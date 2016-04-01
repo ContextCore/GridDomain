@@ -3,7 +3,7 @@ using Ploeh.AutoFixture.Kernel;
 
 namespace GridDomain.Tests.Acceptance.Persistence
 {
-    public class KnownConstructorParameter<TEntiry,TConstructorType> : ISpecimenBuilder
+    public class KnownConstructorParameter<TEntiry, TConstructorType> : ISpecimenBuilder
     {
         private readonly string _name;
         private readonly TConstructorType _value;
@@ -20,8 +20,8 @@ namespace GridDomain.Tests.Acceptance.Persistence
             if (pi == null)
                 return new NoSpecimen();
 
-            if (pi.Member.DeclaringType != typeof(TEntiry) ||
-                pi.ParameterType != typeof(TConstructorType) ||
+            if (pi.Member.DeclaringType != typeof (TEntiry) ||
+                pi.ParameterType != typeof (TConstructorType) ||
                 pi.Name != _name)
                 return new NoSpecimen();
 

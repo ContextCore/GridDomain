@@ -6,9 +6,9 @@ namespace GridDomain.EventStore.MSSQL.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.LogRecords", "TicksFromAppStart", c => c.Long(nullable: false));
+            AddColumn("dbo.LogRecords", "TicksFromAppStart", c => c.Long(false));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.LogRecords", "TicksFromAppStart");

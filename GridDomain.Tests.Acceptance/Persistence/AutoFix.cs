@@ -6,11 +6,13 @@ namespace GridDomain.Tests.Acceptance.Persistence
 {
     public static class AutoFix
     {
-        static Random rnd = new Random();
+        private static readonly Random rnd = new Random();
+        private static readonly Random rng = new Random();
+
         public static T RandomElement<T>(this ICollection<T> collection)
         {
-            int totalLength = collection.Count();
-            int elemIndex = rnd.Next(0, totalLength);
+            var totalLength = collection.Count();
+            var elemIndex = rnd.Next(0, totalLength);
             return collection.Skip(elemIndex - 1).FirstOrDefault();
         }
 
@@ -18,19 +20,18 @@ namespace GridDomain.Tests.Acceptance.Persistence
         {
             if (till > from) throw new ArgumentOutOfRangeException();
 
-            var randomTime = till.AddDays(rnd.Next(0, (int)(@from - till).TotalDays));
+            var randomTime = till.AddDays(rnd.Next(0, (int) (@from - till).TotalDays));
             return randomTime;
         }
-        private static Random rng = new Random();
 
         public static void Shuffle<T>(this IList<T> list)
         {
-            int n = list.Count;
+            var n = list.Count;
             while (n > 1)
             {
                 n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
+                var k = rng.Next(n + 1);
+                var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             }

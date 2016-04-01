@@ -14,13 +14,13 @@ namespace GridDomain.EventSourcing
     {
         public IAggregate Build(Type type, Guid id, IMemento snapshot)
         {
-            ConstructorInfo constructor = type.GetConstructor(
-              BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Guid) }, null);
+            var constructor = type.GetConstructor(
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Guid)}, null);
 
             if (constructor == null)
                 throw new ConventionBasedConstructorNotFound();
 
-            return constructor.Invoke(new object[] { id }) as IAggregate;
+            return constructor.Invoke(new object[] {id}) as IAggregate;
         }
 
         public T Build<T>(Guid id, IMemento snapshot = null) where T : IAggregate

@@ -6,24 +6,23 @@ using NLog;
 
 namespace GridDomain.Tests.Acceptance
 {
-    public class EventWaiter<T> : ReceiveActor where T: ISourcedEvent
+    public class EventWaiter<T> : ReceiveActor where T : ISourcedEvent
     {
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private int _numLeft;
-        private Logger _log = LogManager.GetCurrentClassLogger();
 
         public EventWaiter(IActorRef notifyActor, int numLeft, params Guid[] sources)
         {
             _numLeft = numLeft;
-            this.Receive<T>(
+            Receive<T>(
                 msg =>
                 {
                     if (sources.Contains(msg.SourceId) && --_numLeft <= 0)
                     {
-                        _log.Info("got message for " + this.GetHashCode());
+                        _log.Info("got message for " + GetHashCode());
                         notifyActor.Tell(new ExpectedMessagesRecieved<T>(msg, numLeft, sources));
                     }
                 });
-
         }
     }
 }

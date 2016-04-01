@@ -5,10 +5,14 @@ using NLog;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
 {
-    public class CommandHandler<TAggregate, TCommand> : ICommandHandler<TCommand>, IHandler<TCommand> where TCommand:ICommand
+    public class CommandHandler<TAggregate, TCommand> : ICommandHandler<TCommand>, IHandler<TCommand>
+        where TCommand : ICommand
     {
         private readonly Func<TCommand, TAggregate> _act;
         private readonly Dictionary<Type, Func<object, Exception, object>> _knownFailuresBuilders;
+
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly IPublisher _publisher;
 
         public CommandHandler(Func<TCommand, TAggregate> act,
             Dictionary<Type, Func<object, Exception, object>> knownFailuresBuilders,
@@ -18,9 +22,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
             _knownFailuresBuilders = knownFailuresBuilders;
             _act = act;
         }
-
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
-        private readonly IPublisher _publisher;
 
         public void Handle(TCommand msg)
         {
@@ -32,8 +33,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
             {
                 var failure = new CommandFault<TCommand>(msg, ex);
 
-                _log.Info($"При исполнении команды {typeof(TCommand).Name} возникла ошибка " +
-                          $"{ex.GetType().Name}, которая будет передана отправителю команды. \r\n Информация:\r\n" + failure.ToPropsString());
+                _log.Info($"При исполнении команды {typeof (TCommand).Name} возникла ошибка " +
+                          $"{ex.GetType().Name}, которая будет передана отправителю команды. \r\n Информация:\r\n" +
+                          failure.ToPropsString());
 
                 _publisher.Publish(failure);
                 //TODO: выбрасывать ошибку выше или нет? 

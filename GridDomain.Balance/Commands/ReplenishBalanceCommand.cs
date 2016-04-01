@@ -6,7 +6,8 @@ namespace GridDomain.Balance.Commands
 {
     public class ReplenishBalanceCommand : ChangeBalanceCommand
     {
-        public ReplenishBalanceCommand(Guid balanceId, Money amount, BalanceChangeSource changeSource) : base(balanceId, amount, changeSource)
+        public ReplenishBalanceCommand(Guid balanceId, Money amount, BalanceChangeSource changeSource)
+            : base(balanceId, amount, changeSource)
         {
         }
     }

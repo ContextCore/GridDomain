@@ -4,25 +4,28 @@ using CommonDomain;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
 {
-    public class FailureBuilder<TCommand,TAggregate> where TCommand: ICommand
-        where TAggregate:IAggregate
+    public class FailureBuilder<TCommand, TAggregate> where TCommand : ICommand
+        where TAggregate : IAggregate
     {
         private readonly Func<TCommand, TAggregate> _act;
-        private readonly Dictionary<Type, Func<object, Exception, object>> _knownExceptions = new Dictionary<Type, Func<object, Exception, object>>();
+
+        private readonly Dictionary<Type, Func<object, Exception, object>> _knownExceptions =
+            new Dictionary<Type, Func<object, Exception, object>>();
+
         private readonly IPublisher _publisher;
 
-        public FailureBuilder(Func<TCommand,TAggregate> act,
+        public FailureBuilder(Func<TCommand, TAggregate> act,
             IPublisher publisher)
         {
             _publisher = publisher;
             _act = act;
         }
 
-        public FailureBuilder<TCommand,TAggregate> KnownFailure<TException>()
+        public FailureBuilder<TCommand, TAggregate> KnownFailure<TException>()
         {
-            _knownExceptions.Add(typeof(TException),
+            _knownExceptions.Add(typeof (TException),
                 (msg, ex) =>
-                    new CommandFailure<TCommand,TException>((TCommand)msg, (TException)(object)ex));
+                    new CommandFailure<TCommand, TException>((TCommand) msg, (TException) (object) ex));
 
             return this;
         }
@@ -30,8 +33,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
         public IHandler<TCommand> Create()
         {
             return new CommandHandler<TAggregate, TCommand>(_act,
-                                                            _knownExceptions,
-                                                            _publisher);    
+                _knownExceptions,
+                _publisher);
         }
     }
 }

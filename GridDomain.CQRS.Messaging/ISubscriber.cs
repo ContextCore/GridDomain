@@ -6,6 +6,4 @@ namespace GridDomain.CQRS.Messaging
     {
         void Subscribe<TMessage>(Action<TMessage> msgHandler);
     }
-
-
 }

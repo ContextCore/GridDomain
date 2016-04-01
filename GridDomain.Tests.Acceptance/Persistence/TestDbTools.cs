@@ -13,7 +13,6 @@ namespace GridDomain.Tests.Acceptance.Persistence
 {
     public static class TestDbTools
     {
-
         public static void ClearAll(IDbConfiguration conf)
         {
             //for magic in clear db by delete
@@ -40,7 +39,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
             }
             catch (SqlException ex)
             {
-                Console.WriteLine("DB clearing exception");//shut up with damn CreatedOn
+                Console.WriteLine("DB clearing exception"); //shut up with damn CreatedOn
             }
             var tableNames = objectContext.MetadataWorkspace
                 .GetItemCollection(DataSpace.SSpace)

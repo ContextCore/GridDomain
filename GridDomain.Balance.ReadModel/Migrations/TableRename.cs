@@ -9,30 +9,30 @@ namespace GridDomain.Balance.ReadModel.Migrations
             CreateTable(
                 "dbo.BusinessBalances",
                 c => new
-                    {
-                        BalanceId = c.Guid(nullable: false),
-                        BusinessId = c.Guid(nullable: false),
-                        Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Currency = c.String(),
-                    })
+                {
+                    BalanceId = c.Guid(false),
+                    BusinessId = c.Guid(false),
+                    Amount = c.Decimal(false, 18, 2),
+                    Currency = c.String()
+                })
                 .PrimaryKey(t => t.BalanceId);
-            
+
             DropTable("dbo.BusinessCurrentBalances");
         }
-        
+
         public override void Down()
         {
             CreateTable(
                 "dbo.BusinessCurrentBalances",
                 c => new
-                    {
-                        BusinessId = c.Guid(nullable: false),
-                        BalanceId = c.Guid(nullable: false),
-                        Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Currency = c.String(),
-                    })
+                {
+                    BusinessId = c.Guid(false),
+                    BalanceId = c.Guid(false),
+                    Amount = c.Decimal(false, 18, 2),
+                    Currency = c.String()
+                })
                 .PrimaryKey(t => t.BusinessId);
-            
+
             DropTable("dbo.BusinessBalances");
         }
     }

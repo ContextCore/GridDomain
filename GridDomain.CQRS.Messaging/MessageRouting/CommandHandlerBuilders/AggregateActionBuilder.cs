@@ -8,10 +8,10 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
     public class AggregateActionBuilder<TMessage, TAggregate> where TAggregate : IAggregate where TMessage : ICommand
     {
         private readonly Func<TMessage, TAggregate> _aggregateFactory;
-        private readonly Func<TMessage, Guid> _sagaIdFactory;
-        private readonly IRepository _repository;
         private readonly Func<TMessage, Guid> _commitIdFactory;
         private readonly IPublisher _publisher;
+        private readonly IRepository _repository;
+        private readonly Func<TMessage, Guid> _sagaIdFactory;
 
         public AggregateActionBuilder(Func<TMessage, TAggregate> aggregateFactory,
             Func<TMessage, Guid> sagaIdFactory,
@@ -29,14 +29,15 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
         public FailureBuilder<TMessage, TAggregate> Action(Action<TMessage, TAggregate> act)
         {
             return new FailureBuilder<TMessage, TAggregate>(
-                                                msg => ProcessAggregateCommand(act, msg), 
-                                                _publisher);
+                msg => ProcessAggregateCommand(act, msg),
+                _publisher);
         }
 
         public FailureBuilder<TMessage, TAggregate> NoAction()
         {
             return Action((t, a) => { });
         }
+
         private TAggregate ProcessAggregateCommand(Action<TMessage, TAggregate> act, TMessage msg)
         {
             var aggregate = _aggregateFactory(msg);

@@ -9,6 +9,13 @@ namespace GridDomain.Domain.Tests
     [TestFixture]
     public abstract class RaisedEventsSpecification<TAggregate> where TAggregate : IAggregate
     {
+        [SetUp]
+        public virtual void Init()
+        {
+            Aggregate = CreateAggregate;
+            When();
+        }
+
         protected TAggregate Aggregate;
 
         protected abstract TAggregate CreateAggregate { get; }
@@ -20,25 +27,18 @@ namespace GridDomain.Domain.Tests
 
         protected abstract void When();
 
-        [SetUp]
-        public virtual void Init()
+        protected void ClearUncommittedEvents()
         {
-            Aggregate = CreateAggregate;
-            When();
+            ((IAggregate) Aggregate).ClearUncommittedEvents();
         }
 
         [Test]
         public void VerifyRaisedEvents()
         {
             var expected = ExpectedEvents;
-            var aggregate = ((IAggregate) Aggregate);
+            var aggregate = (IAggregate) Aggregate;
             var published = aggregate.GetUncommittedEvents().OfType<DomainEvent>();
             EventsExtensions.CompareEvents(expected.ToArray(), published.ToArray());
-        }
-
-        protected void ClearUncommittedEvents()
-        {
-            ((IAggregate)Aggregate).ClearUncommittedEvents();
         }
     }
 }

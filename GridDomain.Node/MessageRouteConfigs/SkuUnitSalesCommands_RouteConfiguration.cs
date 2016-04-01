@@ -6,13 +6,13 @@ namespace GridDomain.Node.MessageRouteConfigs
 {
     public class SkuUnitSalesCommands_RouteConfiguration : IMessageRouteConfiguration
     {
-        private readonly IRepository _rep;
         private readonly IPublisher _pub;
+        private readonly IRepository _rep;
 
         public SkuUnitSalesCommands_RouteConfiguration(IRepository rep, IPublisher pub)
         {
             _pub = pub;
-            this._rep = rep;
+            _rep = rep;
         }
 
         public void Register(IMessagesRouter router)

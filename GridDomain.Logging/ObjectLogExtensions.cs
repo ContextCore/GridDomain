@@ -12,8 +12,8 @@ namespace GridDomain.Logging
         public static string ToPropsString(this object o)
         {
             return JsonConvert.SerializeObject(o,
-                                               Formatting.Indented,
-                                               JsonSerializerSettings);
+                Formatting.Indented,
+                JsonSerializerSettings);
         }
     }
 }

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Replenish
 {
     [TestFixture]
-    public class Given_existing_balance_When_BalanceReplenishCommand: CommandSpecification<ReplenishBalanceCommand>
+    public class Given_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishBalanceCommand>
     {
         protected override ICommandHandler<ReplenishBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
 
@@ -29,7 +29,7 @@ namespace GridDomain.Balance.Tests.Replenish
         [Then]
         public void Balance_Should_Be_Replenished()
         {
-             VerifyExpected();
+            VerifyExpected();
         }
     }
 }

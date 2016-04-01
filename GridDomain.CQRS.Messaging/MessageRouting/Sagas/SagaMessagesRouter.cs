@@ -6,15 +6,15 @@ using NLog;
 namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 {
     /// <summary>
-    /// Организует подписку саг на интересующие их события и публикацию результатирующих сообщений.
-    /// Постоянно висит в памяти и создаёт нужные саги при возникновении события
+    ///     Организует подписку саг на интересующие их события и публикацию результатирующих сообщений.
+    ///     Постоянно висит в памяти и создаёт нужные саги при возникновении события
     /// </summary>
-    public class SagaMessagesRouter<TSaga> where TSaga:IStatefullSaga
+    public class SagaMessagesRouter<TSaga> where TSaga : IStatefullSaga
     {
-        private readonly IRepository _repo;
-        private readonly IPublisher _publisher;
-        protected readonly Logger Log = LogManager.GetCurrentClassLogger();
         private readonly IMessagesRouter _messageRouter;
+        private readonly IPublisher _publisher;
+        private readonly IRepository _repo;
+        protected readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 
         public SagaMessagesRouter(IRepository repo, IPublisher publisher, IMessagesRouter messagesRouter)
@@ -26,37 +26,38 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 
         public void RouteFailure<TCommand, TReason, TConcreteSaga>
             (Func<CommandFailure<TCommand, TReason>, TConcreteSaga> sagaFactory)
-            where TCommand : ICommand 
+            where TCommand : ICommand
             where TConcreteSaga : TSaga, IMessageConsumer<CommandFailure<TCommand, TReason>>
         {
-            Route<CommandFailure<TCommand, TReason>, TConcreteSaga>(sagaFactory, fail => fail.Command.Id);
+            Route(sagaFactory, fail => fail.Command.Id);
         }
+
         public void RouteCommand<TCommand, TConreteSaga>(Func<TCommand, TConreteSaga> sagaFactory)
-            where TCommand:ICommand
+            where TCommand : ICommand
             where TConreteSaga : TSaga, IMessageConsumer<TCommand>
         {
             Route(sagaFactory, cmd => cmd.Id);
         }
 
         public void RouteEvent<TCommand, TConreteSaga>(Func<TCommand, TConreteSaga> sagaFactory)
-                          where TCommand : DomainEvent
-                          where TConreteSaga : TSaga, IMessageConsumer<TCommand>
+            where TCommand : DomainEvent
+            where TConreteSaga : TSaga, IMessageConsumer<TCommand>
         {
             Route(sagaFactory, e => Guid.NewGuid());
         }
 
         public void Route<TMessage, TConreteSaga>(Func<TMessage, TConreteSaga> sagaFactory,
-                                                  Func<TMessage, Guid> commitIdFactory)
-                                               where TConreteSaga:TSaga, IMessageConsumer<TMessage>
+            Func<TMessage, Guid> commitIdFactory)
+            where TConreteSaga : TSaga, IMessageConsumer<TMessage>
         {
             _messageRouter.Route<TMessage>()
-                            .To<SagaMessageHandler<TMessage, TConreteSaga>>()
-                            //.WithFactory(msg => 
-                            //new SagaMessageHandler<TMessage, TConreteSaga>(sagaFactory,
-                            //                                               commitIdFactory,
-                            //                                               _repo,
-                            //                                               _publisher))
-                           .Register();
+                .To<SagaMessageHandler<TMessage, TConreteSaga>>()
+                //.WithFactory(msg => 
+                //new SagaMessageHandler<TMessage, TConreteSaga>(sagaFactory,
+                //                                               commitIdFactory,
+                //                                               _repo,
+                //                                               _publisher))
+                .Register();
         }
     }
 }

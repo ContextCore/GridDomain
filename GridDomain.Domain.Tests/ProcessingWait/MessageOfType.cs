@@ -1,10 +1,10 @@
 ﻿namespace GridDomain.Domain.Tests.ProcessingWait
 {
-    class MessageOfType<T> : IStopCondition
+    internal class MessageOfType<T> : IStopCondition
     {
         public bool IsMeet(object msg)
         {
-            return msg != null && msg.GetType() == typeof(T);
+            return msg != null && msg.GetType() == typeof (T);
         }
     }
 }

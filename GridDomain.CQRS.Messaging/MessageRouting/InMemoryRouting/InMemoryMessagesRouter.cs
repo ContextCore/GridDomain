@@ -6,17 +6,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting
 {
     public class InMemoryMessagesRouter : IMessagesRouter
     {
-        private readonly ISubscriber _subscriber;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISubscriber _subscriber;
 
         public InMemoryMessagesRouter(ISubscriber subscriber)
         {
             _subscriber = subscriber;
-        }
-
-        public void Register<TMessage, THandler>(Func<TMessage, THandler> handlerFactory)
-            where THandler : IHandler<TMessage>
-        {
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()
@@ -24,19 +19,25 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting
             return new RouteBuilder<TMessage>(this);
         }
 
+        public void Register<TMessage, THandler>(Func<TMessage, THandler> handlerFactory)
+            where THandler : IHandler<TMessage>
+        {
+        }
+
         private IHandler<TMessage> CreateHandler<TMessage, THandler>
             (Func<TMessage, THandler> commandHandlerFactory, TMessage msg) where THandler : IHandler<TMessage>
         {
             try
             {
-                _log.Trace($"создаётся обработчик для сообщения типа {typeof(TMessage).Name}\r\n" +
+                _log.Trace($"создаётся обработчик для сообщения типа {typeof (TMessage).Name}\r\n" +
                            $"тело сообщения\r\n:{msg.ToPropsString()}");
                 return commandHandlerFactory(msg);
             }
             catch (Exception ex)
             {
-                _log.Fatal($"При создании обработчика {typeof(THandler).Name} для сообщения типа {typeof(TMessage).Name} " +
-                          $"возникла ошибка: \r\n" + ex);
+                _log.Fatal(
+                    $"При создании обработчика {typeof (THandler).Name} для сообщения типа {typeof (TMessage).Name} " +
+                    $"возникла ошибка: \r\n" + ex);
                 return null;
             }
         }
@@ -44,7 +45,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting
         private void ProcessMessage<TMessage, THandler>(Func<TMessage, THandler> commandHandlerFactory, TMessage msg)
             where THandler : IHandler<TMessage>
         {
-            IHandler<TMessage> handler = CreateHandler(commandHandlerFactory, msg);
+            var handler = CreateHandler(commandHandlerFactory, msg);
             if (handler == null) return;
 
             InvokeHandler<TMessage, THandler>(msg, handler);
@@ -55,7 +56,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting
             where THandler : IHandler<TMessage>
         {
             var handlerName = handler.GetType().Name;
-            var name = typeof(TMessage).Name;
+            var name = typeof (TMessage).Name;
             try
             {
                 var propsString = msg.ToPropsString();
@@ -71,7 +72,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting
             catch (Exception ex)
             {
                 _log.Fatal($"При обработке сообщения  {name} обработчиком {handlerName}" +
-                            " возникла ошибка: \r\n" + ex);
+                           " возникла ошибка: \r\n" + ex);
             }
         }
     }

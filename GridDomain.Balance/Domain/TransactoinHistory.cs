@@ -6,13 +6,6 @@ namespace GridDomain.Balance.Domain
 {
     public class TransactoinHistory : AggregateBase
     {
-        public Guid BusinessId { get; private set; }
-        public Guid BalanceId { get; private set; }
-
-        public Money TransactionAmount { get; private set; }
-
-        public Guid TransactionSource { get; private set; }
-
         private TransactoinHistory(Guid id)
         {
             Id = id;
@@ -29,6 +22,14 @@ namespace GridDomain.Balance.Domain
                 TransactionSource = sourceId
             });
         }
+
+        public Guid BusinessId { get; private set; }
+        public Guid BalanceId { get; private set; }
+
+        public Money TransactionAmount { get; private set; }
+
+        public Guid TransactionSource { get; private set; }
+
         private void Apply(TransactoinCreatedEvent e)
         {
             BusinessId = e.BusinessId;

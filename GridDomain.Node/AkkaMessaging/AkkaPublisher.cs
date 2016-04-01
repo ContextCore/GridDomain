@@ -6,10 +6,11 @@ using NLog;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class AkkaPublisher: IPublisher
+    public class AkkaPublisher : IPublisher
     {
         private readonly IActorRef _publisherActor;
-        private Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+
         public AkkaPublisher(ActorSystem system)
         {
             _publisherActor = DistributedPubSub.Get(system).Mediator;
@@ -19,7 +20,7 @@ namespace GridDomain.Node.AkkaMessaging
         {
             var topic = msg.GetType().FullName;
             _log.Trace($"Publishing message {msg.ToPropsString()} to akka distributed pub sub with topic {topic}");
-            _publisherActor.Tell(new Publish(topic,msg));
+            _publisherActor.Tell(new Publish(topic, msg));
         }
     }
 }

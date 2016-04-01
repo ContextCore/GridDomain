@@ -11,8 +11,8 @@ namespace GridDomain.Domain.Tests
     {
         public static void CompareEvents(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2)
         {
-            DomainEvent[] expected = expected1.ToArray();
-            DomainEvent[] published = published2.ToArray();
+            var expected = expected1.ToArray();
+            var published = published2.ToArray();
 
             if (expected.Length != published.Length)
             {
@@ -27,9 +27,9 @@ namespace GridDomain.Domain.Tests
                 Assert.Fail(sb.ToString());
             }
 
-            var compareObjects = new CompareLogic{Config = {DoublePrecision = 0.0001}};
+            var compareObjects = new CompareLogic {Config = {DoublePrecision = 0.0001}};
 
-            var eventPairs = expected.Zip(published, (e, p) => new { Expected = e, Produced = p });
+            var eventPairs = expected.Zip(published, (e, p) => new {Expected = e, Produced = p});
 
 
             foreach (var events in eventPairs)

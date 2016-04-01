@@ -6,11 +6,12 @@ namespace GridDomain.Balance.Domain
 {
     public class BalanceChangedEvent : DomainEvent
     {
-        public Guid BalanceId => SourceId;
-        public Money Amount { get; private set; }
-        protected BalanceChangedEvent(Guid balanceId, Money amount): base(balanceId)
+        protected BalanceChangedEvent(Guid balanceId, Money amount) : base(balanceId)
         {
             Amount = amount;
         }
+
+        public Guid BalanceId => SourceId;
+        public Money Amount { get; private set; }
     }
 }

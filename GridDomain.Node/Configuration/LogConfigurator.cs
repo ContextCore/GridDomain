@@ -15,9 +15,9 @@ namespace GridDomain.Node.Configuration
         {
             _config = config;
         }
+
         public LogConfigurator() : this(new LoggingConfiguration())
         {
-            
         }
 
         public void Apply()
@@ -33,7 +33,7 @@ namespace GridDomain.Node.Configuration
 
         private void AddUdpTarget(LogLevel level, string address, string name)
         {
-            var log2ViewTarget = new ChainsawTarget() {Address = address};
+            var log2ViewTarget = new ChainsawTarget {Address = address};
             _config.AddTarget(name, log2ViewTarget);
             var ruleLog2View = new LoggingRule("*", level, log2ViewTarget);
             _config.LoggingRules.Add(ruleLog2View);
@@ -46,7 +46,7 @@ namespace GridDomain.Node.Configuration
             LogContext.DefaultConnectionString = logConnectionString;
 
             ConfigurationItemFactory.Default.Targets
-                          .RegisterDefinition("DbPersist", typeof(DbPersistTarget));
+                .RegisterDefinition("DbPersist", typeof (DbPersistTarget));
 
             var dbTarget = new DbPersistTarget
             {
@@ -66,11 +66,11 @@ namespace GridDomain.Node.Configuration
             _config.LoggingRules.Add(ruleDb);
         }
 
-        public void InitConsole(LogLevel minLevel,bool async = false)
+        public void InitConsole(LogLevel minLevel, bool async = false)
         {
             var target = CreateConsoleTarget();
 
-            if(async)
+            if (async)
                 target = CreateAsyncWrapper(target);
 
             _config.AddTarget("console" + Guid.NewGuid(), target);
@@ -80,12 +80,12 @@ namespace GridDomain.Node.Configuration
 
         private Target CreateConsoleTarget()
         {
-            return new ColoredConsoleTarget { Layout = @"TM=${date} TH=${threadid} ${logger} ${message}" };
+            return new ColoredConsoleTarget {Layout = @"TM=${date} TH=${threadid} ${logger} ${message}"};
         }
 
         private Target CreateAsyncWrapper(Target orig)
         {
-           return new AsyncTargetWrapper
+            return new AsyncTargetWrapper
             {
                 WrappedTarget = orig,
                 QueueLimit = 5000,
@@ -96,7 +96,7 @@ namespace GridDomain.Node.Configuration
 
         private void InitFileLogging(LogLevel minLevel)
         {
-            var fileTarget = new FileTarget {Layout = @"TM=${date} TH=${threadid} ${logger} ${message}" };
+            var fileTarget = new FileTarget {Layout = @"TM=${date} TH=${threadid} ${logger} ${message}"};
             _config.AddTarget("file" + Guid.NewGuid(), fileTarget);
             fileTarget.FileName = "${basedir}/file.txt";
             var fileAsync = new AsyncTargetWrapper

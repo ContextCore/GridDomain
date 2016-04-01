@@ -7,7 +7,8 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Withdrawal
 {
     [TestFixture]
-    public class Given_non_existing_balance_When_BalanceWithdrawalCommand : CommandSpecification<WithdrawalBalanceCommand>
+    public class Given_non_existing_balance_When_BalanceWithdrawalCommand :
+        CommandSpecification<WithdrawalBalanceCommand>
     {
         protected override ICommandHandler<WithdrawalBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
 

@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class ActorHandler<T>:IHandler<T>
+    public class ActorHandler<T> : IHandler<T>
     {
         private readonly IActorRef _actor;
 

@@ -1,6 +1,6 @@
 ﻿namespace GridDomain.Domain.Tests.ProcessingWait
 {
-    interface IStopCondition
+    internal interface IStopCondition
     {
         bool IsMeet(object msg);
     }

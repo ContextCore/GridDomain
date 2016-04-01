@@ -9,11 +9,27 @@ namespace GridDomain.Domain.Tests
     [TestFixture]
     public class AggregatorFactoryTests
     {
+        [SetUp]
+        public void CreateAssemblyReferences()
+        {
+            Func<string, bool> isGridDomainAssembly = asb => asb.Contains("GridDomain") && !asb.Contains("Test");
+
+            var currentDomainReferences =
+                AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => isGridDomainAssembly(a.FullName))
+                    .ToArray();
+
+            AllAggregateTypes = currentDomainReferences
+                .SelectMany(a => a.GetTypes())
+                .Where(t => typeof (AggregateBase).IsAssignableFrom(t) && t.IsAbstract == false)
+                .ToArray();
+        }
+
         private Type[] AllAggregateTypes;
 
         /// <summary>
-        /// Все агрегаты обязаны иметь приватный конструктор с единственным параметров id для 
-        /// использования внутре EventStore
+        ///     Все агрегаты обязаны иметь приватный конструктор с единственным параметров id для
+        ///     использования внутре EventStore
         /// </summary>
         [Test]
         public void ConstructorConventionTest()
@@ -30,22 +46,6 @@ namespace GridDomain.Domain.Tests
                     Assert.Fail($"Ошибка при построении агрегата {type.Name}: \r\n{ex}");
                 }
             }
-        }
-
-        [SetUp]
-        public void CreateAssemblyReferences()
-        {
-            Func<string, bool> isGridDomainAssembly = asb => asb.Contains("GridDomain") && !asb.Contains("Test");
-
-            var currentDomainReferences =
-                AppDomain.CurrentDomain.GetAssemblies()
-                                       .Where(a => isGridDomainAssembly(a.FullName))
-                                       .ToArray();
-
-            AllAggregateTypes = currentDomainReferences
-                                        .SelectMany(a => a.GetTypes())
-                                        .Where(t => typeof (AggregateBase).IsAssignableFrom(t) && t.IsAbstract == false)
-                                        .ToArray();
         }
     }
 }

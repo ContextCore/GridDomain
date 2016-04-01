@@ -12,7 +12,7 @@ namespace GridDomain.Node.AkkaMessaging
         private readonly ActorHandler<CreateRoute> _routingActor;
         private readonly IActorRef _waiter;
 
-        public ActorMessagesRouter(ActorSystem system,IActorRef waiter)
+        public ActorMessagesRouter(ActorSystem system, IActorRef waiter)
         {
             _waiter = waiter;
             _routingActor = new ActorHandler<CreateRoute>(system.ActorOf<AkkaRoutingActor>());
@@ -20,7 +20,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public IRouteBuilder<TMessage> Route<TMessage>()
         {
-           return new AkkaRouteBuilder<TMessage>(_routingActor);
+            return new AkkaRouteBuilder<TMessage>(_routingActor);
         }
     }
 }

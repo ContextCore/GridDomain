@@ -6,7 +6,6 @@ using NLog;
 
 namespace GridDomain.Node.DomainEventsPublishing
 {
-    
     public class DomainEventsBusNotifier : IObserver<ICommit>
     {
         private readonly IPublisher _bus;
@@ -23,10 +22,10 @@ namespace GridDomain.Node.DomainEventsPublishing
             _log.Trace($"Получен коммит {commit.CommitId} из корзины {commit.BucketId}");
 
             //TODO: понять,почему попадаются null - события
-            foreach (var e in commit.Events.Where(e => e!=null))
+            foreach (var e in commit.Events.Where(e => e != null))
             {
-               _log.Trace($"Отправляем в шину событие {e.Body}");
-               _bus.Publish(e.Body);
+                _log.Trace($"Отправляем в шину событие {e.Body}");
+                _bus.Publish(e.Body);
             }
         }
 
@@ -37,7 +36,6 @@ namespace GridDomain.Node.DomainEventsPublishing
 
         public void OnCompleted()
         {
-        
         }
     }
 }

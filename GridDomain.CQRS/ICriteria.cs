@@ -7,17 +7,17 @@ namespace GridDomain.CQRS
         IQueryable<T> Apply();
     }
 
-    public interface ICriteria<T,U>
+    public interface ICriteria<T, U>
     {
         IQueryable<T> Apply(U namePart);
     }
 
-    public interface ICriteria<T,U,V>
+    public interface ICriteria<T, U, V>
     {
         IQueryable<T> Execute(U p1, V p2);
     }
 
-    public interface ICriteria<T,U,V,K>
+    public interface ICriteria<T, U, V, K>
     {
         IQueryable<T> Execute(U p1, V p2, K p3);
     }

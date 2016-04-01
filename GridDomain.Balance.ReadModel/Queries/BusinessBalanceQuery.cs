@@ -4,8 +4,7 @@ using GridDomain.CQRS.Quering;
 
 namespace GridDomain.Balance.ReadModel.Queries
 {
-
-    public class BusinessBalanceQuery: ISingleQuery<BusinessBalance, Guid>
+    public class BusinessBalanceQuery : ISingleQuery<BusinessBalance, Guid>
     {
         private readonly IQueryable<BusinessBalance> _col;
 

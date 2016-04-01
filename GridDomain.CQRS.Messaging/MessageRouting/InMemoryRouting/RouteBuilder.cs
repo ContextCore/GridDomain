@@ -13,5 +13,5 @@
         {
             return new HandlerBuilder<TMessage, THandler>(_router);
         }
-    } 
+    }
 }

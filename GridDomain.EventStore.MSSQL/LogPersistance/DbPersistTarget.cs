@@ -9,9 +9,8 @@ using NLog.Targets;
 
 namespace GridDomain.EventStore.MSSQL.LogPersistance
 {
-
     [Target("DbPersist")]
-    public sealed class DbPersistTarget:TargetWithLayout
+    public sealed class DbPersistTarget : TargetWithLayout
     {
         public static readonly Stopwatch DebugTimer = new Stopwatch();
 
@@ -19,13 +18,14 @@ namespace GridDomain.EventStore.MSSQL.LogPersistance
         {
             Layout = "${threadid}";
         }
+
         [RequiredParameter]
         public string ConnectionString { get; set; }
 
 
         protected override void Write(AsyncLogEventInfo[] logEvents)
         {
-            using (TransactionScope ts = new TransactionScope())
+            using (var ts = new TransactionScope())
             {
                 using (var context = new LogContext(ConnectionString))
                 {
@@ -36,9 +36,10 @@ namespace GridDomain.EventStore.MSSQL.LogPersistance
                 ts.Complete();
             }
         }
+
         protected override void Write(LogEventInfo logEvent)
         {
-            using (TransactionScope ts = new TransactionScope())
+            using (var ts = new TransactionScope())
             {
                 using (var context = new LogContext(ConnectionString))
                 {
@@ -51,14 +52,14 @@ namespace GridDomain.EventStore.MSSQL.LogPersistance
 
         protected override void Write(AsyncLogEventInfo logEvent)
         {
-            Write(new [] {logEvent});
+            Write(new[] {logEvent});
         }
 
         private LogRecord ConvertToLogRecord(LogEventInfo logInfo)
         {
-            return new LogRecord()
+            return new LogRecord
             {
-                Message =logInfo.FormattedMessage,
+                Message = logInfo.FormattedMessage,
                 Level = logInfo.Level.ToString(),
                 Logger = logInfo.LoggerName,
                 Logged = logInfo.TimeStamp,

@@ -3,10 +3,10 @@ using CommonDomain.Persistence;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
 {
-    public class MessageProcessBuilder<TCommand> where TCommand:ICommand
+    public class MessageProcessBuilder<TCommand> where TCommand : ICommand
     {
-        private readonly IRepository _repository;
         private readonly IPublisher _publisher;
+        private readonly IRepository _repository;
 
         public MessageProcessBuilder(IRepository repository, IPublisher publisher)
         {
@@ -14,9 +14,10 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
             _repository = repository;
         }
 
-        public AggregateCreationBuilder<TCommand, TAggregate> ForAggregate<TAggregate>() where TAggregate : class, IAggregate
+        public AggregateCreationBuilder<TCommand, TAggregate> ForAggregate<TAggregate>()
+            where TAggregate : class, IAggregate
         {
-            return new AggregateCreationBuilder<TCommand, TAggregate>(_repository,_publisher);
+            return new AggregateCreationBuilder<TCommand, TAggregate>(_repository, _publisher);
         }
     }
 }

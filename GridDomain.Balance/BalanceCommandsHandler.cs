@@ -8,12 +8,12 @@ using NLog;
 namespace GridDomain.Balance
 {
     public class BalanceCommandsHandler : ICommandHandler<ReplenishBalanceCommand>,
-                                          ICommandHandler<WithdrawalBalanceCommand>,
-                                          ICommandHandler<CreateBalanceCommand>
+        ICommandHandler<WithdrawalBalanceCommand>,
+        ICommandHandler<CreateBalanceCommand>
 
     {
         private readonly ILogger _log = LogManager.GetCurrentClassLogger();
-         
+
         private readonly IRepository _repository;
 
         public BalanceCommandsHandler(IRepository repository)
@@ -21,12 +21,26 @@ namespace GridDomain.Balance
             _repository = repository;
         }
 
+        public void Handle(CreateBalanceCommand command)
+        {
+            _log.Debug("Handling command:" + command.ToPropsString());
+            _repository.Save(new Domain.Balance(command.BalanceId, command.BusinessId), command.Id);
+        }
+
         public void Handle(ReplenishBalanceCommand command)
         {
             _log.Debug("Handling command:" + command.ToPropsString());
             var balance = LoadBalance(command.BalanceId, command.Id);
             balance.Replenish(command.Amount);
-            _repository.Save(balance,Guid.NewGuid());
+            _repository.Save(balance, Guid.NewGuid());
+        }
+
+        public void Handle(WithdrawalBalanceCommand command)
+        {
+            _log.Debug("Handling command:" + command.ToPropsString());
+            var balance = LoadBalance(command.BalanceId, command.Id);
+            balance.Withdrawal(command.Amount);
+            _repository.Save(balance, command.Id);
         }
 
         private Domain.Balance LoadBalance(Guid balanceId, Guid commandId)
@@ -39,20 +53,6 @@ namespace GridDomain.Balance
             }
 
             return balance;
-        }
-
-        public void Handle(WithdrawalBalanceCommand command)
-        {
-            _log.Debug("Handling command:" + command.ToPropsString());
-            var balance = LoadBalance(command.BalanceId, command.Id);
-            balance.Withdrawal(command.Amount);
-            _repository.Save(balance, command.Id);
-        }
-
-        public void Handle(CreateBalanceCommand command)
-        {
-            _log.Debug("Handling command:" + command.ToPropsString());
-            _repository.Save(new Domain.Balance(command.BalanceId,command.BusinessId), command.Id);
         }
     }
 }

@@ -7,10 +7,10 @@ namespace GridDomain.Node.DomainEventsPublishing
 {
     internal class EventBusSubscriberAdapter : ISubscriber
     {
-        private readonly EventStream _eventStream;
         private readonly Func<Type, IActorRef> _actorRefFactory;
+        private readonly EventStream _eventStream;
 
-        public EventBusSubscriberAdapter(EventStream eventStream, Func<Type,IActorRef> actorRefFactoryFactory)
+        public EventBusSubscriberAdapter(EventStream eventStream, Func<Type, IActorRef> actorRefFactoryFactory)
         {
             _actorRefFactory = actorRefFactoryFactory;
             _eventStream = eventStream;
@@ -18,7 +18,7 @@ namespace GridDomain.Node.DomainEventsPublishing
 
         public void Subscribe<TMessage>(Action<TMessage> msgHandler)
         {
-            _eventStream.Subscribe(_actorRefFactory(typeof(TMessage)),typeof(TMessage));
+            _eventStream.Subscribe(_actorRefFactory(typeof (TMessage)), typeof (TMessage));
         }
     }
 }

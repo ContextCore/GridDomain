@@ -14,16 +14,18 @@ namespace GridDomain.Domain.Tests.Commanding
 {
     public abstract class CommandSpecification<TCommand> where TCommand : class, ICommand
     {
+        protected DomainEvent[] ExpectedEvents;
+
+        protected DomainEvent[] GivenEvents;
         protected TCommand Command { get; private set; }
         protected InMemoryEventRepository Repository { get; private set; }
         protected abstract ICommandHandler<TCommand> Handler { get; }
 
-        protected DomainEvent[] GivenEvents;
-        protected DomainEvent[] ExpectedEvents;
+        protected IMessageTransport Bus { get; private set; }
 
         protected virtual TCommand CommandFactory()
         {
-            return (new Fixture()).Create<TCommand>();
+            return new Fixture().Create<TCommand>();
         }
 
 
@@ -38,7 +40,6 @@ namespace GridDomain.Domain.Tests.Commanding
                 builder.AppendLine(e.ToPropsString());
             }
             builder.AppendLine();
-
         }
 
         protected string CollectDebugInfo()
@@ -57,15 +58,13 @@ namespace GridDomain.Domain.Tests.Commanding
             Console.WriteLine(CollectDebugInfo());
         }
 
-        protected IMessageTransport Bus { get; private set; }
-
         [SetUp]
         public void Init()
         {
             Command = CommandFactory();
             GivenEvents = Given().ToArray();
             ExpectedEvents = Expected().ToArray();
-            Repository =  CreateRepository();
+            Repository = CreateRepository();
             Bus = MessageTransportSetup.SetupInMemoryBus();
         }
 
@@ -86,7 +85,7 @@ namespace GridDomain.Domain.Tests.Commanding
         protected void VerifyExpected()
         {
             EventsExtensions.CompareEvents(ExpectedEvents,
-                                           ExecuteCommand());
+                ExecuteCommand());
         }
 
         protected virtual IEnumerable<DomainEvent> Expected()
@@ -96,10 +95,10 @@ namespace GridDomain.Domain.Tests.Commanding
 
         protected virtual InMemoryEventRepository CreateRepository()
         {
-           var repo = new InMemoryEventRepository(new AggregateFactory());
-            foreach(var ev in GivenEvents)
+            var repo = new InMemoryEventRepository(new AggregateFactory());
+            foreach (var ev in GivenEvents)
                 repo.AddEvent(ev);
-            
+
             return repo;
         }
 

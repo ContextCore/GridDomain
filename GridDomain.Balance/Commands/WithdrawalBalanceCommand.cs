@@ -6,7 +6,8 @@ namespace GridDomain.Balance.Commands
 {
     public class WithdrawalBalanceCommand : ChangeBalanceCommand
     {
-        public WithdrawalBalanceCommand(Guid balanceId, Money amount, BalanceChangeSource changeSource) : base(balanceId, amount, changeSource)
+        public WithdrawalBalanceCommand(Guid balanceId, Money amount, BalanceChangeSource changeSource)
+            : base(balanceId, amount, changeSource)
         {
         }
     }

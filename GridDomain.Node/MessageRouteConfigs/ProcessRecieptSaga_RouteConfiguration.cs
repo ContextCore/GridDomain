@@ -5,7 +5,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 namespace GridDomain.Node.MessageRouteConfigs
 {
     //TODO: перейти на регистрацию по договорёности по IHandler<T>? 
-    class ProcessRecieptSaga_RouteConfiguration : IMessageRouteConfiguration
+    internal class ProcessRecieptSaga_RouteConfiguration : IMessageRouteConfiguration
     {
         private readonly IRepository rep;
         private IPublisher _publisher;
@@ -18,11 +18,11 @@ namespace GridDomain.Node.MessageRouteConfigs
 
         public void Register(IMessagesRouter messagesRouter)
         {
-        //    var sagaRouter = new SagaMessagesRouter<ProcessRecieptSaga>(rep,
-        //                                                                _publisher, messagesRouter);
+            //    var sagaRouter = new SagaMessagesRouter<ProcessRecieptSaga>(rep,
+            //                                                                _publisher, messagesRouter);
 
-        //    sagaRouter.RouteCommand<ProcessNewRecieptCommand, ProcessRecieptSaga>(cmd => new ProcessRecieptSaga(rep));
-        //    sagaRouter.RouteEvent<ProcessSkuSalesSagaData_StateChanged, ProcessRecieptSaga>( cmd => new ProcessRecieptSaga(rep));
+            //    sagaRouter.RouteCommand<ProcessNewRecieptCommand, ProcessRecieptSaga>(cmd => new ProcessRecieptSaga(rep));
+            //    sagaRouter.RouteEvent<ProcessSkuSalesSagaData_StateChanged, ProcessRecieptSaga>( cmd => new ProcessRecieptSaga(rep));
         }
     }
 }

@@ -3,18 +3,20 @@
 namespace GridDomain.EventSourcing
 {
     /// <summary>
-    /// Represents an event message.
+    ///     Represents an event message.
     /// </summary>
     public interface ISourcedEvent
-    { 
+    {
         /// <summary>
-        /// Gets the identifier of the source originating the event.
+        ///     Gets the identifier of the source originating the event.
         /// </summary>
         Guid SourceId { get; }
+
         /// <summary>
-        /// Сага, породившая данное сообщение. 
+        ///     Сага, породившая данное сообщение.
         /// </summary>
         Guid SagaId { get; set; }
+
         DateTime CreatedTime { get; }
     }
 }

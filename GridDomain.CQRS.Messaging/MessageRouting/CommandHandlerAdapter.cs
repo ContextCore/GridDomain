@@ -1,7 +1,7 @@
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public class CommandHandlerAdapter<TMessage,TCommandHandler> : IHandler<TMessage> 
-        where TCommandHandler:ICommandHandler<TMessage>
+    public class CommandHandlerAdapter<TMessage, TCommandHandler> : IHandler<TMessage>
+        where TCommandHandler : ICommandHandler<TMessage>
     {
         private readonly TCommandHandler _cmdHandler;
 

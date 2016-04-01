@@ -8,6 +8,12 @@ namespace GridDomain.Domain.Tests.ProcessingWait
         private readonly IObserver<ICommit> _observer;
         private readonly MessageWaiter _waiter;
 
+        public WaitableObserver(IObserver<ICommit> observer, MessageWaiter waiter)
+        {
+            _waiter = waiter;
+            _observer = observer;
+        }
+
         public void OnNext(ICommit commit)
         {
             _observer.OnNext(commit);
@@ -16,12 +22,6 @@ namespace GridDomain.Domain.Tests.ProcessingWait
             {
                 _waiter.Notify(@event.Body);
             }
-        }
-
-        public WaitableObserver(IObserver<ICommit> observer, MessageWaiter waiter)
-        {
-            _waiter = waiter;
-            _observer = observer;
         }
 
         public void OnError(Exception error)

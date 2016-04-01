@@ -7,12 +7,10 @@ namespace GridDomain.Tests.Acceptance.Persistence.CommandFlowProcessing
 {
     public class LoggingPipelineHook : IPipelineHook
     {
-
         private readonly Logger log = LogManager.GetCurrentClassLogger();
 
         public void Dispose()
         {
-
         }
 
         public ICommit Select(ICommit committed)

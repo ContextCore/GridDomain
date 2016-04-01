@@ -6,10 +6,10 @@ namespace GridDomain.Balance.ReadModel.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.BusinessCurrentBalances", "Amount", c => c.Decimal(nullable: false, precision: 18, scale: 2));
+            AddColumn("dbo.BusinessCurrentBalances", "Amount", c => c.Decimal(false, 18, 2));
             AddColumn("dbo.BusinessCurrentBalances", "Currency", c => c.String());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.BusinessCurrentBalances", "Currency");

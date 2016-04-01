@@ -10,7 +10,7 @@ namespace GridDomain.Node.MessageRouteConfigs
         private readonly IRepository rep;
         private IPublisher _publisher;
 
-        public ProcessSkuSaleSaga_RouteConfiguration(IRepository repository,IPublisher publisher)
+        public ProcessSkuSaleSaga_RouteConfiguration(IRepository repository, IPublisher publisher)
         {
             _publisher = publisher;
             rep = repository;
@@ -18,25 +18,26 @@ namespace GridDomain.Node.MessageRouteConfigs
 
         public void Register(IMessagesRouter messagesRouter)
         {
-        //    var sagaRouter = new SagaMessagesRouter<ProcessSkuSaleSaga>(rep,
-        //                                                                _publisher, 
-        //                                                                messagesRouter);
+            //    var sagaRouter = new SagaMessagesRouter<ProcessSkuSaleSaga>(rep,
+            //                                                                _publisher, 
+            //                                                                messagesRouter);
 
-        //    //TODO: заменить на регистрацию по договорённостии или как-то упростить
-        //    sagaRouter.RouteEvent<ShopSalesHistoryBeginEvent,    ProcessSkuSaleSaga>(m => CreateSaga());
-        //    sagaRouter.RouteCommand<StartSkuSaleSagaCommand,     ProcessSkuSaleSaga>(m => CreateSaga());
-        //    sagaRouter.RouteFailure<CreateSkuSalesNetCommand,
-        //                            SkuSalesNetAlreadyExistException,
-        //                            ProcessSkuSaleSaga>(m => CreateSaga());
+            //    //TODO: заменить на регистрацию по договорённостии или как-то упростить
+            //    sagaRouter.RouteEvent<ShopSalesHistoryBeginEvent,    ProcessSkuSaleSaga>(m => CreateSaga());
+            //    sagaRouter.RouteCommand<StartSkuSaleSagaCommand,     ProcessSkuSaleSaga>(m => CreateSaga());
+            //    sagaRouter.RouteFailure<CreateSkuSalesNetCommand,
+            //                            SkuSalesNetAlreadyExistException,
+            //                            ProcessSkuSaleSaga>(m => CreateSaga());
 
-        //    sagaRouter.RouteEvent<SkuSalesNetCreatedEvent,       ProcessSkuSaleSaga>(m => CreateSaga());
-        //    sagaRouter.RouteEvent<ShopJoinedSalesNetEvent,       ProcessSkuSaleSaga>(m => CreateSaga());
-        //    sagaRouter.RouteEvent<SkuDailySalesRecalulatedEvent, ProcessSkuSaleSaga>(m => CreateSaga());
+            //    sagaRouter.RouteEvent<SkuSalesNetCreatedEvent,       ProcessSkuSaleSaga>(m => CreateSaga());
+            //    sagaRouter.RouteEvent<ShopJoinedSalesNetEvent,       ProcessSkuSaleSaga>(m => CreateSaga());
+            //    sagaRouter.RouteEvent<SkuDailySalesRecalulatedEvent, ProcessSkuSaleSaga>(m => CreateSaga());
         }
 
-        //private ProcessSkuSaleSaga CreateSaga()
-        //{
-        //    return new ProcessSkuSaleSaga(rep);
         //}
+        //    return new ProcessSkuSaleSaga(rep);
+        //{
+
+        //private ProcessSkuSaleSaga CreateSaga()
     }
 }

@@ -7,6 +7,7 @@ namespace GridDomain.EventStore.MSSQL.LogPersistance
     {
         [Key]
         public int Id { get; set; }
+
         public DateTime Logged { get; set; }
         public long TicksFromAppStart { get; set; }
         public string Level { get; set; }

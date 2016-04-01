@@ -7,8 +7,8 @@ using NLog;
 namespace GridDomain.Balance.ReadModel
 {
     public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<BalanceReplenishEvent>,
-                                                           IEventHandler<BalanceWithdrawalEvent>,
-                                                           IEventHandler<BalanceCreatedEvent>
+        IEventHandler<BalanceWithdrawalEvent>,
+        IEventHandler<BalanceCreatedEvent>
     {
         private readonly Func<BusinessBalanceContext> _contextFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
@@ -18,6 +18,26 @@ namespace GridDomain.Balance.ReadModel
         {
             _publisher = publisher;
             _contextFactory = contextFactory;
+        }
+
+        public void Handle(BalanceCreatedEvent msg)
+        {
+            _logger.Debug("Got event:" + msg.ToPropsString());
+            using (var context = _contextFactory())
+            {
+                //skip creation of existing balance
+                if (context.Balances.Find(msg.BalanceId) != null) return;
+
+                var businessCurrentBalance = new BusinessBalance
+                {
+                    BalanceId = msg.BalanceId,
+                    BusinessId = msg.BusinessId
+                };
+
+                context.Balances.Add(businessCurrentBalance);
+                context.SaveChanges();
+                _publisher.Publish(new BalanceCreatedProjectedNotification(msg.BalanceId, msg));
+            }
         }
 
         public void Handle(BalanceReplenishEvent msg)
@@ -31,7 +51,7 @@ namespace GridDomain.Balance.ReadModel
         }
 
         private void HandleChangeEvent(BalanceChangedEvent e,
-                                       Func<decimal, BalanceChangedEvent, decimal> balanceModifier)
+            Func<decimal, BalanceChangedEvent, decimal> balanceModifier)
         {
             _logger.Debug("Got event:" + e.ToPropsString());
             using (var context = _contextFactory())
@@ -52,26 +72,6 @@ namespace GridDomain.Balance.ReadModel
             //persist unknown balance modification
             Handle(new BalanceCreatedEvent(balanceId, Guid.Empty));
             return context.Balances.Find(balanceId);
-        }
-
-        public void Handle(BalanceCreatedEvent msg)
-        {
-            _logger.Debug("Got event:" + msg.ToPropsString());
-            using (var context = _contextFactory())
-            {
-                //skip creation of existing balance
-                if (context.Balances.Find(msg.BalanceId) != null) return;
-
-                var businessCurrentBalance = new BusinessBalance()
-                {
-                    BalanceId = msg.BalanceId,
-                    BusinessId = msg.BusinessId
-                };
-
-                context.Balances.Add(businessCurrentBalance);
-                context.SaveChanges();
-                _publisher.Publish(new BalanceCreatedProjectedNotification(msg.BalanceId, msg));
-            }
         }
     }
 }

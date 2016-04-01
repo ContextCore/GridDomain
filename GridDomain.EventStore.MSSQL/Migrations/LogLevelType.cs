@@ -8,7 +8,7 @@ namespace GridDomain.EventStore.MSSQL.Migrations
         {
             AddColumn("dbo.LogRecords", "Level", c => c.String());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.LogRecords", "Level");

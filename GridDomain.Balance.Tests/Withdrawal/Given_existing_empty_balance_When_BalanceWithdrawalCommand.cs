@@ -11,11 +11,12 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Withdrawal
 {
     [TestFixture]
-    public class Given_existing_empty_balance_When_BalanceWithdrawalCommand : CommandSpecification<WithdrawalBalanceCommand>
+    public class Given_existing_empty_balance_When_BalanceWithdrawalCommand :
+        CommandSpecification<WithdrawalBalanceCommand>
     {
         protected override ICommandHandler<WithdrawalBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
 
-     //   private Money balanceStartAmount = new Fixture().Create<Money>();
+        //   private Money balanceStartAmount = new Fixture().Create<Money>();
         protected override IEnumerable<DomainEvent> Given()
         {
             yield return new BalanceCreatedEvent(Command.BalanceId, Guid.NewGuid());
@@ -29,7 +30,7 @@ namespace GridDomain.Balance.Tests.Withdrawal
         [Then]
         public void Balance_amount_should_be_increased()
         {
-           VerifyExpected();
+            VerifyExpected();
         }
     }
 }

@@ -2,6 +2,5 @@
 {
     public interface IMessageConsumer<T> : IMessageFilter<T>, IHandler<T>
     {
-        
     }
 }

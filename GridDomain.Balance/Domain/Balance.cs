@@ -5,29 +5,29 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain
 {
-    public class Balance:AggregateBase
+    public class Balance : AggregateBase
     {
-        //Business, campaign or smth else
-        public Guid OwnerId { get; private set; }
-
-        public Money Amount { get; private set; } 
-
-
         private Balance(Guid id)
         {
             Id = id;
         }
 
-        public Balance(Guid id, Guid businessId):this(id)
+        public Balance(Guid id, Guid businessId) : this(id)
         {
             RaiseEvent(new BalanceCreatedEvent(id, businessId));
         }
+
+        //Business, campaign or smth else
+        public Guid OwnerId { get; private set; }
+
+        public Money Amount { get; private set; }
 
         private void Apply(BalanceCreatedEvent e)
         {
             Id = e.BalanceId;
             OwnerId = e.BusinessId;
         }
+
         private void Apply(BalanceReplenishEvent e)
         {
             Amount += e.Amount;
@@ -40,7 +40,6 @@ namespace GridDomain.Balance.Domain
 
         public void Replenish(Money m)
         {
-          
             var balanceReplenishEvent = new BalanceReplenishEvent(Id, m);
             GuardNegativeMoney(m, "Cant replenish negative amount of money.", balanceReplenishEvent);
 

@@ -11,41 +11,40 @@ namespace GridDomain.Node.MessageRouteConfigs
 {
     public class BalanceCommandsRouting : IMessageRouteConfiguration
     {
-        private readonly IRepository _rep;
         private readonly Func<BusinessBalanceContext> _contextCreator;
+        private readonly IRepository _rep;
 
         public BalanceCommandsRouting(IRepository rep, Func<BusinessBalanceContext> contextCreator)
         {
             _contextCreator = contextCreator;
-            this._rep = rep;
+            _rep = rep;
         }
 
         public void Register(IMessagesRouter router)
         {
             router.Route<ReplenishBalanceCommand>()
-                     .To<BalanceCommandsHandler>()
-                  .Register();
+                .To<BalanceCommandsHandler>()
+                .Register();
 
             router.Route<WithdrawalBalanceCommand>()
-                     .To<BalanceCommandsHandler>()
-                  .Register();
+                .To<BalanceCommandsHandler>()
+                .Register();
 
             router.Route<CreateBalanceCommand>()
-                  .To<BalanceCommandsHandler>()
-               .Register();
+                .To<BalanceCommandsHandler>()
+                .Register();
 
             router.Route<BalanceReplenishEvent>()
-                    .To<BusinessCurrentBalanceProjectionBuilder>()
-                  .Register();
+                .To<BusinessCurrentBalanceProjectionBuilder>()
+                .Register();
 
             router.Route<BalanceCreatedEvent>()
-                     .To<BusinessCurrentBalanceProjectionBuilder>()
-                   .Register();
+                .To<BusinessCurrentBalanceProjectionBuilder>()
+                .Register();
 
             router.Route<BalanceWithdrawalEvent>()
-                   .To<BusinessCurrentBalanceProjectionBuilder>()
+                .To<BusinessCurrentBalanceProjectionBuilder>()
                 .Register();
         }
     }
-
 }

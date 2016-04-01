@@ -7,10 +7,10 @@ namespace GridDomain.Tests.Acceptance
     [SetUpFixture]
     public class TestsClobalConfig
     {
-       [SetUp]
+        [SetUp]
         public void InitLoggers()
         {
-           InitLog(LogLevel.Error);
+            InitLog(LogLevel.Error);
         }
 
         public static void InitLog(LogLevel minLevel)

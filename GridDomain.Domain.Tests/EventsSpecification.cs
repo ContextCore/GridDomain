@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CommonDomain.Persistence;
 using GridDomain.EventSourcing;
 using NUnit.Framework;
 
@@ -13,7 +12,7 @@ namespace GridDomain.Domain.Tests
         [Test]
         public void When()
         {
-            Repository = new InMemoryEventRepository((IConstructAggregates) new AggregateFactory());
+            Repository = new InMemoryEventRepository(new AggregateFactory());
             var expected = Expect().ToList();
             var published = Repository.ProducedEvents;
             EventsExtensions.CompareEvents(expected.ToArray(), published.ToArray());

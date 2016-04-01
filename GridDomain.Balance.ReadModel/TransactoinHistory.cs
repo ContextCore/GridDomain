@@ -8,7 +8,7 @@ namespace GridDomain.Balance.ReadModel
         public Guid Id { get; set; }
         public Guid BusinessId { get; set; }
         public Guid BalanceId { get; set; }
-       
+
         public Money AmountBeforeTransaction { get; set; }
         public Money AmountAfterTransaction { get; set; }
 

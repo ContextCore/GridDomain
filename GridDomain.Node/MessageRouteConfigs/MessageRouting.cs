@@ -9,15 +9,15 @@ namespace GridDomain.Node.MessageRouteConfigs
     public static class MessageRouting
     {
         public static void Init(IRepository repository,
-                                IPublisher messageTransport,
-                                Func<BusinessBalanceContext> contextCreator,
-                                IMessagesRouter messagesRouter)
+            IPublisher messageTransport,
+            Func<BusinessBalanceContext> contextCreator,
+            IMessagesRouter messagesRouter)
         {
             var routeConfigs = new IMessageRouteConfiguration[]
             {
-              //  new SkuUnitSalesCommands_RouteConfiguration(repository,messageTransport),
-              //  new ProcessRecieptSaga_RouteConfiguration(repository,messageTransport),
-               // new ProcessSkuSaleSaga_RouteConfiguration(repository,messageTransport),
+                //  new SkuUnitSalesCommands_RouteConfiguration(repository,messageTransport),
+                //  new ProcessRecieptSaga_RouteConfiguration(repository,messageTransport),
+                // new ProcessSkuSaleSaga_RouteConfiguration(repository,messageTransport),
                 new BalanceCommandsRouting(repository, contextCreator)
             };
 

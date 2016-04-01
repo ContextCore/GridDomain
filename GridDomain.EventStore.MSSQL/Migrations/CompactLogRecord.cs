@@ -10,7 +10,7 @@ namespace GridDomain.EventStore.MSSQL.Migrations
             DropColumn("dbo.LogRecords", "CallSite");
             DropColumn("dbo.LogRecords", "Exception");
         }
-        
+
         public override void Down()
         {
             AddColumn("dbo.LogRecords", "Exception", c => c.String());

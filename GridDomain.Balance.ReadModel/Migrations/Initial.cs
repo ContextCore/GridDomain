@@ -9,27 +9,26 @@ namespace GridDomain.Balance.ReadModel.Migrations
             CreateTable(
                 "dbo.BusinessCurrentBalances",
                 c => new
-                    {
-                        BusinessId = c.Guid(nullable: false),
-                        BalanceId = c.Guid(nullable: false),
-                    })
+                {
+                    BusinessId = c.Guid(false),
+                    BalanceId = c.Guid(false)
+                })
                 .PrimaryKey(t => t.BusinessId);
-            
+
             CreateTable(
                 "dbo.TransactoinHistories",
                 c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        BusinessId = c.Guid(nullable: false),
-                        BalanceId = c.Guid(nullable: false),
-                        TransactionSource = c.Guid(nullable: false),
-                        TransactionType = c.String(),
-                        TransactionDescription = c.String(),
-                    })
+                {
+                    Id = c.Guid(false),
+                    BusinessId = c.Guid(false),
+                    BalanceId = c.Guid(false),
+                    TransactionSource = c.Guid(false),
+                    TransactionType = c.String(),
+                    TransactionDescription = c.String()
+                })
                 .PrimaryKey(t => t.Id);
-            
         }
-        
+
         public override void Down()
         {
             DropTable("dbo.TransactoinHistories");

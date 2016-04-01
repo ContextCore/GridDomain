@@ -4,13 +4,13 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Domain.Tests.Commanding
 {
-    class CommandDuplicatorHandler<T> : ICommandHandler<T>
+    internal class CommandDuplicatorHandler<T> : ICommandHandler<T>
     {
-        private readonly Func<int,T> _factory;
-        private readonly int _times;
+        private readonly Func<int, T> _factory;
         private readonly ICommandHandler<T> _handler;
+        private readonly int _times;
 
-        public CommandDuplicatorHandler(ICommandHandler<T> handler, Func<int, T> factory, int times )
+        public CommandDuplicatorHandler(ICommandHandler<T> handler, Func<int, T> factory, int times)
         {
             _handler = handler;
             _times = times;
