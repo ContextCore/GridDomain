@@ -173,6 +173,7 @@
     <Compile Include="BalanceChangePlan.cs" />
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
+    <Compile Include="ExplicitSourcesEventWaiter.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
     <Compile Include="Persistence\KnownConstructorParameter.cs" />

@@ -1,13 +1,19 @@
 using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.TestKit.NUnit;
+using CommonDomain.Persistence;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
+using NLog;
+using NLog.LayoutRenderers.Wrappers;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
@@ -16,11 +22,10 @@ namespace GridDomain.Tests.Acceptance
     {
         protected GridDomainNode GridNode;
 
-        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(100);
-
         [TearDown]
         public void DeleteSystems()
         {
+            Console.WriteLine("Stopping node");
             GridNode.Stop();
         }
 
@@ -29,35 +34,38 @@ namespace GridDomain.Tests.Acceptance
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
-            GridNode = new GridDomainNode(new AkkaConfiguration("LocalSystem", 8000, "127.0.0.1"),
-                autoTestGridDomainConfiguration,
-                new UnityContainer());
+
+            GridNode = new GridDomainNode(new AkkaConfiguration("LocalSystem", 8000,"127.0.0.1", "ERROR"),
+                                          autoTestGridDomainConfiguration,
+                                          new UnityContainer());
+
             GridNode.Start();
         }
 
-        protected void ExecuteAndWaitFor<T>(ICommand command,
-            Guid sources) where T : ISourcedEvent
+        protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,
+                                                          Func<TCommand,Guid> expectedSource) 
+                                                  where TEvent : ISourcedEvent
+                                                  where TCommand:ICommand
         {
-            ExecuteAndWaitFor<T>(command, new[] {sources}, DistributedPubSub.Get(GridNode.System)
-                .Mediator, 1);
-        }
-
-        protected void ExecuteAndWaitFor<T>(ICommand command,
-            Guid[] sources, IActorRef Mediator,
-            int msgNum = 0) where T : ISourcedEvent
-        {
-            var numLeft = msgNum == 0 ? sources.Length : msgNum;
-
+            var sources = commands.Select(expectedSource).ToArray();
+            
             var actor = Sys.ActorOf(Props.Create(
-                () => new EventWaiter<T>(TestActor, numLeft, sources)));
+                                    () => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
 
-            Mediator
-                .Ask(new Subscribe(typeof (T).FullName, actor))
-                .Wait(TimeSpan.FromSeconds(1));
+            DistributedPubSub.Get(GridNode.System)
+                             .Mediator
+                             .Ask(new Subscribe(typeof(TEvent).FullName, actor))
+                             .Wait(TimeSpan.FromSeconds(5));
 
-            GridNode.Execute(command);
+            foreach(var c in commands)
+                GridNode.Execute(c);
 
-            ExpectMsg<ExpectedMessagesRecieved<T>>(Timeout);
+            Console.WriteLine($"Wait started with timeout {Timeout}");
+
+            ExpectMsg<ExpectedMessagesRecieved<TEvent>>(Timeout);
+            Console.WriteLine("Wait ended");
         }
+
+        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(100);
     }
 }

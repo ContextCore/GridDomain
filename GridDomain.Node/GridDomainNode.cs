@@ -12,36 +12,31 @@ using NLog.Config;
 
 namespace GridDomain.Node
 {
+
     public class GridDomainNode : IGridDomainNode
     {
-        private readonly AkkaConfiguration _akkaConf;
-        private readonly IUnityContainer _container;
-        private readonly IDbConfiguration _databaseConfiguration;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _mainNodeActor;
+        public readonly IUnityContainer Container;
+        private readonly AkkaConfiguration _akkaConf;
+        private readonly IDbConfiguration _databaseConfiguration;
         public ActorSystem System;
 
+        public Guid Id { get; } = Guid.NewGuid();
+
         public GridDomainNode(AkkaConfiguration akkaConf,
-            IDbConfiguration databaseConfiguration,
-            IUnityContainer unityContainer)
+                              IDbConfiguration databaseConfiguration,
+                              IUnityContainer unityContainer)
         {
             _akkaConf = akkaConf;
             _databaseConfiguration = databaseConfiguration;
-            _container = unityContainer;
-        }
+            Container = unityContainer;
 
-        public Guid Id { get; } = Guid.NewGuid();
+        }
 
         public void Start()
         {
             ConfigureNode(_databaseConfiguration, _akkaConf);
-        }
-
-        public void Stop()
-        {
-            System.Terminate();
-            System.Dispose();
-            _log.Info($"GridDomain node {Id} stopped");
         }
 
         private static void ConfigureLog(IDbConfiguration dbConf)
@@ -53,14 +48,32 @@ namespace GridDomain.Node
             conf.Apply();
         }
 
-        private void ConfigureNode(IDbConfiguration dbConf,
-            AkkaConfiguration akkaConf)
+        private void ConfigureNode(IDbConfiguration dbConf, 
+                                   AkkaConfiguration akkaConf)
         {
             BusinessBalanceContext.DefaultConnectionString = dbConf.ReadModelConnectionString;
             ConfigureLog(dbConf);
             _log.Info($"Launching GridDomain node {Id}");
 
             //TODO: придумать как сделать конфиг через человеческий класс
+            var actorSystem = CreateActorSystem(akkaConf);
+
+            //не убирать - нужен для работы DI в Akka
+            System = actorSystem;
+            var propsResolver = new UnityDependencyResolver(Container, System);
+            CompositionRoot.Init(Container,
+                     System,
+                     _databaseConfiguration);
+
+            var props = System.DI().Props<GridDomainNodeMainActor>();
+            _mainNodeActor = System.ActorOf(props);
+            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start()).Wait();
+
+            _log.Info($"GridDomain node {Id} started at home '{System.Settings.Home}'");
+        }
+
+        public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
+        {
             var actorSystem = ActorSystem.Create(akkaConf.Name,
                 @"akka {  
                         actor {
@@ -74,8 +87,8 @@ namespace GridDomain.Node
                                           unhandled = on
                                        }
                         }
-                        stdout-loglevel = ERROR
-                        loglevel = ERROR
+                        stdout-loglevel = " + akkaConf.LogLevel + @"
+                        loglevel = " + akkaConf.LogLevel + @"
                         log-config-on-start = on
 
 
@@ -93,19 +106,14 @@ namespace GridDomain.Node
                                     }
                                 }
                        ");
+            return actorSystem;
+        }
 
-            //не убирать - нужен для работы DI в Akka
-            System = actorSystem;
-            var propsResolver = new UnityDependencyResolver(_container, System);
-            CompositionRoot.Init(_container,
-                System,
-                _databaseConfiguration);
-
-            var props = System.DI().Props<GridDomainNodeMainActor>();
-            _mainNodeActor = System.ActorOf(props);
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start()).Wait();
-
-            _log.Info($"GridDomain node {Id} started at home '{System.Settings.Home}'");
+        public void Stop()
+        {
+            System.Terminate();
+            System.Dispose();
+            _log.Info($"GridDomain node {Id} stopped");
         }
 
         public void Execute(ICommand cmd)

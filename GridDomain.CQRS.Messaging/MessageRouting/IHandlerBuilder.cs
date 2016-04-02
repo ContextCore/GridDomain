@@ -1,8 +1,11 @@
+using System;
+using System.Linq.Expressions;
+
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public interface IHandlerBuilder<TMessage, THandler> where THandler : IHandler<TMessage>
     {
-        // HandlerBuilder<TMessage, THandler> WithFactory(Func<TMessage, THandler> factory);
         void Register();
+        IHandlerBuilder<TMessage, THandler> WithCorrelation(string propertyName);
     }
 }
