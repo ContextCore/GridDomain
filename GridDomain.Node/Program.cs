@@ -27,10 +27,10 @@ namespace GridDomain.Node
             {
                 x.Service<GridDomainNode>(s =>
                 {
-                    s.ConstructUsing(settings => new GridDomainNode(akkaConfig, conf, container));
+                    s.ConstructUsing(settings => new GridDomainNode(container, ActorSystemFactory.CreateActorSystem(akkaConfig)));
                     s.WhenStarted(node =>
                     {
-                        node.Start();
+                        node.Start(conf);
                         OnStart(node);
                     });
                     s.WhenStopped(tc => tc.Stop());

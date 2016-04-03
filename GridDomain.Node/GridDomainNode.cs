@@ -12,31 +12,37 @@ using NLog.Config;
 
 namespace GridDomain.Node
 {
-
+    
     public class GridDomainNode : IGridDomainNode
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _mainNodeActor;
         public readonly IUnityContainer Container;
-        private readonly AkkaConfiguration _akkaConf;
-        private readonly IDbConfiguration _databaseConfiguration;
-        public ActorSystem System;
+        public readonly ActorSystem System;
 
         public Guid Id { get; } = Guid.NewGuid();
 
-        public GridDomainNode(AkkaConfiguration akkaConf,
-                              IDbConfiguration databaseConfiguration,
-                              IUnityContainer unityContainer)
+        
+        public GridDomainNode(IUnityContainer unityContainer, 
+                              ActorSystem actorSystem)
         {
-            _akkaConf = akkaConf;
-            _databaseConfiguration = databaseConfiguration;
             Container = unityContainer;
-
+            System = actorSystem;
         }
 
-        public void Start()
+        public void Start(IDbConfiguration databaseConfiguration)
         {
-            ConfigureNode(_databaseConfiguration, _akkaConf);
+            BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
+            ConfigureLog(databaseConfiguration);
+            
+            CompositionRoot.Init(Container,
+                                 System,
+                                 databaseConfiguration);
+
+            //не убирать - нужен для работы DI в Akka
+            var propsResolver = new UnityDependencyResolver(Container, System);
+
+            StartActorSystem(System);
         }
 
         private static void ConfigureLog(IDbConfiguration dbConf)
@@ -48,65 +54,16 @@ namespace GridDomain.Node
             conf.Apply();
         }
 
-        private void ConfigureNode(IDbConfiguration dbConf, 
-                                   AkkaConfiguration akkaConf)
+
+        private void StartActorSystem(ActorSystem actorSystem)
         {
-            BusinessBalanceContext.DefaultConnectionString = dbConf.ReadModelConnectionString;
-            ConfigureLog(dbConf);
             _log.Info($"Launching GridDomain node {Id}");
-
-            //TODO: придумать как сделать конфиг через человеческий класс
-            var actorSystem = CreateActorSystem(akkaConf);
-
-            //не убирать - нужен для работы DI в Akka
-            System = actorSystem;
-            var propsResolver = new UnityDependencyResolver(Container, System);
-            CompositionRoot.Init(Container,
-                     System,
-                     _databaseConfiguration);
-
-            var props = System.DI().Props<GridDomainNodeMainActor>();
-            _mainNodeActor = System.ActorOf(props);
+            
+            var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
+             _mainNodeActor = actorSystem.ActorOf(props);
             _mainNodeActor.Ask(new GridDomainNodeMainActor.Start()).Wait();
 
-            _log.Info($"GridDomain node {Id} started at home '{System.Settings.Home}'");
-        }
-
-        public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
-        {
-            var actorSystem = ActorSystem.Create(akkaConf.Name,
-                @"akka {  
-                        actor {
-                                 provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
-                                 loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
-                                 debug {
-                                          receive = on
-                                          autoreceive = on
-                                          lifecycle = on
-                                          event-stream = on
-                                          unhandled = on
-                                       }
-                        }
-                        stdout-loglevel = " + akkaConf.LogLevel + @"
-                        loglevel = " + akkaConf.LogLevel + @"
-                        log-config-on-start = on
-
-
-                        cluster {
-                                seed-nodes = ""akka.tcp://" + akkaConf.Name + "@" + akkaConf.Host + ":" + akkaConf.Port +
-                @"""
-                            }
-                        remote {
-                                    helios.tcp {
-                                        transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
-                                        transport-protocol = tcp
-                                        port = " + akkaConf.Port + @"}
-                                        hostname = " + akkaConf.Host + @"/
-                                       
-                                    }
-                                }
-                       ");
-            return actorSystem;
+            _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }
 
         public void Stop()

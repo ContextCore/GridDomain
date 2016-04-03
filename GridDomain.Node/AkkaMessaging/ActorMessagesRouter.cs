@@ -5,16 +5,12 @@ using NLog;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    // public class 
     public class ActorMessagesRouter : IMessagesRouter
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly ActorHandler<CreateRoute> _routingActor;
-        private readonly IActorRef _waiter;
 
-        public ActorMessagesRouter(ActorSystem system, IActorRef waiter)
+        public ActorMessagesRouter(ActorSystem system)
         {
-            _waiter = waiter;
             _routingActor = new ActorHandler<CreateRoute>(system.ActorOf<AkkaRoutingActor>());
         }
 

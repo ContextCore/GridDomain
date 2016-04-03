@@ -186,6 +186,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
+    <Compile Include="Then_publishing_message_It_should_be_routed_by_correlation_property.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

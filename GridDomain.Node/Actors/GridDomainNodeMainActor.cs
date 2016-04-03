@@ -44,7 +44,7 @@ namespace GridDomain.Node.Actors
             MessageRouting.Init(_repo,
                 _messagePublisher,
                 _readContextFactory,
-                new ActorMessagesRouter(Context.System, Self)
+                new ActorMessagesRouter(Context.System)
                 );
             Thread.Sleep(TimeSpan.FromSeconds(5));
             Sender.Tell(new Started());

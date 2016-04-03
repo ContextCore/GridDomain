@@ -35,11 +35,10 @@ namespace GridDomain.Tests.Acceptance
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
 
-            GridNode = new GridDomainNode(new AkkaConfiguration("LocalSystem", 8000,"127.0.0.1", "ERROR"),
-                                          autoTestGridDomainConfiguration,
-                                          new UnityContainer());
+            AkkaConfiguration akkaConf = new AkkaConfiguration("LocalSystem", 8000,"127.0.0.1", "ERROR");
+            GridNode = new GridDomainNode(new UnityContainer(), ActorSystemFactory.CreateActorSystem(akkaConf));
 
-            GridNode.Start();
+            GridNode.Start(autoTestGridDomainConfiguration);
         }
 
         protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,

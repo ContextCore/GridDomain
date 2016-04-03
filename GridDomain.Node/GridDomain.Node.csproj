@@ -157,6 +157,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\ActorPublishAdapter.cs" />
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />

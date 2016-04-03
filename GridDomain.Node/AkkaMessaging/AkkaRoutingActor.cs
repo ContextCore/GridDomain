@@ -14,7 +14,10 @@ namespace GridDomain.Node.AkkaMessaging
         private Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _distributedTransport;
         //#  private HashSet<CreateRoute>  
-      
+        public AkkaRoutingActor()
+        {
+            
+        }
         protected override void PreStart()
         {
             _distributedTransport = DistributedPubSub.Get(Context.System).Mediator;
