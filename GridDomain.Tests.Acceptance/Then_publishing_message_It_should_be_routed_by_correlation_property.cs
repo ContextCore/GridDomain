@@ -18,12 +18,14 @@ namespace GridDomain.Tests.Acceptance
     [TestFixture]
     public class MessageRoutingTests:TestKit
     {
+        private GridDomainNode _node;
 
-        class TestMessage
+        class TestMessage:ICommand
         {
-            public Guid Id;
             public Guid CorrelationId;
             public Guid ProcessedBy;
+            public Guid Id { get; }
+            public Guid SagaId { get; }
         }
 
         class TestHandlerActor:ReceiveActor
@@ -41,40 +43,49 @@ namespace GridDomain.Tests.Acceptance
         class TestHandler : IHandler<TestMessage>
         {
             private readonly Guid _id;
+            private readonly IActorRef _notifier;
 
-            public TestHandler(Guid id)
+            public TestHandler(Guid id,IActorRef notifier)
             {
+                _notifier = notifier;
                 _id = id;
             }
 
             public void Handle(TestMessage msg)
             {
                 msg.ProcessedBy = _id;
+                _notifier.Tell(msg);
             }
         }
 
         [SetUp]
-        public void Given_correlated_routing_for_message()
+        public void Given_not_correlated_routing_for_message()
         {
             var akkaConfig = new AkkaConfiguration("LocalSystem", 8000, "127.0.0.1", "ERROR");
             var system = ActorSystemFactory.CreateActorSystem(akkaConfig);
             var container = new UnityContainer();
-            container.RegisterType<IHandler<TestMessage>, TestHandler>();
+
+            var guid1 = Guid.NewGuid();
+            container.RegisterType<IHandler<TestMessage>, TestHandler>("handler1",new InjectionConstructor(guid1,TestActor));
+
+            var guid2 = Guid.NewGuid();
+            container.RegisterType<IHandler<TestMessage>, TestHandler>("handler2", new InjectionConstructor(guid2, TestActor));
+
 
             var router = new ActorMessagesRouter(system);
             router.Route<TestMessage>()
                   .To<TestHandler>()
-                  .WithCorrelation(nameof(TestMessage.CorrelationId))
+                //  .WithCorrelation(nameof(TestMessage.CorrelationId))
                   .Register();
 
-            var node = new GridDomainNode(container,system);
+            _node = new GridDomainNode(container,system);
         }
         
 
         [Test]
         public void Then_publishing_message_It_should_be_routed_by_correlation_property()
         {
-            
+          _node.Execute(new );  
         }
     }
 }

@@ -41,22 +41,27 @@ namespace GridDomain.Node.AkkaMessaging
 
         private static IActorRef GetWorkerActorRef(CreateRoute msg)
         {
-            var router = new ConsistentHashingPool(Environment.ProcessorCount)
-                                                  .WithHashMapping(m =>
-                                                  {
-                                                      var msgType = m.GetType();
-                                                      if (msgType == msg.MessageType)
-                                                      {
-                                                          return msgType.GetProperty(msg.MessageCorrelationProperty)
-                                                                        .GetValue(m);
-                                                      }
-                                                      return null;
-                                                  });
 
-            var actorType = typeof(MessageHandlingActor<,>).MakeGenericType(msg.MessageType, msg.HandlerType);
-            var handleActorProps = Context.System.DI().Props(actorType).WithRouter(router);
+            var actorType = typeof (MessageHandlingActor<,>).MakeGenericType(msg.MessageType, msg.HandlerType);
+            var handleActorProps = Context.System.DI().Props(actorType);
+
+            if (!string.IsNullOrEmpty(msg.MessageCorrelationProperty))
+            {
+                var router = new ConsistentHashingPool(Environment.ProcessorCount)
+                    .WithHashMapping(m =>
+                    {
+                        var msgType = m.GetType();
+                        if (msgType == msg.MessageType)
+                        {
+                            return msgType.GetProperty(msg.MessageCorrelationProperty)
+                                .GetValue(m);
+                        }
+                        return null;
+                    });
+                handleActorProps = handleActorProps.WithRouter(router);
+            }
+
             var handleActor = Context.System.ActorOf(handleActorProps);
-
             return handleActor;
         }
     }
