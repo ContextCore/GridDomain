@@ -11,10 +11,9 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class AkkaRoutingActor : TypedActor, IHandler<CreateRoute>
     {
-        private Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _distributedTransport;
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
-        //#  private HashSet<CreateRoute>  
         public AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory)
         {
             _actorTypeFactory = actorTypeFactory;

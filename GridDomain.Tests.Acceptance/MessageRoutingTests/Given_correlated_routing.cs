@@ -22,9 +22,9 @@ namespace GridDomain.Tests.Acceptance
         private int _threadId;
 
         [SetUp]
-        private void Given_correlated_routing_for_message()
+        public void Given_correlated_routing_for_message()
         {
-            _router.Route<TestMessage>()
+            Router.Route<TestMessage>()
                    .To<TestHandler>()
                    .WithCorrelation(nameof(TestMessage.CorrelationId))
                    .Register();

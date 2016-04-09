@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Cluster;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.TestKit.NUnit;
 using CommonDomain.Persistence;
@@ -21,6 +22,7 @@ namespace GridDomain.Tests.Acceptance
     public class NodeCommandsTest : TestKit
     {
         protected GridDomainNode GridNode;
+        private IActorRef _distributedPubSub;
 
         [TearDown]
         public void DeleteSystems()
@@ -35,10 +37,12 @@ namespace GridDomain.Tests.Acceptance
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
 
-            AkkaConfiguration akkaConf = new AkkaConfiguration("LocalSystem", 8000,"127.0.0.1", "ERROR");
+            AkkaConfiguration akkaConf = new AkkaConfiguration("LocalSystem", 8001, "127.0.0.1",AkkaConfiguration.LogVerbosity.Error);
             GridNode = new GridDomainNode(new UnityContainer(), ActorSystemFactory.CreateActorSystem(akkaConf));
 
             GridNode.Start(autoTestGridDomainConfiguration);
+            //GridNode.System.DeadLetters
+            _distributedPubSub = DistributedPubSub.Get(GridNode.System).Mediator;
         }
 
         protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,
@@ -51,8 +55,7 @@ namespace GridDomain.Tests.Acceptance
             var actor = Sys.ActorOf(Props.Create(
                                     () => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
 
-            DistributedPubSub.Get(GridNode.System)
-                             .Mediator
+            _distributedPubSub
                              .Ask(new Subscribe(typeof(TEvent).FullName, actor))
                              .Wait(TimeSpan.FromSeconds(5));
 

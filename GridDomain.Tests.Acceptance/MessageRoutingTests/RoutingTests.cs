@@ -18,10 +18,9 @@ namespace GridDomain.Tests.Acceptance
 {
     public class RoutingTests:TestKit
     {
-        private GridDomainNode _node;
         private ActorSystem _system;
         private AkkaPublisher _publisher;
-        protected ActorMessagesRouter _router;
+        protected ActorMessagesRouter Router;
 
 
         public class TestMessage : ICommand
@@ -53,14 +52,6 @@ namespace GridDomain.Tests.Acceptance
             }
         }
 
-
-        private void Given_not_correlated_routing_for_message(ActorMessagesRouter actorMessagesRouter)
-        {
-            actorMessagesRouter.Route<TestMessage>()
-                .To<TestHandler>()
-                .Register();
-        }
-
         [TearDown]
         public void Clear()
         {
@@ -69,23 +60,20 @@ namespace GridDomain.Tests.Acceptance
         }
 
         [SetUp]
-        protected ActorMessagesRouter Init()
+        public void Init()
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
-
             GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
-            var akkaConfig = new AkkaConfiguration("LocalSystem", 8020, "127.0.0.1", "INFO");
+            var akkaConfig = new AkkaConfiguration("LocalSystem", 8020, "127.0.0.1", AkkaConfiguration.LogVerbosity.Warning);
             _system = ActorSystemFactory.CreateActorSystem(akkaConfig);
             var container = new UnityContainer();
             var propsResolver = new UnityDependencyResolver(container, _system);
             container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(TestActor));
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            _router = new ActorMessagesRouter(_system.ActorOf(_system.DI().Props<AkkaRoutingActor>()));
+            Router = new ActorMessagesRouter(_system.ActorOf(_system.DI().Props<AkkaRoutingActor>()));
             _publisher = new AkkaPublisher(_system);
-
-            return _router;
         }
 
 
@@ -115,27 +103,6 @@ namespace GridDomain.Tests.Acceptance
                 resultMessages.Add(ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)));
 
             return resultMessages.ToArray();
-        }
-
-        [Test]
-        public void Then_It_should_not_be_routed_by_correlation_property()
-        {
-            Given_not_correlated_routing_for_message(_router);
-            var initialCommands = When_publishing_messages_with_same_correlation_id();
-
-            var resultMessages = new[]
-            {
-                ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)),
-                ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)),
-                ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10))
-            };
-
-            CollectionAssert.AreEquivalent(initialCommands.Select(c => c.Id), resultMessages.Select(r => r.Id));
-            var handlerId = resultMessages.First().HandlerHashCode;
-            var threadId = resultMessages.First().HandlerThreadId;
-
-            Assert.True(resultMessages.Any(m => m.HandlerHashCode != handlerId));
-            Assert.True(resultMessages.Any(m => m.HandlerThreadId != threadId));
         }
     }
 }
