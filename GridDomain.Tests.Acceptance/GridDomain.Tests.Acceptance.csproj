@@ -182,6 +182,8 @@
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
+    <Compile Include="MessageRoutingTests\Given_not_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\RoutingTests.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
@@ -195,7 +197,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
-    <Compile Include="Then_publishing_message_It_should_be_routed_by_correlation_property.cs" />
+    <Compile Include="MessageRoutingTests\Given_correlated_routing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

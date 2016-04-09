@@ -47,25 +47,40 @@ namespace GridDomain.Node.AkkaMessaging
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             var handleActorProps = Context.System.DI().Props(actorType);
 
-            if (!string.IsNullOrEmpty(msg.MessageCorrelationProperty))
-            {
-                var router = new ConsistentHashingPool(Environment.ProcessorCount)
-                    .WithHashMapping(m =>
-                    {
-                        var msgType = m.GetType();
-                        if (msgType == msg.MessageType)
-                        {
-                            var value = msgType.GetProperty(msg.MessageCorrelationProperty)
-                                               .GetValue(m);
-                            return value;
-                        }
-                        return null;
-                    });
-                handleActorProps = handleActorProps.WithRouter(router);
-            }
+            var routeConfig = CreateRouter(msg);
+
+            handleActorProps = handleActorProps.WithRouter(routeConfig);
 
             var handleActor = Context.System.ActorOf(handleActorProps);
             return handleActor;
+        }
+
+        private static RouterConfig CreateRouter(CreateRoute routeConfigMessage)
+        {
+            if (!string.IsNullOrEmpty(routeConfigMessage.MessageCorrelationProperty))
+            {
+                var router = new ConsistentHashingPool(Environment.ProcessorCount)
+                                         .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage));
+                return router;
+            }
+            else
+            {
+                var router = new RandomPool(Environment.ProcessorCount);
+                return router;
+            }
+        }
+
+        private static ConsistentHashMapping GetCorrelationPropertyFromMessage(CreateRoute routeConfigMessage)
+        {
+            return m =>
+            {
+                var msgType = m.GetType();
+                if (msgType != routeConfigMessage.MessageType) return null;
+
+                var value = msgType.GetProperty(routeConfigMessage.MessageCorrelationProperty)
+                                   .GetValue(m);
+                return value;
+            };
         }
     }
 }
