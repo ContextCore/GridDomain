@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Akka.DI.Core;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting;
 using NLog;
@@ -9,9 +10,9 @@ namespace GridDomain.Node.AkkaMessaging
     {
         private readonly ActorHandler<CreateRoute> _routingActor;
 
-        public ActorMessagesRouter(ActorSystem system)
+        public ActorMessagesRouter(IActorRef routingActor)
         {
-            _routingActor = new ActorHandler<CreateRoute>(system.ActorOf<AkkaRoutingActor>());
+            _routingActor = new ActorHandler<CreateRoute>(routingActor);
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()

@@ -61,43 +61,4 @@ namespace GridDomain.Node.AkkaMessaging
 
 namespace GridDomain.Node.AkkaMessaging.BadRoute
 {
-
-    class CannotFindCorrelationProperty : Exception
-    {
-        public Type Type { get; set; }
-        public string Property { get; set; }
-
-        public CannotFindCorrelationProperty(Type type, string property):
-            base($"Cannot find property {property} in type {type}")
-        {
-            Type = type;
-            Property = property;
-        }
-    }
-
-    internal class IncorrectTypeOfCorrelationProperty : Exception
-    {
-        public Type Type { get; set; }
-        public string Property { get; set; }
-
-        public IncorrectTypeOfCorrelationProperty(Type type, string property):
-            base($"Correlation property {property} of type {type} should be {typeof(Guid)} type to act as correlation property")
-        {
-            Type = type;
-            Property = property;
-        }
-    }
-
-    internal class InvalidHandlerType : Exception
-    {
-        public Type HandlerType { get; set; }
-        public Type MessageType { get; set; }
-
-        public InvalidHandlerType(Type handlerType, Type messageType): 
-            base($"Handler {handlerType} should implement {typeof(IHandler<>).MakeGenericType(messageType)}")
-        {
-            HandlerType = handlerType;
-            MessageType = messageType;
-        }
-    }
 }

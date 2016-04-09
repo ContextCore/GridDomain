@@ -45,7 +45,7 @@ namespace GridDomain.Node
             StartActorSystem(System);
         }
 
-        private static void ConfigureLog(IDbConfiguration dbConf)
+        public static void ConfigureLog(IDbConfiguration dbConf)
         {
             var conf = new LogConfigurator(new LoggingConfiguration());
             conf.InitDbLogging(LogLevel.Trace, dbConf.LogsConnectionString);

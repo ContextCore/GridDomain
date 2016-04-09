@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Akka.Actor;
+using Akka.DI.Core;
 using CommonDomain.Persistence;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS;
@@ -41,12 +42,15 @@ namespace GridDomain.Node.Actors
             CompositionRoot.ConfigurePushingEventsFromStoreToBus(_eventStore,
                 new DomainEventsBusNotifier(_messagePublisher));
 
+            ActorSystem system = Context.System;
+            var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
+
             MessageRouting.Init(_repo,
-                _messagePublisher,
-                _readContextFactory,
-                new ActorMessagesRouter(Context.System)
-                );
-            Thread.Sleep(TimeSpan.FromSeconds(5));
+                                _messagePublisher,
+                                _readContextFactory,
+                                new ActorMessagesRouter(routingActor)
+                                );
+
             Sender.Tell(new Started());
         }
 

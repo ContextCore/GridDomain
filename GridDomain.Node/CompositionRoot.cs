@@ -30,6 +30,8 @@ namespace GridDomain.Node
             container.RegisterInstance<Func<BusinessBalanceContext>>(
                 () => new BusinessBalanceContext(conf.ReadModelConnectionString));
 
+
+            container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             //register all message handlers available to communicate
             //need to do it on plugin approach
             container.RegisterType<BalanceCommandsHandler>();
