@@ -13,7 +13,8 @@ namespace GridDomain.Node.AkkaMessaging
         /// Name of property in message to use as correlation id.
         /// Property must be Guid type. 
         /// All messages with same correlation id will be processed sequencially
-        /// to avoid race conditions or concurrency problems  
+        /// to avoid race conditions or concurrency problems.
+        /// Can be null.   
         /// </summary>
         public string MessageCorrelationProperty { get; }
 
@@ -45,6 +46,8 @@ namespace GridDomain.Node.AkkaMessaging
 
         private void CheckCorrelationProperty()
         {
+            if (MessageCorrelationProperty == null) return;
+
             var property = MessageType.GetProperty(MessageCorrelationProperty);
             if (property == null)
                 throw new BadRoute.CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);

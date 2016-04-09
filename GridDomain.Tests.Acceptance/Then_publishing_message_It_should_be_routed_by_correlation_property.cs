@@ -22,47 +22,11 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance
 {
 
-    //[TestFixture]
-    //public class MessageRoutingTest_Node : NodeCommandsTest
-    //{
-
-    //    [SetUp]
-    //    public void Init()
-    //    {
-    //        GridNode.Container.RegisterType<IHandler<MessageRoutingTests.TestMessage>, MessageRoutingTests.TestHandler>(new InjectionConstructor(TestActor));
-    //        GridNode.Container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-
-    //        var router = new ActorMessagesRouter(GridNode.System.ActorOf(GridNode.System.DI().Props<AkkaRoutingActor>()));
-    //        router.Route<MessageRoutingTests.TestMessage>()
-    //              .To<MessageRoutingTests.TestHandler>()
-    //              .WithCorrelation(nameof(MessageRoutingTests.TestMessage.CorrelationId))
-    //              .Register();
-    //    }
-
-
-    //    [Test]
-    //    public void Then_It_should_be_routed_by_correlation_property()
-    //    {
-    //        var guid = Guid.NewGuid();
-
-    //        var cmds = new MessageRoutingTests.TestMessage[]
-    //        {
-    //            new MessageRoutingTests.TestMessage() {CorrelationId = guid},
-    //            new MessageRoutingTests.TestMessage() {CorrelationId = guid},
-    //            new MessageRoutingTests.TestMessage() {CorrelationId = guid}
-    //        };
-    //        ExecuteAndWaitFor<MessageRoutingTests.TestMessage>(cmds, c => c.Id);
-    //        Assert.True(hash == hash1 && hash1 == hash2);
-    //    }
-
-    //}
-
-
     public class TestMessage : ICommand
     {
         public Guid CorrelationId { get; set; }
         public Guid ProcessedBy { get; }
-        public Guid Id { get; }
+        public Guid Id => Guid.NewGuid();
         public Guid SagaId { get; }
         public long HandlerHashCode { get; set; }
     }
@@ -93,12 +57,28 @@ namespace GridDomain.Tests.Acceptance
         private GridDomainNode _node;
         private ActorSystem _system;
         private AkkaPublisher _publisher;
+        private ActorMessagesRouter _router;
 
- 
-        [SetUp]
+
         public void Given_correlated_routing_for_message()
         {
+            _router.Route<TestMessage>()
+                   .To<TestHandler>()
+                   .WithCorrelation(nameof(TestMessage.CorrelationId))
+                   .Register();
+        }
 
+        public void Given_not_correlated_routing_for_message()
+        {
+            _router.Route<TestMessage>()
+                   .To<TestHandler>()
+                   .Register();
+        }
+
+        [SetUp]
+
+        private ActorMessagesRouter Init()
+        {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
 
@@ -110,36 +90,59 @@ namespace GridDomain.Tests.Acceptance
             var propsResolver = new UnityDependencyResolver(container, _system);
             container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(TestActor));
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            var router = new ActorMessagesRouter(_system.ActorOf(_system.DI().Props<AkkaRoutingActor>()));
-
-            router.Route<TestMessage>()
-                  .To<TestHandler>()
-                  .WithCorrelation(nameof(TestMessage.CorrelationId))
-                  .Register();
-
+            _router = new ActorMessagesRouter(_system.ActorOf(_system.DI().Props<AkkaRoutingActor>()));
             _publisher = new AkkaPublisher(_system);
+            return _router;
         }
-        
 
-        public void When_publishing_messages_with_same_correlation_id()
+
+        public TestMessage[]  When_publishing_messages_with_same_correlation_id()
         {
             var guid = Guid.NewGuid();
 
-            _publisher.Publish(new TestMessage() { CorrelationId = guid });
-            _publisher.Publish(new TestMessage() { CorrelationId = guid });
-            _publisher.Publish(new TestMessage() { CorrelationId = guid });
+            var commands = new[]
+            {
+                new TestMessage() {CorrelationId = guid},
+                new TestMessage() {CorrelationId = guid},
+                new TestMessage() {CorrelationId = guid}
+            };
+
+            foreach(var c in commands)
+            _publisher.Publish(c);
+
+            return commands;
         }
 
         [Test]
         public void Then_It_should_be_routed_by_correlation_property()
         {
+            Given_correlated_routing_for_message();
+            var initialCommands = When_publishing_messages_with_same_correlation_id();
+
+            var resultMessages = new[]
+            {
+                ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)),
+                ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)),
+                ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10))
+            };
+
+            CollectionAssert.AreEqual(initialCommands.Select(c => c.Id), resultMessages.Select(r => r.Id));
+
+            var handlerId = resultMessages.First().HandlerHashCode;
+            Assert.True(resultMessages.All(m => m.HandlerHashCode == handlerId ));
+        }
+
+        [Test]
+        public void Then_It_should_not_be_routed_by_correlation_property()
+        {
+            Given_not_correlated_routing_for_message();
             When_publishing_messages_with_same_correlation_id();
 
             var hash  = ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)).HandlerHashCode;
             var hash1 = ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)).HandlerHashCode;
             var hash2 = ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)).HandlerHashCode;
 
-            Assert.True(hash == hash1 && hash1 == hash2);
+            Assert.True(hash != hash1 || hash1 != hash2);
         }
     }
 }
