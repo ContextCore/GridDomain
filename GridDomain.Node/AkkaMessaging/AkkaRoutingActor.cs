@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.DI.Core;
@@ -14,6 +15,7 @@ namespace GridDomain.Node.AkkaMessaging
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _distributedTransport;
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
+
         public AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory)
         {
             _actorTypeFactory = actorTypeFactory;
@@ -33,16 +35,16 @@ namespace GridDomain.Node.AkkaMessaging
         {
             var handleActor = GetWorkerActorRef(msg);
             _log.Trace($"Created message handling actor for {msg.ToPropsString()}");
+
             var topic = msg.MessageType.FullName;
 
             _distributedTransport.Ask(new Subscribe(topic, handleActor)).Wait();
-
-            _log.Trace($"Subscribed handler actor {handleActor.Path} to topic {topic}");
+            
+            _log.Trace($"Subscribing handler actor {handleActor.Path} to topic {topic}");
         }
 
         private IActorRef GetWorkerActorRef(CreateRoute msg)
         {
-
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             var handleActorProps = Context.System.DI().Props(actorType);
 

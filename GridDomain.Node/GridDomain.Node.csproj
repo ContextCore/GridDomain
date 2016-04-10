@@ -161,7 +161,7 @@
     <Compile Include="Actors\ActorPublishAdapter.cs" />
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
-    <Compile Include="AkkaMessaging\ActorHandler.cs" />
+    <Compile Include="AkkaMessaging\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
     <Compile Include="AkkaMessaging\AkkaPublisher.cs" />
     <Compile Include="AkkaMessaging\AkkaRouteBuilder.cs" />

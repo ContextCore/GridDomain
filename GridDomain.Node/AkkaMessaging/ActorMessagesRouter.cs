@@ -8,16 +8,16 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class ActorMessagesRouter : IMessagesRouter
     {
-        private readonly ActorHandler<CreateRoute> _routingActor;
+        private readonly TypedMessageActor<CreateRoute> _routingTypedMessageActor;
 
         public ActorMessagesRouter(IActorRef routingActor)
         {
-            _routingActor = new ActorHandler<CreateRoute>(routingActor);
+            _routingTypedMessageActor = new TypedMessageActor<CreateRoute>(routingActor);
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()
         {
-            return new AkkaRouteBuilder<TMessage>(_routingActor);
+            return new AkkaRouteBuilder<TMessage>(_routingTypedMessageActor);
         }
     }
 }

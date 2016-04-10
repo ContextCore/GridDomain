@@ -6,9 +6,9 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class AkkaRouteBuilder<T> : IRouteBuilder<T>
     {
-        private readonly ActorHandler<CreateRoute> _routingRegistrator;
+        private readonly TypedMessageActor<CreateRoute> _routingRegistrator;
 
-        public AkkaRouteBuilder(ActorHandler<CreateRoute> routingRegistrator)
+        public AkkaRouteBuilder(TypedMessageActor<CreateRoute> routingRegistrator)
         {
             _routingRegistrator = routingRegistrator;
         }

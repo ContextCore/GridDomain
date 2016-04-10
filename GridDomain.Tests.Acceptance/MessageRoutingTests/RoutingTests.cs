@@ -66,7 +66,7 @@ namespace GridDomain.Tests.Acceptance
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
             GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
-            var akkaConfig = new AkkaConfiguration("LocalSystem", 8020, "127.0.0.1", AkkaConfiguration.LogVerbosity.Warning);
+            var akkaConfig = new AkkaConfiguration("LocalSystem", 8021, "127.0.0.1", AkkaConfiguration.LogVerbosity.Warning);
             _system = ActorSystemFactory.CreateActorSystem(akkaConfig);
             var container = new UnityContainer();
             var propsResolver = new UnityDependencyResolver(container, _system);

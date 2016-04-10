@@ -188,7 +188,7 @@
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
     <Compile Include="Persistence\KnownConstructorParameter.cs" />
-    <Compile Include="Given_balance_change_plan_When_executing.cs" />
+    <Compile Include="ReadModelConcurrentBuild\Given_balance_change_plan_When_executing.cs" />
     <Compile Include="Persistence\AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />
     <Compile Include="Persistence\CommandFlowProcessing\LoggingPipelineHook.cs" />

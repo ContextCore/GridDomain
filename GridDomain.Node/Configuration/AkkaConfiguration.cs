@@ -21,7 +21,7 @@ namespace GridDomain.Node.Configuration
                                                             {
                                                                 {LogVerbosity.Info, "INFO"},
                                                                 {LogVerbosity.Error, "ERROR"},
-                                                                {LogVerbosity.Trace, "TRACE"},
+                                                                {LogVerbosity.Trace, "DEBUG"},
                                                                 {LogVerbosity.Warning, "WARNING"}
                                                             }; 
         public enum LogVerbosity

@@ -7,9 +7,9 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class AkkaHandlerBuilder<TMessage, THandler>:IHandlerBuilder<TMessage,THandler> where THandler : IHandler<TMessage>
     {
-        private readonly ActorHandler<CreateRoute> _routingRegistrator;
+        private readonly TypedMessageActor<CreateRoute> _routingRegistrator;
         public string CorrelationPropertyName;
-        public AkkaHandlerBuilder(ActorHandler<CreateRoute> routingRegistrator)
+        public AkkaHandlerBuilder(TypedMessageActor<CreateRoute> routingRegistrator)
         {
             _routingRegistrator = routingRegistrator;
         }

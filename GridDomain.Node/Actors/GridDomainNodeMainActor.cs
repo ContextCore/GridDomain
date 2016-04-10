@@ -40,7 +40,7 @@ namespace GridDomain.Node.Actors
             _log.Debug($"Актор {GetType().Name} начинает инициализацию");
 
             CompositionRoot.ConfigurePushingEventsFromStoreToBus(_eventStore,
-                new DomainEventsBusNotifier(_messagePublisher));
+                                                                 new DomainEventsBusNotifier(_messagePublisher));
 
             ActorSystem system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
@@ -51,6 +51,9 @@ namespace GridDomain.Node.Actors
                                 new ActorMessagesRouter(routingActor)
                                 );
 
+            //Time to wait until all routing will be configured
+            //TODO: refactor to message notification from router
+            Thread.Sleep(TimeSpan.FromSeconds(3));
             Sender.Tell(new Started());
         }
 

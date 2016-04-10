@@ -27,6 +27,7 @@ namespace GridDomain.Tests.Acceptance
         [TearDown]
         public void DeleteSystems()
         {
+            Console.WriteLine();
             Console.WriteLine("Stopping node");
             GridNode.Stop();
         }
@@ -59,15 +60,22 @@ namespace GridDomain.Tests.Acceptance
                              .Ask(new Subscribe(typeof(TEvent).FullName, actor))
                              .Wait(TimeSpan.FromSeconds(5));
 
-            foreach(var c in commands)
+            Console.WriteLine();
+            Console.WriteLine("Sleep for 5 seconds");
+            Thread.Sleep(TimeSpan.FromSeconds(5));
+            Console.WriteLine("Starting execute");
+
+            foreach (var c in commands)
                 GridNode.Execute(c);
 
-            Console.WriteLine($"Wait started with timeout {Timeout}");
+            Console.WriteLine();
+            Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
             ExpectMsg<ExpectedMessagesRecieved<TEvent>>(Timeout);
+            Console.WriteLine();
             Console.WriteLine("Wait ended");
         }
 
-        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(100);
+        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(10);
     }
 }
