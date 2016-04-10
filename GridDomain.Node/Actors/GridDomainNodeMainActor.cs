@@ -45,15 +45,14 @@ namespace GridDomain.Node.Actors
             ActorSystem system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
 
+            var actorMessagesRouter = new ActorMessagesRouter(routingActor);
             MessageRouting.Init(_repo,
                                 _messagePublisher,
                                 _readContextFactory,
-                                new ActorMessagesRouter(routingActor)
+                                actorMessagesRouter
                                 );
 
-            //Time to wait until all routing will be configured
-            //TODO: refactor to message notification from router
-            Thread.Sleep(TimeSpan.FromSeconds(3));
+            actorMessagesRouter.WaitForRouteConfiguration();
             Sender.Tell(new Started());
         }
 

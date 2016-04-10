@@ -19,6 +19,7 @@ namespace GridDomain.Tests.Acceptance
             Router.Route<TestMessage>()
                 .To<TestHandler>()
                 .Register();
+            Router.WaitForRouteConfiguration();
 
             _initialCommands = When_publishing_messages_with_same_correlation_id();
             _resultMessages = WaitFor(_initialCommands.Length);
