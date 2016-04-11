@@ -25,7 +25,6 @@ namespace GridDomain.Tests.Acceptance
             _resultMessages = WaitFor(_initialCommands.Length);
 
             _handlerId = _resultMessages.First().HandlerHashCode;
-            _threadId = _resultMessages.First().HandlerThreadId;
         }
 
         [Test]
@@ -35,9 +34,9 @@ namespace GridDomain.Tests.Acceptance
         }
 
         [Then]
-        public void Then_It_should_be_handled_in_separate_thread()
+        public void Then_It_should_be_handled_in_random_way()
         {
-            Assert.True(_resultMessages.Any(m => m.HandlerThreadId != _threadId));
+            Assert.True(_resultMessages.Any(m => m.HandleOrder != m.ExecuteOrder));
         }
 
         [Then]

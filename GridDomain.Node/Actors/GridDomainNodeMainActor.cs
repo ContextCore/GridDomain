@@ -53,7 +53,7 @@ namespace GridDomain.Node.Actors
                                 );
 
             //TODO: replace with message from router
-            Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(5), Sender, new Started(), Self);
+            Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);
         }
 
         public void Handle(ExecuteCommand message)

@@ -42,7 +42,6 @@ namespace GridDomain.Tests.Acceptance
             GridNode = new GridDomainNode(new UnityContainer(), ActorSystemFactory.CreateActorSystem(akkaConf));
 
             GridNode.Start(autoTestGridDomainConfiguration);
-            //GridNode.System.DeadLetters
             _distributedPubSub = DistributedPubSub.Get(GridNode.System).Mediator;
         }
 
@@ -58,11 +57,8 @@ namespace GridDomain.Tests.Acceptance
 
             _distributedPubSub
                              .Ask(new Subscribe(typeof(TEvent).FullName, actor))
-                             .Wait(TimeSpan.FromSeconds(5));
+                             .Wait(TimeSpan.FromSeconds(2));
 
-            Console.WriteLine();
-            Console.WriteLine("Sleep for 5 seconds");
-            Thread.Sleep(TimeSpan.FromSeconds(5));
             Console.WriteLine("Starting execute");
 
             foreach (var c in commands)

@@ -193,11 +193,8 @@
     <Compile Include="MessageRouteConfigs\MessageRouting.cs" />
     <Compile Include="MemTransportMessaging\MessageTransportSetup.cs" />
     <Compile Include="DomainEventsPublishing\NLogToEventStoreLogAdapter.cs" />
-    <Compile Include="MessageRouteConfigs\ProcessRecieptSaga_RouteConfiguration.cs" />
-    <Compile Include="MessageRouteConfigs\ProcessSkuSaleSaga_RouteConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MessageRouteConfigs\SkuUnitSalesCommands_RouteConfiguration.cs" />
     <Compile Include="Configuration\LogConfigurator.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -31,14 +31,15 @@ namespace GridDomain.Tests.Acceptance
             public Guid SagaId { get; }
             public long HandlerHashCode { get; set; }
 
-            public int HandlerThreadId { get; set; }
+            public int HandleOrder { get; set; }
+            public int ExecuteOrder { get; set; }
         }
 
 
         public class TestHandler : IHandler<TestMessage>
         {
             private readonly IActorRef _notifier;
-
+            private static int _handleCounter = 0;
             public TestHandler(IActorRef notifier)
             {
                 _notifier = notifier;
@@ -47,7 +48,7 @@ namespace GridDomain.Tests.Acceptance
             public void Handle(TestMessage msg)
             {
                 msg.HandlerHashCode = GetHashCode();
-                msg.HandlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                msg.HandleOrder = ++_handleCounter;
                 _notifier.Tell(msg);
             }
         }
@@ -80,12 +81,12 @@ namespace GridDomain.Tests.Acceptance
         protected TestMessage[]  When_publishing_messages_with_same_correlation_id()
         {
             var guid = Guid.NewGuid();
-
+            int count = 0;
             var commands = new[]
             {
-                new TestMessage() {CorrelationId = guid},
-                new TestMessage() {CorrelationId = guid},
-                new TestMessage() {CorrelationId = guid}
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count}
             };
 
             foreach(var c in commands)

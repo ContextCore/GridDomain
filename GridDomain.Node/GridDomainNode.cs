@@ -60,10 +60,10 @@ namespace GridDomain.Node
             _log.Info($"Launching GridDomain node {Id}");
             
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
-             _mainNodeActor = actorSystem.ActorOf(props);
-            _mainNodeActor.Tell(new GridDomainNodeMainActor.Start());
-            //TODO: replace with message wait
-            Thread.Sleep(TimeSpan.FromSeconds(1));
+            _mainNodeActor = actorSystem.ActorOf(props);
+            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start())
+                          .Wait(TimeSpan.FromSeconds(10));
+
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }
 

@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Acceptance
             _resultMessages = WaitFor(_initialCommands.Length);
 
             _handlerId = _resultMessages.First().HandlerHashCode;
-            _threadId = _resultMessages.First().HandlerThreadId;
+            _threadId = _resultMessages.First().HandleOrder;
         }
 
         [Test]
@@ -44,9 +44,9 @@ namespace GridDomain.Tests.Acceptance
         }
 
         [Then]
-        public void Then_It_should_be_handled_in_one_thread()
+        public void Then_It_should_be_handled_in_execute_sequence()
         {
-            Assert.True(_resultMessages.All(m => m.HandlerThreadId == _threadId));
+            Assert.True(_resultMessages.All(m => m.HandleOrder == m.ExecuteOrder));
         }
 
         [Then]
