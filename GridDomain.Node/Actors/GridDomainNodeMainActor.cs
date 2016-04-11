@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Akka.Actor;
+using Akka.DI.Core;
 using CommonDomain.Persistence;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS;
@@ -39,13 +40,17 @@ namespace GridDomain.Node.Actors
             _log.Debug($"Актор {GetType().Name} начинает инициализацию");
 
             CompositionRoot.ConfigurePushingEventsFromStoreToBus(_eventStore,
-                new DomainEventsBusNotifier(_messagePublisher));
+                                                                 new DomainEventsBusNotifier(_messagePublisher));
 
+            ActorSystem system = Context.System;
+            var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
+
+            var actorMessagesRouter = new ActorMessagesRouter(routingActor);
             MessageRouting.Init(_repo,
-                _messagePublisher,
-                _readContextFactory,
-                new ActorMessagesRouter(Context.System)
-                );
+                                _messagePublisher,
+                                _readContextFactory,
+                                actorMessagesRouter
+                                );
 
             //TODO: replace with message from router
             Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(5), Sender, new Started(), Self);

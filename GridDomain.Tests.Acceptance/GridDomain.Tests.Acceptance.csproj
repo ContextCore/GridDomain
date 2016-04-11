@@ -49,6 +49,14 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.DI.Core, Version=1.0.6.16, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Core.1.0.6\lib\net45\Akka.DI.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.DI.Unity, Version=1.0.6.16, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Unity.1.0.6\lib\net45\Akka.DI.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Logger.NLog, Version=1.0.6.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Logger.NLog.1.0.6\lib\net45\Akka.Logger.NLog.dll</HintPath>
       <Private>True</Private>
@@ -174,10 +182,13 @@
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
+    <Compile Include="MessageRoutingTests\Given_not_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\RoutingTests.cs" />
+    <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
     <Compile Include="Persistence\KnownConstructorParameter.cs" />
-    <Compile Include="Given_balance_change_plan_When_executing.cs" />
+    <Compile Include="ReadModelConcurrentBuild\Given_balance_change_plan_When_executing.cs" />
     <Compile Include="Persistence\AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />
     <Compile Include="Persistence\CommandFlowProcessing\LoggingPipelineHook.cs" />
@@ -186,7 +197,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
-    <Compile Include="Then_publishing_message_It_should_be_routed_by_correlation_property.cs" />
+    <Compile Include="MessageRoutingTests\Given_correlated_routing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -13,7 +13,8 @@ namespace GridDomain.Node.AkkaMessaging
         /// Name of property in message to use as correlation id.
         /// Property must be Guid type. 
         /// All messages with same correlation id will be processed sequencially
-        /// to avoid race conditions or concurrency problems  
+        /// to avoid race conditions or concurrency problems.
+        /// Can be null.   
         /// </summary>
         public string MessageCorrelationProperty { get; }
 
@@ -45,6 +46,8 @@ namespace GridDomain.Node.AkkaMessaging
 
         private void CheckCorrelationProperty()
         {
+            if (MessageCorrelationProperty == null) return;
+
             var property = MessageType.GetProperty(MessageCorrelationProperty);
             if (property == null)
                 throw new BadRoute.CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);
@@ -61,43 +64,4 @@ namespace GridDomain.Node.AkkaMessaging
 
 namespace GridDomain.Node.AkkaMessaging.BadRoute
 {
-
-    class CannotFindCorrelationProperty : Exception
-    {
-        public Type Type { get; set; }
-        public string Property { get; set; }
-
-        public CannotFindCorrelationProperty(Type type, string property):
-            base($"Cannot find property {property} in type {type}")
-        {
-            Type = type;
-            Property = property;
-        }
-    }
-
-    internal class IncorrectTypeOfCorrelationProperty : Exception
-    {
-        public Type Type { get; set; }
-        public string Property { get; set; }
-
-        public IncorrectTypeOfCorrelationProperty(Type type, string property):
-            base($"Correlation property {property} of type {type} should be {typeof(Guid)} type to act as correlation property")
-        {
-            Type = type;
-            Property = property;
-        }
-    }
-
-    internal class InvalidHandlerType : Exception
-    {
-        public Type HandlerType { get; set; }
-        public Type MessageType { get; set; }
-
-        public InvalidHandlerType(Type handlerType, Type messageType): 
-            base($"Handler {handlerType} should implement {typeof(IHandler<>).MakeGenericType(messageType)}")
-        {
-            HandlerType = handlerType;
-            MessageType = messageType;
-        }
-    }
 }

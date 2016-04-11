@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.DI.Core;
@@ -11,13 +12,15 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class AkkaRoutingActor : TypedActor, IHandler<CreateRoute>
     {
-        private Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _distributedTransport;
-        //#  private HashSet<CreateRoute>  
-        public AkkaRoutingActor()
+        private readonly IHandlerActorTypeFactory _actorTypeFactory;
+
+        public AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory)
         {
-            
+            _actorTypeFactory = actorTypeFactory;
         }
+
         protected override void PreStart()
         {
             _distributedTransport = DistributedPubSub.Get(Context.System).Mediator;
@@ -30,34 +33,55 @@ namespace GridDomain.Node.AkkaMessaging
 
         public void Handle(CreateRoute msg)
         {
-            _log.Trace($"Routing actor creating route: {msg.ToPropsString()}");
             var handleActor = GetWorkerActorRef(msg);
             _log.Trace($"Created message handling actor for {msg.ToPropsString()}");
+
             var topic = msg.MessageType.FullName;
+
+            _distributedTransport.Ask(new Subscribe(topic, handleActor)).Wait();
+            
             _log.Trace($"Subscribing handler actor {handleActor.Path} to topic {topic}");
-           var r = _distributedTransport.Ask(new Subscribe(topic, handleActor)).Result;
-            _log.Trace($"Subscribed handler actor {handleActor.Path} to topic {topic}");
         }
 
-        private static IActorRef GetWorkerActorRef(CreateRoute msg)
+        private IActorRef GetWorkerActorRef(CreateRoute msg)
         {
-            var router = new ConsistentHashingPool(Environment.ProcessorCount)
-                                                  .WithHashMapping(m =>
-                                                  {
-                                                      var msgType = m.GetType();
-                                                      if (msgType == msg.MessageType)
-                                                      {
-                                                          return msgType.GetProperty(msg.MessageCorrelationProperty)
-                                                                        .GetValue(m);
-                                                      }
-                                                      return null;
-                                                  });
+            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
+            var handleActorProps = Context.System.DI().Props(actorType);
 
-            var actorType = typeof(MessageHandlingActor<,>).MakeGenericType(msg.MessageType, msg.HandlerType);
-            var handleActorProps = Context.System.DI().Props(actorType).WithRouter(router);
+            var routeConfig = CreateRouter(msg);
+
+            handleActorProps = handleActorProps.WithRouter(routeConfig);
+
             var handleActor = Context.System.ActorOf(handleActorProps);
-
             return handleActor;
+        }
+
+        private static RouterConfig CreateRouter(CreateRoute routeConfigMessage)
+        {
+            if (!string.IsNullOrEmpty(routeConfigMessage.MessageCorrelationProperty))
+            {
+                var router = new ConsistentHashingPool(Environment.ProcessorCount)
+                                         .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage));
+                return router;
+            }
+            else
+            {
+                var router = new RandomPool(Environment.ProcessorCount);
+                return router;
+            }
+        }
+
+        private static ConsistentHashMapping GetCorrelationPropertyFromMessage(CreateRoute routeConfigMessage)
+        {
+            return m =>
+            {
+                var msgType = m.GetType();
+                if (msgType != routeConfigMessage.MessageType) return null;
+
+                var value = msgType.GetProperty(routeConfigMessage.MessageCorrelationProperty)
+                                   .GetValue(m);
+                return value;
+            };
         }
     }
 }

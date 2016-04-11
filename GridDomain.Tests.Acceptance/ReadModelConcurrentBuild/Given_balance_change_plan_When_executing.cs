@@ -39,16 +39,10 @@ namespace GridDomain.Tests.Acceptance
         private void When_executed_change_balances(IReadOnlyCollection<BalanceChangePlan> balanceManipulationPlans)
         {
             var changeBalanceCommands = balanceManipulationPlans.SelectMany(p => p.BalanceChangeCommands).ToArray();
-            //foreach (var cmd in changeBalanceCommands.ToArray())
-            //{
-            //    ExecuteAndWaitFor<BalanceChangeProjectedNotification, ChangeBalanceCommand>(new[] { cmd },
-            //                                                                                c => c.BalanceId);
-            //}
 
             ExecuteAndWaitFor<BalanceChangeProjectedNotification, ChangeBalanceCommand>(changeBalanceCommands,
                                                                                         c => c.BalanceId);
         }
-
 
         [Then]
         public void Balances_should_be_created_by_local_GridDomain_system()

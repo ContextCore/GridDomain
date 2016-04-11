@@ -32,7 +32,7 @@ static public class ActorSystemFactory
                                         transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                         transport-protocol = tcp
                                         port = " + akkaConf.Port + @"}
-                                        hostname = " + akkaConf.Host + @"/
+                                        hostname = " + akkaConf.Name + @"/
                                        
                                     }
                                 }
