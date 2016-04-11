@@ -46,8 +46,9 @@ namespace GridDomain.Node.Actors
                 _readContextFactory,
                 new ActorMessagesRouter(Context.System)
                 );
-            Thread.Sleep(TimeSpan.FromSeconds(5));
-            Sender.Tell(new Started());
+
+            //TODO: replace with message from router
+            Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(5), Sender, new Started(), Self);
         }
 
         public void Handle(ExecuteCommand message)

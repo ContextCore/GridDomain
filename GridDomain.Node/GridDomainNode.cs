@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -41,7 +42,6 @@ namespace GridDomain.Node
 
             //не убирать - нужен для работы DI в Akka
             var propsResolver = new UnityDependencyResolver(Container, System);
-
             StartActorSystem(System);
         }
 
@@ -61,8 +61,9 @@ namespace GridDomain.Node
             
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
              _mainNodeActor = actorSystem.ActorOf(props);
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start()).Wait();
-
+            _mainNodeActor.Tell(new GridDomainNodeMainActor.Start());
+            //TODO: replace with message wait
+            Thread.Sleep(TimeSpan.FromSeconds(1));
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }
 
@@ -76,11 +77,6 @@ namespace GridDomain.Node
         public void Execute(ICommand cmd)
         {
             _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
-        }
-
-        public void ExecuteSync(ICommand cmd)
-        {
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.ExecuteCommand(cmd)).Wait();
         }
     }
 }
