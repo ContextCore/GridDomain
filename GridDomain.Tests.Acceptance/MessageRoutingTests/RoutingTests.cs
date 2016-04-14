@@ -81,15 +81,33 @@ namespace GridDomain.Tests.Acceptance
         protected TestMessage[]  When_publishing_messages_with_same_correlation_id()
         {
             var guid = Guid.NewGuid();
+            var guid1 = Guid.NewGuid();
             int count = 0;
+            int count1 = 0;
+
+        
             var commands = new[]
             {
                 new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
                 new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count}
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
+                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
+                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
+                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
+                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
+                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
+                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1}
             };
-
-            foreach(var c in commands)
+            foreach (var c in commands)
                 _publisher.Publish(c);
 
             return commands;

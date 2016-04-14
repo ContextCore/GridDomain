@@ -56,12 +56,12 @@ namespace GridDomain.Node.AkkaMessaging
             return handleActor;
         }
 
-        private static RouterConfig CreateRouter(CreateRoute routeConfigMessage)
+        private RouterConfig CreateRouter(CreateRoute routeConfigMessage)
         {
             if (!string.IsNullOrEmpty(routeConfigMessage.MessageCorrelationProperty))
             {
                 var router = new ConsistentHashingPool(Environment.ProcessorCount)
-                                         .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage));
+                                .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage));
                 return router;
             }
             else
@@ -71,17 +71,33 @@ namespace GridDomain.Node.AkkaMessaging
             }
         }
 
-        private static ConsistentHashMapping GetCorrelationPropertyFromMessage(CreateRoute routeConfigMessage)
+        private ConsistentHashMapping GetCorrelationPropertyFromMessage(CreateRoute routeConfigMessage)
         {
             return m =>
             {
                 var msgType = m.GetType();
-                if (msgType != routeConfigMessage.MessageType) return null;
+                if (msgType != routeConfigMessage.MessageType)
+                {
+                    _log.Trace($"Bad message type. Expected:{routeConfigMessage.MessageType}, got:{msgType}");
+                    return null;
+                }
 
                 var value = msgType.GetProperty(routeConfigMessage.MessageCorrelationProperty)
                                    .GetValue(m);
+                if (!(value is Guid))
+                    throw new InvalidCorrelationPropertyValue(value);
+
+                _log.Trace($"created correlation id for message {m.GetType()}: {value}");
                 return value;
             };
+        }
+    }
+
+    internal class InvalidCorrelationPropertyValue : Exception
+    {
+        public InvalidCorrelationPropertyValue(object value):base(value?.ToString())
+        {
+            
         }
     }
 }

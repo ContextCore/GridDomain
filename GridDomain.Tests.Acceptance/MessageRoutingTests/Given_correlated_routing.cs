@@ -18,8 +18,6 @@ namespace GridDomain.Tests.Acceptance
     {
         private TestMessage[] _initialCommands;
         private TestMessage[] _resultMessages;
-        private long _handlerId;
-        private int _threadId;
 
         [SetUp]
         public void Given_correlated_routing_for_message()
@@ -33,8 +31,6 @@ namespace GridDomain.Tests.Acceptance
             _initialCommands = When_publishing_messages_with_same_correlation_id();
             _resultMessages = WaitFor(_initialCommands.Length);
 
-            _handlerId = _resultMessages.First().HandlerHashCode;
-            _threadId = _resultMessages.First().HandleOrder;
         }
 
         [Test]
@@ -52,7 +48,11 @@ namespace GridDomain.Tests.Acceptance
         [Then]
         public void Then_It_should_be_handled_in_single_handler_instance()
         {
-            Assert.True(_resultMessages.All(m => m.HandlerHashCode == _handlerId));
+            foreach (var correlationGroup in _resultMessages.GroupBy(m => m.CorrelationId))
+            {
+                var handlerHashCode = correlationGroup.First().HandlerHashCode;
+                Assert.True(correlationGroup.All(m => m.HandlerHashCode == handlerHashCode));
+            }
         }
 
     }
