@@ -182,6 +182,7 @@
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
+    <Compile Include="MessageRoutingTests\ConsistentHashingRoutingTest.cs" />
     <Compile Include="MessageRoutingTests\Given_not_correlated_routing.cs" />
     <Compile Include="MessageRoutingTests\RoutingTests.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />

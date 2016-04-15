@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Akka.Cluster.Tools.PublishSubscribe;
 using GridDomain.Domain.Tests;
+using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
 {
-
     [TestFixture]
 
     public class Given_correlated_routing : RoutingTests

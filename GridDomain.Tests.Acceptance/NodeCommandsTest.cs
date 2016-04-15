@@ -19,7 +19,7 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
 {
-    public class NodeCommandsTest : TestKit
+    public class NodeCommandsTest: TestKit
     {
         protected GridDomainNode GridNode;
         private IActorRef _distributedPubSub;
@@ -52,8 +52,8 @@ namespace GridDomain.Tests.Acceptance
         {
             var sources = commands.Select(expectedSource).ToArray();
             
-            var actor = Sys.ActorOf(Props.Create(
-                                    () => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
+            var actor = GridNode.System.ActorOf(Props.Create(
+                                        () => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
 
             _distributedPubSub
                              .Ask(new Subscribe(typeof(TEvent).FullName, actor))
