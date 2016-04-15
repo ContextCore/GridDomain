@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.DI.Core;
@@ -14,18 +15,13 @@ namespace GridDomain.Node.AkkaMessaging
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _distributedTransport;
-        private readonly IHandlerActorTypeFactory _actorTypeFactory;
-
-        public AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory)
-        {
-            _actorTypeFactory = actorTypeFactory;
-        }
 
         protected override void PreStart()
         {
             _distributedTransport = DistributedPubSub.Get(Context.System).Mediator;
         }
 
+        //TODO: notify about subscription finish
         public void Handle(SubscribeAck msg)
         {
             _log.Trace($"Subscription was successfull for {msg.ToPropsString()}");
@@ -36,17 +32,18 @@ namespace GridDomain.Node.AkkaMessaging
             var handleActor = GetWorkerActorRef(msg);
             _log.Trace($"Created message handling actor for {msg.ToPropsString()}");
 
-            var topic = msg.MessageType.FullName;
+            foreach (var topic in msg.MessagesToRoute.Select(msgToRegister => msgToRegister.MessageType.FullName))
+            {
+                _distributedTransport.Tell(new Subscribe(topic, handleActor));
+                _log.Trace($"Subscribing handler actor {handleActor.Path} to topic {topic}");
+            }
 
-            _distributedTransport.Ask(new Subscribe(topic, handleActor)).Wait();
-            
-            _log.Trace($"Subscribing handler actor {handleActor.Path} to topic {topic}");
         }
 
         private IActorRef GetWorkerActorRef(CreateRoute msg)
         {
-            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
-            var handleActorProps = Context.System.DI().Props(actorType);
+           
+            var handleActorProps = Context.System.DI().Props();
 
             var routeConfig = CreateRouter(msg);
 
