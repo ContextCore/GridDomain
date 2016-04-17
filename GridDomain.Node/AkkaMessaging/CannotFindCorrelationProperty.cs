@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.AkkaMessaging.BadRoute
+namespace GridDomain.Node.AkkaMessaging
 {
     class CannotFindCorrelationProperty : Exception
     {

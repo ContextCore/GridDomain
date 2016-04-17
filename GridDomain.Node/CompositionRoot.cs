@@ -7,6 +7,7 @@ using CommonDomain.Persistence.EventStore;
 using GridDomain.Balance;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.ReadModel;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
@@ -27,14 +28,19 @@ namespace GridDomain.Node
             IPublisher publisher = new AkkaPublisher(actorSystem);
             container.RegisterInstance(publisher);
             RegisterEventStore(container, conf);
-            container.RegisterInstance<Func<BusinessBalanceContext>>(
-                () => new BusinessBalanceContext(conf.ReadModelConnectionString));
-
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             //register all message handlers available to communicate
             //need to do it on plugin approach
             container.RegisterType<BalanceCommandsHandler>();
+
+            Func<BusinessBalanceContext> contextFactory = () => new BusinessBalanceContext(conf.ReadModelConnectionString);
+
+            container.RegisterType<IReadModelCreator<BusinessBalance>>(
+                                    new InjectionFactory(c =>
+                                        new ReadModelCreatorRetryDecorator<BusinessBalance>(
+                                            new SqlReadModelCreator<BusinessBalance>(contextFactory))));
+
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
         }
 

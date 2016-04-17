@@ -1,16 +1,8 @@
-﻿using System.ComponentModel;
-using System.Linq;
-using System.Net.Configuration;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
-using Akka.Cluster.Tools.PublishSubscribe;
+﻿using System.Linq;
 using GridDomain.Domain.Tests;
-using GridDomain.Node;
-using GridDomain.Node.AkkaMessaging;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     [TestFixture]
 

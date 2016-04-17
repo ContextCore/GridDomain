@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Akka.Actor;
-using Akka.Cluster.Tools.PublishSubscribe;
-using Akka.TestKit.NUnit;
 using CommonDomain.Persistence;
 using GridDomain.Balance.Commands;
-using GridDomain.Balance.Domain;
 using GridDomain.Balance.ReadModel;
-using GridDomain.CQRS;
 using GridDomain.Domain.Tests;
-using GridDomain.EventSourcing;
-using GridDomain.Node;
-using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
 {
    
 
@@ -31,7 +22,7 @@ namespace GridDomain.Tests.Acceptance
         [SetUp]
         public void Init()
         {
-            _balanceManipulationPlans = GivenBalancePlan();
+            _balanceManipulationPlans = GivenBalancePlan(10);
             _createBalanceCommands = When_executed_create_balance_commands(_balanceManipulationPlans);
             When_executed_change_balances(_balanceManipulationPlans);
         }
@@ -150,9 +141,9 @@ namespace GridDomain.Tests.Acceptance
             return createBalanceCommands;
         }
 
-        private static IReadOnlyCollection<BalanceChangePlan> GivenBalancePlan()
+        private static IReadOnlyCollection<BalanceChangePlan> GivenBalancePlan(int businessNum)
         {
-            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(10, 10);
+            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(businessNum, businessNum);
             return balanceManipulationCommands;
         }
     }

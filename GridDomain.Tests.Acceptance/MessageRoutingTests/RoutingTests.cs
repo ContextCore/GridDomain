@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -14,7 +12,7 @@ using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     public class RoutingTests:TestKit
     {
@@ -45,11 +43,11 @@ namespace GridDomain.Tests.Acceptance
                 _notifier = notifier;
             }
 
-            public void Handle(TestMessage msg)
+            public void Handle(TestMessage e)
             {
-                msg.HandlerHashCode = GetHashCode();
-                msg.HandleOrder = ++_handleCounter;
-                _notifier.Tell(msg);
+                e.HandlerHashCode = GetHashCode();
+                e.HandleOrder = ++_handleCounter;
+                _notifier.Tell(e);
             }
         }
 

@@ -41,7 +41,7 @@ namespace GridDomain.Node.AkkaMessaging
         {
             var handlerType = typeof (IHandler<>).MakeGenericType(MessageType);
             if (!handlerType.IsAssignableFrom(HandlerType))
-                throw new BadRoute.InvalidHandlerType(HandlerType, MessageType);
+                throw new InvalidHandlerType(HandlerType, MessageType);
         }
 
         private void CheckCorrelationProperty()
@@ -50,9 +50,9 @@ namespace GridDomain.Node.AkkaMessaging
 
             var property = MessageType.GetProperty(MessageCorrelationProperty);
             if (property == null)
-                throw new BadRoute.CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);
+                throw new CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);
             if (property.PropertyType != typeof (Guid))
-                throw new BadRoute.IncorrectTypeOfCorrelationProperty(MessageType, MessageCorrelationProperty);
+                throw new IncorrectTypeOfCorrelationProperty(MessageType, MessageCorrelationProperty);
         }
 
         public bool Equals(CreateRoute other)
@@ -60,8 +60,4 @@ namespace GridDomain.Node.AkkaMessaging
             return other.HandlerType == HandlerType && other.MessageType == MessageType;
         }
     }
-}
-
-namespace GridDomain.Node.AkkaMessaging.BadRoute
-{
 }

@@ -1,12 +1,14 @@
 using Akka.Actor;
 using GridDomain.Node.Configuration;
 
-static public class ActorSystemFactory
+namespace GridDomain.Node
 {
-    public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
+    static public class ActorSystemFactory
     {
-        var actorSystem = ActorSystem.Create(akkaConf.Name,
-            @"akka {  
+        public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
+        {
+            var actorSystem = ActorSystem.Create(akkaConf.Name,
+                @"akka {  
                         actor {
                                  provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
                                  loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
@@ -25,7 +27,7 @@ static public class ActorSystemFactory
 
                         cluster {
                                 seed-nodes = ""akka.tcp://" + akkaConf.Name + "@" + akkaConf.Host + ":" + akkaConf.Port +
-            @"""
+                @"""
                             }
                         remote {
                                     helios.tcp {
@@ -37,6 +39,7 @@ static public class ActorSystemFactory
                                     }
                                 }
                        ");
-        return actorSystem;
+            return actorSystem;
+        }
     }
 }

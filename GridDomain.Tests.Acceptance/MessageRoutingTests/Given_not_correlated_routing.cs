@@ -1,9 +1,8 @@
 using System.Linq;
 using GridDomain.Domain.Tests;
-using GridDomain.Node.AkkaMessaging;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     [TestFixture]
     public class Given_not_correlated_routing : RoutingTests

@@ -27,14 +27,14 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
             _factory = factory;
         }
 
-        public void Handle(TMessage msg)
+        public void Handle(TMessage e)
         {
-            var saga = _factory.Invoke(msg);
+            var saga = _factory.Invoke(e);
             var messageIsAcceptable = false;
 
             try
             {
-                messageIsAcceptable = saga.IsAcceptable(msg);
+                messageIsAcceptable = saga.IsAcceptable(e);
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
                 return;
             }
 
-            if (messageIsAcceptable) saga.Handle(msg);
+            if (messageIsAcceptable) saga.Handle(e);
             else
             {
                 var consumerName = saga.GetType().Name;
@@ -51,7 +51,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
                     $"Сообщение {typeof (TMessage).Name}, предназначавшееся для {consumerName} не было обработано из-за правила фильтрации");
             }
 
-            _repo.Save(saga.State, _commitIdFactory(msg));
+            _repo.Save(saga.State, _commitIdFactory(e));
 
             var msgs = saga.GetUndispatchedMessages().Cast<object>().ToArray();
             saga.ClearUndispatchedMessages();

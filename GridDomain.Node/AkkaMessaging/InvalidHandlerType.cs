@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Node.AkkaMessaging.BadRoute
+namespace GridDomain.Node.AkkaMessaging
 {
     internal class InvalidHandlerType : Exception
     {

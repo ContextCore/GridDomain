@@ -5,10 +5,11 @@ using System.Threading;
 using Akka.Actor;
 using Akka.Routing;
 using Akka.TestKit.NUnit;
+using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     public class ConsistentHashingRoutingTest:TestKit
     {

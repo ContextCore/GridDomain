@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Acceptance
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleDomain", "ExampleDomain", "{32F0247A-24F4-4E20-95DC-7F6359913C3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS.ReadModel", "GridDomain.CQRS.ReadModel\GridDomain.CQRS.ReadModel.csproj", "{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutoTesting|Any CPU = AutoTesting|Any CPU
@@ -215,6 +217,22 @@ Global
 		{B008531E-4879-4547-A5E1-B30AD176A669}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{B008531E-4879-4547-A5E1-B30AD176A669}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B008531E-4879-4547-A5E1-B30AD176A669}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.AutoTesting|Any CPU.ActiveCfg = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.AutoTesting|Any CPU.Build.0 = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Production|Any CPU.ActiveCfg = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Production|Any CPU.Build.0 = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Sandbox|Any CPU.ActiveCfg = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Sandbox|Any CPU.Build.0 = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

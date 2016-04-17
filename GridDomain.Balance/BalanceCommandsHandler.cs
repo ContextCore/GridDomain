@@ -21,26 +21,26 @@ namespace GridDomain.Balance
             _repository = repository;
         }
 
-        public void Handle(CreateBalanceCommand command)
+        public void Handle(CreateBalanceCommand e)
         {
-            _log.Debug("Handling command:" + command.ToPropsString());
-            _repository.Save(new Domain.Balance(command.BalanceId, command.BusinessId), command.Id);
+            _log.Debug("Handling command:" + e.ToPropsString());
+            _repository.Save(new Domain.Balance(e.BalanceId, e.BusinessId), e.Id);
         }
 
-        public void Handle(ReplenishBalanceCommand command)
+        public void Handle(ReplenishBalanceCommand e)
         {
-            _log.Debug("Handling command:" + command.ToPropsString());
-            var balance = LoadBalance(command.BalanceId, command.Id);
-            balance.Replenish(command.Amount);
+            _log.Debug("Handling command:" + e.ToPropsString());
+            var balance = LoadBalance(e.BalanceId, e.Id);
+            balance.Replenish(e.Amount);
             _repository.Save(balance, Guid.NewGuid());
         }
 
-        public void Handle(WithdrawalBalanceCommand command)
+        public void Handle(WithdrawalBalanceCommand e)
         {
-            _log.Debug("Handling command:" + command.ToPropsString());
-            var balance = LoadBalance(command.BalanceId, command.Id);
-            balance.Withdrawal(command.Amount);
-            _repository.Save(balance, command.Id);
+            _log.Debug("Handling command:" + e.ToPropsString());
+            var balance = LoadBalance(e.BalanceId, e.Id);
+            balance.Withdrawal(e.Amount);
+            _repository.Save(balance, e.Id);
         }
 
         private Domain.Balance LoadBalance(Guid balanceId, Guid commandId)

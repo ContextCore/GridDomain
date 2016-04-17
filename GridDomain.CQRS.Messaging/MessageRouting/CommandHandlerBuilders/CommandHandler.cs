@@ -23,15 +23,15 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.CommandHandlerBuilders
             _act = act;
         }
 
-        public void Handle(TCommand msg)
+        public void Handle(TCommand e)
         {
             try
             {
-                _act(msg);
+                _act(e);
             }
             catch (Exception ex)
             {
-                var failure = new CommandFault<TCommand>(msg, ex);
+                var failure = new CommandFault<TCommand>(e, ex);
 
                 _log.Info($"При исполнении команды {typeof (TCommand).Name} возникла ошибка " +
                           $"{ex.GetType().Name}, которая будет передана отправителю команды. \r\n Информация:\r\n" +

@@ -1,8 +1,9 @@
 using Akka.Actor;
 using GridDomain.CQRS;
+using GridDomain.Node.AkkaMessaging;
 using NLog;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Tests.Acceptance
 {
     public class MessageTraceHandlingDecoratorActor<TMessage, THandler> : UntypedActor where THandler : IHandler<TMessage>
         where TMessage: IMetadataMessage
