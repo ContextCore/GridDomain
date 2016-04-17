@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Threading;
 using GridDomain.Balance.Domain;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
@@ -23,26 +26,51 @@ namespace GridDomain.Balance.ReadModel
 
         public void Handle(BalanceReplenishEvent msg)
         {
-            HandleChangeEvent(msg, (b, e) => b += e.Amount.Amount);
+            HandleChangeEvent(msg, (b, e) => b + e.Amount.Amount);
         }
 
         public void Handle(BalanceWithdrawalEvent msg)
         {
-            HandleChangeEvent(msg, (b, e) => b -= e.Amount.Amount);
+            HandleChangeEvent(msg, (b, e) => b - e.Amount.Amount);
         }
 
         private void HandleChangeEvent(BalanceChangedEvent e,
                                        Func<decimal, BalanceChangedEvent, decimal> balanceModifier)
         {
             _logger.Debug("Got event:" + e.ToPropsString());
-            using (var context = _contextFactory())
+            int maxRetryCount = 5;
+            double retryTimeMultiply = 2;
+            TimeSpan defaultTimeToWait = TimeSpan.FromMilliseconds(100);
+            int tryCount = 0;
+            TimeSpan timeToWait = defaultTimeToWait;
+
+            do
             {
-                var balance = GetOrCreate(context, e.BalanceId);
-                _logger.Debug($"Changing balance {balance.BalanceId} with amount {balance.Amount}");
-                _logger.Debug($"by event {e.GetType().Name}, event amount: {e.Amount}");
-                balance.Amount = balanceModifier(balance.Amount, e);
-                context.SaveChanges();
-            }
+                using (var context = _contextFactory())
+                {
+                   
+                    var balance = GetOrCreate(context, e.BalanceId);
+                    tryCount++;
+                    try
+                    {
+                        _logger.Debug($"Changing balance {balance.BalanceId} with amount {balance.Amount}");
+                        _logger.Debug($"by event {e.GetType().Name}, event amount: {e.Amount}");
+                        balance.Amount = balanceModifier(balance.Amount, e);
+                        context.SaveChanges();
+                        break;
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        if(tryCount >= maxRetryCount)
+                            throw new RetryLimitExceededException();
+
+                        _logger.Trace($"optimistic concurrency exception while saving balance {e.BalanceId} will retry in {timeToWait}");
+                        Thread.Sleep(timeToWait);
+                        timeToWait = TimeSpan.FromMilliseconds(timeToWait.TotalMilliseconds*retryTimeMultiply);
+                    }
+                } 
+            } while (tryCount < maxRetryCount);
+
             _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId, e));
         }
 

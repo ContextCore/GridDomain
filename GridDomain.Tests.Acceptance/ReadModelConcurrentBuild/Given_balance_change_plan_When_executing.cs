@@ -152,7 +152,7 @@ namespace GridDomain.Tests.Acceptance
 
         private static IReadOnlyCollection<BalanceChangePlan> GivenBalancePlan()
         {
-            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(1, 2);
+            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(10, 10);
             return balanceManipulationCommands;
         }
     }

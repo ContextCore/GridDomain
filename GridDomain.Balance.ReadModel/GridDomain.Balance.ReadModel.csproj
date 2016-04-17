@@ -85,6 +85,10 @@
     <Compile Include="Migrations\201604151643245_What.Designer.cs">
       <DependentUpon>201604151643245_What.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604171839203_BalanceReadModelConcurrency.cs" />
+    <Compile Include="Migrations\201604171839203_BalanceReadModelConcurrency.Designer.cs">
+      <DependentUpon>201604171839203_BalanceReadModelConcurrency.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Initial.cs" />
     <Compile Include="Migrations\Initial.Designer.cs">
       <DependentUpon>Initial.cs</DependentUpon>
@@ -138,6 +142,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201604151643245_What.resx">
       <DependentUpon>201604151643245_What.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604171839203_BalanceReadModelConcurrency.resx">
+      <DependentUpon>201604171839203_BalanceReadModelConcurrency.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Initial.resx">
       <DependentUpon>Initial.cs</DependentUpon>
