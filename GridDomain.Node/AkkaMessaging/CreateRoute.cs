@@ -5,9 +5,10 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class MessageRouteInfo
+    public class CreateRoute: IEquatable<CreateRoute>
     {
         public Type MessageType { get; }
+        public Type HandlerType { get; }
         /// <summary>
         /// Name of property in message to use as correlation id.
         /// Property must be Guid type. 
@@ -17,63 +18,46 @@ namespace GridDomain.Node.AkkaMessaging
         /// </summary>
         public string MessageCorrelationProperty { get; }
 
-        public MessageRouteInfo(Type msgType, string propName)
+        public CreateRoute(Type messageType, Type handlerType, string messageCorrelationProperty)
         {
-            MessageType = msgType;
-            MessageCorrelationProperty = propName;
-        }
-    }
-    /// <summary>
-    /// Each route will be created via separate router, e.g. messages from different routes will not 
-    /// be executed in sequence
-    /// </summary>
-    public class CreateRoute
-    {
-        public MessageRouteInfo[] MessagesToRoute { get; }
-        public Type HandlerType { get; }
-
-
-        public CreateRoute(Type handlerType, params MessageRouteInfo[] messagesToRoute)
-        {
-            MessagesToRoute = messagesToRoute;
+            MessageType = messageType;
             HandlerType = handlerType;
+            MessageCorrelationProperty = messageCorrelationProperty;
 
             Check();
         }
 
         public static CreateRoute New<TMessage, THandler>(string property) where THandler: IHandler<TMessage>
         {
-            return new CreateRoute(typeof(THandler), new MessageRouteInfo(typeof(TMessage), property));
+            return new CreateRoute(typeof(TMessage), typeof(THandler), property);
         }
-
         private void Check()
         {
             CheckHandler();
-            CheckCorrelationProperty(MessagesToRoute);
+            CheckCorrelationProperty();
         }
 
         private void CheckHandler()
         {
-            foreach (var msgInfo in MessagesToRoute)
-            {
-                var handlerType = typeof (IHandler<>).MakeGenericType(msgInfo.MessageType);
-                if (!handlerType.IsAssignableFrom(HandlerType))
-                    throw new BadRoute.InvalidHandlerType(HandlerType, msgInfo.MessageType);
-            }
+            var handlerType = typeof (IHandler<>).MakeGenericType(MessageType);
+            if (!handlerType.IsAssignableFrom(HandlerType))
+                throw new BadRoute.InvalidHandlerType(HandlerType, MessageType);
         }
 
-        private void CheckCorrelationProperty(MessageRouteInfo[] msgInfos)
+        private void CheckCorrelationProperty()
         {
-            foreach (var msgInfo in msgInfos)
-            {
-                if (msgInfo.MessageCorrelationProperty == null) return;
+            if (MessageCorrelationProperty == null) return;
 
-                var property = msgInfo.MessageType.GetProperty(msgInfo.MessageCorrelationProperty);
-                if (property == null)
-                    throw new BadRoute.CannotFindCorrelationProperty(msgInfo.MessageType, msgInfo.MessageCorrelationProperty);
-                if (property.PropertyType != typeof (Guid))
-                    throw new BadRoute.IncorrectTypeOfCorrelationProperty(msgInfo.MessageType, msgInfo.MessageCorrelationProperty);
-            }
+            var property = MessageType.GetProperty(MessageCorrelationProperty);
+            if (property == null)
+                throw new BadRoute.CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);
+            if (property.PropertyType != typeof (Guid))
+                throw new BadRoute.IncorrectTypeOfCorrelationProperty(MessageType, MessageCorrelationProperty);
+        }
+
+        public bool Equals(CreateRoute other)
+        {
+            return other.HandlerType == HandlerType && other.MessageType == MessageType;
         }
     }
 }

@@ -36,7 +36,12 @@ namespace GridDomain.Tests.Acceptance
             
             public void Handle(DiagMsg m)
             {
-               
+                //m.TicksStartProcess = watch.ElapsedTicks;
+                //m.ActorHashCode = this.GetHashCode();
+                //m.Thread = Thread.CurrentThread.ManagedThreadId;
+                //Thread.Sleep(100);
+                //m.TicksEndProcess = watch.ElapsedMilliseconds;
+                //Sender.Tell(m);
                 Console.WriteLine( m.TicksStartProcess = watch.ElapsedTicks);
                 m.ActorHashCode = this.GetHashCode();
                 m.Thread = Thread.CurrentThread.ManagedThreadId;
