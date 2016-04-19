@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
+using Akka.Cluster.Routing;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.DI.Core;
 using Akka.Routing;
@@ -60,8 +61,11 @@ namespace GridDomain.Node.AkkaMessaging
         {
             if (!string.IsNullOrEmpty(routeConfigMessage.MessageCorrelationProperty))
             {
-                var router = new ConsistentHashingPool(Environment.ProcessorCount)
-                                .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage));
+                var router = new ClusterRouterPool(
+                    new ConsistentHashingPool(Environment.ProcessorCount)
+                        .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage)),
+                    new ClusterRouterPoolSettings(10, true, 2));
+                                
                 return router;
             }
             else

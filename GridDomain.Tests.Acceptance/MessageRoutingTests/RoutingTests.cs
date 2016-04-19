@@ -29,6 +29,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             public Guid SagaId { get; }
             public long HandlerHashCode { get; set; }
 
+            public string ProcessorActorSystemName { get; set; }
             public int HandleOrder { get; set; }
             public int ExecuteOrder { get; set; }
         }
@@ -37,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         public class TestHandler : IHandler<TestMessage>
         {
             private readonly IActorRef _notifier;
-            private static int _handleCounter = 0;
+            private int _handleCounter = 0;
             public TestHandler(IActorRef notifier)
             {
                 _notifier = notifier;
