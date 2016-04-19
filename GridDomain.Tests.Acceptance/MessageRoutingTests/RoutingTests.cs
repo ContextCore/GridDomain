@@ -16,9 +16,10 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     public class RoutingTests:TestKit
     {
-        private ActorSystem _system;
+        protected ActorSystem _system;
         private AkkaPublisher _publisher;
         protected ActorMessagesRouter Router;
+        protected AkkaConfiguration _akkaConfig;
 
 
         public class TestMessage : ICommand
@@ -29,7 +30,6 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             public Guid SagaId { get; }
             public long HandlerHashCode { get; set; }
 
-            public string ProcessorActorSystemName { get; set; }
             public int HandleOrder { get; set; }
             public int ExecuteOrder { get; set; }
         }
@@ -39,6 +39,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         {
             private readonly IActorRef _notifier;
             private int _handleCounter = 0;
+
             public TestHandler(IActorRef notifier)
             {
                 _notifier = notifier;
@@ -59,6 +60,12 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             _system.Dispose();
         }
 
+
+        protected virtual void InitAkkaSystem()
+        {
+            _system = ActorSystemFactory.CreateActorSystem(_akkaConfig);
+        }
+
         [SetUp]
         public void Init()
         {
@@ -66,14 +73,20 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
             GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
-            var akkaConfig = new AkkaConfiguration("LocalSystem", 8021, "127.0.0.1", AkkaConfiguration.LogVerbosity.Warning);
-            _system = ActorSystemFactory.CreateActorSystem(akkaConfig);
+
+            _akkaConfig = new AkkaConfiguration("LocalSystem", 8021, "127.0.0.1", AkkaConfiguration.LogVerbosity.Warning);
+            InitAkkaSystem();
             var container = new UnityContainer();
             var propsResolver = new UnityDependencyResolver(container, _system);
-            container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(TestActor));
-            container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
+            InitContainer(container);
             Router = new ActorMessagesRouter(_system.ActorOf(_system.DI().Props<AkkaRoutingActor>()));
             _publisher = new AkkaPublisher(_system);
+        }
+
+        protected virtual void InitContainer(UnityContainer container)
+        {
+            container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(TestActor));
+            container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
         }
 
 
@@ -98,14 +111,9 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
                 new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
                 new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
                 new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
-                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
-                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
-                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
-                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1},
-                new TestMessage() {CorrelationId = guid1, ExecuteOrder = ++count1}
+                new TestMessage() {CorrelationId = guid, ExecuteOrder = ++count}
             };
+
             foreach (var c in commands)
                 _publisher.Publish(c);
 

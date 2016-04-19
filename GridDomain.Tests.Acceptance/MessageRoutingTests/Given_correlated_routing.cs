@@ -8,8 +8,8 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 
     public class Given_correlated_routing : RoutingTests
     {
-        private TestMessage[] _initialCommands;
-        private TestMessage[] _resultMessages;
+        protected TestMessage[] _initialCommands;
+        protected TestMessage[] _resultMessages;
 
         [SetUp]
         public void Given_correlated_routing_for_message()

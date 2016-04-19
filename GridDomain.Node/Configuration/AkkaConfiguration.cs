@@ -7,20 +7,25 @@ namespace GridDomain.Node.Configuration
         public int Port { get; }
         public string Name { get; }
         public string Host { get; }
-        public byte SeedNodesCount { get; }
 
         public string LogLevel { get; }
         public AkkaConfiguration(string name, 
                                  int portNumber, 
                                  string host,
-                                 LogVerbosity logLevel = LogVerbosity.Warning,
-                                 byte seedNodes = 3)
+                                 LogVerbosity logLevel = LogVerbosity.Warning
+                                )
         {
+            _logLevel = logLevel;
             Name = name;
             Port = portNumber;
             Host = host;
             LogLevel = _akkaLogLevels[logLevel];
-            SeedNodesCount = seedNodes;
+        }
+
+        public AkkaConfiguration Copy(int newPort)
+        {
+            return new AkkaConfiguration(Name,newPort,Host, _logLevel);
+
         }
 
         private readonly Dictionary<LogVerbosity,string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
@@ -29,7 +34,10 @@ namespace GridDomain.Node.Configuration
                                                                 {LogVerbosity.Error, "ERROR"},
                                                                 {LogVerbosity.Trace, "DEBUG"},
                                                                 {LogVerbosity.Warning, "WARNING"}
-                                                            }; 
+                                                            };
+
+        private readonly LogVerbosity _logLevel;
+
         public enum LogVerbosity
         {
             Warning,
