@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using Akka.TestKit.NUnit;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
@@ -10,11 +14,11 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
-    class ActorSystemInfrastruture
+    public class ActorSystemInfrastruture: IDisposable
     {
         public ActorSystem System;
         public AkkaPublisher Publisher;
-        private ActorMessagesRouter Router;
+        public ActorMessagesRouter Router;
         public readonly AkkaConfiguration AkkaConfig;
 
 
@@ -42,9 +46,26 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
         }
 
-        protected virtual void InitRouting()
+
+        public void Publish(object[] commands)
         {
-            
+            foreach (var c in commands)
+                Publisher.Publish(c);
+        }
+
+        public TestMessage[] WaitFor(TestKit kit, int number)
+        {
+            var resultMessages = new List<TestMessage>();
+            for (int num = 0; num < number; num++)
+                resultMessages.Add(kit.ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)));
+
+            return resultMessages.ToArray();
+        }
+
+        public virtual void Dispose()
+        {
+            System.Terminate();
+            System.Dispose();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.Actor;
 using GridDomain.Node;
@@ -9,7 +10,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     class ClusterActorSysteInfrastructure : ActorSystemInfrastruture
     {
-        private ActorSystem[] _clusterSystems;
+        private ActorSystem[] ClusterNodes;
 
         public ClusterActorSysteInfrastructure(AkkaConfiguration conf):base(conf)
         {
@@ -20,17 +21,24 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         public override void Init(IActorRef notifyActor)
         {
             base.Init(notifyActor);
-            var  _clusterSystems = ActorSystemFactory.CreateCluster(AkkaConfig);
-            this._clusterSystems = _clusterSystems;
-
-            System = _clusterSystems.Last();
+            ClusterNodes = ActorSystemFactory.CreateCluster(AkkaConfig);
+            System = ClusterNodes.Last();
         }
 
         protected override void InitContainer(UnityContainer container, IActorRef actor)
         {
             base.InitContainer(container, actor);
-            container.RegisterType<IHandlerActorTypeFactory, GridDomain.Tests.Acceptance.MessageRoutingTests>();
+            container.RegisterType<IHandlerActorTypeFactory, ClusterActorTypeFactory>();
+        }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            foreach (var system in ClusterNodes)
+            {
+                system.Terminate();
+                system.Dispose();
+            }
         }
     }
 }

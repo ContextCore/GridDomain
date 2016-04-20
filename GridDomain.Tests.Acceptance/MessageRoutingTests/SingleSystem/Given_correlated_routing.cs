@@ -1,28 +1,22 @@
 ﻿using System.Linq;
 using GridDomain.Domain.Tests;
+using GridDomain.Node.AkkaMessaging;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     [TestFixture]
 
-    public class Given_correlated_routing : RoutingTests
+    public class Given_correlated_routing : SingleActorSystemTest
     {
-        protected TestMessage[] _initialCommands;
-        protected TestMessage[] _resultMessages;
-
-        [SetUp]
-        public void Given_correlated_routing_for_message()
+        protected override void ConfigureRouter(ActorMessagesRouter router)
         {
-            Router.Route<TestMessage>()
-                   .To<TestHandler>()
-                   .WithCorrelation(nameof(TestMessage.CorrelationId))
-                   .Register();
-            Router.WaitForRouteConfiguration();
+            router.Route<TestMessage>()
+                  .To<TestHandler>()
+                  .WithCorrelation(nameof(TestMessage.CorrelationId))
+                  .Register();
 
-            _initialCommands = When_publishing_messages_with_same_correlation_id();
-            _resultMessages = WaitFor(_initialCommands.Length);
-
+            router.WaitForRouteConfiguration();
         }
 
         [Test]

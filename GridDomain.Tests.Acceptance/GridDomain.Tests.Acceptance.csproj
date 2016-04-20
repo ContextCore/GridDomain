@@ -182,10 +182,20 @@
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
-    <Compile Include="MessageRoutingTests\Cluster_routing.cs" />
+    <Compile Include="MessageRoutingTests\Cluster\ClusterActorTypeFactory.cs" />
+    <Compile Include="MessageRoutingTests\Cluster\ClusterMessageHandlerActor.cs" />
+    <Compile Include="MessageRoutingTests\Cluster\Cluster_routing_correlated.cs" />
+    <Compile Include="MessageRoutingTests\ActorSystemInfrastruture.cs" />
+    <Compile Include="MessageRoutingTests\Cluster\ClusterActorSysteInfrastructure.cs" />
+    <Compile Include="MessageRoutingTests\IInitialCommands.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\InitialTestMessages.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\SingleActorSystemInfrastructure.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\TestHandler.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\TestMessage.cs" />
+    <Compile Include="MessageRoutingTests\Cluster\ClusterMessage.cs" />
     <Compile Include="MessageRoutingTests\ConsistentHashingRoutingTest.cs" />
-    <Compile Include="MessageRoutingTests\Given_not_correlated_routing.cs" />
-    <Compile Include="MessageRoutingTests\RoutingTests.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\Given_not_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\SingleActorSystemTest.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
@@ -199,7 +209,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
-    <Compile Include="MessageRoutingTests\Given_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\SingleSystem\Given_correlated_routing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
