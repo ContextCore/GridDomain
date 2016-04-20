@@ -6,15 +6,15 @@ namespace GridDomain.Node
 {
     static public class ActorSystemFactory
     {
-        public static ActorSystem CreateCluster(AkkaConfiguration akkaConf)
+        public static ActorSystem[] CreateCluster(AkkaConfiguration akkaConf)
         {
             var port = akkaConf.Port;
-            var seed  = CreateClusterActorSystem(akkaConf, port);
-            var node1 = CreateClusterActorSystem(akkaConf.Copy(++port), port);
-            var node2 = CreateClusterActorSystem(akkaConf.Copy(++port), port);
-            var node3 = CreateClusterActorSystem(akkaConf.Copy(++port), port);
+            var seed  = CreateClusterActorSystem(akkaConf, akkaConf.Port);
+            var node1 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Port);
+            var node2 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Port);
+            var node3 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Port);
             
-            return seed;
+            return new [] {seed,node1,node2,node3};
         }
 
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
@@ -77,9 +77,8 @@ namespace GridDomain.Node
                                     helios.tcp {
                                         transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                         transport-protocol = tcp
-                                        port = " + akkaConf.Port + @"}
+                                        port = 0
                                         hostname = " + akkaConf.Name + @"/
-                                       
                                     }
                                 }
                        ");

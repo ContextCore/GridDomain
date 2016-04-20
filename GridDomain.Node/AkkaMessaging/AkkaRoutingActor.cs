@@ -64,7 +64,7 @@ namespace GridDomain.Node.AkkaMessaging
                 var router = new ClusterRouterPool(
                     new ConsistentHashingPool(Environment.ProcessorCount)
                         .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage)),
-                    new ClusterRouterPoolSettings(10, false, 2));
+                    new ClusterRouterPoolSettings(10, true, 2));
                                 
                 return router;
             }

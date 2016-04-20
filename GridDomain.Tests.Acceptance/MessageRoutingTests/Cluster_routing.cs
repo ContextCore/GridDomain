@@ -18,6 +18,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
     
     class Cluster_routing_correlated:Given_correlated_routing
     {
+        private ActorSystem[] _clusterSystems;
 
         class ClusterMessage : TestMessage
         {
@@ -45,9 +46,15 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             }
         }
 
-        protected override void InitAkkaSystem()
+
+        [TearDown]
+        public void Clear()
         {
-            _system = ActorSystemFactory.CreateCluster(_akkaConfig);
+            foreach (var system in _clusterSystems)
+            {
+                system.Terminate();
+                system.Dispose();
+            }
         }
 
         protected override void InitContainer(UnityContainer container)
