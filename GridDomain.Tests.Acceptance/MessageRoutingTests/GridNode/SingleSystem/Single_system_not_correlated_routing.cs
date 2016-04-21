@@ -7,30 +7,20 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     [TestFixture]
-    public class Given_not_correlated_routing : SingleActorSystemTest
+    public class Single_system_not_correlated_routing : SingleActorSystemTest
     {
         private long _handlerId;
 
         [SetUp]
         public void Given_correlated_routing_for_message()
         {
-        
             _handlerId = _resultMessages.First().HandlerHashCode;
-        }
-        
-        protected override void ConfigureRouter(ActorMessagesRouter router)
-        {
-            router.Route<TestMessage>()
-                .To<TestHandler>()
-                .Register();
-
-            router.WaitForRouteConfiguration();
         }
 
         [Test]
         public void Then_results_should_be_from_initial_commands()
         {
-            CollectionAssert.AreEquivalent(_initialCommands.Select(c => c.Id), _resultMessages.Select(r => r.Id));
+            CollectionAssert.AreEquivalent(InitialCommands.Select(c => c.Id), _resultMessages.Select(r => r.Id));
         }
 
         [Then]
@@ -45,5 +35,9 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             Assert.True(_resultMessages.Any(m => m.HandlerHashCode != _handlerId));
         }
 
+        protected override IRouterConfiguration CreateRoutes()
+        {
+            return new NotCorrelatedRouting<TestMessage, TestHandler>();
+        }
     }
 }

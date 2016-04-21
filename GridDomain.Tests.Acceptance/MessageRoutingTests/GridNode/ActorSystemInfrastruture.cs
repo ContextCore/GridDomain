@@ -14,15 +14,15 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
-    public class ActorSystemInfrastruture: IDisposable
+    public abstract class ActorSystemInfrastruture: IDisposable
     {
-        public ActorSystem System;
+        public ActorSystem System { get; private set; }
         public AkkaPublisher Publisher;
         public ActorMessagesRouter Router;
         public readonly AkkaConfiguration AkkaConfig;
 
 
-        public ActorSystemInfrastruture(AkkaConfiguration conf)
+        protected ActorSystemInfrastruture(AkkaConfiguration conf)
         {
             AkkaConfig = conf;
         }
@@ -33,10 +33,12 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
             GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
+            System = CreateSystem(AkkaConfig);
             var container = new UnityContainer();
             var propsResolver = new UnityDependencyResolver(container, System);
             InitContainer(container, notifyActor);
             Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()));
+
             Publisher = new AkkaPublisher(System);
         }
 
@@ -52,15 +54,17 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             foreach (var c in commands)
                 Publisher.Publish(c);
         }
-
-        public TestMessage[] WaitFor(TestKit kit, int number)
+        
+        public T[] WaitFor<T>(TestKit kit, int number)
         {
-            var resultMessages = new List<TestMessage>();
+            var resultMessages = new List<T>();
             for (int num = 0; num < number; num++)
-                resultMessages.Add(kit.ExpectMsg<TestMessage>(TimeSpan.FromSeconds(10)));
+                resultMessages.Add(kit.ExpectMsg<T>(TimeSpan.FromSeconds(10)));
 
             return resultMessages.ToArray();
         }
+
+        protected abstract ActorSystem CreateSystem(AkkaConfiguration conf);
 
         public virtual void Dispose()
         {

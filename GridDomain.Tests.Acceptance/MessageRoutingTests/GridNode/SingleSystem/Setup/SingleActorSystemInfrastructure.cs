@@ -4,16 +4,16 @@ using GridDomain.Node.Configuration;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
-    class SingleActorSystemInfrastructure : ActorSystemInfrastruture
+    public class SingleActorSystemInfrastructure : ActorSystemInfrastruture
     {
         public SingleActorSystemInfrastructure(AkkaConfiguration conf) : base(conf)
         {
 
         }
-        public override void Init(IActorRef actor)
+  
+        protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
-            System = ActorSystemFactory.CreateActorSystem(AkkaConfig);
-            base.Init(actor);
+            return ActorSystemFactory.CreateActorSystem(AkkaConfig);
         }
     }
 }

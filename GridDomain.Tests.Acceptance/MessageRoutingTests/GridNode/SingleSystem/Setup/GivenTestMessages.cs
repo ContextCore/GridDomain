@@ -2,9 +2,9 @@ using System;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
-    class InitialTestMessages : IInitialCommands<TestMessage>
+    class GivenTestMessages : IGivenCommands<TestMessage>
     {
-        public override TestMessage[] GetCommands()
+        public TestMessage[] GetCommands()
         {
             var guid = Guid.NewGuid();
             int count = 0;
