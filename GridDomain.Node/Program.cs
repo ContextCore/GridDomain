@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GridDomain.Balance.Commands;
 using GridDomain.Balance.Domain;
 using GridDomain.Node.Configuration;
@@ -27,7 +28,11 @@ namespace GridDomain.Node
             {
                 x.Service<GridDomainNode>(s =>
                 {
-                    s.ConstructUsing(settings => new GridDomainNode(container, ActorSystemFactory.CreateActorSystem(akkaConfig)));
+                    s.ConstructUsing(settings =>
+                    {
+                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).Last();
+                        return new GridDomainNode(container, actorSystem);
+                    });
                     s.WhenStarted(node =>
                     {
                         node.Start(conf);

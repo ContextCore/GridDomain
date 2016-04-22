@@ -11,10 +11,8 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
 {
-   
-
     [TestFixture]
-    public class Given_balance_change_plan_When_executing: NodeCommandsTest
+    public class Single_System_Given_balance_change_plan_When_executing: NodeCommandsTest
     {
         private IReadOnlyCollection<BalanceChangePlan> _balanceManipulationPlans;
         private CreateBalanceCommand[] _createBalanceCommands;
