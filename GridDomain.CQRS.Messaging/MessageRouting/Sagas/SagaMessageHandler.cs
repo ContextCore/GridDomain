@@ -53,7 +53,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 
             _repo.Save(saga.State, _commitIdFactory(e));
 
-            var msgs = saga.GetUndispatchedMessages().Cast<object>().ToArray();
+            var msgs = saga.State.GetUncommittedEvents().Cast<object>().ToArray();
             saga.ClearUndispatchedMessages();
 
             foreach (var cmd in msgs)

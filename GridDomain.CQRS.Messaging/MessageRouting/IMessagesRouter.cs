@@ -1,5 +1,4 @@
-﻿using GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting;
-
+﻿
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public interface IMessagesRouter

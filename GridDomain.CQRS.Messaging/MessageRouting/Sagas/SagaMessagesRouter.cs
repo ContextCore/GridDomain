@@ -52,11 +52,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
         {
             _messageRouter.Route<TMessage>()
                 .To<SagaMessageHandler<TMessage, TConreteSaga>>()
-                //.WithFactory(msg => 
-                //new SagaMessageHandler<TMessage, TConreteSaga>(sagaFactory,
-                //                                               commitIdFactory,
-                //                                               _repo,
-                //                                               _publisher))
                 .Register();
         }
     }

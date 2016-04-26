@@ -1,6 +1,5 @@
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.CQRS.Messaging.MessageRouting.InMemoryRouting;
 
 namespace GridDomain.Node.AkkaMessaging
 {

@@ -1,12 +1,12 @@
 ﻿namespace GridDomain.EventSourcing
 {
     /// <summary>
-    ///     Represents an event message that belongs to an ordered event stream.
+    ///     Represents an event message that has a version
     /// </summary>
     public interface IVersionedEvent : ISourcedEvent
     {
         /// <summary>
-        ///     Gets the version or order of the event in the stream.
+        ///     Gets the version of event. Should be increased after each event class change
         /// </summary>
         int Version { get; }
     }

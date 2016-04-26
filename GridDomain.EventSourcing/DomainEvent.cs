@@ -4,9 +4,10 @@ namespace GridDomain.EventSourcing
 {
     public class DomainEvent : IVersionedEvent
     {
-        public DomainEvent(Guid sourceId)
+        public DomainEvent(Guid sourceId, DateTime? createdTime = null)
         {
             SourceId = sourceId;
+            CreatedTime = createdTime ?? DateTime.UtcNow;
         }
 
         //Source of the event - aggregate that created it
@@ -14,6 +15,6 @@ namespace GridDomain.EventSourcing
         public Guid SagaId { get; set; }
         public DateTime CreatedTime { get; set; }
 
-        public int Version { get; set; }
+        public int Version { get; } = 1;
     }
 }

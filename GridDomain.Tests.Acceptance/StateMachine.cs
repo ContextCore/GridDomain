@@ -3,11 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonDomain.Core;
 using NUnit.Framework;
 using Stateless;
 
 namespace GridDomain.Tests.Acceptance
 {
+
+    class BalanceReplenishSaga: SagaBase<object>
+    {
+        enum Trigger
+        {
+            StartEnterCardDetails,
+            SendPaymentReqest,
+            PaymentConfirmationRecieved,
+            PaymentCancelRecieved,
+            BalanceModificationSent,
+            BalanceModified
+        }
+
+        enum State
+        {
+            Idle,
+            ReplenishInitiated,
+            WaitingForPaymentProcessor,
+            ModifyingBalance
+        }
+
+
+    }
+
+
+
+
+
     [TestFixture]
     class StateMachineTest
     {
