@@ -35,6 +35,7 @@ namespace GridDomain.CQRS.ReadModel
                     if (tryCount >= _maxRetryCount)
                         throw new RetryLimitExceededException();
 
+                    //TODO: remove and change to message notification
                     Thread.Sleep(timeToWait);
                     timeToWait = TimeSpan.FromMilliseconds(timeToWait.TotalMilliseconds * _retryTimeMultiply);
                 }
