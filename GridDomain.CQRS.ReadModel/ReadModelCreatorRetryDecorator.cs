@@ -6,12 +6,12 @@ namespace GridDomain.CQRS.ReadModel
     public class ReadModelCreatorRetryDecorator<T>: IReadModelCreator<T>
     {
         private readonly IReadModelCreator<T> _origCreator;
-        private readonly WaitableRetryPolicy<DbUpdateConcurrencyException> _retryPolicy;
+        private readonly RetryPolicy<DbUpdateConcurrencyException> _retryPolicy;
 
         public ReadModelCreatorRetryDecorator(IReadModelCreator<T> origCreator )
         {
             _origCreator = origCreator;
-            _retryPolicy = WaitableRetryPolicy<DbUpdateConcurrencyException>.DefaultSql();
+            _retryPolicy = RetryPolicy<DbUpdateConcurrencyException>.DefaultSql();
         }
 
         public void Add(T entity)

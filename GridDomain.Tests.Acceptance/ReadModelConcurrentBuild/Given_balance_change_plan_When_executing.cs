@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
             foreach (var plan in balanceManipulationPlans)
             {
                 Console.WriteLine($"Checking write model for balance {plan.BalanceId}");
-                var balance = repo.GetById<Balance.Domain.Balance>(plan.BalanceId);
+                var balance = repo.GetById<Balance.Domain.MoneyBalance>(plan.BalanceId);
                 CheckAmount(balance.Amount.Amount, plan,"write model");
             }
         }

@@ -2,14 +2,15 @@
 using System.Linq;
 using GridDomain.Balance.Commands;
 using GridDomain.Balance.Domain;
+using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.MessageRouteConfigs;
 using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Config;
-using NMoneys;
 using Topshelf;
 
-namespace GridDomain.Node
+namespace GridDomain.Balance.Node
 {
     public class Program
     {
@@ -22,6 +23,8 @@ namespace GridDomain.Node
             // container.LoadConfiguration();
             var akkaConfig = container.Resolve<AkkaConfiguration>();
             var conf = new LocalDbConfiguration();
+            CompositionRoot.Init(container,conf);
+
             ConfigureLog(conf);
 
             HostFactory.Run(x =>
@@ -31,12 +34,12 @@ namespace GridDomain.Node
                     s.ConstructUsing(settings =>
                     {
                         var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).Last();
-                        return new GridDomainNode(container, actorSystem);
+                        return new GridDomainNode(container, new BalanceCommandsRouting(), actorSystem);
                     });
                     s.WhenStarted(node =>
                     {
                         node.Start(conf);
-                        OnStart(node);
+                   //     OnStart(node);
                     });
                     s.WhenStopped(tc => tc.Stop());
                 });
@@ -56,19 +59,6 @@ namespace GridDomain.Node
             conf.InitExternalLoggin(LogLevel.Trace);
             conf.InitConsole(LogLevel.Warn);
             conf.Apply();
-        }
-
-        private static void OnStart(GridDomainNode node)
-        {
-            var balanceId = Guid.Parse("65D7AB60-D56D-4BD0-B9F8-031EB054CE38");
-            var money = new Money(10, CurrencyIsoCode.RUB);
-            var source = new BalanceChangeSource
-            {
-                Description = "test replenish",
-                Id = Guid.NewGuid(),
-                Name = "testSource"
-            };
-            node.Execute(new ReplenishBalanceCommand(balanceId, money, source));
         }
     }
 }

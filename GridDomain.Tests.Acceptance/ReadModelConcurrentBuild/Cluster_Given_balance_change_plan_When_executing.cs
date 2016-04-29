@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.MessageRouteConfigs;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
@@ -10,7 +11,7 @@ namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
     {
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-            return new GridDomainNode(new UnityContainer(), ActorSystemFactory.CreateCluster(akkaConf).Last());
+            return new GridDomainNode(new UnityContainer(), new BalanceCommandsRouting(), ActorSystemFactory.CreateCluster(akkaConf).Last());
         }
     }
 }

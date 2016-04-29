@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Itenso.TimePeriod, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d7f23b760ed5c748, processorArchitecture=MSIL">
+      <HintPath>..\packages\TimePeriodLibrary.NET.2.0.0\lib\net35\Desktop.Release\Itenso.TimePeriod.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
       <Private>False</Private>
@@ -56,16 +60,17 @@
     <Compile Include="BalanceCommandsHandler.cs" />
     <Compile Include="BalanceNotFoundException.cs" />
     <Compile Include="Commands\CreateBalanceCommand.cs" />
-    <Compile Include="Domain\Balance.cs" />
-    <Compile Include="Domain\BalanceChangeSource.cs" />
-    <Compile Include="Domain\BalanceCreatedEvent.cs" />
-    <Compile Include="Domain\BalanceReplenishEvent.cs" />
-    <Compile Include="Domain\BalanceWithdrawalEvent.cs" />
-    <Compile Include="Domain\BalanceChangedEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\MoneyBalance.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceChangeSource.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceCreatedEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceReplenishEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceWithdrawalEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceChangedEvent.cs" />
+    <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscription.cs" />
     <Compile Include="Domain\TransactoinCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinHistory.cs" />
     <Compile Include="Commands\ChangeBalanceCommand.cs" />
-    <Compile Include="Domain\NegativeMoneyException.cs" />
+    <Compile Include="Domain\BalanceAggregate\NegativeMoneyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\ReplenishBalanceCommand.cs" />
     <Compile Include="Commands\WithdrawalBalanceCommand.cs" />
@@ -90,6 +95,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

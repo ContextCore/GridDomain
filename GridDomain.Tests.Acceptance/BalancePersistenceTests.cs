@@ -15,34 +15,27 @@ namespace GridDomain.Tests.Acceptance
         [SetUp]
         public void ClearDb()
         {
-            // IDbConfiguration autoTestMarteauConfiguration = TestEnvironment.Configuration;
-            // TestDbTools.RecreateWriteDb(autoTestMarteauConfiguration.EventStoreConnectionString);
-
-            // var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(TestEnvironment.Configuration);
-            //     _workerGridDomainNode = new GridDomainNode(new AkkaConfiguration("Worker", 8081),
-            //                                                     autoTestGridDomainConfiguration,
-            //                                                      new UnityContainer());
         }
 
         private IRepository CreateIndependentRepository()
         {
             var container = new UnityContainer();
             var conf = TestEnvironment.Configuration;
-            CompositionRoot.RegisterEventStore(container, conf);
+            GridDomain.Node.CompositionRoot.RegisterEventStore(container, conf);
             return container.Resolve<IRepository>();
         }
 
         [Test]
         public void Balance_should_persist_with_all_events()
         {
-            var initialBalance = new Fixture().Create<Balance.Domain.Balance>();
+            var initialBalance = new Fixture().Create<Balance.Domain.MoneyBalance>();
 
             var repo = CreateIndependentRepository();
             repo.Save(initialBalance, Guid.NewGuid());
 
             var repo1 = CreateIndependentRepository();
-            var restoredBalance = repo1.GetById<Balance.Domain.Balance>(initialBalance.Id);
+            var restoredBalance = repo1.GetById<Balance.Domain.MoneyBalance>(initialBalance.Id);
             Assert.True(new CompareLogic().Compare(restoredBalance, initialBalance).AreEqual);
         }
     }

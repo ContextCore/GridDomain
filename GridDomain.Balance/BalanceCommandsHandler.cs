@@ -24,7 +24,7 @@ namespace GridDomain.Balance
         public void Handle(CreateBalanceCommand e)
         {
             _log.Debug("Handling command:" + e.ToPropsString());
-            _repository.Save(new Domain.Balance(e.BalanceId, e.BusinessId), e.Id);
+            _repository.Save(new Domain.MoneyBalance(e.BalanceId, e.BusinessId), e.Id);
         }
 
         public void Handle(ReplenishBalanceCommand e)
@@ -43,9 +43,9 @@ namespace GridDomain.Balance
             _repository.Save(balance, e.Id);
         }
 
-        private Domain.Balance LoadBalance(Guid balanceId, Guid commandId)
+        private Domain.MoneyBalance LoadBalance(Guid balanceId, Guid commandId)
         {
-            var balance = _repository.GetById<Domain.Balance>(balanceId);
+            var balance = _repository.GetById<Domain.MoneyBalance>(balanceId);
             //only aggregate factory can create balance with empty ownerId
             if (balance.OwnerId == Guid.Empty)
             {

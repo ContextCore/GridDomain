@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadModelCreatorRetryDecorator.cs" />
     <Compile Include="SqlReadModelCreator.cs" />
-    <Compile Include="WaitableRetryPolicy.cs" />
+    <Compile Include="RetryPolicy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

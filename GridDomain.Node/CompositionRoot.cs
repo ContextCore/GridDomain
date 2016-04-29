@@ -21,27 +21,13 @@ namespace GridDomain.Node
     public static class CompositionRoot
     {
         public static void Init(IUnityContainer container,
-            //  IMessageTransport messageTransport,
-            ActorSystem actorSystem,
-            IDbConfiguration conf)
+                                ActorSystem actorSystem,
+                                IDbConfiguration conf)
         {
             IPublisher publisher = new AkkaPublisher(actorSystem);
             container.RegisterInstance(publisher);
             RegisterEventStore(container, conf);
-
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            //register all message handlers available to communicate
-            //need to do it on plugin approach
-            container.RegisterType<BalanceCommandsHandler>();
-
-            Func<BusinessBalanceContext> contextFactory = () => new BusinessBalanceContext(conf.ReadModelConnectionString);
-
-            container.RegisterType<IReadModelCreator<BusinessBalance>>(
-                                    new InjectionFactory(c =>
-                                        new ReadModelCreatorRetryDecorator<BusinessBalance>(
-                                            new SqlReadModelCreator<BusinessBalance>(contextFactory))));
-
-            container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
         }
 
         public static void RegisterEventStore(IUnityContainer container, IDbConfiguration conf)
@@ -52,6 +38,7 @@ namespace GridDomain.Node
             container.RegisterType<IConstructAggregates, AggregateFactory>();
             container.RegisterType<IDetectConflicts, ConflictDetector>();
             container.RegisterType<IRepository, EventStoreRepository>();
+
         }
 
         public static PollingClient ConfigurePushingEventsFromStoreToBus(IStoreEvents eventStore,

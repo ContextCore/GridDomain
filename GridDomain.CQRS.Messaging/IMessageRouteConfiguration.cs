@@ -1,4 +1,5 @@
 ﻿using GridDomain.CQRS.Messaging.MessageRouting;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.CQRS.Messaging
 {
@@ -6,4 +7,6 @@ namespace GridDomain.CQRS.Messaging
     {
         void Register(IMessagesRouter bus);
     }
+
+
 }

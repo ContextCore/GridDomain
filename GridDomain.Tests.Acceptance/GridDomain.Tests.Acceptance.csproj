@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BalanceChangePlan.cs" />
+    <Compile Include="CompositionRootTests.cs" />
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
@@ -231,6 +232,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Balance.Node\GridDomain.Balance.Node.csproj">
+      <Project>{bc419a4c-6ddd-493a-b395-45a5d5acc555}</Project>
+      <Name>GridDomain.Balance.Node</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Balance.ReadModel\GridDomain.Balance.ReadModel.csproj">
       <Project>{63b5a32b-3ae4-4ce3-a79d-3a4c0c3ec955}</Project>
       <Name>GridDomain.Balance.ReadModel</Name>

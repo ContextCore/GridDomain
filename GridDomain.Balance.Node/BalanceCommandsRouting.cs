@@ -1,5 +1,4 @@
 ﻿using System;
-using CommonDomain.Persistence;
 using GridDomain.Balance;
 using GridDomain.Balance.Commands;
 using GridDomain.Balance.Domain;

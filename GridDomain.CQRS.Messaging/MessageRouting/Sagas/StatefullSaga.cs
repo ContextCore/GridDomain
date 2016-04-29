@@ -23,9 +23,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 
         public void Transit(TTransition transition)
         {
-            if(!Machine.CanFire(transition))
+           // if(!Machine.CanFire(transition))
 
-            Machine.Fire(transition,);
+           // Machine.Fire(transition,);
         }
 
     }

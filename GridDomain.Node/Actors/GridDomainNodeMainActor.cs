@@ -2,14 +2,11 @@
 using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
-using CommonDomain.Persistence;
-using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.DomainEventsPublishing;
-using GridDomain.Node.MessageRouteConfigs;
 using NEventStore;
 using NLog;
 
@@ -20,17 +17,14 @@ namespace GridDomain.Node.Actors
         private readonly IStoreEvents _eventStore;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly IPublisher _messagePublisher;
-        private readonly Func<BusinessBalanceContext> _readContextFactory;
-        private readonly IRepository _repo;
+        private readonly IMessageRouteConfiguration _messageRouting;
 
-        public GridDomainNodeMainActor(IRepository repo,
-            IStoreEvents eventStore,
-            Func<BusinessBalanceContext> readContextFactory,
-            IPublisher transport)
+        public GridDomainNodeMainActor(IStoreEvents eventStore,
+                                       IPublisher transport,
+                                       IMessageRouteConfiguration messageRouting)
         {
+            _messageRouting = messageRouting;
             _eventStore = eventStore;
-            _readContextFactory = readContextFactory;
-            _repo = repo;
             _messagePublisher = transport;
             _log.Debug($"Актор {GetType().Name} был создан по адресу: {Self.Path}.");
         }
@@ -46,11 +40,8 @@ namespace GridDomain.Node.Actors
             var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
 
             var actorMessagesRouter = new ActorMessagesRouter(routingActor);
-            MessageRouting.Init(_repo,
-                                _messagePublisher,
-                                _readContextFactory,
-                                actorMessagesRouter
-                                );
+
+            _messageRouting.Register(actorMessagesRouter);
 
             //TODO: replace with message from router
             Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);

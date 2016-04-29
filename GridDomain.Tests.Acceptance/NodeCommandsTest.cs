@@ -11,6 +11,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.MessageRouteConfigs;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NLog;
@@ -47,7 +48,7 @@ namespace GridDomain.Tests.Acceptance
 
         protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-            return new GridDomainNode(new UnityContainer(), ActorSystemFactory.CreateActorSystem(akkaConf));
+            return new GridDomainNode(new UnityContainer(), new BalanceCommandsRouting(),  ActorSystemFactory.CreateActorSystem(akkaConf));
         }
 
         protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,

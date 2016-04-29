@@ -5,6 +5,7 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
@@ -13,33 +14,44 @@ using NLog.Config;
 
 namespace GridDomain.Node
 {
-    
+
+    public interface IContainerConfiguration
+    {
+        void Register(IUnityContainer container);
+    }
+
     public class GridDomainNode : IGridDomainNode
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _mainNodeActor;
-        public readonly IUnityContainer Container;
+        public IUnityContainer Container { get; }
         public readonly ActorSystem System;
+        private readonly IMessageRouteConfiguration _messageRouting;
 
         public Guid Id { get; } = Guid.NewGuid();
 
-        
-        public GridDomainNode(IUnityContainer unityContainer, 
+
+
+        public GridDomainNode(IUnityContainer container,
+                              IMessageRouteConfiguration messageRouting,
                               ActorSystem actorSystem)
         {
-            Container = unityContainer;
+            _messageRouting = messageRouting;
+            _messageRouting = messageRouting;
             System = actorSystem;
+            Container = container;
         }
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
-            
+
             CompositionRoot.Init(Container,
                                  System,
                                  databaseConfiguration);
-
+       
+            Container.RegisterInstance(_messageRouting);
             //не убирать - нужен для работы DI в Akka
             var propsResolver = new UnityDependencyResolver(Container, System);
             StartActorSystem(System);

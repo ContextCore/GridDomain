@@ -6,7 +6,7 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain
 {
-    public class Balance:AggregateBase
+    public class MoneyBalance:AggregateBase
     {
         //Business, campaign or smth else
         public Guid OwnerId { get; private set; }
@@ -15,12 +15,12 @@ namespace GridDomain.Balance.Domain
 
         private Logger _log = LogManager.GetCurrentClassLogger();
 
-        private Balance(Guid id)
+        private MoneyBalance(Guid id)
         {
             Id = id;
         }
 
-        public Balance(Guid id, Guid businessId):this(id)
+        public MoneyBalance(Guid id, Guid businessId):this(id)
         {
             RaiseEvent(new BalanceCreatedEvent(id, businessId));
         }
