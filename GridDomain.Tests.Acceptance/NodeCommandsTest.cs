@@ -40,15 +40,18 @@ namespace GridDomain.Tests.Acceptance
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
 
             AkkaConfiguration akkaConf = new AkkaConfiguration("LocalSystem", 8001, "127.0.0.1",AkkaConfiguration.LogVerbosity.Error);
-            GridNode = GreateGridDomainNode(akkaConf);
+            var unityContainer = new UnityContainer();
+            GridDomain.Balance.Node.CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
+
+            GridNode = GreateGridDomainNode(akkaConf, unityContainer);
 
             GridNode.Start(autoTestGridDomainConfiguration);
             _distributedPubSub = DistributedPubSub.Get(GridNode.System).Mediator;
         }
 
-        protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf)
+        protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, UnityContainer unityContainer)
         {
-            return new GridDomainNode(new UnityContainer(), new BalanceCommandsRouting(),  ActorSystemFactory.CreateActorSystem(akkaConf));
+            return new GridDomainNode(unityContainer, new BalanceCommandsRouting(),  ActorSystemFactory.CreateActorSystem(akkaConf));
         }
 
         protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,
