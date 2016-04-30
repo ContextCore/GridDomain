@@ -15,6 +15,6 @@ namespace GridDomain.EventSourcing
         public Guid SagaId { get; set; }
         public DateTime CreatedTime { get; set; }
 
-        public int Version { get; } = 1;
+        public virtual int Version { get; } = 1;
     }
 }
