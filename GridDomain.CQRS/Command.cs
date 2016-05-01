@@ -10,6 +10,10 @@ namespace GridDomain.CQRS
             Time = time;
         }
 
+        protected Command(Guid id) : this(id, DateTime.UtcNow)
+        {
+        }
+
         protected Command() : this(Guid.NewGuid(), DateTime.UtcNow)
         {
         }

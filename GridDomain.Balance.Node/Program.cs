@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using GridDomain.Balance.Commands;
 using GridDomain.Balance.Domain;
 using GridDomain.Node;
@@ -39,7 +40,8 @@ namespace GridDomain.Balance.Node
                     s.WhenStarted(node =>
                     {
                         node.Start(conf);
-                   //     OnStart(node);
+                        Thread.Sleep(TimeSpan.FromSeconds(1));
+                        ApplySeeds(node);
                     });
                     s.WhenStopped(tc => tc.Stop());
                 });
@@ -50,6 +52,14 @@ namespace GridDomain.Balance.Node
                 x.SetServiceName("GridDomain_node");
             });
             Console.ReadLine();
+        }
+
+        private static void ApplySeeds(GridDomainNode node)
+        {
+            foreach (var cmd in new SubscriptionsFeed().InitialSubscriptions())
+            {
+                node.Execute(cmd);
+            }
         }
 
         private static void ConfigureLog(IDbConfiguration dbConf)

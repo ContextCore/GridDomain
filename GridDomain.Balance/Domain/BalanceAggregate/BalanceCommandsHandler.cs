@@ -8,8 +8,8 @@ using NLog;
 namespace GridDomain.Balance
 {
     public class BalanceCommandsHandler : ICommandHandler<ReplenishBalanceCommand>,
-        ICommandHandler<WithdrawalBalanceCommand>,
-        ICommandHandler<CreateBalanceCommand>
+                                          ICommandHandler<WithdrawalBalanceCommand>,
+                                          ICommandHandler<CreateBalanceCommand>
 
     {
         private readonly ILogger _log = LogManager.GetCurrentClassLogger();

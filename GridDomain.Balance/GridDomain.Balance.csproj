@@ -40,12 +40,16 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.2.3\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NMoneys, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NMoneys.4.1.0.0\lib\Net40-client\NMoneys.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="NMoneys, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NMoneys.4.2.0.0\lib\Net40-client\NMoneys.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stateless.2.5.62.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Stateless.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,29 +61,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BalanceCommandsHandler.cs" />
-    <Compile Include="BalanceNotFoundException.cs" />
-    <Compile Include="Commands\CreateBalanceCommand.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceCommandsHandler.cs" />
+    <Compile Include="Domain\BalanceAggregate\BalanceNotFoundException.cs" />
+    <Compile Include="Domain\BalanceAggregate\Commands\CreateBalanceCommand.cs" />
     <Compile Include="Domain\BalanceAggregate\MoneyBalance.cs" />
     <Compile Include="Domain\BalanceAggregate\BalanceChangeSource.cs" />
-    <Compile Include="Domain\BalanceAggregate\BalanceCreatedEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\BalanceReplenishEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\BalanceWithdrawalEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\BalanceChangedEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\Events\BalanceCreatedEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\Events\BalanceReplenishEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\Events\BalanceWithdrawalEvent.cs" />
+    <Compile Include="Domain\BalanceAggregate\Events\BalanceChangedEvent.cs" />
     <Compile Include="Domain\BusinessAggregate\Business.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\Grant.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\GrantCreatedEvent.cs" />
+    <Compile Include="Domain\BuySubscriptionSaga.cs" />
+    <Compile Include="Domain\SubscriptionsFeed.cs" />
     <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscription.cs" />
     <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscriptionCreatedEvent.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\SubscriptionRights.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\SubscriptionRightsCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinHistory.cs" />
-    <Compile Include="Commands\ChangeBalanceCommand.cs" />
+    <Compile Include="Domain\BalanceAggregate\Commands\ChangeBalanceCommand.cs" />
     <Compile Include="Domain\BalanceAggregate\NegativeMoneyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\ReplenishBalanceCommand.cs" />
-    <Compile Include="Commands\WithdrawalBalanceCommand.cs" />
+    <Compile Include="Domain\BalanceAggregate\Commands\ReplenishBalanceCommand.cs" />
+    <Compile Include="Domain\BalanceAggregate\Commands\WithdrawalBalanceCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

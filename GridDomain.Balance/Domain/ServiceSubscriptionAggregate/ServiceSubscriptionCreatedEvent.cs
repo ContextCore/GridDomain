@@ -8,7 +8,8 @@ namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
     {
         public TimeSpan Period;
         public Money Cost;
-        public SubscriptionRights Rights;
+        public string[] Grants;
+        public string Name;
 
         public ServiceSubscriptionCreatedEvent(Guid sourceId, DateTime? createdTime = null) : base(sourceId, createdTime)
         {

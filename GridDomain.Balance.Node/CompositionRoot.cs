@@ -1,7 +1,6 @@
 ﻿
 
 using System;
-using Akka.Actor;
 using GridDomain.Balance;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.ReadModel;
