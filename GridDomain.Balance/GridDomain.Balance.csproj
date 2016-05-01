@@ -66,7 +66,13 @@
     <Compile Include="Domain\BalanceAggregate\BalanceReplenishEvent.cs" />
     <Compile Include="Domain\BalanceAggregate\BalanceWithdrawalEvent.cs" />
     <Compile Include="Domain\BalanceAggregate\BalanceChangedEvent.cs" />
+    <Compile Include="Domain\BusinessAggregate\Business.cs" />
+    <Compile Include="Domain\ServiceSubscriptionAggregate\Grant.cs" />
+    <Compile Include="Domain\ServiceSubscriptionAggregate\GrantCreatedEvent.cs" />
     <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscription.cs" />
+    <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscriptionCreatedEvent.cs" />
+    <Compile Include="Domain\ServiceSubscriptionAggregate\SubscriptionRights.cs" />
+    <Compile Include="Domain\ServiceSubscriptionAggregate\SubscriptionRightsCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinHistory.cs" />
     <Compile Include="Commands\ChangeBalanceCommand.cs" />
