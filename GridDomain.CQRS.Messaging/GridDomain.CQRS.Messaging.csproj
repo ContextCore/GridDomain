@@ -110,8 +110,8 @@
     <Compile Include="MessageRouting\Sagas\SagaMessageHandler.cs" />
     <Compile Include="MessageRouting\Sagas\SagaEventCorrelator.cs" />
     <Compile Include="MessageRouting\Sagas\SagaStateAggregate.cs" />
-    <Compile Include="MessageRouting\Sagas\SagaTransitionEvents.cs" />
-    <Compile Include="MessageRouting\Sagas\StatefullSaga.cs" />
+    <Compile Include="MessageRouting\Sagas\SagaTransitionEvent.cs" />
+    <Compile Include="MessageRouting\Sagas\StateSaga.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageRouting\Sagas\SagaMessagesRouter.cs" />
   </ItemGroup>

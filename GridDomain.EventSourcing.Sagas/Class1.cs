@@ -7,6 +7,7 @@ using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
+    class Saga:
 
-   
+
 }

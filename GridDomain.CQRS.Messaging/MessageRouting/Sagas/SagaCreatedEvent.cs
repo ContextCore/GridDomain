@@ -7,9 +7,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
     {
         public SagaCreatedEvent(TState state, Guid sourceId, DateTime? createdTime = null) : base(sourceId, createdTime)
         {
-            InitialState = state;
+            State = state;
         }
 
-        public TState InitialState { get; }
+        public TState State { get; }
     }
 }
