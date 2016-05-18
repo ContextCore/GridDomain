@@ -10,14 +10,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
     {
         public TState State;
 
-
-        public class StateHistory
-        {
-            public TTransition Transition;
-           // public TState From;
-            public TState To;
-        }
-
         private SagaStateAggregate(Guid id)
         {
             Id = id;

@@ -4,33 +4,76 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommonDomain.Core;
+using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging.MessageRouting.Sagas;
 using NUnit.Framework;
 using Stateless;
 
 namespace GridDomain.Tests.Acceptance
 {
-
-    class BalanceReplenishSaga: SagaBase<object>
+    interface IStartBy<T> : IHandler<T>
     {
-        enum Trigger
+        
+    }
+
+    class SubscriptionExpiredEvent { }
+    class NotEnoughFondsFailure { }
+    class SubscriptionChangedEvent { }
+
+    class PayForSubscriptionCommand { }
+    class ChangeSubscriptionCommnad { }
+
+
+    class SubscriptionRenewSagaState
+    {
+        
+    }
+
+    class SubscriptionRenewSaga : IStartBy<SubscriptionExpiredEvent>,
+                                  IHandler<SubscriptionChangedEvent>,
+                                  IHandler<NotEnoughFondsFailure>
+                                  
+
+    {
+        private readonly SagaStateAggregate<State, Trigger> _state;
+
+        internal enum Trigger
         {
-            StartEnterCardDetails,
-            SendPaymentReqest,
-            PaymentConfirmationRecieved,
-            PaymentCancelRecieved,
-            BalanceModificationSent,
-            BalanceModified
+            ExpireSubscription,
+            PayForSubscription,
+            ChangeSubscription,
+            RevokeSubscription
         }
 
-        enum State
+        internal enum State
         {
-            Idle,
-            ReplenishInitiated,
-            WaitingForPaymentProcessor,
-            ModifyingBalance
+           SubscriptionSet,
+           OfferPaying,
+           SubscriptionChanging
+        }
+
+        public SubscriptionRenewSaga(SagaStateAggregate<State, Trigger> state)
+        {
+            _state = state;
+            var machine = new StateMachine<State,Trigger>(_state.State);
+            machine.OnTransitioned( t => _state.Transit(t.Trigger, t.Destination));
         }
 
 
+        public void Handle(SubscriptionExpiredEvent e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Handle(SubscriptionChangedEvent e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Handle(NotEnoughFondsFailure e)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
@@ -72,8 +115,9 @@ namespace GridDomain.Tests.Acceptance
                 .Permit(Trigger.HungUp, State.OffHook)
                 .Permit(Trigger.CallConnected, State.Connected);
 
+
             phoneCall.Configure(State.Connected)
-                .OnEntry(t => StartCallTimer())
+                .OnEntry(t => StartCallTimer()) //send command here
                 .OnExit(t => StopCallTimer())
                 .Permit(Trigger.LeftMessage, State.OffHook)
                 .Permit(Trigger.HungUp, State.OffHook)

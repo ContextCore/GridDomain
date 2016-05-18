@@ -1,4 +1,5 @@
 using System;
+using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.Logging;
 using NLog;
