@@ -26,6 +26,7 @@ namespace GridDomain.Tests.Acceptance
             foreach (var reg in container.Registrations)
             {
                 container.Resolve(reg.RegisteredType, reg.Name);
+                Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
             }
         }
 
@@ -46,6 +47,7 @@ namespace GridDomain.Tests.Acceptance
             foreach (var reg in container.Registrations)
             {
                 container.Resolve(reg.RegisteredType, reg.Name);
+                Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
             }
         }
     }

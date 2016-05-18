@@ -40,18 +40,23 @@ namespace GridDomain.Tests.Acceptance
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
 
             AkkaConfiguration akkaConf = new AkkaConfiguration("LocalSystem", 8001, "127.0.0.1",AkkaConfiguration.LogVerbosity.Error);
-            var unityContainer = new UnityContainer();
-            GridDomain.Balance.Node.CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
-
-            GridNode = GreateGridDomainNode(akkaConf, unityContainer);
+           
+            GridNode = GreateGridDomainNode(akkaConf, autoTestGridDomainConfiguration);
 
             GridNode.Start(autoTestGridDomainConfiguration);
             _distributedPubSub = DistributedPubSub.Get(GridNode.System).Mediator;
         }
 
-        protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, UnityContainer unityContainer)
+        protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(unityContainer, new BalanceCommandsRouting(),  ActorSystemFactory.CreateActorSystem(akkaConf));
+            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(),  ActorSystemFactory.CreateActorSystem(akkaConf));
+        }
+
+        protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
+        {
+            var unityContainer = new UnityContainer();
+            GridDomain.Balance.Node.CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
+            return unityContainer;
         }
 
         protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,

@@ -9,9 +9,10 @@ namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
     public class Cluster_Given_balance_change_plan_When_executing :
         Single_System_Given_balance_change_plan_When_executing
     {
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, UnityContainer unityContainer)
+
+        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(new UnityContainer(), new BalanceCommandsRouting(), ActorSystemFactory.CreateCluster(akkaConf).Last());
+            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(), ActorSystemFactory.CreateActorSystem(akkaConf));
         }
     }
 }
