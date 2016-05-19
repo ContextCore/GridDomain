@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance
         {
             _stateAggregate = stateAggregate;
             Machine = new StateMachine<TState, TTrigger>(_stateAggregate.MachineState);
-            Machine.OnTransitioned(t => _stateAggregate.Transit(t.Trigger, t.Destination));
+            Machine.OnTransitioned(t => _stateAggregate.StateChanged(t.Trigger, t.Destination));
         }
 
         protected StateMachine<TState, TTrigger>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(TTrigger trigger)

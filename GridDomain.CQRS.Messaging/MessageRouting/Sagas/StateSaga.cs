@@ -29,7 +29,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
             if (!Machine.CanFire(transition)) return;
 
             Machine.Fire(transition);
-            StateDetails.Transit(transition,Machine.State);
+            StateDetails.StateChanged(transition,Machine.State);
         }
 
         public StateSaga(Guid id, SagaStateAggregate<TState, TTransition> state)//:base(id)

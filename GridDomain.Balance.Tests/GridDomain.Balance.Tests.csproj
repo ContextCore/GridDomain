@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregatorFactoryTests.cs" />
     <Compile Include="Replenish\Given_non_existing_balance_When_BalanceReplenishCommand.cs" />
     <Compile Include="Replenish\Given_existing_balance_When_BalanceReplenishCommand.cs" />
     <Compile Include="Withdrawal\Given_existing_empty_balance_When_BalanceWithdrawalCommand.cs" />

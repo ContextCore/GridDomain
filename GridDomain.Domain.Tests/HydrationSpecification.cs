@@ -7,15 +7,15 @@ using NUnit.Framework;
 namespace GridDomain.Domain.Tests
 {
     [TestFixture]
-    public abstract class HydrateSpecification<TAggregate> where TAggregate : IAggregate
+    public abstract class HydrationSpecification<TAggregate> where TAggregate : IAggregate
     {
         [SetUp]
         public void When()
         {
-            Aggregate = (TAggregate) aggregateFactory.Build(typeof (TAggregate), Guid.NewGuid(), null);
+            Aggregate = (TAggregate) aggregateFactory.Build(typeof(TAggregate), Guid.NewGuid(), null);
             try
             {
-                foreach (var e in CreateEvent)
+                foreach (var e in GivenEvents())
                     ((IAggregate) Aggregate).ApplyEvent(e);
             }
             catch (Exception ex)
@@ -30,7 +30,7 @@ namespace GridDomain.Domain.Tests
 
         protected TAggregate Aggregate;
 
-        protected abstract IEnumerable<DomainEvent> CreateEvent { get; }
+        protected abstract IEnumerable<DomainEvent> GivenEvents();
 
         protected virtual Type ExpectedException { get; }
         private readonly AggregateFactory aggregateFactory = new AggregateFactory();

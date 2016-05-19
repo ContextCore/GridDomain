@@ -223,8 +223,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sagas\MessageDedublication.cs" />
     <Compile Include="Sagas\MessageOutOfOrder.cs" />
-    <Compile Include="Sagas\SagaStateAggregate\CreateEventsOnTransition.cs" />
-    <Compile Include="Sagas\SagaStateAggregate\HydrateFromEvents.cs" />
     <Compile Include="Sagas\StateTransition.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommnad.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\IStartBy.cs" />

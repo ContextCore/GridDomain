@@ -9,7 +9,25 @@ namespace GridDomain.Domain.Tests
 {
     public static class EventsExtensions
     {
+
+        private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};
+        private static readonly ComparisonConfig DateCreatedIgnoreConfig = new ComparisonConfig
+        {
+            MembersToIgnore = new []{nameof(DomainEvent.CreatedTime)}.ToList(),
+            DoublePrecision = 0.0001
+        };
+
+        /// <summary>
+        /// Compare events ignoring creation date
+        /// </summary>
+        /// <param name="expected1"></param>
+        /// <param name="published2"></param>
         public static void CompareEvents(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2)
+        {
+            CompareEventsByLogic(expected1, published2, new CompareLogic { Config = DateCreatedIgnoreConfig });
+        }
+
+        private static void CompareEventsByLogic(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2, CompareLogic compareLogic)
         {
             var expected = expected1.ToArray();
             var published = published2.ToArray();
@@ -27,22 +45,23 @@ namespace GridDomain.Domain.Tests
                 Assert.Fail(sb.ToString());
             }
 
-            var compareObjects = new CompareLogic {Config = {DoublePrecision = 0.0001}};
-
-            var eventPairs = expected.Zip(published, (e, p) => new {Expected = e, Produced = p});
-
+            var eventPairs = expected.Zip(published, (e, p) => new { Expected = e, Produced = p });
 
             foreach (var events in eventPairs)
             {
-                compareObjects.Config.ActualName = events.Produced.GetType().Name;
-                compareObjects.Config.ExpectedName = events.Expected.GetType().Name;
-                var comparisonResult = compareObjects.Compare(events.Expected, events.Produced);
+                compareLogic.Config.ActualName = events.Produced.GetType().Name;
+                compareLogic.Config.ExpectedName = events.Expected.GetType().Name;
+                var comparisonResult = compareLogic.Compare(events.Expected, events.Produced);
 
                 if (!comparisonResult.AreEqual)
                 {
                     Assert.Fail(comparisonResult.DifferencesString);
                 }
             }
+        }
+        public static void CompareEventsStrict(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2)
+        {
+            CompareEventsByLogic(expected1, published2, new CompareLogic { Config = StrictConfig });
         }
     }
 }

@@ -17,12 +17,13 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 
         public SagaStateAggregate(Guid id, TState state)
         {
-            Apply(new SagaCreatedEvent<TState>(state,id));
+            RaiseEvent(new SagaCreatedEvent<TState>(state,id));
         }
 
         private void Apply(SagaCreatedEvent<TState> e)
         {
             MachineState = e.State;
+            Id = e.SourceId;
         }
 
         private void Apply(SagaTransitionEvent<TState, TTransition> e)
@@ -30,7 +31,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
             MachineState = e.State; 
         }
 
-        public void Transit(TTransition t, TState newState)
+        public void StateChanged(TTransition t, TState newState)
         {
             RaiseEvent(new SagaTransitionEvent<TState, TTransition>(t,newState,Id));
         }

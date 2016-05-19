@@ -12,17 +12,17 @@ namespace GridDomain.Domain.Tests
         [SetUp]
         public void CreateAssemblyReferences()
         {
-            Func<string, bool> isGridDomainAssembly = asb => asb.Contains("GridDomain") && !asb.Contains("Test");
+            Func<string, bool> isGridDomainAssembly = asb => asb.StartsWith("GridDomain.Balance");
 
             var currentDomainReferences =
                 AppDomain.CurrentDomain.GetAssemblies()
-                    .Where(a => isGridDomainAssembly(a.FullName))
-                    .ToArray();
+                                       .Where(a => isGridDomainAssembly(a.FullName))
+                                       .ToArray();
 
             AllAggregateTypes = currentDomainReferences
-                .SelectMany(a => a.GetTypes())
-                .Where(t => typeof (AggregateBase).IsAssignableFrom(t) && t.IsAbstract == false)
-                .ToArray();
+                                                    .SelectMany(a => a.GetTypes())
+                                                    .Where(t => typeof (AggregateBase).IsAssignableFrom(t) && t.IsAbstract == false)
+                                                    .ToArray();
         }
 
         private Type[] AllAggregateTypes;
