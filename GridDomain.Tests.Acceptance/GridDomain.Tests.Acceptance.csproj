@@ -221,11 +221,17 @@
     <Compile Include="Persistence\TestDbTools.cs" />
     <Compile Include="BalancePersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sagas\MessageDedublication.cs" />
+    <Compile Include="Sagas\MessageOutOfOrder.cs" />
+    <Compile Include="Sagas\SagaStateAggregate\CreateEventsOnTransition.cs" />
+    <Compile Include="Sagas\SagaStateAggregate\HydrateFromEvents.cs" />
+    <Compile Include="Sagas\StateTransition.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommnad.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\IStartBy.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFondsFailure.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\StateSaga.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />

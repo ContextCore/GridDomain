@@ -8,7 +8,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
         where TState : struct
         where TTransition : struct
     {
-        public TState State;
+        public TState MachineState;
 
         private SagaStateAggregate(Guid id)
         {
@@ -22,12 +22,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 
         private void Apply(SagaCreatedEvent<TState> e)
         {
-            State = e.State;
+            MachineState = e.State;
         }
 
         private void Apply(SagaTransitionEvent<TState, TTransition> e)
         {
-            State = e.State; 
+            MachineState = e.State; 
         }
 
         public void Transit(TTransition t, TState newState)

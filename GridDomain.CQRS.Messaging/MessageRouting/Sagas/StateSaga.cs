@@ -20,7 +20,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
 
         public void Initialize()
         {
-            Machine = new StateMachine<TState, TTransition>(StateDetails.State);
+            Machine = new StateMachine<TState, TTransition>(StateDetails.MachineState);
             InitializeMachine(Machine);
         }
 
