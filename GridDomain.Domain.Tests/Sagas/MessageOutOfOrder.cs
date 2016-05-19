@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GridDomain.Tests.Acceptance.Sagas
 {
-    class OutOfOrder
+    class MessageOutOfOrder
     {
     }
 }

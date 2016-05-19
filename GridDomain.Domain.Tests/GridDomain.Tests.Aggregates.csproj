@@ -87,6 +87,20 @@
     <Compile Include="SagaStateAggregate\Given_transitioned_event_should_hydrate_state.cs" />
     <Compile Include="SagaStateAggregate\TestState.cs" />
     <Compile Include="SagaStateAggregate\TestTransition.cs" />
+    <Compile Include="Sagas\MessageDedublication.cs" />
+    <Compile Include="Sagas\MessageOutOfOrder.cs" />
+    <Compile Include="Sagas\StateTransition.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommand.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFondsFailure.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\IStartBy.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\StateSaga.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\UnbindedMessageRecievedException.cs" />
     <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>
