@@ -221,7 +221,16 @@
     <Compile Include="Persistence\TestDbTools.cs" />
     <Compile Include="BalancePersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StateMachine.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommnad.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\IStartBy.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFondsFailure.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\UnbindedMessageRecievedException.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
