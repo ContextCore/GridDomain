@@ -7,8 +7,8 @@
     <ProjectGuid>{E6496D95-7FF7-4783-BD06-6D15B67600FA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Domain.Tests</RootNamespace>
-    <AssemblyName>GridDomain.Domain.Tests</AssemblyName>
+    <RootNamespace>GridDomain.Tests</RootNamespace>
+    <AssemblyName>GridDomain.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -96,11 +96,8 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\IStartBy.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\StateSaga.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\UnbindedMessageRecievedException.cs" />
     <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>

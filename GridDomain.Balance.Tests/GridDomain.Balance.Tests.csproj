@@ -75,9 +75,9 @@
       <Name>GridDomain.CQRS</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Domain.Tests\GridDomain.Tests.Aggregates.csproj">
+    <ProjectReference Include="..\GridDomain.Domain.Tests\GridDomain.Tests.csproj">
       <Project>{E6496D95-7FF7-4783-BD06-6D15B67600FA}</Project>
-      <Name>GridDomain.Tests.Aggregates</Name>
+      <Name>GridDomain.Tests</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">

@@ -221,20 +221,6 @@
     <Compile Include="Persistence\TestDbTools.cs" />
     <Compile Include="BalancePersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sagas\MessageDedublication.cs" />
-    <Compile Include="Sagas\MessageOutOfOrder.cs" />
-    <Compile Include="Sagas\StateTransition.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommnad.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\IStartBy.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFondsFailure.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\StateSaga.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\UnbindedMessageRecievedException.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
@@ -263,15 +249,19 @@
       <Name>GridDomain.CQRS</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Domain.Tests\GridDomain.Tests.Aggregates.csproj">
+    <ProjectReference Include="..\GridDomain.Domain.Tests\GridDomain.Tests.csproj">
       <Project>{e6496d95-7ff7-4783-bd06-6d15b67600fa}</Project>
-      <Name>GridDomain.Tests.Aggregates</Name>
+      <Name>GridDomain.Tests</Name>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
       <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+      <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
+      <Name>GridDomain.EventSourcing.Sagas</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>

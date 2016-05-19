@@ -26,7 +26,7 @@ namespace GridDomain.Balance.Domain
             ChanginSubscription
         }
 
-        public enum Transition
+        public enum Transitions
         {
             ChargeForSubscription,
             CharginFailed,
@@ -36,23 +36,23 @@ namespace GridDomain.Balance.Domain
             SubscriptionSet
         }
 
-        public StateMachine<State, Transition> Machine;
+        public StateMachine<State, Transitions> Machine;
         public BuySubscriptionSaga()
         {
-            Machine = new StateMachine<State, Transition>(State.SubscriptionExist);
+            Machine = new StateMachine<State, Transitions>(State.SubscriptionExist);
             Machine.Configure(State.SubscriptionExist)
-                   .Permit(Transition.ChargeForSubscription, State.ChargingBalance);
+                   .Permit(Transitions.ChargeForSubscription, State.ChargingBalance);
 
             Machine.Configure(State.ChargingBalance)
-                   .Permit(Transition.CharginFailed, State.SubscriptionExist)
-                   .Permit(Transition.ChargeSucceeded, State.BalanceCharged);
+                   .Permit(Transitions.CharginFailed, State.SubscriptionExist)
+                   .Permit(Transitions.ChargeSucceeded, State.BalanceCharged);
 
             Machine.Configure(State.BalanceCharged)
-                   .Permit(Transition.SetNewSubscription, State.ChanginSubscription);
+                   .Permit(Transitions.SetNewSubscription, State.ChanginSubscription);
 
             Machine.Configure(State.ChanginSubscription)
-                   .Permit(Transition.SubscriptionSet, State.SubscriptionExist)
-                   .Permit(Transition.SetFailed, State.BalanceCharged);
+                   .Permit(Transitions.SubscriptionSet, State.SubscriptionExist)
+                   .Permit(Transitions.SetFailed, State.BalanceCharged);
         }
 
 

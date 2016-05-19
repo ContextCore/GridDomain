@@ -2,7 +2,7 @@ using System;
 
 namespace GridDomain.Tests.Acceptance
 {
-    internal class UnbindedMessageRecievedException : Exception
+    public class UnbindedMessageRecievedException : Exception
     {
         public readonly object Msg;
 

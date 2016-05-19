@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Balance.ReadMode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node", "GridDomain.Node\GridDomain.Node.csproj", "{760BE08A-D943-4A71-944E-938590527153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Aggregates", "GridDomain.Domain.Tests\GridDomain.Tests.Aggregates.csproj", "{E6496D95-7FF7-4783-BD06-6D15B67600FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests", "GridDomain.Domain.Tests\GridDomain.Tests.csproj", "{E6496D95-7FF7-4783-BD06-6D15B67600FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Acceptance", "GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj", "{B008531E-4879-4547-A5E1-B30AD176A669}"
 EndProject

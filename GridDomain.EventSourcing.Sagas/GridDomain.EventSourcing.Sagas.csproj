@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GridDomain.EventSourcing.Sagas</RootNamespace>
     <AssemblyName>GridDomain.EventSourcing.Sagas</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
       <HintPath>..\packages\Stateless.2.5.62.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Stateless.dll</HintPath>
       <Private>True</Private>
@@ -44,10 +49,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IStartBy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SagaCreatedEvent.cs" />
+    <Compile Include="SagaStateAggregate.cs" />
+    <Compile Include="SagaTransitionEvent.cs" />
+    <Compile Include="StateSaga.cs" />
+    <Compile Include="UnbindedMessageRecievedException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
+      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Name>GridDomain.CQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
+      <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
+      <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -5,7 +5,8 @@ using Stateless;
 
 namespace GridDomain.Tests.Acceptance
 {
-    class StateSaga<TState,TTrigger,TStartMessage> : IStartBy<TStartMessage> where TTrigger : struct 
+    //TODO: add policy for command unexpected failure handling
+    public class StateSaga<TState,TTrigger,TStartMessage> : IStartBy<TStartMessage> where TTrigger : struct 
                                                   where TState : struct
     {
         private readonly SagaStateAggregate<TState, TTrigger> _stateAggregate;

@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Sagas
 {
+    
     [TestFixture]
     class Given_several_repeating_messages_should_dispatch_only_one_command
     {
