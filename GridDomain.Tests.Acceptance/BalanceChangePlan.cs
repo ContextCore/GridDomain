@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Commands;
+using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.CQRS;
 using NMoneys;
 

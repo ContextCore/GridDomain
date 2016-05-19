@@ -1,27 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.MessageRouting.Sagas;
-using GridDomain.Domain.Tests;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Sagas
+namespace GridDomain.Tests.Sagas
 {
     
     [TestFixture]
     class Given_several_repeating_messages_should_dispatch_only_one_command
     {
-        private SubscriptionRenewSaga Saga;
+        private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
         private NotEnoughFondsFailure[] Messages;
         public void Given_new_saga_with_state()
         {
-            var sagaState = new SagaStateAggregate<SubscriptionRenewSaga.States,
-                                 SubscriptionRenewSaga.Triggers>(Guid.NewGuid(), SubscriptionRenewSaga.States.OfferPaying);
+            var sagaState = new SagaStateAggregate<SubscriptionRenewSaga.SubscriptionRenewSaga.States,
+                                 SubscriptionRenewSaga.SubscriptionRenewSaga.Triggers>(Guid.NewGuid(), SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying);
 
-            Saga = new SubscriptionRenewSaga(sagaState);
+            Saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(sagaState);
 
 
             Messages = new[]

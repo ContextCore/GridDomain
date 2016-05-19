@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Commands;
 using GridDomain.Balance.Domain;
+using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.BalanceAggregate.Events;
 using GridDomain.CQRS;
-using GridDomain.Domain.Tests;
-using GridDomain.Domain.Tests.Commanding;
 using GridDomain.EventSourcing;
+using GridDomain.Tests;
 using NUnit.Framework;
 
 namespace GridDomain.Balance.Tests.Withdrawal

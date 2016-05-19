@@ -87,9 +87,9 @@
     <Compile Include="SagaStateAggregate\Given_transitioned_event_should_hydrate_state.cs" />
     <Compile Include="SagaStateAggregate\TestState.cs" />
     <Compile Include="SagaStateAggregate\TestTransition.cs" />
-    <Compile Include="Sagas\MessageDedublication.cs" />
+    <Compile Include="Sagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\MessageOutOfOrder.cs" />
-    <Compile Include="Sagas\StateTransition.cs" />
+    <Compile Include="Sagas\SagaStateTransitionTests.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFondsFailure.cs" />

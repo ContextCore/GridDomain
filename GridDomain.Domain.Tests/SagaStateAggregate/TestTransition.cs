@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Acceptance.Sagas.SagaStateAggregate
+namespace GridDomain.Tests.SagaStateAggregate
 {
     enum TestTransition {
         Forward

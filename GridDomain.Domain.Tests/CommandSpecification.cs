@@ -10,7 +10,7 @@ using GridDomain.Node.MemTransportMessaging;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
-namespace GridDomain.Domain.Tests.Commanding
+namespace GridDomain.Tests
 {
     public abstract class CommandSpecification<TCommand> where TCommand : class, ICommand
     {

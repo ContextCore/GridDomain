@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace GridDomain.Domain.Tests
+namespace GridDomain.Tests
 {
     public class ThenAttribute : TestAttribute
     {

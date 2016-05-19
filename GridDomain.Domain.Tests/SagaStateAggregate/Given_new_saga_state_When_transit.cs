@@ -1,14 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommonDomain.Persistence;
-using GridDomain.CQRS.Messaging.MessageRouting.Sagas;
-using GridDomain.Domain.Tests;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Sagas.SagaStateAggregate
+namespace GridDomain.Tests.SagaStateAggregate
 {
     [TestFixture]
     class Given_new_saga_state_When_transit :

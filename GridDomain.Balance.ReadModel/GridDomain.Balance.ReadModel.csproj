@@ -81,13 +81,13 @@
     <Compile Include="BusinessBalanceContext.cs" />
     <Compile Include="BusinessBalance.cs" />
     <Compile Include="BusinessCurrentBalanceProjectionBuilder.cs" />
-    <Compile Include="Migrations\201604151643245_What.cs" />
-    <Compile Include="Migrations\201604151643245_What.Designer.cs">
-      <DependentUpon>201604151643245_What.cs</DependentUpon>
+    <Compile Include="Migrations\What.cs" />
+    <Compile Include="Migrations\What.Designer.cs">
+      <DependentUpon>What.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604171839203_BalanceReadModelConcurrency.cs" />
-    <Compile Include="Migrations\201604171839203_BalanceReadModelConcurrency.Designer.cs">
-      <DependentUpon>201604171839203_BalanceReadModelConcurrency.cs</DependentUpon>
+    <Compile Include="Migrations\BalanceReadModelConcurrency.cs" />
+    <Compile Include="Migrations\BalanceReadModelConcurrency.Designer.cs">
+      <DependentUpon>BalanceReadModelConcurrency.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Initial.cs" />
     <Compile Include="Migrations\Initial.Designer.cs">
@@ -144,11 +144,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201604151643245_What.resx">
-      <DependentUpon>201604151643245_What.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\What.resx">
+      <DependentUpon>What.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604171839203_BalanceReadModelConcurrency.resx">
-      <DependentUpon>201604171839203_BalanceReadModelConcurrency.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\BalanceReadModelConcurrency.resx">
+      <DependentUpon>BalanceReadModelConcurrency.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Initial.resx">
       <DependentUpon>Initial.cs</DependentUpon>

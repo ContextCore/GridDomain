@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using CommonDomain.Core;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
+namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaStateAggregate<TState,TTransition>: AggregateBase
         where TState : struct

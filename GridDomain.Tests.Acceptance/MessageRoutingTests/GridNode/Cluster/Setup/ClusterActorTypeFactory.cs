@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     class ClusterActorTypeFactory : IHandlerActorTypeFactory
     {

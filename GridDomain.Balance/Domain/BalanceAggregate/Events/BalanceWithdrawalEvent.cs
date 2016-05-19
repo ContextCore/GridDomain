@@ -1,7 +1,7 @@
 using System;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain
+namespace GridDomain.Balance.Domain.BalanceAggregate.Events
 {
     public class BalanceWithdrawalEvent : BalanceChangedEvent
     {

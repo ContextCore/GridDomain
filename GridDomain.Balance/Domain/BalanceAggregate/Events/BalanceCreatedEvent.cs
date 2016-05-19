@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Balance.Domain
+namespace GridDomain.Balance.Domain.BalanceAggregate.Events
 {
     public class BalanceCreatedEvent : DomainEvent
     {

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.CQRS.Messaging.MessageRouting.Sagas;
 using Stateless;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.EventSourcing.Sagas
 {
     //TODO: add policy for command unexpected failure handling
     public class StateSaga<TState,TTrigger,TStartMessage> : IStartBy<TStartMessage> where TTrigger : struct 

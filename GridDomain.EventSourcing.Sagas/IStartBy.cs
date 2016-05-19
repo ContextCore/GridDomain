@@ -1,6 +1,6 @@
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.EventSourcing.Sagas
 {
     interface IStartBy<T> : IHandler<T>
     {

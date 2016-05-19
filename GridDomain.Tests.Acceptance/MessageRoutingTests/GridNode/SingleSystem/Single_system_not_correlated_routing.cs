@@ -1,10 +1,8 @@
 using System.Linq;
-using Akka.Routing;
-using GridDomain.Domain.Tests;
-using GridDomain.Node.AkkaMessaging;
+using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
 {
     [TestFixture]
     public class Single_system_not_correlated_routing : SingleActorSystemTest

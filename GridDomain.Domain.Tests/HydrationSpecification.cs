@@ -4,7 +4,7 @@ using CommonDomain;
 using GridDomain.EventSourcing;
 using NUnit.Framework;
 
-namespace GridDomain.Domain.Tests
+namespace GridDomain.Tests
 {
     [TestFixture]
     public abstract class HydrationSpecification<TAggregate> where TAggregate : IAggregate

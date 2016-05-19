@@ -1,7 +1,7 @@
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
     class NotCorrelatedRouting<TMsg, THandler> : IRouterConfiguration where THandler : IHandler<TMsg>
     { 

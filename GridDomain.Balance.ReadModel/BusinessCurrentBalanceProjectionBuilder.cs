@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using GridDomain.Balance.Domain;
+using GridDomain.Balance.Domain.BalanceAggregate.Events;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Logging;

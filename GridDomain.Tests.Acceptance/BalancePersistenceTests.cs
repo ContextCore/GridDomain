@@ -1,5 +1,6 @@
 ﻿using System;
 using CommonDomain.Persistence;
+using GridDomain.Balance.Domain.BalanceAggregate;
 using GridDomain.Node;
 using GridDomain.Tests.Acceptance.Persistence;
 using KellermanSoftware.CompareNetObjects;
@@ -29,13 +30,13 @@ namespace GridDomain.Tests.Acceptance
         [Test]
         public void Balance_should_persist_with_all_events()
         {
-            var initialBalance = new Fixture().Create<Balance.Domain.MoneyBalance>();
+            var initialBalance = new Fixture().Create<MoneyBalance>();
 
             var repo = CreateIndependentRepository();
             repo.Save(initialBalance, Guid.NewGuid());
 
             var repo1 = CreateIndependentRepository();
-            var restoredBalance = repo1.GetById<Balance.Domain.MoneyBalance>(initialBalance.Id);
+            var restoredBalance = repo1.GetById<MoneyBalance>(initialBalance.Id);
             Assert.True(new CompareLogic().Compare(restoredBalance, initialBalance).AreEqual);
         }
     }

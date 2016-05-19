@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommonDomain.Core;
-using GridDomain.CQRS;
 using Stateless;
 
 namespace GridDomain.Balance.Domain
 {
-    public class BuySubscriptionCommand:Command
-    {
-        public Guid BusinessId;
-        public Guid SubscriptionId;
-        public DateTime ActivateDate;
-    }
-
     public class BuySubscriptionSaga: SagaBase<object>
     {
         public enum State

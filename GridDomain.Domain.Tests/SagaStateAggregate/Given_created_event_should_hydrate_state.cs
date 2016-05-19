@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.CQRS.Messaging.MessageRouting.Sagas;
-using GridDomain.Domain.Tests;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Sagas.SagaStateAggregate
+namespace GridDomain.Tests.SagaStateAggregate
 {
     [TestFixture]
     class Given_created_event_should_hydrate_state : HydrationSpecification<SagaStateAggregate<TestState, TestTransition>>

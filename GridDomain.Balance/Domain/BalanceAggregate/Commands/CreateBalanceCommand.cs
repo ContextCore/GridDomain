@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Balance.Commands
+namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
 {
     public class CreateBalanceCommand : Command
     {

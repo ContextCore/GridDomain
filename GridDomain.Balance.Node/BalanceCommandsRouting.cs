@@ -1,12 +1,11 @@
-﻿using System;
-using GridDomain.Balance;
-using GridDomain.Balance.Commands;
-using GridDomain.Balance.Domain;
+﻿using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.BalanceAggregate.Events;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Node.MessageRouteConfigs
+namespace GridDomain.Balance.Node
 {
     public class BalanceCommandsRouting : IMessageRouteConfiguration
     {

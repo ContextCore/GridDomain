@@ -1,7 +1,9 @@
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.MessageRouting.Sagas;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
 {
     class SubscriptionRenewSaga : StateSaga<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers, SubscriptionExpiredEvent>,
                                   IHandler<SubscriptionChangedEvent>,

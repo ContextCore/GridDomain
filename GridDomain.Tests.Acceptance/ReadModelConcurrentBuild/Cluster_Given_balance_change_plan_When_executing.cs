@@ -1,7 +1,7 @@
 ﻿using System.Linq;
+using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.MessageRouteConfigs;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild

@@ -6,7 +6,7 @@ using CommonDomain.Persistence;
 using GridDomain.EventSourcing;
 using NEventStore;
 
-namespace GridDomain.Domain.Tests
+namespace GridDomain.Tests
 {
     public class InMemoryEventRepository : IRepository
     {

@@ -1,8 +1,7 @@
 using System;
-using GridDomain.Balance.Domain;
 using NMoneys;
 
-namespace GridDomain.Balance.Commands
+namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
 {
     public class ReplenishBalanceCommand : ChangeBalanceCommand
     {

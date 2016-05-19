@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Persistence;
-using GridDomain.Balance.Commands;
+using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.Balance.ReadModel;
-using GridDomain.Domain.Tests;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
             foreach (var plan in balanceManipulationPlans)
             {
                 Console.WriteLine($"Checking write model for balance {plan.BalanceId}");
-                var balance = repo.GetById<Balance.Domain.MoneyBalance>(plan.BalanceId);
+                var balance = repo.GetById<MoneyBalance>(plan.BalanceId);
                 CheckAmount(balance.Amount.Amount, plan,"write model");
             }
         }
@@ -144,9 +144,5 @@ namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
             var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(businessNum, businessNum);
             return balanceManipulationCommands;
         }
-    }
-
-    internal class CorruptedPlanException : Exception
-    {
     }
 }

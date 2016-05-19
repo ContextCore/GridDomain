@@ -1,4 +1,6 @@
-namespace GridDomain.Tests.Acceptance
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+
+namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands
 {
     class ChangeSubscriptionCommand
     {

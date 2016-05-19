@@ -1,14 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Akka.Actor;
-using Akka.DI.Core;
-using Akka.DI.Unity;
-using GridDomain.CQRS;
-using GridDomain.Node;
-using Microsoft.Practices.Unity;
+﻿using Akka.Actor;
+using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     class ClusterMessage : TestMessage
     {

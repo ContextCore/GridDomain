@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
 {
     [TestFixture]
     class StateMachineTest

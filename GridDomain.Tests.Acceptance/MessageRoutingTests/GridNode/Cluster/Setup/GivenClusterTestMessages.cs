@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     class GivenClusterTestMessages : IGivenCommands<ClusterMessage>
     {

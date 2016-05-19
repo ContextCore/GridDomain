@@ -2,6 +2,7 @@
 
 using System;
 using GridDomain.Balance;
+using GridDomain.Balance.Domain.BalanceAggregate;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Node.Configuration;

@@ -1,8 +1,9 @@
 using System.Linq;
-using Akka.Cluster;
+using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup;
+using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster
 {
     [TestFixture]
     class Cluster_not_correlated_routing : ClusterActorSystemTest
@@ -12,7 +13,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         public void Messages_should_be_processed_by_remote_nodes()
         {
             foreach (var node in Infrastructure.Nodes)
-                Assert.True(_resultMessages.Any(m => m.ProcessorActorSystemAdress == Cluster.Get(node).SelfAddress));
+                Assert.True(_resultMessages.Any(m => m.ProcessorActorSystemAdress == Akka.Cluster.Cluster.Get(node).SelfAddress));
         }
 
         protected override IRouterConfiguration CreateRoutes()

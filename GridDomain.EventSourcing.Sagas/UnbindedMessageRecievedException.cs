@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.EventSourcing.Sagas
 {
     public class UnbindedMessageRecievedException : Exception
     {

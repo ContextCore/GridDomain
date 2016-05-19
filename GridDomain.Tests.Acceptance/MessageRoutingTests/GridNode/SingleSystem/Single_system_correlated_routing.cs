@@ -1,10 +1,8 @@
 ﻿using System.Linq;
-using GridDomain.Domain.Tests;
-using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Configuration;
+using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
 {
     [TestFixture]
 

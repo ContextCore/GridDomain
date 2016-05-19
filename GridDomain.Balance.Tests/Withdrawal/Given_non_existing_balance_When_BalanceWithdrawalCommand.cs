@@ -1,7 +1,7 @@
-using GridDomain.Balance.Commands;
+using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.CQRS;
-using GridDomain.Domain.Tests;
-using GridDomain.Domain.Tests.Commanding;
+using GridDomain.Tests;
 using NUnit.Framework;
 
 namespace GridDomain.Balance.Tests.Withdrawal

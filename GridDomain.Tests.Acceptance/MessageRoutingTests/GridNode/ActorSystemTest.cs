@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using Akka.Actor;
 using Akka.TestKit.NUnit;
-using Google.ProtocolBuffers.Serialization;
-using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Configuration;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
     public abstract class ActorSystemTest<T, TInfrastructure>:TestKit where TInfrastructure : ActorSystemInfrastruture
     {

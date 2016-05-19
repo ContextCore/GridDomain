@@ -14,12 +14,6 @@ using NLog.Config;
 
 namespace GridDomain.Node
 {
-
-    public interface IContainerConfiguration
-    {
-        void Register(IUnityContainer container);
-    }
-
     public class GridDomainNode : IGridDomainNode
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();

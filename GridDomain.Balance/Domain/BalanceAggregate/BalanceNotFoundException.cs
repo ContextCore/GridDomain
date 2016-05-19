@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Balance
+namespace GridDomain.Balance.Domain.BalanceAggregate
 {
     public class BalanceNotFoundException : Exception
     {

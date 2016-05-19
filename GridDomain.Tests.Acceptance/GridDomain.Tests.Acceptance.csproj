@@ -183,7 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BalanceChangePlan.cs" />
-    <Compile Include="BuysSubscriptionSaga.cs" />
+    <Compile Include="BuySubscriptionSagaTests.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="EventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
@@ -214,6 +214,7 @@
     <Compile Include="Persistence\DataGenerator.cs" />
     <Compile Include="Persistence\KnownConstructorParameter.cs" />
     <Compile Include="ReadModelConcurrentBuild\Cluster_Given_balance_change_plan_When_executing.cs" />
+    <Compile Include="ReadModelConcurrentBuild\CorruptedPlanException.cs" />
     <Compile Include="ReadModelConcurrentBuild\Single_System_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="Persistence\AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />

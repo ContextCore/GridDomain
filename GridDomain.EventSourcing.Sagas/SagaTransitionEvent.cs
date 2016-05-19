@@ -1,7 +1,6 @@
 using System;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
+namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaTransitionEvent<TState,TTransition> : DomainEvent
     {

@@ -2,7 +2,7 @@
 using NLog;
 using NUnit.Framework;
 
-namespace GridDomain.Domain.Tests
+namespace GridDomain.Tests
 {
     [SetUpFixture]
     public class TestsClogalConfig

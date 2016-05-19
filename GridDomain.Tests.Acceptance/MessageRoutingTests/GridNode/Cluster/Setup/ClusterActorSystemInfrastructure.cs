@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Akka.Actor;
 using GridDomain.Node;
@@ -6,7 +5,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
     {

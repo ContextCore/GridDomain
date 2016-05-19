@@ -1,7 +1,4 @@
-using Akka.Cluster.PubSub.Serializers.Proto;
-using GridDomain.CQRS.Messaging;
-
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
     public interface IGivenCommands<T>
     {

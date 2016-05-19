@@ -1,11 +1,11 @@
 using System;
 using CommonDomain.Persistence;
-using GridDomain.Balance.Commands;
+using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 using NLog;
 
-namespace GridDomain.Balance
+namespace GridDomain.Balance.Domain.BalanceAggregate
 {
     public class BalanceCommandsHandler : ICommandHandler<ReplenishBalanceCommand>,
                                           ICommandHandler<WithdrawalBalanceCommand>,
@@ -24,7 +24,7 @@ namespace GridDomain.Balance
         public void Handle(CreateBalanceCommand e)
         {
             _log.Debug("Handling command:" + e.ToPropsString());
-            _repository.Save(new Domain.MoneyBalance(e.BalanceId, e.BusinessId), e.Id);
+            _repository.Save(new MoneyBalance(e.BalanceId, e.BusinessId), e.Id);
         }
 
         public void Handle(ReplenishBalanceCommand e)
@@ -43,9 +43,9 @@ namespace GridDomain.Balance
             _repository.Save(balance, e.Id);
         }
 
-        private Domain.MoneyBalance LoadBalance(Guid balanceId, Guid commandId)
+        private MoneyBalance LoadBalance(Guid balanceId, Guid commandId)
         {
-            var balance = _repository.GetById<Domain.MoneyBalance>(balanceId);
+            var balance = _repository.GetById<MoneyBalance>(balanceId);
             //only aggregate factory can create balance with empty ownerId
             if (balance.OwnerId == Guid.Empty)
             {
