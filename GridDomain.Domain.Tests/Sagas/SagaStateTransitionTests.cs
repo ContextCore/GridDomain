@@ -9,6 +9,7 @@ namespace GridDomain.Tests.Sagas
     class SagaStateTransitionTests
     {
         private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
+
         public void Given_new_saga_with_state(SubscriptionRenewSaga.SubscriptionRenewSaga.States states)
         {
             var sagaState = new SagaStateAggregate<SubscriptionRenewSaga.SubscriptionRenewSaga.States,
