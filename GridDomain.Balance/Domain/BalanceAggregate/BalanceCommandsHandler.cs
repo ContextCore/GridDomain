@@ -7,6 +7,8 @@ using NLog;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate
 {
+
+
     public class BalanceCommandsHandler : ICommandHandler<ReplenishBalanceCommand>,
                                           ICommandHandler<WithdrawalBalanceCommand>,
                                           ICommandHandler<CreateBalanceCommand>

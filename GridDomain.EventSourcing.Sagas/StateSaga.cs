@@ -6,7 +6,7 @@ namespace GridDomain.EventSourcing.Sagas
 {
     //TODO: add policy for command unexpected failure handling
     public class StateSaga<TState,TTrigger,TStartMessage> : IStartBy<TStartMessage> where TTrigger : struct 
-                                                  where TState : struct
+                                                      where TState : struct
     {
         private readonly SagaStateAggregate<TState, TTrigger> _stateAggregate;
 
@@ -15,7 +15,7 @@ namespace GridDomain.EventSourcing.Sagas
         private readonly IDictionary<Type, StateMachine<TState, TTrigger>.TriggerWithParameters> _eventsToTriggersMapping
             = new Dictionary<Type, StateMachine<TState, TTrigger>.TriggerWithParameters>();
 
-        protected readonly StateMachine<TState, TTrigger> Machine;
+        internal readonly StateMachine<TState, TTrigger> Machine;
         public List<object> MessagesToDispatch  = new List<object>();
         
         public StateSaga(SagaStateAggregate<TState, TTrigger> stateAggregate)

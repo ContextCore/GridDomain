@@ -50,6 +50,7 @@
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="IStatefullSaga.cs" />
     <Compile Include="IVersionedEvent.cs" />
+    <Compile Include="NEventStoreRepositoryAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

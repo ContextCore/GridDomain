@@ -2,9 +2,22 @@
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
-
+using Saga = GridDomain.Tests.Sagas.SubscriptionRenewSaga.SubscriptionRenewSaga;
 namespace GridDomain.Tests.Sagas
 {
+
+    [TestFixture]
+    class CreateSagaGraph
+    {
+        [Test]
+        public void GEtGraph()
+        {
+            var saga = new Saga(new SagaStateAggregate<Saga.States, Saga.Triggers>(Guid.NewGuid(),Saga.States.SubscriptionSet));
+            Console.WriteLine(saga.Machine.ToDotGraph());
+        }
+    }
+
+
     [TestFixture]
     class SagaStateTransitionTests
     {
