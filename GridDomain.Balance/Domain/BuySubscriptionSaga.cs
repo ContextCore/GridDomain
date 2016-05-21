@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommonDomain.Core;
+﻿using CommonDomain.Core;
 using Stateless;
 
 namespace GridDomain.Balance.Domain
@@ -27,7 +23,7 @@ namespace GridDomain.Balance.Domain
             SubscriptionSet
         }
 
-        public StateMachine<State, Transitions> Machine;
+        public readonly StateMachine<State, Transitions> Machine;
         public BuySubscriptionSaga()
         {
             Machine = new StateMachine<State, Transitions>(State.SubscriptionExist);

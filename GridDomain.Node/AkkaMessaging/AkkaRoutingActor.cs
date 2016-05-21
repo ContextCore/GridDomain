@@ -44,6 +44,24 @@ namespace GridDomain.Node.AkkaMessaging
             _log.Trace($"Subscribing handler actor {handleActor.Path} to topic {topic}");
         }
 
+        public void Handle(CreateActorRoute msg)
+        {
+            var handleActorProps = Context.System.DI().Props(msg.ActorType);
+            var routeConfig = new RandomPool(Environment.ProcessorCount);
+
+            handleActorProps = handleActorProps.WithRouter(routeConfig);
+
+            var handleActor = Context.System.ActorOf(handleActorProps);
+
+            _log.Trace($"Create aggregate actor for {msg.ToPropsString()}");
+
+            var topic = msg.MessageType.FullName;
+
+            _distributedTransport.Ask(new Subscribe(topic, handleActor)).Wait();
+
+            _log.Trace($"Subscribing aggregate actor {handleActor.Path} to topic {topic}");
+        }
+
         private IActorRef GetWorkerActorRef(CreateRoute msg)
         {
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);

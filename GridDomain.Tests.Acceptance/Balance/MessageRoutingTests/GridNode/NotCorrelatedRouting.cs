@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         public void ConfigureRouting(ActorMessagesRouter router)
         {
             router.Route<TMsg>()
-                .To<THandler>()
+                .ToHandler<THandler>()
                 .Register();
 
             router.WaitForRouteConfiguration();

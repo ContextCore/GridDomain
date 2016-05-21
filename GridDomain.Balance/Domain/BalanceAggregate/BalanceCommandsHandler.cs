@@ -1,14 +1,15 @@
 using System;
+using System.Collections.Generic;
+using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Logging;
 using NLog;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate
 {
-
-
     public class BalanceCommandsHandler : ICommandHandler<ReplenishBalanceCommand>,
                                           ICommandHandler<WithdrawalBalanceCommand>,
                                           ICommandHandler<CreateBalanceCommand>

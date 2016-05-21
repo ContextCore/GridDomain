@@ -4,6 +4,7 @@ using GridDomain.Balance.Domain.BalanceAggregate.Events;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Balance.Node
 {
@@ -12,32 +13,31 @@ namespace GridDomain.Balance.Node
         public void Register(IMessagesRouter router)
         {
             router.Route<ReplenishBalanceCommand>()
-                     .To<BalanceCommandsHandler>()
-                     .WithCorrelation(nameof(ReplenishBalanceCommand.BalanceId))
-                  .Register();
+                  .ToAggregate<MoneyBalance>()
+            .Register();
 
             router.Route<WithdrawalBalanceCommand>()
-                     .To<BalanceCommandsHandler>()
-                     .WithCorrelation(nameof(WithdrawalBalanceCommand.BalanceId))
-                  .Register();
+                  .ToAggregate<MoneyBalance>()
+             .Register();
 
             router.Route<CreateBalanceCommand>()
-                  .To<BalanceCommandsHandler>()
-                   .WithCorrelation(nameof(CreateBalanceCommand.BalanceId))
-               .Register();
+                  .ToAggregate<MoneyBalance>()
+             .Register();
+
+
 
             router.Route<BalanceReplenishEvent>()
-                    .To<BusinessCurrentBalanceProjectionBuilder>()
+                    .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
                     .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
                   .Register();
 
             router.Route<BalanceCreatedEvent>()
-                     .To<BusinessCurrentBalanceProjectionBuilder>()
+                     .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
                       .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
                    .Register();
 
             router.Route<BalanceWithdrawalEvent>()
-                   .To<BusinessCurrentBalanceProjectionBuilder>()
+                   .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
                     .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
                 .Register();
         }

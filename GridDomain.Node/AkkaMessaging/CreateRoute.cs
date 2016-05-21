@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
+using CommonDomain.Core;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
@@ -58,6 +59,41 @@ namespace GridDomain.Node.AkkaMessaging
         public bool Equals(CreateRoute other)
         {
             return other.HandlerType == HandlerType && other.MessageType == MessageType;
+        }
+    }
+
+    public class CreateActorRoute
+    {
+        public Type MessageType { get; }
+        public Type ActorType { get; }
+        
+        public CreateActorRoute(Type messageType, Type actorType)
+        {
+            MessageType = messageType;
+            ActorType = actorType;
+
+            Check();
+        }
+
+        public static CreateActorRoute New<TMessage, TAggregate>() where TAggregate: AggregateBase
+        {
+            return new CreateActorRoute(typeof(TMessage), typeof(TAggregate));
+        }
+        private void Check()
+        {
+            CheckHandler();
+        }
+
+        private void CheckHandler()
+        {
+            var handlerType = typeof (AggregateActor<>).MakeGenericType(MessageType);
+            if (!handlerType.IsAssignableFrom(ActorType))
+                throw new InvalidHandlerType(ActorType, MessageType);
+        }
+
+        public bool Equals(CreateRoute other)
+        {
+            return other.HandlerType == ActorType && other.MessageType == MessageType;
         }
     }
 }

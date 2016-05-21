@@ -167,6 +167,7 @@
     <Compile Include="Actors\ActorPublishAdapter.cs" />
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
+    <Compile Include="AkkaMessaging\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
     <Compile Include="AkkaMessaging\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
