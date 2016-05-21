@@ -182,6 +182,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateCommandsRouting.cs" />
     <Compile Include="Balance\BalanceChangePlan.cs" />
     <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
     <Compile Include="CompositionRootTests.cs" />
@@ -217,7 +218,6 @@
     <Compile Include="Balance\ReadModelConcurrentBuild\Single_System_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="Persistence\AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />
-    <Compile Include="Persistence\CommandFlowProcessing\LoggingPipelineHook.cs" />
     <Compile Include="Persistence\TestDbTools.cs" />
     <Compile Include="Balance\BalancePersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

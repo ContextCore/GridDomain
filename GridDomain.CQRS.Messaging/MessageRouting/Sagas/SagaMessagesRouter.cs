@@ -51,7 +51,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting.Sagas
             where TConreteSaga : TSaga, IMessageConsumer<TMessage>
         {
             _messageRouter.Route<TMessage>()
-                .To<SagaMessageHandler<TMessage, TConreteSaga>>()
+                .ToHandler<SagaMessageHandler<TMessage, TConreteSaga>>()
                 .Register();
         }
     }

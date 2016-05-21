@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
         [SetUp]
         public void Init()
         {
-            _balanceManipulationPlans = GivenBalancePlan(10);
+            _balanceManipulationPlans = GivenBalancePlan(1);
             _createBalanceCommands = When_executed_create_balance_commands(_balanceManipulationPlans);
             When_executed_change_balances(_balanceManipulationPlans);
         }

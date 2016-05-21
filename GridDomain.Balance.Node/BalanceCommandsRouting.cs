@@ -25,7 +25,6 @@ namespace GridDomain.Balance.Node
              .Register();
 
 
-
             router.Route<BalanceReplenishEvent>()
                     .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
                     .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))

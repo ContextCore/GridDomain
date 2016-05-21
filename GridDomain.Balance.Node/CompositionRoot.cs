@@ -5,6 +5,7 @@ using GridDomain.Balance;
 using GridDomain.Balance.Domain.BalanceAggregate;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.ReadModel;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
@@ -27,6 +28,8 @@ namespace GridDomain.Balance.Node
                                             new SqlReadModelCreator<BusinessBalance>(contextFactory))));
 
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
+
+            container.RegisterType<AggregateActor<MoneyBalance>, BalanceActor>();
         }
     }
 }

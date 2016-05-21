@@ -16,7 +16,7 @@ namespace GridDomain.Node.AkkaMessaging
             _routingRegistrator = routingRegistrator;
         }
 
-        public IHandlerBuilder<T, THandler> To<THandler>() where THandler : IHandler<T>
+        public IHandlerBuilder<T, THandler> ToHandler<THandler>() where THandler : IHandler<T>
         {
             return new AkkaHandlerBuilder<T, THandler>(_routingRegistrator);
         }
