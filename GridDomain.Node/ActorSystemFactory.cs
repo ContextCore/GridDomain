@@ -19,8 +19,7 @@ namespace GridDomain.Node
 
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
         {
-            var actorSystem = ActorSystem.Create(akkaConf.Name,
-                @"akka {  
+            var hoconConfig = @"akka {  
                         actor {
                                  provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
                                  loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
@@ -45,7 +44,70 @@ namespace GridDomain.Node
                                        
                                     }
                                 }
-                       ");
+
+                        akka.persistence{
+
+                        journal {
+                            sql-server {
+
+                                # qualified type name of the SQL Server persistence journal actor
+                                class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
+
+                                # dispatcher used to drive journal actor
+                                plugin-dispatcher = ""akka.actor.default-dispatcher""
+
+                                # connection string used for database access
+                                connection-string = """+ akkaConf.JournalConnectionString + @"""
+
+                                # default SQL commands timeout
+                                connection-timeout = 30s
+
+                                # SQL server schema name to table corresponding with persistent journal
+                                schema-name = dbo
+
+                                # SQL server table corresponding with persistent journal
+                                table-name = EventJournal
+
+                                # should corresponding journal table be initialized automatically
+                                auto-initialize = on
+
+                                # timestamp provider used for generation of journal entries timestamps
+                                timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
+
+                                # metadata table
+                                metadata-table-name = Metadata
+                            }
+                        }
+
+                        snapshot-store {
+                            sql-server {
+
+                                # qualified type name of the SQL Server persistence journal actor
+                                class = ""Akka.Persistence.SqlServer.Snapshot.SqlServerSnapshotStore, Akka.Persistence.SqlServer""
+
+                                # dispatcher used to drive journal actor
+                                plugin-dispatcher = ""akka.actor.default-dispatcher""
+
+                                # connection string used for database access
+                                connection-string = """+ akkaConf.SnapshotConnectionString + @"""
+
+                                # default SQL commands timeout
+                                connection-timeout = 30s
+
+                                # SQL server schema name to table corresponding with persistent journal
+                                schema-name = dbo
+
+                                # SQL server table corresponding with persistent journal
+                                table-name = SnapshotStore
+
+                                # should corresponding journal table be initialized automatically
+                                auto-initialize = on
+                    }
+                        }
+                    }
+
+                       ";
+            var actorSystem = ActorSystem.Create(akkaConf.Name, hoconConfig);
             return actorSystem;
         }
 

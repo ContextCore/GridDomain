@@ -39,8 +39,9 @@ namespace GridDomain.Tests.Acceptance
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
 
-            AkkaConfiguration akkaConf = new AkkaConfiguration("LocalSystem", 8001, "127.0.0.1",AkkaConfiguration.LogVerbosity.Error);
-           
+            AkkaConfiguration akkaConf = new AutoTestAkkaConfiguration();
+
+
             GridNode = GreateGridDomainNode(akkaConf, autoTestGridDomainConfiguration);
 
             GridNode.Start(autoTestGridDomainConfiguration);

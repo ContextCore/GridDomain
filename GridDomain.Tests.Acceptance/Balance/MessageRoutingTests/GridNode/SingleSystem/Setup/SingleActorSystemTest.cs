@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
     {
         protected override SingleActorSystemInfrastructure CreateInfrastructure()
         {
-            return new SingleActorSystemInfrastructure(new AkkaConfiguration("test", 9000, "127.0.0.1"));
+            return new SingleActorSystemInfrastructure(new AutoTestAkkaConfiguration());
 
         }
         protected override IGivenCommands<TestMessage> GivenCommands()

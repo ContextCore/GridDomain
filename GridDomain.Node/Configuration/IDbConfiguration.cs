@@ -6,4 +6,10 @@ namespace GridDomain.Node.Configuration
         string EventStoreConnectionString { get; }
         string LogsConnectionString { get; }
     }
+
+    public interface IAkkaDbConfiguration
+    {
+        string SnapshotConnectionString { get; }
+        string JournalConnectionString { get; }
+    }
 }

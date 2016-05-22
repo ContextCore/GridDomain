@@ -72,24 +72,24 @@ namespace GridDomain.Node.AkkaMessaging
             MessageType = messageType;
             ActorType = actorType;
 
-            Check();
+       //     Check();
         }
 
         public static CreateActorRoute New<TMessage, TAggregate>() where TAggregate: AggregateBase
         {
             return new CreateActorRoute(typeof(TMessage), typeof(TAggregate));
         }
-        private void Check()
-        {
-            CheckHandler();
-        }
+        //private void Check()
+        //{
+        //    CheckHandler();
+        //}
 
-        private void CheckHandler()
-        {
-            var handlerType = typeof (AggregateActor<>).MakeGenericType(MessageType);
-            if (!handlerType.IsAssignableFrom(ActorType))
-                throw new InvalidHandlerType(ActorType, MessageType);
-        }
+        //private void CheckHandler()
+        //{
+        //    var handlerType = typeof(AggregateActor<>).MakeGenericType(ActorType);
+        //  //  if (!handlerType.IsAssignableFrom(ActorType))
+        //     //   throw new InvalidHandlerType(ActorType, MessageType);
+        //}
 
         public bool Equals(CreateRoute other)
         {

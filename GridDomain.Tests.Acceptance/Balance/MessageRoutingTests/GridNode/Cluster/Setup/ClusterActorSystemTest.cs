@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
     {
         protected override ClusterActorSystemInfrastructure CreateInfrastructure()
         {
-            return new ClusterActorSystemInfrastructure(new AkkaConfiguration("testCluster", 8100, "127.0.0.1"));
+            return new ClusterActorSystemInfrastructure(new AutoTestAkkaConfiguration());
         }
 
         protected override IGivenCommands<ClusterMessage> GivenCommands()

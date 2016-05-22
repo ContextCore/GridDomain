@@ -37,12 +37,6 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             
             public void Handle(DiagMsg m)
             {
-                //m.TicksStartProcess = watch.ElapsedTicks;
-                //m.ActorHashCode = this.GetHashCode();
-                //m.Thread = Thread.CurrentThread.ManagedThreadId;
-                //Thread.Sleep(100);
-                //m.TicksEndProcess = watch.ElapsedMilliseconds;
-                //Sender.Tell(m);
                 Console.WriteLine( m.TicksStartProcess = watch.ElapsedTicks);
                 m.ActorHashCode = this.GetHashCode();
                 m.Thread = Thread.CurrentThread.ManagedThreadId;
@@ -57,8 +51,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         [SetUp]
         public void TestsRouting()
         {
-            _system = ActorSystemFactory.CreateActorSystem(new AkkaConfiguration("hashing", 8100, "127.0.0.1",
-                AkkaConfiguration.LogVerbosity.Trace));
+            _system = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
 
             var actor = _system.ActorOf(Props.Create<TimeLoggerActor>(TestActor)
                                       .WithRouter(new ConsistentHashingPool(2).WithHashMapping(m => ((DiagMsg)m).HashKey)));

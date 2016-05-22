@@ -10,6 +10,24 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
 {
+
+    class AutoTestAkkaNetworkConfiguration: IAkkaNetworkConfiguration
+    {
+        public string Name => "LocalSystem";
+        public string Host => "127.0.0.1";
+        public int PortNumber => 8080;
+    }
+
+    class AutoTestAkkaConfiguration : AkkaConfiguration
+    {
+        public AutoTestAkkaConfiguration():base(new AutoTestAkkaNetworkConfiguration(), 
+                                                new AutoTestAkkaDbConfiguration(),
+                                                LogVerbosity.Warning)
+        {
+            
+        }
+    }
+
     [TestFixture]
     public class CompositionRootTests
     {
@@ -19,7 +37,7 @@ namespace GridDomain.Tests.Acceptance
             var container = new UnityContainer();
             CompositionRoot.Init(container, 
                                  ActorSystemFactory.CreateActorSystem(
-                                      new AkkaConfiguration("LocalSystem", 8001, "127.0.0.1", AkkaConfiguration.LogVerbosity.Error)),
+                                      new AutoTestAkkaConfiguration()),
                                  new LocalDbConfiguration());
 
 
@@ -37,8 +55,7 @@ namespace GridDomain.Tests.Acceptance
             var localDbConfiguration = new LocalDbConfiguration();
 
             CompositionRoot.Init(container,
-                                 ActorSystemFactory.CreateActorSystem(
-                                      new AkkaConfiguration("LocalSystem", 8001, "127.0.0.1", AkkaConfiguration.LogVerbosity.Error)),
+                                 ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()),
                                  localDbConfiguration);
 
 
