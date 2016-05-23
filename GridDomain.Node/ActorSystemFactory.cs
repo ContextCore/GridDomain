@@ -66,7 +66,7 @@ namespace GridDomain.Node
                                 schema-name = dbo
 
                                 # SQL server table corresponding with persistent journal
-                                table-name = EventJournal
+                                table-name = """ + akkaConf.JournalTableName + @"""
 
                                 # should corresponding journal table be initialized automatically
                                 auto-initialize = on
@@ -75,7 +75,7 @@ namespace GridDomain.Node
                                 timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
 
                                 # metadata table
-                                metadata-table-name = Metadata
+                                metadata-table-name = """ + akkaConf.MetadataTableName + @"""
                             }
                         }
 
@@ -89,7 +89,7 @@ namespace GridDomain.Node
                                 plugin-dispatcher = ""akka.actor.default-dispatcher""
 
                                 # connection string used for database access
-                                connection-string = """+ akkaConf.SnapshotConnectionString + @"""
+                                connection-string = """ + akkaConf.SnapshotConnectionString + @"""
 
                                 # default SQL commands timeout
                                 connection-timeout = 30s
@@ -98,7 +98,7 @@ namespace GridDomain.Node
                                 schema-name = dbo
 
                                 # SQL server table corresponding with persistent journal
-                                table-name = SnapshotStore
+                                table-name = """ + akkaConf.SnapshotTableName + @"""
 
                                 # should corresponding journal table be initialized automatically
                                 auto-initialize = on

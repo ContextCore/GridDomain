@@ -18,5 +18,9 @@ namespace GridDomain.Tests.Acceptance
                 @"Data Source=(localdb)\\v11.0;Initial Catalog=AutoTestAkka;Integrated Security = true"; 
         public string JournalConnectionString =>
               @"Data Source=(localdb)\\v11.0;Initial Catalog=AutoTestAkka;Integrated Security = true";
+
+        public string MetadataTableName => "Metadata";
+        public string JournalTableName => "Jornal";
+        public string SnapshotTableName => "Snapshots";
     }
 }

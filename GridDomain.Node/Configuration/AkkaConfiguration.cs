@@ -18,9 +18,11 @@ namespace GridDomain.Node.Configuration
         public string JournalConnectionString { get; }
         public string SnapshotConnectionString { get; }
         public string LogLevel { get; }
+        public string MetadataTableName { get; set; }
+        public string JournalTableName { get; set; }
+        public string SnapshotTableName { get; set; }
 
 
-        
         public AkkaConfiguration(IAkkaNetworkConfiguration networkConf,
                                  IAkkaDbConfiguration dbConf,
                                  LogVerbosity logLevel = LogVerbosity.Warning

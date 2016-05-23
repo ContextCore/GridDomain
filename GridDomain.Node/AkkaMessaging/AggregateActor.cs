@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Akka.Actor;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
@@ -7,6 +8,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.AkkaMessaging
 {
+
     public abstract class AggregateActor<TAggregate>: PersistentActor where TAggregate : AggregateBase
     {
         protected TAggregate Aggregate;
