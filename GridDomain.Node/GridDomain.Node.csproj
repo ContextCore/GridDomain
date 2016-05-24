@@ -177,6 +177,10 @@
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActor.cs" />
+    <Compile Include="AkkaMessaging\AggregateActorName.cs" />
+    <Compile Include="AkkaMessaging\AggregateHostActor.cs" />
+    <Compile Include="AkkaMessaging\AkkaAggregateCommandsBuilder.cs" />
+    <Compile Include="AkkaMessaging\CreateActorRoute.cs" />
     <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
     <Compile Include="AkkaMessaging\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
@@ -194,6 +198,7 @@
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaMessaging\MetadataEntry.cs" />
     <Compile Include="AkkaMessaging\MetadataMessage.cs" />
+    <Compile Include="AkkaMessaging\UnknownMessageRecievedException.cs" />
     <Compile Include="DomainEventsPublishing\EventBusPublishingAdapter.cs" />
     <Compile Include="DomainEventsPublishing\EventBusSubscriberAdapter.cs" />
     <Compile Include="Configuration\IDbConfiguration.cs" />

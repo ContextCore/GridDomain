@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Akka.Actor;
 using Akka.Persistence;
 using CommonDomain;
@@ -8,15 +9,20 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-
+    /// <summary>
+    /// Name should be parse by AggregateActorName
+    /// </summary>
+    /// <typeparam name="TAggregate"></typeparam>
     public abstract class AggregateActor<TAggregate>: PersistentActor where TAggregate : AggregateBase
     {
         protected TAggregate Aggregate;
 
-        public AggregateActor(Guid id, AggregateFactory factory)
+        public AggregateActor(AggregateFactory factory)
         {
-            PersistenceId = typeof(TAggregate).Name + id;
-            Aggregate = factory.Build<TAggregate>(id);
+            var conventionName = AggregateActorName.Parse<TAggregate>(Self.Path.Name);
+
+            PersistenceId = conventionName.ToString();
+            Aggregate = factory.Build<TAggregate>(conventionName.Id);
         }
 
         protected override bool ReceiveRecover(object message)

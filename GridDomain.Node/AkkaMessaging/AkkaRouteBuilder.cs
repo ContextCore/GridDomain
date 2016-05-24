@@ -21,9 +21,10 @@ namespace GridDomain.Node.AkkaMessaging
             return new AkkaHandlerBuilder<T, THandler>(_routingRegistrator);
         }
 
-        public IAggregateCommandRouteBuilder<T, TAggregate> ToAggregate<TAggregate>() where TAggregate : AggregateBase
+        public IAggregateCommandRouteBuilder<T, TAggregate> ToAggregate<TAggregate>() 
+            where TAggregate : AggregateBase 
         {
-            return new AkkaAggregateCommandsBuilder<T,TAggregate>(_routingActorRegistrator);
+            return new AkkaAggregateCommandsBuilder<T,TAggregate, TAggregateActor>(_routingActorRegistrator);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public void Handle(CreateActorRoute msg)
         {
-            var aggregateActorOpenType = typeof (AggregateActor<>);
+            var aggregateActorOpenType = typeof (AggregateHostActor<,>);
             var actorType = aggregateActorOpenType.MakeGenericType(msg.ActorType);
 
             var handleActorProps = Context.System.DI().Props(actorType);
