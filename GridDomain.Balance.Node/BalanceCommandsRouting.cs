@@ -13,15 +13,15 @@ namespace GridDomain.Balance.Node
         public void Register(IMessagesRouter router)
         {
             router.Route<ReplenishBalanceCommand>()
-                  .ToAggregate<MoneyBalance>()
+                  .To<MoneyBalance>()
             .Register();
 
             router.Route<WithdrawalBalanceCommand>()
-                  .ToAggregate<MoneyBalance>()
+                  .To<MoneyBalance>()
              .Register();
 
             router.Route<CreateBalanceCommand>()
-                  .ToAggregate<MoneyBalance>()
+                  .To<MoneyBalance>()
              .Register();
 
 

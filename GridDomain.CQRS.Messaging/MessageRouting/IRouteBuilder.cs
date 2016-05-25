@@ -5,10 +5,10 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     public interface IRouteBuilder<TMessage>
     {
         IHandlerBuilder<TMessage, THandler> ToHandler<THandler>() where THandler : IHandler<TMessage>;
-        IAggregateCommandRouteBuilder<TMessage, TAggregate> ToAggregate<TAggregate>() where TAggregate : AggregateBase;
+        ICommandRouteBuilder<TMessage, TAggregate> To<TAggregate>() where TAggregate : AggregateBase;
     }
 
-    public interface IAggregateCommandRouteBuilder<TMessage, TAggregate> where TAggregate : AggregateBase
+    public interface ICommandRouteBuilder<TMessage, TAggregate> where TAggregate : AggregateBase
     {
         void Register();
     }

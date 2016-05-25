@@ -37,7 +37,8 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
             var container = new UnityContainer();
             var propsResolver = new UnityDependencyResolver(container, System);
             InitContainer(container, notifyActor);
-            Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()));
+            Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()),
+                                             container.Resolve<IAggregateActorLocator>());
 
             Publisher = new AkkaPublisher(System);
         }
@@ -46,6 +47,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         {
             container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(actor));
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
+            container.RegisterInstance<IAggregateActorLocator>(AggregateActorLocator.Instance);
         }
 
 

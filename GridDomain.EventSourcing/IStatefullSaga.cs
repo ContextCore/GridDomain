@@ -1,4 +1,5 @@
-﻿using CommonDomain;
+﻿using System.Collections.Generic;
+using CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
@@ -6,4 +7,9 @@ namespace GridDomain.EventSourcing
     {
         IAggregate State { get; }
     }
+
+    //public interface ICommandHandler<in TCommand>
+    //{
+    //    IReadOnlyCollection<DomainEvent> Execute(TCommand command);
+    //}
 }

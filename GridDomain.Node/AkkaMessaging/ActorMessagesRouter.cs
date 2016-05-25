@@ -12,16 +12,18 @@ namespace GridDomain.Node.AkkaMessaging
     {
         private readonly TypedMessageActor<CreateRoute> _routingTypedMessageActor;
         private readonly TypedMessageActor<CreateActorRoute> _routingActorTypedMessageActor;
+        private readonly IAggregateActorLocator _actorLocator;
 
-        public ActorMessagesRouter(IActorRef routingActor)
+        public ActorMessagesRouter(IActorRef routingActor, IAggregateActorLocator actorLocator)
         {
+            _actorLocator = actorLocator;
             _routingTypedMessageActor = new TypedMessageActor<CreateRoute>(routingActor);
             _routingActorTypedMessageActor = new TypedMessageActor<CreateActorRoute>(routingActor);
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()
         {
-            return new AkkaRouteBuilder<TMessage>(_routingTypedMessageActor,_routingActorTypedMessageActor);
+            return new AkkaRouteBuilder<TMessage>(_routingTypedMessageActor, _routingActorTypedMessageActor, _actorLocator);
         }
         //TODO:replace with wait until event notifications
         public void WaitForRouteConfiguration()

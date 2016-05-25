@@ -8,10 +8,13 @@ namespace GridDomain.Node.AkkaMessaging
     {
         private readonly IHandler<CreateRoute> _routingRegistrator;
         private readonly IHandler<CreateActorRoute> _routingActorRegistrator;
+        private readonly IAggregateActorLocator _actorLocator;
 
         public AkkaRouteBuilder(IHandler<CreateRoute> routingRegistrator,
-                                IHandler<CreateActorRoute> routingActorRegistrator )
+                                IHandler<CreateActorRoute> routingActorRegistrator,
+                                IAggregateActorLocator actorLocator)
         {
+            _actorLocator = actorLocator;
             _routingActorRegistrator = routingActorRegistrator;
             _routingRegistrator = routingRegistrator;
         }
@@ -21,10 +24,10 @@ namespace GridDomain.Node.AkkaMessaging
             return new AkkaHandlerBuilder<T, THandler>(_routingRegistrator);
         }
 
-        public IAggregateCommandRouteBuilder<T, TAggregate> ToAggregate<TAggregate>() 
+        public ICommandRouteBuilder<T, TAggregate> To<TAggregate>() 
             where TAggregate : AggregateBase 
         {
-            return new AkkaAggregateCommandsBuilder<T,TAggregate, TAggregateActor>(_routingActorRegistrator);
+            return new AkkaCommandsBuilder<T,TAggregate>(_actorLocator,_routingActorRegistrator);
         }
     }
 }

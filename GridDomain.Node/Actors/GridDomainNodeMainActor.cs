@@ -39,7 +39,7 @@ namespace GridDomain.Node.Actors
             ActorSystem system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
 
-            var actorMessagesRouter = new ActorMessagesRouter(routingActor);
+            var actorMessagesRouter = new ActorMessagesRouter(routingActor, AggregateActorLocator.Instance);
 
             _messageRouting.Register(actorMessagesRouter);
 

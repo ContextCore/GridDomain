@@ -28,6 +28,8 @@ namespace GridDomain.Node
             container.RegisterInstance(publisher);
             RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
+            //TODO: replace dirty hack
+            container.RegisterInstance<IAggregateActorLocator>(AggregateActorLocator.Instance);
         }
 
         public static void RegisterEventStore(IUnityContainer container, IDbConfiguration conf)

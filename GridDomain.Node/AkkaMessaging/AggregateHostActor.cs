@@ -8,18 +8,19 @@ using CommonDomain.Core;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class AggregateHostActor<TAggregate,TAggregateActor> : ReceiveActor
-        where TAggregateActor : AggregateActor<TAggregate>
+    public class AggregateHostActor<TAggregate> : ReceiveActor
         where TAggregate: AggregateBase
     {
-        protected IDictionary<Guid,IActorRef> Children;
+        private readonly IDictionary<Guid,IActorRef> _children = new Dictionary<Guid, IActorRef>();
 
-        protected void TellTo<T>(T message, Guid correlationId)
+        protected void TellTo<T>(T message, Guid aggregateId)
         {
             IActorRef knownChild;
-            if (!Children.TryGetValue(correlationId, out knownChild))
+            if (!_children.TryGetValue(aggregateId, out knownChild))
             {
-                knownChild = Children[correlationId] = Context.ActorOf(Context.DI().Props<TAggregateActor>());
+                var props = Context.DI().Props<AggregateActor<TAggregate>>();
+                var name = AggregateActorName.New<TAggregate>(aggregateId);
+                knownChild = _children[aggregateId] = Context.ActorOf(props, name.ToString());
             }
             knownChild.Tell(message);
         }        

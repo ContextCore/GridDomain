@@ -1,6 +1,7 @@
 using System;
 using CommonDomain.Core;
 using GridDomain.Balance.Domain.BalanceAggregate.Events;
+using GridDomain.CQRS;
 using GridDomain.Logging;
 using NLog;
 using NMoneys;

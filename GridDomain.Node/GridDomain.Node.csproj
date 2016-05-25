@@ -179,7 +179,7 @@
     <Compile Include="AkkaMessaging\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
     <Compile Include="AkkaMessaging\AggregateHostActor.cs" />
-    <Compile Include="AkkaMessaging\AkkaAggregateCommandsBuilder.cs" />
+    <Compile Include="AkkaMessaging\AkkaCommandsBuilder.cs" />
     <Compile Include="AkkaMessaging\CreateActorRoute.cs" />
     <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
     <Compile Include="AkkaMessaging\TypedMessageActor.cs" />

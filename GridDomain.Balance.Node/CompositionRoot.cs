@@ -29,7 +29,7 @@ namespace GridDomain.Balance.Node
 
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
 
-            container.RegisterType<AggregateActor<MoneyBalance>, BalanceActor>();
+            container.RegisterType<AggregateActor<MoneyBalance>>();
         }
     }
 }

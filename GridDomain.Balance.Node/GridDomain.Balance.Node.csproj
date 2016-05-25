@@ -119,8 +119,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\BalanceActor.cs" />
-    <Compile Include="Actors\BalanceHostActor.cs" />
+    <Compile Include="MoneyBalanceCommandsHandler.cs" />
     <Compile Include="BalanceCommandsRouting.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Program.cs" />

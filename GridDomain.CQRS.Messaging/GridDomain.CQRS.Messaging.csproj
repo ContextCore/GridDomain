@@ -91,6 +91,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageRouting\AggregateCommandHandler.cs" />
+    <Compile Include="MessageRouting\AggregateCommandsExecutor.cs" />
+    <Compile Include="MessageRouting\IAggregateCommandsHandler.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IMessageConsumer.cs" />
     <Compile Include="IMessageFilter.cs" />

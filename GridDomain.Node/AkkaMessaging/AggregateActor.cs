@@ -1,10 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Akka.Actor;
+using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
+using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.AkkaMessaging
@@ -17,12 +23,12 @@ namespace GridDomain.Node.AkkaMessaging
     {
         protected TAggregate Aggregate;
 
-        public AggregateActor(AggregateFactory factory)
+        public AggregateActor(IAggregateCommandsHandler<TAggregate> handler, AggregateFactory factory, IPublisher publisher)
         {
-            var conventionName = AggregateActorName.Parse<TAggregate>(Self.Path.Name);
-
-            PersistenceId = conventionName.ToString();
-            Aggregate = factory.Build<TAggregate>(conventionName.Id);
+            _handler = handler;
+            _publisher = publisher;
+            PersistenceId = Self.Path.Name;
+            Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
         }
 
         protected override bool ReceiveRecover(object message)
@@ -37,21 +43,13 @@ namespace GridDomain.Node.AkkaMessaging
 
         protected override bool ReceiveCommand(object message)
         {
-            var commandType = message.GetType();
-            Action<object> handler;
-            if (!commandHandlers.TryGetValue(commandType, out handler))
-                return false;
-
-            handler.Invoke(message);
+            var events = _handler.Execute(Aggregate, (ICommand) message);
+            PersistAll(events, e => _publisher.Publish(e));
             return true;
         }
 
-        private IDictionary<Type, Action<object>> commandHandlers = new Dictionary<Type, Action<object>>();
-        protected void RegisterCommand<TCommand>(Action<TCommand> commandPass)
-        {
-            commandHandlers[typeof(TCommand)] = cmd => commandPass((TCommand)cmd);
-        }
-
+        private readonly IPublisher _publisher;
+        private readonly IAggregateCommandsHandler<TAggregate> _handler;
         public override string PersistenceId { get; } 
     }
 }
