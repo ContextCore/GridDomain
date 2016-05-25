@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         {
             container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(actor));
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            container.RegisterInstance<IAggregateActorLocator>(AggregateActorLocator.Instance);
+            container.RegisterType<IAggregateActorLocator,DefaultAggregateActorLocator>();
         }
 
 

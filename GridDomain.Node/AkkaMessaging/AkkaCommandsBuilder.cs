@@ -10,28 +10,15 @@ namespace GridDomain.Node.AkkaMessaging
 {
    public interface IAggregateActorLocator
    {
-       Type GetActorTypeFor<T>();
+       Type GetActorTypeFor<T>() where T : AggregateBase;
    }
 
-    public class AggregateActorLocator : IAggregateActorLocator
+    public class DefaultAggregateActorLocator : IAggregateActorLocator
     {
-        public void Register<TAggregate, TActor>() where TAggregate : AggregateBase
-                                                   where TActor: AggregateActor<TAggregate>
+        public Type GetActorTypeFor<T>() where T : AggregateBase
         {
-            _aggregateToActors[typeof (TAggregate)] = typeof (TActor);
+            return typeof(AggregateActor<T>);
         }
-
-        private readonly IDictionary<Type,Type> _aggregateToActors = new Dictionary<Type, Type>(); 
-        public Type GetActorTypeFor<T>()
-        {
-            Type actorType;
-            if(!_aggregateToActors.TryGetValue(typeof (T), out actorType))
-                throw new UnregisteredAggregateActorLookupException(typeof(T));
-            return actorType; 
-        }
-
-        //Replace with discover
-        public static AggregateActorLocator Instance => new AggregateActorLocator();
     }
 
     public class UnregisteredAggregateActorLookupException : Exception

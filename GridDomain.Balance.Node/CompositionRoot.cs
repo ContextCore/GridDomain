@@ -4,6 +4,7 @@ using System;
 using GridDomain.Balance;
 using GridDomain.Balance.Domain.BalanceAggregate;
 using GridDomain.Balance.ReadModel;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
@@ -30,6 +31,9 @@ namespace GridDomain.Balance.Node
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
 
             container.RegisterType<AggregateActor<MoneyBalance>>();
+            container.RegisterType<AggregateHostActor<MoneyBalance>>();
+            container.RegisterType<ICommandAggregateLocator<MoneyBalance>,MoneyBalanceCommandsHandler>();
+            container.RegisterType<IAggregateCommandsHandler<MoneyBalance>,MoneyBalanceCommandsHandler>();
         }
     }
 }

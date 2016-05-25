@@ -7,20 +7,9 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    //public class BalanceActor : AggregateActor<MoneyBalance>
-    //{
-    //    public BalanceActor(AggregateFactory factory, IPublisher publisher) : base(factory,publisher)
-    //    {
-    //        RegisterCommand<CreateBalanceCommand>(cmd => Aggregate = new MoneyBalance(cmd.BalanceId, cmd.BusinessId));
-    //        RegisterCommand<ReplenishBalanceCommand>(cmd => Aggregate.Replenish(cmd.Amount));
-    //        RegisterCommand<WithdrawalBalanceCommand>(cmd => Aggregate.Withdrawal(cmd.Amount));
-    //    }
-    //}
-
-
-    class MoneyBalanceCommandsHandler : AggregateCommandsExecutor<MoneyBalance>
+    public class MoneyBalanceCommandsHandler : AggregateCommandsHandler<MoneyBalance>
     {
-        public MoneyBalanceCommandsHandler(Func<MoneyBalance> aggregateSelector) : base(aggregateSelector)
+        public MoneyBalanceCommandsHandler()
         {
             Map<CreateBalanceCommand>(cmd => cmd.BalanceId,
                                       cmd => new MoneyBalance(cmd.BalanceId, cmd.BusinessId));

@@ -19,37 +19,36 @@ namespace GridDomain.Node.AkkaMessaging
     /// Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TAggregate"></typeparam>
-    public abstract class AggregateActor<TAggregate>: PersistentActor where TAggregate : AggregateBase
+    public class AggregateActor<TAggregate>: PersistentActor where TAggregate : AggregateBase
     {
-        protected TAggregate Aggregate;
+        private TAggregate _aggregate;
+        private readonly IPublisher _publisher;
+        private readonly IAggregateCommandsHandler<TAggregate> _handler;
+        public override string PersistenceId { get; }
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler, AggregateFactory factory, IPublisher publisher)
         {
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
-            Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
+            _aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
         }
 
         protected override bool ReceiveRecover(object message)
         {
             if (message is SnapshotOffer)
             {
-                Aggregate = (TAggregate) (message as SnapshotOffer).Snapshot;
+                _aggregate = (TAggregate) (message as SnapshotOffer).Snapshot;
             }
-            else ((IAggregate)Aggregate).ApplyEvent(message);
+            else ((IAggregate)_aggregate).ApplyEvent(message);
             return true;
         }
 
         protected override bool ReceiveCommand(object message)
         {
-            var events = _handler.Execute(Aggregate, (ICommand) message);
+            var events = _handler.Execute(_aggregate, (ICommand) message);
             PersistAll(events, e => _publisher.Publish(e));
             return true;
         }
-
-        private readonly IPublisher _publisher;
-        private readonly IAggregateCommandsHandler<TAggregate> _handler;
-        public override string PersistenceId { get; } 
     }
 }

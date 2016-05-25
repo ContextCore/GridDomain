@@ -119,7 +119,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MoneyBalanceCommandsHandler.cs" />
     <Compile Include="BalanceCommandsRouting.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Program.cs" />

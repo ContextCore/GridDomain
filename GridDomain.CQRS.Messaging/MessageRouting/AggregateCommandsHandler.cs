@@ -5,28 +5,18 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public class AggregateCommandsExecutor<T> where T : AggregateBase
+    public class AggregateCommandsHandler<T>: IAggregateCommandsHandler<T>,
+                                              ICommandAggregateLocator<T>
+        where T : AggregateBase
     {
-        private readonly Func<T> _aggregateProducer;
-
-        public AggregateCommandsExecutor(Func<T> aggregateProducer)
-        {
-            _aggregateProducer = aggregateProducer;
-        }
-
         public Guid GetAggregateId(ICommand command)
         {
-            return Handler(command).GetId(command);
+            return GetHandler(command).GetId(command);
         }
 
-        private AggregateCommandHandler<T> Handler(ICommand cmd)
+        private AggregateCommandHandler<T> GetHandler(ICommand cmd)
         {
             return _commandHandlers[cmd.GetType()];
-        }
-
-        public IReadOnlyCollection<DomainEvent> Execute(ICommand command)
-        {
-            return Handler(command).Execute(_aggregateProducer.Invoke(), command);
         }
 
         private void Map(AggregateCommandHandler<T> handler)
@@ -45,5 +35,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         }
 
         private readonly IDictionary<Type, AggregateCommandHandler<T>> _commandHandlers = new Dictionary<Type, AggregateCommandHandler<T>>();
+        public IReadOnlyCollection<DomainEvent> Execute(T aggregate, ICommand command)
+        {
+            return GetHandler(command).Execute(aggregate, command);
+        }
     }
 }
