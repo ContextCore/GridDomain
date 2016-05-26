@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
             using (var logContext = new LogContext(conf.LogsConnectionString))
                 ClearDbByDelete(logContext);
 
-            RecreateWriteDb(conf.EventStoreConnectionString);
+            //RecreateWriteDb(conf.EventStoreConnectionString);
         }
 
         public static void ClearDbByDelete(DbContext context)

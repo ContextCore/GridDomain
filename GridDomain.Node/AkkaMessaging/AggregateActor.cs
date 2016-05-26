@@ -40,5 +40,16 @@ namespace GridDomain.Node.AkkaMessaging
             Recover<SnapshotOffer>(offer => _aggregate = (TAggregate)offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate)_aggregate).ApplyEvent(e));
         }
+
+        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
+        {
+            base.OnPersistFailure(cause, @event, sequenceNr);
+        }
+
+        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
+        {
+            base.OnPersistRejected(cause, @event, sequenceNr);
+        }
     }
+
 }

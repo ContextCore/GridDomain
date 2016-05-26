@@ -87,6 +87,6 @@ namespace GridDomain.Tests.Acceptance
             Console.WriteLine("Wait ended");
         }
 
-        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(100);
+        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(10);
     }
 }
