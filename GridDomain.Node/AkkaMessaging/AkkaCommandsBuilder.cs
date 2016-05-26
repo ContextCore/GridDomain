@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CommonDomain.Core;
@@ -8,28 +7,6 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-   public interface IAggregateActorLocator
-   {
-       Type GetActorTypeFor<T>() where T : AggregateBase;
-   }
-
-    public class DefaultAggregateActorLocator : IAggregateActorLocator
-    {
-        public Type GetActorTypeFor<T>() where T : AggregateBase
-        {
-            return typeof(AggregateActor<T>);
-        }
-    }
-
-    public class UnregisteredAggregateActorLookupException : Exception
-    {
-        public UnregisteredAggregateActorLookupException(Type type):
-            base("Cannot find registered actor for aggregate " + type.ToString())
-        {
-            
-        }
-    }
-
     public class AkkaCommandsBuilder<TMessage, TAggregate> :
         ICommandRouteBuilder<TMessage, TAggregate> where TAggregate : AggregateBase
     {

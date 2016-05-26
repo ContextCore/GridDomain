@@ -189,6 +189,8 @@
     <Compile Include="AkkaMessaging\AggregateHostActor.cs" />
     <Compile Include="AkkaMessaging\AkkaCommandsBuilder.cs" />
     <Compile Include="AkkaMessaging\CreateActorRoute.cs" />
+    <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
+    <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
     <Compile Include="AkkaMessaging\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
@@ -207,9 +209,17 @@
     <Compile Include="AkkaMessaging\MetadataEntry.cs" />
     <Compile Include="AkkaMessaging\MetadataMessage.cs" />
     <Compile Include="AkkaMessaging\UnknownMessageRecievedException.cs" />
+    <Compile Include="AkkaMessaging\UnregisteredAggregateActorLookupException.cs" />
+    <Compile Include="Configuration\ActorConfig.cs" />
+    <Compile Include="Configuration\ActorDeployConfig.cs" />
     <Compile Include="Configuration\AkkaNetworkConfiguration.cs" />
+    <Compile Include="Configuration\BuildPersistenceConfig.cs" />
+    <Compile Include="Configuration\IAkkaConfig.cs" />
     <Compile Include="Configuration\IAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\IAkkaNetworkConfiguration.cs" />
+    <Compile Include="Configuration\LogConfig.cs" />
+    <Compile Include="Configuration\PersistenceJournalConfig.cs" />
+    <Compile Include="Configuration\PersistenceSnapshotConfig.cs" />
     <Compile Include="DomainEventsPublishing\EventBusPublishingAdapter.cs" />
     <Compile Include="DomainEventsPublishing\EventBusSubscriberAdapter.cs" />
     <Compile Include="Configuration\IDbConfiguration.cs" />
