@@ -21,7 +21,7 @@ namespace GridDomain.Node
 
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
         {
-            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, akkaConf.ToString());
+            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, akkaConf.ToSingleSystemConfig());
             return actorSystem;
         }
 

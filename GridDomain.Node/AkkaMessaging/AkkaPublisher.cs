@@ -1,3 +1,4 @@
+using System;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using GridDomain.CQRS.Messaging;
@@ -13,7 +14,11 @@ namespace GridDomain.Node.AkkaMessaging
 
         public AkkaPublisher(ActorSystem system)
         {
-            _publisherActor = DistributedPubSub.Get(system).Mediator;
+            var distributedPubSub = DistributedPubSub.Get(system);
+            if (distributedPubSub == null)
+                throw new CannotGetDistributedPubSubException();
+
+            _publisherActor = distributedPubSub.Mediator;
         }
 
         public void Publish<T>(T msg)
@@ -22,5 +27,9 @@ namespace GridDomain.Node.AkkaMessaging
             _log.Trace($"Publishing message {msg.ToPropsString()} to akka distributed pub sub with topic {topic}");
             _publisherActor.Tell(new Publish(topic, msg));
         }
+    }
+
+    public class CannotGetDistributedPubSubException : Exception
+    {
     }
 }

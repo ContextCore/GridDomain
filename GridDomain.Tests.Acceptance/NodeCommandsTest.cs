@@ -26,11 +26,6 @@ namespace GridDomain.Tests.Acceptance
         protected GridDomainNode GridNode;
         private IActorRef _distributedPubSub;
 
-        //public NodeCommandsTest(ActorSystem):base()
-        //{
-            
-        //}
-
         [TearDown]
         public void DeleteSystems()
         {
