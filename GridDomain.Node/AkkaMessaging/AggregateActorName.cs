@@ -6,12 +6,14 @@ namespace GridDomain.Node.AkkaMessaging
     {
         public Type AggregateType { get; }
         public Guid Id { get; }
+        private static string Separator = "_";
+
 
         private AggregateActorName(Type aggregateType, Guid id)
         {
             Id = id;
             AggregateType = aggregateType;
-            Name = aggregateType.Name + "_" + id;
+            Name = aggregateType.Name + Separator + id;
         }
 
         public string Name { get; }
@@ -24,7 +26,7 @@ namespace GridDomain.Node.AkkaMessaging
         public static AggregateActorName Parse<T>(string value)
         {
             var aggregateType = typeof(T);
-            var id = Guid.Parse(value.Replace(aggregateType.Name, ""));
+            var id = Guid.Parse(value.Replace(aggregateType.Name + Separator, ""));
             return new AggregateActorName(aggregateType, id);
         }
 
