@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Then_jornal_connection_string_should_be_configured()
         {
-            Assert.AreEqual(_autoTestAkkaConfiguration.Persistence.JournalConnectionString, _sqlPersistence.JournalSettings.ConnectionString);
+            Assert.AreEqual(_autoTestAkkaConfiguration.Persistence.JournalConnectionString.Replace(@"\\", @"\"),  _sqlPersistence.JournalSettings.ConnectionString);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Then_snapshot_connection_string_should_be_configured()
         {
-            Assert.AreEqual(_autoTestAkkaConfiguration.Persistence.SnapshotConnectionString, _sqlPersistence.SnapshotSettings.ConnectionString);
+            Assert.AreEqual(_autoTestAkkaConfiguration.Persistence.SnapshotConnectionString.Replace(@"\\",@"\"), _sqlPersistence.SnapshotSettings.ConnectionString);
         }
 
     }

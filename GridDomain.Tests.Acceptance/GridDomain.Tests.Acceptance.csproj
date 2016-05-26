@@ -203,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateCommandsRouting.cs" />
+    <Compile Include="AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Balance\BalanceChangePlan.cs" />
     <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
     <Compile Include="CompositionRootTests.cs" />

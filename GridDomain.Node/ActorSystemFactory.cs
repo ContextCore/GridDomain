@@ -89,7 +89,7 @@ namespace GridDomain.Node
             }";
 
             string akkaPersistenceConfig = 
-@"      akka.persistence {
+@"      persistence {
 " + persistenceJournalConfig + @"
 " + persistenceSnapshotStorageConfig + @"
         }";
@@ -101,7 +101,7 @@ namespace GridDomain.Node
 }";
 
             var actorSystem = ActorSystem.Create(akkaConf.Network.Name, hoconConfig);
-          //  SqlServerPersistence persistence = SqlServerPersistence.Get(actorSystem);
+            SqlServerPersistence persistence = SqlServerPersistence.Get(actorSystem);
             return actorSystem;
         }
 
