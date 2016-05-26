@@ -69,7 +69,7 @@ namespace GridDomain.Node
                                 table-name = """ + akkaConf.JournalTableName + @"""
 
                                 # should corresponding journal table be initialized automatically
-                                auto-initialize = on
+                                auto-initialize = off
 
                                 # timestamp provider used for generation of journal entries timestamps
                                 timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
@@ -101,7 +101,7 @@ namespace GridDomain.Node
                                 table-name = """ + akkaConf.SnapshotTableName + @"""
 
                                 # should corresponding journal table be initialized automatically
-                                auto-initialize = on
+                                auto-initialize = off
                     }
                         }
                     }

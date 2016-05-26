@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance
               @"Data Source=(localdb)\\v11.0;Initial Catalog=AutoTestAkka;Integrated Security = true";
 
         public string MetadataTableName => "Metadata";
-        public string JournalTableName => "Jornal";
+        public string JournalTableName => "Journal";
         public string SnapshotTableName => "Snapshots";
     }
 }

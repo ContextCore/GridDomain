@@ -9,39 +9,58 @@ namespace GridDomain.Node.Configuration
         string Host { get; }
         int PortNumber { get; }
     }
+
+
+    public class AkkaNetworkConfiguration : IAkkaNetworkConfiguration
+    {
+        public string Name { get;}
+        public string Host { get;}
+        public int PortNumber { get; }
+
+        public AkkaNetworkConfiguration(string name, string host, int port )
+        {
+            Name = name;
+            Host = host;
+            PortNumber = port;
+        }
+    }
+
     public class AkkaConfiguration
     {
-        public int Port { get; }
-        public string Name { get; }
-        public string Host { get; }
+        public int Port => Network.PortNumber;
+        public string Name => Network.Name;
+        public string Host => Network.Host;
 
-        public string JournalConnectionString { get; }
-        public string SnapshotConnectionString { get; }
+        public string JournalConnectionString => Persistence.JournalConnectionString;
+        public string SnapshotConnectionString => Persistence.SnapshotConnectionString;
         public string LogLevel { get; }
-        public string MetadataTableName { get; set; }
-        public string JournalTableName { get; set; }
-        public string SnapshotTableName { get; set; }
+        public string MetadataTableName => Persistence.MetadataTableName;
+        public string JournalTableName => Persistence.JournalTableName;
+        public string SnapshotTableName => Persistence.SnapshotTableName;
+
+        public IAkkaNetworkConfiguration Network { get; }
+        public IAkkaDbConfiguration Persistence { get; }
 
 
         public AkkaConfiguration(IAkkaNetworkConfiguration networkConf,
                                  IAkkaDbConfiguration dbConf,
-                                 LogVerbosity logLevel = LogVerbosity.Warning
-                                )
+                                 LogVerbosity logLevel = LogVerbosity.Warning)
         {
-            _networkConf = networkConf;
-            _dbConf = dbConf;
+            Network = networkConf;
+            Persistence = dbConf;
             _logLevel = logLevel;
-            Name = networkConf.Name;
-            Port = networkConf.PortNumber;
-            Host = networkConf.Host;
             LogLevel = _akkaLogLevels[logLevel];
-            JournalConnectionString = dbConf.JournalConnectionString;
-            SnapshotConnectionString = dbConf.SnapshotConnectionString;
         }
 
         public AkkaConfiguration Copy(int newPort)
         {
-            return new AkkaConfiguration(_networkConf, _dbConf, _logLevel);
+            var networkConf = Network;
+            var network = new AkkaNetworkConfiguration(
+                                                       networkConf.Host,
+                                                       networkConf.Name,
+                                                       newPort);
+
+            return new AkkaConfiguration(network, Persistence, _logLevel);
 
         }
 
@@ -54,8 +73,6 @@ namespace GridDomain.Node.Configuration
                                                             };
 
         private readonly LogVerbosity _logLevel;
-        private IAkkaDbConfiguration _dbConf;
-        private readonly IAkkaNetworkConfiguration _networkConf;
 
         public enum LogVerbosity
         {

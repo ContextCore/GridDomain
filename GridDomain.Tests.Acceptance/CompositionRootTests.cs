@@ -11,7 +11,8 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance
 {
 
-    class AutoTestAkkaNetworkConfiguration: IAkkaNetworkConfiguration
+
+    class AutoTestAkkaNetworkConfiguration : IAkkaNetworkConfiguration
     {
         public string Name => "LocalSystem";
         public string Host => "127.0.0.1";
