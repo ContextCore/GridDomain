@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
 using Akka.Cluster.Tools.PublishSubscribe;
+using Akka.TestKit;
 using Akka.TestKit.NUnit;
 using CommonDomain.Persistence;
 using GridDomain.Balance.Node;
@@ -25,6 +26,11 @@ namespace GridDomain.Tests.Acceptance
         protected GridDomainNode GridNode;
         private IActorRef _distributedPubSub;
 
+        //public NodeCommandsTest(ActorSystem):base()
+        //{
+            
+        //}
+
         [TearDown]
         public void DeleteSystems()
         {
@@ -41,7 +47,6 @@ namespace GridDomain.Tests.Acceptance
 
             AkkaConfiguration akkaConf = new AutoTestAkkaConfiguration();
 
-
             GridNode = GreateGridDomainNode(akkaConf, autoTestGridDomainConfiguration);
 
             GridNode.Start(autoTestGridDomainConfiguration);
@@ -50,7 +55,9 @@ namespace GridDomain.Tests.Acceptance
 
         protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(),  ActorSystemFactory.CreateActorSystem(akkaConf));
+            var actorSystem = ActorSystemFactory.CreateActorSystem(akkaConf);
+
+            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(),  actorSystem);
         }
 
         protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Persistence
 {
     [TestFixture]
-    public class SqlPersistenceConfigTest
+    public class SqlPersistenceConfigurationApplyTest 
     {
         private AutoTestAkkaConfiguration _autoTestAkkaConfiguration;
         private SqlServerPersistence _sqlPersistence;

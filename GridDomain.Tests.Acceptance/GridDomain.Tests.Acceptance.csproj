@@ -234,7 +234,7 @@
     <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemTest.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
-    <Compile Include="Persistence\SqlPersistenceConfigTest.cs" />
+    <Compile Include="Persistence\SqlPersistenceConfigurationApplyTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
     <Compile Include="Persistence\KnownConstructorParameter.cs" />
     <Compile Include="Balance\ReadModelConcurrentBuild\Cluster_Given_balance_change_plan_When_executing.cs" />
@@ -242,6 +242,7 @@
     <Compile Include="Balance\ReadModelConcurrentBuild\Single_System_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="Persistence\AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />
+    <Compile Include="Persistence\Sql_journal_availability_test.cs" />
     <Compile Include="Persistence\TestDbTools.cs" />
     <Compile Include="Balance\BalancePersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
