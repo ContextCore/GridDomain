@@ -8,11 +8,11 @@ namespace GridDomain.Node
     {
         public static ActorSystem[] CreateCluster(AkkaConfiguration akkaConf)
         {
-            var port = akkaConf.Port;
-            var seed  = CreateClusterActorSystem(akkaConf, akkaConf.Port);
-            var node1 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Port);
-            var node2 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Port);
-            var node3 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Port);
+            var port = akkaConf.Network.PortNumber;
+            var seed  = CreateClusterActorSystem(akkaConf, akkaConf.Network.PortNumber);
+            var node1 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Network.PortNumber);
+            var node2 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Network.PortNumber);
+            var node3 = CreateClusterActorSystem(akkaConf.Copy(++port), akkaConf.Network.PortNumber);
             
             return new [] {seed,node1,node2,node3};
         }
@@ -39,8 +39,8 @@ namespace GridDomain.Node
                                     helios.tcp {
                                         transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                         transport-protocol = tcp
-                                        port = " + akkaConf.Port + @"}
-                                        hostname = " + akkaConf.Name + @"/
+                                        port = " + akkaConf.Network.PortNumber + @"}
+                                        hostname = " + akkaConf.Network.Name + @"/
                                        
                                     }
                                 }
@@ -57,7 +57,7 @@ namespace GridDomain.Node
                                 plugin-dispatcher = ""akka.actor.default-dispatcher""
 
                                 # connection string used for database access
-                                connection-string = """+ akkaConf.JournalConnectionString + @"""
+                                connection-string = """+ akkaConf.Persistence.JournalConnectionString + @"""
 
                                 # default SQL commands timeout
                                 connection-timeout = 30s
@@ -66,7 +66,7 @@ namespace GridDomain.Node
                                 schema-name = dbo
 
                                 # SQL server table corresponding with persistent journal
-                                table-name = """ + akkaConf.JournalTableName + @"""
+                                table-name = """ + akkaConf.Persistence.JournalTableName + @"""
 
                                 # should corresponding journal table be initialized automatically
                                 auto-initialize = off
@@ -75,7 +75,7 @@ namespace GridDomain.Node
                                 timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
 
                                 # metadata table
-                                metadata-table-name = """ + akkaConf.MetadataTableName + @"""
+                                metadata-table-name = """ + akkaConf.Persistence.MetadataTableName + @"""
                             }
                         }
 
@@ -89,7 +89,7 @@ namespace GridDomain.Node
                                 plugin-dispatcher = ""akka.actor.default-dispatcher""
 
                                 # connection string used for database access
-                                connection-string = """ + akkaConf.SnapshotConnectionString + @"""
+                                connection-string = """ + akkaConf.Persistence.SnapshotConnectionString + @"""
 
                                 # default SQL commands timeout
                                 connection-timeout = 30s
@@ -98,7 +98,7 @@ namespace GridDomain.Node
                                 schema-name = dbo
 
                                 # SQL server table corresponding with persistent journal
-                                table-name = """ + akkaConf.SnapshotTableName + @"""
+                                table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
 
                                 # should corresponding journal table be initialized automatically
                                 auto-initialize = off
@@ -107,14 +107,14 @@ namespace GridDomain.Node
                     }
 
                        ";
-            var actorSystem = ActorSystem.Create(akkaConf.Name, hoconConfig);
+            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, hoconConfig);
             return actorSystem;
         }
 
 
         public static ActorSystem CreateClusterActorSystem(AkkaConfiguration akkaConf, int clusterPort)
         {
-            var actorSystem = ActorSystem.Create(akkaConf.Name,
+            var actorSystem = ActorSystem.Create(akkaConf.Network.Name,
                 @"akka {  
                         actor {
                                  provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
@@ -129,7 +129,7 @@ namespace GridDomain.Node
                         }
 
                         cluster {
-                            seed - nodes = [""akka.tcp://" + akkaConf.Name + "@" + akkaConf.Host + ":" + clusterPort + @"""]
+                            seed - nodes = [""akka.tcp://" + akkaConf.Network.Name + "@" + akkaConf.Network.Host + ":" + clusterPort + @"""]
                          
                         stdout-loglevel = " + akkaConf.LogLevel + @"
                         loglevel = " + akkaConf.LogLevel + @"
@@ -140,7 +140,7 @@ namespace GridDomain.Node
                                         transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                         transport-protocol = tcp
                                         port = 0
-                                        hostname = " + akkaConf.Name + @"/
+                                        hostname = " + akkaConf.Network.Name + @"/
                                     }
                                 }
                        ");

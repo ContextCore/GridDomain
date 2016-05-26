@@ -199,6 +199,9 @@
     <Compile Include="AkkaMessaging\MetadataEntry.cs" />
     <Compile Include="AkkaMessaging\MetadataMessage.cs" />
     <Compile Include="AkkaMessaging\UnknownMessageRecievedException.cs" />
+    <Compile Include="Configuration\AkkaNetworkConfiguration.cs" />
+    <Compile Include="Configuration\IAkkaDbConfiguration.cs" />
+    <Compile Include="Configuration\IAkkaNetworkConfiguration.cs" />
     <Compile Include="DomainEventsPublishing\EventBusPublishingAdapter.cs" />
     <Compile Include="DomainEventsPublishing\EventBusSubscriberAdapter.cs" />
     <Compile Include="Configuration\IDbConfiguration.cs" />
