@@ -23,9 +23,22 @@ namespace GridDomain.Tests.Acceptance.Persistence
         }
 
         [Test]
+        public void Sql_journal_is_available_for_factory_created_cluster_actor_system()
+        {
+            var actorSystem = ActorSystemFactory.CreateClusterActorSystem(new AutoTestAkkaConfiguration(),1000);
+            PingSqlJournal(actorSystem);
+        }
+
+        [Test]
+        public void Sql_journal_is_available_for_configuraton_created_cluster_actor_system()
+        {
+            var actorSystem = ActorSystem.Create(new AutoTestAkkaConfiguration().ToClusterNodeSystemConfig(1001));
+            PingSqlJournal(actorSystem);
+        }
+
+        [Test]
         public void Sql_journal_is_available_for_testKit_actor_system()
         {
-         //   var actorSystem = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
             PingSqlJournal(Sys);
         }
 

@@ -1,31 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using System.Text;
 
 namespace GridDomain.Node.Configuration
 {
-    class RootConfig : IAkkaConfig
-    {
-        private readonly IAkkaConfig[] _parts;
-
-        public RootConfig(params IAkkaConfig[] parts)
-        {
-            _parts = parts;
-        }
-
-        public string Build()
-        {
-            var configStrings = _parts.Select(p => p.Build()).ToArray();
-            var configString = string.Join(Environment.NewLine, configStrings);
-            return @"akka {
-" + configString + @"
-}";
-        }
-    }
-
-
     public class AkkaConfiguration
     {
         public string LogLevel { get; }
@@ -77,7 +55,16 @@ namespace GridDomain.Node.Configuration
         {
             var cfg = new RootConfig(
                         new LogConfig(this),
-                        new ActorConfig(),
+                        ActorConfig.SingleSystem(),
+                        new ActorDeployConfig(this),
+                        new BuildPersistenceConfig(this));
+            return cfg.Build();
+        }
+        public string ToClusterNodeSystemConfig(int? port = null)
+        {
+            var cfg = new RootConfig(
+                        new LogConfig(this),
+                        ActorConfig.Cluster(),
                         new ActorDeployConfig(this),
                         new BuildPersistenceConfig(this));
             return cfg.Build();

@@ -2,7 +2,24 @@ using GridDomain.Node.Configuration;
 
 internal class ActorConfig: IAkkaConfig
 {
-    public static string BuildActorConfig() 
+    private string _providerType;
+
+    private ActorConfig(string providerType)
+    {
+        _providerType = providerType;
+    }
+
+    public static ActorConfig SingleSystem()
+    {
+         return new ActorConfig("Akka.Remote.RemoteActorRefProvider, Akka.Remote"); 
+    }
+
+    public static ActorConfig Cluster()
+    {
+        return new ActorConfig("Akka.Cluster.ClusterActorRefProvider, Akka.Cluster");
+    }
+
+    public string Build()
     {
         string actorConfig = @"   
        actor {
@@ -14,7 +31,7 @@ internal class ActorConfig: IAkkaConfig
                                     ""System.Object"" = wire
              }
              
-             provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
+             provider = """+_providerType+@"""
              loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
              debug {
                    receive = on
@@ -25,10 +42,5 @@ internal class ActorConfig: IAkkaConfig
              }
        }";
         return actorConfig;
-    }
-
-    public string Build()
-    {
-        return BuildActorConfig();
     }
 }
