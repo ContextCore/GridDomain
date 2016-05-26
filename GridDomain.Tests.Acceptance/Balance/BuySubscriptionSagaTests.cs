@@ -2,7 +2,7 @@
 using GridDomain.Balance.Domain;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.Balance
 {
     [TestFixture]
     public class BuySubscriptionSagaTests

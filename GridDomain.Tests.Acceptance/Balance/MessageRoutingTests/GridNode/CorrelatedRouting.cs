@@ -1,7 +1,7 @@
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 {
     class CorrelatedRouting<TMsg,THandler> : IRouterConfiguration
         where THandler:IHandler<TMsg>

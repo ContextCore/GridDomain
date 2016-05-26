@@ -63,13 +63,13 @@ namespace GridDomain.Node
                     plugin = ""akka.persistence.journal.sql-server""
                     sql-server {
                                class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
-                               plugin-dispatcher = ""akka.actor.default-dispatcher""
+                              # plugin-dispatcher = ""akka.actor.default-dispatcher""
                                connection-string =  """ + akkaConf.Persistence.JournalConnectionString + @"""
-                               connection-timeout = 30s
-                               schema-name = dbo
+                             #  connection-timeout = 30s
+                              # schema-name = dbo
                                table-name = """ + akkaConf.Persistence.JournalTableName + @"""
-                               auto-initialize = off
-                               timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
+                               auto-initialize = on
+                              # timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
                                metadata-table-name = """ + akkaConf.Persistence.MetadataTableName + @"""
                     }
             }";
@@ -81,15 +81,16 @@ namespace GridDomain.Node
                                       class = ""Akka.Persistence.SqlServer.Snapshot.SqlServerSnapshotStore, Akka.Persistence.SqlServer""
                                       plugin-dispatcher = ""akka.actor.default-dispatcher""
                                       connection-string = """+ akkaConf.Persistence.SnapshotConnectionString + @"""
-                                      connection-timeout = 30s
+                                      #connection-timeout = 30s
                                       schema-name = dbo
                                       table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
-                                      auto-initialize = off
+                                      auto-initialize = on
                            }
             }";
 
-            string akkaPersistenceConfig = 
+            string akkaPersistenceConfig =
 @"      persistence {
+                    publish-plugin-commands = on
 " + persistenceJournalConfig + @"
 " + persistenceSnapshotStorageConfig + @"
         }";

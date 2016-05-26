@@ -1,14 +1,13 @@
 ﻿using System;
 using CommonDomain.Persistence;
 using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Node;
 using GridDomain.Tests.Acceptance.Persistence;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.Balance
 {
     [TestFixture]
     public class BalancePersistenceTests

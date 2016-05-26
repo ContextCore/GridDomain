@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
-using GridDomain.CQRS;
 using NMoneys;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.Balance
 {
     public class BalanceChangePlan
     {

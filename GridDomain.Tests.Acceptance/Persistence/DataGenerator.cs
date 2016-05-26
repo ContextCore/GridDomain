@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.CQRS;
+using GridDomain.Tests.Acceptance.Balance;
 using NMoneys;
 using Ploeh.AutoFixture;
 

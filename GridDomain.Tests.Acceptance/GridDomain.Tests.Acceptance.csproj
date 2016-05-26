@@ -203,7 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateCommandsRouting.cs" />
+    <Compile Include="AutoTestAkkaConfiguration.cs" />
     <Compile Include="AutoTestAkkaDbConfiguration.cs" />
+    <Compile Include="AutoTestAkkaNetworkConfiguration.cs" />
     <Compile Include="Balance\BalanceChangePlan.cs" />
     <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
     <Compile Include="CompositionRootTests.cs" />
@@ -232,7 +234,7 @@
     <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemTest.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
-    <Compile Include="Persistence\ConfigTest.cs" />
+    <Compile Include="Persistence\SqlPersistenceConfigTest.cs" />
     <Compile Include="Persistence\DataGenerator.cs" />
     <Compile Include="Persistence\KnownConstructorParameter.cs" />
     <Compile Include="Balance\ReadModelConcurrentBuild\Cluster_Given_balance_change_plan_When_executing.cs" />

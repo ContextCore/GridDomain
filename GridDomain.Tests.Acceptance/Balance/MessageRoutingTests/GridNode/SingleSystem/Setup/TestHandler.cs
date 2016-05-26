@@ -1,7 +1,7 @@
 using Akka.Actor;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
     public class TestHandler : IHandler<TestMessage>
     {

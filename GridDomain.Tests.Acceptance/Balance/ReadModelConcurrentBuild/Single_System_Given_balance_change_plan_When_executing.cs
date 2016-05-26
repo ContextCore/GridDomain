@@ -9,7 +9,7 @@ using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.ReadModelConcurrentBuild
+namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 {
     [TestFixture]
     public class Single_System_Given_balance_change_plan_When_executing: NodeCommandsTest
