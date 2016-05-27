@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
     public abstract class ActorSystemInfrastruture: IDisposable
     {
         public ActorSystem System { get; private set; }
-        public AkkaPublisher Publisher;
+        public DistributedPubSubPublisher Publisher;
         public ActorMessagesRouter Router;
         public readonly AkkaConfiguration AkkaConfig;
 
@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()),
                                              container.Resolve<IAggregateActorLocator>());
 
-            Publisher = new AkkaPublisher(System);
+            Publisher = new DistributedPubSubPublisher(System);
         }
 
         protected virtual void InitContainer(UnityContainer container, IActorRef actor)

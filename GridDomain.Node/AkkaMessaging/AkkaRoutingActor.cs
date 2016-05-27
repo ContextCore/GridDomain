@@ -14,17 +14,13 @@ namespace GridDomain.Node.AkkaMessaging
     public class AkkaRoutingActor : TypedActor, IHandler<CreateRoute>
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
-        private IActorRef _distributedTransport;
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
+        private readonly IActorSubscriber _subscriber;
 
-        public AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory)
+        public AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory, IActorSubscriber subscriber)
         {
+            _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
-        }
-
-        protected override void PreStart()
-        {
-            _distributedTransport = DistributedPubSub.Get(Context.System).Mediator;
         }
 
         public void Handle(SubscribeAck msg)
@@ -37,11 +33,7 @@ namespace GridDomain.Node.AkkaMessaging
             var handleActor = GetWorkerActorRef(msg);
             _log.Trace($"Created message handling actor for {msg.ToPropsString()}");
 
-            var topic = msg.MessageType.FullName;
-
-            _distributedTransport.Ask(new Subscribe(topic, handleActor)).Wait();
-            
-            _log.Trace($"Subscribing handler actor {handleActor.Path} to topic {topic}");
+            _subscriber.Subscribe(msg.MessageType, handleActor);
         }
 
         public void Handle(CreateActorRoute msg)
@@ -58,11 +50,7 @@ namespace GridDomain.Node.AkkaMessaging
 
             _log.Trace($"Create aggregate actor for {msg.ToPropsString()}");
 
-            var topic = msg.MessageType.FullName;
-
-            _distributedTransport.Ask(new Subscribe(topic, handleActor)).Wait();
-
-            _log.Trace($"Subscribing aggregate actor {handleActor.Path} to topic {topic}");
+            _subscriber.Subscribe(msg.MessageType, handleActor);
         }
 
         private IActorRef GetWorkerActorRef(CreateRoute msg)

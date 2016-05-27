@@ -24,9 +24,13 @@ namespace GridDomain.Node
                                 ActorSystem actorSystem,
                                 IDbConfiguration conf)
         {
-            IPublisher publisher = new AkkaPublisher(actorSystem);
+            IPublisher publisher = new DistributedPubSubPublisher(actorSystem);
+            IActorSubscriber subscriber = new DistributedPubSubSubscriber(actorSystem);
+
             container.RegisterInstance(publisher);
+            container.RegisterInstance(subscriber);
             RegisterEventStore(container, conf);
+
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             //TODO: replace dirty hack
             container.RegisterType<IAggregateActorLocator,DefaultAggregateActorLocator>();

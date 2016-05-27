@@ -55,7 +55,7 @@ namespace GridDomain.Node.Configuration
         {
             var cfg = new RootConfig(
                         new LogConfig(this),
-                        ActorConfig.SingleSystem(),
+                        ActorConfig.Cluster(),
                         new ActorDeployConfig(this),
                         new BuildPersistenceConfig(this));
             return cfg.Build();

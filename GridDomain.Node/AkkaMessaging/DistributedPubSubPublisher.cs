@@ -7,12 +7,12 @@ using NLog;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class AkkaPublisher : IPublisher
+    public class DistributedPubSubPublisher : IPublisher
     {
         private readonly IActorRef _publisherActor;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
 
-        public AkkaPublisher(ActorSystem system)
+        public DistributedPubSubPublisher(ActorSystem system)
         {
             var distributedPubSub = DistributedPubSub.Get(system);
             if (distributedPubSub == null)

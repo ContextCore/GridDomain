@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Sql_journal_is_available_for_configuraton_created_cluster_actor_system()
         {
-            var actorSystem = ActorSystem.Create(new AutoTestAkkaConfiguration().ToClusterNodeSystemConfig(1001));
+            var actorSystem = ActorSystem.Create("local",new AutoTestAkkaConfiguration().ToClusterNodeSystemConfig(1001));
             PingSqlJournal(actorSystem);
         }
 

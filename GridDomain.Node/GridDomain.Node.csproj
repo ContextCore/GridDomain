@@ -190,11 +190,12 @@
     <Compile Include="AkkaMessaging\AkkaCommandsBuilder.cs" />
     <Compile Include="AkkaMessaging\CreateActorRoute.cs" />
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
+    <Compile Include="AkkaMessaging\DistributedPubSubSubscriber.cs" />
     <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
     <Compile Include="AkkaMessaging\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
-    <Compile Include="AkkaMessaging\AkkaPublisher.cs" />
+    <Compile Include="AkkaMessaging\DistributedPubSubPublisher.cs" />
     <Compile Include="AkkaMessaging\AkkaRouteBuilder.cs" />
     <Compile Include="AkkaMessaging\CannotFindCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\CreateRoute.cs" />
@@ -233,6 +234,7 @@
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="AkkaMessaging\ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
+    <Compile Include="ISubscriber.cs" />
     <Compile Include="MemTransportMessaging\MemTransportToMessageTransportAdapter.cs" />
     <Compile Include="MemTransportMessaging\MessageTransportSetup.cs" />
     <Compile Include="DomainEventsPublishing\NLogToEventStoreLogAdapter.cs" />

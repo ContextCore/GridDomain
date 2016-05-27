@@ -100,7 +100,6 @@
     <Compile Include="IMessageRouteConfiguration.cs" />
     <Compile Include="IMessageTransport.cs" />
     <Compile Include="IPublisher.cs" />
-    <Compile Include="ISubscriber.cs" />
     <Compile Include="MessageRouting\CommandHandlerAdapter.cs" />
     <Compile Include="MessageRouting\CommandHandlerBuilders\AggregateActionBuilder.cs" />
     <Compile Include="MessageRouting\CommandHandlerBuilders\AggregateCreationBuilder.cs" />
