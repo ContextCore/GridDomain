@@ -60,23 +60,22 @@ internal class ActorConfig: IAkkaConfig
 
     private string BuildClusterNode( int portNumber, string name, params string[] seedNodes)
     {
-        string seeds = string.Concat(seedNodes.Select(n => @"                                         """ + n + @"""" + Environment.NewLine));
+        string seeds = string.Join(Environment.NewLine, seedNodes.Select(n => @"""" + n + @""""));
 
         string clusterConfigString = 
             @"
             actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
             cluster {
-                            seed-nodes = [" + seeds + @"
-                                         ]
+                            seed-nodes = [" + seeds + @"]
             }
      
             remote {
                     helios.tcp {
-                                  #transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
-                                  #transport-protocol = tcp
+                                  transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
+                                  transport-protocol = tcp
                                   port = " + portNumber + @"
-                                  hostname = " + name + @"
                     }
+                    hostname = " + name + @"
             }";
         return clusterConfigString;
     }

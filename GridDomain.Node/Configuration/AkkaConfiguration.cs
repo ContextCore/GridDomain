@@ -24,9 +24,9 @@ namespace GridDomain.Node.Configuration
         public AkkaConfiguration Copy(int? newPort = null)
         {
             var networkConf = Network;
-            var network = new AkkaNetworkAddress(networkConf.Host,
-                                                       networkConf.Name,
-                                                       newPort ?? networkConf.PortNumber);
+            var network = new AkkaNetworkAddress(networkConf.Name,
+                                                 networkConf.Host,
+                                                 newPort ?? networkConf.PortNumber);
 
             return new AkkaConfiguration(network, Persistence, _logLevel);
         }
