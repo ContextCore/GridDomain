@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GridDomain.Tests.Acceptance.Persistence
+namespace GridDomain.Tests.Acceptance
 {
     public static class AutoFix
     {
-        private static readonly Random rnd = new Random();
-        private static readonly Random rng = new Random();
+        private static readonly Random Rnd = new Random();
 
         public static T RandomElement<T>(this ICollection<T> collection)
         {
             var totalLength = collection.Count();
-            var elemIndex = rnd.Next(0, totalLength);
+            var elemIndex = Rnd.Next(0, totalLength);
             return collection.Skip(elemIndex - 1).FirstOrDefault();
         }
 
@@ -20,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         {
             if (till > from) throw new ArgumentOutOfRangeException();
 
-            var randomTime = till.AddDays(rnd.Next(0, (int) (@from - till).TotalDays));
+            var randomTime = till.AddDays(Rnd.Next(0, (int) (@from - till).TotalDays));
             return randomTime;
         }
 
@@ -30,7 +29,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
             while (n > 1)
             {
                 n--;
-                var k = rng.Next(n + 1);
+                var k = Rnd.Next(n + 1);
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;

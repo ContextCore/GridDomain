@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
 
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
-            Nodes = ActorSystemFactory.CreateCluster(AkkaConfig);
+            Nodes = ActorSystemFactory.CreateCluster(AkkaConfig,2,3);
             return Nodes.Last();
         }
 

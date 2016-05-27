@@ -205,7 +205,7 @@
     <Compile Include="AggregateCommandsRouting.cs" />
     <Compile Include="AutoTestAkkaConfiguration.cs" />
     <Compile Include="AutoTestAkkaDbConfiguration.cs" />
-    <Compile Include="AutoTestAkkaNetworkConfiguration.cs" />
+    <Compile Include="AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="Balance\BalanceChangePlan.cs" />
     <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
     <Compile Include="CompositionRootTests.cs" />

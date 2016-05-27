@@ -1,22 +1,33 @@
+using System;
+using System.Linq;
+using Akka.Actor;
 using GridDomain.Node.Configuration;
+
 
 internal class ActorConfig: IAkkaConfig
 {
-    private string _providerType;
+    private readonly string[] _seedNodes;
+    private readonly int _port;
+    private readonly string _name;
 
-    private ActorConfig(string providerType)
+    private ActorConfig(int port, string name, params string[] seedNodes)
     {
-        _providerType = providerType;
+        _name = name;
+        _port = port;
+        _seedNodes = seedNodes;
     }
 
-    public static ActorConfig SingleSystem()
+    public static ActorConfig ClusterSeedNode(IAkkaNetworkAddress address, params IAkkaNetworkAddress[] otherSeeds)
     {
-         return new ActorConfig("Akka.Remote.RemoteActorRefProvider, Akka.Remote"); 
+        var allSeeds = otherSeeds.Union(new []{ address});
+        var seedNodes = allSeeds.Select(GetSeedNetworkAddress).ToArray();
+        return new ActorConfig(address.PortNumber,address.Name, seedNodes);
     }
 
-    public static ActorConfig Cluster()
+    public static ActorConfig ClusterNonSeedNode(string name, IAkkaNetworkAddress[] seedNodesAddresses)
     {
-        return new ActorConfig("Akka.Cluster.ClusterActorRefProvider, Akka.Cluster");
+        var seedNodes = seedNodesAddresses.Select(GetSeedNetworkAddress).ToArray();
+        return new ActorConfig(0, name, seedNodes);
     }
 
     public string Build()
@@ -31,7 +42,6 @@ internal class ActorConfig: IAkkaConfig
                                     ""System.Object"" = wire
              }
              
-             provider = """+_providerType+@"""
              loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
              debug {
                    receive = on
@@ -40,7 +50,40 @@ internal class ActorConfig: IAkkaConfig
                    event-stream = on
                    unhandled = on
              }
+
        }";
-        return actorConfig;
+
+        var deploy = BuildClusterNode(_port,_name, _seedNodes);
+
+        return actorConfig + Environment.NewLine + deploy;
+    }
+
+    private string BuildClusterNode( int portNumber, string name, params string[] seedNodes)
+    {
+        string seeds = string.Concat(seedNodes.Select(n => @"                                         """ + n + @"""" + Environment.NewLine));
+
+        string clusterConfigString = 
+            @"
+            actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
+            cluster {
+                            seed-nodes = [" + seeds + @"
+                                         ]
+            }
+     
+            remote {
+                    helios.tcp {
+                                  #transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
+                                  #transport-protocol = tcp
+                                  port = " + portNumber + @"
+                                  hostname = " + name + @"
+                    }
+            }";
+        return clusterConfigString;
+    }
+
+    private static string GetSeedNetworkAddress(IAkkaNetworkAddress conf)
+    {
+        string networkAddress = $"akka.tcp://{conf.Name}@{conf.Host}:{conf.PortNumber}";
+        return networkAddress;
     }
 }

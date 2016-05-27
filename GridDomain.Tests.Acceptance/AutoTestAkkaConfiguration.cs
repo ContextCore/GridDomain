@@ -4,7 +4,7 @@ namespace GridDomain.Tests.Acceptance
 {
     class AutoTestAkkaConfiguration : AkkaConfiguration
     {
-        public  AutoTestAkkaConfiguration():base(new AutoTestAkkaNetworkConfiguration(), 
+        public  AutoTestAkkaConfiguration():base(new AutoTestAkkaNetworkAddress(), 
             new AutoTestAkkaDbConfiguration(),
             LogVerbosity.Warning)
         {

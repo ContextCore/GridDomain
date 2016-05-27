@@ -8,10 +8,10 @@ namespace GridDomain.Node.Configuration
     {
         public string LogLevel { get; }
 
-        public IAkkaNetworkConfiguration Network { get; }
+        public IAkkaNetworkAddress Network { get; }
         public IAkkaDbConfiguration Persistence { get; }
 
-        public AkkaConfiguration(IAkkaNetworkConfiguration networkConf,
+        public AkkaConfiguration(IAkkaNetworkAddress networkConf,
                                  IAkkaDbConfiguration dbConf,
                                  LogVerbosity logLevel = LogVerbosity.Warning)
         {
@@ -21,26 +21,23 @@ namespace GridDomain.Node.Configuration
             LogLevel = _akkaLogLevels[logLevel];
         }
 
-        public AkkaConfiguration Copy(int newPort)
+        public AkkaConfiguration Copy(int? newPort = null)
         {
             var networkConf = Network;
-            var network = new AkkaNetworkConfiguration(
-                                                       networkConf.Host,
+            var network = new AkkaNetworkAddress(networkConf.Host,
                                                        networkConf.Name,
-                                                       newPort);
+                                                       newPort ?? networkConf.PortNumber);
 
             return new AkkaConfiguration(network, Persistence, _logLevel);
-
         }
 
         private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
-        {
-                                                                {LogVerbosity.Info, "INFO"},
-                                                                {LogVerbosity.Error, "ERROR"},
-                                                                {LogVerbosity.Trace, "DEBUG"},
-                                                                {LogVerbosity.Warning, "WARNING"}
-                                                            };
-
+                                                                           {
+                                                                               {LogVerbosity.Info, "INFO"},
+                                                                               {LogVerbosity.Error, "ERROR"},
+                                                                               {LogVerbosity.Trace, "DEBUG"},
+                                                                               {LogVerbosity.Warning, "WARNING"}
+                                                                           };
         private readonly LogVerbosity _logLevel;
 
         public enum LogVerbosity
@@ -50,29 +47,23 @@ namespace GridDomain.Node.Configuration
             Info,
             Trace
         }
-      
-        public string ToSingleSystemConfig()
+
+        public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
         {
             var cfg = new RootConfig(
                         new LogConfig(this),
-                        ActorConfig.Cluster(),
-                        new ActorDeployConfig(this),
-                        new BuildPersistenceConfig(this));
-            return cfg.Build();
-        }
-        public string ToClusterNodeSystemConfig(int? port = null)
-        {
-            var cfg = new RootConfig(
-                        new LogConfig(this),
-                        ActorConfig.Cluster(),
-                        new ActorDeployConfig(this),
+                        ActorConfig.ClusterSeedNode(Network,otherSeeds),
                         new BuildPersistenceConfig(this));
             return cfg.Build();
         }
 
-        public override string ToString()
+        public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
-            return ToSingleSystemConfig();
+            var cfg = new RootConfig(
+                        new LogConfig(this),
+                        ActorConfig.ClusterNonSeedNode(Network.Name,seeds),
+                        new BuildPersistenceConfig(this));
+            return cfg.Build();
         }
     }
 

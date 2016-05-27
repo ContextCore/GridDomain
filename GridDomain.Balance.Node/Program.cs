@@ -19,7 +19,6 @@ namespace GridDomain.Balance.Node
             Console.WriteLine("Launching GridDomain node");
 
             var container = new UnityContainer();
-            // container.LoadConfiguration();
             var akkaConfig = container.Resolve<AkkaConfiguration>();
             var conf = new LocalDbConfiguration();
             CompositionRoot.Init(container,conf);
@@ -32,7 +31,7 @@ namespace GridDomain.Balance.Node
                 {
                     s.ConstructUsing(settings =>
                     {
-                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).Last();
+                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig,3,3).Last();
                         return new GridDomainNode(container, new BalanceCommandsRouting(), actorSystem);
                     });
                     s.WhenStarted(node =>
