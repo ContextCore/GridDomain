@@ -24,6 +24,11 @@ internal class ActorConfig: IAkkaConfig
         return new ActorConfig(address.PortNumber,address.Name, seedNodes);
     }
 
+    public static ActorConfig Standalone(IAkkaNetworkAddress address)
+    {
+            return ClusterSeedNode(address);
+    }
+
     public static ActorConfig ClusterNonSeedNode(string name, IAkkaNetworkAddress[] seedNodesAddresses)
     {
         var seedNodes = seedNodesAddresses.Select(GetSeedNetworkAddress).ToArray();
@@ -53,30 +58,37 @@ internal class ActorConfig: IAkkaConfig
 
        }";
 
-        var deploy = BuildClusterNode(_port,_name, _seedNodes);
+        var deploy = BuildClusterProvider(_seedNodes) + BuildTransport(_name, _port);
 
         return actorConfig + Environment.NewLine + deploy;
     }
 
-    private string BuildClusterNode( int portNumber, string name, params string[] seedNodes)
+    private string BuildTransport(string name, int port)
+    {
+        string transportString = 
+           @"remote {
+                    helios.tcp {
+                               transport -class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
+                               transport-protocol = tcp
+                               port = " + port + @"
+                    }
+                    hostname = " + name + @"
+            }";
+        return transportString;
+    }
+
+    private string BuildClusterProvider(params string[] seedNodes)
     {
         string seeds = string.Join(Environment.NewLine, seedNodes.Select(n => @"""" + n + @""""));
 
-        string clusterConfigString = 
+        string clusterConfigString =
             @"
             actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
             cluster {
                             seed-nodes = [" + seeds + @"]
-            }
-     
-            remote {
-                    helios.tcp {
-                                  transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
-                                  transport-protocol = tcp
-                                  port = " + portNumber + @"
-                    }
-                    hostname = " + name + @"
             }";
+     
+
         return clusterConfigString;
     }
 

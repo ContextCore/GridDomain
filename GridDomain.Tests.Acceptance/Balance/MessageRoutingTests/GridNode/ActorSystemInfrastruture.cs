@@ -5,6 +5,7 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using Akka.TestKit.NUnit;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
@@ -17,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
     public abstract class ActorSystemInfrastruture: IDisposable
     {
         public ActorSystem System { get; private set; }
-        public DistributedPubSubPublisher Publisher;
+        public IPublisher Publisher;
         public ActorMessagesRouter Router;
         public readonly AkkaConfiguration AkkaConfig;
 
@@ -40,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()),
                                              container.Resolve<IAggregateActorLocator>());
 
-            Publisher = new DistributedPubSubPublisher(System);
+            Publisher = new DistributedPubSubTransport(System);
         }
 
         protected virtual void InitContainer(UnityContainer container, IActorRef actor)

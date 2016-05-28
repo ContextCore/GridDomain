@@ -57,6 +57,16 @@ namespace GridDomain.Node.Configuration
             return cfg.Build();
         }
 
+        public string ToStandAloneSystemConfig()
+        {
+            var cfg = new RootConfig(
+                        new LogConfig(this),
+                        ActorConfig.Standalone(Network),
+                        new BuildPersistenceConfig(this));
+            return cfg.Build();
+        }
+
+
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
             var cfg = new RootConfig(

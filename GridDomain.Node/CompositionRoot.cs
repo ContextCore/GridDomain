@@ -6,29 +6,30 @@ using CommonDomain.Persistence;
 using CommonDomain.Persistence.EventStore;
 using GridDomain.Balance;
 using GridDomain.Balance.ReadModel;
-using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.DomainEventsPublishing;
+using MemBus;
 using Microsoft.Practices.Unity;
 using NEventStore;
 using NEventStore.Client;
+using IPublisher = GridDomain.CQRS.Messaging.IPublisher;
 
 namespace GridDomain.Node
 {
     public static class CompositionRoot
     {
+
         public static void Init(IUnityContainer container,
                                 ActorSystem actorSystem,
                                 IDbConfiguration conf)
         {
-            IPublisher publisher = new DistributedPubSubPublisher(actorSystem);
-            IActorSubscriber subscriber = new DistributedPubSubSubscriber(actorSystem);
-
-            container.RegisterInstance(publisher);
-            container.RegisterInstance(subscriber);
+            var transport = new AkkaEventBusTransport(actorSystem);
+            
+            container.RegisterInstance<IPublisher>(transport);
+            container.RegisterInstance<IActorSubscriber>(transport);
             RegisterEventStore(container, conf);
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();

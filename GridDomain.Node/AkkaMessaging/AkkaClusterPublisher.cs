@@ -1,18 +1,34 @@
 using System;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
+using Akka.Event;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using NLog;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class DistributedPubSubPublisher : IPublisher
+    public class AkkaSystemPublisher : IPublisher
+    {
+        private readonly EventStream _eventStream;
+
+        public AkkaSystemPublisher(ActorSystem system)
+        {
+            _eventStream = system.EventStream;
+        }
+
+        public void Publish<T>(T msg)
+        {
+           _eventStream.Publish(msg);
+        }
+    }
+
+    public class AkkaClusterPublisher : IPublisher
     {
         private readonly IActorRef _publisherActor;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
 
-        public DistributedPubSubPublisher(ActorSystem system)
+        public AkkaClusterPublisher(ActorSystem system)
         {
             var distributedPubSub = DistributedPubSub.Get(system);
             if (distributedPubSub == null)
