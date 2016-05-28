@@ -52,7 +52,7 @@ namespace GridDomain.Node.Configuration
         {
             var cfg = new RootConfig(
                         new LogConfig(this),
-                        ActorConfig.ClusterSeedNode(Network,otherSeeds),
+                        ClusterConfig.SeedNode(Network,otherSeeds),
                         new BuildPersistenceConfig(this));
             return cfg.Build();
         }
@@ -61,7 +61,7 @@ namespace GridDomain.Node.Configuration
         {
             var cfg = new RootConfig(
                         new LogConfig(this),
-                        ActorConfig.Standalone(Network),
+                        new StandAloneConfig(Network),
                         new BuildPersistenceConfig(this));
             return cfg.Build();
         }
@@ -71,7 +71,7 @@ namespace GridDomain.Node.Configuration
         {
             var cfg = new RootConfig(
                         new LogConfig(this),
-                        ActorConfig.ClusterNonSeedNode(Network.Name,seeds),
+                        ClusterConfig.NonSeedNode(Network.Name,seeds),
                         new BuildPersistenceConfig(this));
             return cfg.Build();
         }

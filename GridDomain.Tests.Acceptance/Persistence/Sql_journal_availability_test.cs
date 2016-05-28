@@ -38,8 +38,6 @@ namespace GridDomain.Tests.Acceptance.Persistence
             PingSqlJournal(actorSystem);
         }
 
-      
-
         [Test]
         public void Sql_journal_is_available_for_testKit_actor_system()
         {
