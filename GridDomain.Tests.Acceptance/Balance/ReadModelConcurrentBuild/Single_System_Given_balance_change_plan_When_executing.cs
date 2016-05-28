@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         private CreateBalanceCommand[] _createBalanceCommands;
 
         [SetUp]
-        public void Init()
+        public void InitSystems()
         {
             _balanceManipulationPlans = GivenBalancePlan(1);
             _createBalanceCommands = When_executed_create_balance_commands(_balanceManipulationPlans);
