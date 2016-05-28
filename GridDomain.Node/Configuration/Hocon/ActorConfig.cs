@@ -68,7 +68,9 @@ internal class ActorConfig: IAkkaConfig
             cluster {
                             seed-nodes = [" + seeds + @"]
             }
-     
+            cluster.sharding.journal-plugin-id = ""akka.persistence.journal.sql-server""
+            cluster.sharding.snapshot-plugin-id = ""akka.persistence.snapshot-store.sql-server""
+          
             remote {
                     helios.tcp {
                                   transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""

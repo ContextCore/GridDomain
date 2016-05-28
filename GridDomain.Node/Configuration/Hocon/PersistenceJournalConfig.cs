@@ -25,6 +25,15 @@ internal class PersistenceJournalConfig:IAkkaConfig
                               # timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
                               # metadata-table-name = """ + akkaConf.Persistence.MetadataTableName + @"""
                     }
+            }        
+            shard-journal {
+                        plugin = ""akka.persistence.shard-journal.sql-server""
+                        sql-server {
+                             class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
+                               connection-string =  """ + akkaConf.Persistence.JournalConnectionString + @"""
+                               schema-name = dbo
+                               auto-initialize = on
+                        }
             }";
         return persistenceJournalConfig;
     }
