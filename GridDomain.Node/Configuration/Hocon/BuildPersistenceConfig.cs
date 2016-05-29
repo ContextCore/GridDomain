@@ -15,7 +15,7 @@ internal class BuildPersistenceConfig : IAkkaConfig
             @"      persistence {
                     publish-plugin-commands = on
 " + new PersistenceJournalConfig(_akka).Build() + @"
-" + new PersistenceJournalConfig(_akka).Build() + @"
+" + new PersistenceSnapshotConfig(_akka).Build() + @"
         }";
         return akkaPersistenceConfig;
     }

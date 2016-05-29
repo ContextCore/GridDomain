@@ -11,7 +11,7 @@ class StandAloneConfig : ActorConfig
         string clusterConfigString =
             @"
             actor.provider =  ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
-            }";
+            ";
 
         return clusterConfigString;
     }

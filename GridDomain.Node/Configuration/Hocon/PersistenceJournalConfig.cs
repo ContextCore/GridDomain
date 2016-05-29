@@ -16,25 +16,25 @@ internal class PersistenceJournalConfig:IAkkaConfig
                     plugin = ""akka.persistence.journal.sql-server""
                     sql-server {
                                class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
-                              # plugin-dispatcher = ""akka.actor.default-dispatcher""
+                               plugin-dispatcher = ""akka.actor.default-dispatcher""
                                connection-string =  """ + akkaConf.Persistence.JournalConnectionString + @"""
-                             #  connection-timeout = 30s
+                               connection-timeout = 30s
                                schema-name = dbo
-                              # table-name = """ + akkaConf.Persistence.JournalTableName + @"""
+                               table-name = """ + akkaConf.Persistence.JournalTableName + @"""
                                auto-initialize = on
-                              # timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
-                              # metadata-table-name = """ + akkaConf.Persistence.MetadataTableName + @"""
+                               timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
+                               metadata-table-name = """ + akkaConf.Persistence.MetadataTableName + @"""
                     }
             }        
-            shard-journal {
-                        plugin = ""akka.persistence.shard-journal.sql-server""
-                        sql-server {
-                             class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
-                               connection-string =  """ + akkaConf.Persistence.JournalConnectionString + @"""
-                               schema-name = dbo
-                               auto-initialize = on
-                        }
-            }";
+            #shard-journal {
+            #            plugin = ""akka.persistence.shard-journal.sql-server""
+            #            sql-server {
+            #                 class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
+            #                   connection-string =  """ + akkaConf.Persistence.JournalConnectionString + @"""
+            #                   schema-name = dbo
+            #                   auto-initialize = on
+            #            }
+            #}";
         return persistenceJournalConfig;
     }
 

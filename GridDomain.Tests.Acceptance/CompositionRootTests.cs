@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance
 
             GridDomain.Balance.Node.CompositionRoot.Init(container, localDbConfiguration);
 
-            foreach (var reg in container.Registrations)
+            foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
             {
                 container.Resolve(reg.RegisteredType, reg.Name);
                 Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");

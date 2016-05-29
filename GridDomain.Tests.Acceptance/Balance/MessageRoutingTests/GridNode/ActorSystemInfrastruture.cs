@@ -21,6 +21,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
         public IPublisher Publisher;
         public ActorMessagesRouter Router;
         public readonly AkkaConfiguration AkkaConfig;
+        private AkkaEventBusTransport _akkaEventBusTransport;
 
 
         protected ActorSystemInfrastruture(AkkaConfiguration conf)
@@ -37,11 +38,14 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             System = CreateSystem(AkkaConfig);
             var container = new UnityContainer();
             var propsResolver = new UnityDependencyResolver(container, System);
+            _akkaEventBusTransport = new AkkaEventBusTransport(System);
+            Publisher = _akkaEventBusTransport;//new DistributedPubSubTransport(System));
+
             InitContainer(container, notifyActor);
             Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()),
                                              container.Resolve<IAggregateActorLocator>());
 
-            Publisher = new AkkaEventBusTransport(System);//new DistributedPubSubTransport(System));
+         
         }
 
         protected virtual void InitContainer(UnityContainer container, IActorRef actor)
@@ -49,6 +53,8 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(actor));
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator,DefaultAggregateActorLocator>();
+            container.RegisterInstance<IActorSubscriber>(_akkaEventBusTransport);
+            container.RegisterInstance<IPublisher>(Publisher);
         }
 
 

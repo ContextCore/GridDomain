@@ -27,9 +27,10 @@ namespace GridDomain.Node
 
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
         {
-            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, akkaConf.ToStandAloneSystemConfig());
-            var plugin = Persistence.Instance.Apply(actorSystem).JournalFor(null);
-            plugin.Ask(new object());
+            var standAloneSystemConfig = akkaConf.ToStandAloneSystemConfig();
+            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, standAloneSystemConfig);
+            //var plugin = Persistence.Instance.Apply(actorSystem).JournalFor(null);
+           // plugin.Ask(new object());
             return actorSystem;
         }
     }

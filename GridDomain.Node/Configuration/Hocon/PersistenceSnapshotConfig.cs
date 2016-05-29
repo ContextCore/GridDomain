@@ -16,11 +16,11 @@ internal class PersistenceSnapshotConfig:IAkkaConfig
                            plugin =  ""akka.persistence.snapshot-store.sql-server""
                            sql-server {
                                       class = ""Akka.Persistence.SqlServer.Snapshot.SqlServerSnapshotStore, Akka.Persistence.SqlServer""
-                                      #plugin-dispatcher = ""akka.actor.default-dispatcher""
+                                      plugin-dispatcher = ""akka.actor.default-dispatcher""
                                       connection-string = """ + akkaConf.Persistence.SnapshotConnectionString + @"""
-                                      #connection-timeout = 30s
+                                      connection-timeout = 30s
                                       schema-name = dbo
-                                    #  table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
+                                      table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
                                       auto-initialize = on
                            }
             }";
