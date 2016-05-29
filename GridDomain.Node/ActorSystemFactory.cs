@@ -27,7 +27,7 @@ namespace GridDomain.Node
 
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
         {
-            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, akkaConf.ToClusterSeedNodeSystemConfig());
+            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, akkaConf.ToStandAloneSystemConfig());
             var plugin = Persistence.Instance.Apply(actorSystem).JournalFor(null);
             plugin.Ask(new object());
             return actorSystem;

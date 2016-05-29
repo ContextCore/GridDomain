@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()),
                                              container.Resolve<IAggregateActorLocator>());
 
-            Publisher = new DistributedPubSubTransport(System);
+            Publisher = new AkkaEventBusTransport(System);//new DistributedPubSubTransport(System));
         }
 
         protected virtual void InitContainer(UnityContainer container, IActorRef actor)

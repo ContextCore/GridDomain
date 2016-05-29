@@ -70,10 +70,10 @@ namespace GridDomain.Node.AkkaMessaging
         {
             if (!string.IsNullOrEmpty(routeConfigMessage.MessageCorrelationProperty))
             {
-                var router = new ClusterRouterPool(
+                var router = //new ClusterRouterPool(
                     new ConsistentHashingPool(Environment.ProcessorCount)
-                        .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage)),
-                    new ClusterRouterPoolSettings(10, true, 2));
+                        .WithHashMapping(GetCorrelationPropertyFromMessage(routeConfigMessage));
+                  //  new ClusterRouterPoolSettings(10, true, 2));
                                 
                 return router;
             }

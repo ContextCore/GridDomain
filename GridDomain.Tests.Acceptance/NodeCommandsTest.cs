@@ -24,8 +24,8 @@ namespace GridDomain.Tests.Acceptance
     public class NodeCommandsTest: TestKit
     {
         protected GridDomainNode GridNode;
-        private IActorRef _distributedPubSub;
-
+       // private IActorRef _distributedPubSub;
+        private IActorSubscriber _subscriber;
         [TearDown]
         public void DeleteSystems()
         {
@@ -45,7 +45,8 @@ namespace GridDomain.Tests.Acceptance
             GridNode = GreateGridDomainNode(akkaConf, autoTestGridDomainConfiguration);
 
             GridNode.Start(autoTestGridDomainConfiguration);
-            _distributedPubSub = DistributedPubSub.Get(GridNode.System).Mediator;
+            _subscriber = GridNode.Container.Resolve<IActorSubscriber>();
+
         }
 
         protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
@@ -72,9 +73,7 @@ namespace GridDomain.Tests.Acceptance
             var actor = GridNode.System.ActorOf(Props.Create(
                                         () => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
 
-            _distributedPubSub
-                             .Ask(new Subscribe(typeof(TEvent).FullName, actor))
-                             .Wait(TimeSpan.FromSeconds(2));
+            _subscriber.Subscribe<TEvent>(actor);
 
             Console.WriteLine("Starting execute");
 

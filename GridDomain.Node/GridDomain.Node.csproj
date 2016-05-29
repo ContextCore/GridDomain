@@ -44,17 +44,16 @@
       <HintPath>..\packages\Akka.Cluster.1.0.8.25-beta\lib\net45\Akka.Cluster.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster.Tools, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Cluster.Tools.1.0.6\lib\net45\Akka.Cluster.Tools.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Akka.Cluster.Tools, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Cluster.Tools.1.0.8.25-beta\lib\net45\Akka.Cluster.Tools.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.DI.Core, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.DI.Core.1.0.8\lib\net45\Akka.DI.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.DI.Unity, Version=1.0.7.18, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.DI.Unity.1.0.7\lib\net45\Akka.DI.Unity.dll</HintPath>
+    <Reference Include="Akka.DI.Unity, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Unity.1.0.8\lib\net45\Akka.DI.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Logger.NLog, Version=1.0.8.3, Culture=neutral, processorArchitecture=MSIL">
@@ -187,6 +186,7 @@
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
     <Compile Include="AkkaMessaging\AggregateHostActor.cs" />
     <Compile Include="AkkaMessaging\AkkaCommandsBuilder.cs" />
+    <Compile Include="AkkaMessaging\AkkaEventBusTransport.cs" />
     <Compile Include="AkkaMessaging\CreateActorRoute.cs" />
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\DistributedPubSubTransport.cs" />
