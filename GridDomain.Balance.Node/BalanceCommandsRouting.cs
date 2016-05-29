@@ -16,13 +16,13 @@ namespace GridDomain.Balance.Node
                   .To<MoneyBalance>()
             .Register();
 
-            router.Route<WithdrawalBalanceCommand>()
-                  .To<MoneyBalance>()
-             .Register();
+            //router.Route<WithdrawalBalanceCommand>()
+            //      .To<MoneyBalance>()
+            // .Register();
 
-            router.Route<CreateBalanceCommand>()
-                  .To<MoneyBalance>()
-             .Register();
+            //router.Route<CreateBalanceCommand>()
+            //      .To<MoneyBalance>()
+            // .Register();
 
 
             router.Route<BalanceReplenishEvent>()

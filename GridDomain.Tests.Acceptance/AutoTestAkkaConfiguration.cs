@@ -4,9 +4,9 @@ namespace GridDomain.Tests.Acceptance
 {
     class AutoTestAkkaConfiguration : AkkaConfiguration
     {
-        public  AutoTestAkkaConfiguration():base(new AutoTestAkkaNetworkAddress(), 
+        public  AutoTestAkkaConfiguration(LogVerbosity verbosity = LogVerbosity.Warning) :base(new AutoTestAkkaNetworkAddress(), 
                                                  new AutoTestAkkaDbConfiguration(),
-                                                 LogVerbosity.Trace)
+                                                 verbosity)
         {
             
         }
