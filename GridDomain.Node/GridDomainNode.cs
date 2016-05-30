@@ -40,10 +40,10 @@ namespace GridDomain.Node
         {
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
-
             CompositionRoot.Init(Container,
                                  System,
-                                 databaseConfiguration);
+                                 databaseConfiguration,
+                                 TransportMode.Cluster);
        
             Container.RegisterInstance(_messageRouting);
             //не убирать - нужен для работы DI в Akka

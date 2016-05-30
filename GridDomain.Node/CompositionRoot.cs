@@ -1,5 +1,6 @@
 ﻿using System;
 using Akka.Actor;
+using Akka.Cluster;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
@@ -19,21 +20,39 @@ using IPublisher = GridDomain.CQRS.Messaging.IPublisher;
 
 namespace GridDomain.Node
 {
+    public enum TransportMode
+    {
+        Standalone,
+        Cluster
+    }
     public static class CompositionRoot
     {
-
+        
         public static void Init(IUnityContainer container,
                                 ActorSystem actorSystem,
-                                IDbConfiguration conf)
+                                IDbConfiguration conf,
+                                TransportMode transportMode)
         {
-            var transport = new AkkaEventBusTransport(actorSystem);
-            
-            container.RegisterInstance<IPublisher>(transport);
-            container.RegisterInstance<IActorSubscriber>(transport);
+
+            //TODO: replace with config
+
+            if(transportMode == TransportMode.Standalone)
+            {
+                var transport = new AkkaEventBusTransport(actorSystem);
+                container.RegisterInstance<IPublisher>(transport);
+                container.RegisterInstance<IActorSubscriber>(transport);
+            }
+            if(transportMode == TransportMode.Cluster)
+            {
+                var transport = new DistributedPubSubTransport(actorSystem);
+                container.RegisterInstance<IPublisher>(transport);
+                container.RegisterInstance<IActorSubscriber>(transport);
+            }
+
+            //TODO: remove
             RegisterEventStore(container, conf);
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            //TODO: replace dirty hack
             container.RegisterType<IAggregateActorLocator,DefaultAggregateActorLocator>();
         }
 
