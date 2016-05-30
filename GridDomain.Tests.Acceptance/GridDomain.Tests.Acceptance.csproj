@@ -245,7 +245,7 @@
     <Compile Include="Balance\ReadModelConcurrentBuild\Single_System_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />
-    <Compile Include="Persistence\Sql_journal_availability_for_cluster_actor_test.cs" />
+    <Compile Include="Persistence\Sql_journal_availability_by_persistent_actor.cs" />
     <Compile Include="Persistence\Sql_journal_availability_test.cs" />
     <Compile Include="Persistence\TestDbTools.cs" />
     <Compile Include="Balance\BalancePersistenceTests.cs" />

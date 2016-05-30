@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventSourcing.Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Balance.Node", "GridDomain.Balance.Node\GridDomain.Balance.Node.csproj", "{BC419A4C-6DDD-493A-B395-45A5D5ACC555}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClusterSqlPersistenceIssue", "ClusterSqlPersistenceIssue\ClusterSqlPersistenceIssue.csproj", "{E12453F3-F5F8-4389-8303-6EBA9B00E008}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutoTesting|Any CPU = AutoTesting|Any CPU
@@ -269,6 +271,22 @@ Global
 		{BC419A4C-6DDD-493A-B395-45A5D5ACC555}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{BC419A4C-6DDD-493A-B395-45A5D5ACC555}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC419A4C-6DDD-493A-B395-45A5D5ACC555}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.AutoTesting|Any CPU.ActiveCfg = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.AutoTesting|Any CPU.Build.0 = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Production|Any CPU.ActiveCfg = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Production|Any CPU.Build.0 = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Sandbox|Any CPU.ActiveCfg = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Sandbox|Any CPU.Build.0 = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12453F3-F5F8-4389-8303-6EBA9B00E008}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

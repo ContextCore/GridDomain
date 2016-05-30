@@ -100,7 +100,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
 
 
     [TestFixture]
-    public class Sql_journal_availability_for_cluster_actor_test: TestKit
+    public class Sql_journal_availability_by_persistent_actor: TestKit
     {
         private readonly AutoTestAkkaConfiguration _conf = new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Warning);
       
@@ -126,6 +126,8 @@ namespace GridDomain.Tests.Acceptance.Persistence
         public void Sql_journal_is_available_for_akka_standalone_config()
         {
             var actorSystem = ActorSystem.Create(_conf.Network.Name, _conf.ToStandAloneSystemConfig());
+          //  var plugin = Akka.Persistence.Persistence.Instance.Apply(actorSystem).JournalFor(null);
+           // plugin.Ask(new object());
             var actor = actorSystem.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
             CHeckPersist(actor);
         }
