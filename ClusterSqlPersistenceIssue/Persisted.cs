@@ -1,7 +1,8 @@
 namespace ClusterSqlPersistenceIssue
 {
-    class Persisted
+    public class Persisted
     {
         public string Payload;
+        public string JournalActorName;
     }
 }
