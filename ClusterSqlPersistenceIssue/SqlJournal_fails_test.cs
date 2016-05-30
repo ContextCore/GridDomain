@@ -1,8 +1,9 @@
+using Akka.Persistence.SqlServer;
 using NUnit.Framework;
 
 namespace ClusterSqlPersistenceIssue
 {
-    class SqlJournal_fails : Journal_availability_for_persistent_actor_for_test_akka_system
+    class SqlJournal_fails_test : Journal_availability_for_persistent_actor_for_test_akka_system
     {
         private static readonly string SqlPersistenceConfiguration = @"
 akka.persistence{
@@ -32,8 +33,9 @@ akka.persistence{
             Assert.AreEqual("akka.persistence.journal.sql-server", OnPersistMessage.JournalActorName);
         }
 
-        public SqlJournal_fails() : base(SqlPersistenceConfiguration)
+        public SqlJournal_fails_test() : base(SqlPersistenceConfiguration)
         {
+          
         }
     }
 }

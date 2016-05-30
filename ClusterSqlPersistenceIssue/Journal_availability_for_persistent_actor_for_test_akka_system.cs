@@ -14,7 +14,7 @@ namespace ClusterSqlPersistenceIssue
 
         public Journal_availability_for_persistent_actor_for_test_akka_system(string config):base(config)
         {
-            
+         
         }
 
         [TestFixtureSetUp]

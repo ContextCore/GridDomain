@@ -13,7 +13,7 @@ namespace ClusterSqlPersistenceIssue
         public PersistencePingActor(IActorRef notifyActor)
         {
             _notifyActor = notifyActor;
-            _plugin = Persistence.Instance.Apply(Context.System).JournalFor(null);
+// _plugin = Persistence.Instance.Apply(Context.System).JournalFor(null);
         }
 
         protected override bool ReceiveRecover(object message)
@@ -31,7 +31,7 @@ namespace ClusterSqlPersistenceIssue
             {
                 var m = message as SqlJournalPing;
                 _events.Add(m.Payload);
-                Persist(m.Payload, e => _notifyActor.Tell(new Persisted() { Payload = m.Payload, JournalActorName = _plugin.Path.Name}));
+                Persist(m.Payload, e => _notifyActor.Tell(new Persisted() { Payload = m.Payload, JournalActorName = "1232"}));
             }
             return true;
         }

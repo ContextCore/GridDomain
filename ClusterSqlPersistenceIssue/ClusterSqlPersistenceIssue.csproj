@@ -96,13 +96,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InMemory_journal_works.cs" />
+    <Compile Include="DefaultSQLConfig_fails_test.cs" />
+    <Compile Include="InMemory_journal_works_test.cs" />
     <Compile Include="Persisted.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlJournalPing.cs" />
     <Compile Include="PersistencePingActor.cs" />
     <Compile Include="Journal_availability_for_persistent_actor_for_test_akka_system.cs" />
-    <Compile Include="SqlJournal_fails.cs" />
+    <Compile Include="SqlJournal_fails_test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
