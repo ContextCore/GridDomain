@@ -3,8 +3,8 @@ using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Scheduling.Akka
 {
-    public interface ITargetActorProvider
+    public interface ITaskRouter
     {
-        IActorRef Get(ProcessScheduledTaskRequest request);
+        IActorRef GetTarget(ProcessScheduledTaskRequest request);
     }
 }

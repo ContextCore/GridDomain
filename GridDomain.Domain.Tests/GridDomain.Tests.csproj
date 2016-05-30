@@ -43,6 +43,10 @@
       <HintPath>..\packages\Akka.TestKit.NUnit.1.0.8\lib\net45\Akka.TestKit.NUnit.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -65,6 +69,10 @@
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.5.8.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.5.8\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -131,8 +139,9 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
     <Compile Include="Scheduling\AkkaSpec.cs" />
-    <Compile Include="Scheduling\BasicSpec.cs" />
-    <Compile Include="Scheduling\ResultHolder.cs" />
+    <Compile Include="Scheduling\TestHelpers\SuccessfulTestRequestHandler.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestRequest.cs" />
+    <Compile Include="Scheduling\TestHelpers\FailingTestRequestHandler.cs" />
     <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>

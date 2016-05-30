@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Specialized;
 using Akka;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
-using Quartz.Impl;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling.Akka
@@ -13,29 +11,17 @@ namespace GridDomain.Scheduling.Akka
     {
         private readonly IScheduler _scheduler;
 
-        public SchedulerActor()
+        public SchedulerActor(IScheduler scheduler)
         {
-            var properties = new NameValueCollection
-            {
-                ["quartz.scheduler.instanceName"] = "TestScheduler",
-                ["quartz.scheduler.instanceId"] = "instance_one",
-                ["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz",
-                ["quartz.jobStore.useProperties"] = "true",
-                ["quartz.jobStore.dataSource"] = "default",
-                ["quartz.jobStore.tablePrefix"] = "QRTZ_",
-                ["quartz.jobStore.lockHandler.type"] = "Quartz.Impl.AdoJobStore.UpdateLockRowSemaphore, Quartz",
-                ["quartz.dataSource.default.connectionString"] = "Integrated Security=true;Database=Quartz;MultipleActiveResultSets=True;Application Name=Quartz;",
-                ["quartz.dataSource.default.provider"] = "SqlServer-20"
-            };
-            var stdSchedulerFactory = new StdSchedulerFactory(properties);
-            stdSchedulerFactory.Initialize();
-            _scheduler = stdSchedulerFactory.GetScheduler();
-            
+            _scheduler = scheduler;
         }
 
         protected override bool Receive(object message)
         {
-            return message.Match().With<AddTask>(AddTask).With<RemoveTask>(RemoveTask).WasHandled;
+            return message.Match()
+                .With<AddTask>(AddTask)
+                .With<RemoveTask>(RemoveTask)
+                .WasHandled;
         }
 
         private void RemoveTask(RemoveTask msg)

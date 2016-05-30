@@ -8,11 +8,11 @@ namespace GridDomain.Scheduling.Akka
 {
     public class QuartzJob : IJob
     {
-        private readonly ITargetActorProvider _actorProvider;
+        private readonly ITaskRouter _taskRouter;
 
-        public QuartzJob(ITargetActorProvider actorProvider)
+        public QuartzJob()
         {
-            _actorProvider = actorProvider;
+            _taskRouter = TaskRouterFactory.Get();
         }
 
         public void Execute(IJobExecutionContext context)
@@ -20,11 +20,12 @@ namespace GridDomain.Scheduling.Akka
             try
             {
                 var taskJson = context.JobDetail.JobDataMap["task"] as string;
-                var task = JsonConvert.DeserializeObject<AkkaScheduledTask>(taskJson,new JsonSerializerSettings
+                var task = JsonConvert.DeserializeObject<AkkaScheduledTask>(taskJson, new JsonSerializerSettings
                 {
-                    TypeNameHandling = TypeNameHandling.Auto
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
                 });
-                var targetActor = _actorProvider.Get(task.Request);
+                var targetActor = _taskRouter.GetTarget(task.Request);
                 targetActor.Ask(task.Request, task.Timeout).Wait(task.Timeout);
             }
             catch (Exception e)
@@ -36,7 +37,12 @@ namespace GridDomain.Scheduling.Akka
 
         public static JobBuilder Create(AkkaScheduledTask task)
         {
-            var serialized = JsonConvert.SerializeObject(task);
+            var serialized = JsonConvert.SerializeObject(task, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+            });
+
             var jdm = new JobDataMap { { "task", serialized } };
             return JobBuilder.Create<QuartzJob>().WithIdentity(task.Request.TaskId).UsingJobData(jdm);
         }
