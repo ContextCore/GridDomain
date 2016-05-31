@@ -9,7 +9,7 @@ namespace GridDomain.Node
 {
     public class ActorSystemFactory
     {
-        public static ActorSystem[] CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber,int childNodeNumber)
+        public static ActorSystem[] CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber=2,int childNodeNumber=3)
         {
             var port = akkaConf.Network.PortNumber;
             var nameNumber = 0;

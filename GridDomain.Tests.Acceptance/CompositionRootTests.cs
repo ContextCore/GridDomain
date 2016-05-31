@@ -18,14 +18,12 @@ namespace GridDomain.Tests.Acceptance
         [TestCase(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
-            var container = new UnityContainer();
-            CompositionRoot.Init(container, 
-                                 ActorSystemFactory.CreateActorSystem(
-                                      new AutoTestAkkaConfiguration()),
-                                     new LocalDbConfiguration(),
-                                    transportMode);
+            var container = InitCoreContainer(transportMode, new LocalDbConfiguration());
+            ResolveAll(container);
+        }
 
-
+        private static void ResolveAll(UnityContainer container)
+        {
             foreach (var reg in container.Registrations)
             {
                 container.Resolve(reg.RegisteredType, reg.Name);
@@ -37,36 +35,27 @@ namespace GridDomain.Tests.Acceptance
         [TestCase(TransportMode.Standalone)]
         public void All_registrations_can_be_resolved(TransportMode transportMode)
         {
-            LocalDbConfiguration localDbConfiguration;
-            var container = InitCoreContainer(transportMode, out localDbConfiguration);
-
-
+            var localDbConfiguration = new LocalDbConfiguration();
+            var container = InitCoreContainer(transportMode, localDbConfiguration);
             GridDomain.Balance.Node.CompositionRoot.Init(container, localDbConfiguration);
-
-            foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
-            {
-                container.Resolve(reg.RegisteredType, reg.Name);
-                Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
-            }
+            ResolveAll(container);
         }
 
-        private IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary<TransportMode, Func<ActorSystem>>
-            {
-            {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())}
+        private static readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
+            <TransportMode, Func<ActorSystem>>
+        {
+            {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())},
+            {TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomElement()}
+        };
 
-            } } 
         private static UnityContainer InitCoreContainer(TransportMode transportMode,
                                                         IDbConfiguration localDbConfiguration)
         {
             var container = new UnityContainer();
-            localDbConfiguration = new LocalDbConfiguration();
-
-            if(transportMode = TransportMode.Standalone)
-
-                CompositionRoot.Init(container,
-                                     ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()),
-                                     localDbConfiguration,
-                                     transportMode);
+            CompositionRoot.Init(container,
+                                    ActorSystemBuilders[transportMode](),
+                                    localDbConfiguration,
+                                    transportMode);
             return container;
         }
     }
