@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
 using Akka.Cluster.Tools.PublishSubscribe;
+using Akka.DI.Unity;
 using Akka.TestKit;
 using Akka.TestKit.NUnit;
 using CommonDomain.Persistence;
@@ -25,6 +26,7 @@ namespace GridDomain.Tests.Acceptance
     {
         protected GridDomainNode GridNode;
         private IActorSubscriber _subscriber;
+        private static AkkaConfiguration _akkaConf = new AutoTestAkkaConfiguration();
 
         [TearDown]
         public void DeleteSystems()
@@ -34,20 +36,21 @@ namespace GridDomain.Tests.Acceptance
             GridNode.Stop();
         }
 
-        [SetUp]
+        protected NodeCommandsTest():base(_akkaConf.ToStandAloneSystemConfig())
+        {
+            
+        }
+
+        [TestFixtureSetUp]
         protected void Init()
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
-            AkkaConfiguration akkaConf = new AutoTestAkkaConfiguration();
 
-            TestDbTools.ClearData(autoTestGridDomainConfiguration, akkaConf.Persistence);
+            TestDbTools.ClearData(autoTestGridDomainConfiguration, _akkaConf.Persistence);
 
-
-            GridNode = GreateGridDomainNode(akkaConf, autoTestGridDomainConfiguration);
-
+            GridNode = GreateGridDomainNode(_akkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
             _subscriber = GridNode.Container.Resolve<IActorSubscriber>();
-
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);

@@ -21,7 +21,7 @@ namespace GridDomain.Node.AkkaMessaging
     /// <typeparam name="TAggregate"></typeparam>
     public class AggregateActor<TAggregate>: ReceivePersistentActor where TAggregate : AggregateBase
     {
-        private TAggregate _aggregate;
+        internal TAggregate Aggregate { get; private set; }
         private readonly IPublisher _publisher;
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         public override string PersistenceId { get; }
@@ -31,25 +31,15 @@ namespace GridDomain.Node.AkkaMessaging
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
-            _aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
+            Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
 
             CommandAny(cmd => {
-                                  var events = _handler.Execute(_aggregate, (ICommand) cmd);
+                                  var events = _handler.Execute(Aggregate, (ICommand) cmd);
                                   PersistAll(events, e => _publisher.Publish(e));
             });
 
-            Recover<SnapshotOffer>(offer => _aggregate = (TAggregate)offer.Snapshot);
-            Recover<DomainEvent>(e => ((IAggregate)_aggregate).ApplyEvent(e));
-        }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistFailure(cause, @event, sequenceNr);
-        }
-
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistRejected(cause, @event, sequenceNr);
+            Recover<SnapshotOffer>(offer => Aggregate = (TAggregate)offer.Snapshot);
+            Recover<DomainEvent>(e => ((IAggregate)Aggregate).ApplyEvent(e));
         }
     }
 
