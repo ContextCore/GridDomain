@@ -1,4 +1,5 @@
-﻿using GridDomain.Balance.Node;
+﻿using System;
+using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
@@ -14,5 +15,11 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
                                       ActorSystemFactory.CreateCluster(akkaConf).RandomElement(),
                                       TransportMode.Cluster);
         }
+
+        public Cluster_Given_balance_change_plan_When_executing() : base("")
+        {
+        }
+
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
     }
 }

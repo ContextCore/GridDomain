@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance
     {
         protected GridDomainNode GridNode;
         private IActorSubscriber _subscriber;
-        private static AkkaConfiguration _akkaConf = new AutoTestAkkaConfiguration();
+        protected static AkkaConfiguration _akkaConf = new AutoTestAkkaConfiguration();
 
         [TearDown]
         public void DeleteSystems()
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Acceptance
             GridNode.Stop();
         }
 
-        protected NodeCommandsTest():base(_akkaConf.ToStandAloneSystemConfig())
+        protected NodeCommandsTest(string config):base(config)
         {
             
         }
