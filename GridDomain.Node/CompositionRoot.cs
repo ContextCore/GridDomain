@@ -20,6 +20,7 @@ using IPublisher = GridDomain.CQRS.Messaging.IPublisher;
 
 namespace GridDomain.Node
 {
+    //TODO: refactor to good config
     public enum TransportMode
     {
         Standalone,

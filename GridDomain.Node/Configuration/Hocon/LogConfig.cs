@@ -5,24 +5,24 @@ namespace GridDomain.Node.Configuration
     class LogConfig : IAkkaConfig
     {
         private readonly AkkaConfiguration _akkaConf;
-
-        public LogConfig(AkkaConfiguration akkaConf)
+        private bool _includeConfig;
+        public LogConfig(AkkaConfiguration akkaConf, bool includeConfig = true)
         {
             _akkaConf = akkaConf;
+            _includeConfig = includeConfig;
         }
 
         public string Build()
         {
-            return BuildLogConfig(_akkaConf);
-        }
-
-        public static string BuildLogConfig(AkkaConfiguration akkaConf)
-        {
             string logConfig =
                 @"
-      stdout-loglevel = " + akkaConf.LogLevel + @"
-      loglevel = " + akkaConf.LogLevel + @"
+      stdout-loglevel = " + _akkaConf.LogLevel + @"
+      loglevel = " + _akkaConf.LogLevel;
+
+            if(_includeConfig)
+                logConfig  += @"
       log-config-on-start = on";
+
             return logConfig;
         }
     }

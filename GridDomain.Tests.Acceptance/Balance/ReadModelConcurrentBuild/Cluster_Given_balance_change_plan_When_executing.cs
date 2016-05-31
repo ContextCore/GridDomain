@@ -11,7 +11,10 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(), ActorSystemFactory.CreateCluster(akkaConf,3,3).RandomElement());
+            return new GridDomainNode(DefaultUnityContainer(dbConfig), 
+                                      new BalanceCommandsRouting(), 
+                                      ActorSystemFactory.CreateCluster(akkaConf).RandomElement(),
+                                      TransportMode.Cluster);
         }
     }
 
@@ -21,7 +24,10 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(), ActorSystemFactory.CreateActorSystem(akkaConf));
+            return new GridDomainNode(DefaultUnityContainer(dbConfig),
+                                      new BalanceCommandsRouting(), 
+                                      ActorSystemFactory.CreateActorSystem(akkaConf),
+                                      TransportMode.Cluster);
         }
     }
 }

@@ -48,15 +48,12 @@ public abstract class ActorConfig: IAkkaConfig
     {
         string transportString = 
            @"remote {
-               #cluster.sharding.journal-plugin-id = ""akka.persistence.journal.sql-server""
-               #cluster.sharding.snapshot-plugin-id = ""akka.persistence.snapshot-store.sql-server""
-          
                     helios.tcp {
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                transport-protocol = tcp
                                port = " + port + @"
+                               hostname = localhost
                     }
-                    hostname = " + name + @"
             }";
         return transportString;
     }

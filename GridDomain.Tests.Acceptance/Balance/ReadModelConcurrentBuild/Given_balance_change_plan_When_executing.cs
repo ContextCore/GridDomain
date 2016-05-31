@@ -5,6 +5,7 @@ using CommonDomain.Persistence;
 using GridDomain.Balance.Domain.BalanceAggregate;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.Balance.ReadModel;
+using GridDomain.Node;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -144,5 +145,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(businessNum, businessNum);
             return balanceManipulationCommands;
         }
+
+        protected override TransportMode Transport => TransportMode.Standalone;
     }
 }

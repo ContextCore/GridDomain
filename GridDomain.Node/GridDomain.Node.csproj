@@ -213,7 +213,6 @@
     <Compile Include="Configuration\AkkaNetworkAddress.cs" />
     <Compile Include="Configuration\Hocon\BuildPersistenceConfig.cs" />
     <Compile Include="Configuration\Hocon\ClusterConfig.cs" />
-    <Compile Include="Configuration\Hocon\ClusterSeedConfig.cs" />
     <Compile Include="Configuration\Hocon\IAkkaConfig.cs" />
     <Compile Include="Configuration\Hocon\StandAloneConfig.cs" />
     <Compile Include="Configuration\IAkkaDbConfiguration.cs" />

@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance
 
         private static void ResolveAll(UnityContainer container)
         {
-            foreach (var reg in container.Registrations)
+            foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
             {
                 container.Resolve(reg.RegisteredType, reg.Name);
                 Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");

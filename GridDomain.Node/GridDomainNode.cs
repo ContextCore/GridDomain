@@ -21,15 +21,16 @@ namespace GridDomain.Node
         public IUnityContainer Container { get; }
         public readonly ActorSystem System;
         private readonly IMessageRouteConfiguration _messageRouting;
+        private readonly TransportMode _transportMode;
 
         public Guid Id { get; } = Guid.NewGuid();
 
-
-
         public GridDomainNode(IUnityContainer container,
                               IMessageRouteConfiguration messageRouting,
-                              ActorSystem actorSystem)
+                              ActorSystem actorSystem,
+                              TransportMode transportMode)
         {
+            _transportMode = transportMode;
             _messageRouting = messageRouting;
             _messageRouting = messageRouting;
             System = actorSystem;
@@ -43,7 +44,7 @@ namespace GridDomain.Node
             CompositionRoot.Init(Container,
                                  System,
                                  databaseConfiguration,
-                                 TransportMode.Cluster);
+                                 _transportMode);
        
             Container.RegisterInstance(_messageRouting);
             //не убирать - нужен для работы DI в Akka

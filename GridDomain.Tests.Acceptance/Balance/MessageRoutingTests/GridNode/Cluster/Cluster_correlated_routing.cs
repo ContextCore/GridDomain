@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
         public void Messages_should_be_processed_by_remote_nodes()
         {
             foreach(var node in Infrastructure.Nodes)
-              Assert.True(_resultMessages.Any( m => m.ProcessorActorSystemAdress == Akka.Cluster.Cluster.Get(node).SelfAddress));
+                 Assert.True(_resultMessages.Any( m => m.ProcessorActorSystemAdress == Akka.Cluster.Cluster.Get(node).SelfAddress));
         }
 
         protected override IRouterConfiguration CreateRoutes()

@@ -1,5 +1,6 @@
 using System.Linq;
 using Akka.Actor;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
@@ -10,7 +11,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
     class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
     {
         public ActorSystem[] Nodes;
-
+        private DistributedPubSubTransport _transport;
         public ClusterActorSystemInfrastructure(AkkaConfiguration conf):base(conf)
         {
             
@@ -22,10 +23,15 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
             container.RegisterType<IHandlerActorTypeFactory, ClusterActorTypeFactory>();
         }
 
+        protected override IActorSubscriber Subscriber => _transport;
+        protected override IPublisher Publisher => _transport;
+
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
-            Nodes = ActorSystemFactory.CreateCluster(AkkaConfig,2,3);
-            return Nodes.Last();
+            Nodes = ActorSystemFactory.CreateCluster(AkkaConfig);
+            var actorSystem = Nodes.Last();
+            _transport = new DistributedPubSubTransport(actorSystem);
+            return actorSystem;
         }
 
         public override void Dispose()

@@ -21,10 +21,9 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
 {
-    public class NodeCommandsTest: TestKit
+    public abstract class NodeCommandsTest: TestKit
     {
         protected GridDomainNode GridNode;
-       // private IActorRef _distributedPubSub;
         private IActorSubscriber _subscriber;
         [TearDown]
         public void DeleteSystems()
@@ -53,8 +52,13 @@ namespace GridDomain.Tests.Acceptance
         {
             var actorSystem = ActorSystemFactory.CreateActorSystem(akkaConf);
 
-            return new GridDomainNode(DefaultUnityContainer(dbConfig), new BalanceCommandsRouting(),  actorSystem);
+            return new GridDomainNode(DefaultUnityContainer(dbConfig),
+                                      new BalanceCommandsRouting(),  
+                                      actorSystem,
+                                      Transport);
         }
+
+        protected abstract TransportMode Transport { get; }
 
         protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
         {

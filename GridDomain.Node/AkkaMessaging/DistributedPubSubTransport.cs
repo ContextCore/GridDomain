@@ -9,6 +9,15 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class CannotGetDistributedPubSubException : Exception
     {
+        public CannotGetDistributedPubSubException(Exception ex):base("",ex)
+        {
+     
+        }
+
+        public CannotGetDistributedPubSubException()
+        {
+            
+        }
     }
 
     public class DistributedPubSubTransport : IActorSubscriber, IPublisher
@@ -18,9 +27,18 @@ namespace GridDomain.Node.AkkaMessaging
 
         public DistributedPubSubTransport(ActorSystem system)
         {
-             var distributedPubSub = DistributedPubSub.Get(system);
+            DistributedPubSub distributedPubSub;
+            try
+            {
+                distributedPubSub = DistributedPubSub.Get(system);
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetDistributedPubSubException(ex);
+            }
             if (distributedPubSub == null)
                 throw new CannotGetDistributedPubSubException();
+
             _transport = distributedPubSub.Mediator;
         }
 
