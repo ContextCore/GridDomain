@@ -8,22 +8,12 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Balance.Node
 {
-    public class BalanceCommandsRouting : IMessageRouteConfiguration
+    public class BalanceCommandsRouting : IMessageRouteMap
     {
         public void Register(IMessagesRouter router)
         {
-            router.Route<ReplenishBalanceCommand>()
-                  .To<MoneyBalance>()
-            .Register();
 
-            router.Route<WithdrawalBalanceCommand>()
-                  .To<MoneyBalance>()
-             .Register();
-
-            router.Route<CreateBalanceCommand>()
-                  .To<MoneyBalance>()
-             .Register();
-
+            router.Register<MoneyBalance,MoneyBalanceCommandsHandler>(new MoneyBalanceCommandsHandler());
 
             router.Route<BalanceReplenishEvent>()
                     .ToHandler<BusinessCurrentBalanceProjectionBuilder>()

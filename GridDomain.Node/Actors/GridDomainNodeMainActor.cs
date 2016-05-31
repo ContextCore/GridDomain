@@ -17,11 +17,11 @@ namespace GridDomain.Node.Actors
         private readonly IStoreEvents _eventStore;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly IPublisher _messagePublisher;
-        private readonly IMessageRouteConfiguration _messageRouting;
+        private readonly IMessageRouteMap _messageRouting;
 
         public GridDomainNodeMainActor(IStoreEvents eventStore,
                                        IPublisher transport,
-                                       IMessageRouteConfiguration messageRouting)
+                                       IMessageRouteMap messageRouting)
         {
             _messageRouting = messageRouting;
             _eventStore = eventStore;
@@ -37,10 +37,9 @@ namespace GridDomain.Node.Actors
                                                                  new DomainEventsBusNotifier(_messagePublisher));
 
             ActorSystem system = Context.System;
-            var routingActor = system.ActorOf(system.DI().Props<AkkaRoutingActor>());
+            var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType));
 
             var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
-
             _messageRouting.Register(actorMessagesRouter);
 
             //TODO: replace with message from router
@@ -82,6 +81,7 @@ namespace GridDomain.Node.Actors
 
         public class Start
         {
+            public Type RoutingActorType;
         }
 
         public class Started

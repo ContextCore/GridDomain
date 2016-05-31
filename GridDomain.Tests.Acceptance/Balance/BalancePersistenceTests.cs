@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Balance
         [SetUp]
         public void ClearDb()
         {
-            TestDbTools.ClearAll(TestEnvironment.Configuration);
+            TestDbTools.ClearData(TestEnvironment.Configuration);
         }
 
         private IRepository CreateIndependentRepository()

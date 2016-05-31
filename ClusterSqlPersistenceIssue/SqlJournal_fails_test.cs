@@ -7,6 +7,7 @@ namespace ClusterSqlPersistenceIssue
     {
         private static readonly string SqlPersistenceConfiguration = @"
 akka.persistence{
+
                 journal {
                   plugin = ""akka.persistence.journal.sql-server""
                   sql-server {

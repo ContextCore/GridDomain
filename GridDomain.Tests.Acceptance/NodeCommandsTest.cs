@@ -38,9 +38,10 @@ namespace GridDomain.Tests.Acceptance
         protected void Init()
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
-            TestDbTools.ClearAll(autoTestGridDomainConfiguration);
-
             AkkaConfiguration akkaConf = new AutoTestAkkaConfiguration();
+
+            TestDbTools.ClearData(autoTestGridDomainConfiguration, akkaConf.Persistence);
+
 
             GridNode = GreateGridDomainNode(akkaConf, autoTestGridDomainConfiguration);
 
@@ -65,8 +66,7 @@ namespace GridDomain.Tests.Acceptance
         {
             var sources = commands.Select(expectedSource).ToArray();
             
-            var actor = GridNode.System.ActorOf(Props.Create(
-                                        () => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
+            var actor = Sys.ActorOf(Props.Create(() => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
 
             _subscriber.Subscribe<TEvent>(actor);
 
@@ -79,10 +79,11 @@ namespace GridDomain.Tests.Acceptance
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
             ExpectMsg<ExpectedMessagesRecieved<TEvent>>(Timeout);
+
             Console.WriteLine();
             Console.WriteLine("Wait ended");
         }
 
-        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(100);
     }
 }

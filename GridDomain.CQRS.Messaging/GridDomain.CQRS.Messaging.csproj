@@ -97,7 +97,7 @@
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IMessageConsumer.cs" />
     <Compile Include="IMessageFilter.cs" />
-    <Compile Include="IMessageRouteConfiguration.cs" />
+    <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
     <Compile Include="MessageRouting\CommandHandlerAdapter.cs" />
     <Compile Include="MessageRouting\CommandHandlerBuilders\AggregateActionBuilder.cs" />

@@ -1,13 +1,15 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateCommandsHandler<TAggregate>: IAggregateCommandsHandler<TAggregate>,
-                                              ICommandAggregateLocator<TAggregate>
+                                                       ICommandAggregateLocator<TAggregate>
         where TAggregate : AggregateBase
     {
         public Guid GetAggregateId(ICommand command)
@@ -30,12 +32,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             _commandHandlers[typeof(TCommand)] = handler;
         }
 
-        protected void Map<TCommand>(Func<TCommand, Guid> idLocator, Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator, Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Map<TCommand>(AggregateCommandHandler<TAggregate>.New<TCommand>(idLocator, commandExecutor));
         }
 
-        protected void Map<TCommand>(Func<TCommand, Guid> idLocator, Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator, Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Map<TCommand>(AggregateCommandHandler<TAggregate>.New<TCommand>(idLocator, commandExecutor));
         }
@@ -44,6 +46,20 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public IReadOnlyCollection<DomainEvent> Execute(TAggregate aggregate, ICommand command)
         {
             return GetHandler(command).Execute(aggregate, command);
+        }
+
+        public class AggregateLookupInfo
+        {
+            public Type Command;
+            public string Property;
+        }
+
+        public IReadOnlyCollection<AggregateLookupInfo> GetRegisteredCommands()
+        {
+            return
+                _commandHandlers.Select(
+                    h => new AggregateLookupInfo {Command = h.Key, Property = h.Value.MachingProperty})
+                    .ToArray();
         }
     }
 

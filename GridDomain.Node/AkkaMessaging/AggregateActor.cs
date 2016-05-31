@@ -37,6 +37,7 @@ namespace GridDomain.Node.AkkaMessaging
                                   var events = _handler.Execute(_aggregate, (ICommand) cmd);
                                   PersistAll(events, e => _publisher.Publish(e));
             });
+
             Recover<SnapshotOffer>(offer => _aggregate = (TAggregate)offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate)_aggregate).ApplyEvent(e));
         }

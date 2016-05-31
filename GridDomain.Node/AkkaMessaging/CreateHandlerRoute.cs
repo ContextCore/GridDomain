@@ -5,7 +5,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class CreateRoute: IEquatable<CreateRoute>
+    public class CreateHandlerRoute: IEquatable<CreateHandlerRoute>
     {
         public Type MessageType { get; }
         public Type HandlerType { get; }
@@ -18,7 +18,7 @@ namespace GridDomain.Node.AkkaMessaging
         /// </summary>
         public string MessageCorrelationProperty { get; }
 
-        public CreateRoute(Type messageType, Type handlerType, string messageCorrelationProperty)
+        public CreateHandlerRoute(Type messageType, Type handlerType, string messageCorrelationProperty)
         {
             MessageType = messageType;
             HandlerType = handlerType;
@@ -27,9 +27,9 @@ namespace GridDomain.Node.AkkaMessaging
             Check();
         }
 
-        public static CreateRoute New<TMessage, THandler>(string property) where THandler: IHandler<TMessage>
+        public static CreateHandlerRoute New<TMessage, THandler>(string property) where THandler: IHandler<TMessage>
         {
-            return new CreateRoute(typeof(TMessage), typeof(THandler), property);
+            return new CreateHandlerRoute(typeof(TMessage), typeof(THandler), property);
         }
         private void Check()
         {
@@ -55,7 +55,7 @@ namespace GridDomain.Node.AkkaMessaging
                 throw new IncorrectTypeOfCorrelationProperty(MessageType, MessageCorrelationProperty);
         }
 
-        public bool Equals(CreateRoute other)
+        public bool Equals(CreateHandlerRoute other)
         {
             return other.HandlerType == HandlerType && other.MessageType == MessageType;
         }

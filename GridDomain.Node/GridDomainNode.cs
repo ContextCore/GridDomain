@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
@@ -7,6 +8,7 @@ using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 using NLog;
@@ -20,18 +22,23 @@ namespace GridDomain.Node
         private IActorRef _mainNodeActor;
         public IUnityContainer Container { get; }
         public readonly ActorSystem System;
-        private readonly IMessageRouteConfiguration _messageRouting;
+        private readonly IMessageRouteMap _messageRouting;
         private readonly TransportMode _transportMode;
+        private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
+           <TransportMode, Type>
+        {
+            {TransportMode.Standalone, typeof(LocalSystemRoutingActor)},
+            {TransportMode.Cluster,    typeof(ClusterSystemRouterActor)}
+        };
 
         public Guid Id { get; } = Guid.NewGuid();
 
         public GridDomainNode(IUnityContainer container,
-                              IMessageRouteConfiguration messageRouting,
+                              IMessageRouteMap messageRouting,
                               ActorSystem actorSystem,
                               TransportMode transportMode)
         {
             _transportMode = transportMode;
-            _messageRouting = messageRouting;
             _messageRouting = messageRouting;
             System = actorSystem;
             Container = container;
@@ -41,6 +48,7 @@ namespace GridDomain.Node
         {
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
+
             CompositionRoot.Init(Container,
                                  System,
                                  databaseConfiguration,
@@ -68,8 +76,11 @@ namespace GridDomain.Node
             
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
             _mainNodeActor = actorSystem.ActorOf(props);
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start())
-                          .Wait(TimeSpan.FromSeconds(10));
+            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start()
+            {
+                RoutingActorType = RoutingActorType[_transportMode]
+            })
+            .Wait(TimeSpan.FromSeconds(10));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }

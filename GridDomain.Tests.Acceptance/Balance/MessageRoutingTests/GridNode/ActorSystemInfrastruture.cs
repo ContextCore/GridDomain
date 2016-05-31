@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
         public virtual void Init(IActorRef notifyActor)
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
-            TestDbTools.ClearAll(autoTestGridDomainConfiguration);
+            TestDbTools.ClearData(autoTestGridDomainConfiguration);
             GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
             var system = CreateSystem(AkkaConfig);
