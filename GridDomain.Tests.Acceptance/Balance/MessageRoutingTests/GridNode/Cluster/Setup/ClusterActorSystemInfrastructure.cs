@@ -36,11 +36,11 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
 
         public override void Dispose()
         {
-            base.Dispose();
-            foreach (var system in Nodes)
+            Akka.Cluster.Cluster.Get(Nodes.First()).Shutdown();
+            foreach (var actorSystem in Nodes)
             {
-                system.Terminate();
-                system.Dispose();
+                actorSystem.Terminate();
+                actorSystem.Dispose();
             }
         }
     }

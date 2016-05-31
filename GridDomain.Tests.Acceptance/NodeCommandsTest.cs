@@ -25,6 +25,7 @@ namespace GridDomain.Tests.Acceptance
     {
         protected GridDomainNode GridNode;
         private IActorSubscriber _subscriber;
+
         [TearDown]
         public void DeleteSystems()
         {
@@ -49,12 +50,6 @@ namespace GridDomain.Tests.Acceptance
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
-
-        //    var actorSystem = ActorSystemFactory.CreateActorSystem(akkaConf);
-        //    return new GridDomainNode(DefaultUnityContainer(dbConfig),
-        //                              new BalanceCommandsRouting(),  
-        //                              //actorSystem,
-        //                              //Transport);
 
         protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
         {

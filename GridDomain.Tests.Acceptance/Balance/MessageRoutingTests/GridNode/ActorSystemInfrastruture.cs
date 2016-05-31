@@ -17,7 +17,6 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 {
     public abstract class ActorSystemInfrastruture: IDisposable
     {
-        public ActorSystem System { get; private set; }
         public ActorMessagesRouter Router;
         public readonly AkkaConfiguration AkkaConfig;
 
@@ -33,12 +32,12 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             TestDbTools.ClearAll(autoTestGridDomainConfiguration);
             GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
-            System = CreateSystem(AkkaConfig);
+            var system = CreateSystem(AkkaConfig);
             var container = new UnityContainer();
-            var propsResolver = new UnityDependencyResolver(container, System);
+            var propsResolver = new UnityDependencyResolver(container, system);
 
             InitContainer(container, notifyActor);
-            Router = new ActorMessagesRouter(System.ActorOf(System.DI().Props<AkkaRoutingActor>()),
+            Router = new ActorMessagesRouter(system.ActorOf(system.DI().Props<AkkaRoutingActor>()),
                                              container.Resolve<IAggregateActorLocator>());
 
          
@@ -72,11 +71,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
         }
 
         protected abstract ActorSystem CreateSystem(AkkaConfiguration conf);
+        public abstract void Dispose();
 
-        public virtual void Dispose()
-        {
-            System.Terminate();
-            System.Dispose();
-        }
     }
 }

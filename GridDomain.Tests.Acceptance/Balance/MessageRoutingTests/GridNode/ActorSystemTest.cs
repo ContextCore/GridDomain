@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.TestKit.NUnit;
 using NUnit.Framework;
@@ -13,8 +14,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
         [TearDown]
         public void Clear()
         {
-            Infrastructure.System.Terminate();
-            Infrastructure.System.Dispose();
+            Infrastructure.Dispose();
         }
         
         [SetUp]
@@ -29,6 +29,10 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             Infrastructure.Publish(commands.Cast<object>().ToArray());
             InitialCommands = commands;
             _resultMessages = Infrastructure.WaitFor<T>(this, InitialCommands.Length);
+
+            Console.WriteLine();
+            Console.WriteLine("processing finished");
+            Console.WriteLine();
         }
 
         protected abstract IGivenCommands<T> GivenCommands();

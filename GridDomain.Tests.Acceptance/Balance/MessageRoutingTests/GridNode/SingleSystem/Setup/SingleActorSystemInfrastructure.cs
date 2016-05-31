@@ -9,6 +9,8 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
     public class SingleActorSystemInfrastructure : ActorSystemInfrastruture
     {
         private AkkaEventBusTransport _transport;
+        private ActorSystem _actorSystem;
+
         public SingleActorSystemInfrastructure(AkkaConfiguration conf) : base(conf)
         {
 
@@ -19,9 +21,15 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
 
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
-            var actorSystem = ActorSystemFactory.CreateActorSystem(AkkaConfig);
-            _transport = new AkkaEventBusTransport(actorSystem);
-            return actorSystem;
+            _actorSystem = ActorSystemFactory.CreateActorSystem(AkkaConfig);
+            _transport = new AkkaEventBusTransport(_actorSystem);
+            return _actorSystem;
+        }
+
+        public override void Dispose()
+        {
+            _actorSystem.Terminate();
+            _actorSystem.Dispose();
         }
     }
 }
