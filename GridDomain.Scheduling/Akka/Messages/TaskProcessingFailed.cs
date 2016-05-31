@@ -3,7 +3,7 @@ using Akka.Actor;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public sealed class TaskProcessingFailed : Failure, IProcessingResult
+    public class TaskProcessingFailed : Failure
     {
         public string TaskId { get; private set; }
 

@@ -72,25 +72,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Akka\ILoggingJobListener.cs" />
-    <Compile Include="Akka\ILoggingSchedulerListener.cs" />
-    <Compile Include="Akka\IQuartzConfig.cs" />
-    <Compile Include="Akka\ITaskRouter.cs" />
-    <Compile Include="Akka\LoggingJobListener.cs" />
-    <Compile Include="Akka\LoggingSchedulerListener.cs" />
+    <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />
+    <Compile Include="Quartz\Logging\ILoggingSchedulerListener.cs" />
+    <Compile Include="Quartz\IQuartzConfig.cs" />
+    <Compile Include="Quartz\Logging\IQuartzLogger.cs" />
+    <Compile Include="Integration\ITaskRouter.cs" />
+    <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
+    <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
     <Compile Include="Akka\Messages\AddTask.cs" />
-    <Compile Include="Akka\Messages\IProcessingResult.cs" />
     <Compile Include="Akka\Messages\TaskProcessingFailed.cs" />
-    <Compile Include="Akka\QuartzConfig.cs" />
-    <Compile Include="Akka\ScheduledTaskHandlerActorBase.cs" />
-    <Compile Include="Akka\SchedulerFactory.cs" />
-    <Compile Include="Akka\TaskRouterFactory.cs" />
-    <Compile Include="Akka\Tasks\AkkaScheduledTask.cs" />
-    <Compile Include="Akka\TaskRouter.cs" />
-    <Compile Include="Akka\Tasks\ProcessScheduledTaskRequest.cs" />
-    <Compile Include="Akka\QuartzJob.cs" />
+    <Compile Include="Quartz\QuartzConfig.cs" />
+    <Compile Include="Quartz\Logging\QuartzLogger.cs" />
+    <Compile Include="Quartz\Logging\QuartzLoggerFactory.cs" />
+    <Compile Include="Akka\ScheduledTaskHandler.cs" />
+    <Compile Include="Quartz\SchedulerFactory.cs" />
+    <Compile Include="Integration\TaskRouterFactory.cs" />
+    <Compile Include="Integration\TaskRouter.cs" />
+    <Compile Include="Akka\Tasks\ScheduledRequest.cs" />
+    <Compile Include="Integration\QuartzJob.cs" />
     <Compile Include="Akka\Messages\RemoveTask.cs" />
-    <Compile Include="Akka\SchedulerActor.cs" />
+    <Compile Include="Integration\SchedulerActor.cs" />
     <Compile Include="Akka\Messages\TaskAdded.cs" />
     <Compile Include="Akka\Messages\TaskProcessed.cs" />
     <Compile Include="Akka\Messages\TaskRemoved.cs" />
@@ -103,9 +104,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Quartz\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

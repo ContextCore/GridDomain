@@ -2,7 +2,7 @@ using System;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public sealed class TaskAdded
+    public class TaskAdded
     {
         public DateTime NextExecution { get; private set; }
 

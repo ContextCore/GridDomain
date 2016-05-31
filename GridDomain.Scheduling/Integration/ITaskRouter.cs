@@ -1,10 +1,10 @@
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Tasks;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Integration
 {
     public interface ITaskRouter
     {
-        IActorRef GetTarget(ProcessScheduledTaskRequest request);
+        IActorRef GetTarget(ScheduledRequest request);
     }
 }

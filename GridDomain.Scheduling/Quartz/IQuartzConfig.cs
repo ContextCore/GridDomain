@@ -1,4 +1,4 @@
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Quartz
 {
     public interface IQuartzConfig
     {

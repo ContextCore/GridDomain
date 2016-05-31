@@ -5,7 +5,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Integration
 {
     public class SchedulerActor : ActorBase
     {
@@ -30,7 +30,7 @@ namespace GridDomain.Scheduling.Akka
             {
                 var jobKey = new JobKey(msg.TaskId);
                 _scheduler.DeleteJob(jobKey);
-                Sender.Tell(new TaskRemoved());
+                Sender.Tell(new TaskRemoved(msg.TaskId));
             }
             catch (Exception e)
             {
@@ -42,12 +42,12 @@ namespace GridDomain.Scheduling.Akka
         {
             try
             {
-                var job = QuartzJob.Create(msg.Task).Build();
+                var job = QuartzJob.Create(msg.Request, msg.ExecutionTimeout).Build();
                 var trigger = TriggerBuilder.Create()
-                    .WithIdentity(msg.Task.Request.TaskId)
+                    .WithIdentity(msg.Request.TaskId)
                     .ForJob(job)
                     .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow())
-                    .StartAt(msg.Task.RunAt)
+                    .StartAt(msg.RunAt)
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new TaskAdded(fireTime.UtcDateTime));

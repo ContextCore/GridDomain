@@ -1,6 +1,6 @@
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public sealed class TaskProcessed : IProcessingResult
+    public class TaskProcessed
     {
         public string TaskId { get; private set; }
         public TaskProcessed(string taskId)

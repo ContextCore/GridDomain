@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Tasks;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Integration
 {
     public class TaskRouter : ITaskRouter
     {
@@ -19,7 +19,7 @@ namespace GridDomain.Scheduling.Akka
             _routeTable[requestType] = target;
         }
 
-        public IActorRef GetTarget(ProcessScheduledTaskRequest request)
+        public IActorRef GetTarget(ScheduledRequest request)
         {
             return _routeTable[request.GetType()];
         }

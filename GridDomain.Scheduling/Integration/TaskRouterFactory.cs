@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Integration
 {
     public static class TaskRouterFactory
     {

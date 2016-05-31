@@ -1,8 +1,9 @@
 using System.Collections.Specialized;
+using GridDomain.Scheduling.Quartz.Logging;
 using Quartz;
 using Quartz.Impl;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Quartz
 {
     public class SchedulerFactory
     {

@@ -4,9 +4,9 @@ using GridDomain.Scheduling.Akka;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class FailingTestRequestHandler : ScheduledTaskHandlerActorBase<TestRequest>
+    public class FailingTestRequestHandler : ScheduledTaskHandler<TestRequest>
     {
-        protected override Task Handle(TestRequest request)
+        protected override async Task Handle(TestRequest request)
         {
             throw new InvalidOperationException("something went wrong");
         }

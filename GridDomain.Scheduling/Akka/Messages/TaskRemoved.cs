@@ -1,6 +1,12 @@
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public sealed class TaskRemoved
+    public class TaskRemoved
     {
+        public string TaskId { get; }
+
+        public TaskRemoved(string taskId)
+        {
+            TaskId = taskId;
+        }
     }
 }

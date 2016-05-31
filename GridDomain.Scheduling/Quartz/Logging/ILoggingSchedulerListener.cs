@@ -1,6 +1,6 @@
 using Quartz;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Quartz.Logging
 {
     public interface ILoggingSchedulerListener : ISchedulerListener
     {

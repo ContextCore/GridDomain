@@ -3,8 +3,11 @@ using GridDomain.Scheduling.Akka;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class SuccessfulTestRequestHandler : ScheduledTaskHandlerActorBase<TestRequest>
+    public class SuccessfulTestRequestHandler : ScheduledTaskHandler<TestRequest>
     {
-        protected override Task Handle(TestRequest request) => Task.FromResult(true);
+        protected override async Task Handle(TestRequest request)
+        {
+            ResultHolder.Add(request.TaskId, request.TaskId);
+        }
     }
 }

@@ -1,11 +1,11 @@
 using NLog;
 using Quartz;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class LoggingJobListener : ILoggingJobListener
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger(typeof(LoggingJobListener));
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
 
         public string Name => GetType().Name;
 
@@ -23,7 +23,5 @@ namespace GridDomain.Scheduling.Akka
         {
             _log.Debug($"Job {context.JobDetail.Key} was executed");
         }
-
-
     }
 }

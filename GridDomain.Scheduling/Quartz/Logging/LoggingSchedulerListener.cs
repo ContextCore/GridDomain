@@ -2,7 +2,7 @@ using NLog;
 using Quartz;
 using LogManager = NLog.LogManager;
 
-namespace GridDomain.Scheduling.Akka
+namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class LoggingSchedulerListener : ILoggingSchedulerListener
     {
