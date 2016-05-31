@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Akka.Cluster.Routing;
 using Akka.Routing;
 
 namespace GridDomain.Node.AkkaMessaging
@@ -11,8 +13,20 @@ namespace GridDomain.Node.AkkaMessaging
 
         protected override RouterConfig CreateActorRouter(CreateActorRoute msg)
         {
-            return DefaultRouter;
+            var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
+
+            var localPool =
+                new ConsistentHashingPool(Environment.ProcessorCount)
+                    .WithHashMapping(m =>
+                    {
+                        var type = m.GetType();
+                        var prop = routesMap[type];
+                        return type.GetProperty(prop).GetValue(m);
+                    });
+
+            return localPool;
         }
+
         protected override RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage)
         {
             if (string.IsNullOrEmpty(handlerRouteConfigMessage.MessageCorrelationProperty))
