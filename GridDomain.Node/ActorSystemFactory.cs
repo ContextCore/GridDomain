@@ -12,15 +12,13 @@ namespace GridDomain.Node
         public static ActorSystem[] CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber=2,int childNodeNumber=3)
         {
             var port = akkaConf.Network.PortNumber;
-            var nameNumber = 0;
             var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber).Select(n => akkaConf.Copy(port++)).ToArray();
             var seedAdresses = seedNodeConfigs.Select(s => s.Network).ToArray();
 
-
-            var seedSystems= seedNodeConfigs.Select(c => ActorSystem.Create(c.Network.Name, c.ToClusterSeedNodeSystemConfig(seedAdresses)));
+            var seedSystems= seedNodeConfigs.Select(c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig(seedAdresses)));
 
             var nonSeedConfiguration = Enumerable.Range(0, childNodeNumber)
-                                                 .Select(n => ActorSystem.Create(akkaConf.Network.Name + nameNumber++, akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
+                                                 .Select(n => ActorSystem.Create(akkaConf.Network.SystemName , akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
 
             return seedSystems.Concat(nonSeedConfiguration).ToArray();
         }
@@ -28,7 +26,7 @@ namespace GridDomain.Node
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
         {
             var standAloneSystemConfig = akkaConf.ToStandAloneSystemConfig();
-            var actorSystem = ActorSystem.Create(akkaConf.Network.Name, standAloneSystemConfig);
+            var actorSystem = ActorSystem.Create(akkaConf.Network.SystemName, standAloneSystemConfig);
             return actorSystem;
         }
     }

@@ -1,5 +1,9 @@
+using System.Linq;
+using NUnit.Framework;
+
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
+    [TestFixture]
     abstract class ClusterActorSystemTest : ActorSystemTest<ClusterMessage, ClusterActorSystemInfrastructure>
     {
         protected override ClusterActorSystemInfrastructure CreateInfrastructure()
@@ -9,7 +13,24 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
 
         protected override IGivenCommands<ClusterMessage> GivenCommands()
         {
-            return new GivenClusterTestMessages();
+            return new GivenClusterTestMessages(100);
+        }
+
+        [Test]
+        public void Messages_should_be_processed_by_remote_nodes()
+        {
+            var nodeAddresses = Infrastructure.Nodes.Select(n => Akka.Cluster.Cluster.Get(n).SelfAddress).ToArray();
+            var messageProcessedAddresses = _resultMessages.Select(m => m.ProcessorActorSystemAdress).Distinct();
+
+            //messages should be processed by subset of all cluster nodes
+            CollectionAssert.IsSubsetOf(messageProcessedAddresses, nodeAddresses);
+        }
+
+        [Test]
+        public void Messages_should_be_processed_by_several_nodes()
+        {
+            var messageProcessedAddresses = _resultMessages.Select(m => m.ProcessorActorSystemAdress);
+            Assert.Greater(messageProcessedAddresses.Count(), 1);
         }
     }
 }

@@ -6,12 +6,17 @@ using GridDomain.Node.Configuration;
 public abstract class ActorConfig: IAkkaConfig
 {
     private readonly int _port;
-    private readonly string _name;
+    private readonly string _host;
 
-    protected ActorConfig(int port, string name)
+    private ActorConfig(int port, string host)
     {
-        _name = name;
+        _host = host;
         _port = port;
+    }
+
+    protected ActorConfig(IAkkaNetworkAddress config):this(config.PortNumber, config.Host)
+    {
+        
     }
 
 
@@ -38,7 +43,7 @@ public abstract class ActorConfig: IAkkaConfig
 
        }";
 
-        var deploy = BuildActorProvider() + BuildTransport(_name, _port);
+        var deploy = BuildActorProvider() + BuildTransport(_host, _port);
 
         return actorConfig + Environment.NewLine + deploy;
     }
@@ -52,7 +57,7 @@ public abstract class ActorConfig: IAkkaConfig
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                transport-protocol = tcp
                                port = " + port + @"
-                               hostname = localhost
+                               hostname = " + name + @"
                     }
             }";
         return transportString;

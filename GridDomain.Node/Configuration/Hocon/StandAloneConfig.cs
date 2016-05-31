@@ -2,7 +2,7 @@ using GridDomain.Node.Configuration;
 
 class StandAloneConfig : ActorConfig
 {
-    public StandAloneConfig(IAkkaNetworkAddress address) : base(address.PortNumber, address.Name)
+    public StandAloneConfig(IAkkaNetworkAddress address) : base(address)
     {
     }
 

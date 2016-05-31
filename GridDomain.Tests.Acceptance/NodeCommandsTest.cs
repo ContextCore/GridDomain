@@ -48,17 +48,13 @@ namespace GridDomain.Tests.Acceptance
 
         }
 
-        protected virtual GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
-        {
-            var actorSystem = ActorSystemFactory.CreateActorSystem(akkaConf);
+        protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-            return new GridDomainNode(DefaultUnityContainer(dbConfig),
-                                      new BalanceCommandsRouting(),  
-                                      actorSystem,
-                                      Transport);
-        }
-
-        protected abstract TransportMode Transport { get; }
+        //    var actorSystem = ActorSystemFactory.CreateActorSystem(akkaConf);
+        //    return new GridDomainNode(DefaultUnityContainer(dbConfig),
+        //                              new BalanceCommandsRouting(),  
+        //                              //actorSystem,
+        //                              //Transport);
 
         protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
         {

@@ -211,6 +211,7 @@
     <Compile Include="AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="Balance\BalanceChangePlan.cs" />
     <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
+    <Compile Include="Balance\ReadModelConcurrentBuild\Standalne_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
@@ -237,6 +238,10 @@
     <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemTest.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
+    <Compile Include="Persistence\Persisted.cs" />
+    <Compile Include="Persistence\SqlJournalNotPersistentActor.cs" />
+    <Compile Include="Persistence\SqlJournalPing.cs" />
+    <Compile Include="Persistence\SqlJournalPingActor.cs" />
     <Compile Include="Persistence\SqlPersistenceConfigurationApplyTest.cs" />
     <Compile Include="Balance\DataGenerator.cs" />
     <Compile Include="Balance\KnownConstructorParameter.cs" />

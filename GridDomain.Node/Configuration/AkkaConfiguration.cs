@@ -24,7 +24,7 @@ namespace GridDomain.Node.Configuration
         public AkkaConfiguration Copy(int? newPort = null)
         {
             var networkConf = Network;
-            var network = new AkkaNetworkAddress(networkConf.Name,
+            var network = new AkkaNetworkAddress(networkConf.SystemName,
                                                  networkConf.Host,
                                                  newPort ?? networkConf.PortNumber);
 
@@ -71,7 +71,7 @@ namespace GridDomain.Node.Configuration
         {
             var cfg = new RootConfig(
                         new LogConfig(this,false),
-                        ClusterConfig.NonSeedNode(Network.Name,seeds),
+                        ClusterConfig.NonSeedNode(Network, seeds),
                         new BuildPersistenceConfig(this));
             return cfg.Build();
         }

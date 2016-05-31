@@ -13,14 +13,14 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Sql_journal_is_available_for_akka_config()
         {
-            var actorSystem = ActorSystem.Create(_conf.Network.Name, _conf.ToClusterNonSeedNodeSystemConfig());
+            var actorSystem = ActorSystem.Create(_conf.Network.SystemName, _conf.ToClusterNonSeedNodeSystemConfig());
             PingSqlJournal(actorSystem);
         }
 
         [Test]
         public void Sql_journal_is_available_for_configuraton_created_cluster_actor_system()
         {
-            var actorSystem = ActorSystem.Create(_conf.Network.Name, _conf.ToClusterSeedNodeSystemConfig());
+            var actorSystem = ActorSystem.Create(_conf.Network.SystemName, _conf.ToClusterSeedNodeSystemConfig());
             PingSqlJournal(actorSystem);
         }
 

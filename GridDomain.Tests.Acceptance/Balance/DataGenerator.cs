@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
-using GridDomain.CQRS;
-using GridDomain.Tests.Acceptance.Balance;
 using NMoneys;
 using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Acceptance.Persistence
+namespace GridDomain.Tests.Acceptance.Balance
 {
 
     public class DataGenerator

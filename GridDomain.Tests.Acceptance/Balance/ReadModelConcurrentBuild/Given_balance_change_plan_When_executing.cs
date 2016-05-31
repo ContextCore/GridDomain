@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 {
     [TestFixture]
-    public class Given_balance_change_plan_When_executing: NodeCommandsTest
+    public abstract class Given_balance_change_plan_When_executing: NodeCommandsTest
     {
         private IReadOnlyCollection<BalanceChangePlan> _balanceManipulationPlans;
         private CreateBalanceCommand[] _createBalanceCommands;
@@ -146,6 +146,5 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             return balanceManipulationCommands;
         }
 
-        protected override TransportMode Transport => TransportMode.Standalone;
     }
 }
