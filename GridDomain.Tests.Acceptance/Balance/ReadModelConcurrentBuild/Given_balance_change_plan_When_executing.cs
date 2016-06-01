@@ -71,19 +71,21 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         private void CheckWriteModel(IReadOnlyCollection<BalanceChangePlan> balanceManipulationPlans)
         {
             var unityResolver = new UnityDependencyResolver(GridNode.Container, Sys);
+            var props = Sys.DI().Props<AggregateActor<MoneyBalance>>();
+
+
             Console.WriteLine();
             var aggregateActors = new List<Tuple<BalanceChangePlan, AggregateActor<MoneyBalance>>>();
 
             foreach (var plan in balanceManipulationPlans)
             {
                 Console.WriteLine($"Checking write model for balance {plan.BalanceId}");
-                var props = GridNode.System.DI().Props<AggregateActor<MoneyBalance>>();
                 var name = AggregateActorName.New<MoneyBalance>(plan.BalanceId).ToString();
                 var balanceActor = ActorOfAsTestActorRef<AggregateActor<MoneyBalance>>(props,name);
                 aggregateActors.Add(Tuple.Create(plan,balanceActor.UnderlyingActor));
             }
             //TODO: remove this dirty hack for wait until actors recover
-            Thread.Sleep(5000);
+            Thread.Sleep(2000);
 
             //TODO: refactor this dirty hack to wait until actor recovers
             foreach (var plan in aggregateActors)

@@ -18,12 +18,6 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             var akkaCluster = ActorSystemFactory.CreateCluster(akkaConf);
             var container = DefaultUnityContainer(dbConfig);
 
-            foreach (var system in akkaCluster.All)
-            {
-                var dependencyResolver = new UnityDependencyResolver(container, system);
-                system.ActorOf(Props.Create(typeof(SimpleClusterListener)), "clusterListener");
-            }
-
             return new GridDomainNode(container, 
                                       new BalanceCommandsRouting(),
                                       TransportMode.Cluster, akkaCluster.All);
@@ -32,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         /// <summary>
         /// Important than persistence setting are the same as for testing cluster as for test ActorSystem
         /// </summary>
-        public Cluster_Given_balance_change_plan_When_executing() : base("")//AkkaConf.Copy(9000).ToStandAloneSystemConfig())
+        public Cluster_Given_balance_change_plan_When_executing() : base("")
         {
           
         }
