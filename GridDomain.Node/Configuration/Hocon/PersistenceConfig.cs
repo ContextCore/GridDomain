@@ -1,15 +1,15 @@
 using GridDomain.Node.Configuration;
 
-internal class BuildPersistenceConfig : IAkkaConfig
+internal class PersistenceConfig : IAkkaConfig
 {
     private AkkaConfiguration _akka;
 
-    public BuildPersistenceConfig(AkkaConfiguration akka)
+    public PersistenceConfig(AkkaConfiguration akka)
     {
         _akka = akka;
     }
 
-    public string BuildAkkaPersistenceConfig()
+    public string Build()
     {
         string akkaPersistenceConfig =
             @"      persistence {
@@ -18,10 +18,5 @@ internal class BuildPersistenceConfig : IAkkaConfig
 " + new PersistenceSnapshotConfig(_akka).Build() + @"
         }";
         return akkaPersistenceConfig;
-    }
-
-    public string Build()
-    {
-        return BuildAkkaPersistenceConfig();
     }
 }

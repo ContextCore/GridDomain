@@ -24,13 +24,13 @@ public abstract class ActorConfig: IAkkaConfig
     {
         string actorConfig = @"   
        actor {
-             serializers {
-                         wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
-             }
-
-             serialization-bindings {
-                                    ""System.Object"" = wire
-             }
+             #serializers {
+             #            wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
+             #}
+             #
+             #serialization-bindings {
+             #                       ""System.Object"" = wire
+             #}
              
              loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
              debug {

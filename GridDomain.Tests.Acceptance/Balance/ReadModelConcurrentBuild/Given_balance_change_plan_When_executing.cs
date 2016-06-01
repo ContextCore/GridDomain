@@ -83,7 +83,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
                 aggregateActors.Add(Tuple.Create(plan,balanceActor.UnderlyingActor));
             }
             //TODO: remove this dirty hack for wait until actors recover
-            Thread.Sleep(2000);
+            Thread.Sleep(5000);
 
             //TODO: refactor this dirty hack to wait until actor recovers
             foreach (var plan in aggregateActors)

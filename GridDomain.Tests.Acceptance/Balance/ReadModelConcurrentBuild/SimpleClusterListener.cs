@@ -31,17 +31,17 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             if (up != null)
             {
                 var mem = up;
-                Log.Info("Member is Up: {0}", mem.Member);
+                Log.Warning("Member is Up: {0}", mem.Member);
             }
             else if (message is ClusterEvent.UnreachableMember)
             {
                 var unreachable = (ClusterEvent.UnreachableMember)message;
-                Log.Info("Member detected as unreachable: {0}", unreachable.Member);
+                Log.Warning("Member detected as unreachable: {0}", unreachable.Member);
             }
             else if (message is ClusterEvent.MemberRemoved)
             {
                 var removed = (ClusterEvent.MemberRemoved)message;
-                Log.Info("Member is Removed: {0}", removed.Member);
+                Log.Warning("Member is Removed: {0}", removed.Member);
             }
             else if (message is ClusterEvent.IMemberEvent)
             {

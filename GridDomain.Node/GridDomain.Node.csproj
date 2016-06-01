@@ -212,7 +212,7 @@
     <Compile Include="AkkaMessaging\UnregisteredAggregateActorLookupException.cs" />
     <Compile Include="Configuration\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\AkkaNetworkAddress.cs" />
-    <Compile Include="Configuration\Hocon\BuildPersistenceConfig.cs" />
+    <Compile Include="Configuration\Hocon\PersistenceConfig.cs" />
     <Compile Include="Configuration\Hocon\ClusterConfig.cs" />
     <Compile Include="Configuration\Hocon\IAkkaConfig.cs" />
     <Compile Include="Configuration\Hocon\StandAloneConfig.cs" />

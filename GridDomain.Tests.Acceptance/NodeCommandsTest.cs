@@ -61,10 +61,6 @@ namespace GridDomain.Tests.Acceptance
             GridDomain.Balance.Node.CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
             return unityContainer;
         }
-        protected virtual void AfterCommandExecuted()
-        {
-
-        }
 
         protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands,int eventNumber) 
         {
@@ -76,8 +72,6 @@ namespace GridDomain.Tests.Acceptance
 
             foreach (var c in commands)
                 GridNode.Execute(c);
-
-            AfterCommandExecuted();
 
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");

@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Linq;
 using Akka.Actor;
+using Akka.Configuration;
 using Akka.DI.Unity;
 using GridDomain.Balance.Node;
 using GridDomain.Node;
@@ -20,6 +21,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             foreach (var system in akkaCluster.All)
             {
                 var dependencyResolver = new UnityDependencyResolver(container, system);
+                system.ActorOf(Props.Create(typeof(SimpleClusterListener)), "clusterListener");
             }
 
             return new GridDomainNode(container, 
@@ -27,18 +29,12 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
                                       TransportMode.Cluster, akkaCluster.All);
         }
 
-        public Cluster_Given_balance_change_plan_When_executing() : base("")
+        /// <summary>
+        /// Important than persistence setting are the same as for testing cluster as for test ActorSystem
+        /// </summary>
+        public Cluster_Given_balance_change_plan_When_executing() : base("")//AkkaConf.Copy(9000).ToStandAloneSystemConfig())
         {
           
-        }
-
-        protected override void AfterCommandExecuted()
-        {
-            //cluster.Subscribe(TestActor, new[] { typeof(ClusterEvent.IReachabilityEvent) });
-            //this.FishForMessage<>()
-            //var msg = ExpectMsgAnyOf(typeof(ClusterEvent.IReachabilityEvent),
-            //                         typeof(ClusterEvent.IClusterDomainEvent),
-            //                         typeof(ClusterEvent.CurrentClusterState));
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
