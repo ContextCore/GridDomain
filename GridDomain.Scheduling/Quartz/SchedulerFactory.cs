@@ -37,6 +37,7 @@ namespace GridDomain.Scheduling.Quartz
                 ["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz",
                 ["quartz.jobStore.useProperties"] = "true",
                 ["quartz.jobStore.clustered"] = "true",
+                ["quartz.scheduler.instanceId"] = "AUTO",
                 ["quartz.jobStore.dataSource"] = "default",
                 ["quartz.jobStore.tablePrefix"] = "QRTZ_",
                 ["quartz.jobStore.lockHandler.type"] = "Quartz.Impl.AdoJobStore.UpdateLockRowSemaphore, Quartz",

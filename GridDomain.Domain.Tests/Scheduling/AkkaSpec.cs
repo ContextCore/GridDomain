@@ -37,15 +37,19 @@ namespace GridDomain.Tests.Scheduling
             container.AddNewExtension<QuartzUnityExtension>();
             var loggingJobListener = new Mock<ILoggingJobListener>();
             loggingJobListener.Setup(x => x.Name).Returns("testListener");
-            container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+            //container.RegisterInstance(loggingJobListener.Object);
+            container.RegisterType<ILoggingJobListener, LoggingJobListener>();
+            //container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+            container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
             container.RegisterType<IQuartzConfig, QuartzConfig>();
-            container.RegisterInstance(loggingJobListener.Object);
+            
             _taskRouter = new TaskRouter();
             container.RegisterInstance(_taskRouter);
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
             container.RegisterType<SchedulerActor>();
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
+            container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(), new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
             container.RegisterType<QuartzJob>();
             container.RegisterType<SuccessfulTestRequestHandler>();
             container.RegisterType<FailingTestRequestHandler>();
@@ -68,6 +72,14 @@ namespace GridDomain.Tests.Scheduling
         private void CreateScheduler()
         {
             _quartzScheduler = _container.Resolve<ISchedulerFactory>().GetScheduler();
+        }
+
+        [Test]
+        public void When_system_resolves_scheduler_Then_single_instance_is_returned_in_all_cases()
+        {
+            var sched1 = _container.Resolve<IScheduler>();
+            var sched2 = _container.Resolve<IScheduler>();
+            Assert.True(sched2 == sched1);
         }
 
         [Test]

@@ -45,7 +45,6 @@ namespace GridDomain.Scheduling.Integration
                 var job = QuartzJob.Create(msg.Request, msg.ExecutionTimeout).Build();
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity(msg.Request.TaskId)
-                    .ForJob(job)
                     .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow())
                     .StartAt(msg.RunAt)
                     .Build();
