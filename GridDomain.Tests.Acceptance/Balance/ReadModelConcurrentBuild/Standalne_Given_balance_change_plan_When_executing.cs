@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         {
         }
 
-        protected override int BusinessNum => 1;
+        protected override int BusinessNum => 10;
         protected override int ChangesPerBusiness => 10;
         
     }

@@ -39,11 +39,12 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         {
             var changeBalanceCommands = balanceManipulationPlans.SelectMany(p => p.BalanceChangeCommands).ToArray();
 
+            Console.WriteLine();
             Console.WriteLine($"Totally issued {balanceManipulationPlans.Select(p => p.BalanceCreateCommand).Count()}" +
                               $" create commands and {changeBalanceCommands.Length} change commands");
+            Console.WriteLine();
 
-            ExecuteAndWaitFor<BalanceChangeProjectedNotification, ChangeBalanceCommand>(changeBalanceCommands,
-                                                                                        c => c.BalanceId);
+            ExecuteAndWaitFor<BalanceChangeProjectedNotification>(changeBalanceCommands, changeBalanceCommands.Length);
         }
 
         [Then]
@@ -158,9 +159,8 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         {
             var createBalanceCommands = balanceManipulationCommands.Select(p => p.BalanceCreateCommand).ToArray();
 
-            ExecuteAndWaitFor<BalanceCreatedProjectedNotification, CreateBalanceCommand>
-                    (createBalanceCommands,
-                     c => c.BalanceId);
+            ExecuteAndWaitFor<BalanceCreatedProjectedNotification>
+                    (createBalanceCommands, createBalanceCommands.Length);
 
             return createBalanceCommands;
         }

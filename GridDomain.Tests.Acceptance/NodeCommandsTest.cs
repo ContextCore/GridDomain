@@ -62,14 +62,9 @@ namespace GridDomain.Tests.Acceptance
             return unityContainer;
         }
 
-        protected void ExecuteAndWaitFor<TEvent,TCommand>(TCommand[] commands,
-                                                          Func<TCommand,Guid> expectedSource) 
-                                                  where TEvent : ISourcedEvent
-                                                  where TCommand:ICommand
+        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands,int eventNumber) 
         {
-            var sources = commands.Select(expectedSource).ToArray();
-            
-            var actor = Sys.ActorOf(Props.Create(() => new ExplicitSourcesEventWaiter<TEvent>(TestActor,sources)));
+            var actor = Sys.ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)));
 
             _subscriber.Subscribe<TEvent>(actor);
 

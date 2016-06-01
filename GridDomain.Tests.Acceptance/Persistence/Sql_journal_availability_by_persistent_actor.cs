@@ -34,8 +34,6 @@ namespace GridDomain.Tests.Acceptance.Persistence
         public void Sql_journal_is_available_for_akka_standalone_config()
         {
             var actorSystem = ActorSystem.Create(_conf.Network.SystemName, _conf.ToStandAloneSystemConfig());
-          //  var plugin = Akka.Persistence.Persistence.Instance.Apply(actorSystem).JournalFor(null);
-           // plugin.Ask(new object());
             var actor = actorSystem.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
             CHeckPersist(actor);
         }
