@@ -25,7 +25,7 @@ namespace GridDomain.Node
             var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber).Select(n => akkaConf.Copy(port++)).ToArray();
             var seedAdresses = seedNodeConfigs.Select(s => s.Network).ToArray();
 
-            var seedSystems= seedNodeConfigs.Select(c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig(seedAdresses)));
+            var seedSystems= seedNodeConfigs.Select(c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig(c.Network.SystemName,seedAdresses)));
 
             var nonSeedConfiguration = Enumerable.Range(0, childNodeNumber)
                                                  .Select(n => ActorSystem.Create(akkaConf.Network.SystemName , akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));

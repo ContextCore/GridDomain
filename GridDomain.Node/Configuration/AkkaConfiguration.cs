@@ -48,11 +48,12 @@ namespace GridDomain.Node.Configuration
             Trace
         }
 
-        public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
+        public string ToClusterSeedNodeSystemConfig(string name = null, params IAkkaNetworkAddress[] otherSeeds)
         {
+            var akkaNetworkAddress = new AkkaNetworkAddress(name ?? Network.SystemName,Network.Host,Network.PortNumber);
             var cfg = new RootConfig(
                         new LogConfig(this,false),
-                        ClusterConfig.SeedNode(Network,otherSeeds),
+                        ClusterConfig.SeedNode(akkaNetworkAddress,otherSeeds),
                         new PersistenceConfig(this));
             return cfg.Build();
         }
