@@ -8,19 +8,22 @@ using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
+using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 {
     public class Cluster_Given_balance_change_plan_When_executing: Given_balance_change_plan_When_executing
     {
+        private AkkaCluster _akkaCluster;
+
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var akkaCluster = ActorSystemFactory.CreateCluster(akkaConf);
+            _akkaCluster = ActorSystemFactory.CreateCluster(akkaConf);
             var container = DefaultUnityContainer(dbConfig);
 
             return new GridDomainNode(container, 
                                       new BalanceCommandsRouting(),
-                                      TransportMode.Cluster, akkaCluster.All);
+                                      TransportMode.Cluster, _akkaCluster.All);
         }
 
         /// <summary>
@@ -32,8 +35,13 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
           
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
-        protected override int BusinessNum => 1;
-        protected override int ChangesPerBusiness => 1;
+        [TestFixtureTearDown]
+        public void Dispose()
+        {
+            _akkaCluster.Dispose();
+        }
+
+        protected override int BusinessNum => 5;
+        protected override int ChangesPerBusiness => 10;
     }
 }

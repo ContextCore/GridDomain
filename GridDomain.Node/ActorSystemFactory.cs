@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.Actor;
 using Akka.Cluster;
@@ -7,7 +8,7 @@ using GridDomain.Node.Configuration;
 
 namespace GridDomain.Node
 {
-    public class AkkaCluster
+    public class AkkaCluster:IDisposable
     {
         public ActorSystem[] SeedNodes;
         public ActorSystem[] NonSeedNodes;
@@ -15,6 +16,16 @@ namespace GridDomain.Node
         public ActorSystem RandomNode()
         {
             return SeedNodes.Concat(NonSeedNodes).Last();
+        }
+
+        public void Dispose()
+        {
+            Akka.Cluster.Cluster.Get(RandomNode()).Shutdown();
+            foreach (var actorSystem in All)
+            {
+                actorSystem.Terminate();
+                actorSystem.Dispose();
+            }
         }
     }
     public class ActorSystemFactory
