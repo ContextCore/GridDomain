@@ -34,6 +34,7 @@ namespace GridDomain.Scheduling.Integration
                 var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
                 var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
                 var targetActor = _taskRouter.GetTarget(scheduledRequest);
+                //TODO::VZ:: is there a better way to communicate with akka?
                 var result = targetActor.Ask(scheduledRequest, timeout);
                 result.Wait(timeout);
                 //TODO::VZ refactor without casts
@@ -62,6 +63,7 @@ namespace GridDomain.Scheduling.Integration
         private static ScheduledRequest DeserializeTaskData(JobDataMap jobDatMap)
         {
             var taskJson = jobDatMap[TaskKey] as string;
+            //TODO::VZ:: use external wrapper around serializer?
             var task = JsonConvert.DeserializeObject<ScheduledRequest>(taskJson, JsonSerializerSettings);
             return task;
         }
@@ -74,8 +76,8 @@ namespace GridDomain.Scheduling.Integration
 
         public static JobBuilder Create(ScheduledRequest task, TimeSpan timeout)
         {
+            //TODO::VZ:: use external wrapper around serializer?
             var serialized = JsonConvert.SerializeObject(task, JsonSerializerSettings);
-
             var jdm = new JobDataMap { { TaskKey, serialized }, { Timeout, timeout.ToString() } };
             return JobBuilder.Create<QuartzJob>().WithIdentity(task.TaskId).UsingJobData(jdm);
         }

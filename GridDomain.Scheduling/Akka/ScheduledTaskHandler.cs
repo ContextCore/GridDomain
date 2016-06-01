@@ -13,11 +13,13 @@ namespace GridDomain.Scheduling.Akka
 
         protected ScheduledTaskHandler()
         {
+            //TODO::VZ:: use typed/untyped method, what about async handlers?
             Receive<TRequest>(request => HandleBase(request));
         }
 
         protected override void Unhandled(object message)
         {
+            //TODO::VZ:: is it called automatically when unsupported message comes?
             _log.Error($"Message {message} is unhandled by {this}");
         }
 
@@ -27,6 +29,7 @@ namespace GridDomain.Scheduling.Akka
         {
             Handle(request).ContinueWith(task =>
             {
+                //TODO::VZ:: when base method throws exception instead of returning task (concrete handling method isn`t marked as async), continuation doesn`t work
                 if (task.IsFaulted && task.Exception != null)
                 {
                     Sender.Tell(new Failure { Exception = task.Exception.InnerException });

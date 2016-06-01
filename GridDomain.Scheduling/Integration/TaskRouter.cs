@@ -5,6 +5,7 @@ using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Scheduling.Integration
 {
+    //TODO::VZ:: switch to akka-related routing
     public class TaskRouter : ITaskRouter
     {
         private static Dictionary<Type, IActorRef> _routeTable;
