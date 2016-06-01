@@ -25,7 +25,8 @@ public class ClusterConfig : ActorConfig
             actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
             cluster {
                             seed-nodes = [" + seeds + @"]
-            }";
+            }
+";
 
 
         return clusterConfigString;

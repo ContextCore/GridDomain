@@ -21,12 +21,16 @@ namespace GridDomain.Node.Configuration
             LogLevel = _akkaLogLevels[logLevel];
         }
 
-        public AkkaConfiguration Copy(int? newPort = null)
+        public AkkaConfiguration Copy(int newPort)
         {
-            var networkConf = Network;
-            var network = new AkkaNetworkAddress(networkConf.SystemName,
-                                                 networkConf.Host,
-                                                 newPort ?? networkConf.PortNumber);
+            return Copy(null,newPort);
+        }
+
+        public AkkaConfiguration Copy(string name = null, int? newPort = null)
+        {
+            var network = new AkkaNetworkAddress(name ?? Network.SystemName,
+                                                 Network.Host,
+                                                 newPort ?? Network.PortNumber);
 
             return new AkkaConfiguration(network, Persistence, _logLevel);
         }
@@ -48,15 +52,16 @@ namespace GridDomain.Node.Configuration
             Trace
         }
 
-        public string ToClusterSeedNodeSystemConfig(string name = null, params IAkkaNetworkAddress[] otherSeeds)
+        public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
         {
-            var akkaNetworkAddress = new AkkaNetworkAddress(name ?? Network.SystemName,Network.Host,Network.PortNumber);
             var cfg = new RootConfig(
                         new LogConfig(this,false),
-                        ClusterConfig.SeedNode(akkaNetworkAddress,otherSeeds),
+                        ClusterConfig.SeedNode(Network,otherSeeds),
                         new PersistenceConfig(this));
             return cfg.Build();
         }
+
+
 
         public string ToStandAloneSystemConfig()
         {
