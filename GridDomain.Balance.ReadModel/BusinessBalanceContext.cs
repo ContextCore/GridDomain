@@ -17,6 +17,6 @@ namespace GridDomain.Balance.ReadModel
         }
 
         public DbSet<BusinessBalance> Balances { get; set; }
-        public DbSet<TransactoinHistory> TransactoinHistory { get; set; }
+        public DbSet<TransactionHistory> TransactoinHistory { get; set; }
     }
 }

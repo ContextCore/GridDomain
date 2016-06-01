@@ -92,6 +92,18 @@
     <Compile Include="BusinessBalanceContext.cs" />
     <Compile Include="BusinessBalance.cs" />
     <Compile Include="BusinessCurrentBalanceProjectionBuilder.cs" />
+    <Compile Include="Migrations\201606010645275_TransactionHistoryAdded.cs" />
+    <Compile Include="Migrations\201606010645275_TransactionHistoryAdded.Designer.cs">
+      <DependentUpon>201606010645275_TransactionHistoryAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606010654104_PrimaryKeyForTransactionHistory.cs" />
+    <Compile Include="Migrations\201606010654104_PrimaryKeyForTransactionHistory.Designer.cs">
+      <DependentUpon>201606010654104_PrimaryKeyForTransactionHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606010657264_TimeForTransactionHistory.cs" />
+    <Compile Include="Migrations\201606010657264_TimeForTransactionHistory.Designer.cs">
+      <DependentUpon>201606010657264_TimeForTransactionHistory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\What.cs" />
     <Compile Include="Migrations\What.Designer.cs">
       <DependentUpon>What.cs</DependentUpon>
@@ -115,7 +127,8 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\BusinessBalanceQuery.cs" />
-    <Compile Include="TransactoinHistory.cs" />
+    <Compile Include="TransactionHistory.cs" />
+    <Compile Include="TransactionsProjectionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -155,6 +168,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201606010645275_TransactionHistoryAdded.resx">
+      <DependentUpon>201606010645275_TransactionHistoryAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606010654104_PrimaryKeyForTransactionHistory.resx">
+      <DependentUpon>201606010654104_PrimaryKeyForTransactionHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606010657264_TimeForTransactionHistory.resx">
+      <DependentUpon>201606010657264_TimeForTransactionHistory.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\What.resx">
       <DependentUpon>What.cs</DependentUpon>
     </EmbeddedResource>

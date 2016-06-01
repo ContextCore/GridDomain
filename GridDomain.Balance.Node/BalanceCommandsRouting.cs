@@ -29,6 +29,23 @@ namespace GridDomain.Balance.Node
                    .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
                     .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
                 .Register();
+
+            router.Route<BalanceReplenishEvent>()
+                  .ToHandler<TransactionsProjectionBuilder>()
+                  .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
+                .Register();
+
+            router.Route<BalanceCreatedEvent>()
+                     .ToHandler<TransactionsProjectionBuilder>()
+                      .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
+                   .Register();
+
+            router.Route<BalanceWithdrawalEvent>()
+                   .ToHandler<TransactionsProjectionBuilder>()
+                    .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
+                .Register();
+
+            //TransactionsProjectionBuilder
         }
     }
 

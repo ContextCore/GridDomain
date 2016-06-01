@@ -28,7 +28,13 @@ namespace GridDomain.Balance.Node
                                         new ReadModelCreatorRetryDecorator<BusinessBalance>(
                                             new SqlReadModelCreator<BusinessBalance>(contextFactory))));
 
+            container.RegisterType<IReadModelCreator<TransactionHistory>>(
+                                   new InjectionFactory(c =>
+                                       new ReadModelCreatorRetryDecorator<TransactionHistory>(
+                                           new SqlReadModelCreator<TransactionHistory>(contextFactory))));
+
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
+            container.RegisterType<TransactionsProjectionBuilder>();
 
             container.RegisterType<AggregateActor<MoneyBalance>>();
             container.RegisterType<AggregateHostActor<MoneyBalance>>();

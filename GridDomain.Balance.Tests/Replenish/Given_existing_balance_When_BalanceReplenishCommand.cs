@@ -15,11 +15,12 @@ namespace GridDomain.Balance.Tests.Replenish
     public class Given_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishBalanceCommand>
     {
         protected override ICommandHandler<ReplenishBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
+        Guid businessId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> Given()
         {
             //balance already exists
-            yield return new BalanceCreatedEvent(Command.BalanceId, Guid.NewGuid());
+            yield return new BalanceCreatedEvent(Command.BalanceId, businessId);
         }
 
         protected override IEnumerable<DomainEvent> Expected()

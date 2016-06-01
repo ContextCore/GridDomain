@@ -11,7 +11,6 @@ using GridDomain.CQRS.ReadModel;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.DomainEventsPublishing;
 using MemBus;
 using Microsoft.Practices.Unity;
 using NEventStore;
@@ -60,24 +59,10 @@ namespace GridDomain.Node
         public static void RegisterEventStore(IUnityContainer container, IDbConfiguration conf)
         {
             container.RegisterInstance(conf);
-            var wireupEventStore = EventStoreSetup.WireupEventStore(conf.EventStoreConnectionString);
-            container.RegisterInstance(wireupEventStore);
             container.RegisterType<IConstructAggregates, AggregateFactory>();
             container.RegisterType<IDetectConflicts, ConflictDetector>();
             container.RegisterType<IRepository, EventStoreRepository>();
 
-        }
-
-        public static PollingClient ConfigurePushingEventsFromStoreToBus(IStoreEvents eventStore,
-            IObserver<ICommit> observer)
-        {
-            var pollingClient = new PollingClient(eventStore.Advanced, 10);
-            var observeCommits = pollingClient.ObserveFrom(null);
-
-            observeCommits.Subscribe(observer);
-            observeCommits.Start();
-
-            return pollingClient;
         }
     }
 }

@@ -227,13 +227,10 @@
     <Compile Include="Configuration\AkkaConfiguration.cs" />
     <Compile Include="IContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
-    <Compile Include="DomainEventsPublishing\EventStoreSetup.cs" />
-    <Compile Include="DomainEventsPublishing\DomainEventsBusNotifier.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="AkkaMessaging\ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
     <Compile Include="ISubscriber.cs" />
-    <Compile Include="DomainEventsPublishing\NLogToEventStoreLogAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\LogConfigurator.cs" />
   </ItemGroup>

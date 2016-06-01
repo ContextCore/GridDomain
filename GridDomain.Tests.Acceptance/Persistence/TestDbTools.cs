@@ -21,6 +21,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
 
         public static void ClearData(IDbConfiguration conf)
         {
+            Delete(conf.ReadModelConnectionString, "TransactionHistories");
             Delete(conf.ReadModelConnectionString, nameof(BusinessBalance) + "s");
             Delete(conf.LogsConnectionString, nameof(LogRecord) + "s");
         }

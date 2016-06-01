@@ -1,3 +1,4 @@
+using System;
 using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -20,6 +21,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         }
 
         protected override int BusinessNum => 1;
-        protected override int ChangesPerBusiness => 2;
+        protected override int ChangesPerBusiness => 10;
+        
     }
 }

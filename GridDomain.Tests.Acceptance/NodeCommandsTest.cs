@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Acceptance
         protected GridDomainNode GridNode;
         private IActorSubscriber _subscriber;
         protected static AkkaConfiguration _akkaConf = new AutoTestAkkaConfiguration();
-
+        protected abstract TimeSpan Timeout { get; }
         [TearDown]
         public void DeleteSystems()
         {
@@ -87,6 +87,6 @@ namespace GridDomain.Tests.Acceptance
             Console.WriteLine("Wait ended");
         }
 
-        protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(100);
+        
     }
 }

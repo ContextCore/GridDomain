@@ -24,6 +24,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         private CreateBalanceCommand[] _createBalanceCommands;
         protected abstract int BusinessNum { get; }
         protected virtual int ChangesPerBusiness => BusinessNum*BusinessNum;
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(BusinessNum*ChangesPerBusiness);
 
         [TestFixtureSetUp]
         public void InitSystems()
@@ -37,6 +38,9 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         private void When_executed_change_balances(IReadOnlyCollection<BalanceChangePlan> balanceManipulationPlans)
         {
             var changeBalanceCommands = balanceManipulationPlans.SelectMany(p => p.BalanceChangeCommands).ToArray();
+
+            Console.WriteLine($"Totally issued {balanceManipulationPlans.Select(p => p.BalanceCreateCommand).Count()}" +
+                              $" create commands and {changeBalanceCommands.Length} change commands");
 
             ExecuteAndWaitFor<BalanceChangeProjectedNotification, ChangeBalanceCommand>(changeBalanceCommands,
                                                                                         c => c.BalanceId);

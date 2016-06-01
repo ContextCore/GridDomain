@@ -6,25 +6,20 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.DomainEventsPublishing;
-using NEventStore;
 using NLog;
 
 namespace GridDomain.Node.Actors
 {
     public class GridDomainNodeMainActor : TypedActor
     {
-        private readonly IStoreEvents _eventStore;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
 
-        public GridDomainNodeMainActor(IStoreEvents eventStore,
-                                       IPublisher transport,
+        public GridDomainNodeMainActor(IPublisher transport,
                                        IMessageRouteMap messageRouting)
         {
             _messageRouting = messageRouting;
-            _eventStore = eventStore;
             _messagePublisher = transport;
             _log.Debug($"Актор {GetType().Name} был создан по адресу: {Self.Path}.");
         }
@@ -32,9 +27,6 @@ namespace GridDomain.Node.Actors
         public void Handle(Start msg)
         {
             _log.Debug($"Актор {GetType().Name} начинает инициализацию");
-
-            CompositionRoot.ConfigurePushingEventsFromStoreToBus(_eventStore,
-                                                                 new DomainEventsBusNotifier(_messagePublisher));
 
             ActorSystem system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType));
