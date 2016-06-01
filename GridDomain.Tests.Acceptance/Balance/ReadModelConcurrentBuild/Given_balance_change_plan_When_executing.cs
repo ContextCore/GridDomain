@@ -60,6 +60,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             CheckWriteModel(_balanceManipulationPlans);
         }
 
+    
         [Then]
         public void Then_balance_amounts_should_be_equal_to_plans_in_read_model()
         {
