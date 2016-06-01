@@ -31,7 +31,7 @@ namespace GridDomain.Balance.Node
                 {
                     s.ConstructUsing(settings =>
                     {
-                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).First();
+                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).RandomNode();
                         return new GridDomainNode(container, new BalanceCommandsRouting(), actorSystem, TransportMode.Cluster);
                     });
                     s.WhenStarted(node =>

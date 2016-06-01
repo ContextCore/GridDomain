@@ -7,9 +7,19 @@ using GridDomain.Node.Configuration;
 
 namespace GridDomain.Node
 {
+    public class AkkaCluster
+    {
+        public ActorSystem[] SeedNodes;
+        public ActorSystem[] NonSeedNodes;
+
+        public ActorSystem RandomNode()
+        {
+            return SeedNodes.Concat(NonSeedNodes).Last();
+        }
+    }
     public class ActorSystemFactory
     {
-        public static ActorSystem[] CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber=2,int childNodeNumber=3)
+        public static AkkaCluster CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber=2,int childNodeNumber=3)
         {
             var port = akkaConf.Network.PortNumber;
             var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber).Select(n => akkaConf.Copy(port++)).ToArray();
@@ -20,7 +30,7 @@ namespace GridDomain.Node
             var nonSeedConfiguration = Enumerable.Range(0, childNodeNumber)
                                                  .Select(n => ActorSystem.Create(akkaConf.Network.SystemName , akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
 
-            return seedSystems.Concat(nonSeedConfiguration).ToArray();
+            return new AkkaCluster() {SeedNodes = seedSystems.ToArray(), NonSeedNodes = nonSeedConfiguration.ToArray() };
         }
 
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)

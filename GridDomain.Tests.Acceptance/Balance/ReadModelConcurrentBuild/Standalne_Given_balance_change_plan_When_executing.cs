@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
                                       TransportMode.Standalone);
         }
 
-        public Standalne_Given_balance_change_plan_When_executing() : base(_akkaConf.ToStandAloneSystemConfig())
+        public Standalne_Given_balance_change_plan_When_executing() : base(AkkaConf.ToStandAloneSystemConfig())
         {
         }
 

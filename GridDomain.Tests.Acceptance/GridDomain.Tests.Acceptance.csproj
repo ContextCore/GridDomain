@@ -234,6 +234,7 @@
     <Compile Include="AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="Balance\BalanceChangePlan.cs" />
     <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
+    <Compile Include="Balance\ReadModelConcurrentBuild\SimpleClusterListener.cs" />
     <Compile Include="Balance\ReadModelConcurrentBuild\Standalne_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />

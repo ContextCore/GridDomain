@@ -27,13 +27,13 @@ namespace GridDomain.Balance.ReadModel
         public void Handle(BalanceReplenishEvent e)
         {
             _modelBuilder.Modify(e.BalanceId, b => b.Amount += e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId, e));
+            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
         }
 
         public void Handle(BalanceWithdrawalEvent e)
         {
             _modelBuilder.Modify(e.BalanceId, b => b.Amount -= e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId, e));
+            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
         }
 
         public void Handle(BalanceCreatedEvent e)

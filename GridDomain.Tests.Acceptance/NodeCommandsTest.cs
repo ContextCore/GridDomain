@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance
     {
         protected GridDomainNode GridNode;
         private IActorSubscriber _subscriber;
-        protected static AkkaConfiguration _akkaConf = new AutoTestAkkaConfiguration();
+        protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
         protected abstract TimeSpan Timeout { get; }
         [TearDown]
         public void DeleteSystems()
@@ -46,9 +46,9 @@ namespace GridDomain.Tests.Acceptance
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
 
-            TestDbTools.ClearData(autoTestGridDomainConfiguration, _akkaConf.Persistence);
+            TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 
-            GridNode = GreateGridDomainNode(_akkaConf, autoTestGridDomainConfiguration);
+            GridNode = GreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
             _subscriber = GridNode.Container.Resolve<IActorSubscriber>();
         }
@@ -78,6 +78,7 @@ namespace GridDomain.Tests.Acceptance
                 GridNode.Execute(c);
 
             AfterCommandExecuted();
+
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 

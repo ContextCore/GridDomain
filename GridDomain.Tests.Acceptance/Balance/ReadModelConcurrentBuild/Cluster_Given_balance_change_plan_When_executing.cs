@@ -1,5 +1,6 @@
 ﻿using System;
-using Akka.Cluster;
+using System.CodeDom;
+using Akka.Actor;
 using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -11,10 +12,10 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
     {
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var actorSystems = ActorSystemFactory.CreateCluster(akkaConf).RandomElement();
-            var cluster = Akka.Cluster.Cluster.Get(actorSystems);
-            cluster.Subscribe(TestActor, new[] { typeof(ClusterEvent.IReachabilityEvent) });
-
+            var actorSystems = ActorSystemFactory.CreateCluster(akkaConf,1,1).RandomNode();
+            // var cluster = Akka.Cluster.Cluster.Get(actorSystems);
+            // cluster.Subscribe(TestActor, new[] { typeof(ClusterEvent.IReachabilityEvent) });
+            actorSystems.ActorOf(Props.Create(typeof(SimpleClusterListener)), "clusterListener");
             return new GridDomainNode(DefaultUnityContainer(dbConfig), 
                                       new BalanceCommandsRouting(), 
                                       actorSystems,
@@ -28,7 +29,11 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
         protected override void AfterCommandExecuted()
         {
-            var msg = ExpectMsg<ClusterEvent.IReachabilityEvent>();
+            //cluster.Subscribe(TestActor, new[] { typeof(ClusterEvent.IReachabilityEvent) });
+            //this.FishForMessage<>()
+            //var msg = ExpectMsgAnyOf(typeof(ClusterEvent.IReachabilityEvent),
+            //                         typeof(ClusterEvent.IClusterDomainEvent),
+            //                         typeof(ClusterEvent.CurrentClusterState));
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);

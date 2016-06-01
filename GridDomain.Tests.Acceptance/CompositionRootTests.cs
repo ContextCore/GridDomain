@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Acceptance
             <TransportMode, Func<ActorSystem>>
         {
             {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())},
-            {TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomElement()}
+            {TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()}
         };
 
         private static UnityContainer InitCoreContainer(TransportMode transportMode,

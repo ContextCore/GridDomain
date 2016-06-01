@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Sql_journal_is_available_for_factory_created_cluster_actor_system()
         {
-            var actorSystem = ActorSystemFactory.CreateCluster(_conf, 2,2).RandomElement();
+            var actorSystem = ActorSystemFactory.CreateCluster(_conf, 2,2).RandomNode();
             PingSqlJournal(actorSystem);
         }
 

@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Sql_journal_is_available_for_factored_akka_cluster()
         {
-            var actorSystem = ActorSystemFactory.CreateCluster(_conf,2,2).RandomElement();
+            var actorSystem = ActorSystemFactory.CreateCluster(_conf,2,2).RandomNode();
             var actor = actorSystem.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
             CHeckPersist(actor);
         }
