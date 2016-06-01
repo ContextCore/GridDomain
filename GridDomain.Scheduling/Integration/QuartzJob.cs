@@ -11,20 +11,23 @@ namespace GridDomain.Scheduling.Integration
 {
     public class QuartzJob : IJob
     {
+        private readonly IQuartzLogger _quartzLogger;
         private const string TaskKey = "Task";
         private const string Timeout = "Timeout";
         private readonly ITaskRouter _taskRouter;
-        private readonly IQuartzLogger _logger;
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Objects,
             TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
         };
 
-        public QuartzJob()
+        public QuartzJob(
+            ITaskRouter taskRouter,
+            IQuartzLogger quartzLogger
+            )
         {
-            _taskRouter = TaskRouterFactory.Get();
-            _logger = QuartzLoggerFactory.GetLogger();
+            _quartzLogger = quartzLogger;
+            _taskRouter = taskRouter;
         }
 
         public void Execute(IJobExecutionContext context)
@@ -41,7 +44,7 @@ namespace GridDomain.Scheduling.Integration
                 var success = result.Result as TaskProcessed;
                 if (success != null)
                 {
-                    _logger.LogSuccess(context.JobDetail.Key.Name);
+                    _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
                 }
                 else
                 {
@@ -55,7 +58,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                _logger.LogFailure(context.JobDetail.Key.Name, e);
+                _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
                 throw new JobExecutionException(e);
             }
         }

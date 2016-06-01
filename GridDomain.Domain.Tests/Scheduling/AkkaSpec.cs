@@ -1,18 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using Akka.Actor;
-using Akka.Routing;
+using Akka.DI.Core;
+using Akka.DI.Unity;
 using Akka.TestKit.NUnit;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Tests.Scheduling.TestHelpers;
+using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
+using Quartz;
+using Quartz.Unity;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Tests.Scheduling
@@ -21,31 +26,48 @@ namespace GridDomain.Tests.Scheduling
     public class AkkaSpec : TestKit
     {
         private IActorRef _scheduler;
-        private TaskRouter _taskRouter;
         private IScheduler _quartzScheduler;
         private Mock<IQuartzLogger> _quartzLogger;
+        private UnityContainer _container;
+        private ITaskRouter _taskRouter;
+
+        private UnityContainer Register()
+        {
+            var container = new UnityContainer();
+            container.AddNewExtension<QuartzUnityExtension>();
+            var loggingJobListener = new Mock<ILoggingJobListener>();
+            loggingJobListener.Setup(x => x.Name).Returns("testListener");
+            container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+            container.RegisterType<IQuartzConfig, QuartzConfig>();
+            container.RegisterInstance(loggingJobListener.Object);
+            _taskRouter = new TaskRouter();
+            container.RegisterInstance(_taskRouter);
+            _quartzLogger = new Mock<IQuartzLogger>();
+            container.RegisterInstance(_quartzLogger.Object);
+            container.RegisterType<SchedulerActor>();
+            container.RegisterType<ISchedulerFactory, SchedulerFactory>();
+            container.RegisterType<QuartzJob>();
+            container.RegisterType<SuccessfulTestRequestHandler>();
+            container.RegisterType<FailingTestRequestHandler>();
+            container.RegisterType(typeof(TestRequestHandler<>));
+            return container;
+        }
 
         [SetUp]
         public void SetUp()
         {
+            _container = Register();
+            Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
             CreateScheduler();
 
-            _quartzLogger = new Mock<IQuartzLogger>();
-            QuartzLoggerFactory.SetLoggerFactory(() => _quartzLogger.Object);
-            _scheduler = Sys.ActorOf(Props.Create(() => new SchedulerActor(_quartzScheduler)));
-            
-            _taskRouter = new TaskRouter();
-            TaskRouterFactory.Init(_taskRouter);
+            _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulerActor>());
             _quartzScheduler.Clear();
             ResultHolder.Clear();
         }
 
         private void CreateScheduler()
         {
-            var loggingJobListener = new Mock<ILoggingJobListener>();
-            loggingJobListener.Setup(x => x.Name).Returns("testListener");
-            var quartzConfig = new QuartzConfig();
-            _quartzScheduler = new SchedulerFactory(quartzConfig, new Mock<ILoggingSchedulerListener>().Object, loggingJobListener.Object).Create();
+            _quartzScheduler = _container.Resolve<ISchedulerFactory>().GetScheduler();
         }
 
         [Test]
@@ -98,11 +120,8 @@ namespace GridDomain.Tests.Scheduling
             var taskId = "taskId";
             var result = new List<string>();
 
-            Func<TestRequest, Task> handler = request =>
-            {
-                result.Add(request.TaskId);
-                return Task.FromResult(true);
-            };
+            Action<TestRequest> handler = request => result.Add(request.TaskId);
+
             var testRequest = new TestRequest(taskId);
             var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestRequest>>(Props.Create(() => new TestRequestHandler<TestRequest>(handler)));
             _taskRouter.AddRoute(typeof(TestRequest), testActor);
@@ -113,7 +132,7 @@ namespace GridDomain.Tests.Scheduling
         }
 
         [Test]
-        public void When_some_of_scheduled_jobs_fail_System_still_executes_other()
+        public void When_some_of_scheduled_jobs_fail_System_still_executes_others()
         {
             var successTasks = new[] { 0.5, 1.5, 2.5 };
             var failTasks = new[] { 1.0, 2.0 };
@@ -191,6 +210,7 @@ namespace GridDomain.Tests.Scheduling
             }
 
             _quartzScheduler.Shutdown(false);
+            Thread.Sleep(2000);
             CreateScheduler();
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -204,10 +224,11 @@ namespace GridDomain.Tests.Scheduling
             {
                 //default timeout
                 var timeout = TimeSpan.FromSeconds(3);
-#if DEBUG
                 //in case you want to debug this unit test
-                timeout = TimeSpan.FromSeconds(300);
-#endif
+                if (Debugger.IsAttached)
+                {
+                    timeout = TimeSpan.FromSeconds(300);
+                }
                 return timeout;
             }
         }

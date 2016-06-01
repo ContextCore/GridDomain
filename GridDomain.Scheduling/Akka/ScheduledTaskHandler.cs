@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Akka.Tasks;
@@ -13,8 +13,18 @@ namespace GridDomain.Scheduling.Akka
 
         protected ScheduledTaskHandler()
         {
-            //TODO::VZ:: use typed/untyped method, what about async handlers?
-            Receive<TRequest>(request => HandleBase(request));
+            Receive<TRequest>(request =>
+            {
+                try
+                {
+                    Handle(request);
+                    Sender.Tell(new TaskProcessed(request.TaskId));
+                }
+                catch (Exception e)
+                {
+                    Sender.Tell(new Failure { Exception = e });
+                }
+            });
         }
 
         protected override void Unhandled(object message)
@@ -23,23 +33,6 @@ namespace GridDomain.Scheduling.Akka
             _log.Error($"Message {message} is unhandled by {this}");
         }
 
-        protected abstract Task Handle(TRequest request);
-
-        private void HandleBase(TRequest request)
-        {
-            Handle(request).ContinueWith(task =>
-            {
-                //TODO::VZ:: when base method throws exception instead of returning task (concrete handling method isn`t marked as async), continuation doesn`t work
-                if (task.IsFaulted && task.Exception != null)
-                {
-                    Sender.Tell(new Failure { Exception = task.Exception.InnerException });
-                }
-                else
-                {
-                    Sender.Tell(new TaskProcessed(request.TaskId));
-                }
-            }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.ExecuteSynchronously)
-            .PipeTo(Self);
-        }
+        protected abstract void Handle(TRequest request);
     }
 }

@@ -7,16 +7,16 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
 {
     public class TestRequestHandler<TRequest> : ScheduledTaskHandler<TRequest> where TRequest : ScheduledRequest
     {
-        private readonly Func<TRequest, Task> _handler;
+        private readonly Action<TRequest> _handler;
 
-        public TestRequestHandler(Func<TRequest, Task> handler)
+        public TestRequestHandler(Action<TRequest> handler)
         {
             _handler = handler;
         }
 
-        protected override async Task Handle(TRequest request)
+        protected override void Handle(TRequest request)
         {
-            await _handler(request);
+            _handler(request);
         }
     }
 }
