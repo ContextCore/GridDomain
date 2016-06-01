@@ -22,12 +22,14 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
     {
         private IReadOnlyCollection<BalanceChangePlan> _balanceManipulationPlans;
         private CreateBalanceCommand[] _createBalanceCommands;
+        protected abstract int BusinessNum { get; }
+        protected virtual int ChangesPerBusiness => BusinessNum*BusinessNum;
 
         [TestFixtureSetUp]
         public void InitSystems()
         {
 
-            _balanceManipulationPlans = GivenBalancePlan(1);
+            _balanceManipulationPlans = GivenBalancePlan(BusinessNum, ChangesPerBusiness);
             _createBalanceCommands = When_executed_create_balance_commands(_balanceManipulationPlans);
             When_executed_change_balances(_balanceManipulationPlans);
         }
@@ -159,9 +161,9 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             return createBalanceCommands;
         }
 
-        private static IReadOnlyCollection<BalanceChangePlan> GivenBalancePlan(int businessNum)
+        private static IReadOnlyCollection<BalanceChangePlan> GivenBalancePlan(int businessNum,int changesPerBusiness)
         {
-            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(businessNum, businessNum);
+            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(businessNum, changesPerBusiness);
             return balanceManipulationCommands;
         }
 

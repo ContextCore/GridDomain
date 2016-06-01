@@ -21,5 +21,6 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected override int BusinessNum => 20;
     }
 }

@@ -18,5 +18,8 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         public Standalne_Given_balance_change_plan_When_executing() : base(_akkaConf.ToStandAloneSystemConfig())
         {
         }
+
+        protected override int BusinessNum => 1;
+        protected override int ChangesPerBusiness => 2;
     }
 }
