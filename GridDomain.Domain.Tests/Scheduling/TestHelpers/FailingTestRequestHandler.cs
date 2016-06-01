@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Scheduling.Akka;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class FailingTestRequestHandler : ScheduledTaskHandler<TestRequest>
+    public class FailingTestRequestHandler : TestRequestHandler<FailTaskRequest>
     {
-        protected override async Task Handle(TestRequest request)
+        public FailingTestRequestHandler()
+            : base(request => Task.FromException(new InvalidOperationException()))
         {
-            throw new InvalidOperationException("something went wrong");
         }
     }
 }

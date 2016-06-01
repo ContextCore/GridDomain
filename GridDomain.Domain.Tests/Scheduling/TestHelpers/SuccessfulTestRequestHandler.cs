@@ -1,13 +1,9 @@
-using System.Threading.Tasks;
-using GridDomain.Scheduling.Akka;
-
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class SuccessfulTestRequestHandler : ScheduledTaskHandler<TestRequest>
+    public class SuccessfulTestRequestHandler : TestRequestHandler<TestRequest>
     {
-        protected override async Task Handle(TestRequest request)
+        public SuccessfulTestRequestHandler() : base(async request => ResultHolder.Add(request.TaskId, request.TaskId))
         {
-            ResultHolder.Add(request.TaskId, request.TaskId);
         }
     }
 }

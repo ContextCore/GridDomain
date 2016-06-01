@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using System.Threading;
 using Moq;
 using NUnit.Framework;
@@ -7,15 +8,19 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
 {
     public static class Throttle
     {
-        public static void Verify(Action verifyMock, TimeSpan timeout = default(TimeSpan))
+        public static void Verify<T>(Mock<T> mock, Expression<Action<T>> verification, TimeSpan minTimeout = default(TimeSpan), TimeSpan maxTimeout = default(TimeSpan)) where T : class
         {
-            timeout = timeout == default(TimeSpan) ? TimeSpan.FromSeconds(3) : timeout;
-            var cancellationToken = new CancellationTokenSource(timeout).Token;
+            maxTimeout = maxTimeout == default(TimeSpan) ? TimeSpan.FromSeconds(5) : maxTimeout;
+            var cancellationToken = new CancellationTokenSource(maxTimeout).Token;
+            if (minTimeout != default(TimeSpan))
+            {
+                Thread.Sleep(minTimeout);
+            }
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    verifyMock();
+                    mock.Verify(verification);
                     NUnit.Framework.Assert.True(true, "method was called");
                     return;
                 }
@@ -26,10 +31,14 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
             throw new AssertionException("method wasn`t called");
         }
 
-        public static void Assert(Action action, TimeSpan timeout = default(TimeSpan))
+        public static void Assert(Action action, TimeSpan minTimeout = default(TimeSpan), TimeSpan maxTimeout = default(TimeSpan))
         {
-            timeout = timeout == default(TimeSpan) ? TimeSpan.FromSeconds(3) : timeout;
-            var cancellationToken = new CancellationTokenSource(timeout).Token;
+            maxTimeout = maxTimeout == default(TimeSpan) ? TimeSpan.FromSeconds(5) : maxTimeout;
+            var cancellationToken = new CancellationTokenSource(maxTimeout).Token;
+            if (minTimeout != default(TimeSpan))
+            {
+                Thread.Sleep(minTimeout);
+            }
             while (!cancellationToken.IsCancellationRequested)
             {
                 try

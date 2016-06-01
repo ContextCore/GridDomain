@@ -139,6 +139,8 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
     <Compile Include="Scheduling\AkkaSpec.cs" />
+    <Compile Include="Scheduling\TestHelpers\FailTaskRequest.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestRequestHandler.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="Scheduling\TestHelpers\ResultHolder.cs" />
     <Compile Include="Scheduling\TestHelpers\SuccessfulTestRequestHandler.cs" />

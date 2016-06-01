@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Messages;
@@ -30,7 +29,7 @@ namespace GridDomain.Scheduling.Akka
             {
                 if (task.IsFaulted && task.Exception != null)
                 {
-                    Sender.Tell(new Failure { Exception = task.Exception.Flatten().InnerException });
+                    Sender.Tell(new Failure { Exception = task.Exception.InnerException });
                 }
                 else
                 {
