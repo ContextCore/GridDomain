@@ -5,6 +5,7 @@ using System.Configuration;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.Configuration.Hocon;
+using Akka.DI.Core;
 using Samples.Cluster.Simple.Samples.Cluster.Simple;
 
 namespace Samples.Cluster.Simple
@@ -30,9 +31,9 @@ namespace Samples.Cluster.Simple
 
                 //create an Akka system
                 var system = ActorSystem.Create("ClusterSystem", config);
-
+                var resolver = 
                 //create an actor that handles cluster domain events
-                system.ActorOf(Props.Create(typeof(SimpleClusterListener)), "clusterListener");
+                system.ActorOf(system.DI().Props.Create(typeof(SimpleClusterListener)), "clusterListener");
             }
         }
     }

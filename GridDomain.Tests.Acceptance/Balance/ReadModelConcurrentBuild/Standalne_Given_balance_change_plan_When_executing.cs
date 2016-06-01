@@ -11,9 +11,8 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             return new GridDomainNode(DefaultUnityContainer(dbConfig),
-                                      new BalanceCommandsRouting(), 
-                                      ActorSystemFactory.CreateActorSystem(akkaConf),
-                                      TransportMode.Standalone);
+                                      new BalanceCommandsRouting(),
+                                      TransportMode.Standalone, ActorSystemFactory.CreateActorSystem(akkaConf));
         }
 
         public Standalne_Given_balance_change_plan_When_executing() : base(AkkaConf.ToStandAloneSystemConfig())

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
@@ -21,7 +22,7 @@ namespace GridDomain.Node
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private IActorRef _mainNodeActor;
         public IUnityContainer Container { get; }
-        public readonly ActorSystem System;
+        public readonly ActorSystem[] AllSystems;
         private readonly IMessageRouteMap _messageRouting;
         private readonly TransportMode _transportMode;
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
@@ -31,16 +32,17 @@ namespace GridDomain.Node
             {TransportMode.Cluster,    typeof(ClusterSystemRouterActor)}
         };
 
+        public readonly ActorSystem System;
+
         public Guid Id { get; } = Guid.NewGuid();
 
-        public GridDomainNode(IUnityContainer container,
-                              IMessageRouteMap messageRouting,
-                              ActorSystem actorSystem,
-                              TransportMode transportMode)
+        public GridDomainNode(IUnityContainer container, 
+            IMessageRouteMap messageRouting, TransportMode transportMode, params ActorSystem[] actorAllSystems)
         {
             _transportMode = transportMode;
             _messageRouting = messageRouting;
-            System = actorSystem;
+            AllSystems = actorAllSystems;
+            System = AllSystems.Last();
             Container = container;
         }
 
@@ -50,13 +52,17 @@ namespace GridDomain.Node
             ConfigureLog(databaseConfiguration);
 
             CompositionRoot.Init(Container,
-                                 System,
-                                 databaseConfiguration,
-                                 _transportMode);
-       
+                                System,
+                                databaseConfiguration,
+                                _transportMode);
+
             Container.RegisterInstance(_messageRouting);
             //не убирать - нужен для работы DI в Akka
-            var propsResolver = new UnityDependencyResolver(Container, System);
+            foreach (var system in AllSystems)
+            {
+                var propsResolver = new UnityDependencyResolver(Container, system);
+            }
+
             StartActorSystem(System);
         }
 

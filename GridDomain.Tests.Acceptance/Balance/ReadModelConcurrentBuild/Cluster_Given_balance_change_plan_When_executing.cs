@@ -1,6 +1,8 @@
 ﻿using System;
 using System.CodeDom;
+using System.Linq;
 using Akka.Actor;
+using Akka.DI.Unity;
 using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -12,14 +14,17 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
     {
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var actorSystems = ActorSystemFactory.CreateCluster(akkaConf,1,1).RandomNode();
-            // var cluster = Akka.Cluster.Cluster.Get(actorSystems);
-            // cluster.Subscribe(TestActor, new[] { typeof(ClusterEvent.IReachabilityEvent) });
-            actorSystems.ActorOf(Props.Create(typeof(SimpleClusterListener)), "clusterListener");
-            return new GridDomainNode(DefaultUnityContainer(dbConfig), 
-                                      new BalanceCommandsRouting(), 
-                                      actorSystems,
-                                      TransportMode.Cluster);
+            var akkaCluster = ActorSystemFactory.CreateCluster(akkaConf);
+            var container = DefaultUnityContainer(dbConfig);
+
+            foreach (var system in akkaCluster.All)
+            {
+                var dependencyResolver = new UnityDependencyResolver(container, system);
+            }
+
+            return new GridDomainNode(container, 
+                                      new BalanceCommandsRouting(),
+                                      TransportMode.Cluster, akkaCluster.All);
         }
 
         public Cluster_Given_balance_change_plan_When_executing() : base("")

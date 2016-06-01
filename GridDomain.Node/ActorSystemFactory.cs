@@ -11,7 +11,7 @@ namespace GridDomain.Node
     {
         public ActorSystem[] SeedNodes;
         public ActorSystem[] NonSeedNodes;
-
+        public ActorSystem[] All => SeedNodes.Concat(NonSeedNodes).ToArray();
         public ActorSystem RandomNode()
         {
             return SeedNodes.Concat(NonSeedNodes).Last();
@@ -29,6 +29,8 @@ namespace GridDomain.Node
 
             var nonSeedConfiguration = Enumerable.Range(0, childNodeNumber)
                                                  .Select(n => ActorSystem.Create(akkaConf.Network.SystemName , akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
+
+
 
             return new AkkaCluster() {SeedNodes = seedSystems.ToArray(), NonSeedNodes = nonSeedConfiguration.ToArray() };
         }
