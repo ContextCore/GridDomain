@@ -8,7 +8,7 @@ namespace GridDomain.Scheduling.Akka.Tasks
 
         protected ScheduledRequest(string taskId)
         {
-            TaskId = taskId;
+            TaskId = taskId ?? Guid.NewGuid().ToString();
         }
     }
 }

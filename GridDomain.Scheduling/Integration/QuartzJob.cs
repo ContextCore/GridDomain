@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.ExceptionServices;
 using Akka.Actor;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Akka.Tasks;
 using GridDomain.Scheduling.Quartz.Logging;
@@ -12,19 +13,22 @@ namespace GridDomain.Scheduling.Integration
     public class QuartzJob : IJob
     {
         private readonly IQuartzLogger _quartzLogger;
+        private readonly IPublisher _publisher;
         private const string TaskKey = "Task";
         private const string Timeout = "Timeout";
-        private readonly ITaskRouter _taskRouter;
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Objects,
             TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
         };
 
-        public QuartzJob(IQuartzLogger quartzLogger, ITaskRouter taskRouter)
+        public QuartzJob(
+            IQuartzLogger quartzLogger, 
+            IPublisher publisher
+            )
         {
             _quartzLogger = quartzLogger;
-            _taskRouter = taskRouter;
+            _publisher = publisher;
         }
 
         public void Execute(IJobExecutionContext context)
@@ -32,26 +36,26 @@ namespace GridDomain.Scheduling.Integration
             try
             {
                 var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
-                var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
-                var targetActor = _taskRouter.GetTarget(scheduledRequest);
+                //var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
+                _publisher.Publish(scheduledRequest);
                 //TODO::VZ:: is there a better way to communicate with akka?
-                var result = targetActor.Ask(scheduledRequest, timeout);
-                result.Wait(timeout);
-                //TODO::VZ refactor without casts
-                var success = result.Result as TaskProcessed;
-                if (success != null)
-                {
+                //var result = targetActor.Ask(scheduledRequest, timeout);
+                //result.Wait(timeout);
+                ////TODO::VZ refactor without casts
+                //var success = result.Result as TaskProcessed;
+                //if (success != null)
+                //{
                     _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
-                }
-                else
-                {
-                    var failure = result.Result as Failure;
-                    if (failure != null)
-                    {
-                        ExceptionDispatchInfo.Capture(failure.Exception).Throw();
-                    }
-                    throw new InvalidOperationException($"Wrong reply from task handler actor. Reply: ${result.Result}");
-                }
+                //}
+                //else
+                //{
+                //    var failure = result.Result as Failure;
+                //    if (failure != null)
+                //    {
+                //        ExceptionDispatchInfo.Capture(failure.Exception).Throw();
+                //    }
+                //    throw new InvalidOperationException($"Wrong reply from task handler actor. Reply: ${result.Result}");
+                //}
             }
             catch (Exception e)
             {

@@ -8,6 +8,9 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using Akka.TestKit.NUnit;
+using GridDomain.CQRS.Messaging;
+using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
@@ -29,7 +32,7 @@ namespace GridDomain.Tests.Scheduling
         private IScheduler _quartzScheduler;
         private Mock<IQuartzLogger> _quartzLogger;
         private UnityContainer _container;
-        private ITaskRouter _taskRouter;
+        private IActorSubscriber _subsriber;
 
         private UnityContainer Register()
         {
@@ -44,10 +47,9 @@ namespace GridDomain.Tests.Scheduling
             //container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
             container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
             container.RegisterType<IQuartzConfig, QuartzConfig>();
-            
-            _taskRouter = new TaskRouter();
-            TaskRouterFactory.Init(_taskRouter);
-            container.RegisterInstance(_taskRouter);
+            var transport = new AkkaEventBusTransport(Sys);
+            container.RegisterInstance<IPublisher>(transport);
+            container.RegisterInstance<IActorSubscriber>(transport);
 
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
@@ -65,6 +67,7 @@ namespace GridDomain.Tests.Scheduling
             _container = Register();
             Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
             CreateScheduler();
+            _subsriber = _container.Resolve<IActorSubscriber>();
 
             _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulerActor>());
             _quartzScheduler.Clear();
@@ -91,9 +94,9 @@ namespace GridDomain.Tests.Scheduling
             var runAt = DateTime.UtcNow.AddSeconds(0.5);
             var testRequest = new TestRequest();
             var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _taskRouter.AddRoute(testRequest.GetType(), testActor);
+            _subsriber.Subscribe(testRequest.GetType(), testActor);
             _scheduler.Ask<TaskAdded>(new AddTask(testRequest, runAt, Timeout)).Wait(Timeout);
-            Throttle.Verify(_quartzLogger, x => x.LogSuccess(testRequest.TaskId), maxTimeout: Timeout);
+            Throttle.Assert(()=> Assert.True(ResultHolder.Contains(testRequest.TaskId)), maxTimeout: Timeout);
         }
 
         [Test]
@@ -102,7 +105,7 @@ namespace GridDomain.Tests.Scheduling
             var runAt = DateTime.UtcNow.AddSeconds(0.5);
             var testRequest = new FailTaskRequest("taskId");
             var testActor = ActorOfAsTestActorRef<FailingTestRequestHandler>();
-            _taskRouter.AddRoute(testRequest.GetType(), testActor);
+            _subsriber.Subscribe(testRequest.GetType(), testActor);
             _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
             Throttle.Verify(_quartzLogger, x => x.LogFailure(testRequest.TaskId, It.IsAny<Exception>()), maxTimeout: Timeout);
         }
@@ -113,7 +116,7 @@ namespace GridDomain.Tests.Scheduling
             var tasks = new[] { 0.5, 1, 1.5, 2, 2.5 };
 
             var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _taskRouter.AddRoute(typeof(TestRequest), testActor);
+            _subsriber.Subscribe(typeof(TestRequest), testActor);
 
             foreach (var task in tasks)
             {
@@ -139,7 +142,7 @@ namespace GridDomain.Tests.Scheduling
 
             var testRequest = new TestRequest(taskId);
             var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestRequest>>(Props.Create(() => new TestRequestHandler<TestRequest>(handler)));
-            _taskRouter.AddRoute(typeof(TestRequest), testActor);
+            _subsriber.Subscribe(typeof(TestRequest), testActor);
             _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
             _scheduler.Tell(new AddTask(testRequest, secondRunAt, Timeout));
 
@@ -153,7 +156,7 @@ namespace GridDomain.Tests.Scheduling
             var failTasks = new[] { 1.0, 2.0 };
 
             var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _taskRouter.AddRoute(typeof(TestRequest), testActor);
+            _subsriber.Subscribe(typeof(TestRequest), testActor);
 
             foreach (var task in successTasks)
             {
@@ -185,7 +188,7 @@ namespace GridDomain.Tests.Scheduling
             var tasksToRemove = new[] { 1.0, 2.0 };
 
             var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _taskRouter.AddRoute(typeof(TestRequest), testActor);
+            _subsriber.Subscribe(typeof(TestRequest), testActor);
 
             foreach (var task in successTasks.Concat(tasksToRemove))
             {
@@ -215,7 +218,7 @@ namespace GridDomain.Tests.Scheduling
             var tasks = new[] { 0.5, 1, 1.5, 2, 2.5 };
 
             var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _taskRouter.AddRoute(typeof(TestRequest), testActor);
+            _subsriber.Subscribe(typeof(TestRequest), testActor);
 
             foreach (var task in tasks)
             {
