@@ -7,7 +7,6 @@ using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
-using CompositionRoot = GridDomain.Balance.Node.CompositionRoot;
 
 namespace GridDomain.Tests.Acceptance
 {
@@ -44,13 +43,6 @@ namespace GridDomain.Tests.Acceptance
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
-
-        protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
-        {
-            var unityContainer = new UnityContainer();
-            CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
-            return unityContainer;
-        }
 
         protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber)
         {

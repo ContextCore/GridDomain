@@ -2,7 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
+namespace GridDomain.Balance.Domain.OfferAggregate
 {
     internal class ServiceSubscriptionCreatedEvent : DomainEvent
     {

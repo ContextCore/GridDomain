@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate
+namespace GridDomain.Balance.Domain.AccountAggregate
 {
     public class NegativeMoneyException : Exception
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
-using GridDomain.Balance.Domain.BalanceAggregate.Events;
+using GridDomain.Balance.Domain.AccountAggregate;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate.Events;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Tests;
@@ -11,14 +11,14 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Replenish
 {
     [TestFixture]
-    public class Given_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishAccountCommand>
+    public class Given_existing_balance_When_AccountReplenishCommand : CommandSpecification<ReplenishAccountCommand>
     {
         protected override ICommandHandler<ReplenishAccountCommand> Handler => new AccountCommandsHandler(Repository);
         private readonly Guid businessId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            //balance already exists
+            //account already exists
             yield return new AccountCreatedEvent(Command.BalanceId, businessId);
         }
 

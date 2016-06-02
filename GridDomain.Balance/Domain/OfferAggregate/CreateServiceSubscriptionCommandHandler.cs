@@ -1,7 +1,7 @@
 using CommonDomain.Persistence;
 using GridDomain.CQRS;
 
-namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
+namespace GridDomain.Balance.Domain.OfferAggregate
 {
     public class CreateServiceSubscriptionCommandHandler : ICommandHandler<CreateServiceSubscriptionCommand>
     {

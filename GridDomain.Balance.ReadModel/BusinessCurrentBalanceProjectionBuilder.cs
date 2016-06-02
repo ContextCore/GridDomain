@@ -1,11 +1,11 @@
-﻿using GridDomain.Balance.Domain.BalanceAggregate.Events;
+﻿using GridDomain.Balance.Domain.AccountAggregate.Events;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using NLog;
 
 namespace GridDomain.Balance.ReadModel
 {
-    //keep in mind 1 instance of projection builder should process only 1 balance id 
+    //keep in mind 1 instance of projection builder should process only 1 account id 
     public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
         IEventHandler<AccountWithdrawalEvent>,
         IEventHandler<AccountCreatedEvent>

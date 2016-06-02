@@ -1,8 +1,8 @@
 using System;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate
+namespace GridDomain.Balance.Domain.AccountAggregate
 {
-    public class BalanceChangeSource
+    public class AccountChangeSource
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

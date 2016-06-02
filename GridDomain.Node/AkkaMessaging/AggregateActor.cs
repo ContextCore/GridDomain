@@ -36,7 +36,7 @@ namespace GridDomain.Node.AkkaMessaging
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
         }
 
-        internal TAggregate Aggregate { get; private set; }
+        public TAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
     }
 }

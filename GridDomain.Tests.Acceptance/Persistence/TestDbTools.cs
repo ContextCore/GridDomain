@@ -5,7 +5,6 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
-using GridDomain.Balance.ReadModel;
 using GridDomain.EventStore.MSSQL.LogPersistance;
 using GridDomain.Node.Configuration;
 
@@ -21,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         public static void ClearData(IDbConfiguration conf)
         {
             Delete(conf.ReadModelConnectionString, "TransactionHistories");
-            Delete(conf.ReadModelConnectionString, nameof(BusinessBalance) + "s");
+            Delete(conf.ReadModelConnectionString, "BusinessBalances");
             Delete(conf.LogsConnectionString, nameof(LogRecord) + "s");
         }
 

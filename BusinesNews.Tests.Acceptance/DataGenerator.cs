@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
 using NMoneys;
 using Ploeh.AutoFixture;
 
@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Acceptance.Balance
                 BalanceChangeCommands = changeBalanceCmds,
                 AccountCreateCommand = generator.Create<CreateAccountCommand>(),
                 businessId = businessId,
-                BalanceId = balanceId,
+                AccountId = balanceId,
                 TotalAmountChange = totalReplenish - totalWithdrawal,
                 TotalWithdrwal = totalWithdrawal,
                 TotalReplenish = totalReplenish

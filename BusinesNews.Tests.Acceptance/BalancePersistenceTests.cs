@@ -1,6 +1,6 @@
 ﻿using System;
 using CommonDomain.Persistence;
-using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.Balance.Domain.AccountAggregate;
 using GridDomain.Node;
 using GridDomain.Tests.Acceptance.Persistence;
 using KellermanSoftware.CompareNetObjects;

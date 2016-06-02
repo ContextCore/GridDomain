@@ -2,7 +2,7 @@ using System;
 using GridDomain.CQRS;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
+namespace GridDomain.Balance.Domain.OfferAggregate
 {
     public class CreateServiceSubscriptionCommand : Command
     {

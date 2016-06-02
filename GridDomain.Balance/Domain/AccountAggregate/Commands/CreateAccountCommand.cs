@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
+namespace GridDomain.Balance.Domain.AccountAggregate.Commands
 {
     public class CreateAccountCommand : Command
     {

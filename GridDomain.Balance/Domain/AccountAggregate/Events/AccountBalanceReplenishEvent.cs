@@ -1,7 +1,7 @@
 using System;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate.Events
+namespace GridDomain.Balance.Domain.AccountAggregate.Events
 {
     public class AccountBalanceReplenishEvent : AccountBalanceChangedEvent
     {

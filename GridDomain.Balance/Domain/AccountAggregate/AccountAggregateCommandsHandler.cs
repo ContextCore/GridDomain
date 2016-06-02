@@ -1,19 +1,19 @@
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate
+namespace GridDomain.Balance.Domain.AccountAggregate
 {
-    public class MoneyBalanceCommandsHandler : AggregateCommandsHandler<Account>
+    public class AccountAggregateCommandsHandler : AggregateCommandsHandler<Account>
     {
-        public MoneyBalanceCommandsHandler()
+        public AccountAggregateCommandsHandler()
         {
-            Map<CreateBalanceCommand>(cmd => cmd.BalanceId,
+            Map<CreateAccountCommand>(cmd => cmd.BalanceId,
                 cmd => new Account(cmd.BalanceId, cmd.BusinessId));
 
-            Map<ReplenishBalanceCommand>(cmd => cmd.BalanceId,
+            Map<ReplenishAccountCommand>(cmd => cmd.BalanceId,
                 (cmd, agr) => agr.Replenish(cmd.Amount));
 
-            Map<WithdrawalBalanceCommand>(cmd => cmd.BalanceId,
+            Map<WithdrawalAccountCommand>(cmd => cmd.BalanceId,
                 (cmd, agr) => agr.Withdrawal(cmd.Amount));
         }
     }

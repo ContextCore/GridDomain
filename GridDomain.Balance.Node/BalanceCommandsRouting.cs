@@ -1,5 +1,5 @@
-﻿using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Balance.Domain.BalanceAggregate.Events;
+﻿using GridDomain.Balance.Domain.AccountAggregate;
+using GridDomain.Balance.Domain.AccountAggregate.Events;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;

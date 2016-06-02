@@ -4,10 +4,13 @@ using System.Linq;
 using System.Threading;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
+using GridDomain.Balance.Node;
 using GridDomain.Balance.ReadModel;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Configuration;
+using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
@@ -16,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
     public abstract class Given_balance_change_plan_When_executing : NodeCommandsTest
     {
         private IReadOnlyCollection<BalanceChangePlan> _balanceManipulationPlans;
-        private CreateBalanceCommand[] _createBalanceCommands;
+        private CreateAccountCommand[] _createAccountCommands;
         protected abstract int BusinessNum { get; }
         protected virtual int ChangesPerBusiness => BusinessNum*BusinessNum;
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(BusinessNum*ChangesPerBusiness);
@@ -25,7 +28,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         public void InitSystems()
         {
             _balanceManipulationPlans = GivenBalancePlan(BusinessNum, ChangesPerBusiness);
-            _createBalanceCommands = When_executed_create_balance_commands(_balanceManipulationPlans);
+            _createAccountCommands = When_executed_create_balance_commands(_balanceManipulationPlans);
             When_executed_change_balances(_balanceManipulationPlans);
         }
 
@@ -34,17 +37,23 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             var changeBalanceCommands = balanceManipulationPlans.SelectMany(p => p.BalanceChangeCommands).ToArray();
 
             Console.WriteLine();
-            Console.WriteLine($"Totally issued {balanceManipulationPlans.Select(p => p.BalanceCreateCommand).Count()}" +
+            Console.WriteLine($"Totally issued {balanceManipulationPlans.Select(p => p.AccountCreateCommand).Count()}" +
                               $" create commands and {changeBalanceCommands.Length} change commands");
             Console.WriteLine();
 
             ExecuteAndWaitFor<BalanceChangeProjectedNotification>(changeBalanceCommands, changeBalanceCommands.Length);
         }
+        protected static IUnityContainer CreateUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
+        {
+            var unityContainer = new UnityContainer();
+            CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
+            return unityContainer;
+        }
 
         [Then]
         public void Balances_should_be_created()
         {
-            Then_balances_readmodel_should_be_created(_createBalanceCommands);
+            Then_balances_readmodel_should_be_created(_createAccountCommands);
         }
 
         [Then]
@@ -73,8 +82,8 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
             foreach (var plan in balanceManipulationPlans)
             {
-                Console.WriteLine($"Checking write model for balance {plan.BalanceId}");
-                var name = AggregateActorName.New<Account>(plan.BalanceId).ToString();
+                Console.WriteLine($"Checking write model for account {plan.AccountId}");
+                var name = AggregateActorName.New<Account>(plan.AccountId).ToString();
                 var balanceActor = ActorOfAsTestActorRef<AggregateActor<Account>>(props, name);
                 aggregateActors.Add(Tuple.Create(plan, balanceActor.UnderlyingActor));
             }
@@ -95,14 +104,14 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             {
                 foreach (var tData in balanceManipulationPlans)
                 {
-                    var balanceId = tData.BalanceId;
+                    var account = tData.AccountId;
 
-                    Console.WriteLine($"Checking balance id {balanceId}, expecting amount: {tData.TotalAmountChange}");
-                    var balanceReadModel = context.Balances.Find(balanceId);
+                    Console.WriteLine($"Checking account id {account}, expecting amount: {tData.TotalAmountChange}");
+                    var balanceReadModel = context.Balances.Find(account);
 
                     if (balanceReadModel == null)
                     {
-                        Assert.Fail($"Cannot find balance with id: {balanceId}");
+                        Assert.Fail($"Cannot find account with id: {account}");
                     }
 
                     var resultAmount = balanceReadModel.Amount;
@@ -128,24 +137,24 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
             foreach (var plan in balanceManipulationPlans)
             {
-                Console.WriteLine($"plan for business: {plan.businessId} with balane {plan.BalanceId}");
+                Console.WriteLine($"plan for business: {plan.businessId} with balane {plan.AccountId}");
                 Console.WriteLine(
                     $"total change:{plan.TotalAmountChange}, with {plan.BalanceChangeCommands.Count} commands");
 
                 foreach (var cmd in plan.BalanceChangeCommands)
                 {
-                    if (cmd.BalanceId != plan.BalanceId) throw new CorruptedPlanException();
+                    if (cmd.BalanceId != plan.AccountId) throw new CorruptedPlanException();
                     Console.WriteLine($"{cmd.GetType().Name} {cmd.Id} with amount: {cmd.Amount}");
                 }
             }
         }
 
-        private static void Then_balances_readmodel_should_be_created(CreateBalanceCommand[] createBalanceCommands)
+        private static void Then_balances_readmodel_should_be_created(CreateAccountCommand[] createAccountCommands)
         {
             using (var context = new BusinessBalanceContext())
             {
                 var businessBalances =
-                    createBalanceCommands.Select(cmd => context.Balances.Find(cmd.BalanceId)).ToArray();
+                    createAccountCommands.Select(cmd => context.Balances.Find(cmd.BalanceId)).ToArray();
 
                 foreach (var balance in businessBalances)
                 {
@@ -154,10 +163,10 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             }
         }
 
-        private CreateBalanceCommand[] When_executed_create_balance_commands(
+        private CreateAccountCommand[] When_executed_create_balance_commands(
             IReadOnlyCollection<BalanceChangePlan> balanceManipulationCommands)
         {
-            var createBalanceCommands = balanceManipulationCommands.Select(p => p.BalanceCreateCommand).ToArray();
+            var createBalanceCommands = balanceManipulationCommands.Select(p => p.AccountCreateCommand).ToArray();
 
             ExecuteAndWaitFor<BalanceCreatedProjectedNotification>
                 (createBalanceCommands, createBalanceCommands.Length);

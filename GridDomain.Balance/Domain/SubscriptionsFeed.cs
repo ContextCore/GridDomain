@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain.ServiceSubscriptionAggregate;
+using GridDomain.Balance.Domain.OfferAggregate;
 using GridDomain.CQRS;
 using NMoneys;
 

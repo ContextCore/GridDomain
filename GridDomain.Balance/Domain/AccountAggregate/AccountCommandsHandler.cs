@@ -1,12 +1,11 @@
 using System;
 using CommonDomain.Persistence;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Logging;
 using NLog;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate
+namespace GridDomain.Balance.Domain.AccountAggregate
 {
     [Obsolete("Use AggregateCommandsHandler<Account> instead")]
     public class AccountCommandsHandler : ICommandHandler<ReplenishAccountCommand>,
@@ -32,29 +31,29 @@ namespace GridDomain.Balance.Domain.BalanceAggregate
         public void Handle(ReplenishAccountCommand e)
         {
             _log.Debug("Handling command:" + e.ToPropsString());
-            var balance = LoadBalance(e.BalanceId, e.Id);
-            balance.Replenish(e.Amount);
-            _repository.Save(balance, Guid.NewGuid());
+            var account = LoadAccount(e.BalanceId, e.Id);
+            account.Replenish(e.Amount);
+            _repository.Save(account, Guid.NewGuid());
         }
 
         public void Handle(WithdrawalAccountCommand e)
         {
             _log.Debug("Handling command:" + e.ToPropsString());
-            var balance = LoadBalance(e.BalanceId, e.Id);
-            balance.Withdrawal(e.Amount);
-            _repository.Save(balance, e.Id);
+            var account = LoadAccount(e.BalanceId, e.Id);
+            account.Withdrawal(e.Amount);
+            _repository.Save(account, e.Id);
         }
 
-        private Account LoadBalance(Guid balanceId, Guid commandId)
+        private Account LoadAccount(Guid balanceId, Guid commandId)
         {
-            var balance = _repository.GetById<Account>(balanceId);
-            //only aggregate factory can create balance with empty ownerId
-            if (balance.OwnerId == Guid.Empty)
+            var account = _repository.GetById<Account>(balanceId);
+            //only aggregate factory can create account with empty ownerId
+            if (account.OwnerId == Guid.Empty)
             {
-                throw new BalanceNotFoundException(balanceId, commandId);
+                throw new AccountNotFoundException(balanceId, commandId);
             }
 
-            return balance;
+            return account;
         }
     }
 }

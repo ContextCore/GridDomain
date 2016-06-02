@@ -2,7 +2,7 @@
 using CommonDomain.Core;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
+namespace GridDomain.Balance.Domain.OfferAggregate
 {
     internal class ServiceSubscription : AggregateBase
     {

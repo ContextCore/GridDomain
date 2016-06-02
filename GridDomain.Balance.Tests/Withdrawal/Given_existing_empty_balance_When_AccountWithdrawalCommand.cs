@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
-using GridDomain.Balance.Domain.BalanceAggregate.Events;
+using GridDomain.Balance.Domain.AccountAggregate;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate.Events;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Tests;
@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Withdrawal
 {
     [TestFixture]
-    public class Given_existing_empty_balance_When_BalanceWithdrawalCommand :
+    public class Given_existing_empty_balance_When_AccountWithdrawalCommand :
         CommandSpecification<WithdrawalAccountCommand>
     {
         protected override ICommandHandler<WithdrawalAccountCommand> Handler => new AccountCommandsHandler(Repository);

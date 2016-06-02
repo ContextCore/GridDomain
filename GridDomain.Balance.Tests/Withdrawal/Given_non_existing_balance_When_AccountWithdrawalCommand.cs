@@ -1,5 +1,5 @@
-using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
+using GridDomain.Balance.Domain.AccountAggregate;
+using GridDomain.Balance.Domain.AccountAggregate.Commands;
 using GridDomain.CQRS;
 using GridDomain.Tests;
 using NUnit.Framework;
@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Withdrawal
 {
     [TestFixture]
-    public class Given_non_existing_balance_When_BalanceWithdrawalCommand :
+    public class Given_non_existing_balance_When_AccountWithdrawalCommand :
         CommandSpecification<WithdrawalAccountCommand>
     {
         protected override ICommandHandler<WithdrawalAccountCommand> Handler => new AccountCommandsHandler(Repository);
@@ -16,7 +16,7 @@ namespace GridDomain.Balance.Tests.Withdrawal
         [Then]
         public void Exception_is_thrown()
         {
-            Assert.Throws<BalanceNotFoundException>(() => ExecuteCommand());
+            Assert.Throws<AccountNotFoundException>(() => ExecuteCommand());
         }
     }
 }

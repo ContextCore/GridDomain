@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{601F47B4-849C-49BC-AD2C-58B84DE229D6}</ProjectGuid>
+    <ProjectGuid>{E0523AC9-389C-48FA-A1C7-9AC5A15D8923}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Balance</RootNamespace>
-    <AssemblyName>GridDomain.Balance</AssemblyName>
+    <RootNamespace>BusinessNews.Test</RootNamespace>
+    <AssemblyName>BusinessNews.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,12 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
+    <Reference Include="Akka, Version=1.0.8.191, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.0.8.191-beta\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Persistence, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.1.0.8.25-beta\lib\net45\Akka.Persistence.dll</HintPath>
+    <Reference Include="Akka.Persistence, Version=1.0.8.191, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.1.0.8.191-beta\lib\net45\Akka.Persistence.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.Sql.Common.1.0.8.191-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence.SqlServer, Version=1.0.7.92, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.SqlServer.1.0.7.92-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
@@ -47,8 +55,16 @@
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Itenso.TimePeriod, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d7f23b760ed5c748, processorArchitecture=MSIL">
-      <HintPath>..\packages\TimePeriodLibrary.NET.2.0.0\lib\net35\Desktop.Release\Itenso.TimePeriod.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -59,16 +75,16 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NMoneys, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NMoneys.4.2.0.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Stateless.2.5.62.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Stateless.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.45.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.3.45.1\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -85,55 +101,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\AccountAggregate\AccountCommandsHandler.cs" />
-    <Compile Include="Domain\AccountAggregate\BalanceNotFoundException.cs" />
-    <Compile Include="Domain\AccountAggregate\Commands\CreateBalanceCommand.cs" />
-    <Compile Include="Domain\AccountAggregate\Account.cs" />
-    <Compile Include="Domain\AccountAggregate\BalanceChangeSource.cs" />
-    <Compile Include="Domain\AccountAggregate\Events\AccountCreatedEvent.cs" />
-    <Compile Include="Domain\AccountAggregate\Events\AccountBalanceReplenishEvent.cs" />
-    <Compile Include="Domain\AccountAggregate\Events\AccountWithdrawalEvent.cs" />
-    <Compile Include="Domain\AccountAggregate\Events\AccountBalanceChangedEvent.cs" />
-    <Compile Include="Domain\AccountAggregate\MoneyBalanceCommandsHandler.cs" />
-    <Compile Include="Domain\BusinessAggregate\Business.cs" />
-    <Compile Include="Domain\BusinessAggregate\BusinessCreatedEvent.cs" />
-    <Compile Include="Domain\OfferAggregate\BuySubscriptionCommand.cs" />
-    <Compile Include="Domain\BuySubscriptionSaga.cs" />
-    <Compile Include="Domain\OfferAggregate\CreateServiceSubscriptionCommand.cs" />
-    <Compile Include="Domain\OfferAggregate\CreateServiceSubscriptionCommandHandler.cs" />
-    <Compile Include="Domain\SubscriptionsFeed.cs" />
-    <Compile Include="Domain\OfferAggregate\ServiceSubscription.cs" />
-    <Compile Include="Domain\OfferAggregate\ServiceSubscriptionCreatedEvent.cs" />
-    <Compile Include="Domain\TransactoinCreatedEvent.cs" />
-    <Compile Include="Domain\TransactoinHistory.cs" />
-    <Compile Include="Domain\AccountAggregate\Commands\ChangeBalanceCommand.cs" />
-    <Compile Include="Domain\AccountAggregate\NegativeMoneyException.cs" />
+    <Compile Include="AggregatorFactoryTests.cs" />
+    <Compile Include="Replenish\Given_non_existing_balance_When_AccountReplenishCommand.cs" />
+    <Compile Include="Replenish\Given_existing_balance_When_AccountReplenishCommand.cs" />
+    <Compile Include="Withdrawal\Given_existing_empty_balance_When_AccountWithdrawalCommand.cs" />
+    <Compile Include="Withdrawal\Given_non_existing_balance_When_AccountWithdrawalCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Domain\AccountAggregate\Commands\ReplenishBalanceCommand.cs" />
-    <Compile Include="Domain\AccountAggregate\Commands\WithdrawalBalanceCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
-      <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
-      <Name>GridDomain.CQRS.Messaging</Name>
+    <ProjectReference Include="..\GridDomain.Balance\BusinessNews.Domain.csproj">
+      <Project>{601f47b4-849c-49bc-ad2c-58b84de229d6}</Project>
+      <Name>BusinessNews.Domain</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
-      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Project>{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}</Project>
       <Name>GridDomain.CQRS</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Domain.Tests\GridDomain.Tests.csproj">
+      <Project>{E6496D95-7FF7-4783-BD06-6D15B67600FA}</Project>
+      <Name>GridDomain.Tests</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
-      <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
+      <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
       <Name>GridDomain.EventSourcing</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
-      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
-      <Name>GridDomain.Logging</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
+      <Project>{760BE08A-D943-4A71-944E-938590527153}</Project>
+      <Name>GridDomain.Node</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj">
+      <Project>{B008531E-4879-4547-A5E1-B30AD176A669}</Project>
+      <Name>GridDomain.Tests.Acceptance</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

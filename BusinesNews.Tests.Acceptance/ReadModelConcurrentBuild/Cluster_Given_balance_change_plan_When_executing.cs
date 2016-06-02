@@ -12,11 +12,10 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             _akkaCluster = ActorSystemFactory.CreateCluster(akkaConf);
-            var container = DefaultUnityContainer(dbConfig);
-
-            return new GridDomainNode(container,
-                new BalanceCommandsRouting(),
-                TransportMode.Cluster, _akkaCluster.All);
+            
+            return new GridDomainNode(CreateUnityContainer(dbConfig),
+                                      new BalanceCommandsRouting(),
+                                      TransportMode.Cluster, _akkaCluster.All);
         }
 
         /// <summary>

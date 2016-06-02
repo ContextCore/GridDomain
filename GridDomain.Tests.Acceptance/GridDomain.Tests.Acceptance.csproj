@@ -232,10 +232,6 @@
     <Compile Include="AutoTestAkkaConfiguration.cs" />
     <Compile Include="AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="AutoTestAkkaNetworkAddress.cs" />
-    <Compile Include="Balance\BalanceChangePlan.cs" />
-    <Compile Include="Balance\BuySubscriptionSagaTests.cs" />
-    <Compile Include="Balance\ReadModelConcurrentBuild\SimpleClusterListener.cs" />
-    <Compile Include="Balance\ReadModelConcurrentBuild\Standalne_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="CountEventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
@@ -268,18 +264,13 @@
     <Compile Include="Persistence\SqlJournalPing.cs" />
     <Compile Include="Persistence\SqlJournalPingActor.cs" />
     <Compile Include="Persistence\SqlPersistenceConfigurationApplyTest.cs" />
-    <Compile Include="Balance\DataGenerator.cs" />
-    <Compile Include="Balance\KnownConstructorParameter.cs" />
-    <Compile Include="Balance\ReadModelConcurrentBuild\Cluster_Given_balance_change_plan_When_executing.cs" />
-    <Compile Include="Balance\ReadModelConcurrentBuild\CorruptedPlanException.cs" />
-    <Compile Include="Balance\ReadModelConcurrentBuild\Given_balance_change_plan_When_executing.cs" />
     <Compile Include="AutoFix.cs" />
     <Compile Include="Persistence\AutoTestLocalDbConfiguration.cs" />
     <Compile Include="Persistence\Sql_journal_availability_by_persistent_actor.cs" />
     <Compile Include="Persistence\Sql_journal_availability_test.cs" />
     <Compile Include="Persistence\TestDbTools.cs" />
-    <Compile Include="Balance\BalancePersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleClusterListener.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
     <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
@@ -289,20 +280,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GridDomain.Balance.Node\GridDomain.Balance.Node.csproj">
-      <Project>{bc419a4c-6ddd-493a-b395-45a5d5acc555}</Project>
-      <Name>GridDomain.Balance.Node</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Balance.ReadModel\GridDomain.Balance.ReadModel.csproj">
-      <Project>{63b5a32b-3ae4-4ce3-a79d-3a4c0c3ec955}</Project>
-      <Name>GridDomain.Balance.ReadModel</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Balance\GridDomain.Balance.csproj">
-      <Project>{601f47b4-849c-49bc-ad2c-58b84de229d6}</Project>
-      <Name>GridDomain.Balance</Name>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>

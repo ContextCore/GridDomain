@@ -2,7 +2,7 @@ using System;
 using GridDomain.CQRS;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
+namespace GridDomain.Balance.Domain.AccountAggregate.Commands
 {
     public class ChangeAccountCommand : Command
     {

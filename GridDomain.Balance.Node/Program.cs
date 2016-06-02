@@ -10,6 +10,10 @@ using Topshelf;
 
 namespace GridDomain.Balance.Node
 {
+    /// <summary>
+    /// Business news is a news company who provide fresh news and articles for businessmen 
+    /// </summary>
+    
     public class Program
     {
         private static void Main(string[] args)
