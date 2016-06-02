@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests
         private DiagMsg[] _results;
         private ActorSystem _system;
 
-        [SetUp]
+        [TestFixtureSetUp]
         public void TestsRouting()
         {
             _system = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
@@ -32,6 +32,12 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests
             _results = _diagMsgs.Select(m => ExpectMsg<DiagMsg>()).ToArray();
         }
 
+        [TestFixtureTearDown]
+        public void Dispose()
+        {
+            _system.Terminate();
+            _system.Dispose();
+        }
         private DiagMsg[] CreateMessages()
         {
             return new[]

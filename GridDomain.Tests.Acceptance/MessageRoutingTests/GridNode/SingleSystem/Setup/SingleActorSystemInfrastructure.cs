@@ -1,7 +1,9 @@
 using Akka.Actor;
+using Akka.DI.Core;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup
@@ -29,6 +31,11 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
         {
             _actorSystem.Terminate();
             _actorSystem.Dispose();
+        }
+
+        protected override IActorRef CreateRoutingActor(ActorSystem system)
+        {
+            return system.ActorOf(system.DI().Props<LocalSystemRoutingActor>());
         }
     }
 }

@@ -11,13 +11,13 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
         public TInfrastructure Infrastructure;
         protected T[] InitialCommands;
 
-        [TearDown]
+        [TestFixtureTearDown]
         public void Clear()
         {
             Infrastructure.Dispose();
         }
 
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
             Infrastructure = CreateInfrastructure();

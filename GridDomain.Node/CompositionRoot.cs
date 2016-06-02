@@ -46,8 +46,6 @@ namespace GridDomain.Node
         {
             container.RegisterInstance(conf);
             container.RegisterType<IConstructAggregates, AggregateFactory>();
-            container.RegisterType<IDetectConflicts, ConflictDetector>();
-            container.RegisterType<IRepository, EventStoreRepository>();
         }
     }
 }

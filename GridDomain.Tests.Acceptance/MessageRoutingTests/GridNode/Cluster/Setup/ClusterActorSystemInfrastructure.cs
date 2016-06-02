@@ -1,8 +1,10 @@
 using System.Linq;
 using Akka.Actor;
+using Akka.DI.Core;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
@@ -19,6 +21,11 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
 
         protected override IActorSubscriber Subscriber => _transport;
         protected override IPublisher Publisher => _transport;
+
+        protected override IActorRef CreateRoutingActor(ActorSystem system)
+        {
+            return system.ActorOf(system.DI().Props<ClusterSystemRouterActor>());
+        }
 
         protected override void InitContainer(UnityContainer container, IActorRef actor)
         {

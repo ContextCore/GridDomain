@@ -87,6 +87,7 @@
       <HintPath>..\packages\AutoFixture.3.45.1\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a" />
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
@@ -99,9 +100,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregatorFactoryTests.cs" />
+    <Compile Include="BusinessNewsContainerTests.cs" />
+    <Compile Include="BuySubscriptionSagaTests.cs" />
     <Compile Include="Replenish\Given_non_existing_balance_When_AccountReplenishCommand.cs" />
     <Compile Include="Replenish\Given_existing_balance_When_AccountReplenishCommand.cs" />
     <Compile Include="Withdrawal\Given_existing_empty_balance_When_AccountWithdrawalCommand.cs" />
@@ -109,6 +116,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Balance.Node\BusinessNews.Node.csproj">
+      <Project>{bc419a4c-6ddd-493a-b395-45a5d5acc555}</Project>
+      <Name>BusinessNews.Node</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Balance\BusinessNews.Domain.csproj">
       <Project>{601f47b4-849c-49bc-ad2c-58b84de229d6}</Project>
       <Name>BusinessNews.Domain</Name>

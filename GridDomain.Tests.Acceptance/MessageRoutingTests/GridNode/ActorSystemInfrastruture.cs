@@ -42,9 +42,12 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
             var propsResolver = new UnityDependencyResolver(container, system);
 
             InitContainer(container, notifyActor);
-            Router = new ActorMessagesRouter(system.ActorOf(system.DI().Props<AkkaRoutingActor>()),
-                container.Resolve<IAggregateActorLocator>());
+            var routingActor = CreateRoutingActor(system);
+
+            Router = new ActorMessagesRouter(routingActor,container.Resolve<IAggregateActorLocator>());
         }
+
+        protected abstract IActorRef CreateRoutingActor(ActorSystem system);
 
         protected virtual void InitContainer(UnityContainer container, IActorRef actor)
         {

@@ -9,24 +9,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
 {
-
-
-    public class GridNodeContainerTests : CompositionRootTests
-    {
-        protected override IUnityContainer CreateContainer(TransportMode mode, IDbConfiguration conf)
-        {
-            var container = new UnityContainer();
-
-            CompositionRoot.Init(container,
-                                 ActorSystemBuilders[mode](),
-                                 conf,
-                                 mode);
-
-            return container;
-        }
-    }
-
-
     [TestFixture]
     public abstract class CompositionRootTests
     {
@@ -42,11 +24,29 @@ namespace GridDomain.Tests.Acceptance
 
         private void ResolveAll(IUnityContainer container)
         {
+            var errors = new Dictionary<ContainerRegistration, Exception>();
             foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
             {
-                container.Resolve(reg.RegisteredType, reg.Name);
-                Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
+                try
+                {
+                    container.Resolve(reg.RegisteredType, reg.Name);
+                    Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
+                }
+                catch (Exception ex)
+                {
+                    errors[reg] = ex;
+                }
             }
+
+            if (!errors.Any()) return;
+
+            foreach (var error in errors.Take(5))
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name}");
+                Console.WriteLine();
+            }
+            Assert.Fail("Found unresolvable registrations");
         }
 
         protected  readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary

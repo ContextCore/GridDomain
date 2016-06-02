@@ -228,35 +228,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateCommandsRouting.cs" />
-    <Compile Include="AutoTestAkkaConfiguration.cs" />
-    <Compile Include="AutoTestAkkaDbConfiguration.cs" />
-    <Compile Include="AutoTestAkkaNetworkAddress.cs" />
-    <Compile Include="CompositionRootTests.cs" />
     <Compile Include="CountEventWaiter.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
     <Compile Include="ExplicitSourcesEventWaiter.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemTest.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Cluster_not_correlated_routing.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorTypeFactory.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Setup\ClusterMessageHandlerActor.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Cluster_correlated_routing.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\ActorSystemInfrastruture.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemInfrastructure.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\CorrelatedRouting.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\IGivenCommands.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\IRouterConfiguration.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\NotCorrelatedRouting.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Setup\GivenClusterTestMessages.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\GivenTestMessages.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemInfrastructure.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\TestHandler.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\TestMessage.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\Cluster\Setup\ClusterMessage.cs" />
-    <Compile Include="Balance\MessageRoutingTests\ConsistentHashingRoutingTest.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Single_system_not_correlated_routing.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\ActorSystemTest.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemTest.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemTest.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Cluster_not_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorTypeFactory.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterMessageHandlerActor.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Cluster_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\ActorSystemInfrastruture.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemInfrastructure.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\CorrelatedRouting.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\IGivenCommands.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\IRouterConfiguration.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\NotCorrelatedRouting.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\GivenClusterTestMessages.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\GivenTestMessages.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemInfrastructure.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\TestHandler.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\TestMessage.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterMessage.cs" />
+    <Compile Include="MessageRoutingTests\ConsistentHashingRoutingTest.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_not_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\ActorSystemTest.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemTest.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\Persisted.cs" />
@@ -273,7 +268,7 @@
     <Compile Include="SimpleClusterListener.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="TestsClobalConfig.cs" />
-    <Compile Include="Balance\MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
