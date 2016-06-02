@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Messages;
@@ -23,23 +24,21 @@ namespace GridDomain.Scheduling.Akka
             _log.Error($"Message {message} is unhandled by {this}");
         }
 
-        protected abstract Task Handle(TRequest request);
+        protected abstract void Handle(TRequest request);
 
         private void HandleBase(TRequest request)
         {
-            Handle(request).ContinueWith(task =>
+
+            try
             {
-                //TODO::VZ:: when base method throws exception instead of returning task (concrete handling method isn`t marked as async), continuation doesn`t work
-                if (task.IsFaulted && task.Exception != null)
-                {
-                    Sender.Tell(new Failure { Exception = task.Exception.InnerException });
-                }
-                else
-                {
-                    Sender.Tell(new TaskProcessed(request.TaskId));
-                }
-            }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.ExecuteSynchronously)
-            .PipeTo(Self);
+                Handle(request);
+                Sender.Tell(new TaskProcessed(request.TaskId));
+            }
+            catch (Exception e)
+            {
+                Sender.Tell(new Failure { Exception = e });
+            }
+
         }
     }
 }

@@ -98,11 +98,7 @@ namespace GridDomain.Tests.Scheduling
             var taskId = "taskId";
             var result = new List<string>();
 
-            Func<TestRequest, Task> handler = request =>
-            {
-                result.Add(request.TaskId);
-                return Task.FromResult(true);
-            };
+            Action<TestRequest> handler = request => result.Add(request.TaskId);
             var testRequest = new TestRequest(taskId);
             var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestRequest>>(Props.Create(() => new TestRequestHandler<TestRequest>(handler)));
             _taskRouter.AddRoute(typeof(TestRequest), testActor);

@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Balance.Node", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scheduling", "GridDomain.Scheduling\GridDomain.Scheduling.csproj", "{96037181-43D1-4AE5-A9E8-0660D4CC4C82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchedulerDemo", "SchedulerDemo\SchedulerDemo.csproj", "{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutoTesting|Any CPU = AutoTesting|Any CPU
@@ -287,6 +289,22 @@ Global
 		{96037181-43D1-4AE5-A9E8-0660D4CC4C82}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{96037181-43D1-4AE5-A9E8-0660D4CC4C82}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96037181-43D1-4AE5-A9E8-0660D4CC4C82}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.AutoTesting|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.AutoTesting|Any CPU.Build.0 = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Production|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Production|Any CPU.Build.0 = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Sandbox|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Sandbox|Any CPU.Build.0 = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2CDEC2-28CA-4520-B44A-BA7B5A399145}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
