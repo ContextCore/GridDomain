@@ -47,6 +47,7 @@
     <Compile Include="AggregateFactory.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
+    <Compile Include="IAggregateRepository.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="IStatefullSaga.cs" />
     <Compile Include="IVersionedEvent.cs" />

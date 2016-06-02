@@ -3,60 +3,50 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
 using Saga = GridDomain.Tests.Sagas.SubscriptionRenewSaga.SubscriptionRenewSaga;
+
 namespace GridDomain.Tests.Sagas
 {
-
     [TestFixture]
-    class CreateSagaGraph
+    internal class SagaStateTransitionTests
     {
-        [Test]
-        public void GEtGraph()
+        private Saga Saga;
+
+        public void Given_new_saga_with_state(Saga.States states)
         {
-            var saga = new Saga(new SagaStateAggregate<Saga.States, Saga.Triggers>(Guid.NewGuid(),Saga.States.SubscriptionSet));
-            Console.WriteLine(saga.Machine.ToDotGraph());
-        }
-    }
-
-
-    [TestFixture]
-    class SagaStateTransitionTests
-    {
-        private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
-
-        public void Given_new_saga_with_state(SubscriptionRenewSaga.SubscriptionRenewSaga.States states)
-        {
-            var sagaState = new SagaStateAggregate<SubscriptionRenewSaga.SubscriptionRenewSaga.States,
-                SubscriptionRenewSaga.SubscriptionRenewSaga.Triggers>(Guid.NewGuid(),states);
-            Saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(sagaState);
+            var sagaState = new SagaStateAggregate<Saga.States,
+                Saga.Triggers>(Guid.NewGuid(), states);
+            Saga = new Saga(sagaState);
         }
 
-
-        [Test]
-        public void When_valid_transition_Then_state_is_changed()
+        private class WrongMessage
         {
-            Given_new_saga_with_state(SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying);
-            Saga.Handle(new SubscriptionPaidEvent());
-
-            Assert.AreEqual(SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet, Saga.State);
         }
 
 
         [Test]
         public void When_invalid_transition_Then_state_not_changed()
         {
-            Given_new_saga_with_state(SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionChanging);
+            Given_new_saga_with_state(Saga.States.SubscriptionChanging);
             Saga.Handle(new SubscriptionExpiredEvent());
 
-            Assert.AreEqual(SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionChanging, Saga.State);
+            Assert.AreEqual(Saga.States.SubscriptionChanging, Saga.State);
         }
 
-        private class WrongMessage { }
-        
         [Test]
         public void When_unknown_transition_Then_exception_occurs()
         {
-            Given_new_saga_with_state(SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionChanging);
+            Given_new_saga_with_state(Saga.States.SubscriptionChanging);
             Assert.Throws<UnbindedMessageRecievedException>(() => Saga.Transit(new WrongMessage()));
+        }
+
+
+        [Test]
+        public void When_valid_transition_Then_state_is_changed()
+        {
+            Given_new_saga_with_state(Saga.States.OfferPaying);
+            Saga.Handle(new SubscriptionPaidEvent());
+
+            Assert.AreEqual(Saga.States.SubscriptionSet, Saga.State);
         }
     }
 }

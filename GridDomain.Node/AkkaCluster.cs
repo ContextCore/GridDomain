@@ -1,0 +1,29 @@
+using System;
+using System.Linq;
+using Akka.Actor;
+using Akka.Cluster;
+
+namespace GridDomain.Node
+{
+    public class AkkaCluster : IDisposable
+    {
+        public ActorSystem[] NonSeedNodes;
+        public ActorSystem[] SeedNodes;
+        public ActorSystem[] All => SeedNodes.Concat(NonSeedNodes).ToArray();
+
+        public void Dispose()
+        {
+            Cluster.Get(RandomNode()).Shutdown();
+            foreach (var actorSystem in All)
+            {
+                actorSystem.Terminate();
+                actorSystem.Dispose();
+            }
+        }
+
+        public ActorSystem RandomNode()
+        {
+            return SeedNodes.Concat(NonSeedNodes).Last();
+        }
+    }
+}

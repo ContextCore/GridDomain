@@ -1,23 +1,10 @@
 using System;
-using System.ComponentModel.Design;
-using System.Diagnostics.Contracts;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class CreateHandlerRoute: IEquatable<CreateHandlerRoute>
+    public class CreateHandlerRoute : IEquatable<CreateHandlerRoute>
     {
-        public Type MessageType { get; }
-        public Type HandlerType { get; }
-        /// <summary>
-        /// Name of property in message to use as correlation id.
-        /// Property must be Guid type. 
-        /// All messages with same correlation id will be processed sequencially
-        /// to avoid race conditions or concurrency problems.
-        /// Can be null.   
-        /// </summary>
-        public string MessageCorrelationProperty { get; }
-
         public CreateHandlerRoute(Type messageType, Type handlerType, string messageCorrelationProperty)
         {
             MessageType = messageType;
@@ -27,10 +14,28 @@ namespace GridDomain.Node.AkkaMessaging
             Check();
         }
 
-        public static CreateHandlerRoute New<TMessage, THandler>(string property) where THandler: IHandler<TMessage>
+        public Type MessageType { get; }
+        public Type HandlerType { get; }
+
+        /// <summary>
+        ///     Name of property in message to use as correlation id.
+        ///     Property must be Guid type.
+        ///     All messages with same correlation id will be processed sequencially
+        ///     to avoid race conditions or concurrency problems.
+        ///     Can be null.
+        /// </summary>
+        public string MessageCorrelationProperty { get; }
+
+        public bool Equals(CreateHandlerRoute other)
         {
-            return new CreateHandlerRoute(typeof(TMessage), typeof(THandler), property);
+            return other.HandlerType == HandlerType && other.MessageType == MessageType;
         }
+
+        public static CreateHandlerRoute New<TMessage, THandler>(string property) where THandler : IHandler<TMessage>
+        {
+            return new CreateHandlerRoute(typeof (TMessage), typeof (THandler), property);
+        }
+
         private void Check()
         {
             CheckHandler();
@@ -53,11 +58,6 @@ namespace GridDomain.Node.AkkaMessaging
                 throw new CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);
             if (property.PropertyType != typeof (Guid))
                 throw new IncorrectTypeOfCorrelationProperty(MessageType, MessageCorrelationProperty);
-        }
-
-        public bool Equals(CreateHandlerRoute other)
-        {
-            return other.HandlerType == HandlerType && other.MessageType == MessageType;
         }
     }
 }

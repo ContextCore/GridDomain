@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    class GivenClusterTestMessages: IGivenCommands<ClusterMessage>
+    internal class GivenClusterTestMessages : IGivenCommands<ClusterMessage>
     {
         private readonly int _number;
 
@@ -15,11 +15,10 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
         public ClusterMessage[] GetCommands()
         {
             var guid = Guid.NewGuid();
-            ClusterMessage[] commands =
-
+            var commands =
                 Enumerable.Range(0, _number)
-                          .Select(n => new ClusterMessage() {CorrelationId = guid, ExecuteOrder = n})
-                          .ToArray();
+                    .Select(n => new ClusterMessage {CorrelationId = guid, ExecuteOrder = n})
+                    .ToArray();
 
             return commands;
         }

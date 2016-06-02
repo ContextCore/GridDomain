@@ -1,6 +1,7 @@
 namespace GridDomain.Tests.SagaStateAggregate
 {
-    enum TestTransition {
+    internal enum TestTransition
+    {
         Forward
     }
 }

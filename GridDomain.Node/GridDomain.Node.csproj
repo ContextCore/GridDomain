@@ -182,15 +182,18 @@
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
+    <Compile Include="AkkaCluster.cs" />
     <Compile Include="AkkaMessaging\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
     <Compile Include="AkkaMessaging\AggregateHostActor.cs" />
     <Compile Include="AkkaMessaging\AkkaEventBusTransport.cs" />
+    <Compile Include="AkkaMessaging\CannotGetDistributedPubSubException.cs" />
     <Compile Include="AkkaMessaging\CreateActorRoute.cs" />
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\DistributedPubSubTransport.cs" />
     <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
+    <Compile Include="AkkaMessaging\MessageRoute.cs" />
     <Compile Include="AkkaMessaging\Routing\ClusterSystemRouterActor.cs" />
     <Compile Include="AkkaMessaging\Routing\LocalSystemRoutingActor.cs" />
     <Compile Include="AkkaMessaging\TypedMessageActor.cs" />
@@ -225,14 +228,16 @@
     <Compile Include="Configuration\IDbConfiguration.cs" />
     <Compile Include="Configuration\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\AkkaConfiguration.cs" />
+    <Compile Include="IActorSubscriber.cs" />
     <Compile Include="IContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="AkkaMessaging\ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
-    <Compile Include="ISubscriber.cs" />
+    <Compile Include="IActorTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\LogConfigurator.cs" />
+    <Compile Include="TransportMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -7,7 +7,7 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class AkkaEventBusTransport : IActorSubscriber, IPublisher
     {
-        private EventStream _bus;
+        private readonly EventStream _bus;
 
         public AkkaEventBusTransport(ActorSystem system)
         {
@@ -22,7 +22,6 @@ namespace GridDomain.Node.AkkaMessaging
         public void Subscribe(Type messageType, IActorRef actor)
         {
             _bus.Subscribe(actor, messageType);
-
         }
 
         public void Publish<T>(T msg)

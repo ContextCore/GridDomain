@@ -3,7 +3,7 @@ using GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSys
 
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    class ClusterMessage : TestMessage
+    internal class ClusterMessage : TestMessage
     {
         public Address ProcessorActorSystemAdress { get; set; }
     }

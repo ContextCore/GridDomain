@@ -1,5 +1,4 @@
 using System;
-using GridDomain.EventSourcing;
 
 namespace GridDomain.Balance.ReadModel
 {

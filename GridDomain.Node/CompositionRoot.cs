@@ -1,48 +1,34 @@
-﻿using System;
-using Akka.Actor;
-using Akka.Cluster;
+﻿using Akka.Actor;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
 using CommonDomain.Persistence.EventStore;
-using GridDomain.Balance;
-using GridDomain.Balance.ReadModel;
-using GridDomain.CQRS.ReadModel;
+using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
-using MemBus;
 using Microsoft.Practices.Unity;
-using NEventStore;
-using NEventStore.Client;
-using IPublisher = GridDomain.CQRS.Messaging.IPublisher;
 
 namespace GridDomain.Node
 {
     //TODO: refactor to good config
-    public enum TransportMode
-    {
-        Standalone,
-        Cluster
-    }
+
     public static class CompositionRoot
     {
-        
         public static void Init(IUnityContainer container,
-                                ActorSystem actorSystem,
-                                IDbConfiguration conf,
-                                TransportMode transportMode)
+            ActorSystem actorSystem,
+            IDbConfiguration conf,
+            TransportMode transportMode)
         {
-
             //TODO: replace with config
 
-            if(transportMode == TransportMode.Standalone)
+            if (transportMode == TransportMode.Standalone)
             {
                 var transport = new AkkaEventBusTransport(actorSystem);
                 container.RegisterInstance<IPublisher>(transport);
                 container.RegisterInstance<IActorSubscriber>(transport);
             }
-            if(transportMode == TransportMode.Cluster)
+            if (transportMode == TransportMode.Cluster)
             {
                 var transport = new DistributedPubSubTransport(actorSystem);
                 container.RegisterInstance<IPublisher>(transport);
@@ -53,7 +39,7 @@ namespace GridDomain.Node
             RegisterEventStore(container, conf);
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            container.RegisterType<IAggregateActorLocator,DefaultAggregateActorLocator>();
+            container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
         }
 
         public static void RegisterEventStore(IUnityContainer container, IDbConfiguration conf)
@@ -62,7 +48,6 @@ namespace GridDomain.Node
             container.RegisterType<IConstructAggregates, AggregateFactory>();
             container.RegisterType<IDetectConflicts, ConflictDetector>();
             container.RegisterType<IRepository, EventStoreRepository>();
-
         }
     }
 }

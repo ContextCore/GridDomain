@@ -1,6 +1,6 @@
-namespace GridDomain.Node.Configuration
+namespace GridDomain.Node.Configuration.Hocon
 {
-    interface IAkkaConfig
+    internal interface IAkkaConfig
     {
         string Build();
     }

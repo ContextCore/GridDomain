@@ -5,18 +5,18 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 {
-    public abstract class ActorSystemTest<T, TInfrastructure>:TestKit where TInfrastructure : ActorSystemInfrastruture
+    public abstract class ActorSystemTest<T, TInfrastructure> : TestKit where TInfrastructure : ActorSystemInfrastruture
     {
+        protected T[] _resultMessages;
         public TInfrastructure Infrastructure;
         protected T[] InitialCommands;
-        protected T[] _resultMessages;
 
         [TearDown]
         public void Clear()
         {
             Infrastructure.Dispose();
         }
-        
+
         [SetUp]
         public void Init()
         {
@@ -39,6 +39,5 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 
         protected abstract IRouterConfiguration CreateRoutes();
         protected abstract TInfrastructure CreateInfrastructure();
-
     }
 }

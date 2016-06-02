@@ -2,7 +2,7 @@ using GridDomain.Node.Configuration;
 
 namespace GridDomain.Tests.Acceptance
 {
-    class AutoTestAkkaNetworkAddress : IAkkaNetworkAddress
+    internal class AutoTestAkkaNetworkAddress : IAkkaNetworkAddress
     {
         public string SystemName => "LocalSystem";
         public string Host => "127.0.0.1";

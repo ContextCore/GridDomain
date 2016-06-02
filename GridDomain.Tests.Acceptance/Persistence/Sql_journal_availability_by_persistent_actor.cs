@@ -8,17 +8,16 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Persistence
 {
     [TestFixture]
-    public class Sql_journal_availability_by_persistent_actor: TestKit
+    public class Sql_journal_availability_by_persistent_actor : TestKit
     {
-        private readonly AutoTestAkkaConfiguration _conf = new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Warning);
-      
-       
+        private readonly AutoTestAkkaConfiguration _conf =
+            new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Warning);
 
-        [Test]
-        public void Sql_journal_is_available_for_test_akka_config()
+        private void CHeckPersist(IActorRef actor)
         {
-            var actor = Sys.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
-            CHeckPersist(actor);
+            var sqlJournalPing = new SqlJournalPing {Payload = "testPayload"};
+            actor.Ask(sqlJournalPing);
+            ExpectMsg<Persisted>(m => m.Payload == sqlJournalPing.Payload, TimeSpan.FromSeconds(5));
         }
 
 
@@ -38,11 +37,13 @@ namespace GridDomain.Tests.Acceptance.Persistence
             CHeckPersist(actor);
         }
 
-        private void CHeckPersist(IActorRef actor)
+
+        [Test]
+        public void Sql_journal_is_available_for_factored_akka_cluster()
         {
-            var sqlJournalPing = new SqlJournalPing() {Payload = "testPayload"};
-            actor.Ask(sqlJournalPing);
-            ExpectMsg<Persisted>(m => m.Payload == sqlJournalPing.Payload, TimeSpan.FromSeconds(5));
+            var actorSystem = ActorSystemFactory.CreateCluster(_conf, 2, 2).RandomNode();
+            var actor = actorSystem.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
+            CHeckPersist(actor);
         }
 
         [Test]
@@ -55,10 +56,9 @@ namespace GridDomain.Tests.Acceptance.Persistence
 
 
         [Test]
-        public void Sql_journal_is_available_for_factored_akka_cluster()
+        public void Sql_journal_is_available_for_test_akka_config()
         {
-            var actorSystem = ActorSystemFactory.CreateCluster(_conf,2,2).RandomNode();
-            var actor = actorSystem.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
+            var actor = Sys.ActorOf(Props.Create<SqlJournalPingActor>(TestActor));
             CHeckPersist(actor);
         }
     }

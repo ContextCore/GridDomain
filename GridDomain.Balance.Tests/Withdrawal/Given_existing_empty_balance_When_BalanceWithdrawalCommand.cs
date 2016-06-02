@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain;
 using GridDomain.Balance.Domain.BalanceAggregate;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.Balance.Domain.BalanceAggregate.Events;
@@ -16,7 +15,7 @@ namespace GridDomain.Balance.Tests.Withdrawal
         CommandSpecification<WithdrawalBalanceCommand>
     {
         protected override ICommandHandler<WithdrawalBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
-        Guid businessId = Guid.NewGuid();
+        private readonly Guid businessId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> Given()
         {

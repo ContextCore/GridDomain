@@ -1,17 +1,22 @@
-using GridDomain.Node.Configuration;
-
-internal class PersistenceSnapshotConfig:IAkkaConfig
+namespace GridDomain.Node.Configuration.Hocon
 {
-    private AkkaConfiguration _akka;
-
-    public PersistenceSnapshotConfig(AkkaConfiguration akka)
+    internal class PersistenceSnapshotConfig : IAkkaConfig
     {
-        _akka = akka;
-    }
+        private readonly AkkaConfiguration _akka;
 
-    public static string BuildPersistenceSnapshotConfig(AkkaConfiguration akkaConf)
-    {
-        string persistenceSnapshotStorageConfig = @" 
+        public PersistenceSnapshotConfig(AkkaConfiguration akka)
+        {
+            _akka = akka;
+        }
+
+        public string Build()
+        {
+            return BuildPersistenceSnapshotConfig(_akka);
+        }
+
+        public static string BuildPersistenceSnapshotConfig(AkkaConfiguration akkaConf)
+        {
+            var persistenceSnapshotStorageConfig = @" 
             snapshot-store {
                            plugin =  ""akka.persistence.snapshot-store.sql-server""
                            sql-server {
@@ -24,11 +29,7 @@ internal class PersistenceSnapshotConfig:IAkkaConfig
                                       auto-initialize = on
                            }
             }";
-        return persistenceSnapshotStorageConfig;
-    }
-
-    public string Build()
-    {
-        return BuildPersistenceSnapshotConfig(_akka);
+            return persistenceSnapshotStorageConfig;
+        }
     }
 }

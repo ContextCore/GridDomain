@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -10,6 +9,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 using NLog;
@@ -19,24 +19,22 @@ namespace GridDomain.Node
 {
     public class GridDomainNode : IGridDomainNode
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
-        private IActorRef _mainNodeActor;
-        public IUnityContainer Container { get; }
-        public readonly ActorSystem[] AllSystems;
-        private readonly IMessageRouteMap _messageRouting;
-        private readonly TransportMode _transportMode;
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
-           <TransportMode, Type>
+            <TransportMode, Type>
         {
-            {TransportMode.Standalone, typeof(LocalSystemRoutingActor)},
-            {TransportMode.Cluster,    typeof(ClusterSystemRouterActor)}
+            {TransportMode.Standalone, typeof (LocalSystemRoutingActor)},
+            {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
 
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly IMessageRouteMap _messageRouting;
+        private readonly TransportMode _transportMode;
+        public readonly ActorSystem[] AllSystems;
+
         public readonly ActorSystem System;
+        private IActorRef _mainNodeActor;
 
-        public Guid Id { get; } = Guid.NewGuid();
-
-        public GridDomainNode(IUnityContainer container, 
+        public GridDomainNode(IUnityContainer container,
             IMessageRouteMap messageRouting, TransportMode transportMode, params ActorSystem[] actorAllSystems)
         {
             _transportMode = transportMode;
@@ -46,15 +44,19 @@ namespace GridDomain.Node
             Container = container;
         }
 
+        public IUnityContainer Container { get; }
+
+        public Guid Id { get; } = Guid.NewGuid();
+
         public void Start(IDbConfiguration databaseConfiguration)
         {
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
 
             CompositionRoot.Init(Container,
-                                System,
-                                databaseConfiguration,
-                                _transportMode);
+                System,
+                databaseConfiguration,
+                _transportMode);
 
             Container.RegisterInstance(_messageRouting);
             //не убирать - нужен для работы DI в Akka
@@ -64,6 +66,13 @@ namespace GridDomain.Node
             }
 
             StartActorSystem(System);
+        }
+
+        public void Stop()
+        {
+            System.Terminate();
+            System.Dispose();
+            _log.Info($"GridDomain node {Id} stopped");
         }
 
         public static void ConfigureLog(IDbConfiguration dbConf)
@@ -79,23 +88,16 @@ namespace GridDomain.Node
         private void StartActorSystem(ActorSystem actorSystem)
         {
             _log.Info($"Launching GridDomain node {Id}");
-            
+
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
             _mainNodeActor = actorSystem.ActorOf(props);
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start()
+            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
-            .Wait(TimeSpan.FromSeconds(10));
+                .Wait(TimeSpan.FromSeconds(10));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
-        }
-
-        public void Stop()
-        {
-            System.Terminate();
-            System.Dispose();
-            _log.Info($"GridDomain node {Id} stopped");
         }
 
         public void Execute(ICommand cmd)

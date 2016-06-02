@@ -7,23 +7,10 @@ using NLog;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class CannotGetDistributedPubSubException : Exception
-    {
-        public CannotGetDistributedPubSubException(Exception ex):base("",ex)
-        {
-     
-        }
-
-        public CannotGetDistributedPubSubException()
-        {
-            
-        }
-    }
-
     public class DistributedPubSubTransport : IActorSubscriber, IPublisher
     {
-        private IActorRef _transport;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly IActorRef _transport;
 
         public DistributedPubSubTransport(ActorSystem system)
         {

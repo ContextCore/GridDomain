@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CommonDomain;
+﻿using CommonDomain;
 
 namespace GridDomain.EventSourcing
 {

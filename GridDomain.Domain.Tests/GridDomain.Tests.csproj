@@ -87,6 +87,7 @@
     <Compile Include="SagaStateAggregate\Given_transitioned_event_should_hydrate_state.cs" />
     <Compile Include="SagaStateAggregate\TestState.cs" />
     <Compile Include="SagaStateAggregate\TestTransition.cs" />
+    <Compile Include="Sagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\Given_messages_out_of_order_should_rearrange_and_process.cs" />
     <Compile Include="Sagas\SagaStateTransitionTests.cs" />

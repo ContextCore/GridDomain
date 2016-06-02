@@ -1,44 +1,34 @@
 using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Cluster;
-using Akka.Cluster.Tools.PublishSubscribe;
-using Akka.DI.Unity;
-using Akka.TestKit;
 using Akka.TestKit.NUnit;
-using CommonDomain.Persistence;
-using GridDomain.Balance.Node;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
-using NLog;
-using NLog.LayoutRenderers.Wrappers;
 using NUnit.Framework;
+using CompositionRoot = GridDomain.Balance.Node.CompositionRoot;
 
 namespace GridDomain.Tests.Acceptance
 {
-    public abstract class NodeCommandsTest: TestKit
+    public abstract class NodeCommandsTest : TestKit
     {
-        protected GridDomainNode GridNode;
-        private IActorSubscriber _subscriber;
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
+        private IActorSubscriber _subscriber;
+        protected GridDomainNode GridNode;
+
+        protected NodeCommandsTest(string config) : base(config)
+        {
+        }
+
         protected abstract TimeSpan Timeout { get; }
+
         [TearDown]
         public void DeleteSystems()
         {
             Console.WriteLine();
             Console.WriteLine("Stopping node");
             GridNode.Stop();
-        }
-
-        protected NodeCommandsTest(string config):base(config)
-        {
-            
         }
 
         [TestFixtureSetUp]
@@ -58,11 +48,11 @@ namespace GridDomain.Tests.Acceptance
         protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
         {
             var unityContainer = new UnityContainer();
-            GridDomain.Balance.Node.CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
+            CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
             return unityContainer;
         }
 
-        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands,int eventNumber) 
+        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber)
         {
             var actor = Sys.ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)));
 
@@ -81,7 +71,5 @@ namespace GridDomain.Tests.Acceptance
             Console.WriteLine();
             Console.WriteLine("Wait ended");
         }
-
-        
     }
 }

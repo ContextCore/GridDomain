@@ -16,13 +16,13 @@ namespace GridDomain.Balance.Tests
 
             var currentDomainReferences =
                 AppDomain.CurrentDomain.GetAssemblies()
-                                       .Where(a => isGridDomainAssembly(a.FullName))
-                                       .ToArray();
+                    .Where(a => isGridDomainAssembly(a.FullName))
+                    .ToArray();
 
             AllAggregateTypes = currentDomainReferences
-                                                    .SelectMany(a => a.GetTypes())
-                                                    .Where(t => typeof (AggregateBase).IsAssignableFrom(t) && t.IsAbstract == false)
-                                                    .ToArray();
+                .SelectMany(a => a.GetTypes())
+                .Where(t => typeof (AggregateBase).IsAssignableFrom(t) && t.IsAbstract == false)
+                .ToArray();
         }
 
         private Type[] AllAggregateTypes;

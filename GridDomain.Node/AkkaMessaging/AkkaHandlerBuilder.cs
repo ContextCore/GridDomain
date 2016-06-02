@@ -1,15 +1,14 @@
-using System;
-using System.Linq.Expressions;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class AkkaHandlerBuilder<TMessage, THandler>:
-        IHandlerBuilder<TMessage,THandler> where THandler : IHandler<TMessage>
+    public class AkkaHandlerBuilder<TMessage, THandler> :
+        IHandlerBuilder<TMessage, THandler> where THandler : IHandler<TMessage>
     {
         private readonly IHandler<CreateHandlerRoute> _routingRegistrator;
         public string CorrelationPropertyName;
+
         public AkkaHandlerBuilder(IHandler<CreateHandlerRoute> routingRegistrator)
         {
             _routingRegistrator = routingRegistrator;

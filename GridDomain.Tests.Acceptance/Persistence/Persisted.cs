@@ -1,6 +1,6 @@
 namespace GridDomain.Tests.Acceptance.Persistence
 {
-    class Persisted
+    internal class Persisted
     {
         public string Payload;
     }

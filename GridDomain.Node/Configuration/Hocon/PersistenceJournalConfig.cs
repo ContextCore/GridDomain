@@ -1,17 +1,22 @@
-using GridDomain.Node.Configuration;
-
-internal class PersistenceJournalConfig:IAkkaConfig
+namespace GridDomain.Node.Configuration.Hocon
 {
-    private AkkaConfiguration _akka;
-
-    public PersistenceJournalConfig(AkkaConfiguration akka)
+    internal class PersistenceJournalConfig : IAkkaConfig
     {
-        _akka = akka;
-    }
+        private readonly AkkaConfiguration _akka;
 
-    public static string BuildPersistenceJournalConfig(AkkaConfiguration akkaConf)
-    {
-        string persistenceJournalConfig = @"
+        public PersistenceJournalConfig(AkkaConfiguration akka)
+        {
+            _akka = akka;
+        }
+
+        public string Build()
+        {
+            return BuildPersistenceJournalConfig(_akka);
+        }
+
+        public static string BuildPersistenceJournalConfig(AkkaConfiguration akkaConf)
+        {
+            var persistenceJournalConfig = @"
             journal {
                     plugin = ""akka.persistence.journal.sql-server""
                     sql-server {
@@ -27,11 +32,7 @@ internal class PersistenceJournalConfig:IAkkaConfig
                     }
             }
 ";
-        return persistenceJournalConfig;
-    }
-
-    public string Build()
-    {
-        return BuildPersistenceJournalConfig(_akka);
+            return persistenceJournalConfig;
+        }
     }
 }

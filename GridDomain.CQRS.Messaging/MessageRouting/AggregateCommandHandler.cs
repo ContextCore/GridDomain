@@ -11,54 +11,58 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateCommandHandler<TAggregate> where TAggregate : AggregateBase
     {
-        private readonly Func<ICommand, Guid> _idLocator;
         private readonly Func<ICommand, TAggregate, IReadOnlyCollection<DomainEvent>> _executor;
+        private readonly Func<ICommand, Guid> _idLocator;
 
-        private static string GetName<T,U>(Expression<Func<T, U>> property)
-        {
-            MemberExpression memberExpression;
-
-            if (property.Body is UnaryExpression)
-            {
-                UnaryExpression unaryExpression = (UnaryExpression)(property.Body);
-                memberExpression = (MemberExpression)(unaryExpression.Operand);
-            }
-            else
-            {
-                memberExpression = (MemberExpression)(property.Body);
-            }
-
-            return ((PropertyInfo)memberExpression.Member).Name;
-        }
-        private AggregateCommandHandler(string name, Func<ICommand, Guid> idLocator, Func<ICommand,TAggregate, IReadOnlyCollection<DomainEvent>> executor)
+        private AggregateCommandHandler(string name, Func<ICommand, Guid> idLocator,
+            Func<ICommand, TAggregate, IReadOnlyCollection<DomainEvent>> executor)
         {
             _executor = executor;
             MachingProperty = name;
             _idLocator = idLocator;
         }
 
+        public string MachingProperty { get; }
+
+        private static string GetName<T, U>(Expression<Func<T, U>> property)
+        {
+            MemberExpression memberExpression;
+
+            if (property.Body is UnaryExpression)
+            {
+                var unaryExpression = (UnaryExpression) property.Body;
+                memberExpression = (MemberExpression) unaryExpression.Operand;
+            }
+            else
+            {
+                memberExpression = (MemberExpression) property.Body;
+            }
+
+            return ((PropertyInfo) memberExpression.Member).Name;
+        }
+
         private static IReadOnlyCollection<DomainEvent> GetAggregateEvents(IAggregate agr)
         {
             return agr.GetUncommittedEvents().Cast<DomainEvent>().ToList();
-        } 
+        }
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-                                                                        Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+            Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            return new AggregateCommandHandler<TAggregate>(GetName(idLocator), 
-                c => idLocator.Compile()((TCommand)c), 
+            return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
+                c => idLocator.Compile()((TCommand) c),
                 (cmd, agr) =>
                 {
-                    commandExecutor((TCommand)cmd, agr);
+                    commandExecutor((TCommand) cmd, agr);
                     return GetAggregateEvents(agr);
                 });
         }
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-                                                                        Func<TCommand, TAggregate> commandExecutor)
+            Func<TCommand, TAggregate> commandExecutor)
         {
             return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
-                c => idLocator.Compile()((TCommand)c),
+                c => idLocator.Compile()((TCommand) c),
                 (cmd, agr) =>
                 {
                     var newAgr = commandExecutor((TCommand) cmd);
@@ -70,8 +74,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             return _idLocator(command);
         }
-
-        public string MachingProperty { get; }
 
         public IReadOnlyCollection<DomainEvent> Execute(TAggregate agr, ICommand command)
         {

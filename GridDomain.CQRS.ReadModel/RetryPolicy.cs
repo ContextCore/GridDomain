@@ -1,6 +1,5 @@
 using System;
 using System.Data.Entity.Infrastructure;
-using System.Threading;
 
 namespace GridDomain.CQRS.ReadModel
 {
@@ -16,7 +15,7 @@ namespace GridDomain.CQRS.ReadModel
 
         public void Execute(Action act)
         {
-            int tryCount = 0;
+            var tryCount = 0;
 
             do
             {
@@ -31,8 +30,7 @@ namespace GridDomain.CQRS.ReadModel
                     if (tryCount >= _maxRetryCount)
                         throw new RetryLimitExceededException($"Reached retry limit {_maxRetryCount}", ex);
                 }
-            }
-            while (tryCount < _maxRetryCount);
+            } while (tryCount < _maxRetryCount);
         }
 
         public static RetryPolicy<TException> DefaultSql()

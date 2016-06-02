@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     [TestFixture]
-    abstract class ClusterActorSystemTest : ActorSystemTest<ClusterMessage, ClusterActorSystemInfrastructure>
+    internal abstract class ClusterActorSystemTest : ActorSystemTest<ClusterMessage, ClusterActorSystemInfrastructure>
     {
         protected override ClusterActorSystemInfrastructure CreateInfrastructure()
         {

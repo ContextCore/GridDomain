@@ -1,28 +1,26 @@
 using System;
-using Akka.Actor;
-using GridDomain.Node.Configuration;
 
-
-public abstract class ActorConfig: IAkkaConfig
+namespace GridDomain.Node.Configuration.Hocon
 {
-    private readonly int _port;
-    private readonly string _host;
-
-    private ActorConfig(int port, string host)
+    public abstract class ActorConfig : IAkkaConfig
     {
-        _host = host;
-        _port = port;
-    }
+        private readonly string _host;
+        private readonly int _port;
 
-    protected ActorConfig(IAkkaNetworkAddress config):this(config.PortNumber, config.Host)
-    {
-        
-    }
+        private ActorConfig(int port, string host)
+        {
+            _host = host;
+            _port = port;
+        }
+
+        protected ActorConfig(IAkkaNetworkAddress config) : this(config.PortNumber, config.Host)
+        {
+        }
 
 
-    public string Build()
-    {
-        string actorConfig = @"   
+        public string Build()
+        {
+            var actorConfig = @"   
        actor {
              serializers {
                          wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
@@ -43,16 +41,17 @@ public abstract class ActorConfig: IAkkaConfig
 
        }";
 
-        var deploy = BuildActorProvider() + BuildTransport(_host, _port);
+            var deploy = BuildActorProvider() + BuildTransport(_host, _port);
 
-        return actorConfig + Environment.NewLine + deploy;
-    }
+            return actorConfig + Environment.NewLine + deploy;
+        }
 
-    public abstract string BuildActorProvider();
-    private string BuildTransport(string name, int port)
-    {
-        string transportString = 
-           @"remote {
+        public abstract string BuildActorProvider();
+
+        private string BuildTransport(string name, int port)
+        {
+            var transportString =
+                @"remote {
                     helios.tcp {
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                transport-protocol = tcp
@@ -60,6 +59,7 @@ public abstract class ActorConfig: IAkkaConfig
                                hostname = " + name + @"
                     }
             }";
-        return transportString;
+            return transportString;
+        }
     }
 }

@@ -5,10 +5,10 @@ using Akka.Persistence;
 
 namespace GridDomain.Tests.Acceptance.Persistence
 {
-    class SqlJournalPingActor : PersistentActor
+    internal class SqlJournalPingActor : PersistentActor
     {
-        List<string> _events = new List<string>();
         private readonly IActorRef _notifyActor;
+        private List<string> _events = new List<string>();
 
         public SqlJournalPingActor(IActorRef notifyActor)
         {
@@ -16,6 +16,8 @@ namespace GridDomain.Tests.Acceptance.Persistence
             var plugin = Akka.Persistence.Persistence.Instance.Apply(Context.System).JournalFor(null);
             plugin.Tell(new object());
         }
+
+        public override string PersistenceId => "test";
 
         protected override void Unhandled(object message)
         {
@@ -41,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         {
             if (message is SnapshotOffer)
             {
-                _events = (List<string>)((SnapshotOffer)message).Snapshot;
+                _events = (List<string>) ((SnapshotOffer) message).Snapshot;
             }
             return true;
         }
@@ -52,11 +54,9 @@ namespace GridDomain.Tests.Acceptance.Persistence
             {
                 var m = message as SqlJournalPing;
                 _events.Add(m.Payload);
-                _notifyActor.Tell(new Persisted() { Payload = m.Payload });
+                _notifyActor.Tell(new Persisted {Payload = m.Payload});
             }
             return true;
         }
-
-        public override string PersistenceId => "test";
     }
 }

@@ -3,12 +3,12 @@ using System.Linq;
 using Akka.Cluster.Routing;
 using Akka.Routing;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public class ClusterSystemRouterActor : AkkaRoutingActor
     {
-        public ClusterSystemRouterActor(IHandlerActorTypeFactory actorTypeFactory, 
-                                        IActorSubscriber subscriber) : base(actorTypeFactory, subscriber)
+        public ClusterSystemRouterActor(IHandlerActorTypeFactory actorTypeFactory,
+            IActorSubscriber subscriber) : base(actorTypeFactory, subscriber)
         {
         }
 

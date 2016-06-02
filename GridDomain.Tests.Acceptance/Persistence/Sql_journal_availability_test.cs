@@ -6,9 +6,15 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Persistence
 {
     [TestFixture]
-    public class Sql_journal_availability_test: TestKit
+    public class Sql_journal_availability_test : TestKit
     {
         private readonly AutoTestAkkaConfiguration _conf = new AutoTestAkkaConfiguration();
+
+        private static void PingSqlJournal(ActorSystem actorSystem)
+        {
+            var plugin = Akka.Persistence.Persistence.Instance.Apply(actorSystem).JournalFor(null);
+            plugin.Ask(new object());
+        }
 
         [Test]
         public void Sql_journal_is_available_for_akka_config()
@@ -34,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Sql_journal_is_available_for_factory_created_cluster_actor_system()
         {
-            var actorSystem = ActorSystemFactory.CreateCluster(_conf, 2,2).RandomNode();
+            var actorSystem = ActorSystemFactory.CreateCluster(_conf, 2, 2).RandomNode();
             PingSqlJournal(actorSystem);
         }
 
@@ -42,12 +48,6 @@ namespace GridDomain.Tests.Acceptance.Persistence
         public void Sql_journal_is_available_for_testKit_actor_system()
         {
             PingSqlJournal(Sys);
-        }
-
-        private static void PingSqlJournal(ActorSystem actorSystem)
-        {
-            var plugin = Akka.Persistence.Persistence.Instance.Apply(actorSystem).JournalFor(null);
-            plugin.Ask(new object());
         }
     }
 }

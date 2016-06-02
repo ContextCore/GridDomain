@@ -1,11 +1,10 @@
-using System;
-
-namespace GridDomain.Node.Configuration
+namespace GridDomain.Node.Configuration.Hocon
 {
-    class LogConfig : IAkkaConfig
+    internal class LogConfig : IAkkaConfig
     {
         private readonly AkkaConfiguration _akkaConf;
-        private bool _includeConfig;
+        private readonly bool _includeConfig;
+
         public LogConfig(AkkaConfiguration akkaConf, bool includeConfig = true)
         {
             _akkaConf = akkaConf;
@@ -14,13 +13,13 @@ namespace GridDomain.Node.Configuration
 
         public string Build()
         {
-            string logConfig =
+            var logConfig =
                 @"
       stdout-loglevel = " + _akkaConf.LogLevel + @"
       loglevel = " + _akkaConf.LogLevel;
 
-            if(_includeConfig)
-                logConfig  += @"
+            if (_includeConfig)
+                logConfig += @"
       log-config-on-start = on";
 
             return logConfig;

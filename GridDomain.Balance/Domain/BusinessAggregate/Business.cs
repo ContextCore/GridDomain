@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommonDomain.Core;
 
 namespace GridDomain.Balance.Domain.BusinessAggregate
 {
-    class Business : AggregateBase
+    internal class Business : AggregateBase
     {
-        Guid BalanceId;
-        Guid SubscriptionId;
+        private Guid BalanceId;
 
         public string Name;
+        private Guid SubscriptionId;
 
-        public Business(Guid id, string name,Guid subscriptionId, Guid balanceId)
+        public Business(Guid id, string name, Guid subscriptionId, Guid balanceId)
         {
             RaiseEvent(new BusinessCreatedEvent(id)
             {

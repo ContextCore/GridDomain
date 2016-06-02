@@ -7,7 +7,7 @@ namespace GridDomain.Node.AkkaMessaging
     {
         public Type GetActorTypeFor<T>() where T : AggregateBase
         {
-            return typeof(AggregateActor<T>);
+            return typeof (AggregateActor<T>);
         }
     }
 }

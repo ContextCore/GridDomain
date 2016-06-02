@@ -1,5 +1,4 @@
-﻿
-using CommonDomain.Core;
+﻿using CommonDomain.Core;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -7,7 +6,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         IRouteBuilder<TMessage> Route<TMessage>();
 
-        void Register<TAggregate, TCommandHandler>(TCommandHandler handler) where TCommandHandler : AggregateCommandsHandler<TAggregate>
-                                                                            where TAggregate : AggregateBase;
+        void Register<TAggregate, TCommandHandler>(TCommandHandler handler)
+            where TCommandHandler : AggregateCommandsHandler<TAggregate>
+            where TAggregate : AggregateBase;
     }
 }

@@ -1,6 +1,6 @@
 namespace GridDomain.Tests.Acceptance.Persistence
 {
-    class SqlJournalPing
+    internal class SqlJournalPing
     {
         public string Payload;
     }

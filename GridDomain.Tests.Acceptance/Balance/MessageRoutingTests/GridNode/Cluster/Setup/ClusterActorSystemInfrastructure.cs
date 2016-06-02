@@ -8,23 +8,23 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
+    internal class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
     {
-        public ActorSystem[] Nodes;
         private DistributedPubSubTransport _transport;
-        public ClusterActorSystemInfrastructure(AkkaConfiguration conf):base(conf)
+        public ActorSystem[] Nodes;
+
+        public ClusterActorSystemInfrastructure(AkkaConfiguration conf) : base(conf)
         {
-            
         }
+
+        protected override IActorSubscriber Subscriber => _transport;
+        protected override IPublisher Publisher => _transport;
 
         protected override void InitContainer(UnityContainer container, IActorRef actor)
         {
             base.InitContainer(container, actor);
             container.RegisterType<IHandlerActorTypeFactory, ClusterActorTypeFactory>();
         }
-
-        protected override IActorSubscriber Subscriber => _transport;
-        protected override IPublisher Publisher => _transport;
 
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {

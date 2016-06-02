@@ -5,8 +5,8 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
         protected override SingleActorSystemInfrastructure CreateInfrastructure()
         {
             return new SingleActorSystemInfrastructure(new AutoTestAkkaConfiguration());
-
         }
+
         protected override IGivenCommands<TestMessage> GivenCommands()
         {
             return new GivenTestMessages();

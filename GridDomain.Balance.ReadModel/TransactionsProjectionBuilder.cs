@@ -18,12 +18,24 @@ namespace GridDomain.Balance.ReadModel
             _modelBuilder = modelBuilder;
         }
 
+        public void Handle(BalanceCreatedEvent e)
+        {
+            _modelBuilder.Add(new TransactionHistory
+            {
+                BalanceId = e.BalanceId,
+                EventType = typeof (BalanceCreatedEvent).Name,
+                Event = e.ToPropsString(),
+                Id = Guid.NewGuid(),
+                Time = DateTime.Now
+            });
+        }
+
         public void Handle(BalanceReplenishEvent e)
         {
-            _modelBuilder.Add(new TransactionHistory()
-            { 
-                BalanceId  = e.BalanceId,
-                EventType = typeof(BalanceReplenishEvent).Name,
+            _modelBuilder.Add(new TransactionHistory
+            {
+                BalanceId = e.BalanceId,
+                EventType = typeof (BalanceReplenishEvent).Name,
                 Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
                 TransactionAmount = e.Amount,
@@ -33,25 +45,13 @@ namespace GridDomain.Balance.ReadModel
 
         public void Handle(BalanceWithdrawalEvent e)
         {
-            _modelBuilder.Add(new TransactionHistory()
+            _modelBuilder.Add(new TransactionHistory
             {
                 BalanceId = e.BalanceId,
-                EventType = typeof(BalanceWithdrawalEvent).Name,
+                EventType = typeof (BalanceWithdrawalEvent).Name,
                 Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
                 TransactionAmount = e.Amount,
-                Time = DateTime.Now
-            });
-        }
-
-        public void Handle(BalanceCreatedEvent e)
-        {
-            _modelBuilder.Add(new TransactionHistory()
-            {
-                BalanceId = e.BalanceId,
-                EventType = typeof(BalanceCreatedEvent).Name,
-                Event = e.ToPropsString(),
-                Id = Guid.NewGuid(),
                 Time = DateTime.Now
             });
         }

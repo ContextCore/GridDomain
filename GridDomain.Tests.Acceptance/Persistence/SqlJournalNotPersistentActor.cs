@@ -3,10 +3,10 @@ using Akka.Actor;
 
 namespace GridDomain.Tests.Acceptance.Persistence
 {
-    class SqlJournalNotPersistentActor : UntypedActor
+    internal class SqlJournalNotPersistentActor : UntypedActor
     {
-        List<string> _events = new List<string>();
         private readonly IActorRef _notifyActor;
+        private List<string> _events = new List<string>();
 
         public SqlJournalNotPersistentActor(IActorRef notifyActor)
         {
@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
             {
                 var m = message as SqlJournalPing;
                 //  _events.Add(m.Payload);
-                _notifyActor.Tell(new Persisted() { Payload = m.Payload });
+                _notifyActor.Tell(new Persisted {Payload = m.Payload});
             }
         }
     }

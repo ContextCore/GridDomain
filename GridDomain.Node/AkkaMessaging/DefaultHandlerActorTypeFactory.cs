@@ -6,7 +6,7 @@ namespace GridDomain.Node.AkkaMessaging
     {
         public Type GetActorTypeFor(Type message, Type handler)
         {
-            return typeof(MessageHandlingActor<,>).MakeGenericType(message, handler);
+            return typeof (MessageHandlingActor<,>).MakeGenericType(message, handler);
         }
     }
 }

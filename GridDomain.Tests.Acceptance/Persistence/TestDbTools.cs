@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
-using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using GridDomain.Balance.ReadModel;
@@ -34,14 +33,16 @@ namespace GridDomain.Tests.Acceptance.Persistence
 
         private static void ClearWriteAkkaDb(IAkkaDbConfiguration akkaConf)
         {
-            Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\","\\"), akkaConf.SnapshotTableName);
-            Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"), akkaConf.JournalTableName, akkaConf.MetadataTableName);
+            Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
+            Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"), akkaConf.JournalTableName,
+                akkaConf.MetadataTableName);
         }
 
         private static void Truncate(string connection, params string[] tableNames)
         {
             ExecuteSql(connection, tableNames.Select(t => $"Truncate table {t}").ToArray());
         }
+
         private static void Delete(string connection, params string[] tableNames)
         {
             ExecuteSql(connection, tableNames.Select(t => $"Delete from {t}").ToArray());

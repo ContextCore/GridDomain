@@ -1,22 +1,23 @@
-using GridDomain.Node.Configuration;
-
-internal class PersistenceConfig : IAkkaConfig
+namespace GridDomain.Node.Configuration.Hocon
 {
-    private AkkaConfiguration _akka;
-
-    public PersistenceConfig(AkkaConfiguration akka)
+    internal class PersistenceConfig : IAkkaConfig
     {
-        _akka = akka;
-    }
+        private readonly AkkaConfiguration _akka;
 
-    public string Build()
-    {
-        string akkaPersistenceConfig =
-            @"      persistence {
+        public PersistenceConfig(AkkaConfiguration akka)
+        {
+            _akka = akka;
+        }
+
+        public string Build()
+        {
+            var akkaPersistenceConfig =
+                @"      persistence {
                     publish-plugin-commands = on
 " + new PersistenceJournalConfig(_akka).Build() + @"
 " + new PersistenceSnapshotConfig(_akka).Build() + @"
         }";
-        return akkaPersistenceConfig;
+            return akkaPersistenceConfig;
+        }
     }
 }

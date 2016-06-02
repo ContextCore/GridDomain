@@ -1,6 +1,7 @@
 ﻿using System;
 using CommonDomain.Persistence;
 using GridDomain.Balance.Domain.BalanceAggregate;
+using GridDomain.Node;
 using GridDomain.Tests.Acceptance.Persistence;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.Practices.Unity;
@@ -22,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.Balance
         {
             var container = new UnityContainer();
             var conf = TestEnvironment.Configuration;
-            GridDomain.Node.CompositionRoot.RegisterEventStore(container, conf);
+            CompositionRoot.RegisterEventStore(container, conf);
             return container.Resolve<IRepository>();
         }
 

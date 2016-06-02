@@ -3,7 +3,7 @@ using GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSys
 
 namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    class ClusterMessageHandlerActor : MessageHandlingActor<ClusterMessage, TestHandler>
+    internal class ClusterMessageHandlerActor : MessageHandlingActor<ClusterMessage, TestHandler>
     {
         public ClusterMessageHandlerActor(TestHandler handler) : base(handler)
         {
@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Clust
 
         protected override void OnReceive(object msg)
         {
-            ((ClusterMessage)msg).ProcessorActorSystemAdress = Akka.Cluster.Cluster.Get(Context.System).SelfAddress;
+            ((ClusterMessage) msg).ProcessorActorSystemAdress = Akka.Cluster.Cluster.Get(Context.System).SelfAddress;
             base.OnReceive(msg);
         }
     }

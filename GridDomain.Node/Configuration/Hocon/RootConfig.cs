@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 
-namespace GridDomain.Node.Configuration
+namespace GridDomain.Node.Configuration.Hocon
 {
-    class RootConfig : IAkkaConfig
+    internal class RootConfig : IAkkaConfig
     {
         private readonly IAkkaConfig[] _parts;
 

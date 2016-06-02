@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.CQRS;
@@ -17,7 +16,7 @@ namespace GridDomain.Node.Actors
         private readonly IMessageRouteMap _messageRouting;
 
         public GridDomainNodeMainActor(IPublisher transport,
-                                       IMessageRouteMap messageRouting)
+            IMessageRouteMap messageRouting)
         {
             _messageRouting = messageRouting;
             _messagePublisher = transport;
@@ -28,7 +27,7 @@ namespace GridDomain.Node.Actors
         {
             _log.Debug($"Актор {GetType().Name} начинает инициализацию");
 
-            ActorSystem system = Context.System;
+            var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType));
 
             var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());

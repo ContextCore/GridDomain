@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using CompositionRoot = GridDomain.Balance.Node.CompositionRoot;
 
 namespace GridDomain.Tests.Acceptance
 {
@@ -37,7 +36,7 @@ namespace GridDomain.Tests.Acceptance
         {
             var localDbConfiguration = new LocalDbConfiguration();
             var container = InitCoreContainer(transportMode, localDbConfiguration);
-            GridDomain.Balance.Node.CompositionRoot.Init(container, localDbConfiguration);
+            CompositionRoot.Init(container, localDbConfiguration);
             ResolveAll(container);
         }
 
@@ -45,17 +44,19 @@ namespace GridDomain.Tests.Acceptance
             <TransportMode, Func<ActorSystem>>
         {
             {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())},
-            {TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()}
+            {
+                TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()
+            }
         };
 
         private static UnityContainer InitCoreContainer(TransportMode transportMode,
-                                                        IDbConfiguration localDbConfiguration)
+            IDbConfiguration localDbConfiguration)
         {
             var container = new UnityContainer();
-            CompositionRoot.Init(container,
-                                    ActorSystemBuilders[transportMode](),
-                                    localDbConfiguration,
-                                    transportMode);
+            Node.CompositionRoot.Init(container,
+                ActorSystemBuilders[transportMode](),
+                localDbConfiguration,
+                transportMode);
             return container;
         }
     }

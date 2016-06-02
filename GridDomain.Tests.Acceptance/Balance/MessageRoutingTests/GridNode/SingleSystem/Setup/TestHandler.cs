@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
     public class TestHandler : IHandler<TestMessage>
     {
         private readonly IActorRef _notifier;
-        private int _handleCounter = 0;
+        private int _handleCounter;
 
         public TestHandler(IActorRef notifier)
         {

@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
-using Akka.Cluster.Routing;
 using Akka.Routing;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public class LocalSystemRoutingActor : AkkaRoutingActor
     {
-        public LocalSystemRoutingActor(IHandlerActorTypeFactory actorTypeFactory, IActorSubscriber subscriber) : base(actorTypeFactory, subscriber)
+        public LocalSystemRoutingActor(IHandlerActorTypeFactory actorTypeFactory, IActorSubscriber subscriber)
+            : base(actorTypeFactory, subscriber)
         {
         }
 
@@ -32,7 +32,7 @@ namespace GridDomain.Node.AkkaMessaging
             if (string.IsNullOrEmpty(handlerRouteConfigMessage.MessageCorrelationProperty))
                 return DefaultRouter;
 
-            var router = 
+            var router =
                 new ConsistentHashingPool(Environment.ProcessorCount)
                     .WithHashMapping(GetCorrelationPropertyFromMessage(handlerRouteConfigMessage));
 

@@ -2,7 +2,7 @@ using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 
 namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands
 {
-    class ChangeSubscriptionCommand
+    internal class ChangeSubscriptionCommand
     {
         private NotEnoughFondsFailure e;
 

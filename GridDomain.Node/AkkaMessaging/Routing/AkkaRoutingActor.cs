@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.DI.Core;
@@ -8,27 +7,32 @@ using GridDomain.CQRS;
 using GridDomain.Logging;
 using NLog;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public abstract class AkkaRoutingActor : TypedActor, IHandler<CreateHandlerRoute>,
-                                                         IHandler<CreateActorRoute>
+        IHandler<CreateActorRoute>
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly IActorSubscriber _subscriber;
 
+        protected readonly RouterConfig DefaultRouter = new RandomPool(Environment.ProcessorCount);
+
         protected AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory,
-                                   IActorSubscriber subscriber)
+            IActorSubscriber subscriber)
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
         }
 
-        protected readonly RouterConfig DefaultRouter = new RandomPool(Environment.ProcessorCount);
-
-        public void Handle(SubscribeAck msg)
+        public void Handle(CreateActorRoute msg)
         {
-            _log.Trace($"Subscription was successfull for {msg.ToPropsString()}");
+            var aggregateActorOpenType = typeof (AggregateHostActor<>);
+            var actorType = aggregateActorOpenType.MakeGenericType(msg.AggregateType);
+            var handleActor = CreateHandleActor(msg, actorType, CreateActorRouter);
+
+            foreach (var msgRoute in msg.Routes)
+                _subscriber.Subscribe(msgRoute.MessageType, handleActor);
         }
 
         public void Handle(CreateHandlerRoute msg)
@@ -40,20 +44,16 @@ namespace GridDomain.Node.AkkaMessaging
             _subscriber.Subscribe(msg.MessageType, handleActor);
         }
 
-        public void Handle(CreateActorRoute msg)
+        public void Handle(SubscribeAck msg)
         {
-            var aggregateActorOpenType = typeof (AggregateHostActor<>);
-            var actorType = aggregateActorOpenType.MakeGenericType(msg.AggregateType);
-            var handleActor = CreateHandleActor(msg, actorType, CreateActorRouter);
-
-            foreach(var msgRoute in msg.Routes)
-                _subscriber.Subscribe(msgRoute.MessageType, handleActor);
+            _log.Trace($"Subscription was successfull for {msg.ToPropsString()}");
         }
 
         protected abstract RouterConfig CreateActorRouter(CreateActorRoute msg);
         protected abstract RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage);
 
-        private IActorRef CreateHandleActor<TMessage>(TMessage msg, Type actorType, Func<TMessage, RouterConfig> routerFactory)
+        private IActorRef CreateHandleActor<TMessage>(TMessage msg, Type actorType,
+            Func<TMessage, RouterConfig> routerFactory)
         {
             var handleActorProps = Context.System.DI().Props(actorType);
             var routeConfig = routerFactory(msg);
@@ -74,7 +74,7 @@ namespace GridDomain.Node.AkkaMessaging
                 }
 
                 var value = msgType.GetProperty(handlerRouteConfigMessage.MessageCorrelationProperty)
-                                   .GetValue(m);
+                    .GetValue(m);
                 if (!(value is Guid))
                     throw new InvalidCorrelationPropertyValue(value);
 

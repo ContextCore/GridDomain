@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.SagaStateAggregate
 {
     [TestFixture]
-    class Given_new_saga_state_When_transit :
+    internal class Given_new_saga_state_When_transit :
         DomainEventsProductionSpecification<SagaStateAggregate<TestState, TestTransition>>
     {
         [Then]

@@ -1,37 +1,37 @@
 using System;
 using CommonDomain.Core;
 using GridDomain.Balance.Domain.BalanceAggregate.Events;
-using GridDomain.CQRS;
 using GridDomain.Logging;
 using NLog;
 using NMoneys;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate
 {
-    public class MoneyBalance:AggregateBase
+    public class MoneyBalance : AggregateBase
     {
-        //Business, campaign or smth else
-        public Guid OwnerId { get; private set; }
-
-        public Money Amount { get; private set; }
-
-        private Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
 
         private MoneyBalance(Guid id)
         {
             Id = id;
         }
 
-        public MoneyBalance(Guid id, Guid businessId):this(id)
+        public MoneyBalance(Guid id, Guid businessId) : this(id)
         {
             RaiseEvent(new BalanceCreatedEvent(id, businessId));
         }
+
+        //Business, campaign or smth else
+        public Guid OwnerId { get; private set; }
+
+        public Money Amount { get; private set; }
 
         private void Apply(BalanceCreatedEvent e)
         {
             Id = e.BalanceId;
             OwnerId = e.BusinessId;
         }
+
         private void Apply(BalanceReplenishEvent e)
         {
             _log.Trace($"Balance {Id} with amount {Amount} increased from event by {e.Amount}");

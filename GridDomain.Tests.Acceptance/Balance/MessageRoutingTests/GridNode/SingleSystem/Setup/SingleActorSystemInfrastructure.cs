@@ -8,12 +8,11 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
 {
     public class SingleActorSystemInfrastructure : ActorSystemInfrastruture
     {
-        private AkkaEventBusTransport _transport;
         private ActorSystem _actorSystem;
+        private AkkaEventBusTransport _transport;
 
         public SingleActorSystemInfrastructure(AkkaConfiguration conf) : base(conf)
         {
-
         }
 
         protected override IActorSubscriber Subscriber => _transport;

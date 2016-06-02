@@ -6,19 +6,20 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 {
     public class SimpleClusterListener : UntypedActor
     {
+        protected Cluster Cluster = Cluster.Get(Context.System);
         protected ILoggingAdapter Log = Context.GetLogger();
-        protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
 
         /// <summary>
-        /// Need to subscribe to cluster changes
+        ///     Need to subscribe to cluster changes
         /// </summary>
         protected override void PreStart()
         {
-            Cluster.Subscribe(Self, ClusterEvent.InitialStateAsEvents, new[] { typeof(ClusterEvent.IMemberEvent), typeof(ClusterEvent.UnreachableMember) });
+            Cluster.Subscribe(Self, ClusterEvent.InitialStateAsEvents,
+                new[] {typeof (ClusterEvent.IMemberEvent), typeof (ClusterEvent.UnreachableMember)});
         }
 
         /// <summary>
-        /// Re-subscribe on restart
+        ///     Re-subscribe on restart
         /// </summary>
         protected override void PostStop()
         {
@@ -35,12 +36,12 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             }
             else if (message is ClusterEvent.UnreachableMember)
             {
-                var unreachable = (ClusterEvent.UnreachableMember)message;
+                var unreachable = (ClusterEvent.UnreachableMember) message;
                 Log.Warning("Member detected as unreachable: {0}", unreachable.Member);
             }
             else if (message is ClusterEvent.MemberRemoved)
             {
-                var removed = (ClusterEvent.MemberRemoved)message;
+                var removed = (ClusterEvent.MemberRemoved) message;
                 Log.Warning("Member is Removed: {0}", removed.Member);
             }
             else if (message is ClusterEvent.IMemberEvent)
@@ -49,7 +50,6 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             }
             else if (message is ClusterEvent.CurrentClusterState)
             {
-
             }
             else
             {

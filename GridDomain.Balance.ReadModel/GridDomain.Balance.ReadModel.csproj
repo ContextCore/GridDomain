@@ -92,17 +92,17 @@
     <Compile Include="BusinessBalanceContext.cs" />
     <Compile Include="BusinessBalance.cs" />
     <Compile Include="BusinessCurrentBalanceProjectionBuilder.cs" />
-    <Compile Include="Migrations\201606010645275_TransactionHistoryAdded.cs" />
-    <Compile Include="Migrations\201606010645275_TransactionHistoryAdded.Designer.cs">
-      <DependentUpon>201606010645275_TransactionHistoryAdded.cs</DependentUpon>
+    <Compile Include="Migrations\TransactionHistoryAdded.cs" />
+    <Compile Include="Migrations\TransactionHistoryAdded.Designer.cs">
+      <DependentUpon>TransactionHistoryAdded.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606010654104_PrimaryKeyForTransactionHistory.cs" />
-    <Compile Include="Migrations\201606010654104_PrimaryKeyForTransactionHistory.Designer.cs">
-      <DependentUpon>201606010654104_PrimaryKeyForTransactionHistory.cs</DependentUpon>
+    <Compile Include="Migrations\PrimaryKeyForTransactionHistory.cs" />
+    <Compile Include="Migrations\PrimaryKeyForTransactionHistory.Designer.cs">
+      <DependentUpon>PrimaryKeyForTransactionHistory.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606010657264_TimeForTransactionHistory.cs" />
-    <Compile Include="Migrations\201606010657264_TimeForTransactionHistory.Designer.cs">
-      <DependentUpon>201606010657264_TimeForTransactionHistory.cs</DependentUpon>
+    <Compile Include="Migrations\TimeForTransactionHistory.cs" />
+    <Compile Include="Migrations\TimeForTransactionHistory.Designer.cs">
+      <DependentUpon>TimeForTransactionHistory.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\What.cs" />
     <Compile Include="Migrations\What.Designer.cs">
@@ -168,14 +168,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201606010645275_TransactionHistoryAdded.resx">
-      <DependentUpon>201606010645275_TransactionHistoryAdded.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\TransactionHistoryAdded.resx">
+      <DependentUpon>TransactionHistoryAdded.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606010654104_PrimaryKeyForTransactionHistory.resx">
-      <DependentUpon>201606010654104_PrimaryKeyForTransactionHistory.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\PrimaryKeyForTransactionHistory.resx">
+      <DependentUpon>PrimaryKeyForTransactionHistory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606010657264_TimeForTransactionHistory.resx">
-      <DependentUpon>201606010657264_TimeForTransactionHistory.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\TimeForTransactionHistory.resx">
+      <DependentUpon>TimeForTransactionHistory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\What.resx">
       <DependentUpon>What.cs</DependentUpon>

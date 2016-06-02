@@ -8,6 +8,7 @@ namespace GridDomain.Balance.ReadModel
     {
         [Key]
         public Guid Id { get; set; }
+
         public Guid BalanceId { get; set; }
         public DateTime Time { get; set; }
 
