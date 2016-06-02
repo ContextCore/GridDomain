@@ -21,10 +21,7 @@ namespace GridDomain.Scheduling.Integration
             TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
         };
 
-        public QuartzJob(
-            ITaskRouter taskRouter,
-            IQuartzLogger quartzLogger
-            )
+        public QuartzJob(IQuartzLogger quartzLogger, ITaskRouter taskRouter)
         {
             _quartzLogger = quartzLogger;
             _taskRouter = taskRouter;

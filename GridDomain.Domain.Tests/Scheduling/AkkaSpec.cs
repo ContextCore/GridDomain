@@ -8,6 +8,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using Akka.TestKit.NUnit;
+using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
@@ -17,7 +18,6 @@ using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
 using Quartz;
-using Quartz.Unity;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Tests.Scheduling
@@ -33,8 +33,10 @@ namespace GridDomain.Tests.Scheduling
 
         private UnityContainer Register()
         {
-            var container = new UnityContainer();
-            container.AddNewExtension<QuartzUnityExtension>();
+            var container = Container.Current;
+            container.RegisterType<QuartzJob>();
+            container.RegisterType<ISchedulerFactory, SchedulerFactory>();
+            container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(), new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
             var loggingJobListener = new Mock<ILoggingJobListener>();
             loggingJobListener.Setup(x => x.Name).Returns("testListener");
             //container.RegisterInstance(loggingJobListener.Object);
@@ -44,16 +46,17 @@ namespace GridDomain.Tests.Scheduling
             container.RegisterType<IQuartzConfig, QuartzConfig>();
             
             _taskRouter = new TaskRouter();
+            TaskRouterFactory.Init(_taskRouter);
             container.RegisterInstance(_taskRouter);
+
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
+            QuartzLoggerFactory.SetLoggerFactory(()=>_quartzLogger.Object);
             container.RegisterType<SchedulerActor>();
-            container.RegisterType<ISchedulerFactory, SchedulerFactory>();
-            container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(), new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
-            container.RegisterType<QuartzJob>();
             container.RegisterType<SuccessfulTestRequestHandler>();
             container.RegisterType<FailingTestRequestHandler>();
             container.RegisterType(typeof(TestRequestHandler<>));
+            ContainerHolder.Set(container);
             return container;
         }
 

@@ -3,7 +3,6 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
 using Microsoft.Practices.Unity;
 using Quartz;
-using Quartz.Unity;
 
 namespace GridDomain.Scheduling
 {
@@ -11,8 +10,6 @@ namespace GridDomain.Scheduling
     {
         public UnityContainer Compose(UnityContainer container)
         {
-            container.AddNewExtension<QuartzUnityExtension>();
-
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>()));
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));

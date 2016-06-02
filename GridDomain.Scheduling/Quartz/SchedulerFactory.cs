@@ -2,11 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using GridDomain.Scheduling.Quartz.Logging;
+using Microsoft.Practices.Unity;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Spi;
 
 namespace GridDomain.Scheduling.Quartz
 {
+    public class ContainerHolder
+    {
+        public static void Set(UnityContainer container)
+        {
+            Current = container;
+        }
+        public static UnityContainer Current { get; private set; }
+    }
+
+    public class JobFactory : IJobFactory
+    {
+        public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+        {
+            return (IJob)ContainerHolder.Current.Resolve(bundle.JobDetail.JobType);
+        }
+
+        public void ReturnJob(IJob job)
+        {
+            var disposable = job as IDisposable;
+            disposable?.Dispose();
+        }
+    }
+
     public class SchedulerFactory : ISchedulerFactory
     {
         private readonly IQuartzConfig _config;
@@ -51,8 +76,10 @@ namespace GridDomain.Scheduling.Quartz
             }
 
             var stdSchedulerFactory = new StdSchedulerFactory(properties);
+            
             stdSchedulerFactory.Initialize();
             var scheduler = stdSchedulerFactory.GetScheduler();
+            scheduler.JobFactory = new JobFactory();
             scheduler.ListenerManager.AddSchedulerListener(_loggingSchedulerListener);
             scheduler.ListenerManager.AddJobListener(_loggingJobListener);
             return scheduler;
