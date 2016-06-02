@@ -73,7 +73,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
         private void CheckWriteModel(IReadOnlyCollection<BalanceChangePlan> balanceManipulationPlans)
         {
-            var unityResolver = new UnityDependencyResolver(GridNode.Container, Sys);
+           Sys.AddDependencyResolver(new UnityDependencyResolver(GridNode.Container, Sys));
             var props = Sys.DI().Props<AggregateActor<Account>>();
 
 

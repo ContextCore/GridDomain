@@ -14,10 +14,6 @@ namespace GridDomain.Balance.Node
         public static void Init(IUnityContainer container,
             IDbConfiguration conf)
         {
-            //register all message handlers available to communicate
-            //need to do it on plugin approach
-            container.RegisterType<AccountCommandsHandler>();
-
             Func<BusinessBalanceContext> contextFactory =
                 () => new BusinessBalanceContext(conf.ReadModelConnectionString);
 

@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 
             var system = CreateSystem(AkkaConfig);
             var container = new UnityContainer();
-            var propsResolver = new UnityDependencyResolver(container, system);
+            system.AddDependencyResolver(new UnityDependencyResolver(container, system));
 
             InitContainer(container, notifyActor);
             var routingActor = CreateRoutingActor(system);

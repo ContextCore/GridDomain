@@ -59,10 +59,10 @@ namespace GridDomain.Node
                 _transportMode);
 
             Container.RegisterInstance(_messageRouting);
-            //не убирать - нужен для работы DI в Akka
+            
             foreach (var system in AllSystems)
             {
-                var propsResolver = new UnityDependencyResolver(Container, system);
+               system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
             }
 
             StartActorSystem(System);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -24,6 +25,7 @@ namespace GridDomain.Tests.Acceptance
 
         private void ResolveAll(IUnityContainer container)
         {
+            Console.WriteLine();
             var errors = new Dictionary<ContainerRegistration, Exception>();
             foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
             {
@@ -38,15 +40,15 @@ namespace GridDomain.Tests.Acceptance
                 }
             }
 
+            Console.WriteLine();
             if (!errors.Any()) return;
 
+            var builder = new StringBuilder();
             foreach (var error in errors.Take(5))
             {
-                Console.WriteLine();
-                Console.WriteLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name}");
-                Console.WriteLine();
+                builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name}");
             }
-            Assert.Fail("Found unresolvable registrations");
+            Assert.Fail("Can not resolve registrations: \r\n " + builder);
         }
 
         protected  readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
