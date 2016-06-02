@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Scheduling
             var container = Container.Current;
             container.RegisterType<QuartzJob>();
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
-            container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(), new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
+            container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
             var loggingJobListener = new Mock<ILoggingJobListener>();
             loggingJobListener.Setup(x => x.Name).Returns("testListener");
             //container.RegisterInstance(loggingJobListener.Object);
@@ -56,7 +56,6 @@ namespace GridDomain.Tests.Scheduling
             container.RegisterType<SuccessfulTestRequestHandler>();
             container.RegisterType<FailingTestRequestHandler>();
             container.RegisterType(typeof(TestRequestHandler<>));
-            ContainerHolder.Set(container);
             return container;
         }
 
@@ -74,7 +73,7 @@ namespace GridDomain.Tests.Scheduling
 
         private void CreateScheduler()
         {
-            _quartzScheduler = _container.Resolve<ISchedulerFactory>().GetScheduler();
+            _quartzScheduler = _container.Resolve<IScheduler>();
         }
 
         [Test]
@@ -82,7 +81,8 @@ namespace GridDomain.Tests.Scheduling
         {
             var sched1 = _container.Resolve<IScheduler>();
             var sched2 = _container.Resolve<IScheduler>();
-            Assert.True(sched2 == sched1);
+            var sched3 = _container.Resolve<IScheduler>();
+            Assert.True(sched2 == sched1 && sched2 == sched3);
         }
 
         [Test]

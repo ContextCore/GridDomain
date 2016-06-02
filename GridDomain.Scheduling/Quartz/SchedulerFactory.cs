@@ -1,43 +1,18 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using GridDomain.Scheduling.Quartz.Logging;
-using Microsoft.Practices.Unity;
 using Quartz;
 using Quartz.Impl;
-using Quartz.Spi;
 
 namespace GridDomain.Scheduling.Quartz
 {
-    public class ContainerHolder
-    {
-        public static void Set(UnityContainer container)
-        {
-            Current = container;
-        }
-        public static UnityContainer Current { get; private set; }
-    }
-
-    public class JobFactory : IJobFactory
-    {
-        public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
-        {
-            return (IJob)ContainerHolder.Current.Resolve(bundle.JobDetail.JobType);
-        }
-
-        public void ReturnJob(IJob job)
-        {
-            var disposable = job as IDisposable;
-            disposable?.Dispose();
-        }
-    }
-
     public class SchedulerFactory : ISchedulerFactory
     {
         private readonly IQuartzConfig _config;
         private readonly ILoggingSchedulerListener _loggingSchedulerListener;
         private readonly ILoggingJobListener _loggingJobListener;
-
+        private static readonly object _locker = new object();
+        private IScheduler _current;
         public SchedulerFactory(
             IQuartzConfig config,
             ILoggingSchedulerListener loggingSchedulerListener,
@@ -56,7 +31,20 @@ namespace GridDomain.Scheduling.Quartz
 
         public IScheduler GetScheduler(string schedName)
         {
+            lock (_locker)
+            {
+                if (_current == null || _current.IsShutdown)
+                {
+                    _current = Create(schedName);
+                }
+            }
+            return _current;
+        }
 
+        public ICollection<IScheduler> AllSchedulers => new[] { _current };
+
+        private IScheduler Create(string name)
+        {
             var properties = new NameValueCollection
             {
                 ["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz",
@@ -70,13 +58,13 @@ namespace GridDomain.Scheduling.Quartz
                 ["quartz.dataSource.default.provider"] = "SqlServer-20"
             };
 
-            if (schedName != null)
+            if (name != null)
             {
-                properties["quartz.scheduler.instanceName"] = schedName;
+                properties["quartz.scheduler.instanceName"] = name;
             }
 
             var stdSchedulerFactory = new StdSchedulerFactory(properties);
-            
+
             stdSchedulerFactory.Initialize();
             var scheduler = stdSchedulerFactory.GetScheduler();
             scheduler.JobFactory = new JobFactory();
@@ -84,7 +72,5 @@ namespace GridDomain.Scheduling.Quartz
             scheduler.ListenerManager.AddJobListener(_loggingJobListener);
             return scheduler;
         }
-
-        public ICollection<IScheduler> AllSchedulers => new List<IScheduler>();
     }
 }

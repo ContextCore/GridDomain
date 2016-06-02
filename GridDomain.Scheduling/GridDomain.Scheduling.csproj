@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="Quartz\JobFactory.cs" />
     <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\ILoggingSchedulerListener.cs" />
     <Compile Include="Quartz\IQuartzConfig.cs" />
