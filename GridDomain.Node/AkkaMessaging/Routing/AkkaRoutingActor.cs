@@ -10,7 +10,7 @@ using NLog;
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public abstract class AkkaRoutingActor : TypedActor, IHandler<CreateHandlerRoute>,
-        IHandler<CreateActorRoute>
+                                                         IHandler<CreateActorRoute>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
@@ -27,7 +27,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void Handle(CreateActorRoute msg)
         {
-            var aggregateActorOpenType = typeof (AggregateHostActor<>);
+            var aggregateActorOpenType = typeof(AggregateHostActor<>);
             var actorType = aggregateActorOpenType.MakeGenericType(msg.AggregateType);
             var handleActor = CreateHandleActor(msg, actorType, CreateActorRouter);
 
