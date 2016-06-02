@@ -2,19 +2,11 @@ using System;
 using System.Diagnostics;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Messages;
+using SchedulerDemo.Messages;
+using SchedulerDemo.ScheduledRequests;
 
-namespace SchedulerDemo
+namespace SchedulerDemo.Actors
 {
-    public class ProcessCommand
-    {
-        public string Command { get; }
-
-        public ProcessCommand(string command)
-        {
-            Command = command;
-        }
-    }
-
     public class CommandManager : ReceiveActor
     {
         public CommandManager()
@@ -61,33 +53,6 @@ namespace SchedulerDemo
                 return TimeSpan.FromMinutes(1);
             }
             return TimeSpan.FromSeconds(3);
-        }
-    }
-
-    public class ConsoleReader : ReceiveActor
-    {
-        public ConsoleReader()
-        {
-            Receive<StartReadFromConsole>(msg =>
-            {
-                var read = Console.ReadLine();
-                if (!string.IsNullOrEmpty(read) && read == "close")
-                {
-                    Context.System.Terminate();
-                }
-                if (string.IsNullOrEmpty(read))
-                {
-                    ActorReferences.Writer.Tell(new WriteToConsole("wrong input"));
-                }
-                else
-                {
-                    if (read.StartsWith("command "))
-                    {
-                        ActorReferences.CommandManager.Tell(new ProcessCommand(read.Substring(7)));
-                    }
-                }
-                Self.Tell(new StartReadFromConsole());
-            });
         }
     }
 }

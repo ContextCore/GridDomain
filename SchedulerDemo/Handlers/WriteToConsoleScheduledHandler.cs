@@ -1,7 +1,8 @@
-using System.Threading.Tasks;
 using GridDomain.Scheduling.Akka;
+using SchedulerDemo.Messages;
+using SchedulerDemo.ScheduledRequests;
 
-namespace SchedulerDemo
+namespace SchedulerDemo.Handlers
 {
     public class WriteToConsoleScheduledHandler : ScheduledTaskHandler<WriteToConsoleRequest>
     {

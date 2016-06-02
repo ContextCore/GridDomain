@@ -1,7 +1,8 @@
 using System;
 using Akka.Actor;
+using SchedulerDemo.Messages;
 
-namespace SchedulerDemo
+namespace SchedulerDemo.Actors
 {
     public class ConsoleWriter : ReceiveActor
     {

@@ -4,6 +4,10 @@ using Akka.Actor;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
+using SchedulerDemo.Actors;
+using SchedulerDemo.Handlers;
+using SchedulerDemo.Messages;
+using SchedulerDemo.ScheduledRequests;
 
 namespace SchedulerDemo
 {

@@ -88,14 +88,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorReferences.cs" />
-    <Compile Include="ConsoleReader.cs" />
-    <Compile Include="ConsoleWriter.cs" />
+    <Compile Include="Actors\CommandManager.cs" />
+    <Compile Include="Actors\ConsoleReader.cs" />
+    <Compile Include="Actors\ConsoleWriter.cs" />
+    <Compile Include="Messages\ProcessCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StartReadFromConsole.cs" />
-    <Compile Include="WriteToConsole.cs" />
-    <Compile Include="WriteToConsoleRequest.cs" />
-    <Compile Include="WriteToConsoleScheduledHandler.cs" />
+    <Compile Include="Messages\StartReadFromConsole.cs" />
+    <Compile Include="Messages\WriteToConsole.cs" />
+    <Compile Include="ScheduledRequests\WriteToConsoleRequest.cs" />
+    <Compile Include="Handlers\WriteToConsoleScheduledHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -110,6 +112,7 @@
       <Name>GridDomain.Scheduling</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
