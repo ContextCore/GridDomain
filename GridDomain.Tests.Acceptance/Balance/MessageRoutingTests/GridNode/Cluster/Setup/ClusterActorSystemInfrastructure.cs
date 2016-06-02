@@ -1,20 +1,24 @@
 using System.Linq;
 using Akka.Actor;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
+    internal class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
     {
+        private DistributedPubSubTransport _transport;
         public ActorSystem[] Nodes;
 
-        public ClusterActorSystemInfrastructure(AkkaConfiguration conf):base(conf)
+        public ClusterActorSystemInfrastructure(AkkaConfiguration conf) : base(conf)
         {
-            
         }
+
+        protected override IActorSubscriber Subscriber => _transport;
+        protected override IPublisher Publisher => _transport;
 
         protected override void InitContainer(UnityContainer container, IActorRef actor)
         {
@@ -24,17 +28,19 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
-            Nodes = ActorSystemFactory.CreateCluster(AkkaConfig);
-            return Nodes.Last();
+            Nodes = ActorSystemFactory.CreateCluster(AkkaConfig).NonSeedNodes;
+            var actorSystem = Nodes.Last();
+            _transport = new DistributedPubSubTransport(actorSystem);
+            return actorSystem;
         }
 
         public override void Dispose()
         {
-            base.Dispose();
-            foreach (var system in Nodes)
+            Akka.Cluster.Cluster.Get(Nodes.First()).Shutdown();
+            foreach (var actorSystem in Nodes)
             {
-                system.Terminate();
-                system.Dispose();
+                actorSystem.Terminate();
+                actorSystem.Dispose();
             }
         }
     }

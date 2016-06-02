@@ -3,12 +3,12 @@ using System.Data.Entity.Infrastructure;
 
 namespace GridDomain.CQRS.ReadModel
 {
-    public class ReadModelCreatorRetryDecorator<T>: IReadModelCreator<T>
+    public class ReadModelCreatorRetryDecorator<T> : IReadModelCreator<T>
     {
         private readonly IReadModelCreator<T> _origCreator;
         private readonly RetryPolicy<DbUpdateConcurrencyException> _retryPolicy;
 
-        public ReadModelCreatorRetryDecorator(IReadModelCreator<T> origCreator )
+        public ReadModelCreatorRetryDecorator(IReadModelCreator<T> origCreator)
         {
             _origCreator = origCreator;
             _retryPolicy = RetryPolicy<DbUpdateConcurrencyException>.DefaultSql();

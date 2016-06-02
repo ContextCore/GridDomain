@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.SagaStateAggregate
 {
     [TestFixture]
-    class Given_new_saga_state_When_create_it_by_constructor :
+    internal class Given_new_saga_state_When_create_it_by_constructor :
         DomainEventsProductionSpecification<SagaStateAggregate<TestState, TestTransition>>
     {
         [Then]
@@ -25,7 +25,6 @@ namespace GridDomain.Tests.SagaStateAggregate
         protected override IEnumerable<DomainEvent> ExpectedEvents()
         {
             yield return new SagaCreatedEvent<TestState>(TestState.Idle, Aggregate.Id);
-
         }
     }
 }

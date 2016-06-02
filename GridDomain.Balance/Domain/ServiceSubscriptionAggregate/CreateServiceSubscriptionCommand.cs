@@ -6,15 +6,14 @@ namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
 {
     public class CreateServiceSubscriptionCommand : Command
     {
-        public TimeSpan Period;
         public Money Cost;
         public string[] Grants;
         public string Name;
+        public TimeSpan Period;
         public Guid SubscriptionId;
 
-        public CreateServiceSubscriptionCommand(Guid id):base(id)
+        public CreateServiceSubscriptionCommand(Guid id) : base(id)
         {
-            
         }
     }
 }

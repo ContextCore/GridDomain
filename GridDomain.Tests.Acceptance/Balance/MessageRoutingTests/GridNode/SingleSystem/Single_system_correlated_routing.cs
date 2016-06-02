@@ -1,19 +1,12 @@
 ﻿using System.Linq;
-using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
+using GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem
 {
     [TestFixture]
-
     public class Single_system_correlated_routing : SingleActorSystemTest
     {
-        [Test]
-        public void Then_results_should_be_from_initial_commands()
-        {
-            CollectionAssert.AreEquivalent(InitialCommands.Select(c => c.Id), _resultMessages.Select(r => r.Id));
-        }
-
         [Then]
         public void Then_It_should_be_handled_in_execute_sequence()
         {
@@ -32,7 +25,13 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
 
         protected override IRouterConfiguration CreateRoutes()
         {
-            return new CorrelatedRouting<TestMessage,TestHandler>(nameof(TestMessage.CorrelationId));
+            return new CorrelatedRouting<TestMessage, TestHandler>(nameof(TestMessage.CorrelationId));
+        }
+
+        [Test]
+        public void Then_results_should_be_from_initial_commands()
+        {
+            CollectionAssert.AreEquivalent(InitialCommands.Select(c => c.Id), _resultMessages.Select(r => r.Id));
         }
     }
 }

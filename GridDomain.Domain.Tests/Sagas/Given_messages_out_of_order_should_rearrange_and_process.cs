@@ -1,14 +1,10 @@
-﻿using System;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
-using NUnit.Framework;
-using States = GridDomain.Tests.Sagas.SubscriptionRenewSaga.SubscriptionRenewSaga.States;
+﻿using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas
 {
     //TODO: create tests after finding good business case
     [TestFixture]
-    class Given_messages_out_of_order_should_rearrange_and_process
+    internal class Given_messages_out_of_order_should_rearrange_and_process
     {
         //private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
         //private NotEnoughFondsFailure[] Messages;
@@ -35,8 +31,5 @@ namespace GridDomain.Tests.Sagas
         //    foreach (var m in Messages)
         //        Saga.Handle(m);
         //}
-
-
-
     }
 }

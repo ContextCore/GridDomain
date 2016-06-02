@@ -8,7 +8,7 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.Balance
 {
     [TestFixture]
     public class BalancePersistenceTests
@@ -16,14 +16,14 @@ namespace GridDomain.Tests.Acceptance
         [SetUp]
         public void ClearDb()
         {
-            TestDbTools.ClearAll(TestEnvironment.Configuration);
+            TestDbTools.ClearData(TestEnvironment.Configuration);
         }
 
         private IRepository CreateIndependentRepository()
         {
             var container = new UnityContainer();
             var conf = TestEnvironment.Configuration;
-            GridDomain.Node.CompositionRoot.RegisterEventStore(container, conf);
+            CompositionRoot.RegisterEventStore(container, conf);
             return container.Resolve<IRepository>();
         }
 

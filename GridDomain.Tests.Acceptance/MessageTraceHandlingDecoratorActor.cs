@@ -5,11 +5,12 @@ using NLog;
 
 namespace GridDomain.Tests.Acceptance
 {
-    public class MessageTraceHandlingDecoratorActor<TMessage, THandler> : UntypedActor where THandler : IHandler<TMessage>
-        where TMessage: IMetadataMessage
+    public class MessageTraceHandlingDecoratorActor<TMessage, THandler> : UntypedActor
+        where THandler : IHandler<TMessage>
+        where TMessage : IMetadataMessage
     {
-        private readonly IActorRef _messageHandler;
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly IActorRef _messageHandler;
 
         public MessageTraceHandlingDecoratorActor(IActorRef messageHandler)
         {
@@ -18,11 +19,11 @@ namespace GridDomain.Tests.Acceptance
 
         protected override void OnReceive(object message)
         {
-            IMetadataMessage msg = message as IMetadataMessage;
+            var msg = message as IMetadataMessage;
             if (msg == null)
                 throw new MessageUnexpectedTypeRecievedExpection();
 
-            _log.Trace($"got message {message.GetType().Name} on actor path:{Self.Path} hashCode:{this.GetHashCode()}");
+            _log.Trace($"got message {message.GetType().Name} on actor path:{Self.Path} hashCode:{GetHashCode()}");
             msg.Metadata.Add(new MetadataEntry(
                 $"actor {Self.Path} hashCode {GetHashCode()}",
                 $"passing message to recipient{_messageHandler.Path}",

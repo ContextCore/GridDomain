@@ -1,6 +1,6 @@
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 {
     public interface IRouterConfiguration
     {

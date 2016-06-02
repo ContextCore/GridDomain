@@ -3,7 +3,7 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaStateAggregate<TState,TTransition>: AggregateBase
+    public class SagaStateAggregate<TState, TTransition> : AggregateBase
         where TState : struct
         where TTransition : struct
     {
@@ -16,7 +16,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         public SagaStateAggregate(Guid id, TState state)
         {
-            RaiseEvent(new SagaCreatedEvent<TState>(state,id));
+            RaiseEvent(new SagaCreatedEvent<TState>(state, id));
         }
 
         private void Apply(SagaCreatedEvent<TState> e)
@@ -27,12 +27,12 @@ namespace GridDomain.EventSourcing.Sagas
 
         private void Apply(SagaTransitionEvent<TState, TTransition> e)
         {
-            MachineState = e.State; 
+            MachineState = e.State;
         }
 
         public void StateChanged(TTransition t, TState newState)
         {
-            RaiseEvent(new SagaTransitionEvent<TState, TTransition>(t,newState,Id));
+            RaiseEvent(new SagaTransitionEvent<TState, TTransition>(t, newState, Id));
         }
     }
 }

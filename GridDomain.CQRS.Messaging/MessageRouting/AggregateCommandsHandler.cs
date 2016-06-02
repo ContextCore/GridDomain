@@ -1,15 +1,24 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public class AggregateCommandsHandler<TAggregate>: IAggregateCommandsHandler<TAggregate>,
-                                              ICommandAggregateLocator<TAggregate>
+    public class AggregateCommandsHandler<TAggregate> : IAggregateCommandsHandler<TAggregate>,
+        ICommandAggregateLocator<TAggregate>
         where TAggregate : AggregateBase
     {
+        private readonly IDictionary<Type, AggregateCommandHandler<TAggregate>> _commandHandlers =
+            new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
+
+        public IReadOnlyCollection<DomainEvent> Execute(TAggregate aggregate, ICommand command)
+        {
+            return GetHandler(command).Execute(aggregate, command);
+        }
+
         public Guid GetAggregateId(ICommand command)
         {
             return GetHandler(command).GetId(command);
@@ -17,7 +26,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         private AggregateCommandHandler<TAggregate> GetHandler(ICommand cmd)
         {
-            AggregateCommandHandler<TAggregate> aggregateCommandHandler;//
+            AggregateCommandHandler<TAggregate> aggregateCommandHandler; //
             var commandType = cmd.GetType();
             if (!_commandHandlers.TryGetValue(commandType, out aggregateCommandHandler))
                 throw new CannotFindAggregateCommandHandlerExeption(typeof (TAggregate), commandType);
@@ -27,35 +36,33 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         private void Map<TCommand>(AggregateCommandHandler<TAggregate> handler)
         {
-            _commandHandlers[typeof(TCommand)] = handler;
+            _commandHandlers[typeof (TCommand)] = handler;
         }
 
-        protected void Map<TCommand>(Func<TCommand, Guid> idLocator, Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
+            Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New<TCommand>(idLocator, commandExecutor));
+            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor));
         }
 
-        protected void Map<TCommand>(Func<TCommand, Guid> idLocator, Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
+            Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New<TCommand>(idLocator, commandExecutor));
+            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor));
         }
 
-        private readonly IDictionary<Type, AggregateCommandHandler<TAggregate>> _commandHandlers = new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
-        public IReadOnlyCollection<DomainEvent> Execute(TAggregate aggregate, ICommand command)
+        public IReadOnlyCollection<AggregateLookupInfo> GetRegisteredCommands()
         {
-            return GetHandler(command).Execute(aggregate, command);
+            return
+                _commandHandlers.Select(
+                    h => new AggregateLookupInfo {Command = h.Key, Property = h.Value.MachingProperty})
+                    .ToArray();
         }
-    }
 
-    internal class CannotFindAggregateCommandHandlerExeption : Exception
-    {
-        public Type Type { get; }
-        public Type CommandType { get; }
-
-        public CannotFindAggregateCommandHandlerExeption(Type type, Type commandType)
+        public class AggregateLookupInfo
         {
-            Type = type;
-            CommandType = commandType;
+            public Type Command;
+            public string Property;
         }
     }
 }

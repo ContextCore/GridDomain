@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
-using Akka.Cluster.Routing;
 using Akka.DI.Core;
-using Akka.Routing;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -11,12 +9,12 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 namespace GridDomain.Node.AkkaMessaging
 {
     public class AggregateHostActor<TAggregate> : UntypedActor
-        where TAggregate: AggregateBase
+        where TAggregate : AggregateBase
     {
-        private readonly IDictionary<Guid,IActorRef> _children = new Dictionary<Guid, IActorRef>();
-        private readonly ICommandAggregateLocator<TAggregate> _locator;
         private readonly IAggregateActorLocator _actorLocator;
-        private Type _actorType;
+        private readonly IDictionary<Guid, IActorRef> _children = new Dictionary<Guid, IActorRef>();
+        private readonly ICommandAggregateLocator<TAggregate> _locator;
+        private readonly Type _actorType;
 
         public AggregateHostActor(ICommandAggregateLocator<TAggregate> locator, IAggregateActorLocator actorLocator)
         {

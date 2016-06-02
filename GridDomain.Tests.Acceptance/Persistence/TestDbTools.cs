@@ -13,21 +13,56 @@ namespace GridDomain.Tests.Acceptance.Persistence
 {
     public static class TestDbTools
     {
-        public static void ClearAll(IDbConfiguration conf)
+        public static void ClearData(IAkkaDbConfiguration akkaConf)
         {
-            //for magic in clear db by delete
-            BusinessBalanceContext.DefaultConnectionString = conf.LogsConnectionString;
-            LogContext.DefaultConnectionString = conf.ReadModelConnectionString;
-
-            using (var balanceContext = new BusinessBalanceContext(conf.ReadModelConnectionString))
-                ClearDbByDelete(balanceContext);
-
-            using (var logContext = new LogContext(conf.LogsConnectionString))
-                ClearDbByDelete(logContext);
-
-            RecreateWriteDb(conf.EventStoreConnectionString);
+            ClearWriteAkkaDb(akkaConf);
         }
 
+        public static void ClearData(IDbConfiguration conf)
+        {
+            Delete(conf.ReadModelConnectionString, "TransactionHistories");
+            Delete(conf.ReadModelConnectionString, nameof(BusinessBalance) + "s");
+            Delete(conf.LogsConnectionString, nameof(LogRecord) + "s");
+        }
+
+        public static void ClearData(IDbConfiguration conf, IAkkaDbConfiguration akkaConf)
+        {
+            ClearData(conf);
+            ClearData(akkaConf);
+        }
+
+        private static void ClearWriteAkkaDb(IAkkaDbConfiguration akkaConf)
+        {
+            Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
+            Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"), akkaConf.JournalTableName,
+                akkaConf.MetadataTableName);
+        }
+
+        private static void Truncate(string connection, params string[] tableNames)
+        {
+            ExecuteSql(connection, tableNames.Select(t => $"Truncate table {t}").ToArray());
+        }
+
+        private static void Delete(string connection, params string[] tableNames)
+        {
+            ExecuteSql(connection, tableNames.Select(t => $"Delete from {t}").ToArray());
+        }
+
+        private static void ExecuteSql(string connection, params string[] sqlCommand)
+        {
+            using (var conn = new SqlConnection(connection))
+            {
+                conn.Open();
+                foreach (var sqlrequest in sqlCommand)
+                {
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = sqlrequest;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        [Obsolete("Too slow")]
         public static void ClearDbByDelete(DbContext context)
         {
             //TODO: понять, почему вызывает конструктор контекста по-умолчанию и как отучить 

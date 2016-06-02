@@ -2,7 +2,7 @@ using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 
 namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands
 {
-    class PayForSubscriptionCommand
+    internal class PayForSubscriptionCommand
     {
         private SubscriptionExpiredEvent e;
 

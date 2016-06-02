@@ -1,5 +1,4 @@
 ﻿using GridDomain.Balance.Domain.BalanceAggregate;
-using GridDomain.Balance.Domain.BalanceAggregate.Commands;
 using GridDomain.Balance.Domain.BalanceAggregate.Events;
 using GridDomain.Balance.ReadModel;
 using GridDomain.CQRS.Messaging;
@@ -8,38 +7,43 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Balance.Node
 {
-    public class BalanceCommandsRouting : IMessageRouteConfiguration
+    public class BalanceCommandsRouting : IMessageRouteMap
     {
         public void Register(IMessagesRouter router)
         {
-            router.Route<ReplenishBalanceCommand>()
-                  .To<MoneyBalance>()
-            .Register();
-
-            router.Route<WithdrawalBalanceCommand>()
-                  .To<MoneyBalance>()
-             .Register();
-
-            router.Route<CreateBalanceCommand>()
-                  .To<MoneyBalance>()
-             .Register();
-
+            router.Register<MoneyBalance, MoneyBalanceCommandsHandler>(new MoneyBalanceCommandsHandler());
 
             router.Route<BalanceReplenishEvent>()
-                    .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                    .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
-                  .Register();
+                .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
+                .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
+                .Register();
 
             router.Route<BalanceCreatedEvent>()
-                     .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                      .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
-                   .Register();
+                .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
+                .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
+                .Register();
 
             router.Route<BalanceWithdrawalEvent>()
-                   .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                    .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
+                .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
+                .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
                 .Register();
+
+            router.Route<BalanceReplenishEvent>()
+                .ToHandler<TransactionsProjectionBuilder>()
+                .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
+                .Register();
+
+            router.Route<BalanceCreatedEvent>()
+                .ToHandler<TransactionsProjectionBuilder>()
+                .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
+                .Register();
+
+            router.Route<BalanceWithdrawalEvent>()
+                .ToHandler<TransactionsProjectionBuilder>()
+                .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
+                .Register();
+
+            //TransactionsProjectionBuilder
         }
     }
-
 }

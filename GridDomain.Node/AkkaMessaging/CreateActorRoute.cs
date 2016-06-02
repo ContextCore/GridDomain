@@ -1,26 +1,17 @@
 using System;
-using CommonDomain.Core;
 
 namespace GridDomain.Node.AkkaMessaging
 {
     public class CreateActorRoute
     {
-        public Type MessageType { get; }
-        public Type ActorType { get; }
-
-        public Type AggregateType { get; }
-        
-        public CreateActorRoute(Type messageType, Type actorType, Type aggregateType)
+        public CreateActorRoute(Type aggregateType, params MessageRoute[] routes)
         {
-            MessageType = messageType;
-            ActorType = actorType;
+            Routes = routes;
             AggregateType = aggregateType;
         }
 
-        public static CreateActorRoute New<TMessage, TAggregate, TAggregateActor>() where TAggregate: AggregateBase
-                                                                                    where TAggregateActor: AggregateActor<TAggregate>
-        {
-            return new CreateActorRoute(typeof(TMessage), typeof(TAggregate), typeof(TAggregateActor));
-        }
+        public MessageRoute[] Routes { get; }
+
+        public Type AggregateType { get; }
     }
 }

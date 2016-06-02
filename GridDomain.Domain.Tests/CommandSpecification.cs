@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
-using GridDomain.Node.MemTransportMessaging;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
@@ -21,7 +19,7 @@ namespace GridDomain.Tests
         protected InMemoryEventRepository Repository { get; private set; }
         protected abstract ICommandHandler<TCommand> Handler { get; }
 
-        protected IMessageTransport Bus { get; private set; }
+        //     protected IMessageTransport Bus { get; private set; }
 
         protected virtual TCommand CommandFactory()
         {
@@ -65,7 +63,7 @@ namespace GridDomain.Tests
             GivenEvents = Given().ToArray();
             ExpectedEvents = Expected().ToArray();
             Repository = CreateRepository();
-            Bus = MessageTransportSetup.SetupInMemoryBus();
+            //    Bus = MessageTransportSetup.SetupInMemoryBus();
         }
 
         protected List<DomainEvent> ExecuteCommand()

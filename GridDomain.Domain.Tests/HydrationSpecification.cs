@@ -12,7 +12,7 @@ namespace GridDomain.Tests
         [SetUp]
         public void When()
         {
-            Aggregate = (TAggregate) aggregateFactory.Build(typeof(TAggregate), Guid.NewGuid(), null);
+            Aggregate = (TAggregate) aggregateFactory.Build(typeof (TAggregate), Guid.NewGuid(), null);
             try
             {
                 foreach (var e in GivenEvents())

@@ -7,14 +7,17 @@ using NUnit.Framework;
 namespace GridDomain.Tests.SagaStateAggregate
 {
     [TestFixture]
-    class Given_transitioned_event_should_hydrate_state : HydrationSpecification<SagaStateAggregate<TestState, TestTransition>>
+    internal class Given_transitioned_event_should_hydrate_state :
+        HydrationSpecification<SagaStateAggregate<TestState, TestTransition>>
     {
         private readonly Guid _sourceId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> GivenEvents()
         {
             yield return new SagaCreatedEvent<TestState>(TestState.Idle, _sourceId);
-            yield return new SagaTransitionEvent<TestState,TestTransition>(TestTransition.Forward, TestState.Running, _sourceId);
+            yield return
+                new SagaTransitionEvent<TestState, TestTransition>(TestTransition.Forward, TestState.Running, _sourceId)
+                ;
         }
 
         [Then]

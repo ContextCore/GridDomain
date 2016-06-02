@@ -1,4 +1,6 @@
 namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events
 {
-    class NotEnoughFondsFailure { }
+    internal class NotEnoughFondsFailure
+    {
+    }
 }
