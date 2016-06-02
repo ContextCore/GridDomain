@@ -52,20 +52,20 @@ namespace GridDomain.Node
         {
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
-
-            CompositionRoot.Init(Container,
-                System,
-                databaseConfiguration,
-                _transportMode);
-
             Container.RegisterInstance(_messageRouting);
             
             foreach (var system in AllSystems)
             {
+               //var r = new UnityDependencyResolver(Container,system);
                system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+               CompositionRoot.Init(Container,
+                                    system,
+                                    databaseConfiguration,
+                                    _transportMode);
+
             }
 
-            StartActorSystem(System);
+            StartMainNodeActor(System);
         }
 
         public void Stop()
@@ -85,7 +85,7 @@ namespace GridDomain.Node
         }
 
 
-        private void StartActorSystem(ActorSystem actorSystem)
+        private void StartMainNodeActor(ActorSystem actorSystem)
         {
             _log.Info($"Launching GridDomain node {Id}");
 
@@ -95,7 +95,7 @@ namespace GridDomain.Node
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
-                .Wait(TimeSpan.FromSeconds(10));
+            .Wait(TimeSpan.FromSeconds(2));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }
