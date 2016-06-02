@@ -125,18 +125,11 @@
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
     <Compile Include="MessageRouting\CommandHandlerAdapter.cs" />
-    <Compile Include="MessageRouting\CommandHandlerBuilders\AggregateActionBuilder.cs" />
-    <Compile Include="MessageRouting\CommandHandlerBuilders\AggregateCreationBuilder.cs" />
-    <Compile Include="MessageRouting\CommandHandlerBuilders\CommandHandler.cs" />
-    <Compile Include="MessageRouting\CommandHandlerBuilders\FailureBuilder.cs" />
     <Compile Include="MessageRouting\ICommandAggregateLocator.cs" />
     <Compile Include="MessageRouting\IHandlerBuilder.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />
-    <Compile Include="MessageRouting\Sagas\SagaMessageHandler.cs" />
-    <Compile Include="MessageRouting\Sagas\SagaEventCorrelator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MessageRouting\Sagas\SagaMessagesRouter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
