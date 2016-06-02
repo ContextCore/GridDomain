@@ -1,4 +1,7 @@
-﻿using GridDomain.Balance.Node;
+﻿using System;
+using Akka.DI.Core;
+using Akka.DI.Unity;
+using GridDomain.Balance.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using NUnit.Framework;
@@ -11,9 +14,10 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
 
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            _akkaCluster = ActorSystemFactory.CreateCluster(akkaConf);
-            
-            return new GridDomainNode(CreateUnityContainer(dbConfig),
+            _akkaCluster = ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration(), 1, 0);
+            var unityContainer = CreateUnityContainer(dbConfig);
+
+            return new GridDomainNode(unityContainer,
                                       new BalanceCommandsRouting(),
                                       TransportMode.Cluster, _akkaCluster.All);
         }
@@ -21,9 +25,12 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         /// <summary>
         ///     Important than persistence setting are the same as for testing cluster as for test ActorSystem
         /// </summary>
-        public Cluster_Given_balance_change_plan_When_executing() : base(AkkaConf.Copy("writeModelCheckSystem", 9000)
-            .ToStandAloneSystemConfig())
+        public Cluster_Given_balance_change_plan_When_executing()
+            : base(new AutoTestAkkaConfiguration()//AkkaConf.Copy("writeModelCheckSystem", 9000)
+                   .ToClusterNonSeedNodeSystemConfig(new AutoTestAkkaConfiguration().Network),
+                  "LocalSystem")
         {
+
         }
 
         [TestFixtureTearDown]
@@ -32,7 +39,8 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             _akkaCluster.Dispose();
         }
 
-        protected override int BusinessNum => 5;
-        protected override int ChangesPerBusiness => 10;
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected override int BusinessNum => 1;
+        protected override int ChangesPerBusiness => 1;
     }
 }

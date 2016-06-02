@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Acceptance
         private IActorSubscriber _subscriber;
         protected GridDomainNode GridNode;
 
-        protected NodeCommandsTest(string config) : base(config)
+        protected NodeCommandsTest(string config, string name = null) : base(config, name)
         {
         }
 

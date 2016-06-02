@@ -181,7 +181,7 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
             return balanceManipulationCommands;
         }
 
-        public Given_balance_change_plan_When_executing(string config) : base(config)
+        public Given_balance_change_plan_When_executing(string config, string name=null) : base(config,name)
         {
         }
     }

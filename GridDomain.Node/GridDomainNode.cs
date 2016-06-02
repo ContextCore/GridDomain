@@ -35,7 +35,9 @@ namespace GridDomain.Node
         private IActorRef _mainNodeActor;
 
         public GridDomainNode(IUnityContainer container,
-            IMessageRouteMap messageRouting, TransportMode transportMode, params ActorSystem[] actorAllSystems)
+                              IMessageRouteMap messageRouting, 
+                              TransportMode transportMode, 
+                              params ActorSystem[] actorAllSystems)
         {
             _transportMode = transportMode;
             _messageRouting = messageRouting;
@@ -56,14 +58,18 @@ namespace GridDomain.Node
             
             foreach (var system in AllSystems)
             {
-               //var r = new UnityDependencyResolver(Container,system);
-               system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
-               CompositionRoot.Init(Container,
+               var r = new UnityDependencyResolver(Container,system);
+              // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+               CompositionRoot.Init(Container.CreateChildContainer(),
                                     system,
                                     databaseConfiguration,
                                     _transportMode);
 
             }
+            CompositionRoot.Init(Container,
+                                 System,
+                                 databaseConfiguration,
+                                 _transportMode);
 
             StartMainNodeActor(System);
         }

@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessNews.Node", "GridDo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessNews.Tests.Acceptance", "BusinesNews.Tests.Acceptance\BusinessNews.Tests.Acceptance.csproj", "{F9FE7469-2EA0-4A37-BBB0-1433C0CB835B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaClusterTests", "AkkaClusterTests\AkkaClusterTests.csproj", "{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutoTesting|Any CPU = AutoTesting|Any CPU
@@ -287,6 +289,22 @@ Global
 		{F9FE7469-2EA0-4A37-BBB0-1433C0CB835B}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{F9FE7469-2EA0-4A37-BBB0-1433C0CB835B}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9FE7469-2EA0-4A37-BBB0-1433C0CB835B}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.AutoTesting|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.AutoTesting|Any CPU.Build.0 = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Production|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Production|Any CPU.Build.0 = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Sandbox|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Sandbox|Any CPU.Build.0 = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA63ABB-B5BF-4BBA-A4F1-4D89E192FF20}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

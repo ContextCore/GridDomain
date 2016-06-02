@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests
         }
 
         [TestFixtureTearDown]
-        public void Dispose()
+        public void Terminate()
         {
             _system.Terminate();
             _system.Dispose();

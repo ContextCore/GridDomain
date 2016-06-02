@@ -39,6 +39,14 @@
       <HintPath>..\packages\Akka.Cluster.1.0.8.25-beta\lib\net45\Akka.Cluster.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.DI.Core, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Core.1.0.8\lib\net45\Akka.DI.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.DI.Unity, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Unity.1.0.8\lib\net45\Akka.DI.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Persistence, Version=1.0.8.191, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.0.8.191-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>

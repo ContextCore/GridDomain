@@ -1,6 +1,7 @@
 using Akka.Actor;
 using Akka.Cluster;
 using Akka.Event;
+using Microsoft.SqlServer.Server;
 
 namespace Samples.Cluster.Simple.Samples.Cluster.Simple
 {
@@ -8,6 +9,12 @@ namespace Samples.Cluster.Simple.Samples.Cluster.Simple
     {
         protected ILoggingAdapter Log = Context.GetLogger();
         protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
+        private string _key;
+
+        public SimpleClusterListener(string key)
+        {
+            _key = key;
+        }
 
         /// <summary>
         /// Need to subscribe to cluster changes
