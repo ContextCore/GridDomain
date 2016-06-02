@@ -4,9 +4,9 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate.Events
 {
-    public class BalanceChangedEvent : DomainEvent
+    public class AccountBalanceChangedEvent : DomainEvent
     {
-        protected BalanceChangedEvent(Guid balanceId, Money amount) : base(balanceId)
+        protected AccountBalanceChangedEvent(Guid balanceId, Money amount) : base(balanceId)
         {
             Amount = amount;
         }

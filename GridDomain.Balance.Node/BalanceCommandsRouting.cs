@@ -11,36 +11,36 @@ namespace GridDomain.Balance.Node
     {
         public void Register(IMessagesRouter router)
         {
-            router.Register<MoneyBalance, MoneyBalanceCommandsHandler>(new MoneyBalanceCommandsHandler());
+            router.Register<Account, AccountAggregateCommandsHandler>(new AccountAggregateCommandsHandler());
 
-            router.Route<BalanceReplenishEvent>()
+            router.Route<AccountBalanceReplenishEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
+                .WithCorrelation(nameof(AccountBalanceReplenishEvent.BalanceId))
                 .Register();
 
-            router.Route<BalanceCreatedEvent>()
+            router.Route<AccountCreatedEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
+                .WithCorrelation(nameof(AccountCreatedEvent.BalanceId))
                 .Register();
 
-            router.Route<BalanceWithdrawalEvent>()
+            router.Route<AccountWithdrawalEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
+                .WithCorrelation(nameof(AccountWithdrawalEvent.BalanceId))
                 .Register();
 
-            router.Route<BalanceReplenishEvent>()
+            router.Route<AccountBalanceReplenishEvent>()
                 .ToHandler<TransactionsProjectionBuilder>()
-                .WithCorrelation(nameof(BalanceReplenishEvent.BalanceId))
+                .WithCorrelation(nameof(AccountBalanceReplenishEvent.BalanceId))
                 .Register();
 
-            router.Route<BalanceCreatedEvent>()
+            router.Route<AccountCreatedEvent>()
                 .ToHandler<TransactionsProjectionBuilder>()
-                .WithCorrelation(nameof(BalanceCreatedEvent.BalanceId))
+                .WithCorrelation(nameof(AccountCreatedEvent.BalanceId))
                 .Register();
 
-            router.Route<BalanceWithdrawalEvent>()
+            router.Route<AccountWithdrawalEvent>()
                 .ToHandler<TransactionsProjectionBuilder>()
-                .WithCorrelation(nameof(BalanceWithdrawalEvent.BalanceId))
+                .WithCorrelation(nameof(AccountWithdrawalEvent.BalanceId))
                 .Register();
 
             //TransactionsProjectionBuilder

@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
 {
-    public class CreateBalanceCommand : Command
+    public class CreateAccountCommand : Command
     {
-        public CreateBalanceCommand(Guid balanceId, Guid businessId)
+        public CreateAccountCommand(Guid balanceId, Guid businessId)
         {
             BalanceId = balanceId;
             BusinessId = businessId;

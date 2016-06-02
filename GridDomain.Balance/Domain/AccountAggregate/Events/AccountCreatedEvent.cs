@@ -3,9 +3,9 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate.Events
 {
-    public class BalanceCreatedEvent : DomainEvent
+    public class AccountCreatedEvent : DomainEvent
     {
-        public BalanceCreatedEvent(Guid balanceId, Guid businessId) : base(balanceId)
+        public AccountCreatedEvent(Guid balanceId, Guid businessId) : base(balanceId)
         {
             BusinessId = businessId;
         }

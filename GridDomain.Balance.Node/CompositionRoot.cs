@@ -16,7 +16,7 @@ namespace GridDomain.Balance.Node
         {
             //register all message handlers available to communicate
             //need to do it on plugin approach
-            container.RegisterType<BalanceCommandsHandler>();
+            container.RegisterType<AccountCommandsHandler>();
 
             Func<BusinessBalanceContext> contextFactory =
                 () => new BusinessBalanceContext(conf.ReadModelConnectionString);
@@ -34,10 +34,10 @@ namespace GridDomain.Balance.Node
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
             container.RegisterType<TransactionsProjectionBuilder>();
 
-            container.RegisterType<AggregateActor<MoneyBalance>>();
-            container.RegisterType<AggregateHostActor<MoneyBalance>>();
-            container.RegisterType<ICommandAggregateLocator<MoneyBalance>, MoneyBalanceCommandsHandler>();
-            container.RegisterType<IAggregateCommandsHandler<MoneyBalance>, MoneyBalanceCommandsHandler>();
+            container.RegisterType<AggregateActor<Account>>();
+            container.RegisterType<AggregateHostActor<Account>>();
+            container.RegisterType<ICommandAggregateLocator<Account>, AccountAggregateCommandsHandler>();
+            container.RegisterType<IAggregateCommandsHandler<Account>, AccountAggregateCommandsHandler>();
         }
     }
 }

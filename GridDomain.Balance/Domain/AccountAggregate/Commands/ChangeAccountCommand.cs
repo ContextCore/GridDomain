@@ -4,11 +4,11 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
 {
-    public class ChangeBalanceCommand : Command
+    public class ChangeAccountCommand : Command
     {
-        public ChangeBalanceCommand(Guid balanceId,
+        public ChangeAccountCommand(Guid balanceId,
             Money amount,
-            BalanceChangeSource changeSource)
+            AccountChangeSource changeSource)
         {
             BalanceId = balanceId;
             Amount = amount;
@@ -17,6 +17,6 @@ namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
 
         public Guid BalanceId { get; private set; }
         public Money Amount { get; private set; }
-        public BalanceChangeSource ChangeSource { get; private set; }
+        public AccountChangeSource ChangeSource { get; private set; }
     }
 }

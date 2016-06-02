@@ -7,9 +7,9 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Replenish
 {
     [TestFixture]
-    public class Given_non_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishBalanceCommand>
+    public class Given_non_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishAccountCommand>
     {
-        protected override ICommandHandler<ReplenishBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
+        protected override ICommandHandler<ReplenishAccountCommand> Handler => new AccountCommandsHandler(Repository);
 
         [Then]
         public void Exception_is_thrown()

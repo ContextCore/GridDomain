@@ -6,9 +6,9 @@ using NLog;
 namespace GridDomain.Balance.ReadModel
 {
     //keep in mind 1 instance of projection builder should process only 1 balance id 
-    public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<BalanceReplenishEvent>,
-        IEventHandler<BalanceWithdrawalEvent>,
-        IEventHandler<BalanceCreatedEvent>
+    public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
+        IEventHandler<AccountWithdrawalEvent>,
+        IEventHandler<AccountCreatedEvent>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IReadModelCreator<BusinessBalance> _modelBuilder;
@@ -22,7 +22,7 @@ namespace GridDomain.Balance.ReadModel
             _publisher = publisher;
         }
 
-        public void Handle(BalanceCreatedEvent e)
+        public void Handle(AccountCreatedEvent e)
         {
             var businessCurrentBalance = new BusinessBalance
             {
@@ -34,13 +34,13 @@ namespace GridDomain.Balance.ReadModel
             _publisher.Publish(new BalanceCreatedProjectedNotification(e.BalanceId, e));
         }
 
-        public void Handle(BalanceReplenishEvent e)
+        public void Handle(AccountBalanceReplenishEvent e)
         {
             _modelBuilder.Modify(e.BalanceId, b => b.Amount += e.Amount.Amount);
             _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
         }
 
-        public void Handle(BalanceWithdrawalEvent e)
+        public void Handle(AccountWithdrawalEvent e)
         {
             _modelBuilder.Modify(e.BalanceId, b => b.Amount -= e.Amount.Amount);
             _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));

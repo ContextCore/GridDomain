@@ -7,18 +7,18 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate
 {
-    public class MoneyBalance : AggregateBase
+    public class Account : AggregateBase
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
 
-        private MoneyBalance(Guid id)
+        private Account(Guid id)
         {
             Id = id;
         }
 
-        public MoneyBalance(Guid id, Guid businessId) : this(id)
+        public Account(Guid id, Guid businessId) : this(id)
         {
-            RaiseEvent(new BalanceCreatedEvent(id, businessId));
+            RaiseEvent(new AccountCreatedEvent(id, businessId));
         }
 
         //Business, campaign or smth else
@@ -26,19 +26,19 @@ namespace GridDomain.Balance.Domain.BalanceAggregate
 
         public Money Amount { get; private set; }
 
-        private void Apply(BalanceCreatedEvent e)
+        private void Apply(AccountCreatedEvent e)
         {
             Id = e.BalanceId;
             OwnerId = e.BusinessId;
         }
 
-        private void Apply(BalanceReplenishEvent e)
+        private void Apply(AccountBalanceReplenishEvent e)
         {
             _log.Trace($"Balance {Id} with amount {Amount} increased from event by {e.Amount}");
             Amount += e.Amount;
         }
 
-        private void Apply(BalanceWithdrawalEvent e)
+        private void Apply(AccountWithdrawalEvent e)
         {
             _log.Trace($"Balance {Id} with amount {Amount} decreased from event by {e.Amount}");
             Amount -= e.Amount;
@@ -47,7 +47,7 @@ namespace GridDomain.Balance.Domain.BalanceAggregate
         public void Replenish(Money m)
         {
             _log.Trace($"Balance {Id} with amount {Amount} going to increase from command by {m.Amount}");
-            var balanceReplenishEvent = new BalanceReplenishEvent(Id, m);
+            var balanceReplenishEvent = new AccountBalanceReplenishEvent(Id, m);
             GuardNegativeMoney(m, "Cant replenish negative amount of money.", balanceReplenishEvent);
             RaiseEvent(balanceReplenishEvent);
         }
@@ -61,7 +61,7 @@ namespace GridDomain.Balance.Domain.BalanceAggregate
         public void Withdrawal(Money m)
         {
             _log.Trace($"Balance {Id} with amount {Amount} going to decrease from command by {m.Amount}");
-            var balanceWithdrawalEvent = new BalanceWithdrawalEvent(Id, m);
+            var balanceWithdrawalEvent = new AccountWithdrawalEvent(Id, m);
             GuardNegativeMoney(m, "Cant withdrawal negative amount of money.", balanceWithdrawalEvent);
             RaiseEvent(balanceWithdrawalEvent);
         }

@@ -28,26 +28,26 @@ namespace GridDomain.Tests.Acceptance.Balance
         {
             var generator = new Fixture();
 
-            generator.Customizations.Add(new KnownConstructorParameter<ReplenishBalanceCommand, Guid>("balanceId",
+            generator.Customizations.Add(new KnownConstructorParameter<ReplenishAccountCommand, Guid>("balanceId",
                 balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<WithdrawalBalanceCommand, Guid>("balanceId",
+            generator.Customizations.Add(new KnownConstructorParameter<WithdrawalAccountCommand, Guid>("balanceId",
                 balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<CreateBalanceCommand, Guid>("balanceId",
+            generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("balanceId",
                 balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<CreateBalanceCommand, Guid>("businessId",
+            generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("businessId",
                 businessId));
 
             var rnd = new Random();
             var numOfReplenishCommands = rnd.Next(1, commandsNum);
             var numOfWithdrawalCommands = commandsNum - numOfReplenishCommands;
 
-            var replenishCmds = generator.CreateMany<ReplenishBalanceCommand>(numOfReplenishCommands).ToArray();
-            var withdrawalCmds = generator.CreateMany<WithdrawalBalanceCommand>(numOfWithdrawalCommands).ToArray();
+            var replenishCmds = generator.CreateMany<ReplenishAccountCommand>(numOfReplenishCommands).ToArray();
+            var withdrawalCmds = generator.CreateMany<WithdrawalAccountCommand>(numOfWithdrawalCommands).ToArray();
 
             var totalReplenish = replenishCmds.Aggregate(Money.Zero(), (a, b) => a += b.Amount);
             var totalWithdrawal = withdrawalCmds.Aggregate(Money.Zero(), (a, b) => a += b.Amount);
 
-            var changeBalanceCmds = new List<ChangeBalanceCommand>();
+            var changeBalanceCmds = new List<ChangeAccountCommand>();
             changeBalanceCmds.AddRange(replenishCmds);
             changeBalanceCmds.AddRange(withdrawalCmds);
             changeBalanceCmds.Shuffle();
@@ -55,7 +55,7 @@ namespace GridDomain.Tests.Acceptance.Balance
             return new BalanceChangePlan
             {
                 BalanceChangeCommands = changeBalanceCmds,
-                BalanceCreateCommand = generator.Create<CreateBalanceCommand>(),
+                AccountCreateCommand = generator.Create<CreateAccountCommand>(),
                 businessId = businessId,
                 BalanceId = balanceId,
                 TotalAmountChange = totalReplenish - totalWithdrawal,

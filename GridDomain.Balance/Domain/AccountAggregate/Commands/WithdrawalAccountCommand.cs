@@ -3,9 +3,9 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate.Commands
 {
-    public class ReplenishBalanceCommand : ChangeBalanceCommand
+    public class WithdrawalAccountCommand : ChangeAccountCommand
     {
-        public ReplenishBalanceCommand(Guid balanceId, Money amount, BalanceChangeSource changeSource)
+        public WithdrawalAccountCommand(Guid balanceId, Money amount, AccountChangeSource changeSource)
             : base(balanceId, amount, changeSource)
         {
         }

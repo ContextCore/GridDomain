@@ -11,20 +11,20 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Replenish
 {
     [TestFixture]
-    public class Given_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishBalanceCommand>
+    public class Given_existing_balance_When_BalanceReplenishCommand : CommandSpecification<ReplenishAccountCommand>
     {
-        protected override ICommandHandler<ReplenishBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
+        protected override ICommandHandler<ReplenishAccountCommand> Handler => new AccountCommandsHandler(Repository);
         private readonly Guid businessId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> Given()
         {
             //balance already exists
-            yield return new BalanceCreatedEvent(Command.BalanceId, businessId);
+            yield return new AccountCreatedEvent(Command.BalanceId, businessId);
         }
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new BalanceReplenishEvent(Command.BalanceId, Command.Amount);
+            yield return new AccountBalanceReplenishEvent(Command.BalanceId, Command.Amount);
         }
 
         [Then]

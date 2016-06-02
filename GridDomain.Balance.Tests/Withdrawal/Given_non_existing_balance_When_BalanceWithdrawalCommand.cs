@@ -8,9 +8,9 @@ namespace GridDomain.Balance.Tests.Withdrawal
 {
     [TestFixture]
     public class Given_non_existing_balance_When_BalanceWithdrawalCommand :
-        CommandSpecification<WithdrawalBalanceCommand>
+        CommandSpecification<WithdrawalAccountCommand>
     {
-        protected override ICommandHandler<WithdrawalBalanceCommand> Handler => new BalanceCommandsHandler(Repository);
+        protected override ICommandHandler<WithdrawalAccountCommand> Handler => new AccountCommandsHandler(Repository);
 
 
         [Then]

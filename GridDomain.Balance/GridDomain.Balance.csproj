@@ -85,32 +85,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\BalanceAggregate\BalanceCommandsHandler.cs" />
-    <Compile Include="Domain\BalanceAggregate\BalanceNotFoundException.cs" />
-    <Compile Include="Domain\BalanceAggregate\Commands\CreateBalanceCommand.cs" />
-    <Compile Include="Domain\BalanceAggregate\MoneyBalance.cs" />
-    <Compile Include="Domain\BalanceAggregate\BalanceChangeSource.cs" />
-    <Compile Include="Domain\BalanceAggregate\Events\BalanceCreatedEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\Events\BalanceReplenishEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\Events\BalanceWithdrawalEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\Events\BalanceChangedEvent.cs" />
-    <Compile Include="Domain\BalanceAggregate\MoneyBalanceCommandsHandler.cs" />
+    <Compile Include="Domain\AccountAggregate\AccountCommandsHandler.cs" />
+    <Compile Include="Domain\AccountAggregate\BalanceNotFoundException.cs" />
+    <Compile Include="Domain\AccountAggregate\Commands\CreateBalanceCommand.cs" />
+    <Compile Include="Domain\AccountAggregate\Account.cs" />
+    <Compile Include="Domain\AccountAggregate\BalanceChangeSource.cs" />
+    <Compile Include="Domain\AccountAggregate\Events\AccountCreatedEvent.cs" />
+    <Compile Include="Domain\AccountAggregate\Events\AccountBalanceReplenishEvent.cs" />
+    <Compile Include="Domain\AccountAggregate\Events\AccountWithdrawalEvent.cs" />
+    <Compile Include="Domain\AccountAggregate\Events\AccountBalanceChangedEvent.cs" />
+    <Compile Include="Domain\AccountAggregate\MoneyBalanceCommandsHandler.cs" />
     <Compile Include="Domain\BusinessAggregate\Business.cs" />
     <Compile Include="Domain\BusinessAggregate\BusinessCreatedEvent.cs" />
-    <Compile Include="Domain\BuySubscriptionCommand.cs" />
+    <Compile Include="Domain\OfferAggregate\BuySubscriptionCommand.cs" />
     <Compile Include="Domain\BuySubscriptionSaga.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\CreateServiceSubscriptionCommand.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\CreateServiceSubscriptionCommandHandler.cs" />
+    <Compile Include="Domain\OfferAggregate\CreateServiceSubscriptionCommand.cs" />
+    <Compile Include="Domain\OfferAggregate\CreateServiceSubscriptionCommandHandler.cs" />
     <Compile Include="Domain\SubscriptionsFeed.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscription.cs" />
-    <Compile Include="Domain\ServiceSubscriptionAggregate\ServiceSubscriptionCreatedEvent.cs" />
+    <Compile Include="Domain\OfferAggregate\ServiceSubscription.cs" />
+    <Compile Include="Domain\OfferAggregate\ServiceSubscriptionCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinCreatedEvent.cs" />
     <Compile Include="Domain\TransactoinHistory.cs" />
-    <Compile Include="Domain\BalanceAggregate\Commands\ChangeBalanceCommand.cs" />
-    <Compile Include="Domain\BalanceAggregate\NegativeMoneyException.cs" />
+    <Compile Include="Domain\AccountAggregate\Commands\ChangeBalanceCommand.cs" />
+    <Compile Include="Domain\AccountAggregate\NegativeMoneyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Domain\BalanceAggregate\Commands\ReplenishBalanceCommand.cs" />
-    <Compile Include="Domain\BalanceAggregate\Commands\WithdrawalBalanceCommand.cs" />
+    <Compile Include="Domain\AccountAggregate\Commands\ReplenishBalanceCommand.cs" />
+    <Compile Include="Domain\AccountAggregate\Commands\WithdrawalBalanceCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

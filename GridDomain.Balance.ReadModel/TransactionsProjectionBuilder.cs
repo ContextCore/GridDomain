@@ -6,9 +6,9 @@ using GridDomain.Logging;
 
 namespace GridDomain.Balance.ReadModel
 {
-    public class TransactionsProjectionBuilder : IEventHandler<BalanceReplenishEvent>,
-        IEventHandler<BalanceWithdrawalEvent>,
-        IEventHandler<BalanceCreatedEvent>
+    public class TransactionsProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
+        IEventHandler<AccountWithdrawalEvent>,
+        IEventHandler<AccountCreatedEvent>
     {
         private readonly IReadModelCreator<TransactionHistory> _modelBuilder;
 
@@ -18,24 +18,24 @@ namespace GridDomain.Balance.ReadModel
             _modelBuilder = modelBuilder;
         }
 
-        public void Handle(BalanceCreatedEvent e)
+        public void Handle(AccountCreatedEvent e)
         {
             _modelBuilder.Add(new TransactionHistory
             {
                 BalanceId = e.BalanceId,
-                EventType = typeof (BalanceCreatedEvent).Name,
+                EventType = typeof (AccountCreatedEvent).Name,
                 Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
                 Time = DateTime.Now
             });
         }
 
-        public void Handle(BalanceReplenishEvent e)
+        public void Handle(AccountBalanceReplenishEvent e)
         {
             _modelBuilder.Add(new TransactionHistory
             {
                 BalanceId = e.BalanceId,
-                EventType = typeof (BalanceReplenishEvent).Name,
+                EventType = typeof (AccountBalanceReplenishEvent).Name,
                 Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
                 TransactionAmount = e.Amount,
@@ -43,12 +43,12 @@ namespace GridDomain.Balance.ReadModel
             });
         }
 
-        public void Handle(BalanceWithdrawalEvent e)
+        public void Handle(AccountWithdrawalEvent e)
         {
             _modelBuilder.Add(new TransactionHistory
             {
                 BalanceId = e.BalanceId,
-                EventType = typeof (BalanceWithdrawalEvent).Name,
+                EventType = typeof (AccountWithdrawalEvent).Name,
                 Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
                 TransactionAmount = e.Amount,

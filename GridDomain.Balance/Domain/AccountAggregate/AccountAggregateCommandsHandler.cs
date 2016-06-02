@@ -3,12 +3,12 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Balance.Domain.BalanceAggregate
 {
-    public class MoneyBalanceCommandsHandler : AggregateCommandsHandler<MoneyBalance>
+    public class MoneyBalanceCommandsHandler : AggregateCommandsHandler<Account>
     {
         public MoneyBalanceCommandsHandler()
         {
             Map<CreateBalanceCommand>(cmd => cmd.BalanceId,
-                cmd => new MoneyBalance(cmd.BalanceId, cmd.BusinessId));
+                cmd => new Account(cmd.BalanceId, cmd.BusinessId));
 
             Map<ReplenishBalanceCommand>(cmd => cmd.BalanceId,
                 (cmd, agr) => agr.Replenish(cmd.Amount));

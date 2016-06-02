@@ -30,13 +30,13 @@ namespace GridDomain.Tests.Acceptance.Balance
         [Test]
         public void Balance_should_persist_with_all_events()
         {
-            var initialBalance = new Fixture().Create<MoneyBalance>();
+            var initialBalance = new Fixture().Create<Account>();
 
             var repo = CreateIndependentRepository();
             repo.Save(initialBalance, Guid.NewGuid());
 
             var repo1 = CreateIndependentRepository();
-            var restoredBalance = repo1.GetById<MoneyBalance>(initialBalance.Id);
+            var restoredBalance = repo1.GetById<Account>(initialBalance.Id);
             Assert.True(new CompareLogic().Compare(restoredBalance, initialBalance).AreEqual);
         }
     }
