@@ -7,11 +7,10 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling.Integration
 {
-    public class SchedulerActor : ActorBase
+    public class SchedulingActor : ActorBase
     {
         private readonly IScheduler _scheduler;
-
-        public SchedulerActor(IScheduler scheduler)
+        public SchedulingActor(IScheduler scheduler)
         {
             _scheduler = scheduler;
         }
@@ -19,18 +18,18 @@ namespace GridDomain.Scheduling.Integration
         protected override bool Receive(object message)
         {
             return message.Match()
-                .With<AddTask>(AddTask)
-                .With<RemoveTask>(RemoveTask)
+                .With<Schedule>(Schedule)
+                .With<Unschedule>(Unschedule)
                 .WasHandled;
         }
 
-        private void RemoveTask(RemoveTask msg)
+        private void Unschedule(Unschedule msg)
         {
             try
             {
-                var jobKey = new JobKey(msg.TaskId);
+                var jobKey = new JobKey(msg.TaskId, msg.Group);
                 _scheduler.DeleteJob(jobKey);
-                Sender.Tell(new TaskRemoved(msg.TaskId));
+                Sender.Tell(new Unscheduled(msg.TaskId));
             }
             catch (Exception e)
             {
@@ -38,18 +37,19 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        private void AddTask(AddTask msg)
+        private void Schedule(Schedule scheduleRequest)
         {
             try
             {
-                var job = QuartzJob.Create(msg.Request, msg.ExecutionTimeout).Build();
+                var jobKey = new JobKey(scheduleRequest.Message.TaskId, scheduleRequest.Message.Group);
+                var job = QuartzJob.Create(jobKey, scheduleRequest.Message, scheduleRequest.ExecutionTimeout).Build();
                 var trigger = TriggerBuilder.Create()
-                    .WithIdentity(msg.Request.TaskId)
-                    .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow())
-                    .StartAt(msg.RunAt)
+                    .WithIdentity(job.Key.Name, job.Key.Group)
+                    .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow().WithRepeatCount(0))
+                    .StartAt(scheduleRequest.RunAt)
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
-                Sender.Tell(new TaskAdded(fireTime.UtcDateTime));
+                Sender.Tell(new Scheduled(fireTime.UtcDateTime));
             }
             catch (Exception e)
             {

@@ -6,23 +6,23 @@ using NLog;
 
 namespace GridDomain.Scheduling.Akka
 {
-    public abstract class ScheduledTaskHandler<TRequest> : ReceiveActor
-        where TRequest : ScheduledRequest
+    public abstract class ScheduledMessageHandler<TRequest> : ReceiveActor
+        where TRequest : ScheduledMessage
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
 
-        protected ScheduledTaskHandler()
+        protected ScheduledMessageHandler()
         {
             Receive<TRequest>(request =>
             {
                 try
                 {
                     Handle(request);
-                    Sender.Tell(new TaskProcessed(request.TaskId));
+                    Sender.Tell(new MessageSuccessfullyProcessed(request.TaskId));
                 }
                 catch (Exception e)
                 {
-                    Sender.Tell(new TaskProcessingFailed(request.TaskId, e));
+                    Sender.Tell(new MessageProcessingFailed(request.TaskId, e));
                 }
             });
         }

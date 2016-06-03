@@ -1,11 +1,10 @@
-using System;
 using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class TestRequest : ScheduledRequest
+    public class TestMessage : ScheduledMessage
     {
-        public TestRequest(string taskId = null) : base(taskId)
+        public TestMessage(string taskId, string group) : base(taskId, group)
         {
         }
     }

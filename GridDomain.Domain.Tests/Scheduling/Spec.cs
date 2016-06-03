@@ -16,6 +16,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
+using GridDomain.Scheduling.WebUI;
 using GridDomain.Tests.Scheduling.TestHelpers;
 using Microsoft.Practices.Unity;
 using Moq;
@@ -26,8 +27,10 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Tests.Scheduling
 {
     [TestFixture]
-    public class AkkaSpec : TestKit
+    public class Spec : TestKit
     {
+        private const string Id = "test";
+        private const string Group = "test";
         private IActorRef _scheduler;
         private IScheduler _quartzScheduler;
         private Mock<IQuartzLogger> _quartzLogger;
@@ -51,12 +54,13 @@ namespace GridDomain.Tests.Scheduling
             var transport = new AkkaEventBusTransport(Sys);
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
-
+            container.RegisterType<IWebUiConfig, WebUiConfig>();
+            container.RegisterType<IWebUiWrapper, WebUiWrapper>();
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
             QuartzLoggerFactory.SetLoggerFactory(() => _quartzLogger.Object);
-            container.RegisterType<SchedulerActor>();
-            container.RegisterType<SuccessfulTestRequestHandler>();
+            container.RegisterType<SchedulingActor>();
+            container.RegisterType<SuccessfulTestMessageHandler>();
             container.RegisterType<FailingTestRequestHandler>();
             container.RegisterType(typeof(TestRequestHandler<>));
             return container;
@@ -70,7 +74,7 @@ namespace GridDomain.Tests.Scheduling
             CreateScheduler();
             _subsriber = _container.Resolve<IActorSubscriber>();
 
-            _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulerActor>());
+            _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
             ResultHolder.Clear();
         }
@@ -90,25 +94,48 @@ namespace GridDomain.Tests.Scheduling
         }
 
         [Test]
+        [Ignore]
+        public void WebConsoleTest()
+        {
+            if (!Debugger.IsAttached)
+            {
+                Assert.True(true);
+                return;
+            }
+            
+            using (_container.Resolve<IWebUiWrapper>().Start())
+            {
+                var runAt = DateTime.UtcNow.AddSeconds(500);
+                var testMessage = new TestMessage("web","web");
+                var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+                _subsriber.Subscribe(testMessage.GetType(), testActor);
+                _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
+                _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id, Group), DateTime.UtcNow.AddSeconds(10), Timeout)).Wait(Timeout);
+                _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id+Id, Group), DateTime.UtcNow.AddSeconds(15), Timeout)).Wait(Timeout);
+                Throttle.Assert(() => Assert.True(ResultHolder.Contains("web")), maxTimeout: TimeSpan.FromHours(1));
+            }
+        }
+
+        [Test]
         public void When_job_is_added_Then_it_gets_executed()
         {
             var runAt = DateTime.UtcNow.AddSeconds(0.5);
-            var testRequest = new TestRequest();
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _subsriber.Subscribe(testRequest.GetType(), testActor);
-            _scheduler.Ask<TaskAdded>(new AddTask(testRequest, runAt, Timeout)).Wait(Timeout);
-            Throttle.Assert(() => Assert.True(ResultHolder.Contains(testRequest.TaskId)), maxTimeout: Timeout);
+            var testMessage = new TestMessage(Id, Group);
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            _subsriber.Subscribe(testMessage.GetType(), testActor);
+            _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
+            Throttle.Assert(() => Assert.True(ResultHolder.Contains(testMessage.TaskId)), maxTimeout: Timeout);
         }
 
         [Test]
         public void When_processing_actor_throws_Then_scheduler_receives_failure_response()
         {
             var runAt = DateTime.UtcNow.AddSeconds(0.5);
-            var testRequest = new FailTaskRequest("taskId");
+            var testMessage = new FailTaskMessage(Id, Group);
             var testActor = ActorOfAsTestActorRef<FailingTestRequestHandler>();
-            _subsriber.Subscribe(testRequest.GetType(), testActor);
-            _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
-            Throttle.Verify(_quartzLogger, x => x.LogFailure(testRequest.TaskId, It.IsAny<Exception>()), maxTimeout: Timeout);
+            _subsriber.Subscribe(testMessage.GetType(), testActor);
+            _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
+            Throttle.Verify(_quartzLogger, x => x.LogFailure(testMessage.TaskId, It.IsAny<Exception>()), maxTimeout: Timeout);
         }
 
         [Test]
@@ -116,14 +143,14 @@ namespace GridDomain.Tests.Scheduling
         {
             var tasks = new[] { 0.5, 1, 1.5, 2, 2.5 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _subsriber.Subscribe(typeof(TestRequest), testActor);
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in tasks)
             {
-                var testRequest = new TestRequest(task.ToString(CultureInfo.InvariantCulture));
+                var testMessage = new TestMessage(task.ToString(CultureInfo.InvariantCulture), Group);
                 var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
+                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             }
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -139,13 +166,13 @@ namespace GridDomain.Tests.Scheduling
             var taskId = "taskId";
             var result = new List<string>();
 
-            Action<TestRequest> handler = request => result.Add(request.TaskId);
+            Action<TestMessage> handler = request => result.Add(request.TaskId);
 
-            var testRequest = new TestRequest(taskId);
-            var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestRequest>>(Props.Create(() => new TestRequestHandler<TestRequest>(handler)));
-            _subsriber.Subscribe(typeof(TestRequest), testActor);
-            _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
-            _scheduler.Tell(new AddTask(testRequest, secondRunAt, Timeout));
+            var testMessage = new TestMessage(taskId, Group);
+            var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestMessage>>(Props.Create(() => new TestRequestHandler<TestMessage>(handler)));
+            _subsriber.Subscribe(typeof(TestMessage), testActor);
+            _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
+            _scheduler.Tell(new Schedule(testMessage, secondRunAt, Timeout));
 
             Throttle.Assert(() => Assert.True(result.Count == 1), minTimeout: TimeSpan.FromSeconds(2));
         }
@@ -156,20 +183,20 @@ namespace GridDomain.Tests.Scheduling
             var successTasks = new[] { 0.5, 1.5, 2.5 };
             var failTasks = new[] { 1.0, 2.0 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _subsriber.Subscribe(typeof(TestRequest), testActor);
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in successTasks)
             {
-                var testRequest = new TestRequest(task.ToString(CultureInfo.InvariantCulture));
+                var testMessage = new TestMessage(task.ToString(CultureInfo.InvariantCulture), Group);
                 var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
+                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             }
             foreach (var failTask in failTasks)
             {
-                var failRequest = new FailTaskRequest(failTask.ToString(CultureInfo.InvariantCulture));
+                var failRequest = new FailTaskMessage(failTask.ToString(CultureInfo.InvariantCulture), Group);
                 var runAt = DateTime.UtcNow.AddSeconds(failTask);
-                _scheduler.Tell(new AddTask(failRequest, runAt, Timeout));
+                _scheduler.Tell(new Schedule(failRequest, runAt, Timeout));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -188,14 +215,14 @@ namespace GridDomain.Tests.Scheduling
             var successTasks = new[] { 0.5, 1.5, 2.5 };
             var tasksToRemove = new[] { 1.0, 2.0 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _subsriber.Subscribe(typeof(TestRequest), testActor);
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in successTasks.Concat(tasksToRemove))
             {
-                var testRequest = new TestRequest(task.ToString(CultureInfo.InvariantCulture));
+                var testMessage = new TestMessage(task.ToString(CultureInfo.InvariantCulture), Group);
                 var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
+                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -203,14 +230,14 @@ namespace GridDomain.Tests.Scheduling
 
             foreach (var taskId in tasksToRemoveTaskIds)
             {
-                _scheduler.Tell(new RemoveTask(taskId));
+                _scheduler.Tell(new Unschedule(taskId,"test"));
             }
 
             Throttle.Assert(() =>
             {
                 ResultHolder.Contains(successTaskIds);
                 Assert.True(tasksToRemoveTaskIds.All(x => ResultHolder.Get(x) == null));
-            }, minTimeout: TimeSpan.FromSeconds(3));
+            }, minTimeout: TimeSpan.FromSeconds(4));
         }
 
         [Test]
@@ -218,14 +245,14 @@ namespace GridDomain.Tests.Scheduling
         {
             var tasks = new[] { 0.5, 1, 1.5, 2, 2.5 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
-            _subsriber.Subscribe(typeof(TestRequest), testActor);
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in tasks)
             {
-                var testRequest = new TestRequest(task.ToString(CultureInfo.InvariantCulture));
+                var testMessage = new TestMessage(task.ToString(CultureInfo.InvariantCulture), Group);
                 var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new AddTask(testRequest, runAt, Timeout));
+                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             }
 
             _quartzScheduler.Shutdown(false);
@@ -242,7 +269,7 @@ namespace GridDomain.Tests.Scheduling
             get
             {
                 //default timeout
-                var timeout = TimeSpan.FromSeconds(3);
+                var timeout = TimeSpan.FromSeconds(5);
                 //in case you want to debug this unit test
                 if (Debugger.IsAttached)
                 {

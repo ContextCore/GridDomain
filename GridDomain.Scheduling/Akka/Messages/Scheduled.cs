@@ -2,11 +2,11 @@ using System;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class TaskAdded
+    public class Scheduled
     {
         public DateTime NextExecution { get; private set; }
 
-        public TaskAdded(DateTime nextExecution)
+        public Scheduled(DateTime nextExecution)
         {
             NextExecution = nextExecution;
         }

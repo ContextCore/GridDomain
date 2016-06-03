@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
 
         public static bool Contains(params string[] keys)
         {
-            return keys.All(keys.Contains);
+            return keys.All(Results.ContainsKey);
         }
 
         public static void Clear()

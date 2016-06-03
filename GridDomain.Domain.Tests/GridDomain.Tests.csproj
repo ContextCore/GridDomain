@@ -78,6 +78,18 @@
       <HintPath>..\packages\CompareNETObjects.3.05.0.0\lib\net46\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
       <Private>True</Private>
@@ -110,12 +122,20 @@
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.45.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoFixture.3.45.1\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quartz, Version=2.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <HintPath>..\packages\Quartz.2.3.3\lib\net40\Quartz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuartzNetWebConsole, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuartzNetWebConsole.Owin.0.5.0\lib\net45\QuartzNetWebConsole.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
@@ -166,13 +186,13 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
-    <Compile Include="Scheduling\AkkaSpec.cs" />
-    <Compile Include="Scheduling\TestHelpers\FailTaskRequest.cs" />
+    <Compile Include="Scheduling\Spec.cs" />
+    <Compile Include="Scheduling\TestHelpers\FailTaskMessage.cs" />
     <Compile Include="Scheduling\TestHelpers\TestRequestHandler.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="Scheduling\TestHelpers\ResultHolder.cs" />
-    <Compile Include="Scheduling\TestHelpers\SuccessfulTestRequestHandler.cs" />
-    <Compile Include="Scheduling\TestHelpers\TestRequest.cs" />
+    <Compile Include="Scheduling\TestHelpers\SuccessfulTestMessageHandler.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestMessage.cs" />
     <Compile Include="Scheduling\TestHelpers\FailingTestRequestHandler.cs" />
     <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />

@@ -3,11 +3,11 @@ using Akka.Actor;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class TaskProcessingFailed : Failure
+    public class MessageProcessingFailed : Failure
     {
         public string TaskId { get; private set; }
 
-        public TaskProcessingFailed(string taskId, Exception cause)
+        public MessageProcessingFailed(string taskId, Exception cause)
         {
             TaskId = taskId;
             Exception = cause;

@@ -1,10 +1,12 @@
-﻿using Akka.Actor;
+﻿using System.Net;
+using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
+using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
@@ -26,7 +28,8 @@ namespace GridDomain.Scheduling
             var transport = new AkkaEventBusTransport(actorSystem);
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
-
+            container.RegisterType<IWebUiConfig, WebUiConfig>();
+            container.RegisterType<IWebUiWrapper, WebUiWrapper>();
             return container;
         }
     }
