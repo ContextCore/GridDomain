@@ -47,13 +47,14 @@ namespace GridDomain.Tests.Scheduling
             //container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
             container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
             container.RegisterType<IQuartzConfig, QuartzConfig>();
+            container.RegisterType<ActorSystem>(new InjectionFactory(x => Sys));
             var transport = new AkkaEventBusTransport(Sys);
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
 
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
-            QuartzLoggerFactory.SetLoggerFactory(()=>_quartzLogger.Object);
+            QuartzLoggerFactory.SetLoggerFactory(() => _quartzLogger.Object);
             container.RegisterType<SchedulerActor>();
             container.RegisterType<SuccessfulTestRequestHandler>();
             container.RegisterType<FailingTestRequestHandler>();
@@ -96,7 +97,7 @@ namespace GridDomain.Tests.Scheduling
             var testActor = ActorOfAsTestActorRef<SuccessfulTestRequestHandler>();
             _subsriber.Subscribe(testRequest.GetType(), testActor);
             _scheduler.Ask<TaskAdded>(new AddTask(testRequest, runAt, Timeout)).Wait(Timeout);
-            Throttle.Assert(()=> Assert.True(ResultHolder.Contains(testRequest.TaskId)), maxTimeout: Timeout);
+            Throttle.Assert(() => Assert.True(ResultHolder.Contains(testRequest.TaskId)), maxTimeout: Timeout);
         }
 
         [Test]

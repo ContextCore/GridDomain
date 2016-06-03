@@ -22,7 +22,7 @@ namespace GridDomain.Scheduling.Akka
                 }
                 catch (Exception e)
                 {
-                    Sender.Tell(new Failure { Exception = e });
+                    Sender.Tell(new TaskProcessingFailed(request.TaskId, e));
                 }
             });
         }
