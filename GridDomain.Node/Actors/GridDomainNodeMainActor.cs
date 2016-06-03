@@ -29,7 +29,7 @@ namespace GridDomain.Node.Actors
             _log.Debug($"Актор {GetType().Name} начинает инициализацию");
 
             var system = Context.System;
-            var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType));
+            var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
             var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
             _messageRouting.Register(actorMessagesRouter);

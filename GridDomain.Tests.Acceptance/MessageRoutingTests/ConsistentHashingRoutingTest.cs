@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         {
             _system = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
 
-            var actor = _system.ActorOf(Props.Create<TimeLoggerActor>(TestActor)
+            var actor = _system.ActorOf(Props.Create<TimeLoggerActor>(TestActor,nameof(TimeLoggerActor))
                 .WithRouter(new ConsistentHashingPool(2).WithHashMapping(m => ((DiagMsg) m).HashKey)));
 
             _diagMsgs = CreateMessages();

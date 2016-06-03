@@ -112,7 +112,7 @@ namespace GridDomain.Node
             _log.Info($"Launching GridDomain node {Id}");
 
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
-            _mainNodeActor = actorSystem.ActorOf(props);
+            _mainNodeActor = actorSystem.ActorOf(props,nameof(GridDomainNodeMainActor));
             _mainNodeActor.Ask(new GridDomainNodeMainActor.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]
