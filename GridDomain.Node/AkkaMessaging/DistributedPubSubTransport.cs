@@ -31,13 +31,15 @@ namespace GridDomain.Node.AkkaMessaging
 
         public void Subscribe<TMessage>(IActorRef actor)
         {
-            Subscribe(typeof (TMessage), actor);
+            Subscribe(typeof (TMessage), actor, actor);
         }
 
-        public void Subscribe(Type messageType, IActorRef actor)
+        public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
             var topic = messageType.FullName;
-            _transport.Ask(new Subscribe(topic, actor)).Wait();
+            _transport.Ask<SubscribeAck>(new Subscribe(topic, actor))
+                      .PipeTo(subscribeNotificationWaiter);
+
             _log.Trace($"Subscribing handler actor {actor.Path} to topic {topic}");
         }
 

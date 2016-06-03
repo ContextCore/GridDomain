@@ -26,9 +26,8 @@ namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
         ///     Important than persistence setting are the same as for testing cluster as for test ActorSystem
         /// </summary>
         public Cluster_Given_balance_change_plan_When_executing()
-            : base(new AutoTestAkkaConfiguration()//AkkaConf.Copy("writeModelCheckSystem", 9000)
-                   .ToClusterNonSeedNodeSystemConfig(new AutoTestAkkaConfiguration().Network),
-                  "LocalSystem")
+            : base(AkkaConf.Copy("writeModelCheckSystem", 9000)
+                   .ToStandAloneSystemConfig())
         {
 
         }

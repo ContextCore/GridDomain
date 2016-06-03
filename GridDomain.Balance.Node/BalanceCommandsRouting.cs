@@ -42,8 +42,6 @@ namespace GridDomain.Balance.Node
                 .ToHandler<TransactionsProjectionBuilder>()
                 .WithCorrelation(nameof(AccountWithdrawalEvent.BalanceId))
                 .Register();
-
-            //TransactionsProjectionBuilder
         }
     }
 }

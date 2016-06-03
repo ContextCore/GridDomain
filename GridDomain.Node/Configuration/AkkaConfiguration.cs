@@ -65,7 +65,7 @@ namespace GridDomain.Node.Configuration
         public string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(this),
+                new LogConfig(this, false),
                 new StandAloneConfig(Network),
                 new PersistenceConfig(this));
             return cfg.Build();
@@ -75,7 +75,7 @@ namespace GridDomain.Node.Configuration
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
             var cfg = new RootConfig(
-                new LogConfig(this, false),
+                new LogConfig(this,false),
                 ClusterConfig.NonSeedNode(Network, seeds),
                 new PersistenceConfig(this));
             return cfg.Build();
