@@ -166,7 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BalanceChangePlan.cs" />
-    <Compile Include="BalancePersistenceTests.cs" />
     <Compile Include="DataGenerator.cs" />
     <Compile Include="KnownConstructorParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
