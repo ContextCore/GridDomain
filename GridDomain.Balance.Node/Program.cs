@@ -57,10 +57,7 @@ namespace GridDomain.Balance.Node
 
         private static void ApplySeeds(GridDomainNode node)
         {
-            foreach (var cmd in new SubscriptionsFeed().InitialSubscriptions())
-            {
-                node.Execute(cmd);
-            }
+           
         }
 
         private static void ConfigureLog(IDbConfiguration dbConf)

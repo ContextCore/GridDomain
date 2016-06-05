@@ -1,39 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
 using NMoneys;
 
 namespace GridDomain.Balance.Domain.OfferAggregate
 {
-    internal class Subscription : AggregateBase
+    public class Subscription : AggregateBase
     {
-        public Money Cost;
-        public string[] Grants;
-        public string Name;
-        public TimeSpan Period;
+        public Offer Offer { get; private set; }
+        public IReadOnlyCollection<Guid> Bills => _bills;
+        private readonly List<Guid> _bills = new List<Guid>();
 
         private Subscription(Guid id)
         {
             Id = id;
         }
-
-        public Subscription(Guid id, TimeSpan period, Money cost, string name, string[] grants) : this(id)
+    
+        public Subscription(Guid id, Offer offer) : this(id)
         {
-            RaiseEvent(new SubscriptionCreatedEvent(id)
-            {
-                Period = period,
-                Cost = cost,
-                Name = name,
-                Grants = grants
-            });
+            RaiseEvent(new SubscriptionCreatedEvent(id,offer));
+        }
+
+        public void CreateBill(Guid billId)
+        {
+            RaiseEvent(new SubscriptionBillCreatedEvent(Id, billId, Offer.Price));
         }
 
         private void Apply(SubscriptionCreatedEvent e)
         {
             Id = e.SourceId;
-            Period = e.Period;
-            Cost = e.Cost;
-            Grants = e.Grants;
-            Name = e.Name;
+            Offer = e.Offer;
+        }
+        private void Apply(SubscriptionBillCreatedEvent e)
+        {
+            _bills.Add(e.BillId);
+        }
+    }
+
+    public class SubscriptionBillCreatedEvent:DomainEvent
+    {
+        public Guid BillId { get; }
+        public Money Price { get; }
+
+        public SubscriptionBillCreatedEvent(Guid id, Guid billId, Money price):base(id)
+        {
+            BillId = billId;
+            Price = price;
         }
     }
 }

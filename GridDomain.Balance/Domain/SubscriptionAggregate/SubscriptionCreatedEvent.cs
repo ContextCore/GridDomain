@@ -6,14 +6,12 @@ namespace GridDomain.Balance.Domain.OfferAggregate
 {
     internal class SubscriptionCreatedEvent : DomainEvent
     {
-        public Money Cost;
-        public string[] Grants;
-        public string Name;
-        public TimeSpan Period;
+        public Offer Offer { get; }
 
-        public SubscriptionCreatedEvent(Guid sourceId, DateTime? createdTime = null)
+        public SubscriptionCreatedEvent(Guid sourceId, Offer offer, DateTime? createdTime = null)
             : base(sourceId, createdTime)
         {
+            Offer = offer;
         }
     }
 }
