@@ -1,5 +1,6 @@
 ﻿using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
+using GridDomain.Tests.Configuration;
 
 namespace GridDomain.Tests.Acceptance
 {

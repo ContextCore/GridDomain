@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using NMoneys;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
     public class TransactionHistory
     {

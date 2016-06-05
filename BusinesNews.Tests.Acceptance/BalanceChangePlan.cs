@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Commands;
 using NMoneys;
 
-namespace GridDomain.Tests.Acceptance.Balance
+namespace BusinesNews.Tests.Acceptance
 {
     public class BalanceChangePlan
     {

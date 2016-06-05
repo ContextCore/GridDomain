@@ -1,13 +1,13 @@
 ﻿using System;
-using GridDomain.Balance.Domain.AccountAggregate;
-using GridDomain.Balance.ReadModel;
+using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.ReadModel;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Balance.Node
+namespace BusinessNews.Node
 {
     public static class CompositionRoot
     {

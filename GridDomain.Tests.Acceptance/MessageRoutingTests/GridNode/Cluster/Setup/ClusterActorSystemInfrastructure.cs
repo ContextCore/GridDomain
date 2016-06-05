@@ -8,7 +8,7 @@ using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     internal class ClusterActorSystemInfrastructure : ActorSystemInfrastruture
     {

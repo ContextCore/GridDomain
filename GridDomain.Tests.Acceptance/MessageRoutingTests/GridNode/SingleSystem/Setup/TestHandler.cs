@@ -1,7 +1,7 @@
 using Akka.Actor;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
     public class TestHandler : IHandler<TestMessage>
     {
@@ -13,11 +13,11 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
             _notifier = notifier;
         }
 
-        public void Handle(TestMessage cmd)
+        public void Handle(TestMessage e)
         {
-            cmd.HandlerHashCode = GetHashCode();
-            cmd.HandleOrder = ++_handleCounter;
-            _notifier.Tell(cmd);
+            e.HandlerHashCode = GetHashCode();
+            e.HandleOrder = ++_handleCounter;
+            _notifier.Tell(e);
         }
     }
 }

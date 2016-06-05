@@ -2,7 +2,7 @@
 using Akka.Cluster;
 using Akka.Event;
 
-namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
+namespace GridDomain.Tests.Acceptance
 {
     public class SimpleClusterListener : UntypedActor
     {

@@ -1,10 +1,10 @@
 using System;
-using GridDomain.Balance.Domain.AccountAggregate.Events;
+using BusinessNews.Domain.AccountAggregate.Events;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Logging;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
     public class TransactionsProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
         IEventHandler<PayedForBillEvent>,
@@ -18,40 +18,40 @@ namespace GridDomain.Balance.ReadModel
             _modelBuilder = modelBuilder;
         }
 
-        public void Handle(AccountCreatedEvent cmd)
+        public void Handle(AccountCreatedEvent e)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = cmd.BalanceId,
+                BalanceId = e.BalanceId,
                 EventType = typeof (AccountCreatedEvent).Name,
-                Event = cmd.ToPropsString(),
+                Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
                 Time = DateTime.Now
             });
         }
 
-        public void Handle(AccountBalanceReplenishEvent cmd)
+        public void Handle(AccountBalanceReplenishEvent e)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = cmd.BalanceId,
+                BalanceId = e.BalanceId,
                 EventType = typeof (AccountBalanceReplenishEvent).Name,
-                Event = cmd.ToPropsString(),
+                Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
-                TransactionAmount = cmd.Amount,
+                TransactionAmount = e.Amount,
                 Time = DateTime.Now
             });
         }
 
-        public void Handle(PayedForBillEvent cmd)
+        public void Handle(PayedForBillEvent e)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = cmd.BalanceId,
+                BalanceId = e.BalanceId,
                 EventType = typeof (PayedForBillEvent).Name,
-                Event = cmd.ToPropsString(),
+                Event = e.ToPropsString(),
                 Id = Guid.NewGuid(),
-                TransactionAmount = cmd.Amount,
+                TransactionAmount = e.Amount,
                 Time = DateTime.Now
             });
         }

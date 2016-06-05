@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Balance.Domain.BusinessAggregate
+namespace BusinessNews.Domain.BusinessAggregate
 {
     public class SubscriptionRevokedEvent : SubscriptionChangedEvent
     {

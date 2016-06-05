@@ -1,7 +1,7 @@
 using System.Reflection;
 using Ploeh.AutoFixture.Kernel;
 
-namespace GridDomain.Tests.Acceptance.Balance
+namespace BusinesNews.Tests.Acceptance
 {
     public class KnownConstructorParameter<TEntiry, TConstructorType> : ISpecimenBuilder
     {

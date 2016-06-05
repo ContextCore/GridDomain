@@ -1,6 +1,6 @@
 using GridDomain.Node.Configuration;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Configuration
 {
     internal class AutoTestAkkaNetworkAddress : IAkkaNetworkAddress
     {

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain.AccountAggregate;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
-using GridDomain.Balance.Domain.AccountAggregate.Events;
+using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Events;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Tests;
 using NUnit.Framework;
 
-namespace GridDomain.Balance.Tests.Replenish
+namespace BusinessNews.Test.Replenish
 {
     [TestFixture]
     public class Given_existing_balance_When_AccountReplenishCommand : CommandSpecification<ReplenishAccountByCardCommand>

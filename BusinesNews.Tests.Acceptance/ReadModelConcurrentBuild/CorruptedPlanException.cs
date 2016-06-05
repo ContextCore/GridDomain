@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
+namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 {
     internal class CorruptedPlanException : Exception
     {

@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Configuration;
 using Akka.Actor;
 using Akka.Configuration;
@@ -8,10 +6,8 @@ using Akka.Configuration.Hocon;
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
-using Samples.Cluster.Simple.Samples.Cluster.Simple;
 
-namespace Samples.Cluster.Simple
+namespace AkkaClusterTests
 {
     class Program
     {

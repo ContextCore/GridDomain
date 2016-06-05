@@ -2,7 +2,7 @@
 using GridDomain.EventSourcing;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.AccountAggregate.Events
+namespace BusinessNews.Domain.AccountAggregate.Events
 {
     public class AccountBalanceChangedEvent : DomainEvent
     {

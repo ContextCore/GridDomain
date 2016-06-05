@@ -8,13 +8,12 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
-using GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup;
+using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using GridDomain.Tests.Acceptance.Persistence;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
     public abstract class ActorSystemInfrastruture : IDisposable
     {

@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace BusinessNews.Domain.Domain.BillAggregate
+namespace BusinessNews.Domain.BillAggregate
 {
     class MarkBillPayedCommand : Command
     {

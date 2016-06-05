@@ -1,10 +1,10 @@
-﻿using GridDomain.Balance.Domain.AccountAggregate;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
+﻿using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.AccountAggregate.Commands;
 using GridDomain.CQRS;
 using GridDomain.Tests;
 using NUnit.Framework;
 
-namespace GridDomain.Balance.Tests.Replenish
+namespace BusinessNews.Test.Replenish
 {
     [TestFixture]
     public class Given_non_existing_balance_When_AccountReplenishCommand : CommandSpecification<ReplenishAccountByCardCommand>

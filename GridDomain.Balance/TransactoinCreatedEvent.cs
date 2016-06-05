@@ -2,7 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain
+namespace BusinessNews.Domain
 {
     public class TransactoinCreatedEvent : DomainEvent
     {

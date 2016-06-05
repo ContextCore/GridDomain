@@ -4,7 +4,7 @@ using System.CodeDom.Compiler;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Resources;
 
-namespace GridDomain.Balance.ReadModel.Migrations
+namespace BusinessNews.ReadModel.Migrations
 {
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
     public sealed partial class Initial : IMigrationMetadata

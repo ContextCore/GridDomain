@@ -5,6 +5,7 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
+using GridDomain.Tests.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

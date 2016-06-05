@@ -2,7 +2,7 @@
 using System.Linq;
 using GridDomain.CQRS.Quering;
 
-namespace GridDomain.Balance.ReadModel.Queries
+namespace BusinessNews.ReadModel.Queries
 {
     public class BusinessBalanceQuery : ISingleQuery<BusinessBalance, Guid>
     {

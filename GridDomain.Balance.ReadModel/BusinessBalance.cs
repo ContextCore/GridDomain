@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
     public class BusinessBalance
     {

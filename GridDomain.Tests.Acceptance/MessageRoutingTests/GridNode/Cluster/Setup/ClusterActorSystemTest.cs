@@ -1,7 +1,8 @@
 using System.Linq;
+using GridDomain.Tests.Configuration;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     [TestFixture]
     internal abstract class ClusterActorSystemTest : ActorSystemTest<ClusterMessage, ClusterActorSystemInfrastructure>

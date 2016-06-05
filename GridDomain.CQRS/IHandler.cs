@@ -2,6 +2,6 @@
 {
     public interface IHandler<in T>
     {
-        void Handle(T cmd);
+        void Handle(T e);
     }
 }

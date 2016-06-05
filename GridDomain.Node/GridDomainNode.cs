@@ -4,7 +4,7 @@ using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using GridDomain.Balance.ReadModel;
+using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;

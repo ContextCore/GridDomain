@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Balance.Domain.AccountAggregate.Events
+namespace BusinessNews.Domain.AccountAggregate.Events
 {
     public class AccountCreatedEvent : DomainEvent
     {

@@ -1,6 +1,6 @@
 using System.Data.Entity.Migrations;
 
-namespace GridDomain.Balance.ReadModel.Migrations
+namespace BusinessNews.ReadModel.Migrations
 {
     public partial class TimeForTransactionHistory : DbMigration
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
     internal class GivenTestMessages : IGivenCommands<TestMessage>
     {

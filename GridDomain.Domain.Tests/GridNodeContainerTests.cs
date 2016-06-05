@@ -2,7 +2,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests
 {
     public class GridNodeContainerTests : CompositionRootTests
     {

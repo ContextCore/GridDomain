@@ -3,7 +3,7 @@ using System.Linq;
 using Akka.TestKit.NUnit;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
     public abstract class ActorSystemTest<T, TInfrastructure> : TestKit where TInfrastructure : ActorSystemInfrastruture
     {

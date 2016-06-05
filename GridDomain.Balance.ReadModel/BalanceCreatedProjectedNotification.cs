@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
     public class BalanceCreatedProjectedNotification : ISourcedEvent
     {

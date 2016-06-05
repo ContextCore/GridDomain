@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Balance.Domain.AccountAggregate
+namespace BusinessNews.Domain.AccountAggregate
 {
     public class AccountNotFoundException : Exception
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
     public class BalanceChangeProjectedNotification
     {

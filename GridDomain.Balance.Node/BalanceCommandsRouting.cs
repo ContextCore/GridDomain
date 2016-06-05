@@ -1,11 +1,10 @@
-﻿using GridDomain.Balance.Domain.AccountAggregate;
-using GridDomain.Balance.Domain.AccountAggregate.Events;
-using GridDomain.Balance.ReadModel;
+﻿using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.AccountAggregate.Events;
+using BusinessNews.ReadModel;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Balance.Node
+namespace BusinessNews.Node
 {
     public class BalanceCommandsRouting : IMessageRouteMap
     {

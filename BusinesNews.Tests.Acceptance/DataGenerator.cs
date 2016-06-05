@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Commands;
+using GridDomain.Tests.Acceptance;
 using NMoneys;
 using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Acceptance.Balance
+namespace BusinesNews.Tests.Acceptance
 {
     public class DataGenerator
     {

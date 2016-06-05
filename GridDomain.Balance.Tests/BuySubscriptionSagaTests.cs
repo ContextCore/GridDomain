@@ -1,10 +1,8 @@
 ﻿using System;
-using GridDomain.Balance.Domain;
-using GridDomain.Balance.Domain.BusinessAggregate;
-using GridDomain.EventSourcing.Sagas;
+using BusinessNews.Domain.Sagas.BuySubscription;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Balance
+namespace BusinessNews.Test
 {
     [TestFixture]
     public class BuySubscriptionSagaTests
@@ -12,7 +10,7 @@ namespace GridDomain.Tests.Acceptance.Balance
         [Test]
         public void GetSagaGraph()
         {
-            var sagaStateAggregate = new BuySubscriptionSaga.BuySubscriptionSagaStateAggregate
+            var sagaStateAggregate = new BuySubscriptionSagaStateAggregate
                                        (Guid.NewGuid(), BuySubscriptionSaga.State.SubscriptionSet);
 
             var saga = new BuySubscriptionSaga(sagaStateAggregate);
@@ -23,7 +21,7 @@ namespace GridDomain.Tests.Acceptance.Balance
         [Test]
         public void Given_business_has_enough_money_when_purchase_subscription_it_is_ok()
         {
-            var sagaStateAggregate = new BuySubscriptionSaga.BuySubscriptionSagaStateAggregate
+            var sagaStateAggregate = new BuySubscriptionSagaStateAggregate
                                        (Guid.NewGuid(), BuySubscriptionSaga.State.SubscriptionSet);
 
             var saga = new BuySubscriptionSaga(sagaStateAggregate);

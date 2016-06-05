@@ -1,9 +1,8 @@
 using Akka.Actor;
 using Akka.Cluster;
 using Akka.Event;
-using Microsoft.SqlServer.Server;
 
-namespace Samples.Cluster.Simple.Samples.Cluster.Simple
+namespace AkkaClusterTests
 {
     public class SimpleClusterListener : UntypedActor
     {

@@ -2,7 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using NMoneys;
 
-namespace BusinessNews.Domain.Domain.BillAggregate
+namespace BusinessNews.Domain.BillAggregate
 {
     internal class BillCreatedEvent: DomainEvent
     {

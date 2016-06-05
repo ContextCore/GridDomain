@@ -1,4 +1,6 @@
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup
+using GridDomain.Tests.Configuration;
+
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
     public abstract class SingleActorSystemTest : ActorSystemTest<TestMessage, SingleActorSystemInfrastructure>
     {

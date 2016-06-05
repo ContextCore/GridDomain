@@ -6,9 +6,10 @@ using Akka.Actor;
 using Akka.Routing;
 using Akka.TestKit.NUnit;
 using GridDomain.Node;
+using GridDomain.Tests.Configuration;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.MessageRoutingTests
 {
     public class ConsistentHashingRoutingTest : TestKit
     {

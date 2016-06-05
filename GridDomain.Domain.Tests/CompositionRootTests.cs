@@ -5,10 +5,11 @@ using System.Text;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Tests.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests
 {
     [TestFixture]
     public abstract class CompositionRootTests

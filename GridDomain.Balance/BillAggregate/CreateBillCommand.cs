@@ -2,7 +2,7 @@
 using GridDomain.CQRS;
 using NMoneys;
 
-namespace BusinessNews.Domain.Domain.BillAggregate
+namespace BusinessNews.Domain.BillAggregate
 {
     class CreateBillCommand:Command
     {

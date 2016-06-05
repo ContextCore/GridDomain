@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
     public class BusinessBalanceContext : DbContext
     {

@@ -4,16 +4,18 @@ using System.Linq;
 using System.Threading;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using GridDomain.Balance.Domain.AccountAggregate;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
-using GridDomain.Balance.Node;
-using GridDomain.Balance.ReadModel;
+using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Node;
+using BusinessNews.ReadModel;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Tests;
+using GridDomain.Tests.Acceptance;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
+namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 {
     [TestFixture]
     public abstract class Given_balance_change_plan_When_executing : NodeCommandsTest
