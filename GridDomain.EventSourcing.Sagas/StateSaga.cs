@@ -14,10 +14,10 @@ namespace GridDomain.EventSourcing.Sagas
 
         private readonly SagaStateAggregate<TState, TTrigger> _stateAggregate;
 
-        internal readonly StateMachine<TState, TTrigger> Machine;
-        public List<object> MessagesToDispatch = new List<object>();
+        public readonly StateMachine<TState, TTrigger> Machine;
+        public readonly List<object> MessagesToDispatch = new List<object>();
 
-        public StateSaga(SagaStateAggregate<TState, TTrigger> stateAggregate)
+        protected StateSaga(SagaStateAggregate<TState, TTrigger> stateAggregate)
         {
             _stateAggregate = stateAggregate;
             Machine = new StateMachine<TState, TTrigger>(_stateAggregate.MachineState);

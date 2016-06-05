@@ -9,4 +9,6 @@ namespace GridDomain.Balance.Domain.OfferAggregate
         public Guid BusinessId;
         public Guid SubscriptionId;
     }
+
+
 }

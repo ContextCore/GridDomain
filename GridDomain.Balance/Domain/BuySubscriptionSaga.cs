@@ -1,16 +1,21 @@
 ﻿using CommonDomain.Core;
+using GridDomain.Balance.Domain.BusinessAggregate;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas;
 using Stateless;
 
 namespace GridDomain.Balance.Domain
 {
-    public class BuySubscriptionSaga : SagaBase<object>
+    public class BuySubscriptionSaga : StateSaga<BuySubscriptionSaga.State, 
+                                                 BuySubscriptionSaga.Transitions, 
+                                                 SubscriptionOrderedEvent>
     {
         public enum State
         {
             SubscriptionExist,
             ChargingBalance,
             BalanceCharged,
-            ChanginSubscription
+            ChangingSubscription
         }
 
         public enum Transitions
@@ -23,11 +28,9 @@ namespace GridDomain.Balance.Domain
             SubscriptionSet
         }
 
-        public readonly StateMachine<State, Transitions> Machine;
-
-        public BuySubscriptionSaga()
+        public BuySubscriptionSaga(SagaStateAggregate<State,
+                                                     Transitions> machine ):base(machine)
         {
-            Machine = new StateMachine<State, Transitions>(State.SubscriptionExist);
             Machine.Configure(State.SubscriptionExist)
                 .Permit(Transitions.ChargeForSubscription, State.ChargingBalance);
 
@@ -36,9 +39,9 @@ namespace GridDomain.Balance.Domain
                 .Permit(Transitions.ChargeSucceeded, State.BalanceCharged);
 
             Machine.Configure(State.BalanceCharged)
-                .Permit(Transitions.SetNewSubscription, State.ChanginSubscription);
+                .Permit(Transitions.SetNewSubscription, State.ChangingSubscription);
 
-            Machine.Configure(State.ChanginSubscription)
+            Machine.Configure(State.ChangingSubscription)
                 .Permit(Transitions.SubscriptionSet, State.SubscriptionExist)
                 .Permit(Transitions.SetFailed, State.BalanceCharged);
         }

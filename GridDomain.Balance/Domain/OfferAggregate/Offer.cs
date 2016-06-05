@@ -12,7 +12,7 @@ namespace GridDomain.Balance.Domain.OfferAggregate
         {
             Id = ID;
             Name = "Free subscription";
-            Cost = Money.Zero();
+            Price = Money.Zero();
             Grants = new[] {"free"};
             Period = TimeSpan.MaxValue;
         }
@@ -26,7 +26,7 @@ namespace GridDomain.Balance.Domain.OfferAggregate
         {
             Id = ID;
             Name = "Vip subscription";
-            Cost = new Money(10);
+            Price = new Money(10);
             Grants = new[] { "free", "vip" };
             Period = TimeSpan.FromDays(30);
         }
@@ -37,7 +37,7 @@ namespace GridDomain.Balance.Domain.OfferAggregate
     public abstract class Offer
     {
         public Guid Id { get; protected set; }
-        public Money Cost { get; protected set; }
+        public Money Price { get; protected set; }
         public string[] Grants { get; protected set; }
         public string Name { get; protected set; }
         public TimeSpan Period { get; protected set; }
