@@ -8,8 +8,8 @@ namespace GridDomain.Balance.Domain.OfferAggregate
     {
         public CreateSubscriptionCommandHandler()
         {
-            Map<CreateSubscriptionCommand>(cmd => cmd.SubscriptionId,
-                cmd => new Subscription(cmd.SubscriptionId, cmd.Offer));
+         //   Map<CreateSubscriptionCommand>(cmd => cmd.SubscriptionId,
+         //       cmd => new Subscription(cmd.SubscriptionId, cmd.Offer));
         }
     }
 }

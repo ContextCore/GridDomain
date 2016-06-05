@@ -4,37 +4,39 @@ using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    //TODO: add policy for command unexpected failure handling
-    public class StateSaga<TState, TTrigger, TStartMessage> : IStartBy<TStartMessage> where TTrigger : struct
-        where TState : struct
+
+    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : IStartBy<TStartMessage> 
+        where TSagaTriggers : struct
+        where TSagaStates : struct
+        where TStateData : SagaStateAggregate<TSagaStates,TSagaTriggers>
     {
-        private readonly IDictionary<Type, StateMachine<TState, TTrigger>.TriggerWithParameters>
-            _eventsToTriggersMapping
-                = new Dictionary<Type, StateMachine<TState, TTrigger>.TriggerWithParameters>();
+        private readonly IDictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>
+         _eventsToTriggersMapping
+             = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
-        private readonly SagaStateAggregate<TState, TTrigger> _stateAggregate;
+        protected readonly TStateData StateData;
 
-        public readonly StateMachine<TState, TTrigger> Machine;
+        public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
         public readonly List<object> MessagesToDispatch = new List<object>();
 
-        protected StateSaga(SagaStateAggregate<TState, TTrigger> stateAggregate)
+        protected StateSaga(TStateData stateData)
         {
-            _stateAggregate = stateAggregate;
-            Machine = new StateMachine<TState, TTrigger>(_stateAggregate.MachineState);
-            Machine.OnTransitioned(t => _stateAggregate.StateChanged(t.Trigger, t.Destination));
+            StateData = stateData;
+            Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateData.MachineState);
+            Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
         }
 
-        public TState State => _stateAggregate.MachineState;
+        public TSagaStates State => StateData.MachineState;
 
         public void Handle(TStartMessage cmd)
         {
             Transit(cmd);
         }
 
-        protected StateMachine<TState, TTrigger>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(TTrigger trigger)
+        protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(TSagaTriggers trigger)
         {
             var triggerWithParameters = Machine.SetTriggerParameters<TEvent>(trigger);
-            _eventsToTriggersMapping[typeof (TEvent)] = triggerWithParameters;
+            _eventsToTriggersMapping[typeof(TEvent)] = triggerWithParameters;
             return triggerWithParameters;
         }
 
@@ -45,12 +47,23 @@ namespace GridDomain.EventSourcing.Sagas
 
         internal void Transit<T>(T message)
         {
-            StateMachine<TState, TTrigger>.TriggerWithParameters triggerWithParameters;
-            if (!_eventsToTriggersMapping.TryGetValue(typeof (T), out triggerWithParameters))
+            StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters triggerWithParameters;
+            if (!_eventsToTriggersMapping.TryGetValue(typeof(T), out triggerWithParameters))
                 throw new UnbindedMessageRecievedException(message);
 
             if (Machine.CanFire(triggerWithParameters.Trigger))
-                Machine.Fire((StateMachine<TState, TTrigger>.TriggerWithParameters<T>) triggerWithParameters, message);
+                Machine.Fire((StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>)triggerWithParameters, message);
         }
+    }
+
+    //TODO: add policy for command unexpected failure handling
+        public class StateSaga<TState, TTrigger, TStartMessage> : 
+        StateSaga<TState,TTrigger,SagaStateAggregate<TState,TTrigger>,TStartMessage> 
+        where TTrigger : struct
+        where TState : struct
+    {
+            public StateSaga(SagaStateAggregate<TState, TTrigger> stateData) : base(stateData)
+            {
+            }
     }
 }

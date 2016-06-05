@@ -4,12 +4,13 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.OfferAggregate
 {
-    internal class SubscriptionCreatedEvent : DomainEvent
+    public class SubscriptionCreatedEvent : DomainEvent
     {
         public Offer Offer { get; }
 
-        public SubscriptionCreatedEvent(Guid sourceId, Offer offer, DateTime? createdTime = null)
-            : base(sourceId, createdTime)
+        public Guid SubscriptionId => SourceId;
+        public SubscriptionCreatedEvent(Guid subscriptionId, Offer offer)
+            : base(subscriptionId)
         {
             Offer = offer;
         }

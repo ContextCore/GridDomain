@@ -15,12 +15,12 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
             SubscriptionId = subscriptionId;
         }
     }
-    public class SetBusinessSubscriptionCommand : Command
+    public class CompleteBusinessSubscriptionOrderCommand : Command
     {
         public Guid BusinessId { get; }
         public Guid SubscriptionId { get; }
 
-        public SetBusinessSubscriptionCommand(Guid businessId, Guid subscriptionId)
+        public CompleteBusinessSubscriptionOrderCommand(Guid businessId, Guid subscriptionId)
         {
             BusinessId = businessId;
             SubscriptionId = subscriptionId;

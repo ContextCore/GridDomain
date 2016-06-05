@@ -8,11 +8,13 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
 {
     internal class Business : AggregateBase
     {
-        private Guid BalanceId;
+        private Guid MainAccountId;
+        private Guid MediaAccountId;
 
         public string Name;
         private Guid SubscriptionId;
 
+        //TODO: decide should we extend orders with order\offer\subscription Id or store it in saga
         private readonly List<Guid> _subscriptionOrders = new List<Guid>();
         public IReadOnlyCollection<Guid> SubscriptionOrders => _subscriptionOrders; 
 
@@ -28,12 +30,12 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
 
         public void OrderSubscription(Guid suibscriptionId, Guid offerId)
         {
-            RaiseEvent(new SubscriptionOrderedEvent(Id, suibscriptionId, offerId));
+            RaiseEvent(new SubscriptionOrderedEvent(Id, suibscriptionId, offerId, MainAccountId));
         }
 
         public void PurchaseSubscription(Guid subscriptionId)
         {
-            RaiseEvent(new SubscriptionPurchasedEvent(Id,subscriptionId));
+            RaiseEvent(new SubscriptionOrderCompletedEvent(Id,subscriptionId));
         }
         public void RevokeSubscription()
         {
@@ -46,7 +48,7 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
             SubscriptionId = FreeSubscription.ID;
         }
 
-        private void Apply(SubscriptionPurchasedEvent e)
+        private void Apply(SubscriptionOrderCompletedEvent e)
         {
             SubscriptionId = e.SubscriptionId;
         }
@@ -58,7 +60,7 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
         private void Apply(BusinessCreatedEvent e)
         {
             Id = e.SourceId;
-            BalanceId = e.BalanceId;
+            MediaAccountId = e.BalanceId;
             SubscriptionId = e.SubscriptionId;
         }
     }
@@ -68,10 +70,14 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
         public Guid SuibscriptionId { get; }
         public Guid OfferId { get; }
 
-        public SubscriptionOrderedEvent(Guid businessId, Guid suibscriptionId, Guid offerId):base(businessId)
+        public Guid BusinessId => SourceId;
+        public Guid AccountId { get; }
+
+        public SubscriptionOrderedEvent(Guid businessId, Guid suibscriptionId, Guid offerId, Guid accountId):base(businessId)
         {
             SuibscriptionId = suibscriptionId;
             OfferId = offerId;
+            AccountId = accountId;
         }
     }
 }

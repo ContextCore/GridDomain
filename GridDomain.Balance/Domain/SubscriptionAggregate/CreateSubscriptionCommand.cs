@@ -7,14 +7,14 @@ namespace GridDomain.Balance.Domain.OfferAggregate
 {
     public class CreateSubscriptionCommand : Command
     {
-        public CreateSubscriptionCommand(Guid id, Offer offer, Guid subscriptionId) : base(id)
+        public CreateSubscriptionCommand(Guid offer, Guid subscriptionId)
         {
             Offer = offer;
             SubscriptionId = subscriptionId;
         }
 
         public Guid SubscriptionId { get; }
-        public Offer Offer { get; }
+        public Guid Offer { get; }
     }
 
     public class CreateSubscriptionBillCommand : Command

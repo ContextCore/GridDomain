@@ -102,9 +102,9 @@
     <Compile Include="Domain\BillAggregate\MarkBillPayedCommand.cs" />
     <Compile Include="Domain\BusinessAggregate\Business.cs" />
     <Compile Include="Domain\BusinessAggregate\BusinessCreatedEvent.cs" />
-    <Compile Include="Domain\BusinessAggregate\SetBusinessSubscriptionCommand.cs" />
+    <Compile Include="Domain\BusinessAggregate\CompleteBusinessSubscriptionOrderCommand.cs" />
     <Compile Include="Domain\BusinessAggregate\SubscriptionChangedEvent.cs" />
-    <Compile Include="Domain\BusinessAggregate\SubscriptionPurchasedEvent.cs" />
+    <Compile Include="Domain\BusinessAggregate\SubscriptionOrderCompletedEvent.cs" />
     <Compile Include="Domain\BusinessAggregate\SubscriptionRevokedEvent.cs" />
     <Compile Include="Domain\SubscriptionAggregate\BuySubscriptionCommand.cs" />
     <Compile Include="Domain\BuySubscriptionSaga.cs" />
