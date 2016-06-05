@@ -13,11 +13,11 @@ namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Singl
             _notifier = notifier;
         }
 
-        public void Handle(TestMessage e)
+        public void Handle(TestMessage cmd)
         {
-            e.HandlerHashCode = GetHashCode();
-            e.HandleOrder = ++_handleCounter;
-            _notifier.Tell(e);
+            cmd.HandlerHashCode = GetHashCode();
+            cmd.HandleOrder = ++_handleCounter;
+            _notifier.Tell(cmd);
         }
     }
 }

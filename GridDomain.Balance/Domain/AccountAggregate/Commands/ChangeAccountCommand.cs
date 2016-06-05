@@ -6,17 +6,13 @@ namespace GridDomain.Balance.Domain.AccountAggregate.Commands
 {
     public class ChangeAccountCommand : Command
     {
-        public ChangeAccountCommand(Guid balanceId,
-            Money amount,
-            AccountChangeSource changeSource)
+        public ChangeAccountCommand(Guid balanceId,Money amount)
         {
             BalanceId = balanceId;
             Amount = amount;
-            ChangeSource = changeSource;
         }
 
         public Guid BalanceId { get; private set; }
         public Money Amount { get; private set; }
-        public AccountChangeSource ChangeSource { get; private set; }
     }
 }

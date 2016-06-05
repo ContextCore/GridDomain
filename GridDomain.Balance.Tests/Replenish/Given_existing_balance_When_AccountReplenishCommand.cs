@@ -11,9 +11,9 @@ using NUnit.Framework;
 namespace GridDomain.Balance.Tests.Replenish
 {
     [TestFixture]
-    public class Given_existing_balance_When_AccountReplenishCommand : CommandSpecification<ReplenishAccountCommand>
+    public class Given_existing_balance_When_AccountReplenishCommand : CommandSpecification<ReplenishAccountByCardCommand>
     {
-        protected override ICommandHandler<ReplenishAccountCommand> Handler => new AccountCommandsHandler(Repository);
+        protected override ICommandHandler<ReplenishAccountByCardCommand> Handler => new AccountCommandsHandler(Repository);
         private readonly Guid businessId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> Given()

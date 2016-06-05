@@ -10,11 +10,11 @@ namespace GridDomain.Balance.Domain.AccountAggregate
             Map<CreateAccountCommand>(cmd => cmd.BalanceId,
                 cmd => new Account(cmd.BalanceId, cmd.BusinessId));
 
-            Map<ReplenishAccountCommand>(cmd => cmd.BalanceId,
+            Map<ReplenishAccountByCardCommand>(cmd => cmd.BalanceId,
                 (cmd, agr) => agr.Replenish(cmd.Amount));
 
-            Map<WithdrawalAccountCommand>(cmd => cmd.BalanceId,
-                (cmd, agr) => agr.Withdrawal(cmd.Amount));
+            Map<PayForBillCommand>(cmd => cmd.BalanceId,
+                (cmd, agr) => agr.PayBill(cmd.Amount, cmd.BillId));
         }
     }
 }

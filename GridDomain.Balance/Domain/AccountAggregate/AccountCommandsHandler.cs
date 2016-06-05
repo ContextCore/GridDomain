@@ -8,8 +8,8 @@ using NLog;
 namespace GridDomain.Balance.Domain.AccountAggregate
 {
     [Obsolete("Use AggregateCommandsHandler<Account> instead")]
-    public class AccountCommandsHandler : ICommandHandler<ReplenishAccountCommand>,
-                                          ICommandHandler<WithdrawalAccountCommand>,
+    public class AccountCommandsHandler : ICommandHandler<ReplenishAccountByCardCommand>,
+                                          ICommandHandler<PayForBillCommand>,
                                           ICommandHandler<CreateAccountCommand>
 
     {
@@ -22,26 +22,26 @@ namespace GridDomain.Balance.Domain.AccountAggregate
             _repository = repository;
         }
 
-        public void Handle(CreateAccountCommand e)
+        public void Handle(CreateAccountCommand cmd)
         {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            _repository.Save(new Account(e.BalanceId, e.BusinessId), e.Id);
+            _log.Debug("Handling command:" + cmd.ToPropsString());
+            _repository.Save(new Account(cmd.BalanceId, cmd.BusinessId), cmd.Id);
         }
 
-        public void Handle(ReplenishAccountCommand e)
+        public void Handle(ReplenishAccountByCardCommand cmd)
         {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            var account = LoadAccount(e.BalanceId, e.Id);
-            account.Replenish(e.Amount);
+            _log.Debug("Handling command:" + cmd.ToPropsString());
+            var account = LoadAccount(cmd.BalanceId, cmd.Id);
+            account.Replenish(cmd.Amount);
             _repository.Save(account, Guid.NewGuid());
         }
 
-        public void Handle(WithdrawalAccountCommand e)
+        public void Handle(PayForBillCommand cmd)
         {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            var account = LoadAccount(e.BalanceId, e.Id);
-            account.Withdrawal(e.Amount);
-            _repository.Save(account, e.Id);
+            _log.Debug("Handling command:" + cmd.ToPropsString());
+            var account = LoadAccount(cmd.BalanceId, cmd.Id);
+            account.PayBill(cmd.Amount, cmd.BillId);
+            _repository.Save(account, cmd.Id);
         }
 
         private Account LoadAccount(Guid balanceId, Guid commandId)

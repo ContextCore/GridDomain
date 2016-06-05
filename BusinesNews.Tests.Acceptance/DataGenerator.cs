@@ -28,9 +28,9 @@ namespace GridDomain.Tests.Acceptance.Balance
         {
             var generator = new Fixture();
 
-            generator.Customizations.Add(new KnownConstructorParameter<ReplenishAccountCommand, Guid>("balanceId",
+            generator.Customizations.Add(new KnownConstructorParameter<ReplenishAccountByCardCommand, Guid>("balanceId",
                 balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<WithdrawalAccountCommand, Guid>("balanceId",
+            generator.Customizations.Add(new KnownConstructorParameter<PayForBillCommand, Guid>("balanceId",
                 balanceId));
             generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("balanceId",
                 balanceId));
@@ -41,8 +41,8 @@ namespace GridDomain.Tests.Acceptance.Balance
             var numOfReplenishCommands = rnd.Next(1, commandsNum);
             var numOfWithdrawalCommands = commandsNum - numOfReplenishCommands;
 
-            var replenishCmds = generator.CreateMany<ReplenishAccountCommand>(numOfReplenishCommands).ToArray();
-            var withdrawalCmds = generator.CreateMany<WithdrawalAccountCommand>(numOfWithdrawalCommands).ToArray();
+            var replenishCmds = generator.CreateMany<ReplenishAccountByCardCommand>(numOfReplenishCommands).ToArray();
+            var withdrawalCmds = generator.CreateMany<PayForBillCommand>(numOfWithdrawalCommands).ToArray();
 
             var totalReplenish = replenishCmds.Aggregate(Money.Zero(), (a, b) => a += b.Amount);
             var totalWithdrawal = withdrawalCmds.Aggregate(Money.Zero(), (a, b) => a += b.Amount);

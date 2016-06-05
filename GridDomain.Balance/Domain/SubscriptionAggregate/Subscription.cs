@@ -4,21 +4,21 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.OfferAggregate
 {
-    internal class ServiceSubscription : AggregateBase
+    internal class Subscription : AggregateBase
     {
         public Money Cost;
         public string[] Grants;
         public string Name;
         public TimeSpan Period;
 
-        private ServiceSubscription(Guid id)
+        private Subscription(Guid id)
         {
             Id = id;
         }
 
-        public ServiceSubscription(Guid id, TimeSpan period, Money cost, string name, string[] grants) : this(id)
+        public Subscription(Guid id, TimeSpan period, Money cost, string name, string[] grants) : this(id)
         {
-            RaiseEvent(new ServiceSubscriptionCreatedEvent(id)
+            RaiseEvent(new SubscriptionCreatedEvent(id)
             {
                 Period = period,
                 Cost = cost,
@@ -27,7 +27,7 @@ namespace GridDomain.Balance.Domain.OfferAggregate
             });
         }
 
-        private void Apply(ServiceSubscriptionCreatedEvent e)
+        private void Apply(SubscriptionCreatedEvent e)
         {
             Id = e.SourceId;
             Period = e.Period;

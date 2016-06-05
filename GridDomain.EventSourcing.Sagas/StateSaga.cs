@@ -26,9 +26,9 @@ namespace GridDomain.EventSourcing.Sagas
 
         public TState State => _stateAggregate.MachineState;
 
-        public void Handle(TStartMessage e)
+        public void Handle(TStartMessage cmd)
         {
-            Transit(e);
+            Transit(cmd);
         }
 
         protected StateMachine<TState, TTrigger>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(TTrigger trigger)

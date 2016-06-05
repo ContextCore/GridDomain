@@ -4,7 +4,7 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.OfferAggregate
 {
-    public class CreateServiceSubscriptionCommand : Command
+    public class CreateSubscriptionCommand : Command
     {
         public Money Cost;
         public string[] Grants;
@@ -12,7 +12,7 @@ namespace GridDomain.Balance.Domain.OfferAggregate
         public TimeSpan Period;
         public Guid SubscriptionId;
 
-        public CreateServiceSubscriptionCommand(Guid id) : base(id)
+        public CreateSubscriptionCommand(Guid id) : base(id)
         {
         }
     }

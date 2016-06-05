@@ -12,10 +12,11 @@ namespace GridDomain.Balance.Tests.Withdrawal
 {
     [TestFixture]
     public class Given_existing_empty_balance_When_AccountWithdrawalCommand :
-        CommandSpecification<WithdrawalAccountCommand>
+        CommandSpecification<PayForBillCommand>
     {
-        protected override ICommandHandler<WithdrawalAccountCommand> Handler => new AccountCommandsHandler(Repository);
+        protected override ICommandHandler<PayForBillCommand> Handler => new AccountCommandsHandler(Repository);
         private readonly Guid businessId = Guid.NewGuid();
+        private readonly Guid billId = Guid.NewGuid();
 
         protected override IEnumerable<DomainEvent> Given()
         {
@@ -24,7 +25,7 @@ namespace GridDomain.Balance.Tests.Withdrawal
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new AccountWithdrawalEvent(Command.BalanceId, Command.Amount);
+            yield return new PayedForBillEvent(Command.BalanceId, Command.Amount, billId);
         }
 
         [Then]

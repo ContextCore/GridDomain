@@ -4,14 +4,14 @@ using NMoneys;
 
 namespace GridDomain.Balance.Domain.OfferAggregate
 {
-    internal class ServiceSubscriptionCreatedEvent : DomainEvent
+    internal class SubscriptionCreatedEvent : DomainEvent
     {
         public Money Cost;
         public string[] Grants;
         public string Name;
         public TimeSpan Period;
 
-        public ServiceSubscriptionCreatedEvent(Guid sourceId, DateTime? createdTime = null)
+        public SubscriptionCreatedEvent(Guid sourceId, DateTime? createdTime = null)
             : base(sourceId, createdTime)
         {
         }

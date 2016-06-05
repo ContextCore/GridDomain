@@ -38,7 +38,7 @@ namespace GridDomain.Balance.Domain.AccountAggregate
             Amount += e.Amount;
         }
 
-        private void Apply(AccountWithdrawalEvent e)
+        private void Apply(PayedForBillEvent e)
         {
             _log.Trace($"Balance {Id} with amount {Amount} decreased from event by {e.Amount}");
             Amount -= e.Amount;
@@ -58,10 +58,9 @@ namespace GridDomain.Balance.Domain.AccountAggregate
                 throw new NegativeMoneyException(msg + "\r\n" + @event.ToPropsString());
         }
 
-        public void Withdrawal(Money m)
+        public void PayBill(Money m, Guid billId)
         {
-            _log.Trace($"Balance {Id} with amount {Amount} going to decrease from command by {m.Amount}");
-            var balanceWithdrawalEvent = new AccountWithdrawalEvent(Id, m);
+            var balanceWithdrawalEvent = new PayedForBillEvent(Id, m, billId);
             GuardNegativeMoney(m, "Cant withdrawal negative amount of money.", balanceWithdrawalEvent);
             RaiseEvent(balanceWithdrawalEvent);
         }

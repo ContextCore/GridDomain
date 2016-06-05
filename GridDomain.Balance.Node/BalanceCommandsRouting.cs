@@ -23,9 +23,9 @@ namespace GridDomain.Balance.Node
                 .WithCorrelation(nameof(AccountCreatedEvent.BalanceId))
                 .Register();
 
-            router.Route<AccountWithdrawalEvent>()
+            router.Route<PayedForBillEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()
-                .WithCorrelation(nameof(AccountWithdrawalEvent.BalanceId))
+                .WithCorrelation(nameof(PayedForBillEvent.BalanceId))
                 .Register();
 
             router.Route<AccountBalanceReplenishEvent>()
@@ -38,9 +38,9 @@ namespace GridDomain.Balance.Node
                 .WithCorrelation(nameof(AccountCreatedEvent.BalanceId))
                 .Register();
 
-            router.Route<AccountWithdrawalEvent>()
+            router.Route<PayedForBillEvent>()
                 .ToHandler<TransactionsProjectionBuilder>()
-                .WithCorrelation(nameof(AccountWithdrawalEvent.BalanceId))
+                .WithCorrelation(nameof(PayedForBillEvent.BalanceId))
                 .Register();
         }
     }

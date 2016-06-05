@@ -7,7 +7,7 @@ namespace GridDomain.Balance.ReadModel
 {
     //keep in mind 1 instance of projection builder should process only 1 account id 
     public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
-        IEventHandler<AccountWithdrawalEvent>,
+        IEventHandler<PayedForBillEvent>,
         IEventHandler<AccountCreatedEvent>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
@@ -22,28 +22,28 @@ namespace GridDomain.Balance.ReadModel
             _publisher = publisher;
         }
 
-        public void Handle(AccountCreatedEvent e)
+        public void Handle(AccountCreatedEvent cmd)
         {
             var businessCurrentBalance = new BusinessBalance
             {
-                BalanceId = e.BalanceId,
-                BusinessId = e.BusinessId
+                BalanceId = cmd.BalanceId,
+                BusinessId = cmd.BusinessId
             };
 
             _modelBuilder.Add(businessCurrentBalance);
-            _publisher.Publish(new BalanceCreatedProjectedNotification(e.BalanceId, e));
+            _publisher.Publish(new BalanceCreatedProjectedNotification(cmd.BalanceId, cmd));
         }
 
-        public void Handle(AccountBalanceReplenishEvent e)
+        public void Handle(AccountBalanceReplenishEvent cmd)
         {
-            _modelBuilder.Modify(e.BalanceId, b => b.Amount += e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
+            _modelBuilder.Modify(cmd.BalanceId, b => b.Amount += cmd.Amount.Amount);
+            _publisher.Publish(new BalanceChangeProjectedNotification(cmd.BalanceId));
         }
 
-        public void Handle(AccountWithdrawalEvent e)
+        public void Handle(PayedForBillEvent cmd)
         {
-            _modelBuilder.Modify(e.BalanceId, b => b.Amount -= e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
+            _modelBuilder.Modify(cmd.BalanceId, b => b.Amount -= cmd.Amount.Amount);
+            _publisher.Publish(new BalanceChangeProjectedNotification(cmd.BalanceId));
         }
     }
 }

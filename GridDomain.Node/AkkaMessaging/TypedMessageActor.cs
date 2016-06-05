@@ -12,9 +12,9 @@ namespace GridDomain.Node.AkkaMessaging
             Actor = actor;
         }
 
-        public void Handle(T msg)
+        public void Handle(T cmd)
         {
-            Actor.Tell(msg);
+            Actor.Tell(cmd);
         }
     }
 }
