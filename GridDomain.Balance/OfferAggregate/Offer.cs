@@ -1,36 +1,22 @@
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.OfferAggregate
+namespace BusinessNews.Domain.OfferAggregate
 {
-
-    public class FreeSubscription : Offer
+    public static class WellKnownOffers
     {
-        public static readonly Guid ID = Guid.Parse("9EA47C4B-7605-45B6-AD21-C552CE8BD211");
+        public static IDictionary<Guid, Offer> Catalog = new Dictionary<Guid, Offer>();
 
-        public FreeSubscription()
+        static WellKnownOffers()
         {
-            Id = ID;
-            Name = "Free subscription";
-            Price = Money.Zero();
-            Grants = new[] {"free"};
-            Period = TimeSpan.MaxValue;
+            var free = new FreeSubscription();
+            var paid = new VIPSubscription();
+
+            Catalog[free.Id] = free;
+            Catalog[paid.Id] = paid;
         }
-    }
-
-    public class VIPSubscription : Offer
-    {
-        public static readonly Guid ID = Guid.Parse("BFE2B6DD-3256-4580-9D64-9BCECD90EB26");
-
-        public VIPSubscription()
-        {
-            Id = ID;
-            Name = "Vip subscription";
-            Price = new Money(10);
-            Grants = new[] { "free", "vip" };
-            Period = TimeSpan.FromDays(30);
-        }
-
     }
 
     //for demo purposes offers is predefined 

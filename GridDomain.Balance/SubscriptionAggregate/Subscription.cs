@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using BusinessNews.Domain.OfferAggregate;
 using CommonDomain.Core;
-using GridDomain.EventSourcing;
-using NMoneys;
 
-namespace GridDomain.Balance.Domain.OfferAggregate
+namespace BusinessNews.Domain.SubscriptionAggregate
 {
     public class Subscription : AggregateBase
     {
@@ -35,18 +34,6 @@ namespace GridDomain.Balance.Domain.OfferAggregate
         private void Apply(SubscriptionBillCreatedEvent e)
         {
             _bills.Add(e.BillId);
-        }
-    }
-
-    public class SubscriptionBillCreatedEvent:DomainEvent
-    {
-        public Guid BillId { get; }
-        public Money Price { get; }
-
-        public SubscriptionBillCreatedEvent(Guid id, Guid billId, Money price):base(id)
-        {
-            BillId = billId;
-            Price = price;
         }
     }
 }

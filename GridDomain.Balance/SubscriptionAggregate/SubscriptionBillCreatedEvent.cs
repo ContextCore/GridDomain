@@ -9,7 +9,7 @@ namespace BusinessNews.Domain.SubscriptionAggregate
         public Guid BillId { get; }
         public Money Price { get; }
 
-        public SubscriptionBillCreatedEvent(Guid id, Guid billId, Money price):base(id)
+        public SubscriptionBillCreatedEvent(Guid subscriptionId, Guid billId, Money price):base(subscriptionId)
         {
             BillId = billId;
             Price = price;

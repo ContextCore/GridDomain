@@ -1,8 +1,8 @@
 using System;
+using BusinessNews.Domain.OfferAggregate;
 using GridDomain.EventSourcing;
-using NMoneys;
 
-namespace GridDomain.Balance.Domain.OfferAggregate
+namespace BusinessNews.Domain.SubscriptionAggregate
 {
     public class SubscriptionCreatedEvent : DomainEvent
     {

@@ -14,18 +14,22 @@ namespace GridDomain.EventSourcing.Sagas
             Id = id;
         }
 
+        static SagaStateAggregate()
+        {
+             
+        }
         public SagaStateAggregate(Guid id, TState state)
         {
             RaiseEvent(new SagaCreatedEvent<TState>(state, id));
         }
 
-        private void Apply(SagaCreatedEvent<TState> e)
+        public void Apply(SagaCreatedEvent<TState> e)
         {
             MachineState = e.State;
             Id = e.SourceId;
         }
 
-        private void Apply(SagaTransitionEvent<TState, TTransition> e)
+        public void Apply(SagaTransitionEvent<TState, TTransition> e)
         {
             MachineState = e.State;
         }

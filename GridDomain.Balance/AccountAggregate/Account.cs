@@ -1,11 +1,11 @@
 using System;
+using BusinessNews.Domain.AccountAggregate.Events;
 using CommonDomain.Core;
-using GridDomain.Balance.Domain.AccountAggregate.Events;
 using GridDomain.Logging;
 using NLog;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.AccountAggregate
+namespace BusinessNews.Domain.AccountAggregate
 {
     public class Account : AggregateBase
     {

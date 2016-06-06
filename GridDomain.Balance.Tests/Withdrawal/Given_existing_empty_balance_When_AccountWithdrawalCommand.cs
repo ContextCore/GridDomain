@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Balance.Domain.AccountAggregate;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
-using GridDomain.Balance.Domain.AccountAggregate.Events;
+using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Events;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Tests;
 using NUnit.Framework;
 
-namespace GridDomain.Balance.Tests.Withdrawal
+namespace BusinessNews.Test.Withdrawal
 {
     [TestFixture]
     public class Given_existing_empty_balance_When_AccountWithdrawalCommand :
@@ -20,12 +20,12 @@ namespace GridDomain.Balance.Tests.Withdrawal
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new AccountCreatedEvent(Command.BalanceId, businessId);
+            yield return new AccountCreatedEvent(Command.AccountId, businessId);
         }
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new PayedForBillEvent(Command.BalanceId, Command.Amount, billId);
+            yield return new PayedForBillEvent(Command.AccountId, Command.Amount, billId);
         }
 
         [Then]

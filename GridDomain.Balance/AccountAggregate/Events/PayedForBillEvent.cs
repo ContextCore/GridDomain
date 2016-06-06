@@ -1,7 +1,7 @@
 using System;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.AccountAggregate.Events
+namespace BusinessNews.Domain.AccountAggregate.Events
 {
     public class PayedForBillEvent : AccountBalanceChangedEvent
     {

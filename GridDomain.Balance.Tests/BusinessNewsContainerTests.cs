@@ -1,11 +1,10 @@
-using System;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
-using GridDomain.Tests.Acceptance;
+using GridDomain.Tests;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using CompositionRoot = BusinessNews.Node.CompositionRoot;
 
-namespace BusinesNews.Tests.Acceptance
+namespace BusinessNews.Test
 {
     public class BusinessNewsContainerTests : CompositionRootTests
     {
@@ -16,7 +15,7 @@ namespace BusinesNews.Tests.Acceptance
                                             ActorSystemBuilders[mode](),
                                             conf,
                                             mode);
-            GridDomain.Balance.Node.CompositionRoot.Init(container, conf);
+            CompositionRoot.Init(container, conf);
             return container;
         }
     }

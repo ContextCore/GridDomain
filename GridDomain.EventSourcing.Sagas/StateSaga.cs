@@ -5,7 +5,17 @@ using Stateless;
 namespace GridDomain.EventSourcing.Sagas
 {
 
-    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : IStartBy<TStartMessage> 
+    public class Saga
+    {
+        public readonly List<object> MessagesToDispatch = new List<object>();
+        protected void Dispatch(object message)
+        {
+            MessagesToDispatch.Add(message);
+        }
+
+    }
+    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : Saga,
+        IStartBy<TStartMessage> 
         where TSagaTriggers : struct
         where TSagaStates : struct
         where TStateData : SagaStateAggregate<TSagaStates,TSagaTriggers>
@@ -17,7 +27,6 @@ namespace GridDomain.EventSourcing.Sagas
         protected readonly TStateData StateData;
 
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
-        public readonly List<object> MessagesToDispatch = new List<object>();
 
         protected StateSaga(TStateData stateData)
         {
@@ -26,11 +35,11 @@ namespace GridDomain.EventSourcing.Sagas
             Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
         }
 
-        public TSagaStates State => StateData.MachineState;
+        public TSagaStates DomainState => StateData.MachineState;
 
-        public void Handle(TStartMessage cmd)
+        public void Handle(TStartMessage e)
         {
-            Transit(cmd);
+            Transit(e);
         }
 
         protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(TSagaTriggers trigger)
@@ -40,12 +49,9 @@ namespace GridDomain.EventSourcing.Sagas
             return triggerWithParameters;
         }
 
-        protected void Dispatch(object message)
-        {
-            MessagesToDispatch.Add(message);
-        }
 
-        internal void Transit<T>(T message)
+
+        protected internal void Transit<T>(T message)
         {
             StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters triggerWithParameters;
             if (!_eventsToTriggersMapping.TryGetValue(typeof(T), out triggerWithParameters))

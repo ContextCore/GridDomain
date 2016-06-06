@@ -1,78 +1,13 @@
 ﻿using System;
-using BusinessNews.Domain.Domain.BillAggregate;
-using CommonDomain.Core;
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
-using GridDomain.Balance.Domain.BusinessAggregate;
-using GridDomain.Balance.Domain.OfferAggregate;
+using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.BillAggregate;
+using BusinessNews.Domain.BusinessAggregate;
+using BusinessNews.Domain.SubscriptionAggregate;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
-using Stateless;
 
-namespace GridDomain.Balance.Domain
+namespace BusinessNews.Domain.Sagas.BuySubscription
 {
-   
-
-    public class BuySubscriptionSagaStateAggregate : SagaStateAggregate<BuySubscriptionSaga.State, BuySubscriptionSaga.Transitions>
-    {
-        public BuySubscriptionSagaStateAggregate(Guid id, BuySubscriptionSaga.State state) : base(id, state)
-        {
-        }
-
-        public void RememberOrder(SubscriptionOrderedEvent e)
-        {
-            RaiseEvent(new AccountRememberedEvent(e.AccountId, e.BusinessId, e.SuibscriptionId));
-        }
-
-        private void Apply(AccountRememberedEvent e)
-        {
-            AccountId = e.AccountId;
-            BusinessId = e.BusinessId;
-            SubscriptionId = e.SuibscriptionId;
-        }
-
-        public Guid BusinessId { get; private set; }
-
-        public Guid AccountId { get; private set; }
-
-        internal class AccountRememberedEvent
-        {
-            public Guid AccountId { get; }
-            public Guid BusinessId { get; }
-            public Guid SuibscriptionId { get; }
-
-            public AccountRememberedEvent(Guid accountId, Guid businessId, Guid suibscriptionId)
-            {
-                AccountId = accountId;
-                BusinessId = businessId;
-                SuibscriptionId = suibscriptionId;
-            }
-        }
-
-        public void RememberSubscription(SubscriptionCreatedEvent e)
-        {
-            RaiseEvent(new SubscriptionRememberedEvent(e.SubscriptionId));
-        }
-
-        private void Apply(SubscriptionRememberedEvent e)
-        {
-            SubscriptionId = e.SubscriptionId;
-        }
-
-        public Guid SubscriptionId { get; private set; }
-
-        public class SubscriptionRememberedEvent
-        {
-            public Guid SubscriptionId { get; }
-
-            public SubscriptionRememberedEvent(Guid subscriptionId)
-            {
-                SubscriptionId = subscriptionId;
-            }
-        }
-    }
-
-
     public class BuySubscriptionSaga : StateSaga<BuySubscriptionSaga.State, 
                                                  BuySubscriptionSaga.Transitions,
                                                  BuySubscriptionSagaStateAggregate,
@@ -105,9 +40,17 @@ namespace GridDomain.Balance.Domain
 
         public BuySubscriptionSaga(BuySubscriptionSagaStateAggregate stateData):base(stateData)
         {
-            var createSubscriptionTransition = RegisterEvent<SubscriptionOrderedEvent>(Transitions.CreateSubscription);
+            var subscriptionOrderedTransition = RegisterEvent<SubscriptionOrderedEvent>(Transitions.CreateSubscription);
             Machine.Configure(State.SubscriptionSet)
-                   .OnEntryFrom(createSubscriptionTransition,
+                   //.OnE(subscriptionOrderedTransition, e =>
+                   //{
+                   //        Machine.Fire(subscriptionOrderedTransition,e);
+                   //})
+                   .Permit(Transitions.CreateSubscription, State.SubscriptionCreating);
+
+
+            Machine.Configure(State.SubscriptionCreating)
+                   .OnEntryFrom(subscriptionOrderedTransition,
                        e =>
                        {
                            StateData.RememberOrder(e);
@@ -120,7 +63,7 @@ namespace GridDomain.Balance.Domain
                    .OnEntryFrom(createBillTransition,
                        e =>
                        {
-                           StateData.RememberSubscription(e);
+                           //StateData.RememberSubscription(e);
                            Dispatch(new CreateSubscriptionBillCommand(e.SubscriptionId, Guid.NewGuid()));
                        })
                    .Permit(Transitions.PayBill, State.BillPaying);

@@ -19,12 +19,12 @@ namespace BusinessNews.Test.Replenish
         protected override IEnumerable<DomainEvent> Given()
         {
             //account already exists
-            yield return new AccountCreatedEvent(Command.BalanceId, businessId);
+            yield return new AccountCreatedEvent(Command.AccountId, businessId);
         }
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new AccountBalanceReplenishEvent(Command.BalanceId, Command.Amount);
+            yield return new AccountBalanceReplenishEvent(Command.AccountId, Command.Amount);
         }
 
         [Then]

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using BusinessNews.Domain.OfferAggregate;
 using CommonDomain.Core;
-using GridDomain.Balance.Domain.OfferAggregate;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Balance.Domain.BusinessAggregate
+namespace BusinessNews.Domain.BusinessAggregate
 {
     internal class Business : AggregateBase
     {
@@ -62,22 +61,6 @@ namespace GridDomain.Balance.Domain.BusinessAggregate
             Id = e.SourceId;
             MediaAccountId = e.BalanceId;
             SubscriptionId = e.SubscriptionId;
-        }
-    }
-
-    public class SubscriptionOrderedEvent : DomainEvent
-    {
-        public Guid SuibscriptionId { get; }
-        public Guid OfferId { get; }
-
-        public Guid BusinessId => SourceId;
-        public Guid AccountId { get; }
-
-        public SubscriptionOrderedEvent(Guid businessId, Guid suibscriptionId, Guid offerId, Guid accountId):base(businessId)
-        {
-            SuibscriptionId = suibscriptionId;
-            OfferId = offerId;
-            AccountId = accountId;
         }
     }
 }

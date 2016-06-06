@@ -1,7 +1,7 @@
-using GridDomain.Balance.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Commands;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Balance.Domain.AccountAggregate
+namespace BusinessNews.Domain.AccountAggregate
 {
     public class AccountAggregateCommandsHandler : AggregateCommandsHandler<Account>
     {
@@ -10,10 +10,10 @@ namespace GridDomain.Balance.Domain.AccountAggregate
             Map<CreateAccountCommand>(cmd => cmd.BalanceId,
                 cmd => new Account(cmd.BalanceId, cmd.BusinessId));
 
-            Map<ReplenishAccountByCardCommand>(cmd => cmd.BalanceId,
+            Map<ReplenishAccountByCardCommand>(cmd => cmd.AccountId,
                 (cmd, agr) => agr.Replenish(cmd.Amount));
 
-            Map<PayForBillCommand>(cmd => cmd.BalanceId,
+            Map<PayForBillCommand>(cmd => cmd.AccountId,
                 (cmd, agr) => agr.PayBill(cmd.Amount, cmd.BillId));
         }
     }

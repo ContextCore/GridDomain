@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using GridDomain.Balance.Domain;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
@@ -8,7 +7,7 @@ using NLog;
 using NLog.Config;
 using Topshelf;
 
-namespace GridDomain.Balance.Node
+namespace BusinessNews.Node
 {
     /// <summary>
     /// Business news is a news company who provide fresh news and articles for businessmen 

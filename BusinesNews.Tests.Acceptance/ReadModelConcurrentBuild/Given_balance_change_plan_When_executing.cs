@@ -145,7 +145,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 
                 foreach (var cmd in plan.BalanceChangeCommands)
                 {
-                    if (cmd.BalanceId != plan.AccountId) throw new CorruptedPlanException();
+                    if (cmd.AccountId != plan.AccountId) throw new CorruptedPlanException();
                     Console.WriteLine($"{cmd.GetType().Name} {cmd.Id} with amount: {cmd.Amount}");
                 }
             }

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommonDomain.Core;
 using NMoneys;
 
-namespace BusinessNews.Domain.Domain.BillAggregate
+namespace BusinessNews.Domain.BillAggregate
 {
     class Bill : AggregateBase
     {

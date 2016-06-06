@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Sagas
             Given_new_saga_with_state(Saga.States.SubscriptionChanging);
             Saga.Handle(new SubscriptionExpiredEvent());
 
-            Assert.AreEqual(Saga.States.SubscriptionChanging, Saga.State);
+            Assert.AreEqual(Saga.States.SubscriptionChanging, Saga.DomainState);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Sagas
             Given_new_saga_with_state(Saga.States.OfferPaying);
             Saga.Handle(new SubscriptionPaidEvent());
 
-            Assert.AreEqual(Saga.States.SubscriptionSet, Saga.State);
+            Assert.AreEqual(Saga.States.SubscriptionSet, Saga.DomainState);
         }
     }
 }

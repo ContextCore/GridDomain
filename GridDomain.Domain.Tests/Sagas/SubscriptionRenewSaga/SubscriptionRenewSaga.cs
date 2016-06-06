@@ -31,19 +31,19 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
                 .Permit(Triggers.ChangeSubscription, States.SubscriptionSet);
         }
 
-        public void Handle(NotEnoughFondsFailure cmd)
+        public void Handle(NotEnoughFondsFailure e)
         {
-            Transit(cmd);
+            Transit(e);
         }
 
-        public void Handle(SubscriptionChangedEvent cmd)
+        public void Handle(SubscriptionChangedEvent e)
         {
-            Transit(cmd);
+            Transit(e);
         }
 
-        public void Handle(SubscriptionPaidEvent cmd)
+        public void Handle(SubscriptionPaidEvent e)
         {
-            Transit(cmd);
+            Transit(e);
         }
 
         internal enum Triggers

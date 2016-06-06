@@ -25,27 +25,27 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _actorTypeFactory = actorTypeFactory;
         }
        
-        public void Handle(CreateActorRoute cmd)
+        public void Handle(CreateActorRoute e)
         {
             var aggregateActorOpenType = typeof(AggregateHostActor<>);
-            var actorType = aggregateActorOpenType.MakeGenericType(cmd.AggregateType);
+            var actorType = aggregateActorOpenType.MakeGenericType(e.AggregateType);
 
-            string actorName = $"Message_handler_for_{cmd.AggregateType.Name}_{Guid.NewGuid()}";
-            var handleActor = CreateHandleActor(cmd, actorType, CreateActorRouter, actorName);
+            string actorName = $"Message_handler_for_{e.AggregateType.Name}_{Guid.NewGuid()}";
+            var handleActor = CreateHandleActor(e, actorType, CreateActorRouter, actorName);
 
-            foreach (var msgRoute in cmd.Routes)
+            foreach (var msgRoute in e.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
         }
 
-        public void Handle(CreateHandlerRoute cmd)
+        public void Handle(CreateHandlerRoute e)
         {
-            var actorType = _actorTypeFactory.GetActorTypeFor(cmd.MessageType, cmd.HandlerType);
+            var actorType = _actorTypeFactory.GetActorTypeFor(e.MessageType, e.HandlerType);
 
-            string actorName = $"Message_handler_for_{cmd.MessageType.Name}_{Guid.NewGuid()}";
-            var handleActor = CreateHandleActor(cmd, actorType, CreateRouter, actorName);
-            _log.Trace($"Created message handling actor for {cmd.ToPropsString()}");
+            string actorName = $"Message_handler_for_{e.MessageType.Name}_{Guid.NewGuid()}";
+            var handleActor = CreateHandleActor(e, actorType, CreateRouter, actorName);
+            _log.Trace($"Created message handling actor for {e.ToPropsString()}");
 
-            _subscriber.Subscribe(cmd.MessageType, handleActor, Self);
+            _subscriber.Subscribe(e.MessageType, handleActor, Self);
         }
 
         protected abstract RouterConfig CreateActorRouter(CreateActorRoute msg);

@@ -2,7 +2,7 @@
 using CommonDomain.Core;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain
+namespace BusinessNews.Domain
 {
     public class TransactoinHistory : AggregateBase
     {

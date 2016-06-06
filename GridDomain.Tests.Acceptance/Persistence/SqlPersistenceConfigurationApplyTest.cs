@@ -1,5 +1,6 @@
 ﻿using Akka.Persistence.SqlServer;
 using GridDomain.Node;
+using GridDomain.Tests.Configuration;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Persistence

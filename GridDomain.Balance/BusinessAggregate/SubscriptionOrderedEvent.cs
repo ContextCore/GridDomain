@@ -6,7 +6,8 @@ namespace BusinessNews.Domain.BusinessAggregate
     public class SubscriptionOrderedEvent : DomainEvent
     {
         public Guid SuibscriptionId { get; }
-        public Guid OfferId { get; }
+        //set for tests
+        public Guid OfferId { get; set; }
 
         public Guid BusinessId => SourceId;
         public Guid AccountId { get; }

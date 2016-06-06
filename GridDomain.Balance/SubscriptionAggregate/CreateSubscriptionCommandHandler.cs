@@ -1,8 +1,6 @@
-using CommonDomain.Persistence;
-using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Balance.Domain.OfferAggregate
+namespace BusinessNews.Domain.SubscriptionAggregate
 {
     public class CreateSubscriptionCommandHandler : AggregateCommandsHandler<Subscription>
     {

@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Balance.Domain.OfferAggregate
+namespace BusinessNews.Domain.SubscriptionAggregate
 {
     public class BuySubscriptionCommand : Command
     {

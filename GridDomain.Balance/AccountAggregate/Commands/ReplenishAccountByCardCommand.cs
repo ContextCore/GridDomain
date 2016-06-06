@@ -1,12 +1,12 @@
 using System;
 using NMoneys;
 
-namespace GridDomain.Balance.Domain.AccountAggregate.Commands
+namespace BusinessNews.Domain.AccountAggregate.Commands
 {
     public class ReplenishAccountByCardCommand : ChangeAccountCommand
     {
-        public ReplenishAccountByCardCommand(Guid balanceId, Money amount)
-            : base(balanceId, amount)
+        public ReplenishAccountByCardCommand(Guid accountId, Money amount)
+            : base(accountId, amount)
         {
         }
     }

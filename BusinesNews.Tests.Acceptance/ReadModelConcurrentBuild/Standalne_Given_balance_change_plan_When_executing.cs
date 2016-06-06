@@ -1,8 +1,8 @@
-using GridDomain.Balance.Node;
+using BusinessNews.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 
-namespace GridDomain.Tests.Acceptance.Balance.ReadModelConcurrentBuild
+namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 {
     public class Standalne_Given_balance_change_plan_When_executing : Given_balance_change_plan_When_executing
     {
