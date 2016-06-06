@@ -76,7 +76,6 @@ namespace GridDomain.Tests.Scheduling
 
             _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
-            ResultHolder.Clear();
         }
 
         private void CreateScheduler()
@@ -102,17 +101,18 @@ namespace GridDomain.Tests.Scheduling
                 Assert.True(true);
                 return;
             }
-            
+
             using (_container.Resolve<IWebUiWrapper>().Start())
             {
                 var runAt = DateTime.UtcNow.AddSeconds(500);
-                var testMessage = new TestMessage("web","web");
-                var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+                var testMessage = new TestMessage("web", "web");
+                var resultHolder = new ResultHolder();
+                var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
                 _subsriber.Subscribe(testMessage.GetType(), testActor);
                 _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
                 _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id, Group), DateTime.UtcNow.AddSeconds(10), Timeout)).Wait(Timeout);
-                _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id+Id, Group), DateTime.UtcNow.AddSeconds(15), Timeout)).Wait(Timeout);
-                Throttle.Assert(() => Assert.True(ResultHolder.Contains("web")), maxTimeout: TimeSpan.FromHours(1));
+                _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id + Id, Group), DateTime.UtcNow.AddSeconds(15), Timeout)).Wait(Timeout);
+                Throttle.Assert(() => Assert.True(resultHolder.Contains("web")), maxTimeout: TimeSpan.FromHours(1));
             }
         }
 
@@ -121,10 +121,33 @@ namespace GridDomain.Tests.Scheduling
         {
             var runAt = DateTime.UtcNow.AddSeconds(0.5);
             var testMessage = new TestMessage(Id, Group);
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            var resultHolder = new ResultHolder();
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
             _subsriber.Subscribe(testMessage.GetType(), testActor);
             _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
-            Throttle.Assert(() => Assert.True(ResultHolder.Contains(testMessage.TaskId)), maxTimeout: Timeout);
+            Throttle.Assert(() => Assert.True(resultHolder.Contains(testMessage.TaskId)), maxTimeout: Timeout);
+        }
+
+        [Test]
+        public void When_scheduler_is_restarted_during_job_execution_Then_on_next_start_job_is_fired_again()
+        {
+            var runAt = DateTime.UtcNow.AddSeconds(0.5);
+            var testMessage = new TestMessage(Id, Group);
+            var resultHolder = new ResultHolder();
+            Action<TestMessage> handler = msg =>
+            {
+                resultHolder.Add(DateTime.UtcNow.Ticks.ToString(), "1");
+                Thread.Sleep(2000);
+            };
+            var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestMessage>>(Props.Create(() => new TestRequestHandler<TestMessage>(handler)));
+            _subsriber.Subscribe(testMessage.GetType(), testActor);
+            _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
+            Thread.Sleep(500);
+            _quartzScheduler.Shutdown(false);
+            Thread.Sleep(1000);
+            CreateScheduler();
+                                                                                                                //it takes a lot of time to scheduler to actually fire job second time
+            Throttle.Assert(() => Assert.True(resultHolder.Count == 2), minTimeout: TimeSpan.FromSeconds(2.5), maxTimeout: TimeSpan.FromSeconds(20));
         }
 
         [Test]
@@ -138,12 +161,15 @@ namespace GridDomain.Tests.Scheduling
             Throttle.Verify(_quartzLogger, x => x.LogFailure(testMessage.TaskId, It.IsAny<Exception>()), maxTimeout: Timeout);
         }
 
+
+
         [Test]
         public void When_there_are_several_scheduled_jobs_System_executes_all_of_them()
         {
             var tasks = new[] { 0.5, 1, 1.5, 2, 2.5 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            var resultHolder = new ResultHolder();
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
             _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in tasks)
@@ -155,7 +181,7 @@ namespace GridDomain.Tests.Scheduling
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
-            Throttle.Assert(() => ResultHolder.Contains(taskIds));
+            Throttle.Assert(() => resultHolder.Contains(taskIds));
         }
 
         [Test]
@@ -183,7 +209,8 @@ namespace GridDomain.Tests.Scheduling
             var successTasks = new[] { 0.5, 1.5, 2.5 };
             var failTasks = new[] { 1.0, 2.0 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            var resultHolder = new ResultHolder();
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
             _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in successTasks)
@@ -204,8 +231,8 @@ namespace GridDomain.Tests.Scheduling
 
             Throttle.Assert(() =>
             {
-                ResultHolder.Contains(successTaskIds);
-                Assert.True(failTaskIds.All(x => ResultHolder.Get(x) == null));
+                resultHolder.Contains(successTaskIds);
+                Assert.True(failTaskIds.All(x => resultHolder.Get(x) == null));
             }, minTimeout: TimeSpan.FromSeconds(3));
         }
 
@@ -215,7 +242,8 @@ namespace GridDomain.Tests.Scheduling
             var successTasks = new[] { 0.5, 1.5, 2.5 };
             var tasksToRemove = new[] { 1.0, 2.0 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            var resultHolder = new ResultHolder();
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
             _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in successTasks.Concat(tasksToRemove))
@@ -230,13 +258,13 @@ namespace GridDomain.Tests.Scheduling
 
             foreach (var taskId in tasksToRemoveTaskIds)
             {
-                _scheduler.Tell(new Unschedule(taskId,"test"));
+                _scheduler.Tell(new Unschedule(taskId, "test"));
             }
 
             Throttle.Assert(() =>
             {
-                ResultHolder.Contains(successTaskIds);
-                Assert.True(tasksToRemoveTaskIds.All(x => ResultHolder.Get(x) == null));
+                resultHolder.Contains(successTaskIds);
+                Assert.True(tasksToRemoveTaskIds.All(x => resultHolder.Get(x) == null));
             }, minTimeout: TimeSpan.FromSeconds(4));
         }
 
@@ -245,7 +273,8 @@ namespace GridDomain.Tests.Scheduling
         {
             var tasks = new[] { 0.5, 1, 1.5, 2, 2.5 };
 
-            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>();
+            var resultHolder = new ResultHolder();
+            var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
             _subsriber.Subscribe(typeof(TestMessage), testActor);
 
             foreach (var task in tasks)
@@ -261,8 +290,10 @@ namespace GridDomain.Tests.Scheduling
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
-            Throttle.Assert(() => ResultHolder.Contains(taskIds));
+            Throttle.Assert(() => resultHolder.Contains(taskIds));
         }
+
+
 
         private static TimeSpan Timeout
         {

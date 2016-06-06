@@ -113,8 +113,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Akka\Messages\IMessageProcessingStatusChanged.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="Integration\ManageMessage.cs" />
     <Compile Include="Integration\MessageProcessingStatusManager.cs" />
     <Compile Include="Quartz\JobFactory.cs" />
     <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />

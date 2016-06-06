@@ -16,7 +16,7 @@ namespace GridDomain.Scheduling.Integration
         private readonly ActorSystem _actorSystem;
         private const string MessageKey = "Message";
         private const string Timeout = "Timeout";
-        
+
 
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
@@ -40,8 +40,7 @@ namespace GridDomain.Scheduling.Integration
                 var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
                 var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
                 var jobStatusManager = _actorSystem.ActorOf(_actorSystem.DI().Props<MessageProcessingStatusManager>());
-                var result = jobStatusManager.Ask(scheduledRequest, timeout);
-                //TODO::VZ:: is there a better way to communicate with akka?
+                var result = jobStatusManager.Ask( new ManageMessage(scheduledRequest) , timeout);
                 result.Wait(timeout);
                 //TODO::VZ refactor without casts
                 var success = result.Result as MessageSuccessfullyProcessed;

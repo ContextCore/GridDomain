@@ -70,6 +70,8 @@ namespace GridDomain.Scheduling.Quartz
             scheduler.JobFactory = new JobFactory();
             scheduler.ListenerManager.AddSchedulerListener(_loggingSchedulerListener);
             scheduler.ListenerManager.AddJobListener(_loggingJobListener);
+
+            scheduler.Start();
             return scheduler;
         }
     }

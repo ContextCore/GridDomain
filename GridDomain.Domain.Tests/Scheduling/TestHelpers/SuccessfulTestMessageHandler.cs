@@ -2,8 +2,8 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
 {
     public class SuccessfulTestMessageHandler : TestRequestHandler<TestMessage>
     {
-        public SuccessfulTestMessageHandler() 
-                : base(request => ResultHolder.Add(request.TaskId, request.TaskId))
+        public SuccessfulTestMessageHandler(ResultHolder resultHolder) 
+                : base(request => resultHolder.Add(request.TaskId, request.TaskId))
         {
         }
     }
