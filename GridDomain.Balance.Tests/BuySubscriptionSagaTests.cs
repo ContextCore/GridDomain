@@ -29,7 +29,14 @@ namespace BusinessNews.Test
         }
 
         [Test]
-        public void Given_business_has_enough_money_when_purchase_subscription_it_is_ok()
+        public void Given_business_with_enough_balance_then_saga_is_working_on_aggregates()
+        {
+            
+
+        }
+
+        [Test]
+        public void Given_positive_flow_events_saga_completes()
         {
             var sagaStateAggregate = new BuySubscriptionSagaStateAggregate
                                        (Guid.NewGuid(), BuySubscriptionSaga.State.SubscriptionSet);
@@ -58,15 +65,23 @@ namespace BusinessNews.Test
             var subscriptionCreatedEvent = new SubscriptionCreatedEvent(subscriptionId, offer);
             saga.Handle(subscriptionCreatedEvent);
 
-            var createBillCommand = ExpectCommand<CreateSubscriptionBillCommand>(saga);
+            var createBillCommand = ExpectCommand<ChargeSubscriptionCommand>(saga);
             Assert.AreEqual(subscriptionId,createBillCommand.SubscriptionId);
-            var billId = createBillCommand.BillId;
+            var chargeId = createBillCommand.ChargeId;
 
-            var billCreateEvent = new SubscriptionBillCreatedEvent(subscriptionId,billId,offer.Price);
-            saga.Handle(billCreateEvent);
+            var subscriptionChargedEvent = new SubscriptionChargedEvent(subscriptionId,chargeId,offer.Price);
+            saga.Handle(subscriptionChargedEvent);
+
+            var charge = new Charge(subscriptionChargedEvent.ChargeId,subscriptionChargedEvent.Price);
+            var billCreateCommand = ExpectCommand<CreateBillCommand>(saga);
+            Assert.AreEqual(new [] { charge },billCreateCommand.Charges);
+            var billId = billCreateCommand.BillId;
+            
+            var billCreatedEvent = new BillCreatedEvent(billId,charge.Amount);
+            saga.Handle(billCreatedEvent);
 
             var payBillCommand = ExpectCommand<PayForBillCommand>(saga);
-            Assert.AreEqual(billId,payBillCommand.BillId);
+            Assert.AreEqual(billId, payBillCommand.BillId);
             Assert.AreEqual(offer.Price,payBillCommand.Amount);
             Assert.AreEqual(accountId,payBillCommand.AccountId);
 

@@ -17,7 +17,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
             var unityContainer = CreateUnityContainer(dbConfig);
 
             return new GridDomainNode(unityContainer,
-                                      new BalanceCommandsRouting(),
+                                      new BusinessNewsRouting(),
                                       TransportMode.Cluster, _akkaCluster.All);
         }
 

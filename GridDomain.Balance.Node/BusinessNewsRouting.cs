@@ -6,7 +6,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace BusinessNews.Node
 {
-    public class BalanceCommandsRouting : IMessageRouteMap
+    public class BusinessNewsRouting : IMessageRouteMap
     {
         public void Register(IMessagesRouter router)
         {

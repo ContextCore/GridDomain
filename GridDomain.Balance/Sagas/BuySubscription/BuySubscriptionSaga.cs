@@ -13,7 +13,8 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                                                  BuySubscriptionSagaStateAggregate,
                                                  SubscriptionOrderedEvent>,
                                                  IHandler<SubscriptionCreatedEvent>,
-                                                 IHandler<SubscriptionBillCreatedEvent>,
+                                                 IHandler<SubscriptionChargedEvent>,
+                                                 IHandler<BillCreatedEvent>,
                                                  IHandler<BillPayedEvent>,
                                                  IHandler<SubscriptionOrderCompletedEvent>
     {
@@ -24,7 +25,8 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             SubscriptionCreating,
             BillPaying,
             BillCreating,
-            SubscriptionSetting
+            SubscriptionSetting,
+            ChargingSubscription
         }
 
         public enum Transitions
@@ -35,17 +37,14 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             ChangeSubscription,
             SetNewSubscription,
             SetFailed,
-            SubscriptionSet
+            SubscriptionSet,
+            BillScubscription
         }
 
         public BuySubscriptionSaga(BuySubscriptionSagaStateAggregate stateData):base(stateData)
         {
             var subscriptionOrderedTransition = RegisterEvent<SubscriptionOrderedEvent>(Transitions.CreateSubscription);
             Machine.Configure(State.SubscriptionSet)
-                   //.OnE(subscriptionOrderedTransition, e =>
-                   //{
-                   //        Machine.Fire(subscriptionOrderedTransition,e);
-                   //})
                    .Permit(Transitions.CreateSubscription, State.SubscriptionCreating);
 
 
@@ -56,23 +55,33 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                            StateData.RememberOrder(e);
                            Dispatch(new CreateSubscriptionCommand(e.SuibscriptionId, e.OfferId));
                        })
-                   .Permit(Transitions.CreateBill, State.BillCreating);
-            var createBillTransition = RegisterEvent<SubscriptionCreatedEvent>(Transitions.CreateBill);
+                   .Permit(Transitions.BillScubscription, State.ChargingSubscription);
+            var chargeSubscriptionTransition = RegisterEvent<SubscriptionCreatedEvent>(Transitions.BillScubscription);
 
-            Machine.Configure(State.BillCreating)
-                   .OnEntryFrom(createBillTransition,
+            Machine.Configure(State.ChargingSubscription)
+                   .OnEntryFrom(chargeSubscriptionTransition,
                        e =>
                        {
-                           //StateData.RememberSubscription(e);
-                           Dispatch(new CreateSubscriptionBillCommand(e.SubscriptionId, Guid.NewGuid()));
+                           Dispatch(new ChargeSubscriptionCommand(e.SubscriptionId, Guid.NewGuid()));
                        })
-                   .Permit(Transitions.PayBill, State.BillPaying);
-            var payBillTransition = RegisterEvent<SubscriptionBillCreatedEvent>(Transitions.PayBill);
+                   .Permit(Transitions.CreateBill, State.BillCreating);
+
+            var createBillTransition = RegisterEvent<SubscriptionChargedEvent>(Transitions.CreateBill);
+
+            Machine.Configure(State.BillCreating)
+                .OnEntryFrom(createBillTransition,
+                    e =>
+                    {
+                        Dispatch(new CreateBillCommand(new [] {new Charge(e.ChargeId,e.Price)}, Guid.NewGuid()));
+                    })
+                .Permit(Transitions.PayBill, State.BillPaying);
+            var payBillTransition = RegisterEvent<BillCreatedEvent>(Transitions.PayBill);
+
 
 
             Machine.Configure(State.BillPaying)
                    .OnEntryFrom(payBillTransition,
-                                e => Dispatch(new PayForBillCommand(StateData.AccountId,e.Price,e.BillId)))
+                                e => Dispatch(new PayForBillCommand(StateData.AccountId,e.Amount,e.BillId)))
                    .Permit(Transitions.ChangeSubscription, State.SubscriptionSetting);
             var changeSubscriptionTransition = RegisterEvent<BillPayedEvent>(Transitions.ChangeSubscription);
 
@@ -90,7 +99,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             Transit(e);
         }
 
-        public void Handle(SubscriptionBillCreatedEvent e)
+        public void Handle(SubscriptionChargedEvent e)
         {
             Transit(e);
         }
@@ -103,6 +112,11 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
         public void Handle(SubscriptionOrderCompletedEvent e)
         {
            Transit(e);
+        }
+
+        public void Handle(BillCreatedEvent e)
+        {
+            Transit(e);
         }
     }
 

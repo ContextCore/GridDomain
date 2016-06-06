@@ -34,7 +34,7 @@ namespace BusinessNews.Node
                     s.ConstructUsing(settings =>
                     {
                         var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).RandomNode();
-                        return new GridDomainNode(container, new BalanceCommandsRouting(), TransportMode.Cluster,
+                        return new GridDomainNode(container, new BusinessNewsRouting(), TransportMode.Cluster,
                             actorSystem);
                     });
                     s.WhenStarted(node =>

@@ -4,7 +4,7 @@ using NMoneys;
 
 namespace BusinessNews.Domain.BillAggregate
 {
-    internal class BillCreatedEvent: DomainEvent
+    public class BillCreatedEvent: DomainEvent
     {
         public Guid BillId => SourceId;
         public Money Amount { get; }

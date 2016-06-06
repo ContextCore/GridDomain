@@ -9,7 +9,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             return new GridDomainNode(CreateUnityContainer(dbConfig),
-                new BalanceCommandsRouting(),
+                new BusinessNewsRouting(),
                 TransportMode.Standalone, ActorSystemFactory.CreateActorSystem(akkaConf));
         }
 

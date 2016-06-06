@@ -23,7 +23,7 @@ namespace BusinessNews.Domain.SubscriptionAggregate
 
         public void CreateBill(Guid billId)
         {
-            RaiseEvent(new SubscriptionBillCreatedEvent(Id, billId, Offer.Price));
+            RaiseEvent(new SubscriptionChargedEvent(Id, billId, Offer.Price));
         }
 
         private void Apply(SubscriptionCreatedEvent e)
@@ -31,9 +31,9 @@ namespace BusinessNews.Domain.SubscriptionAggregate
             Id = e.SourceId;
             Offer = e.Offer;
         }
-        private void Apply(SubscriptionBillCreatedEvent e)
+        private void Apply(SubscriptionChargedEvent e)
         {
-            _bills.Add(e.BillId);
+            _bills.Add(e.ChargeId);
         }
     }
 }

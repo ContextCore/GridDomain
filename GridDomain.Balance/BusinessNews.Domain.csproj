@@ -96,9 +96,9 @@
     <Compile Include="AccountAggregate\Events\AccountBalanceChangedEvent.cs" />
     <Compile Include="AccountAggregate\AccountAggregateCommandsHandler.cs" />
     <Compile Include="BillAggregate\Bill.cs" />
+    <Compile Include="BillAggregate\BillAggregateCommandsHandler.cs" />
     <Compile Include="BillAggregate\BillCreatedEvent.cs" />
     <Compile Include="BillAggregate\BillPayedEvent.cs" />
-    <Compile Include="BillAggregate\CreateBillCommand.cs" />
     <Compile Include="BillAggregate\MarkBillPayedCommand.cs" />
     <Compile Include="BusinessAggregate\Business.cs" />
     <Compile Include="BusinessAggregate\BusinessCreatedEvent.cs" />
@@ -118,12 +118,12 @@
     <Compile Include="Subscription.cs" />
     <Compile Include="SubscriptionAggregate\BuySubscriptionCommand.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSaga.cs" />
-    <Compile Include="SubscriptionAggregate\CreateSubscriptionBillCommand.cs" />
+    <Compile Include="SubscriptionAggregate\ChargeSubscriptionCommand.cs" />
     <Compile Include="SubscriptionAggregate\CreateSubscriptionCommand.cs" />
     <Compile Include="SubscriptionAggregate\CreateSubscriptionCommandHandler.cs" />
     <Compile Include="OfferAggregate\Offer.cs" />
     <Compile Include="SubscriptionAggregate\Subscription.cs" />
-    <Compile Include="SubscriptionAggregate\SubscriptionBillCreatedEvent.cs" />
+    <Compile Include="SubscriptionAggregate\SubscriptionChargedEvent.cs" />
     <Compile Include="SubscriptionAggregate\SubscriptionCreatedEvent.cs" />
     <Compile Include="TransactoinCreatedEvent.cs" />
     <Compile Include="TransactoinHistory.cs" />
