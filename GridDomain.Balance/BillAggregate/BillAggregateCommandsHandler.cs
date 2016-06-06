@@ -12,8 +12,11 @@ namespace BusinessNews.Domain.BillAggregate
     {
         public BillAggregateCommandsHandler()
         {
-          //  Map<ChargeSubscriptionCommand>(c => c.ChargeId,
-          //      c => new Bill(c.ChargeId));
+            Map<CreateBillCommand>(c => c.BillId,
+                                   c => new Bill(c.BillId,c.Charges));
+
+            Map<MarkBillPayedCommand>(c => c.BillId,
+                                     (cmd, agr) => agr.MarkPaid());
         }
     }
 }

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using BusinessNews.Domain.BillAggregate;
 using BusinessNews.Domain.OfferAggregate;
 using CommonDomain.Core;
 
 namespace BusinessNews.Domain.SubscriptionAggregate
 {
+
+
     public class Subscription : AggregateBase
     {
         public Offer Offer { get; private set; }
-        public IReadOnlyCollection<Guid> Bills => _bills;
-        private readonly List<Guid> _bills = new List<Guid>();
+        public IReadOnlyCollection<Charge> Charges => _charges;
+        private readonly List<Charge> _charges = new List<Charge>();
 
         private Subscription(Guid id)
         {
@@ -21,9 +24,9 @@ namespace BusinessNews.Domain.SubscriptionAggregate
             RaiseEvent(new SubscriptionCreatedEvent(id,offer));
         }
 
-        public void CreateBill(Guid billId)
+        public void Charge(Guid chargeId)
         {
-            RaiseEvent(new SubscriptionChargedEvent(Id, billId, Offer.Price));
+            RaiseEvent(new SubscriptionChargedEvent(Id, chargeId, Offer.Price));
         }
 
         private void Apply(SubscriptionCreatedEvent e)
@@ -33,7 +36,7 @@ namespace BusinessNews.Domain.SubscriptionAggregate
         }
         private void Apply(SubscriptionChargedEvent e)
         {
-            _bills.Add(e.ChargeId);
+            _charges.Add(new Charge(e.ChargeId,e.Price));
         }
     }
 }

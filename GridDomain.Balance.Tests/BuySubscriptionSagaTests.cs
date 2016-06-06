@@ -77,7 +77,7 @@ namespace BusinessNews.Test
             Assert.AreEqual(new [] { charge },billCreateCommand.Charges);
             var billId = billCreateCommand.BillId;
             
-            var billCreatedEvent = new BillCreatedEvent(billId,charge.Amount);
+            var billCreatedEvent = new BillCreatedEvent(billId, new[] { charge }, charge.Amount);
             saga.Handle(billCreatedEvent);
 
             var payBillCommand = ExpectCommand<PayForBillCommand>(saga);

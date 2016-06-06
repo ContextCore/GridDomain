@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using BusinessNews.Domain.SubscriptionAggregate;
 using CommonDomain.Core;
 using GridDomain.CQRS;
@@ -39,11 +40,16 @@ namespace BusinessNews.Domain.BillAggregate
             Id = id;
         }
 
-        public Bill(Guid id, Money amount)
+        public Bill(Guid id, Charge[] charges)
         {
-            RaiseEvent(new BillCreatedEvent(id,amount));
+            var amount = charges.Aggregate(Money.Zero(), (m, c) => m += c.Amount);
+            RaiseEvent(new BillCreatedEvent(id,charges, amount));
         }
 
+        public void MarkPaid()
+        {
+            RaiseEvent(new BillPayedEvent(Id));
+        }
         private void Apply(BillCreatedEvent e)
         {
             Id = e.BillId;
