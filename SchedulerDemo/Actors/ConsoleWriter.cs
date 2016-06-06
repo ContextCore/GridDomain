@@ -21,7 +21,7 @@ namespace SchedulerDemo.Actors
                 Console.WriteLine();
             });
 
-            Receive<Failure>(msg =>
+            Receive<WriteError>(msg =>
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(msg.Exception.ToString());

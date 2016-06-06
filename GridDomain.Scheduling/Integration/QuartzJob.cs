@@ -17,7 +17,6 @@ namespace GridDomain.Scheduling.Integration
         private const string MessageKey = "Message";
         private const string Timeout = "Timeout";
 
-
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Objects,

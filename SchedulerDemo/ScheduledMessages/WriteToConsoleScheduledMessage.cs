@@ -1,6 +1,6 @@
 using GridDomain.Scheduling.Akka.Tasks;
 
-namespace SchedulerDemo.ScheduledRequests
+namespace SchedulerDemo.ScheduledMessages
 {
     public class WriteToConsoleScheduledMessage : ScheduledMessage
     {

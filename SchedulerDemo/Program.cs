@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
@@ -13,7 +15,7 @@ using Microsoft.Practices.Unity;
 using SchedulerDemo.Actors;
 using SchedulerDemo.Handlers;
 using SchedulerDemo.Messages;
-using SchedulerDemo.ScheduledRequests;
+using SchedulerDemo.ScheduledMessages;
 using CompositionRoot = GridDomain.Scheduling.CompositionRoot;
 
 namespace SchedulerDemo
@@ -31,15 +33,22 @@ namespace SchedulerDemo
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
             using (container.Resolve<IWebUiWrapper>().Start())
             {
-                ActorReferences.Reader = Sys.ActorOf(Sys.DI().Props<ConsoleReader>());
-                ActorReferences.Writer = Sys.ActorOf(Sys.DI().Props<ConsoleWriter>());
-                ActorReferences.Scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
-                ActorReferences.Handler = Sys.ActorOf(Sys.DI().Props<WriteToConsoleScheduledHandler>());
-                ActorReferences.CommandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
-                var subsriber = Container.Current.Resolve<IActorSubscriber>();
-                subsriber.Subscribe(typeof(WriteToConsoleScheduledMessage), ActorReferences.Handler);
-                ActorReferences.Writer.Tell(new WriteToConsole("started"));
-                ActorReferences.Reader.Tell(new StartReadFromConsole());
+                var reader = Sys.ActorOf(Sys.DI().Props<ConsoleReader>());
+                var writer = Sys.ActorOf(Sys.DI().Props<ConsoleWriter>());
+                var scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
+                var handler = Sys.ActorOf(Sys.DI().Props<WriteToConsoleScheduledHandler>());
+                var commandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
+                IActorSubscriber subsriber = container.Resolve<IActorSubscriber>();
+                subsriber.Subscribe(typeof(WriteToConsoleScheduledMessage), handler);
+                subsriber.Subscribe(typeof(ProcessCommand), commandManager);
+                subsriber.Subscribe(typeof(StartReadFromConsole), reader);
+                subsriber.Subscribe(typeof(WriteToConsole), writer);
+                subsriber.Subscribe(typeof(WriteError), writer);
+                subsriber.Subscribe(typeof(Schedule), scheduler);
+                subsriber.Subscribe(typeof(Unschedule), scheduler);
+                var publisher = container.Resolve<IPublisher>();
+                publisher.Publish(new WriteToConsole("started"));
+                publisher.Publish(new StartReadFromConsole());
 
                 Sys.WhenTerminated.Wait();
             }

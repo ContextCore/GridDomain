@@ -92,16 +92,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorReferences.cs" />
     <Compile Include="Actors\CommandManager.cs" />
     <Compile Include="Actors\ConsoleReader.cs" />
     <Compile Include="Actors\ConsoleWriter.cs" />
     <Compile Include="Messages\ProcessCommand.cs" />
+    <Compile Include="Messages\WriteError.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\StartReadFromConsole.cs" />
     <Compile Include="Messages\WriteToConsole.cs" />
-    <Compile Include="ScheduledRequests\WriteToConsoleScheduledMessage.cs" />
+    <Compile Include="ScheduledMessages\WriteToConsoleScheduledMessage.cs" />
     <Compile Include="Handlers\WriteToConsoleScheduledHandler.cs" />
   </ItemGroup>
   <ItemGroup>
