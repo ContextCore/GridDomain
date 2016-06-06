@@ -7,9 +7,9 @@ namespace GridDomain.Scheduling.Quartz.Logging
     {
         private readonly Logger _coreLogger;
 
-        public QuartzLogger(Logger coreLogger)
+        public QuartzLogger()
         {
-            _coreLogger = coreLogger;
+            _coreLogger = LogManager.GetCurrentClassLogger();
         }
 
         public void LogSuccess(string jobName)

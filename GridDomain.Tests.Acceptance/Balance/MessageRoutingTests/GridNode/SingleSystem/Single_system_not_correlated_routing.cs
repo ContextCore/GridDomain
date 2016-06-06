@@ -1,25 +1,19 @@
 using System.Linq;
-using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
+using GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem
 {
     [TestFixture]
     public class Single_system_not_correlated_routing : SingleActorSystemTest
     {
-        private long _handlerId;
-
         [SetUp]
         public void Given_correlated_routing_for_message()
         {
             _handlerId = _resultMessages.First().HandlerHashCode;
         }
 
-        [Test]
-        public void Then_results_should_be_from_initial_commands()
-        {
-            CollectionAssert.AreEquivalent(InitialCommands.Select(c => c.Id), _resultMessages.Select(r => r.Id));
-        }
+        private long _handlerId;
 
         [Then]
         public void Then_It_should_be_handled_in_random_way()
@@ -36,6 +30,12 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
         protected override IRouterConfiguration CreateRoutes()
         {
             return new NotCorrelatedRouting<TestMessage, TestHandler>();
+        }
+
+        [Test]
+        public void Then_results_should_be_from_initial_commands()
+        {
+            CollectionAssert.AreEquivalent(InitialCommands.Select(c => c.Id), _resultMessages.Select(r => r.Id));
         }
     }
 }

@@ -11,7 +11,9 @@ namespace SchedulerDemo.Actors
     {
         public CommandManager()
         {
-            Receive<TaskAdded>(x => ActorReferences.Writer.Tell(new WriteToConsole($"Task added, fire at : {x.NextExecution.ToString("HH:mm:")}", x.NextExecution.ToString("ss.fff"))));
+            Receive<Scheduled>(x => ActorReferences.Writer.Tell(new WriteToConsole($"Task added, fire at : {x.NextExecution.ToString("HH:mm:")}", x.NextExecution.ToString("ss.fff"))));
+            Receive<Unscheduled>(x => ActorReferences.Writer.Tell(new WriteToConsole($"Task {x.TaskId} unscheduled")));
+            Receive<AlreadyScheduled>(x => ActorReferences.Writer.Tell(new WriteToConsole($"Task {x.TaskId} is already scheduled")));
             Receive<Failure>(x => ActorReferences.Writer.Forward(x));
             Receive<ProcessCommand>(x =>
             {
@@ -19,8 +21,14 @@ namespace SchedulerDemo.Actors
                 var command = parts[0];
                 switch (command)
                 {
-                    case "s":
+                    case "add":
                         Schedule(parts);
+                        break;
+                    case "remove":
+                        Unschedule(parts);
+                        break;
+                    default:
+                        ActorReferences.Writer.Tell(new WriteToConsole("unknown command"));
                         break;
                 }
             });
@@ -30,7 +38,7 @@ namespace SchedulerDemo.Actors
         {
             if (parts.Length != 3)
             {
-                ActorReferences.Writer.Tell(new WriteToConsole("wrong format command"));
+                ActorReferences.Writer.Tell(new WriteToConsole("wrong command format"));
                 return;
             }
 
@@ -39,11 +47,24 @@ namespace SchedulerDemo.Actors
             int seconds;
             if (!int.TryParse(secondsToWaitString, out seconds))
             {
-                ActorReferences.Writer.Tell(new WriteToConsole("wrong format command"));
+                ActorReferences.Writer.Tell(new WriteToConsole("wrong command format"));
             }
             var taskId = text;// + Guid.NewGuid().ToString().Substring(0, 8);
 
-            ActorReferences.Scheduler.Tell(new AddTask(new WriteToConsoleRequest(taskId), DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout()));
+            ActorReferences.Scheduler.Tell(new Schedule(new WriteToConsoleScheduledMessage(taskId, taskId), DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout()));
+        }
+
+        private void Unschedule(string[] parts)
+        {
+            if (parts.Length != 2)
+            {
+                ActorReferences.Writer.Tell(new WriteToConsole("wrong command format"));
+                return;
+            }
+
+            var text = parts[1];
+            var taskId = text;// + Guid.NewGuid().ToString().Substring(0, 8);
+            ActorReferences.Scheduler.Tell(new Unschedule(taskId, taskId));
         }
 
         private static TimeSpan ExecutionTimeout()

@@ -1,29 +1,25 @@
 using System;
+using System.Linq;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    class GivenClusterTestMessages : IGivenCommands<ClusterMessage>
+    internal class GivenClusterTestMessages : IGivenCommands<ClusterMessage>
     {
+        private readonly int _number;
+
+        public GivenClusterTestMessages(int number)
+        {
+            _number = number;
+        }
+
         public ClusterMessage[] GetCommands()
         {
             var guid = Guid.NewGuid();
-            int count = 0;
+            var commands =
+                Enumerable.Range(0, _number)
+                    .Select(n => new ClusterMessage {CorrelationId = guid, ExecuteOrder = n})
+                    .ToArray();
 
-            var commands = new[]
-            {
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count},
-                new ClusterMessage() {CorrelationId = guid, ExecuteOrder = ++count}
-            };
             return commands;
         }
     }

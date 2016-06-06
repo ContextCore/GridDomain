@@ -21,10 +21,7 @@ namespace SchedulerDemo.Actors
                 }
                 else
                 {
-                    if (read.StartsWith("command "))
-                    {
-                        ActorReferences.CommandManager.Tell(new ProcessCommand(read.Substring(7)));
-                    }
+                    ActorReferences.CommandManager.Tell(new ProcessCommand(read));
                 }
                 Self.Tell(new StartReadFromConsole());
             });

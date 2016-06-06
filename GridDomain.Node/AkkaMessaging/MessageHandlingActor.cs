@@ -1,6 +1,4 @@
 using Akka.Actor;
-using Akka.IO;
-using CommonDomain.Persistence;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 using NLog;

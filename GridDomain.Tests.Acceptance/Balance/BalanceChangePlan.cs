@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using GridDomain.Balance.Domain.BalanceAggregate.Commands;
-using GridDomain.CQRS;
 using NMoneys;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Acceptance.Balance
 {
     public class BalanceChangePlan
     {
-        public Guid businessId;
-        public Guid BalanceId;
         public IReadOnlyCollection<ChangeBalanceCommand> BalanceChangeCommands;
         public CreateBalanceCommand BalanceCreateCommand;
+        public Guid BalanceId;
+        public Guid businessId;
         public Money TotalAmountChange;
         public Money TotalReplenish;
         public Money TotalWithdrwal;

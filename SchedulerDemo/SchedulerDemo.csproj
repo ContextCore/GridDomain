@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SchedulerDemo</RootNamespace>
     <AssemblyName>SchedulerDemo</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,6 +52,10 @@
     </Reference>
     <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -96,7 +101,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\StartReadFromConsole.cs" />
     <Compile Include="Messages\WriteToConsole.cs" />
-    <Compile Include="ScheduledRequests\WriteToConsoleRequest.cs" />
+    <Compile Include="ScheduledRequests\WriteToConsoleScheduledMessage.cs" />
     <Compile Include="Handlers\WriteToConsoleScheduledHandler.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +112,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
+      <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
+      <Name>GridDomain.CQRS.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
+      <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
+      <Name>GridDomain.Node</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
       <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
       <Name>GridDomain.Scheduling</Name>

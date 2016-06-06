@@ -27,6 +27,7 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
                 catch (MockException)
                 {
                 }
+                Thread.Sleep(10);
             }
             throw new AssertionException("method wasn`t called");
         }
@@ -49,6 +50,7 @@ namespace GridDomain.Tests.Scheduling.TestHelpers
                 catch (AssertionException)
                 {
                 }
+                Thread.Sleep(10);
             }
             throw new AssertionException("Assertion wasn`t satisfied in time");
         }

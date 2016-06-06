@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using Akka.Actor;
+using Akka.DI.Core;
+using Akka.DI.Unity;
+using GridDomain.Node;
+using GridDomain.Scheduling;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
+using GridDomain.Scheduling.WebUI;
+using Microsoft.Practices.Unity;
 using SchedulerDemo.Actors;
 using SchedulerDemo.Handlers;
 using SchedulerDemo.Messages;
 using SchedulerDemo.ScheduledRequests;
+using CompositionRoot = GridDomain.Scheduling.CompositionRoot;
 
 namespace SchedulerDemo
 {
@@ -18,21 +25,32 @@ namespace SchedulerDemo
         static void Main()
         {
             Sys = ActorSystem.Create("Sys");
-            ActorReferences.Reader = Sys.ActorOf(Props.Create<ConsoleReader>());
-            ActorReferences.Writer = Sys.ActorOf(Props.Create<ConsoleWriter>());
-            var schedulerFactory = new SchedulerFactory(new QuartzConfig(), new LoggingSchedulerListener(), new LoggingJobListener());
-            ActorReferences.Scheduler = Sys.ActorOf(Props.Create(() => new SchedulerActor(schedulerFactory.Create())));
-            ActorReferences.Handler = Sys.ActorOf(Props.Create<WriteToConsoleScheduledHandler>());
-            ActorReferences.CommandManager = Sys.ActorOf(Props.Create<CommandManager>());
-            var taskRouter = new TaskRouter(new Dictionary<Type, IActorRef>
-            {
-                {typeof(WriteToConsoleRequest), ActorReferences.Handler}
-            });
-            TaskRouterFactory.Init(taskRouter);
-            ActorReferences.Writer.Tell(new WriteToConsole("started"));
-            ActorReferences.Reader.Tell(new StartReadFromConsole());
+            var container = new CompositionRoot().Compose(Container.Current, Sys);
 
-            Sys.WhenTerminated.Wait();
+            RegisterAppSpecificTypes(container);
+            Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
+            using (container.Resolve<IWebUiWrapper>().Start())
+            {
+                ActorReferences.Reader = Sys.ActorOf(Sys.DI().Props<ConsoleReader>());
+                ActorReferences.Writer = Sys.ActorOf(Sys.DI().Props<ConsoleWriter>());
+                ActorReferences.Scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
+                ActorReferences.Handler = Sys.ActorOf(Sys.DI().Props<WriteToConsoleScheduledHandler>());
+                ActorReferences.CommandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
+                var subsriber = Container.Current.Resolve<IActorSubscriber>();
+                subsriber.Subscribe(typeof(WriteToConsoleScheduledMessage), ActorReferences.Handler);
+                ActorReferences.Writer.Tell(new WriteToConsole("started"));
+                ActorReferences.Reader.Tell(new StartReadFromConsole());
+
+                Sys.WhenTerminated.Wait();
+            }
+        }
+
+        private static void RegisterAppSpecificTypes(UnityContainer container)
+        {
+            container.RegisterType<ConsoleReader>();
+            container.RegisterType<ConsoleWriter>();
+            container.RegisterType<WriteToConsoleScheduledHandler>();
+            container.RegisterType<CommandManager>();
         }
     }
 }

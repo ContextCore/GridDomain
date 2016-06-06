@@ -7,7 +7,8 @@ using NUnit.Framework;
 namespace GridDomain.Tests.SagaStateAggregate
 {
     [TestFixture]
-    class Given_created_event_should_hydrate_state : HydrationSpecification<SagaStateAggregate<TestState, TestTransition>>
+    internal class Given_created_event_should_hydrate_state :
+        HydrationSpecification<SagaStateAggregate<TestState, TestTransition>>
     {
         private readonly Guid _sourceId = Guid.NewGuid();
 
@@ -28,6 +29,5 @@ namespace GridDomain.Tests.SagaStateAggregate
         {
             Assert.AreEqual(Aggregate.Id, _sourceId);
         }
-
     }
 }

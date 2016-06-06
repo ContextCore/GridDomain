@@ -1,11 +1,10 @@
 using System;
-using System.Threading.Tasks;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class TestRequestHandler<TRequest> : ScheduledTaskHandler<TRequest> where TRequest : ScheduledRequest
+    public class TestRequestHandler<TRequest> : ScheduledMessageHandler<TRequest> where TRequest : ScheduledMessage
     {
         private readonly Action<TRequest> _handler;
 

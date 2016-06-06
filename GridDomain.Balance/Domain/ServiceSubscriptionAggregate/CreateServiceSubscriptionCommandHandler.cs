@@ -14,7 +14,8 @@ namespace GridDomain.Balance.Domain.ServiceSubscriptionAggregate
 
         public void Handle(CreateServiceSubscriptionCommand cmd)
         {
-            var serviceSubscription = new ServiceSubscription(cmd.SubscriptionId,cmd.Period, cmd.Cost, cmd.Name, cmd.Grants);
+            var serviceSubscription = new ServiceSubscription(cmd.SubscriptionId, cmd.Period, cmd.Cost, cmd.Name,
+                cmd.Grants);
             _repo.Save(serviceSubscription, cmd.Id);
         }
     }

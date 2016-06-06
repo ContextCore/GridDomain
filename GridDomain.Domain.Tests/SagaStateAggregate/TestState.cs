@@ -1,6 +1,6 @@
 namespace GridDomain.Tests.SagaStateAggregate
 {
-    enum TestState
+    internal enum TestState
     {
         Idle,
         Running

@@ -6,47 +6,15 @@ using Akka.Actor;
 using Akka.Routing;
 using Akka.TestKit.NUnit;
 using GridDomain.Node;
-using GridDomain.Node.Configuration;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests
 {
-    public class ConsistentHashingRoutingTest:TestKit
+    public class ConsistentHashingRoutingTest : TestKit
     {
-        private ActorSystem _system;
         private DiagMsg[] _diagMsgs;
         private DiagMsg[] _results;
-
-        class DiagMsg
-        {
-            public long TicksStartProcess;
-            public long TicksEndProcess;
-            public long Thread;
-            public long ActorHashCode;
-            public long HashKey;
-        }
-
-        class TimeLoggerActor : TypedActor
-        {
-            public static Stopwatch watch = new Stopwatch();
-            public TimeLoggerActor(IActorRef sender)
-            {
-                watch.Start();
-            }
-
-            
-            public void Handle(DiagMsg m)
-            {
-                Console.WriteLine( m.TicksStartProcess = watch.ElapsedTicks);
-                m.ActorHashCode = this.GetHashCode();
-                m.Thread = Thread.CurrentThread.ManagedThreadId;
-                Thread.Sleep(100);
-                m.TicksEndProcess = watch.ElapsedTicks;
-
-                Console.WriteLine($"msg {m.GetHashCode()} correlation {m.HashKey} handled in thread {m.Thread} from {m.TicksStartProcess} ticks to {m.TicksEndProcess}");
-                Sender.Tell(m);
-            }
-        }
+        private ActorSystem _system;
 
         [SetUp]
         public void TestsRouting()
@@ -54,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             _system = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
 
             var actor = _system.ActorOf(Props.Create<TimeLoggerActor>(TestActor)
-                                      .WithRouter(new ConsistentHashingPool(2).WithHashMapping(m => ((DiagMsg)m).HashKey)));
+                .WithRouter(new ConsistentHashingPool(2).WithHashMapping(m => ((DiagMsg) m).HashKey)));
 
             _diagMsgs = CreateMessages();
 
@@ -68,39 +36,71 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         {
             return new[]
             {
-                new DiagMsg() {HashKey = 1},
-                new DiagMsg() {HashKey = 2},
-                new DiagMsg() {HashKey = 1},
-                new DiagMsg() {HashKey = 1},
-                new DiagMsg() {HashKey = 3},
-                new DiagMsg() {HashKey = 2},
-                new DiagMsg() {HashKey = 2},
-                new DiagMsg() {HashKey = 1},
-                new DiagMsg() {HashKey = 2},
-                new DiagMsg() {HashKey = 3},
-                new DiagMsg() {HashKey = 3},
-                new DiagMsg() {HashKey = 3},
-                new DiagMsg() {HashKey = 2},
-                new DiagMsg() {HashKey = 3},
+                new DiagMsg {HashKey = 1},
+                new DiagMsg {HashKey = 2},
+                new DiagMsg {HashKey = 1},
+                new DiagMsg {HashKey = 1},
+                new DiagMsg {HashKey = 3},
+                new DiagMsg {HashKey = 2},
+                new DiagMsg {HashKey = 2},
+                new DiagMsg {HashKey = 1},
+                new DiagMsg {HashKey = 2},
+                new DiagMsg {HashKey = 3},
+                new DiagMsg {HashKey = 3},
+                new DiagMsg {HashKey = 3},
+                new DiagMsg {HashKey = 2},
+                new DiagMsg {HashKey = 3}
             };
         }
 
         [Test]
         public void All_messages_was_processed_in_linear_sequence()
         {
-
             foreach (var group in _results.GroupBy(r => r.HashKey))
             {
                 var enumerator = group.GetEnumerator();
                 enumerator.MoveNext();
-                var prev = enumerator.Current as DiagMsg;
+                var prev = enumerator.Current;
 
                 while (enumerator.MoveNext())
                 {
-                    var current = (DiagMsg) enumerator.Current;
+                    var current = enumerator.Current;
                     if (prev != null)
                         Assert.True(prev.TicksEndProcess < current.TicksStartProcess);
                 }
+            }
+        }
+
+        private class DiagMsg
+        {
+            public long ActorHashCode;
+            public long HashKey;
+            public long Thread;
+            public long TicksEndProcess;
+            public long TicksStartProcess;
+        }
+
+        private class TimeLoggerActor : TypedActor
+        {
+            public static readonly Stopwatch watch = new Stopwatch();
+
+            public TimeLoggerActor(IActorRef sender)
+            {
+                watch.Start();
+            }
+
+
+            public void Handle(DiagMsg m)
+            {
+                Console.WriteLine(m.TicksStartProcess = watch.ElapsedTicks);
+                m.ActorHashCode = GetHashCode();
+                m.Thread = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(100);
+                m.TicksEndProcess = watch.ElapsedTicks;
+
+                Console.WriteLine(
+                    $"msg {m.GetHashCode()} correlation {m.HashKey} handled in thread {m.Thread} from {m.TicksStartProcess} ticks to {m.TicksEndProcess}");
+                Sender.Tell(m);
             }
         }
     }

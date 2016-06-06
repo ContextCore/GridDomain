@@ -1,12 +1,12 @@
 using Akka.Actor;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
     public class TestHandler : IHandler<TestMessage>
     {
         private readonly IActorRef _notifier;
-        private int _handleCounter = 0;
+        private int _handleCounter;
 
         public TestHandler(IActorRef notifier)
         {

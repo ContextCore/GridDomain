@@ -1,12 +1,13 @@
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
+namespace GridDomain.Tests.Acceptance.Balance.MessageRoutingTests.GridNode
 {
-    class CorrelatedRouting<TMsg,THandler> : IRouterConfiguration
-        where THandler:IHandler<TMsg>
+    internal class CorrelatedRouting<TMsg, THandler> : IRouterConfiguration
+        where THandler : IHandler<TMsg>
     {
         private readonly string _correlationPropertyName;
+
         public CorrelatedRouting(string correlationPropertyName)
         {
             _correlationPropertyName = correlationPropertyName;

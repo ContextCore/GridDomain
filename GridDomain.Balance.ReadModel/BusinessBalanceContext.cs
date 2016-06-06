@@ -5,7 +5,7 @@ namespace GridDomain.Balance.ReadModel
     public class BusinessBalanceContext : DbContext
     {
         public static string DefaultConnectionString
-             = @"Data Source=(localdb)\v11.0;Initial Catalog=AutoTestGridDomainRead;Integrated Security = true";
+            = @"Data Source=(localdb)\v11.0;Initial Catalog=AutoTestGridDomainRead;Integrated Security = true";
 
         public BusinessBalanceContext(string connectionString) : base(connectionString)
         {
@@ -17,6 +17,6 @@ namespace GridDomain.Balance.ReadModel
         }
 
         public DbSet<BusinessBalance> Balances { get; set; }
-        public DbSet<TransactoinHistory> TransactoinHistory { get; set; }
+        public DbSet<TransactionHistory> TransactoinHistory { get; set; }
     }
 }

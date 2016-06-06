@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using GridDomain.Balance.Domain;
 using GridDomain.Node;
@@ -19,10 +18,9 @@ namespace GridDomain.Balance.Node
             Console.WriteLine("Launching GridDomain node");
 
             var container = new UnityContainer();
-            // container.LoadConfiguration();
             var akkaConfig = container.Resolve<AkkaConfiguration>();
             var conf = new LocalDbConfiguration();
-            CompositionRoot.Init(container,conf);
+            CompositionRoot.Init(container, conf);
 
             ConfigureLog(conf);
 
@@ -32,8 +30,9 @@ namespace GridDomain.Balance.Node
                 {
                     s.ConstructUsing(settings =>
                     {
-                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).Last();
-                        return new GridDomainNode(container, new BalanceCommandsRouting(), actorSystem);
+                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).RandomNode();
+                        return new GridDomainNode(container, new BalanceCommandsRouting(), TransportMode.Cluster,
+                            actorSystem);
                     });
                     s.WhenStarted(node =>
                     {

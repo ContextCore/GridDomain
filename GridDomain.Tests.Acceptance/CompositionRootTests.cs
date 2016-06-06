@@ -1,72 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using CompositionRoot = GridDomain.Balance.Node.CompositionRoot;
 
 namespace GridDomain.Tests.Acceptance
 {
-
-
-    class AutoTestAkkaNetworkConfiguration : IAkkaNetworkConfiguration
-    {
-        public string Name => "LocalSystem";
-        public string Host => "127.0.0.1";
-        public int PortNumber => 8080;
-    }
-
-    class AutoTestAkkaConfiguration : AkkaConfiguration
-    {
-        public AutoTestAkkaConfiguration():base(new AutoTestAkkaNetworkConfiguration(), 
-                                                new AutoTestAkkaDbConfiguration(),
-                                                LogVerbosity.Warning)
-        {
-            
-        }
-    }
-
     [TestFixture]
     public class CompositionRootTests
     {
-        [Test]
-        public void All_base_registrations_can_be_resolved()
+        [TestCase(TransportMode.Cluster)]
+        [TestCase(TransportMode.Standalone)]
+        public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
-            var container = new UnityContainer();
-            CompositionRoot.Init(container, 
-                                 ActorSystemFactory.CreateActorSystem(
-                                      new AutoTestAkkaConfiguration()),
-                                 new LocalDbConfiguration());
+            var container = InitCoreContainer(transportMode, new LocalDbConfiguration());
+            ResolveAll(container);
+        }
 
-
-            foreach (var reg in container.Registrations)
+        private static void ResolveAll(UnityContainer container)
+        {
+            foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
             {
                 container.Resolve(reg.RegisteredType, reg.Name);
                 Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
             }
         }
 
-        [Test]
-        public void All_registrations_can_be_resolved()
+        [TestCase(TransportMode.Cluster)]
+        [TestCase(TransportMode.Standalone)]
+        public void All_registrations_can_be_resolved(TransportMode transportMode)
+        {
+            var localDbConfiguration = new LocalDbConfiguration();
+            var container = InitCoreContainer(transportMode, localDbConfiguration);
+            CompositionRoot.Init(container, localDbConfiguration);
+            ResolveAll(container);
+        }
+
+        private static readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
+            <TransportMode, Func<ActorSystem>>
+        {
+            {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())},
+            {
+                TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()
+            }
+        };
+
+        private static UnityContainer InitCoreContainer(TransportMode transportMode,
+            IDbConfiguration localDbConfiguration)
         {
             var container = new UnityContainer();
-            var localDbConfiguration = new LocalDbConfiguration();
-
-            CompositionRoot.Init(container,
-                                 ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()),
-                                 localDbConfiguration);
-
-
-            GridDomain.Balance.Node.CompositionRoot.Init(container, localDbConfiguration);
-
-            foreach (var reg in container.Registrations)
-            {
-                container.Resolve(reg.RegisteredType, reg.Name);
-                Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
-            }
+            Node.CompositionRoot.Init(container,
+                ActorSystemBuilders[transportMode](),
+                localDbConfiguration,
+                transportMode);
+            return container;
         }
     }
 }

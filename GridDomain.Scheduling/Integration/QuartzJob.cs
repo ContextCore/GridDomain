@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.ExceptionServices;
 using Akka.Actor;
+using Akka.DI.Core;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Akka.Tasks;
 using GridDomain.Scheduling.Quartz.Logging;
@@ -11,20 +12,25 @@ namespace GridDomain.Scheduling.Integration
 {
     public class QuartzJob : IJob
     {
-        private const string TaskKey = "Task";
+        private readonly IQuartzLogger _quartzLogger;
+        private readonly ActorSystem _actorSystem;
+        private const string MessageKey = "Message";
         private const string Timeout = "Timeout";
-        private readonly ITaskRouter _taskRouter;
-        private readonly IQuartzLogger _logger;
+
+
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Objects,
             TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
         };
 
-        public QuartzJob()
+        public QuartzJob(
+            IQuartzLogger quartzLogger,
+            ActorSystem actorSystem
+            )
         {
-            _taskRouter = TaskRouterFactory.Get();
-            _logger = QuartzLoggerFactory.GetLogger();
+            _quartzLogger = quartzLogger;
+            _actorSystem = actorSystem;
         }
 
         public void Execute(IJobExecutionContext context)
@@ -33,19 +39,18 @@ namespace GridDomain.Scheduling.Integration
             {
                 var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
                 var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
-                var targetActor = _taskRouter.GetTarget(scheduledRequest);
-                //TODO::VZ:: is there a better way to communicate with akka?
-                var result = targetActor.Ask(scheduledRequest, timeout);
+                var jobStatusManager = _actorSystem.ActorOf(_actorSystem.DI().Props<MessageProcessingStatusManager>());
+                var result = jobStatusManager.Ask(new ManageMessage(scheduledRequest), timeout);
                 result.Wait(timeout);
                 //TODO::VZ refactor without casts
-                var success = result.Result as TaskProcessed;
+                var success = result.Result as MessageSuccessfullyProcessed;
                 if (success != null)
                 {
-                    _logger.LogSuccess(context.JobDetail.Key.Name);
+                    _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
                 }
                 else
                 {
-                    var failure = result.Result as Failure;
+                    var failure = result.Result as MessageProcessingFailed;
                     if (failure != null)
                     {
                         ExceptionDispatchInfo.Capture(failure.Exception).Throw();
@@ -53,18 +58,22 @@ namespace GridDomain.Scheduling.Integration
                     throw new InvalidOperationException($"Wrong reply from task handler actor. Reply: ${result.Result}");
                 }
             }
+            catch (JsonSerializationException e)
+            {
+                _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
+            }
             catch (Exception e)
             {
-                _logger.LogFailure(context.JobDetail.Key.Name, e);
+                _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
                 throw new JobExecutionException(e);
             }
         }
 
-        private static ScheduledRequest DeserializeTaskData(JobDataMap jobDatMap)
+        private static ScheduledMessage DeserializeTaskData(JobDataMap jobDatMap)
         {
-            var taskJson = jobDatMap[TaskKey] as string;
+            var taskJson = jobDatMap[MessageKey] as string;
             //TODO::VZ:: use external wrapper around serializer?
-            var task = JsonConvert.DeserializeObject<ScheduledRequest>(taskJson, JsonSerializerSettings);
+            var task = JsonConvert.DeserializeObject<ScheduledMessage>(taskJson, JsonSerializerSettings);
             return task;
         }
 
@@ -74,12 +83,17 @@ namespace GridDomain.Scheduling.Integration
             return timeout;
         }
 
-        public static JobBuilder Create(ScheduledRequest task, TimeSpan timeout)
+        public static JobBuilder Create(JobKey jobKey, ScheduledMessage message, TimeSpan timeout)
         {
             //TODO::VZ:: use external wrapper around serializer?
-            var serialized = JsonConvert.SerializeObject(task, JsonSerializerSettings);
-            var jdm = new JobDataMap { { TaskKey, serialized }, { Timeout, timeout.ToString() } };
-            return JobBuilder.Create<QuartzJob>().WithIdentity(task.TaskId).UsingJobData(jdm);
+            var serialized = JsonConvert.SerializeObject(message, JsonSerializerSettings);
+            var jdm = new JobDataMap { { MessageKey, serialized }, { Timeout, timeout.ToString() } };
+            return JobBuilder
+                        .Create<QuartzJob>()
+                        .WithIdentity(jobKey)
+                        .UsingJobData(jdm)
+                        .StoreDurably(true)
+                        .RequestRecovery(true);
         }
     }
 }

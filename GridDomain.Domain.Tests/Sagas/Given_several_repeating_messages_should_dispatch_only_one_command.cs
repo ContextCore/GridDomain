@@ -6,16 +6,24 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas
 {
-    
     [TestFixture]
-    class Given_several_repeating_messages_should_dispatch_only_one_command
+    internal class Given_several_repeating_messages_should_dispatch_only_one_command
     {
+        [SetUp]
+        public void Init()
+        {
+            Given_new_saga_with_state();
+            When_applying_several_events();
+        }
+
         private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
         private NotEnoughFondsFailure[] Messages;
+
         public void Given_new_saga_with_state()
         {
             var sagaState = new SagaStateAggregate<SubscriptionRenewSaga.SubscriptionRenewSaga.States,
-                                 SubscriptionRenewSaga.SubscriptionRenewSaga.Triggers>(Guid.NewGuid(), SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying);
+                SubscriptionRenewSaga.SubscriptionRenewSaga.Triggers>(Guid.NewGuid(),
+                    SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying);
 
             Saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(sagaState);
 
@@ -31,15 +39,8 @@ namespace GridDomain.Tests.Sagas
 
         public void When_applying_several_events()
         {
-            foreach(var m in Messages)
+            foreach (var m in Messages)
                 Saga.Handle(m);
-        }
-
-        [SetUp]
-        public void Init()
-        {
-            Given_new_saga_with_state();
-            When_applying_several_events();
         }
 
         [Then]
@@ -51,7 +52,7 @@ namespace GridDomain.Tests.Sagas
         [Then]
         public void All_dispatched_messages_are_commands()
         {
-            CollectionAssert.AllItemsAreInstancesOfType(Saga.MessagesToDispatch, typeof(ChangeSubscriptionCommand));
+            CollectionAssert.AllItemsAreInstancesOfType(Saga.MessagesToDispatch, typeof (ChangeSubscriptionCommand));
         }
     }
 }

@@ -3,33 +3,34 @@ using System.Linq;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public static class ResultHolder
+    public class ResultHolder
     {
-        private static readonly ConcurrentDictionary<string, string> Results = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> _results = new ConcurrentDictionary<string, string>();
+        public int Count => _results.Count;
 
-        public static void Add(string key, string result)
+        public void Add(string key, string result)
         {
-            Results.AddOrUpdate(key, result, (k, oldValue) => result);
+            _results.AddOrUpdate(key, result, (k, oldValue) => result);
         }
 
-        public static string Get(string key)
+        public string Get(string key)
         {
             string result;
-            if (Results.TryGetValue(key, out result))
+            if (_results.TryGetValue(key, out result))
             {
                 return result;
             }
             return null;
         }
 
-        public static bool Contains(params string[] keys)
+        public bool Contains(params string[] keys)
         {
-            return keys.All(keys.Contains);
+            return keys.All(_results.ContainsKey);
         }
 
-        public static void Clear()
+        public void Clear()
         {
-            Results.Clear();
+            _results.Clear();
         }
     }
 }
