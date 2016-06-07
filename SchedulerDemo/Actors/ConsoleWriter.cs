@@ -13,15 +13,15 @@ namespace SchedulerDemo.Actors
                 Console.Write(msg.Text);
                 if (msg.PartToHighlight != null)
                 {
-                    WriteHightlighted(DateTime.UtcNow.ToString("ss.fff"));
+                    WriteHightlighted(DateTime.Now.ToString("ss.fff"));
                 }
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.Write($"       Received at: {DateTime.UtcNow.ToString("HH:mm:")}");
-                WriteHightlighted(DateTime.UtcNow.ToString("ss.fff"));
+                Console.Write($"       Received at: {DateTime.Now.ToString("HH:mm:")}");
+                WriteHightlighted(DateTime.Now.ToString("ss.fff"));
                 Console.WriteLine();
             });
 
-            Receive<WriteError>(msg =>
+            Receive<WriteErrorToConsole>(msg =>
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(msg.Exception.ToString());

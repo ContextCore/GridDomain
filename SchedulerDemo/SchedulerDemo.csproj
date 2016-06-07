@@ -95,12 +95,17 @@
     <Compile Include="Actors\CommandManager.cs" />
     <Compile Include="Actors\ConsoleReader.cs" />
     <Compile Include="Actors\ConsoleWriter.cs" />
+    <Compile Include="DemoLogger.cs" />
+    <Compile Include="Handlers\FailingScheduledHandler.cs" />
+    <Compile Include="Handlers\LongTimeScheduledHandler.cs" />
     <Compile Include="Messages\ProcessCommand.cs" />
-    <Compile Include="Messages\WriteError.cs" />
+    <Compile Include="Messages\WriteErrorToConsole.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\StartReadFromConsole.cs" />
     <Compile Include="Messages\WriteToConsole.cs" />
+    <Compile Include="ScheduledMessages\FailScheduledMessage.cs" />
+    <Compile Include="ScheduledMessages\LongTimeScheduledMessage.cs" />
     <Compile Include="ScheduledMessages\WriteToConsoleScheduledMessage.cs" />
     <Compile Include="Handlers\WriteToConsoleScheduledHandler.cs" />
   </ItemGroup>

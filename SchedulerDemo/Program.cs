@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.CQRS.Messaging;
@@ -8,7 +6,6 @@ using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
@@ -37,15 +34,19 @@ namespace SchedulerDemo
                 var writer = Sys.ActorOf(Sys.DI().Props<ConsoleWriter>());
                 var scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
                 var handler = Sys.ActorOf(Sys.DI().Props<WriteToConsoleScheduledHandler>());
+                var failHandler = Sys.ActorOf(Sys.DI().Props<FailingScheduledHandler>());
+                var longTimeHandler = Sys.ActorOf(Sys.DI().Props<LongTimeScheduledHandler>());
                 var commandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
                 IActorSubscriber subsriber = container.Resolve<IActorSubscriber>();
                 subsriber.Subscribe(typeof(WriteToConsoleScheduledMessage), handler);
                 subsriber.Subscribe(typeof(ProcessCommand), commandManager);
                 subsriber.Subscribe(typeof(StartReadFromConsole), reader);
                 subsriber.Subscribe(typeof(WriteToConsole), writer);
-                subsriber.Subscribe(typeof(WriteError), writer);
+                subsriber.Subscribe(typeof(WriteErrorToConsole), writer);
                 subsriber.Subscribe(typeof(Schedule), scheduler);
                 subsriber.Subscribe(typeof(Unschedule), scheduler);
+                subsriber.Subscribe(typeof(FailScheduledMessage), failHandler);
+                subsriber.Subscribe(typeof(LongTimeScheduledMessage), longTimeHandler);
                 var publisher = container.Resolve<IPublisher>();
                 publisher.Publish(new WriteToConsole("started"));
                 publisher.Publish(new StartReadFromConsole());
@@ -56,6 +57,7 @@ namespace SchedulerDemo
 
         private static void RegisterAppSpecificTypes(UnityContainer container)
         {
+            container.RegisterType<IQuartzLogger, DemoLogger>();
             container.RegisterType<ConsoleReader>();
             container.RegisterType<ConsoleWriter>();
             container.RegisterType<WriteToConsoleScheduledHandler>();

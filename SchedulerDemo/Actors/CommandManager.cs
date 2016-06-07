@@ -15,10 +15,10 @@ namespace SchedulerDemo.Actors
         public CommandManager(IPublisher publisher)
         {
             _publisher = publisher;
-            Receive<Scheduled>(x => _publisher.Publish(new WriteToConsole($"Task added, fire at : {x.NextExecution.ToString("HH:mm:")}", x.NextExecution.ToString("ss.fff"))));
+            Receive<Scheduled>(x => _publisher.Publish(new WriteToConsole($"Task added, fire at : {x.NextExecution.ToLocalTime().ToString("HH:mm:")}", x.NextExecution.ToString("ss.fff"))));
             Receive<Unscheduled>(x => _publisher.Publish(new WriteToConsole($"Task {x.TaskId} unscheduled")));
             Receive<AlreadyScheduled>(x => _publisher.Publish(new WriteToConsole($"Task {x.TaskId} is already scheduled")));
-            Receive<Failure>(x => _publisher.Publish(new WriteError(x.Exception)));
+            Receive<Failure>(x => _publisher.Publish(new WriteErrorToConsole(x.Exception)));
             Receive<ProcessCommand>(x =>
             {
                 var parts = x.Command.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
@@ -31,11 +31,49 @@ namespace SchedulerDemo.Actors
                     case "remove":
                         Unschedule(parts);
                         break;
+                    case "fail":
+                        ScheduleFailure(parts);
+                        break;
+                    case "longtime":
+                        ScheduleLongTime(parts);
+                        break;
                     default:
                         _publisher.Publish(new WriteToConsole("unknown command"));
                         break;
                 }
             });
+        }
+
+        private void ScheduleLongTime(string[] parts)
+        {
+            if (parts.Length != 2)
+            {
+                _publisher.Publish(new WriteToConsole("wrong command format"));
+                return;
+            }
+            var secondsToWaitString = parts[1];
+            int seconds;
+            if (!int.TryParse(secondsToWaitString, out seconds))
+            {
+                _publisher.Publish(new WriteToConsole("wrong command format"));
+            }
+            _publisher.Publish(new Schedule(new LongTimeScheduledMessage("long", "long", seconds), DateTime.UtcNow, TimeSpan.FromMinutes(1)));
+        }
+
+        private void ScheduleFailure(string[] parts)
+        {
+            if (parts.Length != 2)
+            {
+                _publisher.Publish(new WriteToConsole("wrong command format"));
+                return;
+            }
+            var secondsToWaitString = parts[1];
+            int seconds;
+            if (!int.TryParse(secondsToWaitString, out seconds))
+            {
+                _publisher.Publish(new WriteToConsole("wrong command format"));
+            }
+            _publisher.Publish(new Schedule(new FailScheduledMessage("fail", "fail"), DateTime.UtcNow.AddSeconds(seconds), TimeSpan.FromSeconds(4)));
         }
 
         private void Schedule(string[] parts)

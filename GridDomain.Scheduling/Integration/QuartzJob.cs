@@ -34,8 +34,10 @@ namespace GridDomain.Scheduling.Integration
 
         public void Execute(IJobExecutionContext context)
         {
+            bool isFirstTimeFiring = true;
             try
             {
+                isFirstTimeFiring = context.RefireCount == 0;
                 var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
                 var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
                 var jobStatusManager = _actorSystem.ActorOf(_actorSystem.DI().Props<MessageProcessingStatusManager>());
@@ -64,7 +66,9 @@ namespace GridDomain.Scheduling.Integration
             catch (Exception e)
             {
                 _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
-                throw new JobExecutionException(e);
+                var jobExecutionException = new JobExecutionException(e);
+                jobExecutionException.RefireImmediately = isFirstTimeFiring;
+                throw jobExecutionException;
             }
         }
 
@@ -91,7 +95,7 @@ namespace GridDomain.Scheduling.Integration
                         .Create<QuartzJob>()
                         .WithIdentity(jobKey)
                         .UsingJobData(jdm)
-                        .StoreDurably(true)
+                        //.StoreDurably(true)
                         .RequestRecovery(true);
         }
     }

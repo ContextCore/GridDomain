@@ -2,11 +2,11 @@ using System;
 
 namespace SchedulerDemo.Messages
 {
-    public class WriteError
+    public class WriteErrorToConsole
     {
         public Exception Exception { get;}
 
-        public WriteError(Exception exception)
+        public WriteErrorToConsole(Exception exception)
         {
             Exception = exception;
         }
