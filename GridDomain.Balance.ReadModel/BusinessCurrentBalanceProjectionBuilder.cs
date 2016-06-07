@@ -37,7 +37,7 @@ namespace BusinessNews.ReadModel
             };
 
             _modelBuilder.Add(businessCurrentBalance);
-            _publisher.Publish(new BalanceCreatedProjectedNotification(msg.BalanceId, msg));
+            _publisher.Publish(new BusinessBalanceCreatedProjectedNotification(msg.BalanceId, msg));
         }
 
         public void Handle(PayedForBillEvent msg)

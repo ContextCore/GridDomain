@@ -7,6 +7,7 @@ using BusinessNews.Domain.AccountAggregate.Commands;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
 using BusinessNews.Node;
+using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -29,7 +30,6 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
         [TestFixtureSetUp]
         public void Given_business_with_money()
         {
-            //var data = new Fixture();
             var accountId = Guid.NewGuid();
             var businessId = Guid.NewGuid();
             var subscriptionId = Guid.NewGuid();
@@ -37,16 +37,21 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
             var commands = new Command[]
             {
                 new RegisterNewBusinessCommand(businessId, "test business", accountId),
-                new CreateAccountCommand(accountId, businessId),
+                new CreateAccountCommand(accountId, businessId)
+                
+            };
+
+            ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>(commands);
+
+            commands = new Command[]
+            {
                 new ReplenishAccountByCardCommand(accountId, new Money(1000)),
                 new OrderSubscriptionCommand(businessId, VIPSubscription.ID, subscriptionId)
             };
-
-            GridNode.Execute(commands);
-            ExpectMsg<SubscriptionOrderCompletedEvent>(Timeout);
+            ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(commands);
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(5);
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(50);
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();

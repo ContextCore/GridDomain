@@ -3,11 +3,11 @@ using GridDomain.EventSourcing;
 
 namespace BusinessNews.ReadModel
 {
-    public class BalanceCreatedProjectedNotification : ISourcedEvent
+    public class BusinessBalanceCreatedProjectedNotification : ISourcedEvent
     {
         public Guid BalanceId;
 
-        public BalanceCreatedProjectedNotification(Guid balanceId, ISourcedEvent o)
+        public BusinessBalanceCreatedProjectedNotification(Guid balanceId, ISourcedEvent o)
         {
             BalanceId = balanceId;
             SourceId = o.SourceId;

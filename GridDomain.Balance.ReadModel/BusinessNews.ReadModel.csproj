@@ -88,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BalanceChangeProjectedNotification.cs" />
-    <Compile Include="BalanceCreatedProjectedNotification.cs" />
+    <Compile Include="BusinessBalanceCreatedProjectedNotification.cs" />
     <Compile Include="BusinessBalanceContext.cs" />
     <Compile Include="BusinessBalance.cs" />
     <Compile Include="BusinessCurrentBalanceProjectionBuilder.cs" />

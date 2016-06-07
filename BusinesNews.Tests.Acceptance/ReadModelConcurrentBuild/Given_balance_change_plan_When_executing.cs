@@ -171,7 +171,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         {
             var createBalanceCommands = balanceManipulationCommands.Select(p => p.AccountCreateCommand).ToArray();
 
-            ExecuteAndWaitFor<BalanceCreatedProjectedNotification>
+            ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>
                 (createBalanceCommands, createBalanceCommands.Length);
 
             return createBalanceCommands;

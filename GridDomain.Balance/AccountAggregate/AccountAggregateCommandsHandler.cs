@@ -8,7 +8,7 @@ namespace BusinessNews.Domain.AccountAggregate
         public AccountAggregateCommandsHandler()
         {
             Map<CreateAccountCommand>(cmd => cmd.AccountId,
-                cmd => new Account(cmd.AccountId, cmd.BusinessId));
+                   cmd => new Account(cmd.AccountId, cmd.BusinessId));
 
             Map<ReplenishAccountByCardCommand>(cmd => cmd.AccountId,
                 (cmd, agr) => agr.Replenish(cmd.Amount));

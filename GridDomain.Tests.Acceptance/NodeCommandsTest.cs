@@ -14,7 +14,6 @@ namespace GridDomain.Tests.Acceptance
     public abstract class NodeCommandsTest : TestKit
     {
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
-        private IActorSubscriber _subscriber;
         protected GridDomainNode GridNode;
 
         protected NodeCommandsTest(string config, string name = null) : base(config, name)
@@ -40,18 +39,19 @@ namespace GridDomain.Tests.Acceptance
 
             GridNode = GreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
-            _subscriber = GridNode.Container.Resolve<IActorSubscriber>();
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber)
+        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber = 0)
         {
+            eventNumber = eventNumber == 0 ? commands.Length : eventNumber;
+
             var actor = GridNode.System
                                 .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)),
                                          "EventCounter_" + Guid.NewGuid());
 
-            _subscriber.Subscribe<TEvent>(actor);
+            GridNode.Container.Resolve<IActorSubscriber>().Subscribe<TEvent>(actor);
 
             Console.WriteLine("Starting execute");
 

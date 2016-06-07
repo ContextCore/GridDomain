@@ -12,7 +12,7 @@ namespace BusinessNews.Domain.BusinessAggregate
         private Guid MainAccountId;
         private Guid MediaAccountId;
 
-        public string Name;
+        public string Name { get; private set; }
         private Guid SubscriptionId;
 
         public Business(Guid id, string name, Guid subscriptionId, Guid balanceId)
@@ -23,6 +23,11 @@ namespace BusinessNews.Domain.BusinessAggregate
                 SubscriptionId = subscriptionId,
                 BalanceId = balanceId
             });
+        }
+
+        private Business(Guid id)
+        {
+            Id = id;
         }
 
         public IReadOnlyCollection<Guid> SubscriptionOrders => _subscriptionOrders;
