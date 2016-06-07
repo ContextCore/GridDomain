@@ -37,27 +37,29 @@ namespace BusinessNews.Node
 
             container.RegisterType<ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>, BuySubscriptionSagaFactory>();
             container.RegisterType<ISagaFactory<BuySubscriptionSaga, SubscriptionOrderedEvent>, BuySubscriptionSagaFactory>();
+            container.RegisterType<AggregateHubActor<Subscription>>();
+            container.RegisterType<AggregateHubActor<Subscription>>();
 
             container.RegisterType<AggregateActor<Account>>();
-            container.RegisterType<AggregateHostActor<Account>>();
+            container.RegisterType<AggregateHubActor<Account>>();
             container.RegisterType<ICommandAggregateLocator<Account>, AccountAggregateCommandsHandler>();
             container.RegisterType<IAggregateCommandsHandler<Account>, AccountAggregateCommandsHandler>();
 
 
             container.RegisterType<AggregateActor<Bill>>();
-            container.RegisterType<AggregateHostActor<Bill>>();
+            container.RegisterType<AggregateHubActor<Bill>>();
             container.RegisterType<ICommandAggregateLocator<Bill>, BillAggregateCommandsHandler>();
             container.RegisterType<IAggregateCommandsHandler<Bill>, BillAggregateCommandsHandler>();
 
 
             container.RegisterType<AggregateActor<Business>>();
-            container.RegisterType<AggregateHostActor<Business>>();
+            container.RegisterType<AggregateHubActor<Business>>();
             container.RegisterType<ICommandAggregateLocator<Business>, BusinessAggregateCommandsHandler>();
             container.RegisterType<IAggregateCommandsHandler<Business>, BusinessAggregateCommandsHandler>();
 
 
             container.RegisterType<AggregateActor<Subscription>>();
-            container.RegisterType<AggregateHostActor<Subscription>>();
+            container.RegisterType<AggregateHubActor<Subscription>>();
             container.RegisterType<ICommandAggregateLocator<Subscription>, SubscriptionAggregateCommandsHandler>();
             container.RegisterType<IAggregateCommandsHandler<Subscription>, SubscriptionAggregateCommandsHandler>();
         }

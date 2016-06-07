@@ -10,22 +10,19 @@ using NLog;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public abstract class AkkaRoutingActor : TypedActor, IHandler<CreateHandlerRoute>,
-        IHandler<CreateActorRoute>
+    public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRoute>,
+                                                     IHandler<CreateActorRoute>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
         protected readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly IActorSubscriber _subscriber;
 
-        protected readonly RouterConfig DefaultRouter = new RandomPool(Environment.ProcessorCount);
-
-        protected AkkaRoutingActor(IHandlerActorTypeFactory actorTypeFactory,
+        protected RoutingActor(IHandlerActorTypeFactory actorTypeFactory,
             IActorSubscriber subscriber)
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
         }
-
 
         public void Handle(CreateActorRoute msg)
         {
@@ -56,38 +53,15 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             return pool;
         }
-        protected abstract RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage);
-
         private IActorRef CreateActor(Type actorType, 
-                                            RouterConfig routeConfig,
-                                            string actorName)
+                                      RouterConfig routeConfig,
+                                      string actorName)
         {
             var handleActorProps = Context.System.DI().Props(actorType);
             handleActorProps = handleActorProps.WithRouter(routeConfig);
 
             var handleActor = Context.System.ActorOf(handleActorProps, actorName);
             return handleActor;
-        }
-
-        protected ConsistentHashMapping GetCorrelationPropertyFromMessage(CreateHandlerRoute handlerRouteConfigMessage)
-        {
-            return m =>
-            {
-                var msgType = m.GetType();
-                if (msgType != handlerRouteConfigMessage.MessageType)
-                {
-                    _log.Trace($"Bad message type. Expected:{handlerRouteConfigMessage.MessageType}, got:{msgType}");
-                    return null;
-                }
-
-                var value = msgType.GetProperty(handlerRouteConfigMessage.MessageCorrelationProperty)
-                    .GetValue(m);
-                if (!(value is Guid))
-                    throw new InvalidCorrelationPropertyValue(value);
-
-                _log.Trace($"created correlation id for message {m.GetType()}: {value}");
-                return value;
-            };
         }
     }
 }

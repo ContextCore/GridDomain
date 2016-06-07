@@ -180,13 +180,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemFactory.cs" />
+    <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
-    <Compile Include="Actors\AggregateHostActor.cs" />
+    <Compile Include="Actors\PersistentHubActor.cs" />
     <Compile Include="AkkaMessaging\AkkaEventBusTransport.cs" />
     <Compile Include="AkkaMessaging\CannotGetDistributedPubSubException.cs" />
     <Compile Include="AkkaMessaging\Routing\CreateActorRoute.cs" />
@@ -208,7 +209,7 @@
     <Compile Include="AkkaMessaging\IncorrectTypeOfCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\InvalidHandlerType.cs" />
     <Compile Include="Actors\MessageHandlingActor.cs" />
-    <Compile Include="AkkaMessaging\Routing\AkkaRoutingActor.cs" />
+    <Compile Include="AkkaMessaging\Routing\RoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaMessaging\MetadataEntry.cs" />
     <Compile Include="AkkaMessaging\MetadataMessage.cs" />

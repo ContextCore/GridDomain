@@ -16,7 +16,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public static CreateActorRoute ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
         {
-            return new CreateActorRoute(typeof(AggregateHostActor<TAggregate>), name, routes);
+            return new CreateActorRoute(typeof(AggregateHubActor<TAggregate>), name, routes);
         }
 
         public static CreateActorRoute ForSaga<TSaga, TSagaState, TStartMessage>(string name, params MessageRoute[] routes) 

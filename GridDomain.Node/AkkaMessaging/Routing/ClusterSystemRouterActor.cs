@@ -7,7 +7,7 @@ using Akka.Routing;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public class ClusterSystemRouterActor : AkkaRoutingActor
+    public class ClusterSystemRouterActor : RoutingActor
     {
         private IActorRef _subscriptionWaiter;
 
@@ -34,19 +34,6 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _subscriptionWaiter?.Tell(msg);
             _log.Trace(
                 $"Subscription was successfull for topic {msg.Subscribe.Topic} group {msg.Subscribe.Group} path {msg.Subscribe.Ref.Path}");
-        }
-
-
-        protected override RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage)
-        {
-            if (string.IsNullOrEmpty(handlerRouteConfigMessage.MessageCorrelationProperty))
-                return DefaultRouter;
-
-            var localPool = new ConsistentHashingPool(Environment.ProcessorCount)
-                .WithHashMapping(GetCorrelationPropertyFromMessage(handlerRouteConfigMessage));
-
-            var router = new ClusterRouterPool(localPool, new ClusterRouterPoolSettings(10, true, 2));
-            return router;
         }
 
         public class SubscribeToRouteEstanblishAck
