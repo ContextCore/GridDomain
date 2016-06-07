@@ -25,7 +25,7 @@ namespace BusinessNews.Domain.AccountAggregate
         public void Handle(CreateAccountCommand e)
         {
             _log.Debug("Handling command:" + e.ToPropsString());
-            _repository.Save(new Account(e.BalanceId, e.BusinessId), e.Id);
+            _repository.Save(new Account(e.AccountId, e.BusinessId), e.Id);
         }
 
         public void Handle(PayForBillCommand e)

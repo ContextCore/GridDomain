@@ -3,7 +3,7 @@ using NMoneys;
 
 namespace BusinessNews.Domain.AccountAggregate.Commands
 {
-    public class PayForBillCommand : ChangeAccountCommand
+    public class PayForBillCommand : ChargeAccountCommand
     {
         public PayForBillCommand(Guid accountId, Money amount, Guid billId)
             : base(accountId, amount)
@@ -11,6 +11,6 @@ namespace BusinessNews.Domain.AccountAggregate.Commands
             BillId = billId;
         }
 
-        public Guid BillId { get; private set; }
+        public Guid BillId { get; }
     }
 }

@@ -104,9 +104,10 @@ namespace GridDomain.Node
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }
 
-        public void Execute(ICommand cmd)
+        public void Execute(params ICommand[] commands)
         {
-            _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
+            foreach(var cmd in commands)
+                 _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
     }
 }

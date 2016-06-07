@@ -37,11 +37,11 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 
         private void When_executed_change_balances(IReadOnlyCollection<BalanceChangePlan> balanceManipulationPlans)
         {
-            var changeBalanceCommands = balanceManipulationPlans.SelectMany(p => p.BalanceChangeCommands).ToArray();
+            var changeBalanceCommands = balanceManipulationPlans.SelectMany(p => p.AccountChangeCommands).ToArray();
 
             Console.WriteLine();
             Console.WriteLine($"Totally issued {balanceManipulationPlans.Select(p => p.AccountCreateCommand).Count()}" +
-                              $" create commands and {changeBalanceCommands.Length} change commands");
+                              $"create commands and {changeBalanceCommands.Length} change commands");
             Console.WriteLine();
 
             ExecuteAndWaitFor<BalanceChangeProjectedNotification>(changeBalanceCommands, changeBalanceCommands.Length);
@@ -79,7 +79,6 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         {
             Sys.AddDependencyResolver(new UnityDependencyResolver(GridNode.Container, Sys));
             var props = Sys.DI().Props<AggregateActor<Account>>();
-
 
             Console.WriteLine();
             var aggregateActors = new List<Tuple<BalanceChangePlan, AggregateActor<Account>>>();
@@ -141,11 +140,11 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 
             foreach (var plan in balanceManipulationPlans)
             {
-                Console.WriteLine($"plan for business: {plan.businessId} with balane {plan.AccountId}");
+                Console.WriteLine($"plan for business: {plan.BusinessId} with balane {plan.AccountId}");
                 Console.WriteLine(
-                    $"total change:{plan.TotalAmountChange}, with {plan.BalanceChangeCommands.Count} commands");
+                    $"total change:{plan.TotalAmountChange}, with {plan.AccountChangeCommands.Count} commands");
 
-                foreach (var cmd in plan.BalanceChangeCommands)
+                foreach (var cmd in plan.AccountChangeCommands)
                 {
                     if (cmd.AccountId != plan.AccountId) throw new CorruptedPlanException();
                     Console.WriteLine($"{cmd.GetType().Name} {cmd.Id} with amount: {cmd.Amount}");
@@ -158,7 +157,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
             using (var context = new BusinessBalanceContext())
             {
                 var businessBalances =
-                    createAccountCommands.Select(cmd => context.Balances.Find(cmd.BalanceId)).ToArray();
+                    createAccountCommands.Select(cmd => context.Balances.Find(cmd.AccountId)).ToArray();
 
                 foreach (var balance in businessBalances)
                 {
@@ -180,8 +179,8 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 
         private static IReadOnlyCollection<BalanceChangePlan> GivenBalancePlan(int businessNum, int changesPerBusiness)
         {
-            var balanceManipulationCommands = new DataGenerator().CreateBalanceManipulationCommands(businessNum,
-                changesPerBusiness);
+            var balanceManipulationCommands = new DataGenerator()
+                                              .CreateBalanceManipulationCommands(businessNum,changesPerBusiness);
             return balanceManipulationCommands;
         }
 

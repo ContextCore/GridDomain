@@ -47,7 +47,9 @@ namespace GridDomain.Tests.Acceptance
 
         protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber)
         {
-            var actor = Sys.ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)));
+            var actor = GridNode.System
+                                .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)),
+                                         "EventCounter_" + Guid.NewGuid());
 
             _subscriber.Subscribe<TEvent>(actor);
 

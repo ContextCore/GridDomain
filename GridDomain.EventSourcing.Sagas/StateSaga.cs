@@ -30,11 +30,7 @@ namespace GridDomain.EventSourcing.Sagas
         public TSagaStates DomainState => StateData.MachineState;
         public List<object> MessagesToDispatch => new List<object>();
 
-        IAggregate IDomainSaga.StateAggregate
-        {
-            get { return StateData; }
-            set { StateData = (TStateData) value; }
-        }
+        IAggregate IDomainSaga.StateAggregate => StateData;
 
         public void Handle(TStartMessage e)
         {

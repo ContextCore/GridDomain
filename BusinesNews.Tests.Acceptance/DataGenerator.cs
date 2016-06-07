@@ -25,18 +25,15 @@ namespace BusinesNews.Tests.Acceptance
         }
 
 
-        private BalanceChangePlan CreateBalanceChangePlan(Guid businessId, Guid balanceId, int commandsNum)
+        private BalanceChangePlan CreateBalanceChangePlan(Guid businessId, Guid accountId, int commandsNum)
         {
             var generator = new Fixture();
 
-            generator.Customizations.Add(new KnownConstructorParameter<ReplenishAccountByCardCommand, Guid>("balanceId",
-                balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<PayForBillCommand, Guid>("balanceId",
-                balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("balanceId",
-                balanceId));
-            generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("businessId",
-                businessId));
+            generator.Customizations.Add(new KnownConstructorParameter<ReplenishAccountByCardCommand, Guid>("accountId", accountId));
+            generator.Customizations.Add(new KnownConstructorParameter<PayForBillCommand, Guid>("accountId", accountId));
+
+            generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("accountId", accountId));
+            generator.Customizations.Add(new KnownConstructorParameter<CreateAccountCommand, Guid>("businessId", businessId));
 
             var rnd = new Random();
             var numOfReplenishCommands = rnd.Next(1, commandsNum);
@@ -48,20 +45,18 @@ namespace BusinesNews.Tests.Acceptance
             var totalReplenish = replenishCmds.Aggregate(Money.Zero(), (a, b) => a += b.Amount);
             var totalWithdrawal = withdrawalCmds.Aggregate(Money.Zero(), (a, b) => a += b.Amount);
 
-            var changeBalanceCmds = new List<ChangeAccountCommand>();
+            var changeBalanceCmds = new List<ChargeAccountCommand>();
             changeBalanceCmds.AddRange(replenishCmds);
             changeBalanceCmds.AddRange(withdrawalCmds);
             changeBalanceCmds.Shuffle();
 
             return new BalanceChangePlan
             {
-                BalanceChangeCommands = changeBalanceCmds,
+                AccountChangeCommands = changeBalanceCmds,
                 AccountCreateCommand = generator.Create<CreateAccountCommand>(),
-                businessId = businessId,
-                AccountId = balanceId,
+                BusinessId = businessId,
+                AccountId = accountId,
                 TotalAmountChange = totalReplenish - totalWithdrawal,
-                TotalWithdrwal = totalWithdrawal,
-                TotalReplenish = totalReplenish
             };
         }
     }

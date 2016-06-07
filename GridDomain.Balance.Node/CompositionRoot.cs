@@ -1,5 +1,10 @@
 ﻿using System;
 using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.BillAggregate;
+using BusinessNews.Domain.BusinessAggregate;
+using BusinessNews.Domain.OfferAggregate;
+using BusinessNews.Domain.Sagas.BuySubscription;
+using BusinessNews.Domain.SubscriptionAggregate;
 using BusinessNews.ReadModel;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.CQRS.ReadModel;
@@ -30,10 +35,31 @@ namespace BusinessNews.Node
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
             container.RegisterType<TransactionsProjectionBuilder>();
 
+            container.RegisterType<ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>, BuySubscriptionSagaFactory>();
+            container.RegisterType<ISagaFactory<BuySubscriptionSaga, SubscriptionOrderedEvent>, BuySubscriptionSagaFactory>();
+
             container.RegisterType<AggregateActor<Account>>();
             container.RegisterType<AggregateHostActor<Account>>();
             container.RegisterType<ICommandAggregateLocator<Account>, AccountAggregateCommandsHandler>();
             container.RegisterType<IAggregateCommandsHandler<Account>, AccountAggregateCommandsHandler>();
+
+
+            container.RegisterType<AggregateActor<Bill>>();
+            container.RegisterType<AggregateHostActor<Bill>>();
+            container.RegisterType<ICommandAggregateLocator<Bill>, BillAggregateCommandsHandler>();
+            container.RegisterType<IAggregateCommandsHandler<Bill>, BillAggregateCommandsHandler>();
+
+
+            container.RegisterType<AggregateActor<Business>>();
+            container.RegisterType<AggregateHostActor<Business>>();
+            container.RegisterType<ICommandAggregateLocator<Business>, BusinessAggregateCommandsHandler>();
+            container.RegisterType<IAggregateCommandsHandler<Business>, BusinessAggregateCommandsHandler>();
+
+
+            container.RegisterType<AggregateActor<Subscription>>();
+            container.RegisterType<AggregateHostActor<Subscription>>();
+            container.RegisterType<ICommandAggregateLocator<Subscription>, SubscriptionAggregateCommandsHandler>();
+            container.RegisterType<IAggregateCommandsHandler<Subscription>, SubscriptionAggregateCommandsHandler>();
         }
     }
 }

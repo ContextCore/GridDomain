@@ -166,13 +166,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BalanceChangePlan.cs" />
+    <Compile Include="BuySubscriptionSaga\Saga_execution.cs" />
     <Compile Include="DataGenerator.cs" />
     <Compile Include="KnownConstructorParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadModelConcurrentBuild\Cluster_Given_balance_change_plan_When_executing.cs" />
     <Compile Include="ReadModelConcurrentBuild\CorruptedPlanException.cs" />
     <Compile Include="ReadModelConcurrentBuild\Given_balance_change_plan_When_executing.cs" />
-    <Compile Include="ReadModelConcurrentBuild\Standalne_Given_balance_change_plan_When_executing.cs" />
+    <Compile Include="ReadModelConcurrentBuild\Standalone_Given_balance_change_plan_When_executing.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Balance.Node\BusinessNews.Node.csproj">

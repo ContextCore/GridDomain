@@ -107,6 +107,7 @@
     <Compile Include="BusinessAggregate\BusinessCreatedEvent.cs" />
     <Compile Include="BusinessAggregate\CompleteBusinessSubscriptionOrderCommand.cs" />
     <Compile Include="BusinessAggregate\OrderSubscriptionCommand.cs" />
+    <Compile Include="BusinessAggregate\RegisterNewBusinessCommand.cs" />
     <Compile Include="BusinessAggregate\SubscriptionChangedEvent.cs" />
     <Compile Include="BusinessAggregate\SubscriptionOrderCompletedEvent.cs" />
     <Compile Include="BusinessAggregate\SubscriptionOrderedEvent.cs" />
@@ -131,7 +132,7 @@
     <Compile Include="SubscriptionAggregate\SubscriptionCreatedEvent.cs" />
     <Compile Include="TransactoinCreatedEvent.cs" />
     <Compile Include="TransactoinHistory.cs" />
-    <Compile Include="AccountAggregate\Commands\ChangeAccountCommand.cs" />
+    <Compile Include="AccountAggregate\Commands\ChargeAccountCommand.cs" />
     <Compile Include="AccountAggregate\NegativeMoneyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccountAggregate\Commands\ReplenishAccountByCardCommand.cs" />

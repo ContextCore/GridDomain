@@ -2,6 +2,7 @@
 using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BillAggregate;
 using BusinessNews.Domain.BusinessAggregate;
+using BusinessNews.Domain.Sagas.BuySubscription;
 using BusinessNews.Domain.SubscriptionAggregate;
 using BusinessNews.ReadModel;
 using GridDomain.CQRS.Messaging;
@@ -17,6 +18,8 @@ namespace BusinessNews.Node
             router.RegisterAggregate<Bill, BillAggregateCommandsHandler>();
             router.RegisterAggregate<Subscription, SubscriptionAggregateCommandsHandler>();
             router.RegisterAggregate<Business, BusinessAggregateCommandsHandler>();
+
+            router.RegisterSaga<BuySubscriptionSaga,BuySubscriptionSagaStateAggregate, SubscriptionOrderedEvent>();
 
             router.Route<AccountBalanceReplenishEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()

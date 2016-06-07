@@ -1,17 +1,18 @@
 using System;
 using GridDomain.CQRS;
+using NMoneys;
 
 namespace BusinessNews.Domain.AccountAggregate.Commands
 {
-    public class CreateAccountCommand : Command
+    public class ChargeAccountCommand : Command
     {
-        public CreateAccountCommand(Guid accountId, Guid businessId)
+        protected ChargeAccountCommand(Guid accountId, Money amount)
         {
             AccountId = accountId;
-            BusinessId = businessId;
+            Amount = amount;
         }
 
         public Guid AccountId { get; }
-        public Guid BusinessId { get;}
+        public Money Amount { get; }
     }
 }

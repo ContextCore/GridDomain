@@ -1,4 +1,7 @@
-﻿using GridDomain.CQRS.Messaging.MessageRouting;
+﻿using System;
+using BusinessNews.Domain.AccountAggregate;
+using BusinessNews.Domain.OfferAggregate;
+using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace BusinessNews.Domain.BusinessAggregate
 {
@@ -11,6 +14,9 @@ namespace BusinessNews.Domain.BusinessAggregate
 
             Map<CompleteBusinessSubscriptionOrderCommand>(c => c.BusinessId,
                 (cmd, agr) => agr.PurchaseSubscription(cmd.SubscriptionId));
+
+            Map<RegisterNewBusinessCommand>(c => c.BusinessId,
+                                           cmd => new Business(cmd.BusinessId, cmd.Name, FreeSubscription.ID, cmd.AccountId));
         }
     }
 }

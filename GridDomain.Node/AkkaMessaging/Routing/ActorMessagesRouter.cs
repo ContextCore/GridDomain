@@ -5,6 +5,7 @@ using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 
@@ -34,12 +35,13 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
             var messageRoutes = new TCommandHandler().GetRegisteredCommands().Select(c => new MessageRoute
-            {
-                CorrelationField = c.Property,
-                MessageType = c.Command
-            }).ToArray();
+            (
+                c.Command,
+                c.Property
+            )).ToArray();
 
-            var createActorRoute = new CreateActorRoute(typeof (TAggregate), messageRoutes);
+            var name = $"Aggregate_{typeof(TAggregate).Name}";
+            var createActorRoute = CreateActorRoute.ForAggregate<TAggregate>(name,messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
@@ -48,14 +50,24 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         ///     Messages are determined by implemented IHandler<T> interfaces
         /// </summary>
         /// <typeparam name="TSaga"></typeparam>
-        public void RegisterSaga<TSaga>() where TSaga : IDomainSaga
+        public void RegisterSaga<TSaga, TSagaState, TStartMessage>()
+                                         where TSaga : IDomainSaga
+                                         where TSagaState : AggregateBase
+                                         where TStartMessage : DomainEvent
         {
             var allInterfaces = typeof (TSaga).GetInterfaces();
             var handlerInterfaces =
                 allInterfaces.Where(i => i.IsGenericType &&
                                          i.GetGenericTypeDefinition() == typeof (IHandler<>))
                     .ToArray();
-            var supportedMessages = handlerInterfaces.SelectMany(s => s.GetGenericArguments());
+            var supportedMessages = handlerInterfaces.SelectMany(s => s.GetGenericArguments())
+                                                     .Union(new [] { typeof(TStartMessage)})
+                                                     .ToArray();
+
+            var messageRoutes = supportedMessages.Select(m => new MessageRoute(m, nameof(DomainEvent.SagaId))).ToArray();
+            var name = $"Saga_{typeof (TSaga).Name}";
+            var createActorRoute = CreateActorRoute.ForSaga<TSaga,TSagaState,TStartMessage>(name,messageRoutes);
+            _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
         //TODO:replace with wait until event notifications

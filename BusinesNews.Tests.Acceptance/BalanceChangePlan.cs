@@ -9,10 +9,8 @@ namespace BusinesNews.Tests.Acceptance
     {
         public CreateAccountCommand AccountCreateCommand;
         public Guid AccountId;
-        public IReadOnlyCollection<ChangeAccountCommand> BalanceChangeCommands;
-        public Guid businessId;
+        public IReadOnlyCollection<ChargeAccountCommand> AccountChangeCommands;
+        public Guid BusinessId;
         public Money TotalAmountChange;
-        public Money TotalReplenish;
-        public Money TotalWithdrwal;
     }
 }

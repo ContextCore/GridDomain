@@ -9,9 +9,9 @@ using GridDomain.EventSourcing.Sagas;
 namespace BusinessNews.Domain.Sagas.BuySubscription
 {
     public class BuySubscriptionSaga : StateSaga<BuySubscriptionSaga.State,
-        BuySubscriptionSaga.Transitions,
-        BuySubscriptionSagaStateAggregate,
-        SubscriptionOrderedEvent>,
+                                                 BuySubscriptionSaga.Transitions,
+                                                 BuySubscriptionSagaStateAggregate,
+                                                 SubscriptionOrderedEvent>,
         IHandler<SubscriptionCreatedEvent>,
         IHandler<SubscriptionChargedEvent>,
         IHandler<BillCreatedEvent>,

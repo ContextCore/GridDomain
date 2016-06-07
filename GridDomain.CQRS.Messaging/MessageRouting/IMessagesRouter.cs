@@ -1,4 +1,5 @@
 ﻿using CommonDomain.Core;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
@@ -11,6 +12,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
             where TAggregate : AggregateBase;
 
-        void RegisterSaga<TSaga>() where TSaga : IDomainSaga;
+        void RegisterSaga<TSaga, TSagaState, TStartMessage>()
+                                                where TSaga : IDomainSaga
+                                                where TSagaState : AggregateBase
+                                                where TStartMessage : DomainEvent;
     }
 }

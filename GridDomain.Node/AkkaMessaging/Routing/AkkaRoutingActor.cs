@@ -25,13 +25,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _actorTypeFactory = actorTypeFactory;
         }
 
+
         public void Handle(CreateActorRoute e)
         {
-            var aggregateActorOpenType = typeof (AggregateHostActor<>);
-            var actorType = aggregateActorOpenType.MakeGenericType(e.AggregateType);
-
-            string actorName = $"Message_handler_for_{e.AggregateType.Name}_{Guid.NewGuid()}";
-            var handleActor = CreateHandleActor(e, actorType, CreateActorRouter, actorName);
+            var handleActor = CreateHandleActor(e, e.ActorType, CreateActorRouter, e.ActorName);
 
             foreach (var msgRoute in e.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);

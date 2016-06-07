@@ -8,7 +8,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
     public class BuySubscriptionSagaStateAggregate :
         SagaStateAggregate<BuySubscriptionSaga.State, BuySubscriptionSaga.Transitions>
     {
-        public BuySubscriptionSagaStateAggregate(Guid id, BuySubscriptionSaga.State state) : base(id, state)
+        public BuySubscriptionSagaStateAggregate(Guid id, BuySubscriptionSaga.State state = BuySubscriptionSaga.State.SubscriptionSet) : base(id, state)
         {
         }
 
