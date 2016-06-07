@@ -182,6 +182,7 @@
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
+    <Compile Include="Actors\ISagaFactory.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />

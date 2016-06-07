@@ -8,6 +8,7 @@ using BusinessNews.Domain.AccountAggregate;
 using BusinessNews.Domain.AccountAggregate.Commands;
 using BusinessNews.Node;
 using BusinessNews.ReadModel;
+using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests;
@@ -45,6 +46,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 
             ExecuteAndWaitFor<BalanceChangeProjectedNotification>(changeBalanceCommands, changeBalanceCommands.Length);
         }
+
         protected static IUnityContainer CreateUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
         {
             var unityContainer = new UnityContainer();
@@ -75,7 +77,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 
         private void CheckWriteModel(IReadOnlyCollection<BalanceChangePlan> balanceManipulationPlans)
         {
-           Sys.AddDependencyResolver(new UnityDependencyResolver(GridNode.Container, Sys));
+            Sys.AddDependencyResolver(new UnityDependencyResolver(GridNode.Container, Sys));
             var props = Sys.DI().Props<AggregateActor<Account>>();
 
 
@@ -183,7 +185,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
             return balanceManipulationCommands;
         }
 
-        public Given_balance_change_plan_When_executing(string config, string name=null) : base(config,name)
+        public Given_balance_change_plan_When_executing(string config, string name = null) : base(config, name)
         {
         }
     }

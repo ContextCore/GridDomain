@@ -1,7 +1,7 @@
 using Akka.Actor;
 using GridDomain.CQRS;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.Actors
 {
     public class TypedMessageActor<T> : IHandler<T>
     {

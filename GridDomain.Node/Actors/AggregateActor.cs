@@ -5,8 +5,9 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
+using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.Actors
 {
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -17,9 +18,9 @@ namespace GridDomain.Node.AkkaMessaging
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
 
-        public AggregateActor(IAggregateCommandsHandler<TAggregate> handler, 
-                              AggregateFactory factory,
-                              IPublisher publisher)
+        public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
+            AggregateFactory factory,
+            IPublisher publisher)
         {
             _handler = handler;
             _publisher = publisher;

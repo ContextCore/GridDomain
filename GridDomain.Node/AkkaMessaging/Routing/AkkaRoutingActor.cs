@@ -1,16 +1,16 @@
 using System;
 using Akka.Actor;
-using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.DI.Core;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.Logging;
+using GridDomain.Node.Actors;
 using NLog;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public abstract class AkkaRoutingActor : TypedActor, IHandler<CreateHandlerRoute>,
-                                                         IHandler<CreateActorRoute>
+        IHandler<CreateActorRoute>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
         protected readonly Logger _log = LogManager.GetCurrentClassLogger();
@@ -24,10 +24,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
         }
-       
+
         public void Handle(CreateActorRoute e)
         {
-            var aggregateActorOpenType = typeof(AggregateHostActor<>);
+            var aggregateActorOpenType = typeof (AggregateHostActor<>);
             var actorType = aggregateActorOpenType.MakeGenericType(e.AggregateType);
 
             string actorName = $"Message_handler_for_{e.AggregateType.Name}_{Guid.NewGuid()}";
@@ -51,10 +51,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         protected abstract RouterConfig CreateActorRouter(CreateActorRoute msg);
         protected abstract RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage);
 
-        private IActorRef CreateHandleActor<TMessage>(TMessage msg, 
-                                                      Type actorType,
-                                                      Func<TMessage, RouterConfig> routerFactory,
-                                                      string actorName = null)
+        private IActorRef CreateHandleActor<TMessage>(TMessage msg,
+            Type actorType,
+            Func<TMessage, RouterConfig> routerFactory,
+            string actorName = null)
         {
             var handleActorProps = Context.System.DI().Props(actorType);
             var routeConfig = routerFactory(msg);
@@ -85,6 +85,4 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             };
         }
     }
-
-
 }

@@ -4,7 +4,7 @@ namespace BusinessNews.Domain
 {
     public class Subscription
     {
-        public Guid Id;
         public string[] claims;
+        public Guid Id;
     }
 }

@@ -6,7 +6,7 @@ namespace BusinessNews.Domain.AccountAggregate.Commands
 {
     public class ChangeAccountCommand : Command
     {
-        public ChangeAccountCommand(Guid accountId,Money amount)
+        public ChangeAccountCommand(Guid accountId, Money amount)
         {
             AccountId = accountId;
             Amount = amount;

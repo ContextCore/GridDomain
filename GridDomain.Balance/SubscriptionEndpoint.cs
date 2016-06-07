@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NMoneys;
-
-namespace BusinessNews.Domain
+﻿namespace BusinessNews.Domain
 {
     //public enum Subscription
     //{
@@ -12,7 +7,7 @@ namespace BusinessNews.Domain
     //}
 
 
-    class SubscriptionEndpoint
+    internal class SubscriptionEndpoint
     {
     }
 }

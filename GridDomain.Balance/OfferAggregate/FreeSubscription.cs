@@ -14,7 +14,6 @@ namespace BusinessNews.Domain.OfferAggregate
             Price = Money.Zero();
             Grants = new[] {"free"};
             Period = TimeSpan.MaxValue;
-
         }
     }
 }

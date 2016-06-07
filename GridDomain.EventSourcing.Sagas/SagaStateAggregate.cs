@@ -14,10 +14,6 @@ namespace GridDomain.EventSourcing.Sagas
             Id = id;
         }
 
-        static SagaStateAggregate()
-        {
-             
-        }
         public SagaStateAggregate(Guid id, TState state)
         {
             RaiseEvent(new SagaCreatedEvent<TState>(state, id));

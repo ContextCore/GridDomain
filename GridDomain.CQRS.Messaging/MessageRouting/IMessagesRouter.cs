@@ -8,8 +8,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         IRouteBuilder<TMessage> Route<TMessage>();
 
         void RegisterAggregate<TAggregate, TCommandHandler>()
-                                where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
-                                where TAggregate : AggregateBase;
+            where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
+            where TAggregate : AggregateBase;
 
         void RegisterSaga<TSaga>() where TSaga : IDomainSaga;
     }

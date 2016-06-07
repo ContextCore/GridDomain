@@ -5,11 +5,18 @@ using GridDomain.EventSourcing.Sagas;
 
 namespace BusinessNews.Domain.Sagas.BuySubscription
 {
-    public class BuySubscriptionSagaStateAggregate : SagaStateAggregate<BuySubscriptionSaga.State, BuySubscriptionSaga.Transitions>
+    public class BuySubscriptionSagaStateAggregate :
+        SagaStateAggregate<BuySubscriptionSaga.State, BuySubscriptionSaga.Transitions>
     {
         public BuySubscriptionSagaStateAggregate(Guid id, BuySubscriptionSaga.State state) : base(id, state)
         {
         }
+
+        public Guid BusinessId { get; private set; }
+
+        public Guid AccountId { get; private set; }
+
+        public Guid SubscriptionId { get; private set; }
 
         public void RememberOrder(SubscriptionOrderedEvent e)
         {
@@ -23,24 +30,6 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             SubscriptionId = e.SuibscriptionId;
         }
 
-        public Guid BusinessId { get; private set; }
-
-        public Guid AccountId { get; private set; }
-
-        internal class AccountRememberedEvent
-        {
-            public Guid AccountId { get; }
-            public Guid BusinessId { get; }
-            public Guid SuibscriptionId { get; }
-
-            public AccountRememberedEvent(Guid accountId, Guid businessId, Guid suibscriptionId)
-            {
-                AccountId = accountId;
-                BusinessId = businessId;
-                SuibscriptionId = suibscriptionId;
-            }
-        }
-
         public void RememberSubscription(SubscriptionCreatedEvent e)
         {
             RaiseEvent(new SubscriptionRememberedEvent(e.SubscriptionId));
@@ -51,16 +40,28 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             SubscriptionId = e.SubscriptionId;
         }
 
-        public Guid SubscriptionId { get; private set; }
+        internal class AccountRememberedEvent
+        {
+            public AccountRememberedEvent(Guid accountId, Guid businessId, Guid suibscriptionId)
+            {
+                AccountId = accountId;
+                BusinessId = businessId;
+                SuibscriptionId = suibscriptionId;
+            }
+
+            public Guid AccountId { get; }
+            public Guid BusinessId { get; }
+            public Guid SuibscriptionId { get; }
+        }
 
         public class SubscriptionRememberedEvent
         {
-            public Guid SubscriptionId { get; }
-
             public SubscriptionRememberedEvent(Guid subscriptionId)
             {
                 SubscriptionId = subscriptionId;
             }
+
+            public Guid SubscriptionId { get; }
         }
     }
 }

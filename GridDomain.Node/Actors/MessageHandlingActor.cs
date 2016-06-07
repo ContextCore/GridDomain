@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 using GridDomain.Logging;
 using NLog;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.Actors
 {
     public class MessageHandlingActor<TMessage, THandler> : UntypedActor where THandler : IHandler<TMessage>
     {

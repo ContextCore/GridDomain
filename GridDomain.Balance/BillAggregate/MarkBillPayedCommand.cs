@@ -3,13 +3,12 @@ using GridDomain.CQRS;
 
 namespace BusinessNews.Domain.BillAggregate
 {
-    class MarkBillPayedCommand : Command
+    internal class MarkBillPayedCommand : Command
     {
-        public Guid BillId { get; }
-
-        public MarkBillPayedCommand(Guid id, Guid billId):base(id)
+        public MarkBillPayedCommand(Guid id, Guid billId) : base(id)
         {
-            
         }
+
+        public Guid BillId { get; }
     }
 }

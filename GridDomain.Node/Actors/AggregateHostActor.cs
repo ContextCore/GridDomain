@@ -5,16 +5,17 @@ using Akka.DI.Core;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.Actors
 {
     public class AggregateHostActor<TAggregate> : UntypedActor
         where TAggregate : AggregateBase
     {
         private readonly IAggregateActorLocator _actorLocator;
+        private readonly Type _actorType;
         private readonly IDictionary<Guid, IActorRef> _children = new Dictionary<Guid, IActorRef>();
         private readonly ICommandAggregateLocator<TAggregate> _locator;
-        private readonly Type _actorType;
 
         public AggregateHostActor(ICommandAggregateLocator<TAggregate> locator, IAggregateActorLocator actorLocator)
         {

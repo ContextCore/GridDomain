@@ -10,9 +10,8 @@ using Topshelf;
 namespace BusinessNews.Node
 {
     /// <summary>
-    /// Business news is a news company who provide fresh news and articles for businessmen 
+    ///     Business news is a news company who provide fresh news and articles for businessmen
     /// </summary>
-    
     public class Program
     {
         private static void Main(string[] args)
@@ -56,7 +55,6 @@ namespace BusinessNews.Node
 
         private static void ApplySeeds(GridDomainNode node)
         {
-           
         }
 
         private static void ConfigureLog(IDbConfiguration dbConf)

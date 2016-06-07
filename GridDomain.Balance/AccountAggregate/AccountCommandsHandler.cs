@@ -9,8 +9,8 @@ namespace BusinessNews.Domain.AccountAggregate
 {
     [Obsolete("Use AggregateCommandsHandler<Account> instead")]
     public class AccountCommandsHandler : ICommandHandler<ReplenishAccountByCardCommand>,
-                                          ICommandHandler<PayForBillCommand>,
-                                          ICommandHandler<CreateAccountCommand>
+        ICommandHandler<PayForBillCommand>,
+        ICommandHandler<CreateAccountCommand>
 
     {
         private readonly ILogger _log = LogManager.GetCurrentClassLogger();
@@ -28,20 +28,20 @@ namespace BusinessNews.Domain.AccountAggregate
             _repository.Save(new Account(e.BalanceId, e.BusinessId), e.Id);
         }
 
-        public void Handle(ReplenishAccountByCardCommand e)
-        {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            var account = LoadAccount(e.AccountId, e.Id);
-            account.Replenish(e.Amount);
-            _repository.Save(account, Guid.NewGuid());
-        }
-
         public void Handle(PayForBillCommand e)
         {
             _log.Debug("Handling command:" + e.ToPropsString());
             var account = LoadAccount(e.AccountId, e.Id);
             account.PayBill(e.Amount, e.BillId);
             _repository.Save(account, e.Id);
+        }
+
+        public void Handle(ReplenishAccountByCardCommand e)
+        {
+            _log.Debug("Handling command:" + e.ToPropsString());
+            var account = LoadAccount(e.AccountId, e.Id);
+            account.Replenish(e.Amount);
+            _repository.Save(account, Guid.NewGuid());
         }
 
         private Account LoadAccount(Guid balanceId, Guid commandId)

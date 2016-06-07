@@ -7,15 +7,13 @@ namespace BusinessNews.Domain.BusinessAggregate
 {
     public class Business : AggregateBase
     {
+        //TODO: decide should we extend orders with order\offer\subscription Id or store it in saga
+        private readonly List<Guid> _subscriptionOrders = new List<Guid>();
         private Guid MainAccountId;
         private Guid MediaAccountId;
 
         public string Name;
         private Guid SubscriptionId;
-
-        //TODO: decide should we extend orders with order\offer\subscription Id or store it in saga
-        private readonly List<Guid> _subscriptionOrders = new List<Guid>();
-        public IReadOnlyCollection<Guid> SubscriptionOrders => _subscriptionOrders; 
 
         public Business(Guid id, string name, Guid subscriptionId, Guid balanceId)
         {
@@ -27,6 +25,8 @@ namespace BusinessNews.Domain.BusinessAggregate
             });
         }
 
+        public IReadOnlyCollection<Guid> SubscriptionOrders => _subscriptionOrders;
+
         public void OrderSubscription(Guid suibscriptionId, Guid offerId)
         {
             RaiseEvent(new SubscriptionOrderedEvent(Id, suibscriptionId, offerId, MainAccountId));
@@ -34,8 +34,9 @@ namespace BusinessNews.Domain.BusinessAggregate
 
         public void PurchaseSubscription(Guid subscriptionId)
         {
-            RaiseEvent(new SubscriptionOrderCompletedEvent(Id,subscriptionId));
+            RaiseEvent(new SubscriptionOrderCompletedEvent(Id, subscriptionId));
         }
+
         public void RevokeSubscription()
         {
             RaiseEvent(new SubscriptionRevokedEvent(Id, SubscriptionId));
@@ -51,6 +52,7 @@ namespace BusinessNews.Domain.BusinessAggregate
         {
             SubscriptionId = e.SubscriptionId;
         }
+
         private void Apply(SubscriptionOrderedEvent e)
         {
             _subscriptionOrders.Add(e.SuibscriptionId);

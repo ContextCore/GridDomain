@@ -99,6 +99,8 @@
     <Compile Include="BillAggregate\BillAggregateCommandsHandler.cs" />
     <Compile Include="BillAggregate\BillCreatedEvent.cs" />
     <Compile Include="BillAggregate\BillPayedEvent.cs" />
+    <Compile Include="BillAggregate\Charge.cs" />
+    <Compile Include="BillAggregate\CreateBillCommand.cs" />
     <Compile Include="BillAggregate\MarkBillPayedCommand.cs" />
     <Compile Include="BusinessAggregate\BusinessAggregateCommandsHandler.cs" />
     <Compile Include="BusinessAggregate\Business.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="ISubscriptionStore.cs" />
     <Compile Include="OfferAggregate\FreeSubscription.cs" />
     <Compile Include="OfferAggregate\VIPSubscription.cs" />
+    <Compile Include="OfferAggregate\WellKnownOffers.cs" />
     <Compile Include="Sagas\BuySubscription\BuysSubscriptionSagaFactory.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSagaStateAggregate.cs" />
     <Compile Include="Subscription.cs" />
