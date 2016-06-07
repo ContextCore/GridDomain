@@ -3,7 +3,7 @@ using BusinessNews.Domain.AccountAggregate;
 using BusinessNews.ReadModel;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.CQRS.ReadModel;
-using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 

@@ -1,5 +1,5 @@
 using GridDomain.CQRS;
-using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {

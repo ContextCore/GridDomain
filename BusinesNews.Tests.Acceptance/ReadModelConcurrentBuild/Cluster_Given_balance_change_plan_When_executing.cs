@@ -17,8 +17,8 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
             var unityContainer = CreateUnityContainer(dbConfig);
 
             return new GridDomainNode(unityContainer,
-                                      new BusinessNewsRouting(),
-                                      TransportMode.Cluster, _akkaCluster.All);
+                new BusinessNewsRouting(),
+                TransportMode.Cluster, _akkaCluster.All);
         }
 
         /// <summary>
@@ -26,9 +26,8 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         /// </summary>
         public Cluster_Given_balance_change_plan_When_executing()
             : base(AkkaConf.Copy("writeModelCheckSystem", 9000)
-                   .ToStandAloneSystemConfig())
+                .ToStandAloneSystemConfig())
         {
-
         }
 
         [TestFixtureTearDown]

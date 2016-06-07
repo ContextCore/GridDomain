@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public class CreateActorRoute
     {

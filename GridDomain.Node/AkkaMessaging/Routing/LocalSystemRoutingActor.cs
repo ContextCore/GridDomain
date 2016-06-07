@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Akka.Actor;
 using Akka.Routing;
 
 namespace GridDomain.Node.AkkaMessaging.Routing

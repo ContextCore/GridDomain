@@ -12,9 +12,8 @@ namespace BusinessNews.Domain.OfferAggregate
             Id = ID;
             Name = "Vip subscription";
             Price = new Money(10);
-            Grants = new[] { "free", "vip" };
+            Grants = new[] {"free", "vip"};
             Period = TimeSpan.FromDays(30);
         }
-
     }
 }

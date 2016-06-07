@@ -5,6 +5,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 using NLog;
 
 namespace GridDomain.Node.Actors

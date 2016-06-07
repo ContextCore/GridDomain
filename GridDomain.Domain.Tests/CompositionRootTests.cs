@@ -52,15 +52,14 @@ namespace GridDomain.Tests
             Assert.Fail("Can not resolve registrations: \r\n " + builder);
         }
 
-        protected  readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
+        protected readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
             <TransportMode, Func<ActorSystem>>
         {
             {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())},
             {
-                TransportMode.Cluster, () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()
+                TransportMode.Cluster,
+                () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()
             }
         };
-
-  
     }
 }

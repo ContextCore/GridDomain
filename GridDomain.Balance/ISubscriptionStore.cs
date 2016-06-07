@@ -6,6 +6,5 @@ namespace BusinessNews.Domain
     {
         Subscription GetFreeSubscription(Guid businessId);
         Subscription GetPaidSubscription(Guid businessId);
-
     }
 }

@@ -8,6 +8,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using GridDomain.Tests.Acceptance.Persistence;
@@ -43,7 +44,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
             InitContainer(container, notifyActor);
             var routingActor = CreateRoutingActor(system);
 
-            Router = new ActorMessagesRouter(routingActor,container.Resolve<IAggregateActorLocator>());
+            Router = new ActorMessagesRouter(routingActor, container.Resolve<IAggregateActorLocator>());
         }
 
         protected abstract IActorRef CreateRoutingActor(ActorSystem system);

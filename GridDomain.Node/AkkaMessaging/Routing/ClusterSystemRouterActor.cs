@@ -9,8 +9,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public class ClusterSystemRouterActor : AkkaRoutingActor
     {
+        private IActorRef _subscriptionWaiter;
+
         public ClusterSystemRouterActor(IHandlerActorTypeFactory actorTypeFactory,
-                                IActorSubscriber subscriber) : base(actorTypeFactory, subscriber)
+            IActorSubscriber subscriber) : base(actorTypeFactory, subscriber)
         {
         }
 
@@ -31,29 +33,18 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             return router;
         }
 
-        private IActorRef _subscriptionWaiter;
-
         public void Handle(SubscribeToRouteEstanblish msg)
         {
             _subscriptionWaiter = msg.Subscriber;
-            Sender.Tell(new SubscribeToRouteEstanblishAck() { Subscriber = msg.Subscriber });
-
-        }
-        public class SubscribeToRouteEstanblishAck
-        {
-            public IActorRef Subscriber;
-        }
-
-        public class SubscribeToRouteEstanblish
-        {
-            public IActorRef Subscriber;
+            Sender.Tell(new SubscribeToRouteEstanblishAck {Subscriber = msg.Subscriber});
         }
 
 
         public void Handle(SubscribeAck msg)
         {
             _subscriptionWaiter?.Tell(msg);
-            _log.Trace($"Subscription was successfull for topic {msg.Subscribe.Topic} group {msg.Subscribe.Group} path {msg.Subscribe.Ref.Path}");
+            _log.Trace(
+                $"Subscription was successfull for topic {msg.Subscribe.Topic} group {msg.Subscribe.Group} path {msg.Subscribe.Ref.Path}");
         }
 
 
@@ -67,6 +58,16 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             var router = new ClusterRouterPool(localPool, new ClusterRouterPoolSettings(10, true, 2));
             return router;
+        }
+
+        public class SubscribeToRouteEstanblishAck
+        {
+            public IActorRef Subscriber;
+        }
+
+        public class SubscribeToRouteEstanblish
+        {
+            public IActorRef Subscriber;
         }
     }
 }

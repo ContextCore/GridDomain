@@ -38,7 +38,7 @@ namespace GridDomain.Node.AkkaMessaging
         {
             var topic = messageType.FullName;
             _transport.Ask<SubscribeAck>(new Subscribe(topic, actor))
-                      .PipeTo(subscribeNotificationWaiter);
+                .PipeTo(subscribeNotificationWaiter);
 
             _log.Trace($"Subscribing handler actor {actor.Path} to topic {topic}");
         }

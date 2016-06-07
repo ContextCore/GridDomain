@@ -1,4 +1,4 @@
-using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Actors;
 using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup

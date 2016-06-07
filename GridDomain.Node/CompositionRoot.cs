@@ -1,8 +1,5 @@
 ﻿using Akka.Actor;
-using CommonDomain;
-using CommonDomain.Core;
 using CommonDomain.Persistence;
-using CommonDomain.Persistence.EventStore;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;

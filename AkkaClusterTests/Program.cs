@@ -9,7 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace AkkaClusterTests
 {
-    class Program
+    internal class Program
     {
         public static void Main(string[] args)
         {
@@ -17,10 +17,11 @@ namespace AkkaClusterTests
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
         }
+
         public static void StartUp()
         {
-            var ports = new []{"2551", "2552", "0","0","0"};
-            var section = (AkkaConfigurationSection)ConfigurationManager.GetSection("akka");
+            var ports = new[] {"2551", "2552", "0", "0", "0"};
+            var section = (AkkaConfigurationSection) ConfigurationManager.GetSection("akka");
             var container = new UnityContainer();
             container.RegisterInstance("key1");
             foreach (var port in ports)
@@ -32,11 +33,10 @@ namespace AkkaClusterTests
 
                 //create an Akka system
                 var system = ActorSystem.Create("ClusterSystem", config);
-                system.AddDependencyResolver(new UnityDependencyResolver(container,system));
+                system.AddDependencyResolver(new UnityDependencyResolver(container, system));
                 //create an actor that handles cluster domain events
                 system.ActorOf(system.DI().Props<SimpleClusterListener>());
             }
         }
     }
-
 }

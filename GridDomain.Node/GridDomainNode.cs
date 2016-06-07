@@ -8,7 +8,6 @@ using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
@@ -35,9 +34,9 @@ namespace GridDomain.Node
         private IActorRef _mainNodeActor;
 
         public GridDomainNode(IUnityContainer container,
-                              IMessageRouteMap messageRouting, 
-                              TransportMode transportMode, 
-                              params ActorSystem[] actorAllSystems)
+            IMessageRouteMap messageRouting,
+            TransportMode transportMode,
+            params ActorSystem[] actorAllSystems)
         {
             _transportMode = transportMode;
             _messageRouting = messageRouting;
@@ -55,21 +54,20 @@ namespace GridDomain.Node
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
             Container.RegisterInstance(_messageRouting);
-            
+
             foreach (var system in AllSystems)
             {
-               var r = new UnityDependencyResolver(Container,system);
-              // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
-               CompositionRoot.Init(Container.CreateChildContainer(),
-                                    system,
-                                    databaseConfiguration,
-                                    _transportMode);
-
+                var r = new UnityDependencyResolver(Container, system);
+                // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+                CompositionRoot.Init(Container.CreateChildContainer(),
+                    system,
+                    databaseConfiguration,
+                    _transportMode);
             }
             CompositionRoot.Init(Container,
-                                 System,
-                                 databaseConfiguration,
-                                 _transportMode);
+                System,
+                databaseConfiguration,
+                _transportMode);
 
             StartMainNodeActor(System);
         }
@@ -101,7 +99,7 @@ namespace GridDomain.Node
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
-            .Wait(TimeSpan.FromSeconds(2));
+                .Wait(TimeSpan.FromSeconds(2));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }

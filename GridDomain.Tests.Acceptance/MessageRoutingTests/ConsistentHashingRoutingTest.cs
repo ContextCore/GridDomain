@@ -39,6 +39,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             _system.Terminate();
             _system.Dispose();
         }
+
         private DiagMsg[] CreateMessages()
         {
             return new[]

@@ -7,9 +7,9 @@ namespace BusinesNews.Tests.Acceptance
 {
     public class BalanceChangePlan
     {
-        public IReadOnlyCollection<ChangeAccountCommand> BalanceChangeCommands;
         public CreateAccountCommand AccountCreateCommand;
         public Guid AccountId;
+        public IReadOnlyCollection<ChangeAccountCommand> BalanceChangeCommands;
         public Guid businessId;
         public Money TotalAmountChange;
         public Money TotalReplenish;
