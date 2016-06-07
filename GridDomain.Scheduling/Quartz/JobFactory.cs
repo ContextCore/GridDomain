@@ -7,9 +7,16 @@ namespace GridDomain.Scheduling.Quartz
 {
     public class JobFactory : IJobFactory
     {
+        private readonly IUnityContainer _container;
+
+        public JobFactory(IUnityContainer container)
+        {
+            _container = container;
+        }
+
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return (IJob)Container.Current.Resolve(bundle.JobDetail.JobType);
+            return (IJob)_container.Resolve(bundle.JobDetail.JobType);
         }
 
         public void ReturnJob(IJob job)

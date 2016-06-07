@@ -22,6 +22,7 @@ using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
 using Quartz;
+using Quartz.Spi;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Tests.Scheduling
@@ -34,12 +35,12 @@ namespace GridDomain.Tests.Scheduling
         private IActorRef _scheduler;
         private IScheduler _quartzScheduler;
         private Mock<IQuartzLogger> _quartzLogger;
-        private UnityContainer _container;
+        private IUnityContainer _container;
         private IActorSubscriber _subsriber;
 
-        private UnityContainer Register()
+        private IUnityContainer Register()
         {
-            var container = Container.Current;
+            var container = Container.Current.CreateChildContainer();
             container.RegisterType<QuartzJob>();
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
@@ -56,6 +57,7 @@ namespace GridDomain.Tests.Scheduling
             container.RegisterInstance<IActorSubscriber>(transport);
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
+            container.RegisterType<IJobFactory>(new InjectionFactory(x=>new JobFactory(container)));
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
             container.RegisterType<SchedulingActor>();
@@ -77,6 +79,12 @@ namespace GridDomain.Tests.Scheduling
             _quartzScheduler.Clear();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _container.Dispose();
+        }
+
         private void CreateScheduler()
         {
             _quartzScheduler = _container.Resolve<IScheduler>();
@@ -88,7 +96,16 @@ namespace GridDomain.Tests.Scheduling
             var sched1 = _container.Resolve<IScheduler>();
             var sched2 = _container.Resolve<IScheduler>();
             var sched3 = _container.Resolve<IScheduler>();
-            Assert.True(sched2 == sched1 && sched2 == sched3);
+            Assert.True(sched1 == sched2 && sched2 == sched3);
+        }
+
+        [Test]
+        public void When_system_shuts_down__the_scheduler_Then_the_next_resolve_will_return_another_instance()
+        {
+            var sched1 = _container.Resolve<IScheduler>();
+            sched1.Shutdown(false);
+            var sched2 = _container.Resolve<IScheduler>();
+            Assert.True(sched1 != sched2);
         }
 
         [Test]
