@@ -98,7 +98,7 @@ namespace BusinessNews.Test
             Assert.AreEqual(BuySubscriptionSaga.State.SubscriptionSet, saga.DomainState);
         }
 
-        private T ExpectCommand<T>(Saga saga) where T: class, ICommand
+        private T ExpectCommand<T>(IDomainSaga saga) where T: class, ICommand
         {
             var cmd = saga.MessagesToDispatch.FirstOrDefault();
             Assert.NotNull(cmd, $"Cannot find expected {typeof(T).Name} in dispatched messages");

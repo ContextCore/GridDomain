@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading;
 using Akka.Actor;
 using CommonDomain.Core;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.AkkaMessaging
@@ -27,10 +29,11 @@ namespace GridDomain.Node.AkkaMessaging
                 _actorLocator);
         }
 
-        public void Register<TAggregate, TCommandHandler>(TCommandHandler handler) where TAggregate : AggregateBase
-            where TCommandHandler : AggregateCommandsHandler<TAggregate>
+        public void RegisterAggregate<TAggregate, TCommandHandler>() 
+            where TAggregate : AggregateBase 
+            where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
-            var messageRoutes = handler.GetRegisteredCommands().Select(c => new MessageRoute
+            var messageRoutes = new TCommandHandler().GetRegisteredCommands().Select(c => new MessageRoute
             {
                 CorrelationField = c.Property,
                 MessageType = c.Command
@@ -38,6 +41,22 @@ namespace GridDomain.Node.AkkaMessaging
 
             var createActorRoute = new CreateActorRoute(typeof (TAggregate), messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
+        }
+
+        /// <summary>
+        /// Subscribe saga for all messages it can handle.
+        /// Messages are determined by implemented IHandler<T> interfaces
+        /// </summary>
+        /// <typeparam name="TSaga"></typeparam>
+        public void RegisterSaga<TSaga>() where TSaga : IDomainSaga
+        {
+            var allInterfaces = typeof(TSaga).GetInterfaces();
+            var handlerInterfaces =
+                allInterfaces.Where(i => i.IsGenericType && 
+                                    i.GetGenericTypeDefinition() == typeof (IHandler<>))
+                             .ToArray();
+            var supportedMessages = handlerInterfaces.SelectMany(s => s.GetGenericArguments());
+
         }
 
         //TODO:replace with wait until event notifications

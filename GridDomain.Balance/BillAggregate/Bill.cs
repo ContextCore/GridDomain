@@ -30,7 +30,7 @@ namespace BusinessNews.Domain.BillAggregate
             BillId = billId;
         }
     }
-    class Bill : AggregateBase
+    public class Bill : AggregateBase
     {
         public Money Amount { get; private set; }
         public bool IsPaid { get; private set; }

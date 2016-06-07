@@ -1,5 +1,8 @@
 ﻿using BusinessNews.Domain.AccountAggregate;
 using BusinessNews.Domain.AccountAggregate.Events;
+using BusinessNews.Domain.BillAggregate;
+using BusinessNews.Domain.BusinessAggregate;
+using BusinessNews.Domain.SubscriptionAggregate;
 using BusinessNews.ReadModel;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -10,7 +13,10 @@ namespace BusinessNews.Node
     {
         public void Register(IMessagesRouter router)
         {
-            router.Register<Account, AccountAggregateCommandsHandler>(new AccountAggregateCommandsHandler());
+            router.RegisterAggregate<Account, AccountAggregateCommandsHandler>();
+            router.RegisterAggregate<Bill, BillAggregateCommandsHandler>();
+            router.RegisterAggregate<Subscription, SubscriptionAggregateCommandsHandler>();
+            router.RegisterAggregate<Business, BusinessAggregateCommandsHandler>();
 
             router.Route<AccountBalanceReplenishEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()

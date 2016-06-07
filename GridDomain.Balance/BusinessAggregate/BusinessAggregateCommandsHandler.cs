@@ -9,7 +9,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace BusinessNews.Domain.BusinessAggregate
 {
-    class BusinessAggregateCommandsHandler : AggregateCommandsHandler<Business>
+    public class BusinessAggregateCommandsHandler : AggregateCommandsHandler<Business>
     {
         public BusinessAggregateCommandsHandler()
         {

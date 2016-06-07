@@ -5,7 +5,7 @@ using CommonDomain.Core;
 
 namespace BusinessNews.Domain.BusinessAggregate
 {
-    internal class Business : AggregateBase
+    public class Business : AggregateBase
     {
         private Guid MainAccountId;
         private Guid MediaAccountId;

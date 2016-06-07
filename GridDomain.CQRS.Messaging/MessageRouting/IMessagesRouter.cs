@@ -1,4 +1,5 @@
 ﻿using CommonDomain.Core;
+using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -6,8 +7,10 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         IRouteBuilder<TMessage> Route<TMessage>();
 
-        void Register<TAggregate, TCommandHandler>(TCommandHandler handler)
-            where TCommandHandler : AggregateCommandsHandler<TAggregate>
-            where TAggregate : AggregateBase;
+        void RegisterAggregate<TAggregate, TCommandHandler>()
+                                where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
+                                where TAggregate : AggregateBase;
+
+        void RegisterSaga<TSaga>() where TSaga : IDomainSaga;
     }
 }

@@ -17,8 +17,9 @@ namespace GridDomain.Node.AkkaMessaging
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
 
-        public AggregateActor(IAggregateCommandsHandler<TAggregate> handler, AggregateFactory factory,
-            IPublisher publisher)
+        public AggregateActor(IAggregateCommandsHandler<TAggregate> handler, 
+                              AggregateFactory factory,
+                              IPublisher publisher)
         {
             _handler = handler;
             _publisher = publisher;

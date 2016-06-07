@@ -1,30 +1,42 @@
 using System;
 using System.Collections.Generic;
+using CommonDomain;
+using CommonDomain.Core;
 using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
 
-    public class Saga
+    public interface IDomainSaga
     {
-        public readonly List<object> MessagesToDispatch = new List<object>();
+         List<object> MessagesToDispatch { get; }
+         IAggregate StateAggregate { get; set; }
+    }
+
+    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : IDomainSaga,
+                                                             IStartBy<TStartMessage> 
+        where TSagaTriggers : struct
+        where TSagaStates : struct
+        where TStateData : SagaStateAggregate<TSagaStates,TSagaTriggers>
+    {
+        public List<object> MessagesToDispatch => new List<object>();
+        IAggregate IDomainSaga.StateAggregate
+        {
+            get { return StateData; }
+            set { StateData = (TStateData) value; }
+        }
+
         protected void Dispatch(object message)
         {
             MessagesToDispatch.Add(message);
         }
 
-    }
-    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : Saga,
-        IStartBy<TStartMessage> 
-        where TSagaTriggers : struct
-        where TSagaStates : struct
-        where TStateData : SagaStateAggregate<TSagaStates,TSagaTriggers>
-    {
         private readonly IDictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>
          _eventsToTriggersMapping
              = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
-        protected readonly TStateData StateData;
+        //TODO: think how to restrict external change except SagaActor
+        public TStateData StateData;
 
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
 

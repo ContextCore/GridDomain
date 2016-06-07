@@ -8,7 +8,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace BusinessNews.Domain.SubscriptionAggregate
 {
-    class SubscriptionAggregateCommandsHandler: AggregateCommandsHandler<Subscription>
+    public class SubscriptionAggregateCommandsHandler: AggregateCommandsHandler<Subscription>
     {
         public SubscriptionAggregateCommandsHandler()
         {

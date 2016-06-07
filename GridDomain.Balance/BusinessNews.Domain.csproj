@@ -115,15 +115,15 @@
     <Compile Include="ISubscriptionStore.cs" />
     <Compile Include="OfferAggregate\FreeSubscription.cs" />
     <Compile Include="OfferAggregate\VIPSubscription.cs" />
+    <Compile Include="Sagas\BuySubscription\BuysSubscriptionSagaFactory.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSagaStateAggregate.cs" />
     <Compile Include="Subscription.cs" />
-    <Compile Include="SubscriptionAggregate\BuySubscriptionCommand.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSaga.cs" />
     <Compile Include="SubscriptionAggregate\ChargeSubscriptionCommand.cs" />
     <Compile Include="SubscriptionAggregate\CreateSubscriptionCommand.cs" />
-    <Compile Include="SubscriptionAggregate\CreateSubscriptionCommandHandler.cs" />
     <Compile Include="OfferAggregate\Offer.cs" />
     <Compile Include="SubscriptionAggregate\Subscription.cs" />
+    <Compile Include="SubscriptionAggregate\SubscriptionAggregateCommandsHandler.cs" />
     <Compile Include="SubscriptionAggregate\SubscriptionChargedEvent.cs" />
     <Compile Include="SubscriptionAggregate\SubscriptionCreatedEvent.cs" />
     <Compile Include="TransactoinCreatedEvent.cs" />

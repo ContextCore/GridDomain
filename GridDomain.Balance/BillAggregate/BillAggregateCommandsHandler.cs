@@ -8,7 +8,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace BusinessNews.Domain.BillAggregate
 {
-    class BillAggregateCommandsHandler : AggregateCommandsHandler<Bill>
+    public class BillAggregateCommandsHandler : AggregateCommandsHandler<Bill>
     {
         public BillAggregateCommandsHandler()
         {
