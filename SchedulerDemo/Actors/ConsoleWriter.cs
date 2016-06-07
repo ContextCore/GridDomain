@@ -16,8 +16,10 @@ namespace SchedulerDemo.Actors
                     WriteHightlighted(DateTime.Now.ToString("ss.fff"));
                 }
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.SetCursorPosition(50,Console.CursorTop);
                 Console.Write($"       Received at: {DateTime.Now.ToString("HH:mm:")}");
                 WriteHightlighted(DateTime.Now.ToString("ss.fff"));
+                Console.SetCursorPosition(0, Console.CursorTop);
                 Console.WriteLine();
             });
 
