@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Routing;
@@ -26,35 +27,42 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         }
 
 
-        public void Handle(CreateActorRoute e)
+        public void Handle(CreateActorRoute msg)
         {
-            var handleActor = CreateHandleActor(e, e.ActorType, CreateActorRouter, e.ActorName);
-
-            foreach (var msgRoute in e.Routes)
+            var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
+            foreach (var msgRoute in msg.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
         }
 
-        public void Handle(CreateHandlerRoute e)
+        public void Handle(CreateHandlerRoute msg)
         {
-            var actorType = _actorTypeFactory.GetActorTypeFor(e.MessageType, e.HandlerType);
-
-            string actorName = $"Message_handler_for_{e.MessageType.Name}_{Guid.NewGuid()}";
-            var handleActor = CreateHandleActor(e, actorType, CreateRouter, actorName);
-            _log.Trace($"Created message handling actor for {e.ToPropsString()}");
-
-            _subscriber.Subscribe(e.MessageType, handleActor, Self);
+            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
+            string actorName = $"Message_handler_for_{msg.MessageType.Name}_{Guid.NewGuid()}";
+            Self.Tell(new CreateActorRoute(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 
-        protected abstract RouterConfig CreateActorRouter(CreateActorRoute msg);
+        protected virtual Pool CreateActorRouter(CreateActorRoute msg)
+        {
+            var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
+
+            var pool =
+                new ConsistentHashingPool(Environment.ProcessorCount)
+                    .WithHashMapping(m =>
+                    {
+                        var type = m.GetType();
+                        var prop = routesMap[type];
+                        return type.GetProperty(prop).GetValue(m);
+                    });
+
+            return pool;
+        }
         protected abstract RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage);
 
-        private IActorRef CreateHandleActor<TMessage>(TMessage msg,
-            Type actorType,
-            Func<TMessage, RouterConfig> routerFactory,
-            string actorName = null)
+        private IActorRef CreateActor(Type actorType, 
+                                            RouterConfig routeConfig,
+                                            string actorName)
         {
             var handleActorProps = Context.System.DI().Props(actorType);
-            var routeConfig = routerFactory(msg);
             handleActorProps = handleActorProps.WithRouter(routeConfig);
 
             var handleActor = Context.System.ActorOf(handleActorProps, actorName);

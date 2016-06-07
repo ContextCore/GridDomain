@@ -22,28 +22,28 @@ namespace BusinessNews.ReadModel
             _publisher = publisher;
         }
 
-        public void Handle(AccountBalanceReplenishEvent e)
+        public void Handle(AccountBalanceReplenishEvent msg)
         {
-            _modelBuilder.Modify(e.BalanceId, b => b.Amount += e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
+            _modelBuilder.Modify(msg.BalanceId, b => b.Amount += msg.Amount.Amount);
+            _publisher.Publish(new BalanceChangeProjectedNotification(msg.BalanceId));
         }
 
-        public void Handle(AccountCreatedEvent e)
+        public void Handle(AccountCreatedEvent msg)
         {
             var businessCurrentBalance = new BusinessBalance
             {
-                BalanceId = e.BalanceId,
-                BusinessId = e.BusinessId
+                BalanceId = msg.BalanceId,
+                BusinessId = msg.BusinessId
             };
 
             _modelBuilder.Add(businessCurrentBalance);
-            _publisher.Publish(new BalanceCreatedProjectedNotification(e.BalanceId, e));
+            _publisher.Publish(new BalanceCreatedProjectedNotification(msg.BalanceId, msg));
         }
 
-        public void Handle(PayedForBillEvent e)
+        public void Handle(PayedForBillEvent msg)
         {
-            _modelBuilder.Modify(e.BalanceId, b => b.Amount -= e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
+            _modelBuilder.Modify(msg.BalanceId, b => b.Amount -= msg.Amount.Amount);
+            _publisher.Publish(new BalanceChangeProjectedNotification(msg.BalanceId));
         }
     }
 }

@@ -22,25 +22,25 @@ namespace BusinessNews.Domain.AccountAggregate
             _repository = repository;
         }
 
-        public void Handle(CreateAccountCommand e)
+        public void Handle(CreateAccountCommand msg)
         {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            _repository.Save(new Account(e.AccountId, e.BusinessId), e.Id);
+            _log.Debug("Handling command:" + msg.ToPropsString());
+            _repository.Save(new Account(msg.AccountId, msg.BusinessId), msg.Id);
         }
 
-        public void Handle(PayForBillCommand e)
+        public void Handle(PayForBillCommand msg)
         {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            var account = LoadAccount(e.AccountId, e.Id);
-            account.PayBill(e.Amount, e.BillId);
-            _repository.Save(account, e.Id);
+            _log.Debug("Handling command:" + msg.ToPropsString());
+            var account = LoadAccount(msg.AccountId, msg.Id);
+            account.PayBill(msg.Amount, msg.BillId);
+            _repository.Save(account, msg.Id);
         }
 
-        public void Handle(ReplenishAccountByCardCommand e)
+        public void Handle(ReplenishAccountByCardCommand msg)
         {
-            _log.Debug("Handling command:" + e.ToPropsString());
-            var account = LoadAccount(e.AccountId, e.Id);
-            account.Replenish(e.Amount);
+            _log.Debug("Handling command:" + msg.ToPropsString());
+            var account = LoadAccount(msg.AccountId, msg.Id);
+            account.Replenish(msg.Amount);
             _repository.Save(account, Guid.NewGuid());
         }
 

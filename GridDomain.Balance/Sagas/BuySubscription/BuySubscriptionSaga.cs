@@ -87,29 +87,29 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             var subscriptionSetTransition = RegisterEvent<SubscriptionOrderCompletedEvent>(Transitions.SubscriptionSet);
         }
 
-        public void Handle(BillCreatedEvent e)
+        public void Handle(BillCreatedEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
-        public void Handle(BillPayedEvent e)
+        public void Handle(BillPayedEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
-        public void Handle(SubscriptionChargedEvent e)
+        public void Handle(SubscriptionChargedEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
-        public void Handle(SubscriptionCreatedEvent e)
+        public void Handle(SubscriptionCreatedEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
-        public void Handle(SubscriptionOrderCompletedEvent e)
+        public void Handle(SubscriptionOrderCompletedEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
     }
 }

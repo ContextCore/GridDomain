@@ -32,9 +32,9 @@ namespace GridDomain.EventSourcing.Sagas
 
         IAggregate IDomainSaga.StateAggregate => StateData;
 
-        public void Handle(TStartMessage e)
+        public void Handle(TStartMessage msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
         protected void Dispatch(object message)

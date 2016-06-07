@@ -16,20 +16,9 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
         }
 
-        protected override RouterConfig CreateActorRouter(CreateActorRoute msg)
+        protected override Pool CreateActorRouter(CreateActorRoute msg)
         {
-            var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
-
-            var localPool =
-                new ConsistentHashingPool(Environment.ProcessorCount)
-                    .WithHashMapping(m =>
-                    {
-                        var type = m.GetType();
-                        var prop = routesMap[type];
-                        return type.GetProperty(prop).GetValue(m);
-                    });
-
-            var router = new ClusterRouterPool(localPool, new ClusterRouterPoolSettings(10, true, 2));
+            var router = new ClusterRouterPool(base.CreateActorRouter(msg), new ClusterRouterPoolSettings(10, true, 2));
             return router;
         }
 

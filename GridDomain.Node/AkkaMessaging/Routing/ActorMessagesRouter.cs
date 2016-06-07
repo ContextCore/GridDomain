@@ -66,7 +66,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             var messageRoutes = supportedMessages.Select(m => new MessageRoute(m, nameof(DomainEvent.SagaId))).ToArray();
             var name = $"Saga_{typeof (TSaga).Name}";
-            var createActorRoute = CreateActorRoute.ForSaga<TSaga,TSagaState,TStartMessage>(name,messageRoutes);
+            var createActorRoute = CreateActorRoute.ForSaga<TSaga,TSagaState,TStartMessage>(name, messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 

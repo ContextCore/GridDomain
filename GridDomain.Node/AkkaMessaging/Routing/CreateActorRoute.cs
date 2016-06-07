@@ -7,7 +7,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public class CreateActorRoute
     {
-        private CreateActorRoute(Type actorType, string actorName, params MessageRoute[] routes)
+        public CreateActorRoute(Type actorType, string actorName, params MessageRoute[] routes)
         {
             Routes = routes;
             ActorType = actorType;

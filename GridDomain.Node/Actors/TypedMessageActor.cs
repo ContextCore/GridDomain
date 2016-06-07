@@ -12,9 +12,9 @@ namespace GridDomain.Node.Actors
             Actor = actor;
         }
 
-        public void Handle(T e)
+        public void Handle(T msg)
         {
-            Actor.Tell(e);
+            Actor.Tell(msg);
         }
     }
 }

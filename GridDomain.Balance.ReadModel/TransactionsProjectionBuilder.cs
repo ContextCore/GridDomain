@@ -18,40 +18,40 @@ namespace BusinessNews.ReadModel
             _modelBuilder = modelBuilder;
         }
 
-        public void Handle(AccountBalanceReplenishEvent e)
+        public void Handle(AccountBalanceReplenishEvent msg)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = e.BalanceId,
+                BalanceId = msg.BalanceId,
                 EventType = typeof (AccountBalanceReplenishEvent).Name,
-                Event = e.ToPropsString(),
+                Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
-                TransactionAmount = e.Amount,
+                TransactionAmount = msg.Amount,
                 Time = DateTime.Now
             });
         }
 
-        public void Handle(AccountCreatedEvent e)
+        public void Handle(AccountCreatedEvent msg)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = e.BalanceId,
+                BalanceId = msg.BalanceId,
                 EventType = typeof (AccountCreatedEvent).Name,
-                Event = e.ToPropsString(),
+                Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
                 Time = DateTime.Now
             });
         }
 
-        public void Handle(PayedForBillEvent e)
+        public void Handle(PayedForBillEvent msg)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = e.BalanceId,
+                BalanceId = msg.BalanceId,
                 EventType = typeof (PayedForBillEvent).Name,
-                Event = e.ToPropsString(),
+                Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
-                TransactionAmount = e.Amount,
+                TransactionAmount = msg.Amount,
                 Time = DateTime.Now
             });
         }

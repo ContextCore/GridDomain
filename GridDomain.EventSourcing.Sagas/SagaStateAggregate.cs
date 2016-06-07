@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas
     {
         public TState MachineState;
 
-        private SagaStateAggregate(Guid id)
+        protected SagaStateAggregate(Guid id)
         {
             Id = id;
         }

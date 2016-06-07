@@ -9,6 +9,7 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
+    //TODO: think about replace with ConsistentHashingPool
     public class AggregateHostActor<TAggregate> : UntypedActor
         where TAggregate : AggregateBase
     {

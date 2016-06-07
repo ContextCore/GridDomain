@@ -10,9 +10,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             _cmdHandler = cmdHandler;
         }
 
-        public void Handle(TMessage e)
+        public void Handle(TMessage msg)
         {
-            _cmdHandler.Handle(e);
+            _cmdHandler.Handle(msg);
         }
     }
 }
