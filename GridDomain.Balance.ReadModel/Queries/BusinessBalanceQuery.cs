@@ -2,9 +2,9 @@
 using System.Linq;
 using GridDomain.CQRS.Quering;
 
-namespace GridDomain.Balance.ReadModel.Queries
+namespace BusinessNews.ReadModel.Queries
 {
-    public class BusinessBalanceQuery : ISingleQuery<BusinessBalance, Guid>
+    public class BusinessBalanceQuery : ISingleQuery<Guid, BusinessBalance>
     {
         private readonly IQueryable<BusinessBalance> _col;
 

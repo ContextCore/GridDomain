@@ -5,19 +5,18 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
+using GridDomain.Tests.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
-using CompositionRoot = GridDomain.Balance.Node.CompositionRoot;
 
 namespace GridDomain.Tests.Acceptance
 {
     public abstract class NodeCommandsTest : TestKit
     {
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
-        private IActorSubscriber _subscriber;
         protected GridDomainNode GridNode;
 
-        protected NodeCommandsTest(string config) : base(config)
+        protected NodeCommandsTest(string config, string name = null) : base(config, name)
         {
         }
 
@@ -40,23 +39,19 @@ namespace GridDomain.Tests.Acceptance
 
             GridNode = GreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
-            _subscriber = GridNode.Container.Resolve<IActorSubscriber>();
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-        protected static UnityContainer DefaultUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
+        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber = 0)
         {
-            var unityContainer = new UnityContainer();
-            CompositionRoot.Init(unityContainer, autoTestGridDomainConfiguration);
-            return unityContainer;
-        }
+            eventNumber = eventNumber == 0 ? commands.Length : eventNumber;
 
-        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber)
-        {
-            var actor = Sys.ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)));
+            var actor = GridNode.System
+                                .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)),
+                                         "EventCounter_" + Guid.NewGuid());
 
-            _subscriber.Subscribe<TEvent>(actor);
+            GridNode.Container.Resolve<IActorSubscriber>().Subscribe<TEvent>(actor);
 
             Console.WriteLine("Starting execute");
 

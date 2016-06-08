@@ -4,11 +4,10 @@ using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using GridDomain.Balance.ReadModel;
+using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
@@ -35,7 +34,9 @@ namespace GridDomain.Node
         private IActorRef _mainNodeActor;
 
         public GridDomainNode(IUnityContainer container,
-            IMessageRouteMap messageRouting, TransportMode transportMode, params ActorSystem[] actorAllSystems)
+            IMessageRouteMap messageRouting,
+            TransportMode transportMode,
+            params ActorSystem[] actorAllSystems)
         {
             _transportMode = transportMode;
             _messageRouting = messageRouting;
@@ -52,20 +53,23 @@ namespace GridDomain.Node
         {
             BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
+            Container.RegisterInstance(_messageRouting);
 
+            foreach (var system in AllSystems)
+            {
+                var r = new UnityDependencyResolver(Container, system);
+                // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+                CompositionRoot.Init(Container.CreateChildContainer(),
+                    system,
+                    databaseConfiguration,
+                    _transportMode);
+            }
             CompositionRoot.Init(Container,
                 System,
                 databaseConfiguration,
                 _transportMode);
 
-            Container.RegisterInstance(_messageRouting);
-            //не убирать - нужен для работы DI в Akka
-            foreach (var system in AllSystems)
-            {
-                var propsResolver = new UnityDependencyResolver(Container, system);
-            }
-
-            StartActorSystem(System);
+            StartMainNodeActor(System);
         }
 
         public void Stop()
@@ -85,7 +89,7 @@ namespace GridDomain.Node
         }
 
 
-        private void StartActorSystem(ActorSystem actorSystem)
+        private void StartMainNodeActor(ActorSystem actorSystem)
         {
             _log.Info($"Launching GridDomain node {Id}");
 
@@ -95,14 +99,15 @@ namespace GridDomain.Node
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
-                .Wait(TimeSpan.FromSeconds(10));
+                .Wait(TimeSpan.FromSeconds(2));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }
 
-        public void Execute(ICommand cmd)
+        public void Execute(params ICommand[] commands)
         {
-            _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
+            foreach(var cmd in commands)
+                 _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
     }
 }

@@ -1,14 +1,14 @@
-﻿using GridDomain.Balance.Domain.BalanceAggregate.Events;
+﻿using BusinessNews.Domain.AccountAggregate.Events;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using NLog;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
-    //keep in mind 1 instance of projection builder should process only 1 balance id 
-    public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<BalanceReplenishEvent>,
-        IEventHandler<BalanceWithdrawalEvent>,
-        IEventHandler<BalanceCreatedEvent>
+    //keep in mind 1 instance of projection builder should process only 1 account id 
+    public class BusinessCurrentBalanceProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
+        IEventHandler<PayedForBillEvent>,
+        IEventHandler<AccountCreatedEvent>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IReadModelCreator<BusinessBalance> _modelBuilder;
@@ -22,28 +22,28 @@ namespace GridDomain.Balance.ReadModel
             _publisher = publisher;
         }
 
-        public void Handle(BalanceCreatedEvent e)
+        public void Handle(AccountBalanceReplenishEvent msg)
+        {
+            _modelBuilder.Modify(msg.BalanceId, b => b.Amount += msg.Amount.Amount);
+            _publisher.Publish(new BalanceChangeProjectedNotification(msg.BalanceId));
+        }
+
+        public void Handle(AccountCreatedEvent msg)
         {
             var businessCurrentBalance = new BusinessBalance
             {
-                BalanceId = e.BalanceId,
-                BusinessId = e.BusinessId
+                BalanceId = msg.BalanceId,
+                BusinessId = msg.BusinessId
             };
 
             _modelBuilder.Add(businessCurrentBalance);
-            _publisher.Publish(new BalanceCreatedProjectedNotification(e.BalanceId, e));
+            _publisher.Publish(new BusinessBalanceCreatedProjectedNotification(msg.BalanceId, msg));
         }
 
-        public void Handle(BalanceReplenishEvent e)
+        public void Handle(PayedForBillEvent msg)
         {
-            _modelBuilder.Modify(e.BalanceId, b => b.Amount += e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
-        }
-
-        public void Handle(BalanceWithdrawalEvent e)
-        {
-            _modelBuilder.Modify(e.BalanceId, b => b.Amount -= e.Amount.Amount);
-            _publisher.Publish(new BalanceChangeProjectedNotification(e.BalanceId));
+            _modelBuilder.Modify(msg.BalanceId, b => b.Amount -= msg.Amount.Amount);
+            _publisher.Publish(new BalanceChangeProjectedNotification(msg.BalanceId));
         }
     }
 }

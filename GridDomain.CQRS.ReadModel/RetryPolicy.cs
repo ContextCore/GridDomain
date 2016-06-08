@@ -25,7 +25,7 @@ namespace GridDomain.CQRS.ReadModel
                     act();
                     break;
                 }
-                catch (TException ex)
+                catch (Exception ex)
                 {
                     if (tryCount >= _maxRetryCount)
                         throw new RetryLimitExceededException($"Reached retry limit {_maxRetryCount}", ex);

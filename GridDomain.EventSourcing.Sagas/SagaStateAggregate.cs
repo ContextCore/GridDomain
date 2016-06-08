@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas
     {
         public TState MachineState;
 
-        private SagaStateAggregate(Guid id)
+        protected SagaStateAggregate(Guid id)
         {
             Id = id;
         }
@@ -19,13 +19,13 @@ namespace GridDomain.EventSourcing.Sagas
             RaiseEvent(new SagaCreatedEvent<TState>(state, id));
         }
 
-        private void Apply(SagaCreatedEvent<TState> e)
+        public void Apply(SagaCreatedEvent<TState> e)
         {
             MachineState = e.State;
             Id = e.SourceId;
         }
 
-        private void Apply(SagaTransitionEvent<TState, TTransition> e)
+        public void Apply(SagaTransitionEvent<TState, TTransition> e)
         {
             MachineState = e.State;
         }

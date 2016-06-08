@@ -4,7 +4,7 @@ using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using NUnit.Framework;
 
-namespace GridDomain.Balance.Tests
+namespace BusinessNews.Test
 {
     [TestFixture]
     public class AggregatorFactoryTests

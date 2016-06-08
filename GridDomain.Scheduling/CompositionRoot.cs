@@ -8,19 +8,20 @@ using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
 using Quartz;
+using Quartz.Spi;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling
 {
     public class CompositionRoot
     {
-        public UnityContainer Compose(UnityContainer container, ActorSystem actorSystem)
+        public IUnityContainer Compose(IUnityContainer container, ActorSystem actorSystem)
         {
-            container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>()));
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
             container.RegisterType<IQuartzConfig, QuartzConfig>();
             container.RegisterType<IQuartzLogger, QuartzLogger>();
+            container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
             container.RegisterType<ILoggingJobListener, LoggingJobListener>();

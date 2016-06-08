@@ -1,8 +1,5 @@
 ﻿using Akka.Actor;
-using CommonDomain;
-using CommonDomain.Core;
 using CommonDomain.Persistence;
-using CommonDomain.Persistence.EventStore;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
@@ -46,8 +43,6 @@ namespace GridDomain.Node
         {
             container.RegisterInstance(conf);
             container.RegisterType<IConstructAggregates, AggregateFactory>();
-            container.RegisterType<IDetectConflicts, ConflictDetector>();
-            container.RegisterType<IRepository, EventStoreRepository>();
         }
     }
 }

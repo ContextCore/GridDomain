@@ -1,14 +1,14 @@
 using System;
-using GridDomain.Balance.Domain.BalanceAggregate.Events;
+using BusinessNews.Domain.AccountAggregate.Events;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Logging;
 
-namespace GridDomain.Balance.ReadModel
+namespace BusinessNews.ReadModel
 {
-    public class TransactionsProjectionBuilder : IEventHandler<BalanceReplenishEvent>,
-        IEventHandler<BalanceWithdrawalEvent>,
-        IEventHandler<BalanceCreatedEvent>
+    public class TransactionsProjectionBuilder : IEventHandler<AccountBalanceReplenishEvent>,
+        IEventHandler<PayedForBillEvent>,
+        IEventHandler<AccountCreatedEvent>
     {
         private readonly IReadModelCreator<TransactionHistory> _modelBuilder;
 
@@ -18,40 +18,40 @@ namespace GridDomain.Balance.ReadModel
             _modelBuilder = modelBuilder;
         }
 
-        public void Handle(BalanceCreatedEvent e)
+        public void Handle(AccountBalanceReplenishEvent msg)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = e.BalanceId,
-                EventType = typeof (BalanceCreatedEvent).Name,
-                Event = e.ToPropsString(),
+                BalanceId = msg.BalanceId,
+                EventType = typeof (AccountBalanceReplenishEvent).Name,
+                Event = msg.ToPropsString(),
+                Id = Guid.NewGuid(),
+                TransactionAmount = msg.Amount,
+                Time = DateTime.Now
+            });
+        }
+
+        public void Handle(AccountCreatedEvent msg)
+        {
+            _modelBuilder.Add(new TransactionHistory
+            {
+                BalanceId = msg.BalanceId,
+                EventType = typeof (AccountCreatedEvent).Name,
+                Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
                 Time = DateTime.Now
             });
         }
 
-        public void Handle(BalanceReplenishEvent e)
+        public void Handle(PayedForBillEvent msg)
         {
             _modelBuilder.Add(new TransactionHistory
             {
-                BalanceId = e.BalanceId,
-                EventType = typeof (BalanceReplenishEvent).Name,
-                Event = e.ToPropsString(),
+                BalanceId = msg.BalanceId,
+                EventType = typeof (PayedForBillEvent).Name,
+                Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
-                TransactionAmount = e.Amount,
-                Time = DateTime.Now
-            });
-        }
-
-        public void Handle(BalanceWithdrawalEvent e)
-        {
-            _modelBuilder.Add(new TransactionHistory
-            {
-                BalanceId = e.BalanceId,
-                EventType = typeof (BalanceWithdrawalEvent).Name,
-                Event = e.ToPropsString(),
-                Id = Guid.NewGuid(),
-                TransactionAmount = e.Amount,
+                TransactionAmount = msg.Amount,
                 Time = DateTime.Now
             });
         }

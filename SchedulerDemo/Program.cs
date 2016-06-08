@@ -24,7 +24,7 @@ namespace SchedulerDemo
         static void Main()
         {
             Sys = ActorSystem.Create("Sys");
-            var container = new CompositionRoot().Compose(Container.Current, Sys);
+            var container = new CompositionRoot().Compose(Container.Current.CreateChildContainer(), Sys);
 
             RegisterAppSpecificTypes(container);
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
@@ -38,15 +38,15 @@ namespace SchedulerDemo
                 var longTimeHandler = Sys.ActorOf(Sys.DI().Props<LongTimeScheduledHandler>());
                 var commandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
                 IActorSubscriber subsriber = container.Resolve<IActorSubscriber>();
-                subsriber.Subscribe(typeof(WriteToConsoleScheduledMessage), handler);
-                subsriber.Subscribe(typeof(ProcessCommand), commandManager);
-                subsriber.Subscribe(typeof(StartReadFromConsole), reader);
-                subsriber.Subscribe(typeof(WriteToConsole), writer);
-                subsriber.Subscribe(typeof(WriteErrorToConsole), writer);
-                subsriber.Subscribe(typeof(Schedule), scheduler);
-                subsriber.Subscribe(typeof(Unschedule), scheduler);
-                subsriber.Subscribe(typeof(FailScheduledMessage), failHandler);
-                subsriber.Subscribe(typeof(LongTimeScheduledMessage), longTimeHandler);
+                subsriber.Subscribe<WriteToConsoleScheduledMessage>(handler);
+                subsriber.Subscribe<ProcessCommand>(commandManager);
+                subsriber.Subscribe<StartReadFromConsole>(reader);
+                subsriber.Subscribe<WriteToConsole>(writer);
+                subsriber.Subscribe<WriteErrorToConsole>(writer);
+                subsriber.Subscribe<Schedule>(scheduler);
+                subsriber.Subscribe<Unschedule>(scheduler);
+                subsriber.Subscribe<FailScheduledMessage>(failHandler);
+                subsriber.Subscribe<LongTimeScheduledMessage>(longTimeHandler);
                 var publisher = container.Resolve<IPublisher>();
                 publisher.Publish(new WriteToConsole("started"));
                 publisher.Publish(new StartReadFromConsole());
@@ -55,7 +55,7 @@ namespace SchedulerDemo
             }
         }
 
-        private static void RegisterAppSpecificTypes(UnityContainer container)
+        private static void RegisterAppSpecificTypes(IUnityContainer container)
         {
             container.RegisterType<IQuartzLogger, DemoLogger>();
             container.RegisterType<ConsoleReader>();

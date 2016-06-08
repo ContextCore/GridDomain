@@ -19,14 +19,19 @@ namespace GridDomain.Node.AkkaMessaging
             Subscribe(typeof (TMessage), actor);
         }
 
-        public void Subscribe(Type messageType, IActorRef actor)
+        public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
-            _bus.Subscribe(actor, messageType);
+            Subscribe(messageType, actor);
         }
 
         public void Publish<T>(T msg)
         {
             _bus.Publish(msg);
+        }
+
+        public void Subscribe(Type messageType, IActorRef actor)
+        {
+            _bus.Subscribe(actor, messageType);
         }
     }
 }

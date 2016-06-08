@@ -2,23 +2,30 @@ using Akka.Actor;
 using Akka.Cluster;
 using Akka.Event;
 
-namespace Samples.Cluster.Simple.Samples.Cluster.Simple
+namespace AkkaClusterTests
 {
     public class SimpleClusterListener : UntypedActor
     {
+        private string _key;
+        protected Cluster Cluster = Cluster.Get(Context.System);
         protected ILoggingAdapter Log = Context.GetLogger();
-        protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
 
-        /// <summary>
-        /// Need to subscribe to cluster changes
-        /// </summary>
-        protected override void PreStart()
+        public SimpleClusterListener(string key)
         {
-            Cluster.Subscribe(Self, ClusterEvent.InitialStateAsEvents, new[] { typeof(ClusterEvent.IMemberEvent), typeof(ClusterEvent.UnreachableMember) });
+            _key = key;
         }
 
         /// <summary>
-        /// Re-subscribe on restart
+        ///     Need to subscribe to cluster changes
+        /// </summary>
+        protected override void PreStart()
+        {
+            Cluster.Subscribe(Self, ClusterEvent.InitialStateAsEvents,
+                new[] {typeof (ClusterEvent.IMemberEvent), typeof (ClusterEvent.UnreachableMember)});
+        }
+
+        /// <summary>
+        ///     Re-subscribe on restart
         /// </summary>
         protected override void PostStop()
         {
@@ -35,12 +42,12 @@ namespace Samples.Cluster.Simple.Samples.Cluster.Simple
             }
             else if (message is ClusterEvent.UnreachableMember)
             {
-                var unreachable = (ClusterEvent.UnreachableMember)message;
+                var unreachable = (ClusterEvent.UnreachableMember) message;
                 Log.Info("Member detected as unreachable: {0}", unreachable.Member);
             }
             else if (message is ClusterEvent.MemberRemoved)
             {
-                var removed = (ClusterEvent.MemberRemoved)message;
+                var removed = (ClusterEvent.MemberRemoved) message;
                 Log.Info("Member is Removed: {0}", removed.Member);
             }
             else if (message is ClusterEvent.IMemberEvent)
@@ -49,7 +56,6 @@ namespace Samples.Cluster.Simple.Samples.Cluster.Simple
             }
             else if (message is ClusterEvent.CurrentClusterState)
             {
-
             }
             else
             {

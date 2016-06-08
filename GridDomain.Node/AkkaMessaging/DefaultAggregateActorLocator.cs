@@ -1,5 +1,6 @@
 using System;
 using CommonDomain.Core;
+using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging
 {

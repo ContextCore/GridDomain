@@ -49,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDomainSaga.cs" />
+    <Compile Include="ISagaFactory.cs" />
     <Compile Include="IStartBy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SagaCreatedEvent.cs" />

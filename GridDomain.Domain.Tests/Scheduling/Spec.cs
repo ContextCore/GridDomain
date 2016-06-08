@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Scheduling
 
         private IUnityContainer Register()
         {
-            var container = Container.Current.CreateChildContainer();
+            var container = Container.CreateChildScope();
             container.RegisterType<QuartzJob>();
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
@@ -124,7 +124,7 @@ namespace GridDomain.Tests.Scheduling
                 var testMessage = new TestMessage("web", "web");
                 var resultHolder = new ResultHolder();
                 var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
-                _subsriber.Subscribe(testMessage.GetType(), testActor);
+                _subsriber.Subscribe<TestMessage>(testActor);
                 _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
                 _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id, Group), DateTime.UtcNow.AddSeconds(10), Timeout)).Wait(Timeout);
                 _scheduler.Ask<Scheduled>(new Schedule(new TestMessage(Id + Id, Group), DateTime.UtcNow.AddSeconds(15), Timeout)).Wait(Timeout);
@@ -139,7 +139,7 @@ namespace GridDomain.Tests.Scheduling
             var testMessage = new TestMessage(Id, Group);
             var resultHolder = new ResultHolder();
             var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
-            _subsriber.Subscribe(testMessage.GetType(), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
             _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
             Throttle.Assert(() => Assert.True(resultHolder.Contains(testMessage.TaskId)), maxTimeout: Timeout);
         }
@@ -156,7 +156,7 @@ namespace GridDomain.Tests.Scheduling
                 Thread.Sleep(2000);
             };
             var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestMessage>>(Props.Create(() => new TestRequestHandler<TestMessage>(handler)));
-            _subsriber.Subscribe(testMessage.GetType(), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
             _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
             Thread.Sleep(500);
             _quartzScheduler.Shutdown(false);
@@ -172,7 +172,7 @@ namespace GridDomain.Tests.Scheduling
             var runAt = DateTime.UtcNow.AddSeconds(0.5);
             var testMessage = new FailTaskMessage(Id, Group);
             var testActor = ActorOfAsTestActorRef<FailingTestRequestHandler>();
-            _subsriber.Subscribe(testMessage.GetType(), testActor);
+            _subsriber.Subscribe<FailTaskMessage>(testActor);
             _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             Throttle.Verify(_quartzLogger, x => x.LogFailure(testMessage.TaskId, It.IsAny<Exception>()), maxTimeout: Timeout);
         }
@@ -186,7 +186,7 @@ namespace GridDomain.Tests.Scheduling
 
             var resultHolder = new ResultHolder();
             var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
-            _subsriber.Subscribe(typeof(TestMessage), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
 
             foreach (var task in tasks)
             {
@@ -212,7 +212,7 @@ namespace GridDomain.Tests.Scheduling
 
             var testMessage = new TestMessage(taskId, Group);
             var testActor = ActorOfAsTestActorRef<TestRequestHandler<TestMessage>>(Props.Create(() => new TestRequestHandler<TestMessage>(handler)));
-            _subsriber.Subscribe(typeof(TestMessage), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
             _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             _scheduler.Tell(new Schedule(testMessage, secondRunAt, Timeout));
 
@@ -227,7 +227,7 @@ namespace GridDomain.Tests.Scheduling
 
             var resultHolder = new ResultHolder();
             var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
-            _subsriber.Subscribe(typeof(TestMessage), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
 
             foreach (var task in successTasks)
             {
@@ -260,7 +260,7 @@ namespace GridDomain.Tests.Scheduling
 
             var resultHolder = new ResultHolder();
             var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
-            _subsriber.Subscribe(typeof(TestMessage), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
 
             foreach (var task in successTasks.Concat(tasksToRemove))
             {
@@ -291,7 +291,7 @@ namespace GridDomain.Tests.Scheduling
 
             var resultHolder = new ResultHolder();
             var testActor = ActorOfAsTestActorRef<SuccessfulTestMessageHandler>(Props.Create(() => new SuccessfulTestMessageHandler(resultHolder)));
-            _subsriber.Subscribe(typeof(TestMessage), testActor);
+            _subsriber.Subscribe<TestMessage>(testActor);
 
             foreach (var task in tasks)
             {

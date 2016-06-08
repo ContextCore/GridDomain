@@ -1,44 +1,49 @@
 using System;
 using System.Linq;
+using Akka.Actor;
 using Akka.Cluster.Routing;
+using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Routing;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public class ClusterSystemRouterActor : AkkaRoutingActor
+    public class ClusterSystemRouterActor : RoutingActor
     {
+        private IActorRef _subscriptionWaiter;
+
         public ClusterSystemRouterActor(IHandlerActorTypeFactory actorTypeFactory,
             IActorSubscriber subscriber) : base(actorTypeFactory, subscriber)
         {
         }
 
-        protected override RouterConfig CreateActorRouter(CreateActorRoute msg)
+        protected override Pool CreateActorRouter(CreateActorRoute msg)
         {
-            var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
-
-            var localPool =
-                new ConsistentHashingPool(Environment.ProcessorCount)
-                    .WithHashMapping(m =>
-                    {
-                        var type = m.GetType();
-                        var prop = routesMap[type];
-                        return type.GetProperty(prop).GetValue(m);
-                    });
-
-            var router = new ClusterRouterPool(localPool, new ClusterRouterPoolSettings(10, true, 2));
+            var router = new ClusterRouterPool(base.CreateActorRouter(msg), new ClusterRouterPoolSettings(10, true, 2));
             return router;
         }
 
-        protected override RouterConfig CreateRouter(CreateHandlerRoute handlerRouteConfigMessage)
+        public void Handle(SubscribeToRouteEstanblish msg)
         {
-            if (string.IsNullOrEmpty(handlerRouteConfigMessage.MessageCorrelationProperty))
-                return DefaultRouter;
+            _subscriptionWaiter = msg.Subscriber;
+            Sender.Tell(new SubscribeToRouteEstanblishAck {Subscriber = msg.Subscriber});
+        }
 
-            var localPool = new ConsistentHashingPool(Environment.ProcessorCount)
-                .WithHashMapping(GetCorrelationPropertyFromMessage(handlerRouteConfigMessage));
 
-            var router = new ClusterRouterPool(localPool, new ClusterRouterPoolSettings(10, true, 2));
-            return router;
+        public void Handle(SubscribeAck msg)
+        {
+            _subscriptionWaiter?.Tell(msg);
+            _log.Trace(
+                $"Subscription was successfull for topic {msg.Subscribe.Topic} group {msg.Subscribe.Group} path {msg.Subscribe.Ref.Path}");
+        }
+
+        public class SubscribeToRouteEstanblishAck
+        {
+            public IActorRef Subscriber;
+        }
+
+        public class SubscribeToRouteEstanblish
+        {
+            public IActorRef Subscriber;
         }
     }
 }

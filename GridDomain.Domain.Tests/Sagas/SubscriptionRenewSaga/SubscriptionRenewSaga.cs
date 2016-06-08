@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
         IHandler<NotEnoughFondsFailure>,
         IHandler<SubscriptionPaidEvent>
     {
-        public SubscriptionRenewSaga(SagaStateAggregate<States, Triggers> stateAggregate) : base(stateAggregate)
+        public SubscriptionRenewSaga(SagaStateAggregate<States, Triggers> stateData) : base(stateData)
         {
             var parForSubscriptionTrigger = RegisterEvent<SubscriptionExpiredEvent>(Triggers.PayForSubscription);
             var remainSubscriptionTrigger = RegisterEvent<SubscriptionPaidEvent>(Triggers.RemainSubscription);
@@ -31,19 +31,19 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
                 .Permit(Triggers.ChangeSubscription, States.SubscriptionSet);
         }
 
-        public void Handle(NotEnoughFondsFailure e)
+        public void Handle(NotEnoughFondsFailure msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
-        public void Handle(SubscriptionChangedEvent e)
+        public void Handle(SubscriptionChangedEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
-        public void Handle(SubscriptionPaidEvent e)
+        public void Handle(SubscriptionPaidEvent msg)
         {
-            Transit(e);
+            Transit(msg);
         }
 
         internal enum Triggers

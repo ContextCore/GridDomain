@@ -4,7 +4,13 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class MessageRoute
     {
-        public Type MessageType { get; set; }
-        public string CorrelationField { get; set; }
+        public MessageRoute(Type messageType, string correlationField = null)
+        {
+            MessageType = messageType;
+            CorrelationField = correlationField;
+        }
+
+        public Type MessageType { get; }
+        public string CorrelationField { get; }
     }
 }

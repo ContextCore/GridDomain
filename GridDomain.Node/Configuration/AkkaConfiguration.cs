@@ -65,7 +65,7 @@ namespace GridDomain.Node.Configuration
         public string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(this),
+                new LogConfig(this, false),
                 new StandAloneConfig(Network),
                 new PersistenceConfig(this));
             return cfg.Build();

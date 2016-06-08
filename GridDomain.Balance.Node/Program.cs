@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using GridDomain.Balance.Domain;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
@@ -8,8 +7,11 @@ using NLog;
 using NLog.Config;
 using Topshelf;
 
-namespace GridDomain.Balance.Node
+namespace BusinessNews.Node
 {
+    /// <summary>
+    ///     Business news is a news company who provide fresh news and articles for businessmen
+    /// </summary>
     public class Program
     {
         private static void Main(string[] args)
@@ -31,7 +33,7 @@ namespace GridDomain.Balance.Node
                     s.ConstructUsing(settings =>
                     {
                         var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).RandomNode();
-                        return new GridDomainNode(container, new BalanceCommandsRouting(), TransportMode.Cluster,
+                        return new GridDomainNode(container, new BusinessNewsRouting(), TransportMode.Cluster,
                             actorSystem);
                     });
                     s.WhenStarted(node =>
@@ -53,10 +55,6 @@ namespace GridDomain.Balance.Node
 
         private static void ApplySeeds(GridDomainNode node)
         {
-            foreach (var cmd in new SubscriptionsFeed().InitialSubscriptions())
-            {
-                node.Execute(cmd);
-            }
         }
 
         private static void ConfigureLog(IDbConfiguration dbConf)
