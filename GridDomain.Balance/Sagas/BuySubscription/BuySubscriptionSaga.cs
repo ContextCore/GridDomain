@@ -51,7 +51,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                 .OnEntryFrom(subscriptionOrderedTransition,
                     e =>
                     {
-                        StateData.RememberOrder(e);
+                        StateAggregateData.RememberOrder(e);
                         Dispatch(new CreateSubscriptionCommand(e.SuibscriptionId, e.OfferId));
                     })
                 .Permit(Transitions.BillScubscription, State.ChargingSubscription);
@@ -73,7 +73,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
 
             Machine.Configure(State.BillPaying)
                 .OnEntryFrom(payBillTransition,
-                    e => Dispatch(new PayForBillCommand(StateData.AccountId, e.Amount, e.BillId)))
+                    e => Dispatch(new PayForBillCommand(StateAggregateData.AccountId, e.Amount, e.BillId)))
                 .Permit(Transitions.ChangeSubscription, State.SubscriptionSetting);
             var changeSubscriptionTransition = RegisterEvent<BillPayedEvent>(Transitions.ChangeSubscription);
 
@@ -81,8 +81,8 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             Machine.Configure(State.SubscriptionSetting)
                 .OnEntryFrom(changeSubscriptionTransition,
                     e =>
-                        Dispatch(new CompleteBusinessSubscriptionOrderCommand(StateData.BusinessId,
-                            StateData.SubscriptionId)))
+                        Dispatch(new CompleteBusinessSubscriptionOrderCommand(StateAggregateData.BusinessId,
+                            StateAggregateData.SubscriptionId)))
                 .Permit(Transitions.SubscriptionSet, State.SubscriptionSet);
             var subscriptionSetTransition = RegisterEvent<SubscriptionOrderCompletedEvent>(Transitions.SubscriptionSet);
         }

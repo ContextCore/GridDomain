@@ -23,7 +23,7 @@ namespace GridDomain.Scheduling.Integration
         private void Manage(ManageMessage envelope)
         {
             _quartzJobActorRef = Sender;
-            _publisher.Publish(envelope.Message);
+            _publisher.Publish(envelope.Command);
         }
 
     }

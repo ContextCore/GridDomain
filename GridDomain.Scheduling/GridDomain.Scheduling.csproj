@@ -132,7 +132,7 @@
     <Compile Include="Quartz\Logging\QuartzLogger.cs" />
     <Compile Include="Akka\ScheduledMessageHandler.cs" />
     <Compile Include="Quartz\SchedulerFactory.cs" />
-    <Compile Include="Akka\Tasks\ScheduledMessage.cs" />
+    <Compile Include="Akka\Tasks\ScheduledCommand.cs" />
     <Compile Include="Integration\QuartzJob.cs" />
     <Compile Include="Akka\Messages\Unschedule.cs" />
     <Compile Include="Integration\SchedulingActor.cs" />

@@ -4,9 +4,9 @@ using SchedulerDemo.ScheduledMessages;
 
 namespace SchedulerDemo.Handlers
 {
-    public class FailingScheduledHandler : ScheduledMessageHandler<FailScheduledMessage>
+    public class FailingScheduledHandler : ScheduledMessageHandler<FailScheduledCommand>
     {
-        protected override void Handle(FailScheduledMessage request)
+        protected override void Handle(FailScheduledCommand request)
         {
             throw new InvalidOperationException();
         }

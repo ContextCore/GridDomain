@@ -1,13 +1,14 @@
 using System;
+using GridDomain.CQRS;
 
 namespace GridDomain.Scheduling.Akka.Tasks
 {
-    public abstract class ScheduledMessage
+    public abstract class ScheduledCommand : Command
     {
         public string Group { get;  }
         public string TaskId { get; }
 
-        protected ScheduledMessage(string taskId, string group)
+        protected ScheduledCommand(string taskId, string group)
         {
             if (string.IsNullOrWhiteSpace(taskId))
             {

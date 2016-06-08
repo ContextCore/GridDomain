@@ -70,12 +70,20 @@
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quartz, Version=2.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <HintPath>..\packages\Quartz.2.3.3\lib\net40\Quartz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stateless.2.5.62.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Stateless.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -100,13 +108,29 @@
     <Compile Include="Handlers\LongTimeScheduledHandler.cs" />
     <Compile Include="Messages\ProcessCommand.cs" />
     <Compile Include="Messages\WriteErrorToConsole.cs" />
+    <Compile Include="PhoneCallDomain\Events\AbonentAnsweredEvent.cs" />
+    <Compile Include="PhoneCallDomain\Events\AbonentHungUpEvent.cs" />
+    <Compile Include="PhoneCallDomain\Events\AbonentIsBusyEvent.cs" />
+    <Compile Include="PhoneCallDomain\Events\AbonentReceivingIncomingCallEvent.cs" />
+    <Compile Include="PhoneCallDomain\Commands\AnswerToCallCommand.cs" />
+    <Compile Include="PhoneCallDomain\Events\CallInitiatedEvent.cs" />
+    <Compile Include="PhoneCallDomain\Commands\HangupCommand.cs" />
+    <Compile Include="PhoneCallDomain\PhoneCallsRouting.cs" />
+    <Compile Include="PhoneCallDomain\ScheduledCommands\HangUpIfNotRespondedScheduledCommand.cs" />
+    <Compile Include="PhoneCallDomain\ScheduledCommands\HangUpTooLongConversationSchduledCommand.cs" />
+    <Compile Include="PhoneCallDomain\Commands\InitiateCallCommand.cs" />
+    <Compile Include="PhoneCallDomain\Aggregates\Person\Person.cs" />
+    <Compile Include="PhoneCallDomain\Aggregates\Person\PersonAggregateCommandHandler.cs" />
+    <Compile Include="PhoneCallDomain\Commands\ReceiveCallCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\StartReadFromConsole.cs" />
     <Compile Include="Messages\WriteToConsole.cs" />
-    <Compile Include="ScheduledMessages\FailScheduledMessage.cs" />
-    <Compile Include="ScheduledMessages\LongTimeScheduledMessage.cs" />
-    <Compile Include="ScheduledMessages\WriteToConsoleScheduledMessage.cs" />
+    <Compile Include="PhoneCallDomain\Sagas\PhoneCall\PhoneCallSaga.cs" />
+    <Compile Include="PhoneCallDomain\Sagas\PhoneCall\PhoneCallSagaStateAggregate.cs" />
+    <Compile Include="ScheduledMessages\FailScheduledCommand.cs" />
+    <Compile Include="ScheduledMessages\LongTimeScheduledCommand.cs" />
+    <Compile Include="ScheduledMessages\WriteToConsoleScheduledCommand.cs" />
     <Compile Include="Handlers\WriteToConsoleScheduledHandler.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +145,18 @@
       <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
+      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Name>GridDomain.CQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+      <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
+      <Name>GridDomain.EventSourcing.Sagas</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
+      <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
+      <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
       <Name>GridDomain.Node</Name>
@@ -133,6 +169,7 @@
   <ItemGroup>
     <None Include="CreateDatabase.sql" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

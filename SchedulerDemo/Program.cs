@@ -38,15 +38,15 @@ namespace SchedulerDemo
                 var longTimeHandler = Sys.ActorOf(Sys.DI().Props<LongTimeScheduledHandler>());
                 var commandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
                 IActorSubscriber subsriber = container.Resolve<IActorSubscriber>();
-                subsriber.Subscribe<WriteToConsoleScheduledMessage>(handler);
+                subsriber.Subscribe<WriteToConsoleScheduledCommand>(handler);
                 subsriber.Subscribe<ProcessCommand>(commandManager);
                 subsriber.Subscribe<StartReadFromConsole>(reader);
                 subsriber.Subscribe<WriteToConsole>(writer);
                 subsriber.Subscribe<WriteErrorToConsole>(writer);
                 subsriber.Subscribe<Schedule>(scheduler);
                 subsriber.Subscribe<Unschedule>(scheduler);
-                subsriber.Subscribe<FailScheduledMessage>(failHandler);
-                subsriber.Subscribe<LongTimeScheduledMessage>(longTimeHandler);
+                subsriber.Subscribe<FailScheduledCommand>(failHandler);
+                subsriber.Subscribe<LongTimeScheduledCommand>(longTimeHandler);
                 var publisher = container.Resolve<IPublisher>();
                 publisher.Publish(new WriteToConsole("started"));
                 publisher.Publish(new StartReadFromConsole());

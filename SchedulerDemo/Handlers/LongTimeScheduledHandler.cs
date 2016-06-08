@@ -5,9 +5,9 @@ using SchedulerDemo.ScheduledMessages;
 
 namespace SchedulerDemo.Handlers
 {
-    public class LongTimeScheduledHandler : ScheduledMessageHandler<LongTimeScheduledMessage>
+    public class LongTimeScheduledHandler : ScheduledMessageHandler<LongTimeScheduledCommand>
     {
-        protected override void Handle(LongTimeScheduledMessage request)
+        protected override void Handle(LongTimeScheduledCommand request)
         {
             Thread.Sleep(TimeSpan.FromSeconds(request.SecondsToExecute));
         }

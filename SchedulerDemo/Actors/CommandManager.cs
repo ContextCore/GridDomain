@@ -57,7 +57,7 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            _publisher.Publish(new Schedule(new LongTimeScheduledMessage("long", "long", seconds), DateTime.UtcNow, TimeSpan.FromMinutes(1)));
+            _publisher.Publish(new Schedule(new LongTimeScheduledCommand("long", "long", seconds), DateTime.UtcNow, TimeSpan.FromMinutes(1)));
         }
 
         private void ScheduleFailure(string[] parts)
@@ -73,7 +73,7 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            _publisher.Publish(new Schedule(new FailScheduledMessage("fail", "fail"), DateTime.UtcNow.AddSeconds(seconds), TimeSpan.FromSeconds(4)));
+            _publisher.Publish(new Schedule(new FailScheduledCommand("fail", "fail"), DateTime.UtcNow.AddSeconds(seconds), TimeSpan.FromSeconds(4)));
         }
 
         private void Schedule(string[] parts)
@@ -93,7 +93,7 @@ namespace SchedulerDemo.Actors
             }
             var taskId = text;// + Guid.NewGuid().ToString().Substring(0, 8);
 
-            _publisher.Publish(new Schedule(new WriteToConsoleScheduledMessage(taskId, taskId), DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout()));
+            _publisher.Publish(new Schedule(new WriteToConsoleScheduledCommand(taskId, taskId), DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout()));
         }
 
         private void Unschedule(string[] parts)

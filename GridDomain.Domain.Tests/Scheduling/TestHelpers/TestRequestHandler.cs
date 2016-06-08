@@ -4,7 +4,7 @@ using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Tests.Scheduling.TestHelpers
 {
-    public class TestRequestHandler<TRequest> : ScheduledMessageHandler<TRequest> where TRequest : ScheduledMessage
+    public class TestRequestHandler<TRequest> : ScheduledMessageHandler<TRequest> where TRequest : ScheduledCommand
     {
         private readonly Action<TRequest> _handler;
 

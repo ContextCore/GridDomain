@@ -6,7 +6,7 @@ using SchedulerDemo.ScheduledMessages;
 
 namespace SchedulerDemo.Handlers
 {
-    public class WriteToConsoleScheduledHandler : ScheduledMessageHandler<WriteToConsoleScheduledMessage>
+    public class WriteToConsoleScheduledHandler : ScheduledMessageHandler<WriteToConsoleScheduledCommand>
     {
         private readonly IPublisher _publisher;
 
@@ -15,10 +15,10 @@ namespace SchedulerDemo.Handlers
             _publisher = publisher;
         }
 
-        protected override void Handle(WriteToConsoleScheduledMessage scheduledMessage)
+        protected override void Handle(WriteToConsoleScheduledCommand scheduledCommand)
         {
-            _publisher.Publish(new WriteToConsole("scheduled event " + scheduledMessage.TaskId));
-            Sender.Tell(new MessageSuccessfullyProcessed(scheduledMessage.TaskId), Self);
+            _publisher.Publish(new WriteToConsole("scheduled event " + scheduledCommand.TaskId));
+            Sender.Tell(new MessageSuccessfullyProcessed(scheduledCommand.TaskId), Self);
         }
     }
 }

@@ -5,13 +5,13 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class Schedule
     {
-        public ScheduledMessage Message { get; }
+        public ScheduledCommand Command { get; }
         public DateTime RunAt { get; }
         public TimeSpan ExecutionTimeout { get; }
 
-        public Schedule(ScheduledMessage message, DateTime runAt, TimeSpan executionTimeout)
+        public Schedule(ScheduledCommand command, DateTime runAt, TimeSpan executionTimeout)
         {
-            Message = message;
+            Command = command;
             RunAt = runAt;
             ExecutionTimeout = executionTimeout;
         }

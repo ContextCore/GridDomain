@@ -18,19 +18,19 @@ namespace GridDomain.EventSourcing.Sagas
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
 
         //TODO: think how to restrict external change except SagaActor
-        public TStateData StateData;
+        public TStateData StateAggregateData;
 
-        protected StateSaga(TStateData stateData)
+        protected StateSaga(TStateData stateAggregateData)
         {
-            StateData = stateData;
-            Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateData.MachineState);
-            Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
+            StateAggregateData = stateAggregateData;
+            Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateAggregateData.MachineState);
+            Machine.OnTransitioned(t => StateAggregateData.StateChanged(t.Trigger, t.Destination));
         }
 
-        public TSagaStates DomainState => StateData.MachineState;
+        public TSagaStates DomainState => StateAggregateData.MachineState;
         public List<object> MessagesToDispatch => new List<object>();
 
-        IAggregate IDomainSaga.StateAggregate => StateData;
+        IAggregate IDomainSaga.StateAggregate => StateAggregateData;
 
         public void Handle(TStartMessage msg)
         {

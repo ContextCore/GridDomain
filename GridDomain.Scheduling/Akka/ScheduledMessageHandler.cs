@@ -7,7 +7,7 @@ using NLog;
 namespace GridDomain.Scheduling.Akka
 {
     public abstract class ScheduledMessageHandler<TRequest> : ReceiveActor
-        where TRequest : ScheduledMessage
+        where TRequest : ScheduledCommand
     {
         private readonly Logger _log = LogManager.GetCurrentClassLogger();
 

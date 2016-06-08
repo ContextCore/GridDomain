@@ -201,12 +201,12 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
     <Compile Include="Scheduling\Spec.cs" />
-    <Compile Include="Scheduling\TestHelpers\FailTaskMessage.cs" />
+    <Compile Include="Scheduling\TestHelpers\FailTaskCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\TestRequestHandler.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="Scheduling\TestHelpers\ResultHolder.cs" />
     <Compile Include="Scheduling\TestHelpers\SuccessfulTestMessageHandler.cs" />
-    <Compile Include="Scheduling\TestHelpers\TestMessage.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\FailingTestRequestHandler.cs" />
     <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />

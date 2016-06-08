@@ -2,7 +2,6 @@
 using BusinessNews.Domain.AccountAggregate;
 using BusinessNews.Domain.BillAggregate;
 using BusinessNews.Domain.BusinessAggregate;
-using BusinessNews.Domain.OfferAggregate;
 using BusinessNews.Domain.Sagas.BuySubscription;
 using BusinessNews.Domain.SubscriptionAggregate;
 using BusinessNews.ReadModel;

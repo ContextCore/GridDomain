@@ -72,11 +72,11 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        private static ScheduledMessage DeserializeTaskData(JobDataMap jobDatMap)
+        private static ScheduledCommand DeserializeTaskData(JobDataMap jobDatMap)
         {
             var taskJson = jobDatMap[MessageKey] as string;
             //TODO::VZ:: use external wrapper around serializer?
-            var task = JsonConvert.DeserializeObject<ScheduledMessage>(taskJson, JsonSerializerSettings);
+            var task = JsonConvert.DeserializeObject<ScheduledCommand>(taskJson, JsonSerializerSettings);
             return task;
         }
 
@@ -86,10 +86,10 @@ namespace GridDomain.Scheduling.Integration
             return timeout;
         }
 
-        public static JobBuilder Create(JobKey jobKey, ScheduledMessage message, TimeSpan timeout)
+        public static JobBuilder Create(JobKey jobKey, ScheduledCommand command, TimeSpan timeout)
         {
             //TODO::VZ:: use external wrapper around serializer?
-            var serialized = JsonConvert.SerializeObject(message, JsonSerializerSettings);
+            var serialized = JsonConvert.SerializeObject(command, JsonSerializerSettings);
             var jdm = new JobDataMap { { MessageKey, serialized }, { Timeout, timeout.ToString() } };
             return JobBuilder
                         .Create<QuartzJob>()

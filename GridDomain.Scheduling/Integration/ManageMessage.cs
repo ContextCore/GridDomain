@@ -4,11 +4,11 @@ namespace GridDomain.Scheduling.Integration
 {
     public class ManageMessage
     {
-        public ScheduledMessage Message { get; }
+        public ScheduledCommand Command { get; }
 
-        public ManageMessage(ScheduledMessage message)
+        public ManageMessage(ScheduledCommand command)
         {
-            Message = message;
+            Command = command;
         }
     }
 }

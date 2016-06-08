@@ -41,8 +41,8 @@ namespace GridDomain.Scheduling.Integration
         {
             try
             {
-                var jobKey = new JobKey(scheduleRequest.Message.TaskId, scheduleRequest.Message.Group);
-                var job = QuartzJob.Create(jobKey, scheduleRequest.Message, scheduleRequest.ExecutionTimeout).Build();
+                var jobKey = new JobKey(scheduleRequest.Command.TaskId, scheduleRequest.Command.Group);
+                var job = QuartzJob.Create(jobKey, scheduleRequest.Command, scheduleRequest.ExecutionTimeout).Build();
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity(job.Key.Name, job.Key.Group)
                     .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow().WithRepeatCount(0))
@@ -55,7 +55,7 @@ namespace GridDomain.Scheduling.Integration
             {
                 if (e.InnerException.GetType() == typeof(ObjectAlreadyExistsException))
                 {
-                    Sender.Tell(new AlreadyScheduled(scheduleRequest.Message.TaskId, scheduleRequest.Message.Group));
+                    Sender.Tell(new AlreadyScheduled(scheduleRequest.Command.TaskId, scheduleRequest.Command.Group));
                 }
             }
             catch (Exception e)
