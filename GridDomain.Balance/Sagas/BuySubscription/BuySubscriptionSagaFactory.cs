@@ -1,6 +1,6 @@
 ﻿using System;
 using BusinessNews.Domain.BusinessAggregate;
-using GridDomain.Node.Actors;
+using GridDomain.EventSourcing.Sagas;
 
 namespace BusinessNews.Domain.Sagas.BuySubscription
 {

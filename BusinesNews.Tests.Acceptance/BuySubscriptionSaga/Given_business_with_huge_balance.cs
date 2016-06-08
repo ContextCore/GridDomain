@@ -45,7 +45,7 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
 
             commands = new Command[]
             {
-                new ReplenishAccountByCardCommand(accountId, new Money(1000)),
+                new ReplenishAccountByCardCommand(accountId, new Money(1000), null),
                 new OrderSubscriptionCommand(businessId, VIPSubscription.ID, subscriptionId)
             };
             ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(commands);

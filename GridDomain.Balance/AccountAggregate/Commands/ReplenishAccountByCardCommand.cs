@@ -5,9 +5,11 @@ namespace BusinessNews.Domain.AccountAggregate.Commands
 {
     public class ReplenishAccountByCardCommand : ChargeAccountCommand
     {
-        public ReplenishAccountByCardCommand(Guid accountId, Money amount): base(accountId, amount)
-        {
+        public readonly CreditCardInfo CreditCard;
 
+        public ReplenishAccountByCardCommand(Guid accountId, Money amount, CreditCardInfo creditCard) : base(accountId, amount)
+        {
+            CreditCard = creditCard;
         }
     }
 }

@@ -1,6 +1,4 @@
-using GridDomain.EventSourcing.Sagas;
-
-namespace GridDomain.Node.Actors
+namespace GridDomain.EventSourcing.Sagas
 {
     public interface ISagaFactory<TSaga, TStartMessage> where TSaga : IDomainSaga
     {

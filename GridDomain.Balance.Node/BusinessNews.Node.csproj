@@ -129,8 +129,21 @@
   <ItemGroup>
     <Compile Include="BusinessNewsRouting.cs" />
     <Compile Include="CompositionRoot.cs" />
+    <Compile Include="Endpoints\Contracts\INewsFeed.cs" />
+    <Compile Include="Endpoints\Contracts\IPaymentGate.cs" />
+    <Compile Include="Endpoints\Contracts\ISubscriptionService.cs" />
+    <Compile Include="Endpoints\Contracts\OfferViewModel.cs" />
+    <Compile Include="Endpoints\Contracts\SubscriptionService.cs" />
+    <Compile Include="PaymentsGate.cs" />
+    <Compile Include="Endpoints\NewsFeed.cs" />
+    <Compile Include="Endpoints\ResponseDummy.cs" />
+    <Compile Include="Endpoints\SecurityDummy.cs" />
+    <Compile Include="Endpoints\SubscriptioPurchaseAdviserDummy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Endpoints\Contracts\ResourceAttribute.cs" />
+    <Compile Include="Endpoints\Contracts\SubscriptionClaims.cs" />
+    <Compile Include="Endpoints\Contracts\SubscriptionViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

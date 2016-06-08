@@ -12,7 +12,7 @@ namespace BusinessNews.Domain.OfferAggregate
             Id = ID;
             Name = "Free subscription";
             Price = Money.Zero();
-            Grants = new[] {"free"};
+            Grants = new[] { WellKnownGrants.PublicNewsRead};
             Period = TimeSpan.MaxValue;
         }
     }

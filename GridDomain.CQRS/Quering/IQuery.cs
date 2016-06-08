@@ -2,35 +2,35 @@
 
 namespace GridDomain.CQRS.Quering
 {
-    public interface IQuery<T> : IGenericQuery<IReadOnlyCollection<T>>
+    public interface IQuery<TReturn> : IGenericQuery<IReadOnlyCollection<TReturn>>
     {
     }
 
-    public interface IQuery<T, U> : IGenericQuery<IReadOnlyCollection<T>, U>
+    public interface IQuery<TParam, TReturn> : IGenericQuery<TParam, IReadOnlyCollection<TReturn>>
     {
     }
 
-    public interface IQuery<T, U, V> : IGenericQuery<IReadOnlyCollection<T>, U, V>
-    {
-    }
-
-
-    public interface ISingleQuery<T, U> : IGenericQuery<T, U>
-    {
-    }
-
-    public interface ISingleQuery<T, U, V> : IGenericQuery<T, U, V>
+    public interface IQuery<TParam1, TParam2, TReturn> : IGenericQuery<TParam1, TParam2, IReadOnlyCollection<TReturn>>
     {
     }
 
 
-    public interface IGenericQuery<T, U>
+    public interface ISingleQuery<TParam, TReturn> : IGenericQuery<TParam, TReturn>
     {
-        T Execute(U p1);
     }
 
-    public interface IGenericQuery<T, U, V>
+    public interface ISingleQuery<TParam1, TParam2, TReturn> : IGenericQuery<TParam1, TParam2, TReturn>
     {
-        T Execute(U p1, V p2);
+    }
+
+
+    public interface IGenericQuery<TParam, TReturn>
+    {
+        TReturn Execute(TParam p1);
+    }
+
+    public interface IGenericQuery<TParam1, TParam2, TReturn>
+    {
+        TReturn Execute(TParam1 p1, TParam2 p2);
     }
 }
