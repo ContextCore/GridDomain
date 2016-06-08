@@ -19,7 +19,7 @@ namespace BusinessNews.Node
             router.RegisterAggregate<Subscription, SubscriptionAggregateCommandsHandler>();
             router.RegisterAggregate<Business, BusinessAggregateCommandsHandler>();
 
-            router.RegisterSaga<BuySubscriptionSaga,BuySubscriptionSagaStateAggregate, SubscriptionOrderedEvent>();
+            router.RegisterSaga(BuySubscriptionSaga.Descriptor);
 
             router.Route<AccountBalanceReplenishEvent>()
                 .ToHandler<BusinessCurrentBalanceProjectionBuilder>()

@@ -40,6 +40,11 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             BillScubscription
         }
 
+        //TODO: extract subscriptor in separate class
+        public static ISagaDescriptor Descriptor => 
+            new BuySubscriptionSaga(new BuySubscriptionSagaStateAggregate(Guid.Empty, State.BillCreating));
+
+
         public BuySubscriptionSaga(BuySubscriptionSagaStateAggregate stateData) : base(stateData)
         {
             var subscriptionOrderedTransition = RegisterEvent<SubscriptionOrderedEvent>(Transitions.CreateSubscription);

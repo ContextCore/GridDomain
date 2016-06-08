@@ -1,28 +1,58 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonDomain;
+using GridDomain.CQRS;
 using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : IDomainSaga,
-        IStartBy<TStartMessage>
-        where TSagaTriggers : struct
-        where TSagaStates : struct
-        where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
+
+    public static class SagaInfo<TSaga>
+    {
+        public static IReadOnlyCollection<Type> KnownMessages()
+        {
+            var allInterfaces = typeof(TSaga).GetInterfaces();
+
+            var handlerInterfaces =
+                allInterfaces.Where(i => i.IsGenericType &&
+                                         i.GetGenericTypeDefinition() == typeof(IHandler<>))
+                             .ToArray();
+
+            return handlerInterfaces.SelectMany(s => s.GetGenericArguments()).ToArray();
+        }
+    }
+
+    public class SagaDescriptor
+    {
+        
+    }
+public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : 
+                                                                 IDomainSaga,
+                                                                 ISagaDescriptor
+                                                                 where TSagaTriggers : struct
+                                                                 where TSagaStates : struct
+                                                                 where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
     {
         private readonly IDictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>
             _eventsToTriggersMapping
                 = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
+        public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
+        public Type StartMessage { get; } = typeof (TStartMessage);
+        public Type StateType { get; } = typeof (TStateData);
+        public Type SagaType => this.GetType();
+
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
 
-        //TODO: think how to restrict external change except SagaActor
-        public TStateData StateData;
+        protected readonly TStateData StateData;
 
         protected StateSaga(TStateData stateData)
         {
             StateData = stateData;
+
+            //to include start message into list of accept messages
+            _eventsToTriggersMapping[typeof (TStartMessage)] = null; 
             Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateData.MachineState);
             Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
         }
@@ -32,7 +62,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         IAggregate IDomainSaga.StateAggregate => StateData;
 
-        public void Handle(TStartMessage msg)
+        public void Handle(object msg)
         {
             Transit(msg);
         }
@@ -43,14 +73,14 @@ namespace GridDomain.EventSourcing.Sagas
         }
 
         protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(
-            TSagaTriggers trigger)
+                                                                                                    TSagaTriggers trigger)
         {
             var triggerWithParameters = Machine.SetTriggerParameters<TEvent>(trigger);
-            _eventsToTriggersMapping[typeof (TEvent)] = triggerWithParameters;
+            _eventsToTriggersMapping[typeof(TEvent)] = triggerWithParameters;
             return triggerWithParameters;
         }
 
-
+        //TODO: make method non-generic
         protected internal void Transit<T>(T message)
         {
             StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters triggerWithParameters;

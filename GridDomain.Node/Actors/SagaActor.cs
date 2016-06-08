@@ -1,4 +1,6 @@
-﻿using Akka.Persistence;
+﻿using System;
+using System.Collections.Generic;
+using Akka.Persistence;
 using CommonDomain.Core;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -32,15 +34,14 @@ namespace GridDomain.Node.Actors
 
             CommandAny(cmd =>
             {
+
                 if (cmd is TStartMessage)
                 {
                     var startMessage = (TStartMessage)cmd;
                     Saga = _sagaStarter.Create(startMessage);
-                    return;
                 };
 
-                dynamic saga = Saga;
-                saga.Handle(cmd);
+                Saga.Handle(cmd);
                 PersistAll(Saga.MessagesToDispatch, e => _publisher.Publish(e));
                 Saga.MessagesToDispatch.Clear();
             });
