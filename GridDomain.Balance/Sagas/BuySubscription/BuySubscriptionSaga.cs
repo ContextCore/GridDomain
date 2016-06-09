@@ -11,12 +11,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
     public class BuySubscriptionSaga : StateSaga<BuySubscriptionSaga.State,
                                                  BuySubscriptionSaga.Transitions,
                                                  BuySubscriptionSagaStateAggregate,
-                                                 SubscriptionOrderedEvent>,
-        IHandler<SubscriptionCreatedEvent>,
-        IHandler<SubscriptionChargedEvent>,
-        IHandler<BillCreatedEvent>,
-        IHandler<BillPayedEvent>,
-        IHandler<SubscriptionOrderCompletedEvent>
+                                                 SubscriptionOrderedEvent>
     {
         public enum State
         {
@@ -49,7 +44,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
         {
             var subscriptionOrderedTransition = RegisterEvent<SubscriptionOrderedEvent>(Transitions.CreateSubscription);
             Machine.Configure(State.SubscriptionSet)
-                .Permit(Transitions.CreateSubscription, State.SubscriptionCreating);
+                   .Permit(Transitions.CreateSubscription, State.SubscriptionCreating);
 
 
             Machine.Configure(State.SubscriptionCreating)
@@ -90,31 +85,6 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                             StateData.SubscriptionId)))
                 .Permit(Transitions.SubscriptionSet, State.SubscriptionSet);
             var subscriptionSetTransition = RegisterEvent<SubscriptionOrderCompletedEvent>(Transitions.SubscriptionSet);
-        }
-
-        public void Handle(BillCreatedEvent msg)
-        {
-            Transit(msg);
-        }
-
-        public void Handle(BillPayedEvent msg)
-        {
-            Transit(msg);
-        }
-
-        public void Handle(SubscriptionChargedEvent msg)
-        {
-            Transit(msg);
-        }
-
-        public void Handle(SubscriptionCreatedEvent msg)
-        {
-            Transit(msg);
-        }
-
-        public void Handle(SubscriptionOrderCompletedEvent msg)
-        {
-            Transit(msg);
         }
     }
 }

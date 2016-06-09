@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Akka;
 using Akka.Persistence;
 using CommonDomain.Core;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -17,6 +19,7 @@ namespace GridDomain.Node.Actors
     public class SagaActor<TSaga, TSagaState, TStartMessage> :
         ReceivePersistentActor where TSaga : IDomainSaga
         where TSagaState : AggregateBase
+        where TStartMessage : DomainEvent
     {
         private readonly IPublisher _publisher;
         private readonly ISagaFactory<TSaga, TStartMessage> _sagaStarter;
@@ -30,25 +33,31 @@ namespace GridDomain.Node.Actors
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
-            PersistenceId = Self.Path.Name;
 
-            CommandAny(cmd =>
+            Command<DomainEvent>(cmd =>
             {
-
-                if (cmd is TStartMessage)
+                var startMessage = cmd as TStartMessage;
+                if (startMessage != null)
                 {
-                    var startMessage = (TStartMessage)cmd;
                     Saga = _sagaStarter.Create(startMessage);
-                };
+                }
+                
+                Saga.Transit(cmd);
 
-                Saga.Handle(cmd);
-                PersistAll(Saga.MessagesToDispatch, e => _publisher.Publish(e));
-                Saga.MessagesToDispatch.Clear();
+                foreach(var msg in Saga.CommandsToDispatch)
+                    _publisher.Publish(msg);
+
+                var sagaStateChangeEvents = Saga.StateAggregate.GetUncommittedEvents().Cast<object>();
+                PersistAll(sagaStateChangeEvents, e => _publisher.Publish(e));
+
+                Saga.ClearCommandsToDispatch();
+                Saga.StateAggregate.ClearUncommittedEvents();
             });
+
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
             Recover<DomainEvent>(e => Saga.StateAggregate.ApplyEvent(e));
         }
 
-        public override string PersistenceId { get; }
+        public override string PersistenceId => Self.Path.Name;
     }
 }

@@ -2,9 +2,9 @@ using System;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaCreatedEvent<TState> : DomainEvent
+    public class SagaCreatedEvent<TState> : SagaStateEvent
     {
-        public SagaCreatedEvent(TState state, Guid sourceId, DateTime? createdTime = null) : base(sourceId, createdTime)
+        public SagaCreatedEvent(TState state, Guid sourceId) : base(sourceId)
         {
             State = state;
         }

@@ -28,13 +28,13 @@ namespace BusinessNews.Domain.SubscriptionAggregate
             RaiseEvent(new SubscriptionChargedEvent(Id, chargeId, Offer.Price));
         }
 
-        private void Apply(SubscriptionCreatedEvent e)
+        public void Apply(SubscriptionCreatedEvent e)
         {
             Id = e.SourceId;
             Offer = e.Offer;
         }
 
-        private void Apply(SubscriptionChargedEvent e)
+        public void Apply(SubscriptionChargedEvent e)
         {
             _charges.Add(new Charge(e.ChargeId, e.Price));
         }

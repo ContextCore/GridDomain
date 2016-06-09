@@ -46,13 +46,13 @@ namespace GridDomain.Tests.Sagas
         [Then]
         public void Only_one_command_should_be_dispatched()
         {
-            Assert.AreEqual(1, Saga.MessagesToDispatch.Count);
+            Assert.AreEqual(1, Saga.CommandsToDispatch.Count);
         }
 
         [Then]
         public void All_dispatched_messages_are_commands()
         {
-            CollectionAssert.AllItemsAreInstancesOfType(Saga.MessagesToDispatch, typeof (ChangeSubscriptionCommand));
+            CollectionAssert.AllItemsAreInstancesOfType(Saga.CommandsToDispatch, typeof (ChangeSubscriptionCommand));
         }
     }
 }

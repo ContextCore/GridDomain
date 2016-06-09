@@ -33,17 +33,17 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
 
         public void Handle(NotEnoughFondsFailure msg)
         {
-            Transit(msg);
+            TransitState(msg);
         }
 
         public void Handle(SubscriptionChangedEvent msg)
         {
-            Transit(msg);
+            TransitState(msg);
         }
 
         public void Handle(SubscriptionPaidEvent msg)
         {
-            Transit(msg);
+            TransitState(msg);
         }
 
         internal enum Triggers

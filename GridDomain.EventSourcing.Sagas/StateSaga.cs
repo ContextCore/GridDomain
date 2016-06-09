@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CommonDomain;
 using GridDomain.CQRS;
 using Stateless;
@@ -39,6 +40,7 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
                 = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
         public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
+
         public Type StartMessage { get; } = typeof (TStartMessage);
         public Type StateType { get; } = typeof (TStateData);
         public Type SagaType => this.GetType();
@@ -55,21 +57,32 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
             _eventsToTriggersMapping[typeof (TStartMessage)] = null; 
             Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateData.MachineState);
             Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
+            _transitMethod = GetType().GetMethod(nameof(TransitState),BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public TSagaStates DomainState => StateData.MachineState;
-        public List<object> MessagesToDispatch => new List<object>();
+        private readonly List<Command> _messagesToDispatch = new List<Command>();
 
-        IAggregate IDomainSaga.StateAggregate => StateData;
+        public IReadOnlyCollection<ICommand> CommandsToDispatch => _messagesToDispatch;
 
-        public void Handle(object msg)
+        public void ClearCommandsToDispatch()
         {
-            Transit(msg);
+            _messagesToDispatch.Clear();
         }
 
-        protected void Dispatch(object message)
+        IAggregate IDomainSaga.StateAggregate => StateData;
+ 
+        private readonly MethodInfo _transitMethod;
+        public void Transit(DomainEvent msg)
         {
-            MessagesToDispatch.Add(message);
+            MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
+            genericTransit.Invoke(this, new object[] { msg});
+        }
+
+        protected void Dispatch(Command command)
+        {
+            command.SagaId = StateData.Id;
+            _messagesToDispatch.Add(command);
         }
 
         protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(
@@ -81,15 +94,17 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
         }
 
         //TODO: make method non-generic
-        protected internal void Transit<T>(T message)
+        protected internal void TransitState<T>(T message)
         {
             StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters triggerWithParameters;
-            if (!_eventsToTriggersMapping.TryGetValue(typeof (T), out triggerWithParameters))
+            if (!_eventsToTriggersMapping.TryGetValue(typeof(T), out triggerWithParameters))
                 throw new UnbindedMessageRecievedException(message);
 
             if (Machine.CanFire(triggerWithParameters.Trigger))
-                Machine.Fire((StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>) triggerWithParameters,
-                    message);
+            {
+                var withParameters = (StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>) triggerWithParameters;
+                Machine.Fire(withParameters, message);
+            }
         }
     }
 
