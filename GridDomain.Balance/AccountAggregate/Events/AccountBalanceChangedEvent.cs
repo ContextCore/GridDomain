@@ -6,7 +6,7 @@ namespace BusinessNews.Domain.AccountAggregate.Events
 {
     public class AccountBalanceChangedEvent : DomainEvent
     {
-        protected AccountBalanceChangedEvent(Guid balanceId, Money amount) : base(balanceId)
+        protected AccountBalanceChangedEvent(Guid accountId, Money amount) : base(accountId)
         {
             Amount = amount;
         }

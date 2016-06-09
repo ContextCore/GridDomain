@@ -1,5 +1,6 @@
 ﻿using System;
 using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BillAggregate;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.SubscriptionAggregate;
@@ -82,7 +83,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                     e => 
                     Dispatch(new PayForBillCommand(StateData.AccountId, e.Amount, e.BillId)))
                 .Permit(Transitions.ChangeSubscription, State.SubscriptionSetting);
-            var changeSubscriptionTransition = RegisterEvent<BillPayedEvent>(Transitions.ChangeSubscription);
+            var changeSubscriptionTransition = RegisterEvent<PayedForBillEvent>(Transitions.ChangeSubscription);
 
 
             Machine.Configure(State.SubscriptionSetting)

@@ -5,6 +5,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public interface IAggregateCommandsHandler<TAggregate>
     {
-        IReadOnlyCollection<DomainEvent> Execute(TAggregate aggregate, ICommand command);
+        TAggregate Execute(TAggregate aggregate, ICommand command);
     }
 }

@@ -21,8 +21,8 @@ namespace GridDomain.Node.Actors
         private readonly IPublisher _publisher;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-            AggregateFactory factory,
-            IPublisher publisher)
+                              AggregateFactory factory,
+                              IPublisher publisher)
         {
             _handler = handler;
             _publisher = publisher;
@@ -32,10 +32,15 @@ namespace GridDomain.Node.Actors
             Command<ICommand>(cmd =>
             {
                 //TODO: create more efficient way to set up a saga
-                var events = _handler.Execute(Aggregate, cmd).Select(e => e.CloneWithSaga(cmd.SagaId));
+                Aggregate = _handler.Execute(Aggregate, cmd);
+                var aggregate = (IAggregate) Aggregate;
+
+                var events = aggregate.GetUncommittedEvents()
+                                      .Cast<DomainEvent>()
+                                      .Select(e => e.CloneWithSaga(cmd.SagaId));
 
                 PersistAll(events, e => _publisher.Publish(e));
-                ((IAggregate)Aggregate).ClearUncommittedEvents();
+                aggregate.ClearUncommittedEvents();
             });
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);

@@ -98,7 +98,7 @@
     <Compile Include="BillAggregate\Bill.cs" />
     <Compile Include="BillAggregate\BillAggregateCommandsHandler.cs" />
     <Compile Include="BillAggregate\BillCreatedEvent.cs" />
-    <Compile Include="BillAggregate\BillPayedEvent.cs" />
+    <Compile Include="BillAggregate\BillMarkedAsPayedEvent.cs" />
     <Compile Include="BillAggregate\Charge.cs" />
     <Compile Include="BillAggregate\CreateBillCommand.cs" />
     <Compile Include="BillAggregate\MarkBillPayedCommand.cs" />
