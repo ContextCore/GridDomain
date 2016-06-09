@@ -45,10 +45,10 @@ namespace BusinessNews.Node
         {
             Func<BusinessBalanceContext> contextFactory = () => new BusinessBalanceContext(conf.ReadModelConnectionString);
 
-            container.RegisterType<IReadModelCreator<BusinessBalance>>(
+            container.RegisterType<IReadModelCreator<BusinessAccount>>(
                 new InjectionFactory(c =>
-                    new ReadModelCreatorRetryDecorator<BusinessBalance>(
-                        new SqlReadModelCreator<BusinessBalance>(contextFactory))));
+                    new ReadModelCreatorRetryDecorator<BusinessAccount>(
+                        new SqlReadModelCreator<BusinessAccount>(contextFactory))));
             container.RegisterType<BusinessCurrentBalanceProjectionBuilder>();
 
 

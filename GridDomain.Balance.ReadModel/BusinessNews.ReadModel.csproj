@@ -90,39 +90,11 @@
     <Compile Include="BalanceChangeProjectedNotification.cs" />
     <Compile Include="BusinessBalanceCreatedProjectedNotification.cs" />
     <Compile Include="BusinessBalanceContext.cs" />
-    <Compile Include="BusinessBalance.cs" />
+    <Compile Include="BusinessAccount.cs" />
     <Compile Include="BusinessCurrentBalanceProjectionBuilder.cs" />
-    <Compile Include="Migrations\TransactionHistoryAdded.cs" />
-    <Compile Include="Migrations\TransactionHistoryAdded.Designer.cs">
-      <DependentUpon>TransactionHistoryAdded.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\PrimaryKeyForTransactionHistory.cs" />
-    <Compile Include="Migrations\PrimaryKeyForTransactionHistory.Designer.cs">
-      <DependentUpon>PrimaryKeyForTransactionHistory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\TimeForTransactionHistory.cs" />
-    <Compile Include="Migrations\TimeForTransactionHistory.Designer.cs">
-      <DependentUpon>TimeForTransactionHistory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\What.cs" />
-    <Compile Include="Migrations\What.Designer.cs">
-      <DependentUpon>What.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\BalanceReadModelConcurrency.cs" />
-    <Compile Include="Migrations\BalanceReadModelConcurrency.Designer.cs">
-      <DependentUpon>BalanceReadModelConcurrency.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Initial.cs" />
-    <Compile Include="Migrations\Initial.Designer.cs">
-      <DependentUpon>Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\BalanceMoney.cs" />
-    <Compile Include="Migrations\BalanceMoney.Designer.cs">
-      <DependentUpon>BalanceMoney.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\TableRename.cs" />
-    <Compile Include="Migrations\TableRename.Designer.cs">
-      <DependentUpon>TableRename.cs</DependentUpon>
+    <Compile Include="Migrations\201606092139262_Initial.cs" />
+    <Compile Include="Migrations\201606092139262_Initial.Designer.cs">
+      <DependentUpon>201606092139262_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -168,29 +140,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\TransactionHistoryAdded.resx">
-      <DependentUpon>TransactionHistoryAdded.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\PrimaryKeyForTransactionHistory.resx">
-      <DependentUpon>PrimaryKeyForTransactionHistory.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\TimeForTransactionHistory.resx">
-      <DependentUpon>TimeForTransactionHistory.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\What.resx">
-      <DependentUpon>What.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\BalanceReadModelConcurrency.resx">
-      <DependentUpon>BalanceReadModelConcurrency.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Initial.resx">
-      <DependentUpon>Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\BalanceMoney.resx">
-      <DependentUpon>BalanceMoney.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\TableRename.resx">
-      <DependentUpon>TableRename.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201606092139262_Initial.resx">
+      <DependentUpon>201606092139262_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

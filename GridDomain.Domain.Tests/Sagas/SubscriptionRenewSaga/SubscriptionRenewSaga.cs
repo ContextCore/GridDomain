@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
         IHandler<NotEnoughFondsFailure>,
         IHandler<SubscriptionPaidEvent>
     {
-        public SubscriptionRenewSaga(SagaStateAggregate<States, Triggers> stateData) : base(stateData)
+        public SubscriptionRenewSaga(SagaStateAggregate<States, Triggers> state) : base(state)
         {
             var parForSubscriptionTrigger = RegisterEvent<SubscriptionExpiredEvent>(Triggers.PayForSubscription);
             var remainSubscriptionTrigger = RegisterEvent<SubscriptionPaidEvent>(Triggers.RemainSubscription);

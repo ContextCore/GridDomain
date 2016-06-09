@@ -202,6 +202,10 @@
       <Project>{E6496D95-7FF7-4783-BD06-6D15B67600FA}</Project>
       <Name>GridDomain.Tests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+      <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
+      <Name>GridDomain.EventSourcing.Sagas</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>

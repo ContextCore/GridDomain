@@ -1,10 +1,15 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Akka.Actor;
+using Akka.DI.Core;
 using Akka.TestKit.NUnit;
+using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.Node;
+using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Persistence;
 using GridDomain.Tests.Configuration;
@@ -18,6 +23,8 @@ namespace GridDomain.Tests.Acceptance
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
         protected GridDomainNode GridNode;
         private Stopwatch watch = new Stopwatch();
+        private IActorSubscriber _actorSubscriber;
+
         protected NodeCommandsTest(string config, string name = null) : base(config, name)
         {
         }
@@ -41,25 +48,34 @@ namespace GridDomain.Tests.Acceptance
 
             GridNode = GreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
+            _actorSubscriber = GridNode.Container.Resolve<IActorSubscriber>();
+
+        }
+
+        public T LoadAggregate<T>(Guid id) where T : AggregateBase
+        {
+            var props = GridNode.System.DI().Props<AggregateActor<T>>();
+            var name = AggregateActorName.New<T>(id).ToString();
+            var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
+            Thread.Sleep(1000); //wait for actor recover
+            return actor.UnderlyingActor.Aggregate;
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
         protected void ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            int eventNumber = commands.Length;
-
             var actor = GridNode.System
-                                .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)),
+                                .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(commands.Length, TestActor)),
                                          "EventCounter_" + Guid.NewGuid());
 
-            GridNode.Container.Resolve<IActorSubscriber>().Subscribe<TEvent>(actor);
+            _actorSubscriber.Subscribe<TEvent>(actor);
 
             Console.WriteLine("Starting execute");
 
-            var commandTypes = commands.Select(c => c.GetType()).
-                                        GroupBy(c => c.Name)
-                                        .Select(g => new {Name = g.Key, Count = g.Count()});
+            var commandTypes = commands.Select(c => c.GetType())
+                                       .GroupBy(c => c.Name)
+                                       .Select(g => new {Name = g.Key, Count = g.Count()});
 
             foreach (var commandStat in commandTypes)
             {

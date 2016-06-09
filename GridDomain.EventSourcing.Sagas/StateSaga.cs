@@ -47,20 +47,20 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
 
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
 
-        protected readonly TStateData StateData;
+        public TStateData State { get; }
 
-        protected StateSaga(TStateData stateData)
+        protected StateSaga(TStateData state)
         {
-            StateData = stateData;
+            State = state;
 
             //to include start message into list of accept messages
             _eventsToTriggersMapping[typeof (TStartMessage)] = null; 
-            Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateData.MachineState);
-            Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
+            Machine = new StateMachine<TSagaStates, TSagaTriggers>(State.MachineState);
+            Machine.OnTransitioned(t => State.StateChanged(t.Trigger, t.Destination));
             _transitMethod = GetType().GetMethod(nameof(TransitState),BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
-        public TSagaStates DomainState => StateData.MachineState;
+        public TSagaStates DomainState => State.MachineState;
         private readonly List<Command> _messagesToDispatch = new List<Command>();
 
         public IReadOnlyCollection<ICommand> CommandsToDispatch => _messagesToDispatch;
@@ -70,7 +70,7 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
             _messagesToDispatch.Clear();
         }
 
-        IAggregate IDomainSaga.State => StateData;
+        IAggregate IDomainSaga.State => State;
  
         private readonly MethodInfo _transitMethod;
         public void Transit(DomainEvent msg)
@@ -81,7 +81,7 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
 
         protected void Dispatch(Command command)
         {
-            command.SagaId = StateData.Id;
+            command.SagaId = State.Id;
             _messagesToDispatch.Add(command);
         }
 
@@ -114,7 +114,7 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
         where TTrigger : struct
         where TState : struct
     {
-        public StateSaga(SagaStateAggregate<TState, TTrigger> stateData) : base(stateData)
+        public StateSaga(SagaStateAggregate<TState, TTrigger> state) : base(state)
         {
         }
     }

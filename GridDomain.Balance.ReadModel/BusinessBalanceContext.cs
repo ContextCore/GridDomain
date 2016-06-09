@@ -16,7 +16,7 @@ namespace BusinessNews.ReadModel
         {
         }
 
-        public DbSet<BusinessBalance> Balances { get; set; }
+        public DbSet<BusinessAccount> Accounts { get; set; }
         public DbSet<TransactionHistory> TransactoinHistory { get; set; }
     }
 }
