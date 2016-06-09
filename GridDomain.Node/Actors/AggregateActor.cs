@@ -1,3 +1,4 @@
+using System.Linq;
 using Akka;
 using Akka.Persistence;
 using CommonDomain;
@@ -30,10 +31,8 @@ namespace GridDomain.Node.Actors
 
             Command<ICommand>(cmd =>
             {
-                var events = _handler.Execute(Aggregate, cmd);
-
-                foreach (var ev in events)
-                    ev.SagaId = cmd.SagaId;
+                //TODO: create more efficient way to set up a saga
+                var events = _handler.Execute(Aggregate, cmd).Select(e => e.CloneWithSaga(cmd.SagaId));
 
                 PersistAll(events, e => _publisher.Publish(e));
                 ((IAggregate)Aggregate).ClearUncommittedEvents();

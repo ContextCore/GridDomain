@@ -70,7 +70,7 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
             _messagesToDispatch.Clear();
         }
 
-        IAggregate IDomainSaga.StateAggregate => StateData;
+        IAggregate IDomainSaga.State => StateData;
  
         private readonly MethodInfo _transitMethod;
         public void Transit(DomainEvent msg)

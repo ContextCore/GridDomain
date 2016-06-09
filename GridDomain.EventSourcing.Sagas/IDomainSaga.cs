@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas
     {
         IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
         void ClearCommandsToDispatch();
-        IAggregate StateAggregate { get; }
+        IAggregate State { get; }
         void Transit(DomainEvent message);
     }
 

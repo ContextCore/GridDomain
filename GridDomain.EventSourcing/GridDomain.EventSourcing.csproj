@@ -50,7 +50,6 @@
     <Compile Include="IAggregateRepository.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="IStatefullSaga.cs" />
-    <Compile Include="IVersionedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

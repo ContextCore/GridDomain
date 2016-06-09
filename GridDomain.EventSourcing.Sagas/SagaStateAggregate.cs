@@ -12,8 +12,8 @@ namespace GridDomain.EventSourcing.Sagas
     }
 
     public class SagaStateAggregate<TState, TTransition> : AggregateBase
-        where TState : struct
-        where TTransition : struct
+                                                             where TState : struct
+                                                             where TTransition : struct
     {
         public TState MachineState;
 
