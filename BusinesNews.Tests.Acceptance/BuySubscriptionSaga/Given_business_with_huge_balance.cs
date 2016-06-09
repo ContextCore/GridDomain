@@ -49,7 +49,7 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
             ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(orderSubscriptionCommand);
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(50);
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(500);
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();

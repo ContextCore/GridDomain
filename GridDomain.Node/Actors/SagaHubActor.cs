@@ -35,6 +35,11 @@ namespace GridDomain.Node.Actors
             return Guid.Empty;
         }
 
+        protected override void OnReceive(object message)
+        {
+            base.OnReceive(message);
+        }
+
         protected override Type GetChildActorType(object message)
         {
             return _actorType;

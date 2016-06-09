@@ -31,7 +31,9 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public static CreateActorRoute ForSaga(ISagaDescriptor descriptor, string name)
         {
-            var messageRoutes = descriptor.AcceptMessages.Select(m => new MessageRoute(m, nameof(DomainEvent.SagaId))).ToArray();
+            var messageRoutes = descriptor.AcceptMessages
+                                          .Select(m => new MessageRoute(m, nameof(DomainEvent.SagaId))).ToArray();
+
             var actorOpenType = typeof(SagaHubActor<,,>);
 
             var actorType = actorOpenType.MakeGenericType(descriptor.SagaType, 

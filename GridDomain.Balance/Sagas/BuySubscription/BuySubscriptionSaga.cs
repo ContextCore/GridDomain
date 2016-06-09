@@ -59,21 +59,28 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
 
             Machine.Configure(State.ChargingSubscription)
                 .OnEntryFrom(chargeSubscriptionTransition,
-                    e => { Dispatch(new ChargeSubscriptionCommand(e.SubscriptionId, Guid.NewGuid())); })
+                    e =>
+                    {
+                        Dispatch(new ChargeSubscriptionCommand(e.SubscriptionId, Guid.NewGuid()));
+                    })
                 .Permit(Transitions.CreateBill, State.BillCreating);
 
             var createBillTransition = RegisterEvent<SubscriptionChargedEvent>(Transitions.CreateBill);
 
             Machine.Configure(State.BillCreating)
                 .OnEntryFrom(createBillTransition,
-                    e => { Dispatch(new CreateBillCommand(new[] {new Charge(e.ChargeId, e.Price)}, Guid.NewGuid())); })
+                    e =>
+                    {
+                        Dispatch(new CreateBillCommand(new[] {new Charge(e.ChargeId, e.Price)}, Guid.NewGuid()));
+                    })
                 .Permit(Transitions.PayBill, State.BillPaying);
             var payBillTransition = RegisterEvent<BillCreatedEvent>(Transitions.PayBill);
 
 
             Machine.Configure(State.BillPaying)
                 .OnEntryFrom(payBillTransition,
-                    e => Dispatch(new PayForBillCommand(StateData.AccountId, e.Amount, e.BillId)))
+                    e => 
+                    Dispatch(new PayForBillCommand(StateData.AccountId, e.Amount, e.BillId)))
                 .Permit(Transitions.ChangeSubscription, State.SubscriptionSetting);
             var changeSubscriptionTransition = RegisterEvent<BillPayedEvent>(Transitions.ChangeSubscription);
 

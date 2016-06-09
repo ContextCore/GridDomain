@@ -48,14 +48,15 @@ namespace GridDomain.Node.Actors
                 
                 Saga.Transit(cmd);
 
-                foreach(var msg in Saga.CommandsToDispatch)
-                        _publisher.Publish(msg);
-
                 var sagaStateChangeEvents = Saga.StateAggregate.GetUncommittedEvents().Cast<object>();
                 PersistAll(sagaStateChangeEvents, e => _publisher.Publish(e));
 
+                foreach (var msg in Saga.CommandsToDispatch)
+                    _publisher.Publish(msg);
+
                 Saga.ClearCommandsToDispatch();
                 Saga.StateAggregate.ClearUncommittedEvents();
+                SaveSnapshot(Saga.StateAggregate);
             });
 
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
