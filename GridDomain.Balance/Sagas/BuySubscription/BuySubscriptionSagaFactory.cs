@@ -5,7 +5,8 @@ using GridDomain.EventSourcing.Sagas;
 namespace BusinessNews.Domain.Sagas.BuySubscription
 {
     public class BuySubscriptionSagaFactory : ISagaFactory<BuySubscriptionSaga, SubscriptionOrderedEvent>,
-                                              ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>
+                                              ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>,
+                                              IEmptySagaFactory<BuySubscriptionSaga>
 
 
     {
@@ -17,6 +18,11 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
         public BuySubscriptionSaga Create(BuySubscriptionSagaStateAggregate message)
         {
             return new BuySubscriptionSaga(message);
+        }
+
+        public BuySubscriptionSaga Create()
+        {
+            return Create(new BuySubscriptionSagaStateAggregate(Guid.Empty));
         }
     }
 }

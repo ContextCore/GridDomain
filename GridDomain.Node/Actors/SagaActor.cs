@@ -25,14 +25,18 @@ namespace GridDomain.Node.Actors
         private readonly ISagaFactory<TSaga, TStartMessage> _sagaStarter;
         public TSaga Saga;
         private readonly ISagaFactory<TSaga, TSagaState> _sagaFactory;
+        private readonly IEmptySagaFactory<TSaga> _emptySagaFactory;
 
         public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
+                         IEmptySagaFactory<TSaga> emptySagaFactory,
                          IPublisher publisher)
         {
+            _emptySagaFactory = emptySagaFactory;
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
+            Saga = _emptySagaFactory.Create();
 
             Command<DomainEvent>(cmd =>
             {
@@ -45,7 +49,7 @@ namespace GridDomain.Node.Actors
                 Saga.Transit(cmd);
 
                 foreach(var msg in Saga.CommandsToDispatch)
-                    _publisher.Publish(msg);
+                        _publisher.Publish(msg);
 
                 var sagaStateChangeEvents = Saga.StateAggregate.GetUncommittedEvents().Cast<object>();
                 PersistAll(sagaStateChangeEvents, e => _publisher.Publish(e));
