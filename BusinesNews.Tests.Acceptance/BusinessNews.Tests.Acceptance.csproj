@@ -167,6 +167,7 @@
   <ItemGroup>
     <Compile Include="BalanceChangePlan.cs" />
     <Compile Include="BuySubscriptionSaga\Given_business_with_huge_balance.cs" />
+    <Compile Include="BuySubscriptionSaga\Given_business_with_low_balance.cs" />
     <Compile Include="DataGenerator.cs" />
     <Compile Include="KnownConstructorParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

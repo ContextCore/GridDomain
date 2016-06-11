@@ -1,41 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using System.Threading;
-using System.Threading.Tasks;
-using Akka.DI.Core;
 using BusinessNews.Domain.AccountAggregate.Commands;
 using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
-using BusinessNews.Domain.Sagas.BuySubscription;
 using BusinessNews.Node;
 using BusinessNews.ReadModel;
-using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Configuration;
 using Microsoft.Practices.Unity;
 using NMoneys;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 
 namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
 {
     [TestFixture]
-    class Given_business_with_huge_balance: NodeCommandsTest
+    class Given_business_with_low_balance : NodeCommandsTest
     {
         private readonly Guid _accountId = Guid.NewGuid();
         private readonly Guid _businessId = Guid.NewGuid();
         private readonly Guid _subscriptionId = Guid.NewGuid();
-        private readonly Money _amount = new Money(1000);
+        private readonly Money _amount = new Money(1);
 
-
-        public Given_business_with_huge_balance() : base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
+        public Given_business_with_low_balance() : base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
         {
         }
 
@@ -52,28 +41,30 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
             ExecuteAndWaitFor<AccountBalanceReplenishEvent>(replenishAccountByCardCommand);
 
             var orderSubscriptionCommand = new OrderSubscriptionCommand(_businessId, VIPSubscription.ID, _subscriptionId);
-       
+
             ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(orderSubscriptionCommand);
 
             Thread.Sleep(2000); //to build up read model
         }
 
+
+
         [Test]
-        public void BusinessBalance_in_read_model_should_be_descreased_by_money_amount()
+        public void BusinessBalance_in_read_model_should_remains_the_same()
         {
-            var offer = WellKnownOffers.Catalog[VIPSubscription.ID]; 
+            var offer = WellKnownOffers.Catalog[VIPSubscription.ID];
             using (var context = new BusinessBalanceContext(new LocalDbConfiguration().ReadModelConnectionString))
             {
                 var businessBalance = context.Accounts.Find(_accountId);
-                Assert.AreEqual(_amount.Amount - offer.Price.Amount,businessBalance.Amount);
-            }    
+                Assert.AreEqual(_amount.Amount, businessBalance.Amount);
+            }
         }
 
         [Test]
-        public void BusinessSubscription_in_write_model_should_be_set()
+        public void BusinessSubscription_in_write_model_should_not_be_set()
         {
             var business = LoadAggregate<Business>(_businessId);
-            Assert.AreEqual(_subscriptionId, business.SubscriptionId);
+            Assert.AreNotEqual(_subscriptionId, business.SubscriptionId);
         }
 
 

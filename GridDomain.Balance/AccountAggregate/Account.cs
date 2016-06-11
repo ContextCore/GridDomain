@@ -46,22 +46,24 @@ namespace BusinessNews.Domain.AccountAggregate
 
         public void Replenish(Money m)
         {
+            GuardNegativeMoney(m, "Cant replenish negative amount of money.");
             _log.Trace($"Balance {Id} with amount {Amount} going to increase from command by {m.Amount}");
             var balanceReplenishEvent = new AccountBalanceReplenishEvent(Id, m);
-            GuardNegativeMoney(m, "Cant replenish negative amount of money.", balanceReplenishEvent);
             RaiseEvent(balanceReplenishEvent);
         }
 
-        private static void GuardNegativeMoney(Money m, string msg, object @event)
+        private static void GuardNegativeMoney(Money m, string msg)
         {
             if (m.IsNegative())
-                throw new NegativeMoneyException(msg + "\r\n" + @event.ToPropsString());
+                throw new NegativeMoneyException(msg);
         }
 
         public void PayBill(Money m, Guid billId)
         {
+            //TODO: replace with Apply logic reuse ? need to peek the changes in apply ? 
+            GuardNegativeMoney(m, "Cant withdrawal negative amount of money.");
+            GuardNegativeMoney(Amount - m, "Dont have enought money to pay for bill");
             var balanceWithdrawalEvent = new PayedForBillEvent(Id, m, billId);
-            GuardNegativeMoney(m, "Cant withdrawal negative amount of money.", balanceWithdrawalEvent);
             RaiseEvent(balanceWithdrawalEvent);
         }
     }
