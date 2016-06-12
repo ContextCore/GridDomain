@@ -1,15 +1,37 @@
-﻿namespace GridDomain.CQRS
+﻿using System;
+using System.Reflection;
+
+namespace GridDomain.CQRS
 {
-    public class CommandFailure<TCommand, TReason> : ICommandFault<TCommand> where TCommand : ICommand
+
+    public static class CommandFault
     {
-        public CommandFailure(TCommand command, TReason ex)
+        public static object CreateGenericFor(ICommand command, Exception ex)
         {
-            Error = ex;
+            var type = command.GetType();
+            var faultType = typeof(CommandFault<>).MakeGenericType(type);
+            var fault = faultType.GetConstructor(new[] { type, typeof(Exception)})
+                                 .Invoke(new object[] { command, ex });
+            return fault;
+        }
+    }
+    public class CommandFault<TCommand> : ICommandFault<TCommand>
+        where TCommand : ICommand
+    {
+        public CommandFault(TCommand command, Exception ex)
+        {
+            Fault = ex;
             Command = command;
+            SagaId = command.SagaId;
         }
 
-        public TReason Error { get; }
+        public Exception Fault { get; }
+        public Guid SagaId { get; } 
+
         public TCommand Command { get; }
-        public object Fault => Error;
+
+        Exception ICommandFault<TCommand>.Fault => Fault;
+
+     
     }
 }

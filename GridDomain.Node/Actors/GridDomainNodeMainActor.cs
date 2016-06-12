@@ -71,6 +71,18 @@ namespace GridDomain.Node.Actors
             public ICommand Command { get; }
         }
 
+        public class ExecuteCommandWithTracking 
+        {
+            public ExecuteCommandWithTracking(ExecuteCommand command, IActorRef tracker)
+            {
+                Command = command;
+                Tracker = tracker;
+            }
+
+            public ExecuteCommand Command { get; }
+            public IActorRef Tracker { get; }
+        }
+
         public class Start
         {
             public Type RoutingActorType;

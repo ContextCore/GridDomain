@@ -1,14 +1,17 @@
-﻿namespace GridDomain.CQRS
-{
-    public class CommandFault<T>
-    {
-        public CommandFault(T command, object fault)
-        {
-            Command = command;
-            Fault = fault;
-        }
+﻿using System;
 
-        public T Command { get; }
-        public object Fault { get; }
-    }
+namespace GridDomain.CQRS
+{
+    //public class CommandFault : ICommandFault
+    //{
+    //    public CommandFault(ICommand command, Exception fault)
+    //    {
+    //        Command = command;
+    //        Fault = fault;
+    //    }
+
+    //    public ICommand Command { get; }
+    //    public Exception Fault { get; }
+    //}
+
 }

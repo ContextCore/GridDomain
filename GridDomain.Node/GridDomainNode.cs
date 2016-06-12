@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -16,6 +17,23 @@ using NLog.Config;
 
 namespace GridDomain.Node
 {
+
+    //class CommandTracker: ICommandStatus
+    //{
+    //    public CommandTracker()
+    //    {
+            
+
+    //    }
+    //    public Task<bool> Result { get; }
+    //    public string State { get; }
+    //    public event EventHandler<string> OnStateChange;
+
+    //    public void OnStateChange(Action<string> act)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
     public class GridDomainNode : IGridDomainNode
     {
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
@@ -109,5 +127,10 @@ namespace GridDomain.Node
             foreach(var cmd in commands)
                  _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
+
+        //public ICommandStatus ExecuteTracking(ICommand command)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

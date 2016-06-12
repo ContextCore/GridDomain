@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka;
 using Akka.Persistence;
@@ -32,12 +33,21 @@ namespace GridDomain.Node.Actors
             Command<ICommand>(cmd =>
             {
                 //TODO: create more efficient way to set up a saga
-                Aggregate = _handler.Execute(Aggregate, cmd);
+                try
+                {
+                    Aggregate = _handler.Execute(Aggregate, cmd);
+                }
+                catch (Exception ex)
+                {
+                    _publisher.Publish(CommandFault.CreateGenericFor(cmd,ex));
+                    return;
+                }
+                
                 var aggregate = (IAggregate) Aggregate;
-
+                
                 var events = aggregate.GetUncommittedEvents()
-                                      .Cast<DomainEvent>()
-                                      .Select(e => e.CloneWithSaga(cmd.SagaId));
+                    .Cast<DomainEvent>()
+                    .Select(e => e.CloneWithSaga(cmd.SagaId));
 
                 PersistAll(events, e => _publisher.Publish(e));
                 aggregate.ClearUncommittedEvents();

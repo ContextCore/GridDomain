@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CommonDomain.Core;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
@@ -31,8 +32,13 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public static CreateActorRoute ForSaga(ISagaDescriptor descriptor, string name)
         {
-            var messageRoutes = descriptor.AcceptMessages
-                                          .Select(m => new MessageRoute(m, nameof(DomainEvent.SagaId))).ToArray();
+            var eventRoutes = descriptor.AcceptEvents
+                .Select(eventType => new MessageRoute(eventType, nameof(DomainEvent.SagaId)));
+
+            var commandFaultRoutes = descriptor.ProduceCommands.Select(commandType =>
+                new MessageRoute(typeof (CommandFault<>).MakeGenericType(commandType), nameof(ICommand.SagaId)));
+
+            var messageRoutes = eventRoutes.Concat(commandFaultRoutes).ToArray();
 
             var actorOpenType = typeof(SagaHubActor<,,>);
 

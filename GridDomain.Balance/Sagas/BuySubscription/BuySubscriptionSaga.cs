@@ -21,7 +21,9 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             BillPaying,
             BillCreating,
             SubscriptionSetting,
-            ChargingSubscription
+            ChargingSubscription,
+            Fault
+
         }
 
         public enum Transitions
@@ -30,10 +32,9 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             CreateSubscription,
             PayBill,
             ChangeSubscription,
-            SetNewSubscription,
-            SetFailed,
             SubscriptionSet,
-            BillScubscription
+            BillScubscription,
+            Fault
         }
 
         //TODO: extract subscriptor in separate class
@@ -43,14 +44,22 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
 
         public BuySubscriptionSaga(BuySubscriptionSagaStateAggregate state) : base(state)
         {
+            //TODO: replace with more elegatn solution to combine Dispatch and registergin for faults
+            var createSubscriptionFault = RegisterCommandFault<CreateSubscriptionCommand>(Transitions.Fault);
+            var chargeSubscriptionFault = RegisterCommandFault<ChargeSubscriptionCommand>(Transitions.Fault);
+            var createBillCommandFault  = RegisterCommandFault<CreateBillCommand>(Transitions.Fault);
+            var payForBillCommandFault  = RegisterCommandFault<PayForBillCommand>(Transitions.Fault);
+
+            Machine.Configure(State.Fault)
+                   .OnEntryFrom(createSubscriptionFault, c => Dispatch()
+
             var subscriptionOrderCreatedTransition = RegisterEvent<SubscriptionOrderedEvent>(Transitions.CreateSubscription);
             var subscriptionOrderCompletedTransition = RegisterEvent<SubscriptionOrderCompletedEvent>(Transitions.SubscriptionSet);
 
-
             Machine.Configure(State.SubscriptionSet)
-                .OnEntryFrom(subscriptionOrderCompletedTransition, e => 
-                    base.State.Complete())
-                   .Permit(Transitions.CreateSubscription, State.SubscriptionCreating);
+                   .OnEntryFrom(subscriptionOrderCompletedTransition, e => base.State.Complete())
+                   .Permit(Transitions.CreateSubscription, State.SubscriptionCreating)
+                   .Permit(Transitions.Fault, State.Fault);
 
 
             Machine.Configure(State.SubscriptionCreating)
@@ -60,7 +69,9 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                         base.State.RememberOrder(e);
                         Dispatch(new CreateSubscriptionCommand(e.SuibscriptionId, e.OfferId));
                     })
-                .Permit(Transitions.BillScubscription, State.ChargingSubscription);
+                .Permit(Transitions.BillScubscription, State.ChargingSubscription)
+                .Permit(Transitions.Fault, State.Fault); 
+
             var chargeSubscriptionTransition = RegisterEvent<SubscriptionCreatedEvent>(Transitions.BillScubscription);
 
             Machine.Configure(State.ChargingSubscription)
@@ -69,7 +80,8 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                     {
                         Dispatch(new ChargeSubscriptionCommand(e.SubscriptionId, Guid.NewGuid()));
                     })
-                .Permit(Transitions.CreateBill, State.BillCreating);
+                .Permit(Transitions.CreateBill, State.BillCreating)
+                   .Permit(Transitions.Fault, State.Fault);
 
             var createBillTransition = RegisterEvent<SubscriptionChargedEvent>(Transitions.CreateBill);
 
@@ -79,7 +91,9 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                     {
                         Dispatch(new CreateBillCommand(new[] {new Charge(e.ChargeId, e.Price)}, Guid.NewGuid()));
                     })
-                .Permit(Transitions.PayBill, State.BillPaying);
+                .Permit(Transitions.PayBill, State.BillPaying)
+                .Permit(Transitions.Fault, State.Fault); 
+
             var payBillTransition = RegisterEvent<BillCreatedEvent>(Transitions.PayBill);
 
 
@@ -87,7 +101,8 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                 .OnEntryFrom(payBillTransition,
                     e => 
                     Dispatch(new PayForBillCommand(base.State.AccountId, e.Amount, e.BillId)))
-                .Permit(Transitions.ChangeSubscription, State.SubscriptionSetting);
+                .Permit(Transitions.ChangeSubscription, State.SubscriptionSetting)
+                .Permit(Transitions.Fault, State.Fault); ;
             var changeSubscriptionTransition = RegisterEvent<PayedForBillEvent>(Transitions.ChangeSubscription);
 
 
@@ -95,7 +110,8 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
                 .OnEntryFrom(changeSubscriptionTransition,
                     e =>
                         Dispatch(new CompleteBusinessSubscriptionOrderCommand(base.State.BusinessId,base.State.SubscriptionId)))
-                .Permit(Transitions.SubscriptionSet, State.SubscriptionSet);
+                .Permit(Transitions.SubscriptionSet, State.SubscriptionSet)
+                .Permit(Transitions.Fault, State.Fault); 
 
 
         }
