@@ -31,7 +31,7 @@ namespace BusinessNews.Test.Withdrawal
         [Then]
         public void Balance_amount_should_be_increased()
         {
-            VerifyExpected();
+            Assert.Throws<NegativeMoneyException>(VerifyExpected);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Core;
 using GridDomain.CQRS;
@@ -9,9 +8,9 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public class CreateActorRoute
+    public class CreateActorRouteMessage
     {
-        public CreateActorRoute(Type actorType, string actorName, params MessageRoute[] routes)
+        public CreateActorRouteMessage(Type actorType, string actorName, params MessageRoute[] routes)
         {
             CheckForUniqueRoutes(routes);
             Routes = routes;
@@ -28,20 +27,20 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                 throw new DublicateRoutesException(dublicateRoutes.Select(r => r.Key.FullName));
         }
 
-        public static CreateActorRoute ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
+        public static CreateActorRouteMessage ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
         {
-            return new CreateActorRoute(typeof(AggregateHubActor<TAggregate>), name, routes);
+            return new CreateActorRouteMessage(typeof(AggregateHubActor<TAggregate>), name, routes);
         }
 
-        public static CreateActorRoute ForSaga<TSaga, TSagaState, TStartMessage>(string name, params MessageRoute[] routes) 
+        public static CreateActorRouteMessage ForSaga<TSaga, TSagaState, TStartMessage>(string name, params MessageRoute[] routes) 
             where TSaga : IDomainSaga 
             where TSagaState : AggregateBase 
             where TStartMessage : DomainEvent
         {
-            return new CreateActorRoute(typeof(SagaHubActor<TSaga, TSagaState, TStartMessage>), name, routes);
+            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState, TStartMessage>), name, routes);
         }
 
-        public static CreateActorRoute ForSaga(ISagaDescriptor descriptor, string name = null)
+        public static CreateActorRouteMessage ForSaga(ISagaDescriptor descriptor, string name = null)
         {
             name = name ??  $"SagaHub_{descriptor.SagaType.Name}";
 
@@ -55,7 +54,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                                                           descriptor.StateType,
                                                           descriptor.StartMessage);
 
-            return new CreateActorRoute(actorType, name, messageRoutes);
+            return new CreateActorRouteMessage(actorType, name, messageRoutes);
         }
 
         public MessageRoute[] Routes { get; }
@@ -63,13 +62,5 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         public Type ActorType { get; }
 
         public string ActorName { get; }
-    }
-
-    internal class DublicateRoutesException : Exception
-    {
-        public DublicateRoutesException(IEnumerable<string> dublicateRoutes)
-            :base($"Found dublicate routes for messages: {string.Join(";",dublicateRoutes)}")
-        {
-        }
     }
 }

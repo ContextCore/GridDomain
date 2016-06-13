@@ -1,3 +1,4 @@
+using CommonDomain;
 using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas
@@ -6,5 +7,10 @@ namespace GridDomain.EventSourcing.Sagas
     {
         ICommandFault CommandFault { get; }
         object State { get; }
+    }
+    public interface ISagaFault<out TState> : ISagaFault
+                                   where TState : IAggregate
+    {
+        new TState State { get; }
     }
 }

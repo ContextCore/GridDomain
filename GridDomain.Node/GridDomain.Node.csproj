@@ -181,7 +181,6 @@
   <ItemGroup>
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
-    <Compile Include="Actors\CommandHandlerActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
@@ -191,31 +190,26 @@
     <Compile Include="Actors\PersistentHubActor.cs" />
     <Compile Include="AkkaMessaging\AkkaEventBusTransport.cs" />
     <Compile Include="AkkaMessaging\CannotGetDistributedPubSubException.cs" />
-    <Compile Include="AkkaMessaging\Routing\CreateActorRoute.cs" />
+    <Compile Include="AkkaMessaging\Routing\CreateActorRouteMessage.cs" />
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\DistributedPubSubTransport.cs" />
     <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
-    <Compile Include="AkkaMessaging\InvalidCorrelationPropertyValue.cs" />
     <Compile Include="AkkaMessaging\MessageRoute.cs" />
     <Compile Include="AkkaMessaging\Routing\ClusterSystemRouterActor.cs" />
+    <Compile Include="AkkaMessaging\Routing\DublicateRoutesException.cs" />
     <Compile Include="AkkaMessaging\Routing\LocalSystemRoutingActor.cs" />
     <Compile Include="Actors\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
     <Compile Include="AkkaMessaging\Routing\AkkaRouteBuilder.cs" />
     <Compile Include="AkkaMessaging\CannotFindCorrelationProperty.cs" />
-    <Compile Include="AkkaMessaging\CreateHandlerRoute.cs" />
+    <Compile Include="AkkaMessaging\CreateHandlerRouteMessage.cs" />
     <Compile Include="AkkaMessaging\DefaultHandlerActorTypeFactory.cs" />
     <Compile Include="AkkaMessaging\IHandlerActorTypeFactory.cs" />
-    <Compile Include="AkkaMessaging\IMetadataMessage.cs" />
     <Compile Include="AkkaMessaging\IncorrectTypeOfCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\InvalidHandlerType.cs" />
     <Compile Include="Actors\MessageHandlingActor.cs" />
     <Compile Include="AkkaMessaging\Routing\RoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
-    <Compile Include="AkkaMessaging\MetadataEntry.cs" />
-    <Compile Include="AkkaMessaging\MetadataMessage.cs" />
-    <Compile Include="AkkaMessaging\UnknownMessageRecievedException.cs" />
-    <Compile Include="AkkaMessaging\UnregisteredAggregateActorLookupException.cs" />
     <Compile Include="Configuration\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\AkkaNetworkAddress.cs" />
     <Compile Include="Configuration\Hocon\PersistenceConfig.cs" />
@@ -281,9 +275,8 @@
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventStore.MSSQL\GridDomain.EventStore.MSSQL.csproj">
-      <Project>{08e73994-2ffa-424a-a138-e9fa1875f270}</Project>
+      <Project>{08E73994-2FFA-424A-A138-E9FA1875F270}</Project>
       <Name>GridDomain.EventStore.MSSQL</Name>
-      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
       <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>

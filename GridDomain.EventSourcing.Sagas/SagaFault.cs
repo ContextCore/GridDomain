@@ -4,12 +4,6 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISagaFault<out TState> : ISagaFault
-                                    where TState : IAggregate
-    {
-        new TState State { get; }
-    }
-
     public class SagaFault<TState> : ISagaFault<TState> where TState : IAggregate
     {
         private SagaFault(Guid sagaId, ICommandFault commandFault, TState state)

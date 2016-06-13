@@ -17,23 +17,6 @@ using NLog.Config;
 
 namespace GridDomain.Node
 {
-
-    //class CommandTracker: ICommandStatus
-    //{
-    //    public CommandTracker()
-    //    {
-            
-
-    //    }
-    //    public Task<bool> Result { get; }
-    //    public string State { get; }
-    //    public event EventHandler<string> OnStateChange;
-
-    //    public void OnStateChange(Action<string> act)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
     public class GridDomainNode : IGridDomainNode
     {
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
@@ -76,7 +59,7 @@ namespace GridDomain.Node
             foreach (var system in AllSystems)
             {
                 var r = new UnityDependencyResolver(Container, system);
-                // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+               // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
                 CompositionRoot.Init(Container.CreateChildContainer(),
                     system,
                     databaseConfiguration,

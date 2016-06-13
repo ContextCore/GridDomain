@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class CreateHandlerRoute : IEquatable<CreateHandlerRoute>
+    public class CreateHandlerRouteMessage : IEquatable<CreateHandlerRouteMessage>
     {
-        public CreateHandlerRoute(Type messageType, Type handlerType, string messageCorrelationProperty)
+        public CreateHandlerRouteMessage(Type messageType, Type handlerType, string messageCorrelationProperty)
         {
             MessageType = messageType;
             HandlerType = handlerType;
@@ -26,14 +26,14 @@ namespace GridDomain.Node.AkkaMessaging
         /// </summary>
         public string MessageCorrelationProperty { get; }
 
-        public bool Equals(CreateHandlerRoute other)
+        public bool Equals(CreateHandlerRouteMessage other)
         {
             return other.HandlerType == HandlerType && other.MessageType == MessageType;
         }
 
-        public static CreateHandlerRoute New<TMessage, THandler>(string property) where THandler : IHandler<TMessage>
+        public static CreateHandlerRouteMessage New<TMessage, THandler>(string property) where THandler : IHandler<TMessage>
         {
-            return new CreateHandlerRoute(typeof (TMessage), typeof (THandler), property);
+            return new CreateHandlerRouteMessage(typeof (TMessage), typeof (THandler), property);
         }
 
         private void Check()

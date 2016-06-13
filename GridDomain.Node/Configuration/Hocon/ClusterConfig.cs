@@ -7,11 +7,6 @@ namespace GridDomain.Node.Configuration.Hocon
     {
         private readonly string[] _seedNodes;
 
-        //public ClusterConfig(int port, string host, params string[] seedNodes):base(port,host)
-        //{
-        //    _seedNodes = seedNodes;
-        //}
-
         public ClusterConfig(IAkkaNetworkAddress config, params string[] seedNodes) : base(config)
         {
             _seedNodes = seedNodes;

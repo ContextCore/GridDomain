@@ -2,7 +2,7 @@ using System;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISagaFactory<TSaga, TStartMessage> where TSaga : IDomainSaga
+    public interface ISagaFactory<out TSaga, in TStartMessage> where TSaga : IDomainSaga
     {
         TSaga Create(TStartMessage message);
     }

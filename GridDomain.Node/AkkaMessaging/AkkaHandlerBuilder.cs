@@ -6,17 +6,17 @@ namespace GridDomain.Node.AkkaMessaging
     public class AkkaHandlerBuilder<TMessage, THandler> :
         IHandlerBuilder<TMessage, THandler> where THandler : IHandler<TMessage>
     {
-        private readonly IHandler<CreateHandlerRoute> _routingRegistrator;
+        private readonly IHandler<CreateHandlerRouteMessage> _routingRegistrator;
         public string CorrelationPropertyName;
 
-        public AkkaHandlerBuilder(IHandler<CreateHandlerRoute> routingRegistrator)
+        public AkkaHandlerBuilder(IHandler<CreateHandlerRouteMessage> routingRegistrator)
         {
             _routingRegistrator = routingRegistrator;
         }
 
         public void Register()
         {
-            _routingRegistrator.Handle(CreateHandlerRoute.New<TMessage, THandler>(CorrelationPropertyName));
+            _routingRegistrator.Handle(CreateHandlerRouteMessage.New<TMessage, THandler>(CorrelationPropertyName));
         }
 
         public IHandlerBuilder<TMessage, THandler> WithCorrelation(string name)

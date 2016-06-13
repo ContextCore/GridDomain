@@ -10,8 +10,8 @@ using NLog;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRoute>,
-                                                     IHandler<CreateActorRoute>
+    public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRouteMessage>,
+                                                     IHandler<CreateActorRouteMessage>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
         protected readonly Logger _log = LogManager.GetCurrentClassLogger();
@@ -24,21 +24,21 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _actorTypeFactory = actorTypeFactory;
         }
 
-        public void Handle(CreateActorRoute msg)
+        public void Handle(CreateActorRouteMessage msg)
         {
             var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
             foreach (var msgRoute in msg.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
         }
 
-        public void Handle(CreateHandlerRoute msg)
+        public void Handle(CreateHandlerRouteMessage msg)
         {
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
-            Self.Tell(new CreateActorRoute(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
+            Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 
-        protected virtual Pool CreateActorRouter(CreateActorRoute msg)
+        protected virtual Pool CreateActorRouter(CreateActorRouteMessage msg)
         {
             var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
 

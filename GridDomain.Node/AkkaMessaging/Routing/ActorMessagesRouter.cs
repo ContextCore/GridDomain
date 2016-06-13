@@ -13,14 +13,14 @@ namespace GridDomain.Node.AkkaMessaging.Routing
     public class ActorMessagesRouter : IMessagesRouter
     {
         private readonly IAggregateActorLocator _actorLocator;
-        private readonly TypedMessageActor<CreateActorRoute> _routingActorTypedMessageActor;
-        private readonly TypedMessageActor<CreateHandlerRoute> _routingTypedMessageActor;
+        private readonly TypedMessageActor<CreateActorRouteMessage> _routingActorTypedMessageActor;
+        private readonly TypedMessageActor<CreateHandlerRouteMessage> _routingTypedMessageActor;
 
         public ActorMessagesRouter(IActorRef routingActor, IAggregateActorLocator actorLocator)
         {
             _actorLocator = actorLocator;
-            _routingTypedMessageActor = new TypedMessageActor<CreateHandlerRoute>(routingActor);
-            _routingActorTypedMessageActor = new TypedMessageActor<CreateActorRoute>(routingActor);
+            _routingTypedMessageActor = new TypedMessageActor<CreateHandlerRouteMessage>(routingActor);
+            _routingActorTypedMessageActor = new TypedMessageActor<CreateActorRouteMessage>(routingActor);
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()
@@ -40,13 +40,13 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             )).ToArray();
 
             var name = $"Aggregate_{typeof(TAggregate).Name}";
-            var createActorRoute = CreateActorRoute.ForAggregate<TAggregate>(name,messageRoutes);
+            var createActorRoute = CreateActorRouteMessage.ForAggregate<TAggregate>(name,messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
         public void RegisterSaga(ISagaDescriptor sagaDescriptor)
         {
-            var createActorRoute = CreateActorRoute.ForSaga(sagaDescriptor);
+            var createActorRoute = CreateActorRouteMessage.ForSaga(sagaDescriptor);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
