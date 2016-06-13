@@ -56,36 +56,4 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             RaiseEvent(new CompletedEvent(Id));
         }
     }
-
-    public class CompletedEvent : SagaStateEvent
-    {
-        public CompletedEvent(Guid sourceId): base(sourceId)
-        {
-        }
-    }
-
-
-    internal class AccountRememberedEvent : SagaStateEvent
-    {
-        public AccountRememberedEvent(Guid accountId, Guid businessId, Guid suibscriptionId, Guid sagaId) : base(sagaId)
-        {
-            AccountId = accountId;
-            BusinessId = businessId;
-            SuibscriptionId = suibscriptionId;
-        }
-
-        public Guid AccountId { get; }
-        public Guid BusinessId { get; }
-        public Guid SuibscriptionId { get; }
-    }
-
-    public class SubscriptionRememberedEvent: SagaStateEvent
-    {
-        public SubscriptionRememberedEvent(Guid subscriptionId, Guid sagaId) : base(sagaId)
-        {
-            SubscriptionId = subscriptionId;
-        }
-
-        public Guid SubscriptionId { get; }
-    }
 }

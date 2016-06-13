@@ -8,35 +8,21 @@ using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
+  
 
-    public static class SagaInfo<TSaga>
-    {
-        public static IReadOnlyCollection<Type> KnownMessages()
-        {
-            var allInterfaces = typeof(TSaga).GetInterfaces();
-
-            var handlerInterfaces =
-                allInterfaces.Where(i => i.IsGenericType &&
-                                         i.GetGenericTypeDefinition() == typeof(IHandler<>))
-                             .ToArray();
-
-            return handlerInterfaces.SelectMany(s => s.GetGenericArguments()).ToArray();
-        }
-    }
-
-public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : 
-                                                                 IDomainSaga,
-                                                                 ISagaDescriptor
-                                                                 where TSagaTriggers : struct
-                                                                 where TSagaStates : struct
-                                                                 where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
+    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
+                                                            IDomainStateSaga<TStateData>,
+                                                            ISagaDescriptor
+                                                            where TSagaTriggers : struct
+                                                            where TSagaStates : struct
+                                                            where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
     {
         private readonly IDictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>
             _eventsToTriggersMapping
                 = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
-        public IReadOnlyCollection<Type> AcceptEvents => _eventsToTriggersMapping.Keys.ToArray();
-        public IReadOnlyCollection<Type> ProduceCommands => registeredCommands;
+        public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
+        public IReadOnlyCollection<Type> ProduceCommands => _registeredCommands;
 
         public Type StartMessage { get; } = typeof (TStartMessage);
         public Type StateType { get; } = typeof (TStateData);
@@ -47,14 +33,13 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
         public TStateData State { get; }
 
         protected StateMachine<TSagaStates, TSagaTriggers>
-            .TriggerWithParameters<TCommand> RegisterCommandFault<TCommand>(TSagaTriggers trigger) where TCommand : ICommand
+            .TriggerWithParameters<CommandFault<TCommand>> RegisterCommandFault<TCommand>(TSagaTriggers trigger) where TCommand : ICommand
         {
-            var triggerWithParameters = Machine.SetTriggerParameters<TCommand>(trigger);
-            registeredCommands.Add(typeof(TCommand));
-            return triggerWithParameters;
-
+            _registeredCommands.Add(typeof(TCommand));
+            return RegisterEvent<CommandFault<TCommand>>(trigger);
         }
-        private readonly List<Type> registeredCommands = new List<Type>(); 
+
+        private readonly List<Type> _registeredCommands = new List<Type>(); 
 
         protected StateSaga(TStateData state)
         {
@@ -80,10 +65,10 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
         IAggregate IDomainSaga.State => State;
  
         private readonly MethodInfo _transitMethod;
-        public void Transit(DomainEvent msg)
+        public void Transit(object msg)
         {
             MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
-            genericTransit.Invoke(this, new object[] { msg});
+            genericTransit.Invoke(this, new [] { msg});
         }
 
         protected void Dispatch(Command command)
@@ -92,9 +77,13 @@ public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
             _messagesToDispatch.Add(command);
         }
 
-        protected void Dispatch<T>(CommandFault<T> commandFault) where T:ICommand
+        protected void DispatchSagaFault<T>(CommandFault<T> commandFault) where T:ICommand
         {
-            _messagesToDispatch.Add(commandFault);
+            _messagesToDispatch.Add(new SagaFault<TStateData>(this, commandFault));
+        }
+        protected void Dispatch(ISagaFault sagaFault)
+        {
+            _messagesToDispatch.Add(sagaFault);
         }
 
         protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(

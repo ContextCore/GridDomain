@@ -2,18 +2,23 @@ using System;
 
 namespace GridDomain.Tests.Acceptance
 {
-    public class ExpectedMessagesRecieved<T>
+    public class ExpectedMessagesRecieved<T> : ExpectedMessagesRecieved
     {
-        public ExpectedMessagesRecieved(T msg, int numLeft, Guid[] sources)
+        public ExpectedMessagesRecieved(T msg) : base(msg)
         {
-            NumLeft = numLeft;
-            Sources = sources;
             Message = msg;
         }
 
-        public int NumLeft { get; set; }
-        public Guid[] Sources { get; set; }
+        public new T Message { get;}
+    }
 
-        public T Message { get; set; }
+    public class ExpectedMessagesRecieved
+    {
+        public ExpectedMessagesRecieved(object msg)
+        {
+            Message = msg;
+        }
+
+        public object Message { get; private set; }
     }
 }

@@ -252,7 +252,9 @@
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_not_correlated_routing.cs" />
     <Compile Include="MessageRoutingTests\GridNode\ActorSystemTest.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemTest.cs" />
+    <Compile Include="MessageToWait.cs" />
     <Compile Include="MessageTraceHandlingDecoratorActor.cs" />
+    <Compile Include="MessageWaiter.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\Persisted.cs" />
     <Compile Include="Persistence\SqlJournalNotPersistentActor.cs" />

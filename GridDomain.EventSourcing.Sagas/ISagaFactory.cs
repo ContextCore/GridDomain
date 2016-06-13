@@ -6,9 +6,4 @@ namespace GridDomain.EventSourcing.Sagas
     {
         TSaga Create(TStartMessage message);
     }
-
-    public interface IEmptySagaFactory<TSaga> where TSaga : IDomainSaga
-    {
-        TSaga Create();
-    }
 }

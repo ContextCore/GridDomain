@@ -7,6 +7,7 @@ using Akka.DI.Core;
 using Akka.TestKit.NUnit;
 using CommonDomain.Core;
 using GridDomain.CQRS;
+using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
@@ -65,17 +66,48 @@ namespace GridDomain.Tests.Acceptance
 
         protected void ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
+           ExecuteAndWaitFor(new [] {typeof(TEvent)},commands);
+        }
+        protected void ExecuteAndWaitFor<TMessage1,TMessage2>(params ICommand[] commands)
+        {
+            ExecuteAndWaitFor(new[] { typeof(TMessage1),typeof(TMessage2)}, commands);
+        }
+
+        private void WaitFor(Action act, params Type[] messageTypes)
+        {
+            var toWait = messageTypes.Select(m => new MessageToWait(m, 1)).ToArray();
             var actor = GridNode.System
-                                .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(commands.Length, TestActor)),
-                                         "EventCounter_" + Guid.NewGuid());
+                                .ActorOf(Props.Create(() => new MessageWaiter(toWait, TestActor)),
+                                         "MessageWaiter_" + Guid.NewGuid());
 
-            _actorSubscriber.Subscribe<TEvent>(actor);
+            foreach (var m in messageTypes)
+                _actorSubscriber.Subscribe(m, actor);
 
+            act();
+
+            Console.WriteLine();
+            Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
+
+            var msg = FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
+            watch.Stop();
+
+            Console.WriteLine();
+            Console.WriteLine($"Wait ended, total wait time: {watch.Elapsed}");
+            Console.WriteLine($"Stoped after message recieved: \r\n{msg.ToPropsString()}");
+        }
+
+        protected void ExecuteAndWaitFor(Type[] messageTypes,params ICommand[] commands)
+        {
+            WaitFor(() => Execute(commands),messageTypes);
+        }
+
+        private void Execute(ICommand[] commands)
+        {
             Console.WriteLine("Starting execute");
 
             var commandTypes = commands.Select(c => c.GetType())
-                                       .GroupBy(c => c.Name)
-                                       .Select(g => new {Name = g.Key, Count = g.Count()});
+                .GroupBy(c => c.Name)
+                .Select(g => new {Name = g.Key, Count = g.Count()});
 
             foreach (var commandStat in commandTypes)
             {
@@ -88,15 +120,6 @@ namespace GridDomain.Tests.Acceptance
             {
                 GridNode.Execute(c);
             }
-
-            Console.WriteLine();
-            Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
-
-            var msg = FishForMessage(m => m is ExpectedMessagesRecieved<TEvent>,Timeout);
-            watch.Stop();
-
-            Console.WriteLine();
-            Console.WriteLine($"Wait ended, total wait time: {watch.Elapsed}");
         }
     }
 }

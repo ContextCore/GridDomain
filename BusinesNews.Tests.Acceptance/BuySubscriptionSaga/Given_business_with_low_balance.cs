@@ -4,8 +4,10 @@ using BusinessNews.Domain.AccountAggregate.Commands;
 using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
+using BusinessNews.Domain.Sagas.BuySubscription;
 using BusinessNews.Node;
 using BusinessNews.ReadModel;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance;
@@ -42,12 +44,11 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
 
             var orderSubscriptionCommand = new OrderSubscriptionCommand(_businessId, VIPSubscription.ID, _subscriptionId);
 
-            ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(orderSubscriptionCommand);
+            ExecuteAndWaitFor<SubscriptionOrderCompletedEvent,
+                              SagaFault<BuySubscriptionSagaStateAggregate>>(orderSubscriptionCommand);
 
             Thread.Sleep(2000); //to build up read model
         }
-
-
 
         [Test]
         public void BusinessBalance_in_read_model_should_remains_the_same()
@@ -66,7 +67,6 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
             var business = LoadAggregate<Business>(_businessId);
             Assert.AreNotEqual(_subscriptionId, business.SubscriptionId);
         }
-
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(20);
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)

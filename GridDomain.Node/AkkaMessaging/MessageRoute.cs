@@ -8,8 +8,10 @@ namespace GridDomain.Node.AkkaMessaging
         {
             MessageType = messageType;
             CorrelationField = correlationField;
+            Topic = MessageType.FullName;
         }
 
+        public string Topic { get; }
         public Type MessageType { get; }
         public string CorrelationField { get; }
     }

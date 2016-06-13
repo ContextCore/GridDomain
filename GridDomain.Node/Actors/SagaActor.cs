@@ -26,42 +26,41 @@ namespace GridDomain.Node.Actors
         private readonly ISagaFactory<TSaga, TStartMessage> _sagaStarter;
         public TSaga Saga;
         private readonly ISagaFactory<TSaga, TSagaState> _sagaFactory;
-        private readonly IEmptySagaFactory<TSaga> _emptySagaFactory;
 
         public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
                          IEmptySagaFactory<TSaga> emptySagaFactory,
                          IPublisher publisher)
         {
-            _emptySagaFactory = emptySagaFactory;
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
-            Saga = _emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
+            Saga = emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
 
-            Command<DomainEvent>(cmd =>
+
+            Command<ICommandFault>(fault => ProcessSaga(fault),fault => fault.SagaId == Saga.State.Id);
+            Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.State.Id);
+            Command<TStartMessage>(startMessage =>
             {
-                var startMessage = cmd as TStartMessage;
-                if (startMessage != null)
-                {
-                    if (Saga.State.Id != Guid.Empty) return; //duplicate start event
-                    Saga = _sagaStarter.Create(startMessage);
-                }
-              
-                Saga.Transit(cmd);
-
-                var sagaStateChangeEvents = Saga.State.GetUncommittedEvents().Cast<object>();
-                PersistAll(sagaStateChangeEvents, e => _publisher.Publish(e));
-
-                foreach (var msg in Saga.CommandsToDispatch)
-                    _publisher.Publish(msg);
-
-                Saga.ClearCommandsToDispatch();
-                Saga.State.ClearUncommittedEvents();
-            });
-
+                Saga = _sagaStarter.Create(startMessage);
+                ProcessSaga(startMessage);
+            },start => Saga.State.Id == Guid.Empty); //duplicate start event
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
             Recover<DomainEvent>(e => Saga.State.ApplyEvent(e));
+        }
+
+        private void ProcessSaga(object message)
+        {
+            Saga.Transit(message);
+
+            var stateChangeEvents = Saga.State.GetUncommittedEvents().Cast<object>();
+            PersistAll(stateChangeEvents, e => _publisher.Publish(e));
+
+            foreach (var msg in Saga.CommandsToDispatch)
+                _publisher.Publish(msg);
+
+            Saga.ClearCommandsToDispatch();
+            Saga.State.ClearUncommittedEvents();
         }
 
         public override string PersistenceId => Self.Path.Name;

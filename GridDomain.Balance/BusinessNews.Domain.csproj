@@ -117,9 +117,12 @@
     <Compile Include="OfferAggregate\VIPSubscription.cs" />
     <Compile Include="OfferAggregate\WellKnownGrants.cs" />
     <Compile Include="OfferAggregate\WellKnownOffers.cs" />
+    <Compile Include="Sagas\BuySubscription\AccountRememberedEvent.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSagaFactory.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSagaStateAggregate.cs" />
     <Compile Include="Sagas\BuySubscription\BuySubscriptionSaga.cs" />
+    <Compile Include="Sagas\BuySubscription\CompletedEvent.cs" />
+    <Compile Include="Sagas\BuySubscription\SubscriptionRememberedEvent.cs" />
     <Compile Include="SubscriptionAggregate\ChargeSubscriptionCommand.cs" />
     <Compile Include="SubscriptionAggregate\CreateSubscriptionCommand.cs" />
     <Compile Include="OfferAggregate\Offer.cs" />

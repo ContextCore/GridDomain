@@ -92,9 +92,9 @@
     <Compile Include="BusinessBalanceContext.cs" />
     <Compile Include="BusinessAccount.cs" />
     <Compile Include="BusinessCurrentBalanceProjectionBuilder.cs" />
-    <Compile Include="Migrations\201606092139262_Initial.cs" />
-    <Compile Include="Migrations\201606092139262_Initial.Designer.cs">
-      <DependentUpon>201606092139262_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\Initial.cs" />
+    <Compile Include="Migrations\Initial.Designer.cs">
+      <DependentUpon>Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,8 +140,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201606092139262_Initial.resx">
-      <DependentUpon>201606092139262_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\Initial.resx">
+      <DependentUpon>Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

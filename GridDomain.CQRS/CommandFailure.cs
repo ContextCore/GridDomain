@@ -3,7 +3,6 @@ using System.Reflection;
 
 namespace GridDomain.CQRS
 {
-
     public static class CommandFault
     {
         public static object CreateGenericFor(ICommand command, Exception ex)
@@ -16,7 +15,7 @@ namespace GridDomain.CQRS
         }
     }
     public class CommandFault<TCommand> : ICommandFault<TCommand>
-        where TCommand : ICommand
+                                    where TCommand : ICommand
     {
         public CommandFault(TCommand command, Exception ex)
         {
@@ -25,13 +24,12 @@ namespace GridDomain.CQRS
             SagaId = command.SagaId;
         }
 
+        ICommand ICommandFault.Command => Command;
+
         public Exception Fault { get; }
         public Guid SagaId { get; } 
 
         public TCommand Command { get; }
 
-        Exception ICommandFault<TCommand>.Fault => Fault;
-
-     
     }
 }

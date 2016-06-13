@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Core;
 using GridDomain.CQRS;
@@ -12,9 +13,19 @@ namespace GridDomain.Node.AkkaMessaging.Routing
     {
         public CreateActorRoute(Type actorType, string actorName, params MessageRoute[] routes)
         {
+            CheckForUniqueRoutes(routes);
             Routes = routes;
             ActorType = actorType;
             ActorName = actorName;
+        }
+
+        private void CheckForUniqueRoutes(MessageRoute[] routes)
+        {
+           var dublicateRoutes = routes.GroupBy(r => r.MessageType)
+                                       .Where(g => g.Count() > 1)
+                                       .ToArray();
+            if (dublicateRoutes.Any())
+                throw new DublicateRoutesException(dublicateRoutes.Select(r => r.Key.FullName));
         }
 
         public static CreateActorRoute ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
@@ -32,13 +43,9 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public static CreateActorRoute ForSaga(ISagaDescriptor descriptor, string name)
         {
-            var eventRoutes = descriptor.AcceptEvents
-                .Select(eventType => new MessageRoute(eventType, nameof(DomainEvent.SagaId)));
-
-            var commandFaultRoutes = descriptor.ProduceCommands.Select(commandType =>
-                new MessageRoute(typeof (CommandFault<>).MakeGenericType(commandType), nameof(ICommand.SagaId)));
-
-            var messageRoutes = eventRoutes.Concat(commandFaultRoutes).ToArray();
+            var messageRoutes = descriptor.AcceptMessages
+                .Select(eventType => new MessageRoute(eventType, nameof(DomainEvent.SagaId)))
+                .ToArray();
 
             var actorOpenType = typeof(SagaHubActor<,,>);
 
@@ -54,5 +61,13 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         public Type ActorType { get; }
 
         public string ActorName { get; }
+    }
+
+    internal class DublicateRoutesException : Exception
+    {
+        public DublicateRoutesException(IEnumerable<string> dublicateRoutes)
+            :base($"Found dublicate routes for messages: {string.Join(";",dublicateRoutes)}")
+        {
+        }
     }
 }

@@ -40,14 +40,14 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         protected virtual Pool CreateActorRouter(CreateActorRoute msg)
         {
-            var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
+            var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
 
             var pool =
                 new ConsistentHashingPool(Environment.ProcessorCount)
                     .WithHashMapping(m =>
                     {
                         var type = m.GetType();
-                        var prop = routesMap[type];
+                        var prop = routesMap[type.FullName];
                         return type.GetProperty(prop).GetValue(m);
                     });
 

@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Acceptance
 
                     if (_set.Any()) return;
                     _log.Info($"got all expected messages, will notify. last message: {msg.ToPropsString()}");
-                    notifyActor.Tell(new ExpectedMessagesRecieved<T>(msg, 0, _collection));
+                    notifyActor.Tell(new ExpectedMessagesRecieved<T>(msg));
                 });
         }
     }
