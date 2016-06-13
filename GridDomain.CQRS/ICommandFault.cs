@@ -10,7 +10,7 @@ namespace GridDomain.CQRS
     public interface ICommandFault
     {
         ICommand Command { get; }
-        Exception Fault { get; }
+        Exception Exception { get; }
         Guid SagaId { get; }
     }
 }

@@ -46,8 +46,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void RegisterSaga(ISagaDescriptor sagaDescriptor)
         {
-            var name = $"Saga_{sagaDescriptor.SagaType.Name}";
-            var createActorRoute = CreateActorRoute.ForSaga(sagaDescriptor, name);
+            var createActorRoute = CreateActorRoute.ForSaga(sagaDescriptor);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 

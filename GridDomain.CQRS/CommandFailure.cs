@@ -19,14 +19,14 @@ namespace GridDomain.CQRS
     {
         public CommandFault(TCommand command, Exception ex)
         {
-            Fault = ex;
+            Exception = ex;
             Command = command;
             SagaId = command.SagaId;
         }
 
         ICommand ICommandFault.Command => Command;
 
-        public Exception Fault { get; }
+        public Exception Exception { get; }
         public Guid SagaId { get; } 
 
         public TCommand Command { get; }

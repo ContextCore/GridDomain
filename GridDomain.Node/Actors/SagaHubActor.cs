@@ -1,5 +1,7 @@
 using System;
+using Akka;
 using CommonDomain.Core;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -30,11 +32,11 @@ namespace GridDomain.Node.Actors
 
         protected override Guid GetChildActorId(object message)
         {
-            if (message is DomainEvent)
-            {
-                return (message as DomainEvent).SagaId;
-            }
-            return Guid.Empty;
+            Guid childActorId = Guid.Empty;
+            message.Match()
+                   .With<DomainEvent>(m => childActorId = m.SagaId)
+                   .With<ICommandFault>(m => childActorId = m.SagaId);
+            return childActorId;
         }
 
         protected override void OnReceive(object message)

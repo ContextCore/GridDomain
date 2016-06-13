@@ -64,16 +64,16 @@ namespace GridDomain.Tests.Acceptance
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-        protected void ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-           ExecuteAndWaitFor(new [] {typeof(TEvent)},commands);
+           return ExecuteAndWaitFor(new [] {typeof(TEvent)},commands);
         }
-        protected void ExecuteAndWaitFor<TMessage1,TMessage2>(params ICommand[] commands)
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1,TMessage2>(params ICommand[] commands)
         {
-            ExecuteAndWaitFor(new[] { typeof(TMessage1),typeof(TMessage2)}, commands);
+           return ExecuteAndWaitFor(new[] { typeof(TMessage1),typeof(TMessage2)}, commands);
         }
 
-        private void WaitFor(Action act, params Type[] messageTypes)
+        private ExpectedMessagesRecieved WaitForFirstOf(Action act, params Type[] messageTypes)
         {
             var toWait = messageTypes.Select(m => new MessageToWait(m, 1)).ToArray();
             var actor = GridNode.System
@@ -88,17 +88,21 @@ namespace GridDomain.Tests.Acceptance
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
-            var msg = FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
+            var msg = (ExpectedMessagesRecieved) FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
             watch.Stop();
 
             Console.WriteLine();
             Console.WriteLine($"Wait ended, total wait time: {watch.Elapsed}");
-            Console.WriteLine($"Stoped after message recieved: \r\n{msg.ToPropsString()}");
+            Console.WriteLine("Stoped after message recieved:");
+            Console.WriteLine("------begin of message-----");
+            Console.WriteLine(msg.ToPropsString());
+            Console.WriteLine("------end of message-----");
+            return msg;
         }
 
-        protected void ExecuteAndWaitFor(Type[] messageTypes,params ICommand[] commands)
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes,params ICommand[] commands)
         {
-            WaitFor(() => Execute(commands),messageTypes);
+            return WaitForFirstOf(() => Execute(commands),messageTypes);
         }
 
         private void Execute(ICommand[] commands)
