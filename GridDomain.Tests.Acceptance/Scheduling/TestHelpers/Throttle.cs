@@ -4,7 +4,7 @@ using System.Threading;
 using Moq;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public static class Throttle
     {

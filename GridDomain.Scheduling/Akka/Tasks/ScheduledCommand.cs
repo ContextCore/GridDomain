@@ -1,4 +1,5 @@
 using System;
+using Akka.Actor;
 using GridDomain.CQRS;
 
 namespace GridDomain.Scheduling.Akka.Tasks
@@ -8,6 +9,8 @@ namespace GridDomain.Scheduling.Akka.Tasks
         public string Group { get;  }
         public string TaskId { get; }
 
+        //TODO::VZ:: remove
+        public IActorRef Manager { get; set; }
         protected ScheduledCommand(string taskId, string group)
         {
             if (string.IsNullOrWhiteSpace(taskId))

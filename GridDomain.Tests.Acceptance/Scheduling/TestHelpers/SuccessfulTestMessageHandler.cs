@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class SuccessfulTestMessageHandler : TestRequestHandler<TestCommand>
     {

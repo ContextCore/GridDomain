@@ -104,6 +104,7 @@
     <Compile Include="Actors\ConsoleReader.cs" />
     <Compile Include="Actors\ConsoleWriter.cs" />
     <Compile Include="DemoLogger.cs" />
+    <Compile Include="DemoSaga\DemoSaga.cs" />
     <Compile Include="Handlers\FailingScheduledHandler.cs" />
     <Compile Include="Handlers\LongTimeScheduledHandler.cs" />
     <Compile Include="Messages\ProcessCommand.cs" />

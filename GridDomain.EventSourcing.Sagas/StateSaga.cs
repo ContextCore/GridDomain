@@ -16,6 +16,7 @@ namespace GridDomain.EventSourcing.Sagas
                                                             where TSagaTriggers : struct
                                                             where TSagaStates : struct
                                                             where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
+                                                            where TStartMessage : DomainEvent
     {
         private readonly IDictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>
             _eventsToTriggersMapping
@@ -114,6 +115,7 @@ namespace GridDomain.EventSourcing.Sagas
         StateSaga<TState, TTrigger, SagaStateAggregate<TState, TTrigger>, TStartMessage>
         where TTrigger : struct
         where TState : struct
+        where TStartMessage : DomainEvent
     {
         public StateSaga(SagaStateAggregate<TState, TTrigger> state) : base(state)
         {

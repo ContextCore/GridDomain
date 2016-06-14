@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class FailingTestRequestHandler : TestRequestHandler<FailTaskCommand>
     {

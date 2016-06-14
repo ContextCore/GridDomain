@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 
-namespace GridDomain.Tests.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class ResultHolder
     {

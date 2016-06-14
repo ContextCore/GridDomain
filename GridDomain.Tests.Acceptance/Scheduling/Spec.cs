@@ -7,28 +7,32 @@ using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using Akka.TestKit.NUnit;
-using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node;
-using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Actors;
+using GridDomain.Node.Configuration;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.WebUI;
-using GridDomain.Tests.Scheduling.TestHelpers;
+using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
+using GridDomain.Tests.Configuration;
 using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
 using Quartz;
 using Quartz.Spi;
+using SchedulerDemo.DemoSaga;
+using SchedulerDemo.PhoneCallDomain.Commands;
+using SchedulerDemo.ScheduledMessages;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Tests.Scheduling
+namespace GridDomain.Tests.Acceptance.Scheduling
 {
     [TestFixture]
-    public class Spec : TestKit
+    public class Spec : NodeCommandsTest
     {
         private const string Id = "test";
         private const string Group = "test";
@@ -38,6 +42,11 @@ namespace GridDomain.Tests.Scheduling
         private IUnityContainer _container;
         private IActorSubscriber _subsriber;
 
+        public Spec() : base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
+        {
+
+        }
+
         private IUnityContainer Register()
         {
             var container = Container.CreateChildScope();
@@ -46,48 +55,60 @@ namespace GridDomain.Tests.Scheduling
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
             var loggingJobListener = new Mock<ILoggingJobListener>();
             loggingJobListener.Setup(x => x.Name).Returns("testListener");
-            //container.RegisterInstance(loggingJobListener.Object);
+            container.RegisterInstance(loggingJobListener.Object);
             container.RegisterType<ILoggingJobListener, LoggingJobListener>();
-            //container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+            container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
             container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
             container.RegisterType<IQuartzConfig, QuartzConfig>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => Sys));
-            var transport = new AkkaEventBusTransport(Sys);
-            container.RegisterInstance<IPublisher>(transport);
-            container.RegisterInstance<IActorSubscriber>(transport);
+            //var transport = new AkkaEventBusTransport(Sys);
+            //container.RegisterInstance<IPublisher>(transport);
+            //container.RegisterInstance<IActorSubscriber>(transport);
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
-            container.RegisterType<IJobFactory>(new InjectionFactory(x=>new JobFactory(container)));
+            container.RegisterType<IJobFactory>(new InjectionFactory(x => new JobFactory(container)));
             _quartzLogger = new Mock<IQuartzLogger>();
             container.RegisterInstance(_quartzLogger.Object);
             container.RegisterType<SchedulingActor>();
             container.RegisterType<SuccessfulTestMessageHandler>();
             container.RegisterType<FailingTestRequestHandler>();
             container.RegisterType(typeof(TestRequestHandler<>));
+            container.RegisterType<AggregateActor<DemoAggregate>>();
+            container.RegisterType<AggregateHubActor<DemoAggregate>>();
+            container.RegisterType<ICommandAggregateLocator<DemoAggregate>, DemoAggregateCommadHandler>();
+            container.RegisterType<IAggregateCommandsHandler<DemoAggregate>, DemoAggregateCommadHandler>();
+
             return container;
         }
 
         [SetUp]
         public void SetUp()
         {
-            _container = Register();
-            Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
             CreateScheduler();
             _subsriber = _container.Resolve<IActorSubscriber>();
-
-            _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
+            _scheduler = GridNode.System.ActorOf(Sys.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
         }
 
         [TearDown]
         public void TearDown()
         {
+            _quartzScheduler.Shutdown(true);
             _container.Dispose();
         }
 
         private void CreateScheduler()
         {
             _quartzScheduler = _container.Resolve<IScheduler>();
+        }
+
+        [Test]
+        public void When_a_message_published_Then_saga_receives_it()
+        {
+            Thread.Sleep(1000);
+            var demoCommand = new DemoCommand(Guid.Empty, Id, Group);
+            _scheduler.Ask<Scheduled>(new Schedule(demoCommand, DateTime.UtcNow.AddSeconds(3), Timeout)).Wait(Timeout);
+            WaitFor<DemoEvent>();
         }
 
         [Test]
@@ -100,13 +121,15 @@ namespace GridDomain.Tests.Scheduling
         }
 
         [Test]
-        public void When_system_shuts_down__the_scheduler_Then_the_next_resolve_will_return_another_instance()
+        public void When_system_shuts_down_the_scheduler_Then_the_next_resolve_will_return_another_instance()
         {
             var sched1 = _container.Resolve<IScheduler>();
             sched1.Shutdown(false);
             var sched2 = _container.Resolve<IScheduler>();
             Assert.True(sched1 != sched2);
         }
+
+
 
         [Test]
         [Ignore]
@@ -162,7 +185,7 @@ namespace GridDomain.Tests.Scheduling
             _quartzScheduler.Shutdown(false);
             Thread.Sleep(1000);
             CreateScheduler();
-                                                                                                                //it takes a lot of time to scheduler to actually fire job second time
+            //it takes a lot of time to scheduler to actually fire job second time
             Throttle.Assert(() => Assert.True(resultHolder.Count == 2), minTimeout: TimeSpan.FromSeconds(2.5), maxTimeout: TimeSpan.FromSeconds(20));
         }
 
@@ -311,7 +334,7 @@ namespace GridDomain.Tests.Scheduling
 
 
 
-        private static TimeSpan Timeout
+        protected override TimeSpan Timeout
         {
             get
             {
@@ -324,6 +347,18 @@ namespace GridDomain.Tests.Scheduling
                 }
                 return timeout;
             }
+        }
+
+        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        {
+            _container = Register();
+
+
+            var system = Sys;//ActorSystemFactory.CreateActorSystem(akkaConf);
+            system.AddDependencyResolver(new UnityDependencyResolver(_container, system));
+
+            var router = new DemoRouting();
+            return new GridDomainNode(_container, router, TransportMode.Standalone, system);
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Akka.Tasks;
 
-namespace GridDomain.Tests.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestRequestHandler<TRequest> : ScheduledMessageHandler<TRequest> where TRequest : ScheduledCommand
     {

@@ -3,6 +3,7 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
@@ -12,6 +13,7 @@ using Microsoft.Practices.Unity;
 using SchedulerDemo.Actors;
 using SchedulerDemo.Handlers;
 using SchedulerDemo.Messages;
+using SchedulerDemo.PhoneCallDomain;
 using SchedulerDemo.ScheduledMessages;
 using CompositionRoot = GridDomain.Scheduling.CompositionRoot;
 
@@ -25,9 +27,11 @@ namespace SchedulerDemo
         {
             Sys = ActorSystem.Create("Sys");
             var container = new CompositionRoot().Compose(Container.Current.CreateChildContainer(), Sys);
-
+            var routing = new PhoneCallsRouting();
             RegisterAppSpecificTypes(container);
+            var gridNode = new GridDomainNode(container, routing, TransportMode.Standalone, Sys);
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
+            gridNode.Start(new LocalDbConfiguration());
             using (container.Resolve<IWebUiWrapper>().Start())
             {
                 var reader = Sys.ActorOf(Sys.DI().Props<ConsoleReader>());

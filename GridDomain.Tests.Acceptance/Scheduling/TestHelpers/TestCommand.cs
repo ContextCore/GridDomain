@@ -1,6 +1,6 @@
 using GridDomain.Scheduling.Akka.Tasks;
 
-namespace GridDomain.Tests.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestCommand : ScheduledCommand
     {

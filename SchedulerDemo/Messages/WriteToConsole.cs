@@ -1,7 +1,9 @@
+using GridDomain.CQRS;
+
 namespace SchedulerDemo.Messages
 {
-    public class WriteToConsole
-    {
+    public class WriteToConsole : Command
+    { 
         public string Text { get; }
         public string PartToHighlight { get; set; }
 
