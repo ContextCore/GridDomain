@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Akka.DI.Core;
 using BusinessNews.Domain.AccountAggregate.Commands;
 using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
+using BusinessNews.Domain.Sagas.BuySubscription;
 using BusinessNews.Node;
 using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.Node;
+using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Configuration;
@@ -24,6 +29,12 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
     [TestFixture]
     class Given_business_with_huge_balance: NodeCommandsTest
     {
+        private readonly Guid _accountId = Guid.NewGuid();
+        private readonly Guid _businessId = Guid.NewGuid();
+        private readonly Guid _subscriptionId = Guid.NewGuid();
+        private readonly Money _amount = new Money(1000);
+
+
         public Given_business_with_huge_balance() : base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
         {
         }
@@ -31,25 +42,42 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
         [TestFixtureSetUp]
         public void Given_business_with_money()
         {
-            var accountId = Guid.NewGuid();
-            var businessId = Guid.NewGuid();
-            var subscriptionId = Guid.NewGuid();
-
-            var registerNewBusinessCommand = new RegisterNewBusinessCommand(businessId, "test business", accountId);
+            var registerNewBusinessCommand = new RegisterNewBusinessCommand(_businessId, "test business", _accountId);
             ExecuteAndWaitFor<BusinessCreatedEvent>(registerNewBusinessCommand);
 
-            var createAccountCommand = new CreateAccountCommand(accountId, businessId);
+            var createAccountCommand = new CreateAccountCommand(_accountId, _businessId);
             ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>(createAccountCommand);
 
-            var replenishAccountByCardCommand = new ReplenishAccountByCardCommand(accountId, new Money(1000), null);
+            var replenishAccountByCardCommand = new ReplenishAccountByCardCommand(_accountId, _amount, null);
             ExecuteAndWaitFor<AccountBalanceReplenishEvent>(replenishAccountByCardCommand);
 
-            var orderSubscriptionCommand = new OrderSubscriptionCommand(businessId, VIPSubscription.ID, subscriptionId);
+            var orderSubscriptionCommand = new OrderSubscriptionCommand(_businessId, VIPSubscription.ID, _subscriptionId);
        
             ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(orderSubscriptionCommand);
+
+            Thread.Sleep(2000); //to build up read model
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(500);
+        [Test]
+        public void BusinessBalance_in_read_model_should_be_descreased_by_money_amount()
+        {
+            var offer = WellKnownOffers.Catalog[VIPSubscription.ID]; 
+            using (var context = new BusinessBalanceContext(new LocalDbConfiguration().ReadModelConnectionString))
+            {
+                var businessBalance = context.Accounts.Find(_accountId);
+                Assert.AreEqual(_amount.Amount - offer.Price.Amount,businessBalance.Amount);
+            }    
+        }
+
+        [Test]
+        public void BusinessSubscription_in_write_model_should_be_set()
+        {
+            var business = LoadAggregate<Business>(_businessId);
+            Assert.AreEqual(_subscriptionId, business.SubscriptionId);
+        }
+
+
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(20);
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();

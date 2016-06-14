@@ -18,5 +18,6 @@ namespace BusinessNews.ReadModel
         public Guid SourceId { get; }
         public Guid SagaId { get; set; }
         public DateTime CreatedTime { get; }
+        public int Version { get; }
     }
 }

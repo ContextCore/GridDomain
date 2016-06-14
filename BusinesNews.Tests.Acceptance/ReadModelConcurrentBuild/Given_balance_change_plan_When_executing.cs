@@ -110,7 +110,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
                     var account = tData.AccountId;
 
                     Console.WriteLine($"Checking account id {account}, expecting amount: {tData.TotalAmountChange}");
-                    var balanceReadModel = context.Balances.Find(account);
+                    var balanceReadModel = context.Accounts.Find(account);
 
                     if (balanceReadModel == null)
                     {
@@ -157,7 +157,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
             using (var context = new BusinessBalanceContext())
             {
                 var businessBalances =
-                    createAccountCommands.Select(cmd => context.Balances.Find(cmd.AccountId)).ToArray();
+                    createAccountCommands.Select(cmd => context.Accounts.Find(cmd.AccountId)).ToArray();
 
                 foreach (var balance in businessBalances)
                 {

@@ -44,7 +44,7 @@ namespace SchedulerDemo.PhoneCallDomain.Sagas.PhoneCall
                 .Permit(Transitions.TerminateCall, States.CallBeingTerminated);
 
             Machine.Configure(States.CallBeingTerminated)
-                .OnEntry(e=> Dispatch(new HangupCommand(StateData.)));
+                .OnEntry(e=> Dispatch(new HangupCommand(State.LastActiveMember.Value)));
 
         }
 

@@ -3,17 +3,9 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaStateEvent : DomainEvent
-    {
-        public SagaStateEvent(Guid sagaId) : base(sagaId)
-        {
-
-        }
-    }
-
     public class SagaStateAggregate<TState, TTransition> : AggregateBase
-        where TState : struct
-        where TTransition : struct
+                                                             where TState : struct
+                                                             where TTransition : struct
     {
         public TState MachineState;
 

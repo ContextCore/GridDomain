@@ -14,7 +14,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         private readonly IDictionary<Type, AggregateCommandHandler<TAggregate>> _commandHandlers =
             new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
 
-        public IReadOnlyCollection<DomainEvent> Execute(TAggregate aggregate, ICommand command)
+        public TAggregate Execute(TAggregate aggregate, ICommand command)
         {
             return GetHandler(command).Execute(aggregate, command);
         }

@@ -1,14 +1,16 @@
-﻿namespace GridDomain.CQRS
-{
-    public class CommandFault<T>
-    {
-        public CommandFault(T command, object fault)
-        {
-            Command = command;
-            Fault = fault;
-        }
+using System;
 
-        public T Command { get; }
-        public object Fault { get; }
+namespace GridDomain.CQRS
+{
+    public static class CommandFault
+    {
+        public static object CreateGenericFor(ICommand command, Exception ex)
+        {
+            var type = command.GetType();
+            var faultType = typeof(CommandFault<>).MakeGenericType(type);
+            var fault = faultType.GetConstructor(new[] { type, typeof(Exception)})
+                .Invoke(new object[] { command, ex });
+            return fault;
+        }
     }
 }

@@ -5,7 +5,6 @@ using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 
@@ -14,14 +13,14 @@ namespace GridDomain.Node.AkkaMessaging.Routing
     public class ActorMessagesRouter : IMessagesRouter
     {
         private readonly IAggregateActorLocator _actorLocator;
-        private readonly TypedMessageActor<CreateActorRoute> _routingActorTypedMessageActor;
-        private readonly TypedMessageActor<CreateHandlerRoute> _routingTypedMessageActor;
+        private readonly TypedMessageActor<CreateActorRouteMessage> _routingActorTypedMessageActor;
+        private readonly TypedMessageActor<CreateHandlerRouteMessage> _routingTypedMessageActor;
 
         public ActorMessagesRouter(IActorRef routingActor, IAggregateActorLocator actorLocator)
         {
             _actorLocator = actorLocator;
-            _routingTypedMessageActor = new TypedMessageActor<CreateHandlerRoute>(routingActor);
-            _routingActorTypedMessageActor = new TypedMessageActor<CreateActorRoute>(routingActor);
+            _routingTypedMessageActor = new TypedMessageActor<CreateHandlerRouteMessage>(routingActor);
+            _routingActorTypedMessageActor = new TypedMessageActor<CreateActorRouteMessage>(routingActor);
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()
@@ -41,31 +40,13 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             )).ToArray();
 
             var name = $"Aggregate_{typeof(TAggregate).Name}";
-            var createActorRoute = CreateActorRoute.ForAggregate<TAggregate>(name,messageRoutes);
+            var createActorRoute = CreateActorRouteMessage.ForAggregate<TAggregate>(name,messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
         public void RegisterSaga(ISagaDescriptor sagaDescriptor)
         {
-            var name = $"Saga_{sagaDescriptor.SagaType.Name}";
-            var createActorRoute = CreateActorRoute.ForSaga(sagaDescriptor, name);
-            _routingActorTypedMessageActor.Handle(createActorRoute);
-        }
-
-        /// <summary>
-        ///     Subscribe saga for all messages it can handle.
-        ///     Messages are determined by implemented IHandler<T> interfaces
-        /// </summary>
-        /// <typeparam name="TSaga"></typeparam>
-        public void RegisterSaga<TSaga, TSagaState, TStartMessage>()
-                                         where TSaga : IDomainSaga
-                                         where TSagaState : AggregateBase
-                                         where TStartMessage : DomainEvent
-        {
-           
-            var messageRoutes = SagaInfo<TSaga>.KnownMessages().Select(m => new MessageRoute(m, nameof(DomainEvent.SagaId))).ToArray();
-            var name = $"Saga_{typeof(TSaga).Name}";
-            var createActorRoute = CreateActorRoute.ForSaga<TSaga,TSagaState,TStartMessage>(name, messageRoutes);
+            var createActorRoute = CreateActorRouteMessage.ForSaga(sagaDescriptor);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 

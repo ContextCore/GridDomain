@@ -5,7 +5,7 @@ namespace BusinessNews.Domain.AccountAggregate.Events
 {
     public class AccountBalanceReplenishEvent : AccountBalanceChangedEvent
     {
-        public AccountBalanceReplenishEvent(Guid balanceId, Money amount) : base(balanceId, amount)
+        public AccountBalanceReplenishEvent(Guid accountId, Money amount) : base(accountId, amount)
         {
         }
     }

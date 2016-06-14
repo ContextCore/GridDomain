@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -58,7 +59,7 @@ namespace GridDomain.Node
             foreach (var system in AllSystems)
             {
                 var r = new UnityDependencyResolver(Container, system);
-                // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+               // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
                 CompositionRoot.Init(Container.CreateChildContainer(),
                     system,
                     databaseConfiguration,
@@ -94,7 +95,7 @@ namespace GridDomain.Node
             _log.Info($"Launching GridDomain node {Id}");
 
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
-            _mainNodeActor = actorSystem.ActorOf(props);
+            _mainNodeActor = actorSystem.ActorOf(props,nameof(GridDomainNodeMainActor));
             _mainNodeActor.Ask(new GridDomainNodeMainActor.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]
@@ -109,5 +110,10 @@ namespace GridDomain.Node
             foreach(var cmd in commands)
                  _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
+
+        //public ICommandStatus ExecuteTracking(ICommand command)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

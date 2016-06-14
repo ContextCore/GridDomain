@@ -120,11 +120,8 @@
     <Compile Include="MessageRouting\CannotFindAggregateCommandHandlerExeption.cs" />
     <Compile Include="MessageRouting\IAggregateCommandsHandler.cs" />
     <Compile Include="IEventHandler.cs" />
-    <Compile Include="IMessageConsumer.cs" />
-    <Compile Include="IMessageFilter.cs" />
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
-    <Compile Include="MessageRouting\CommandHandlerAdapter.cs" />
     <Compile Include="MessageRouting\ICommandAggregateLocator.cs" />
     <Compile Include="MessageRouting\IHandlerBuilder.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />

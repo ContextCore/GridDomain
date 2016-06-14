@@ -6,11 +6,11 @@ namespace GridDomain.Node.AkkaMessaging.Routing
     public class AkkaRouteBuilder<T> : IRouteBuilder<T>
     {
         private readonly IAggregateActorLocator _actorLocator;
-        private readonly IHandler<CreateActorRoute> _routingActorRegistrator;
-        private readonly IHandler<CreateHandlerRoute> _routingRegistrator;
+        private readonly IHandler<CreateActorRouteMessage> _routingActorRegistrator;
+        private readonly IHandler<CreateHandlerRouteMessage> _routingRegistrator;
 
-        public AkkaRouteBuilder(IHandler<CreateHandlerRoute> routingRegistrator,
-            IHandler<CreateActorRoute> routingActorRegistrator,
+        public AkkaRouteBuilder(IHandler<CreateHandlerRouteMessage> routingRegistrator,
+            IHandler<CreateActorRouteMessage> routingActorRegistrator,
             IAggregateActorLocator actorLocator)
         {
             _actorLocator = actorLocator;

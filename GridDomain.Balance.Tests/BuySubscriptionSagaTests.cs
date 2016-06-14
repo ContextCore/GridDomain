@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BillAggregate;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
@@ -93,7 +94,7 @@ namespace BusinessNews.Test
             Assert.AreEqual(offer.Price, payBillCommand.Amount);
             Assert.AreEqual(accountId, payBillCommand.AccountId);
 
-            var billPaidEvent = new BillPayedEvent(billId);
+            var billPaidEvent = new PayedForBillEvent(accountId,payBillCommand.Amount,billId);
             saga.Transit(billPaidEvent);
 
             var subscriptionChangeCommand = ExpectCommand<CompleteBusinessSubscriptionOrderCommand>(saga);

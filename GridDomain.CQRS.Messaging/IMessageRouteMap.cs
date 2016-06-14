@@ -4,6 +4,6 @@ namespace GridDomain.CQRS.Messaging
 {
     public interface IMessageRouteMap
     {
-        void Register(IMessagesRouter bus);
+        void Register(IMessagesRouter router);
     }
 }

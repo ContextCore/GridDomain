@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BusinessNews.ReadModel
 {
-    public class BusinessBalance
+    public class BusinessAccount
     {
         [Key]
         public Guid BalanceId { get; set; }

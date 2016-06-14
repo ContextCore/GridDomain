@@ -11,11 +11,11 @@ namespace BusinessNews.ReadModel
         IEventHandler<AccountCreatedEvent>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IReadModelCreator<BusinessBalance> _modelBuilder;
+        private readonly IReadModelCreator<BusinessAccount> _modelBuilder;
         private readonly IPublisher _publisher;
 
         public BusinessCurrentBalanceProjectionBuilder(
-            IReadModelCreator<BusinessBalance> modelBuilder,
+            IReadModelCreator<BusinessAccount> modelBuilder,
             IPublisher publisher)
         {
             _modelBuilder = modelBuilder;
@@ -30,7 +30,7 @@ namespace BusinessNews.ReadModel
 
         public void Handle(AccountCreatedEvent msg)
         {
-            var businessCurrentBalance = new BusinessBalance
+            var businessCurrentBalance = new BusinessAccount
             {
                 BalanceId = msg.BalanceId,
                 BusinessId = msg.BusinessId

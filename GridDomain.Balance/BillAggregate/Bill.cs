@@ -23,7 +23,7 @@ namespace BusinessNews.Domain.BillAggregate
 
         public void MarkPaid()
         {
-            RaiseEvent(new BillPayedEvent(Id));
+            RaiseEvent(new BillMarkedAsPayedEvent(Id));
         }
 
         private void Apply(BillCreatedEvent e)
@@ -33,7 +33,7 @@ namespace BusinessNews.Domain.BillAggregate
             IsPaid = false;
         }
 
-        private void Apply(BillPayedEvent e)
+        private void Apply(BillMarkedAsPayedEvent e)
         {
             IsPaid = true;
         }

@@ -1,15 +1,24 @@
-﻿namespace GridDomain.CQRS
+﻿using System;
+using System.Reflection;
+
+namespace GridDomain.CQRS
 {
-    public class CommandFailure<TCommand, TReason> : ICommandFault<TCommand> where TCommand : ICommand
+    public class CommandFault<TCommand> : ICommandFault<TCommand>
+                                    where TCommand : ICommand
     {
-        public CommandFailure(TCommand command, TReason ex)
+        public CommandFault(TCommand command, Exception ex)
         {
-            Error = ex;
+            Exception = ex;
             Command = command;
+            SagaId = command.SagaId;
         }
 
-        public TReason Error { get; }
+        ICommand ICommandFault.Command => Command;
+
+        public Exception Exception { get; }
+        public Guid SagaId { get; } 
+
         public TCommand Command { get; }
-        public object Fault => Error;
+
     }
 }

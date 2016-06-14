@@ -50,11 +50,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IDomainSaga.cs" />
+    <Compile Include="IDomainStateSaga.cs" />
+    <Compile Include="IEmptySagaFactory.cs" />
+    <Compile Include="ISagaDescriptor.cs" />
     <Compile Include="ISagaFactory.cs" />
-    <Compile Include="IStartBy.cs" />
+    <Compile Include="ISagaFault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SagaCreatedEvent.cs" />
+    <Compile Include="SagaFault.cs" />
     <Compile Include="SagaStateAggregate.cs" />
+    <Compile Include="SagaStateEvent.cs" />
     <Compile Include="SagaTransitionEvent.cs" />
     <Compile Include="StateSaga.cs" />
     <Compile Include="UnbindedMessageRecievedException.cs" />

@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Acceptance
                 msg =>
                 {
                     if (-- _count > 0) return;
-                    notifyActor.Tell(new ExpectedMessagesRecieved<T>(msg, 0, null));
+                    notifyActor.Tell(new ExpectedMessagesRecieved<T>(msg));
                 });
         }
     }

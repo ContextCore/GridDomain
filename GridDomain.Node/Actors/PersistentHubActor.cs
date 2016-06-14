@@ -24,9 +24,11 @@ namespace GridDomain.Node.Actors
             if (!_children.TryGetValue(childId, out knownChild))
             {
                 //TODO: Implement reuse logic
+
                 var props = Context.DI().Props(GetChildActorType(message));
                 knownChild = _children[childId] = Context.ActorOf(props, name);
             }
+
             knownChild.Tell(message);
         }
     }

@@ -23,7 +23,9 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             _system = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
 
             var actor = _system.ActorOf(Props.Create<TimeLoggerActor>(TestActor)
-                .WithRouter(new ConsistentHashingPool(2).WithHashMapping(m => ((DiagMsg) m).HashKey)));
+                                             .WithRouter(new ConsistentHashingPool(2)
+                                                        .WithHashMapping(m => ((DiagMsg) m).HashKey)),
+                                        nameof(TimeLoggerActor));
 
             _diagMsgs = CreateMessages();
 

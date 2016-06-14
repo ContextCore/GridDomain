@@ -16,7 +16,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
         }
 
-        protected override Pool CreateActorRouter(CreateActorRoute msg)
+        protected override Pool CreateActorRouter(CreateActorRouteMessage msg)
         {
             var router = new ClusterRouterPool(base.CreateActorRouter(msg), new ClusterRouterPoolSettings(10, true, 2));
             return router;

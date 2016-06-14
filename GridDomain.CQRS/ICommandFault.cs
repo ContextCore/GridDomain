@@ -1,8 +1,16 @@
-﻿namespace GridDomain.CQRS
+﻿using System;
+
+namespace GridDomain.CQRS
 {
-    public interface ICommandFault<T> where T : ICommand
+    public interface ICommandFault<out T>: ICommandFault where T : ICommand
     {
-        T Command { get; }
-        object Fault { get; }
+        new T Command { get; }
+    }
+
+    public interface ICommandFault
+    {
+        ICommand Command { get; }
+        Exception Exception { get; }
+        Guid SagaId { get; }
     }
 }

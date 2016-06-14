@@ -11,11 +11,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateCommandHandler<TAggregate> where TAggregate : AggregateBase
     {
-        private readonly Func<ICommand, TAggregate, IReadOnlyCollection<DomainEvent>> _executor;
+        private readonly Func<ICommand, TAggregate, TAggregate> _executor;
         private readonly Func<ICommand, Guid> _idLocator;
 
         private AggregateCommandHandler(string name, Func<ICommand, Guid> idLocator,
-            Func<ICommand, TAggregate, IReadOnlyCollection<DomainEvent>> executor)
+            Func<ICommand, TAggregate, TAggregate> executor)
         {
             _executor = executor;
             MachingProperty = name;
@@ -41,10 +41,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             return ((PropertyInfo) memberExpression.Member).Name;
         }
 
-        private static IReadOnlyCollection<DomainEvent> GetAggregateEvents(IAggregate agr)
-        {
-            return agr.GetUncommittedEvents().Cast<DomainEvent>().ToList();
-        }
+ 
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
@@ -53,8 +50,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
                 c => idLocator.Compile()((TCommand) c),
                 (cmd, agr) =>
                 {
-                    commandExecutor((TCommand) cmd, agr);
-                    return GetAggregateEvents(agr);
+                    commandExecutor((TCommand)cmd, agr);
+                    return agr;
                 });
         }
 
@@ -62,12 +59,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             Func<TCommand, TAggregate> commandExecutor)
         {
             return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
-                c => idLocator.Compile()((TCommand) c),
-                (cmd, agr) =>
-                {
-                    var newAgr = commandExecutor((TCommand) cmd);
-                    return GetAggregateEvents(newAgr);
-                });
+                c => idLocator.Compile()((TCommand) c), (cmd, agr) => commandExecutor((TCommand) cmd));
         }
 
         public Guid GetId(ICommand command)
@@ -75,7 +67,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             return _idLocator(command);
         }
 
-        public IReadOnlyCollection<DomainEvent> Execute(TAggregate agr, ICommand command)
+        public TAggregate Execute(TAggregate agr, ICommand command)
         {
             return _executor(command, agr);
         }

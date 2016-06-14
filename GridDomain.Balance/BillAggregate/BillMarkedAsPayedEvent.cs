@@ -3,9 +3,9 @@ using GridDomain.EventSourcing;
 
 namespace BusinessNews.Domain.BillAggregate
 {
-    public class BillPayedEvent : DomainEvent
+    public class BillMarkedAsPayedEvent : DomainEvent
     {
-        public BillPayedEvent(Guid billId) : base(billId)
+        public BillMarkedAsPayedEvent(Guid billId) : base(billId)
         {
         }
 

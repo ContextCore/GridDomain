@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Akka;
 using Akka.Persistence;
 using CommonDomain;
@@ -20,8 +22,8 @@ namespace GridDomain.Node.Actors
         private readonly IPublisher _publisher;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-            AggregateFactory factory,
-            IPublisher publisher)
+                              AggregateFactory factory,
+                              IPublisher publisher)
         {
             _handler = handler;
             _publisher = publisher;
@@ -30,13 +32,25 @@ namespace GridDomain.Node.Actors
 
             Command<ICommand>(cmd =>
             {
-                var events = _handler.Execute(Aggregate, cmd);
-
-                foreach (var ev in events)
-                    ev.SagaId = cmd.SagaId;
+                //TODO: create more efficient way to set up a saga
+                try
+                {
+                    Aggregate = _handler.Execute(Aggregate, cmd);
+                }
+                catch (Exception ex)
+                {
+                    _publisher.Publish(CommandFault.CreateGenericFor(cmd,ex));
+                    return;
+                }
+                
+                var aggregate = (IAggregate) Aggregate;
+                
+                var events = aggregate.GetUncommittedEvents()
+                    .Cast<DomainEvent>()
+                    .Select(e => e.CloneWithSaga(cmd.SagaId));
 
                 PersistAll(events, e => _publisher.Publish(e));
-                ((IAggregate)Aggregate).ClearUncommittedEvents();
+                aggregate.ClearUncommittedEvents();
             });
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);

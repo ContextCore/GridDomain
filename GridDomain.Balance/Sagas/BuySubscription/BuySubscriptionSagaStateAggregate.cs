@@ -17,6 +17,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
         {
         }
 
+        public bool IsCompleted { get; private set; }
         public Guid BusinessId { get; private set; }
 
         public Guid AccountId { get; private set; }
@@ -44,31 +45,15 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
         {
             SubscriptionId = e.SubscriptionId;
         }
-    }
 
- 
-
-    internal class AccountRememberedEvent : SagaStateEvent
-    {
-        public AccountRememberedEvent(Guid accountId, Guid businessId, Guid suibscriptionId, Guid sagaId) : base(sagaId)
+        private void Apply(CompletedEvent e)
         {
-            AccountId = accountId;
-            BusinessId = businessId;
-            SuibscriptionId = suibscriptionId;
+            IsCompleted = true;
         }
 
-        public Guid AccountId { get; }
-        public Guid BusinessId { get; }
-        public Guid SuibscriptionId { get; }
-    }
-
-    public class SubscriptionRememberedEvent: SagaStateEvent
-    {
-        public SubscriptionRememberedEvent(Guid subscriptionId, Guid sagaId) : base(sagaId)
+        public void Complete()
         {
-            SubscriptionId = subscriptionId;
+            RaiseEvent(new CompletedEvent(Id));
         }
-
-        public Guid SubscriptionId { get; }
     }
 }

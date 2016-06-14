@@ -1,5 +1,6 @@
 ﻿using System;
 using BusinessNews.Domain.BusinessAggregate;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 
 namespace BusinessNews.Domain.Sagas.BuySubscription
@@ -10,9 +11,16 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
 
 
     {
+        private readonly AggregateFactory _aggregateFactory;
+
+        public BuySubscriptionSagaFactory(AggregateFactory aggregateFactory)
+        {
+            _aggregateFactory = aggregateFactory;
+        }
+
         public BuySubscriptionSaga Create(SubscriptionOrderedEvent message)
         {
-            return new BuySubscriptionSaga(new BuySubscriptionSagaStateAggregate(Guid.NewGuid()));
+            return new BuySubscriptionSaga(new BuySubscriptionSagaStateAggregate(message.SagaId));
         }
 
         public BuySubscriptionSaga Create(BuySubscriptionSagaStateAggregate message)
@@ -22,7 +30,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
 
         public BuySubscriptionSaga Create()
         {
-            return Create(new BuySubscriptionSagaStateAggregate(Guid.Empty));
+            return Create(_aggregateFactory.Build<BuySubscriptionSagaStateAggregate>(Guid.Empty));
         }
     }
 }

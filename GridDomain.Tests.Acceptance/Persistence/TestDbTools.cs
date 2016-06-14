@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         public static void ClearData(IDbConfiguration conf)
         {
             Delete(conf.ReadModelConnectionString, "TransactionHistories");
-            Delete(conf.ReadModelConnectionString, "BusinessBalances");
+            Delete(conf.ReadModelConnectionString, "BusinessAccounts");
             Delete(conf.LogsConnectionString, nameof(LogRecord) + "s");
         }
 

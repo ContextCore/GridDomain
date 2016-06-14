@@ -1,15 +1,18 @@
-using System.Data.Entity.Migrations;
-
 namespace BusinessNews.ReadModel.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<BusinessBalanceContext>
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
+    internal sealed class Configuration : DbMigrationsConfiguration<BusinessNews.ReadModel.BusinessBalanceContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(BusinessBalanceContext context)
+        protected override void Seed(BusinessNews.ReadModel.BusinessBalanceContext context)
         {
             //  This method will be called after migrating to the latest version.
 

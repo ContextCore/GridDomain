@@ -4,16 +4,16 @@ using GridDomain.CQRS.Quering;
 
 namespace BusinessNews.ReadModel.Queries
 {
-    public class BusinessBalanceQuery : ISingleQuery<Guid, BusinessBalance>
+    public class BusinessBalanceQuery : ISingleQuery<Guid, BusinessAccount>
     {
-        private readonly IQueryable<BusinessBalance> _col;
+        private readonly IQueryable<BusinessAccount> _col;
 
-        public BusinessBalanceQuery(IQueryable<BusinessBalance> col)
+        public BusinessBalanceQuery(IQueryable<BusinessAccount> col)
         {
             _col = col;
         }
 
-        public BusinessBalance Execute(Guid businessId)
+        public BusinessAccount Execute(Guid businessId)
         {
             return _col.First(b => b.BusinessId == businessId);
         }
