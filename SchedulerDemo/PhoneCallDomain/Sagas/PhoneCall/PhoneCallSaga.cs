@@ -1,5 +1,7 @@
-﻿using GridDomain.CQRS;
+﻿using System;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
+using SchedulerDemo.PhoneCallDomain.Commands;
 using SchedulerDemo.PhoneCallDomain.Events;
 
 namespace SchedulerDemo.PhoneCallDomain.Sagas.PhoneCall
@@ -37,7 +39,16 @@ namespace SchedulerDemo.PhoneCallDomain.Sagas.PhoneCall
             Machine.Configure(States.Dialing)
                 .Permit(Transitions.AbonentResponded, States.InConversation)
                 .Permit(Transitions.TerminateCall, States.CallBeingTerminated);
+
+            Machine.Configure(States.InConversation)
+                .Permit(Transitions.TerminateCall, States.CallBeingTerminated);
+
+            Machine.Configure(States.CallBeingTerminated)
+                .OnEntry(e=> Dispatch(new HangupCommand(StateData.)));
+
         }
+
+        public static ISagaDescriptor SagaDescriptor => new PhoneCallSaga(new PhoneCallSagaStateAggregate(Guid.Empty, States.CallBeingTerminated));
 
         public void Handle(AbonentAnsweredEvent msg)
         {

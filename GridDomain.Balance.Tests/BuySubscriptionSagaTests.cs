@@ -19,11 +19,11 @@ namespace BusinessNews.Test
     {
         private T ExpectCommand<T>(IDomainSaga saga) where T : class, ICommand
         {
-            var cmd = saga.MessagesToDispatch.FirstOrDefault();
+            var cmd = saga.CommandsToDispatch.FirstOrDefault();
             Assert.NotNull(cmd, $"Cannot find expected {typeof (T).Name} in dispatched messages");
             var typedCommand = cmd as T;
             Assert.NotNull(cmd, $"Dispatched message has wrong type: {cmd.GetType().Name}. Expected: {typeof (T).Name}");
-            saga.MessagesToDispatch.Clear();
+            saga.ClearCommandsToDispatch();
             return typedCommand;
         }
 
@@ -61,7 +61,7 @@ namespace BusinessNews.Test
             var offerId = subscriptionOrderedEvent.OfferId;
             var accountId = subscriptionOrderedEvent.AccountId;
             var businessId = subscriptionOrderedEvent.BusinessId;
-            saga.Handle(subscriptionOrderedEvent);
+            saga.Transit(subscriptionOrderedEvent);
 
             var createSubscription = ExpectCommand<CreateSubscriptionCommand>(saga);
             Assert.AreEqual(subscriptionId, createSubscription.SubscriptionId);
@@ -71,14 +71,14 @@ namespace BusinessNews.Test
 
             var offer = WellKnownOffers.Catalog[offerId];
             var subscriptionCreatedEvent = new SubscriptionCreatedEvent(subscriptionId, offer);
-            saga.Handle(subscriptionCreatedEvent);
+            saga.Transit(subscriptionCreatedEvent);
 
             var createBillCommand = ExpectCommand<ChargeSubscriptionCommand>(saga);
             Assert.AreEqual(subscriptionId, createBillCommand.SubscriptionId);
             var chargeId = createBillCommand.ChargeId;
 
             var subscriptionChargedEvent = new SubscriptionChargedEvent(subscriptionId, chargeId, offer.Price);
-            saga.Handle(subscriptionChargedEvent);
+            saga.Transit(subscriptionChargedEvent);
 
             var charge = new Charge(subscriptionChargedEvent.ChargeId, subscriptionChargedEvent.Price);
             var billCreateCommand = ExpectCommand<CreateBillCommand>(saga);
@@ -86,7 +86,7 @@ namespace BusinessNews.Test
             var billId = billCreateCommand.BillId;
 
             var billCreatedEvent = new BillCreatedEvent(billId, new[] {charge}, charge.Amount);
-            saga.Handle(billCreatedEvent);
+            saga.Transit(billCreatedEvent);
 
             var payBillCommand = ExpectCommand<PayForBillCommand>(saga);
             Assert.AreEqual(billId, payBillCommand.BillId);
@@ -94,14 +94,14 @@ namespace BusinessNews.Test
             Assert.AreEqual(accountId, payBillCommand.AccountId);
 
             var billPaidEvent = new BillPayedEvent(billId);
-            saga.Handle(billPaidEvent);
+            saga.Transit(billPaidEvent);
 
             var subscriptionChangeCommand = ExpectCommand<CompleteBusinessSubscriptionOrderCommand>(saga);
             Assert.AreEqual(subscriptionId, subscriptionChangeCommand.SubscriptionId);
             Assert.AreEqual(businessId, subscriptionChangeCommand.BusinessId);
 
             var orderCompletedEvent = new SubscriptionOrderCompletedEvent(businessId, subscriptionId);
-            saga.Handle(orderCompletedEvent);
+            saga.Transit(orderCompletedEvent);
 
             Assert.AreEqual(BuySubscriptionSaga.State.SubscriptionSet, saga.DomainState);
         }

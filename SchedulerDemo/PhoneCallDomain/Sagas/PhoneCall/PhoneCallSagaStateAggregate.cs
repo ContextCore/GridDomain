@@ -15,9 +15,8 @@ namespace SchedulerDemo.PhoneCallDomain.Sagas.PhoneCall
         }
 
         public Guid InitiatorId { get; private set; }
-
         public Guid AbonentId { get; private set; }
-
+        public Guid? LastActiveMember { get; private set; }
         public DateTime? ConversationStartedAt { get; private set; }
         public DateTime? CallInitiatedAt { get; private set; }
 
@@ -27,5 +26,12 @@ namespace SchedulerDemo.PhoneCallDomain.Sagas.PhoneCall
             AbonentId = evt.Abonent;
             CallInitiatedAt = DateTime.UtcNow;
         }
+
+        public void Apply(AbonentHungUpEvent evt)
+        {
+            LastActiveMember = evt.AbonentId == AbonentId ? InitiatorId : AbonentId;
+        }
+
+
     }
 }

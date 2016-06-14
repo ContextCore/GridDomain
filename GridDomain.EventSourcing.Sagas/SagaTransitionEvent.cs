@@ -2,10 +2,10 @@ using System;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaTransitionEvent<TState, TTransition> : DomainEvent
+    public class SagaTransitionEvent<TState, TTransition> : SagaStateEvent
     {
-        public SagaTransitionEvent(TTransition transition, TState state, Guid sourceId, DateTime? createdTime = null)
-            : base(sourceId, createdTime)
+        public SagaTransitionEvent(TTransition transition, TState state, Guid sourceId)
+            : base(sourceId)
         {
             Transition = transition;
             State = state;

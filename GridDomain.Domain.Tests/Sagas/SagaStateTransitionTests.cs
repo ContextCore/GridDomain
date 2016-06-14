@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Sagas
         public void When_invalid_transition_Then_state_not_changed()
         {
             Given_new_saga_with_state(Saga.States.SubscriptionChanging);
-            Saga.Handle(new SubscriptionExpiredEvent());
+            Saga.Transit(new SubscriptionExpiredEvent(Guid.NewGuid()));
 
             Assert.AreEqual(Saga.States.SubscriptionChanging, Saga.DomainState);
         }
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Sagas
         public void When_unknown_transition_Then_exception_occurs()
         {
             Given_new_saga_with_state(Saga.States.SubscriptionChanging);
-            Assert.Throws<UnbindedMessageRecievedException>(() => Saga.Transit(new WrongMessage()));
+            Assert.Throws<UnbindedMessageRecievedException>(() => Saga.TransitState(new WrongMessage()));
         }
 
 

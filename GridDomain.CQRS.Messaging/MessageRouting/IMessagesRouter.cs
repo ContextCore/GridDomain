@@ -12,9 +12,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
             where TAggregate : AggregateBase;
 
-        void RegisterSaga<TSaga, TSagaState, TStartMessage>()
-                                                where TSaga : IDomainSaga
-                                                where TSagaState : AggregateBase
-                                                where TStartMessage : DomainEvent;
+        //void RegisterSaga<TSaga, TSagaState, TStartMessage>(ISagaDescriptor saga)
+                                                //where TSaga : IDomainSaga
+                                                //where TSagaState : AggregateBase
+                                                //where TStartMessage : DomainEvent;
+
+        void RegisterSaga(ISagaDescriptor sagaDescriptor);
     }
 }

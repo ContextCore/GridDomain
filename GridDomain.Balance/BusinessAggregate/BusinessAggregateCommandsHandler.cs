@@ -9,11 +9,11 @@ namespace BusinessNews.Domain.BusinessAggregate
     {
         public BusinessAggregateCommandsHandler()
         {
-            Map<OrderSubscriptionCommand>(c => c.BusinessId,
-                (c, a) => a.OrderSubscription(c.SubscriptionId, c.OfferId));
+            Map<OrderSubscriptionCommand>(command => command.BusinessId,
+                                         (command, aggregate) => aggregate.OrderSubscription(command.SubscriptionId, command.OfferId));
 
             Map<CompleteBusinessSubscriptionOrderCommand>(c => c.BusinessId,
-                (cmd, agr) => agr.PurchaseSubscription(cmd.SubscriptionId));
+                                                         (cmd, agr) => agr.PurchaseSubscription(cmd.SubscriptionId));
 
             Map<RegisterNewBusinessCommand>(c => c.BusinessId,
                                            cmd => new Business(cmd.BusinessId, cmd.Name, FreeSubscription.ID, cmd.AccountId));

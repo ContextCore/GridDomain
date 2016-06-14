@@ -1,65 +1,110 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using CommonDomain;
+using GridDomain.CQRS;
 using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : IDomainSaga,
-        IStartBy<TStartMessage>
-        where TSagaTriggers : struct
-        where TSagaStates : struct
-        where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
+
+    public static class SagaInfo<TSaga>
+    {
+        public static IReadOnlyCollection<Type> KnownMessages()
+        {
+            var allInterfaces = typeof(TSaga).GetInterfaces();
+
+            var handlerInterfaces =
+                allInterfaces.Where(i => i.IsGenericType &&
+                                         i.GetGenericTypeDefinition() == typeof(IHandler<>))
+                             .ToArray();
+
+            return handlerInterfaces.SelectMany(s => s.GetGenericArguments()).ToArray();
+        }
+    }
+
+    public class SagaDescriptor
+    {
+        
+    }
+public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> : 
+                                                                 IDomainSaga,
+                                                                 ISagaDescriptor
+                                                                 where TSagaTriggers : struct
+                                                                 where TSagaStates : struct
+                                                                 where TStateData : SagaStateAggregate<TSagaStates, TSagaTriggers>
     {
         private readonly IDictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>
             _eventsToTriggersMapping
                 = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
+        public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
+
+        public Type StartMessage { get; } = typeof (TStartMessage);
+        public Type StateType { get; } = typeof (TStateData);
+        public Type SagaType => this.GetType();
+
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
 
-        //TODO: think how to restrict external change except SagaActor
-        public TStateData StateAggregateData;
+        protected readonly TStateData StateData;
 
-        protected StateSaga(TStateData stateAggregateData)
+        protected StateSaga(TStateData stateData)
         {
-            StateAggregateData = stateAggregateData;
-            Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateAggregateData.MachineState);
-            Machine.OnTransitioned(t => StateAggregateData.StateChanged(t.Trigger, t.Destination));
+            StateData = stateData;
+
+            //to include start message into list of accept messages
+            _eventsToTriggersMapping[typeof (TStartMessage)] = null; 
+            Machine = new StateMachine<TSagaStates, TSagaTriggers>(StateData.MachineState);
+            Machine.OnTransitioned(t => StateData.StateChanged(t.Trigger, t.Destination));
+            _transitMethod = GetType().GetMethod(nameof(TransitState),BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
-        public TSagaStates DomainState => StateAggregateData.MachineState;
-        public List<object> MessagesToDispatch => new List<object>();
+        public TSagaStates DomainState => StateData.MachineState;
+        private readonly List<Command> _messagesToDispatch = new List<Command>();
 
-        IAggregate IDomainSaga.StateAggregate => StateAggregateData;
+        public IReadOnlyCollection<ICommand> CommandsToDispatch => _messagesToDispatch;
 
-        public void Handle(TStartMessage msg)
+        public void ClearCommandsToDispatch()
         {
-            Transit(msg);
+            _messagesToDispatch.Clear();
         }
 
-        protected void Dispatch(object message)
+        IAggregate IDomainSaga.StateAggregate => StateData;
+ 
+        private readonly MethodInfo _transitMethod;
+        public void Transit(DomainEvent msg)
         {
-            MessagesToDispatch.Add(message);
+            MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
+            genericTransit.Invoke(this, new object[] { msg});
+        }
+
+        protected void Dispatch(Command command)
+        {
+            command.SagaId = StateData.Id;
+            _messagesToDispatch.Add(command);
         }
 
         protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(
-            TSagaTriggers trigger)
+                                                                                                    TSagaTriggers trigger)
         {
             var triggerWithParameters = Machine.SetTriggerParameters<TEvent>(trigger);
-            _eventsToTriggersMapping[typeof (TEvent)] = triggerWithParameters;
+            _eventsToTriggersMapping[typeof(TEvent)] = triggerWithParameters;
             return triggerWithParameters;
         }
 
-
-        protected internal void Transit<T>(T message)
+        //TODO: make method non-generic
+        protected internal void TransitState<T>(T message)
         {
             StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters triggerWithParameters;
-            if (!_eventsToTriggersMapping.TryGetValue(typeof (T), out triggerWithParameters))
+            if (!_eventsToTriggersMapping.TryGetValue(typeof(T), out triggerWithParameters))
                 throw new UnbindedMessageRecievedException(message);
 
             if (Machine.CanFire(triggerWithParameters.Trigger))
-                Machine.Fire((StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>) triggerWithParameters,
-                    message);
+            {
+                var withParameters = (StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>) triggerWithParameters;
+                Machine.Fire(withParameters, message);
+            }
         }
     }
 

@@ -116,6 +116,7 @@
     <Compile Include="PhoneCallDomain\Events\CallInitiatedEvent.cs" />
     <Compile Include="PhoneCallDomain\Commands\HangupCommand.cs" />
     <Compile Include="PhoneCallDomain\PhoneCallsRouting.cs" />
+    <Compile Include="PhoneCallDomain\Sagas\PhoneCall\PhoneCallSagaFactory.cs" />
     <Compile Include="PhoneCallDomain\ScheduledCommands\HangUpIfNotRespondedScheduledCommand.cs" />
     <Compile Include="PhoneCallDomain\ScheduledCommands\HangUpTooLongConversationSchduledCommand.cs" />
     <Compile Include="PhoneCallDomain\Commands\InitiateCallCommand.cs" />

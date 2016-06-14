@@ -34,7 +34,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         public void Handle(CreateHandlerRoute msg)
         {
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
-            string actorName = $"Message_handler_for_{msg.MessageType.Name}_{Guid.NewGuid()}";
+            string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
             Self.Tell(new CreateActorRoute(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 

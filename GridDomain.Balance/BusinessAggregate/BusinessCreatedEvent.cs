@@ -3,7 +3,7 @@ using GridDomain.EventSourcing;
 
 namespace BusinessNews.Domain.BusinessAggregate
 {
-    internal class BusinessCreatedEvent : DomainEvent
+    public class BusinessCreatedEvent : DomainEvent
     {
         public Guid BalanceId;
         public string Names;

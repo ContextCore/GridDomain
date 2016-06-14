@@ -44,7 +44,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
                               $"create commands and {changeBalanceCommands.Length} change commands");
             Console.WriteLine();
 
-            ExecuteAndWaitFor<BalanceChangeProjectedNotification>(changeBalanceCommands, changeBalanceCommands.Length);
+            ExecuteAndWaitFor<BalanceChangeProjectedNotification>(changeBalanceCommands);
         }
 
         protected static IUnityContainer CreateUnityContainer(IDbConfiguration autoTestGridDomainConfiguration)
@@ -171,8 +171,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         {
             var createBalanceCommands = balanceManipulationCommands.Select(p => p.AccountCreateCommand).ToArray();
 
-            ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>
-                (createBalanceCommands, createBalanceCommands.Length);
+            ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>(createBalanceCommands);
 
             return createBalanceCommands;
         }

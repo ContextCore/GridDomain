@@ -1,3 +1,4 @@
+using Akka;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
@@ -27,11 +28,15 @@ namespace GridDomain.Node.Actors
             PersistenceId = Self.Path.Name;
             Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
 
-            CommandAny(cmd =>
+            Command<ICommand>(cmd =>
             {
-                var events = _handler.Execute(Aggregate, (ICommand) cmd);
+                var events = _handler.Execute(Aggregate, cmd);
+
+                foreach (var ev in events)
+                    ev.SagaId = cmd.SagaId;
+
                 PersistAll(events, e => _publisher.Publish(e));
-                ((IAggregate) Aggregate).ClearUncommittedEvents();
+                ((IAggregate)Aggregate).ClearUncommittedEvents();
             });
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);

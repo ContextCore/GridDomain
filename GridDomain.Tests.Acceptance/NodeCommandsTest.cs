@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Linq;
 using Akka.Actor;
 using Akka.TestKit.NUnit;
 using GridDomain.CQRS;
@@ -15,7 +17,7 @@ namespace GridDomain.Tests.Acceptance
     {
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
         protected GridDomainNode GridNode;
-
+        private Stopwatch watch = new Stopwatch();
         protected NodeCommandsTest(string config, string name = null) : base(config, name)
         {
         }
@@ -43,9 +45,9 @@ namespace GridDomain.Tests.Acceptance
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-        protected void ExecuteAndWaitFor<TEvent>(ICommand[] commands, int eventNumber = 0)
+        protected void ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            eventNumber = eventNumber == 0 ? commands.Length : eventNumber;
+            int eventNumber = commands.Length;
 
             var actor = GridNode.System
                                 .ActorOf(Props.Create(() => new CountEventWaiter<TEvent>(eventNumber, TestActor)),
@@ -55,16 +57,30 @@ namespace GridDomain.Tests.Acceptance
 
             Console.WriteLine("Starting execute");
 
+            var commandTypes = commands.Select(c => c.GetType()).
+                                        GroupBy(c => c.Name)
+                                        .Select(g => new {Name = g.Key, Count = g.Count()});
+
+            foreach (var commandStat in commandTypes)
+            {
+                Console.WriteLine($"Executing {commandStat.Count} of {commandStat.Name}");
+            }
+
+            watch.Restart();
+
             foreach (var c in commands)
+            {
                 GridNode.Execute(c);
+            }
 
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
-            ExpectMsg<ExpectedMessagesRecieved<TEvent>>(Timeout);
+            var msg = FishForMessage(m => m is ExpectedMessagesRecieved<TEvent>,Timeout);
+            watch.Stop();
 
             Console.WriteLine();
-            Console.WriteLine("Wait ended");
+            Console.WriteLine($"Wait ended, total wait time: {watch.Elapsed}");
         }
     }
 }

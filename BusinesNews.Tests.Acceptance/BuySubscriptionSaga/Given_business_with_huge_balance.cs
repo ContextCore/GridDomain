@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessNews.Domain.AccountAggregate.Commands;
+using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
 using BusinessNews.Node;
@@ -34,24 +35,21 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
             var businessId = Guid.NewGuid();
             var subscriptionId = Guid.NewGuid();
 
-            var commands = new Command[]
-            {
-                new RegisterNewBusinessCommand(businessId, "test business", accountId),
-                new CreateAccountCommand(accountId, businessId)
-                
-            };
+            var registerNewBusinessCommand = new RegisterNewBusinessCommand(businessId, "test business", accountId);
+            ExecuteAndWaitFor<BusinessCreatedEvent>(registerNewBusinessCommand);
 
-            ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>(commands);
+            var createAccountCommand = new CreateAccountCommand(accountId, businessId);
+            ExecuteAndWaitFor<BusinessBalanceCreatedProjectedNotification>(createAccountCommand);
 
-            commands = new Command[]
-            {
-                new ReplenishAccountByCardCommand(accountId, new Money(1000), null),
-                new OrderSubscriptionCommand(businessId, VIPSubscription.ID, subscriptionId)
-            };
-            ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(commands);
+            var replenishAccountByCardCommand = new ReplenishAccountByCardCommand(accountId, new Money(1000), null);
+            ExecuteAndWaitFor<AccountBalanceReplenishEvent>(replenishAccountByCardCommand);
+
+            var orderSubscriptionCommand = new OrderSubscriptionCommand(businessId, VIPSubscription.ID, subscriptionId);
+       
+            ExecuteAndWaitFor<SubscriptionOrderCompletedEvent>(orderSubscriptionCommand);
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(50);
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(500);
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();

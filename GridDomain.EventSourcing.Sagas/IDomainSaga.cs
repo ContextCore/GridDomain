@@ -1,11 +1,24 @@
+using System;
 using System.Collections.Generic;
 using CommonDomain;
+using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas
 {
     public interface IDomainSaga
     {
-        List<object> MessagesToDispatch { get; }
+        IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
+        void ClearCommandsToDispatch();
         IAggregate StateAggregate { get; }
+        void Transit(DomainEvent message);
+    }
+
+    public interface ISagaDescriptor
+    {
+        //TODO: enforce check all messages are DomainEvents
+        IReadOnlyCollection<Type> AcceptMessages { get; }
+        Type StartMessage { get; } 
+        Type StateType { get; }
+        Type SagaType { get; }
     }
 }
