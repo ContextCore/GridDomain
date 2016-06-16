@@ -53,6 +53,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             return pool;
         }
+
         private IActorRef CreateActor(Type actorType, 
                                       RouterConfig routeConfig,
                                       string actorName)

@@ -38,6 +38,10 @@
       <HintPath>..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.Cluster, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Cluster.1.0.8.25-beta\lib\net45\Akka.Cluster.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.DI.Core, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.DI.Core.1.0.8\lib\net45\Akka.DI.Core.dll</HintPath>
       <Private>True</Private>
@@ -46,12 +50,56 @@
       <HintPath>..\packages\Akka.DI.Unity.1.0.8\lib\net45\Akka.DI.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.Persistence, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.1.0.8.25-beta\lib\net45\Akka.Persistence.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.Sql.Common.1.0.8.25-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence.SqlServer, Version=1.0.8.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.SqlServer.1.0.8.4-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Remote, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Remote.1.0.8\lib\net45\Akka.Remote.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Serialization.Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Serialization.Wire.1.0.8.25-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.MappingAPI, Version=6.1.0.9, Culture=neutral, PublicKeyToken=7ee2e825d201459e, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.MappingAPI.6.1.0.9\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Helios, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Helios.1.4.1\lib\net45\Helios.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -91,6 +139,7 @@
       <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -98,38 +147,31 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actors\CommandManager.cs" />
     <Compile Include="Actors\ConsoleReader.cs" />
     <Compile Include="Actors\ConsoleWriter.cs" />
+    <Compile Include="Configuration\LocalAkkaConfiguration.cs" />
+    <Compile Include="Configuration\LocalAkkaDbConfiguration.cs" />
+    <Compile Include="Configuration\LocalAkkaNetworkAddress.cs" />
     <Compile Include="DemoLogger.cs" />
-    <Compile Include="DemoSaga\DemoSaga.cs" />
+    <Compile Include="AgregateHandler\ConsoleAggregate.cs" />
+    <Compile Include="AgregateHandler\ConsoleAggregateCommadHandler.cs" />
+    <Compile Include="AgregateHandler\ConsoleAggregateRouting.cs" />
     <Compile Include="Handlers\FailingScheduledHandler.cs" />
     <Compile Include="Handlers\LongTimeScheduledHandler.cs" />
     <Compile Include="Messages\ProcessCommand.cs" />
     <Compile Include="Messages\WriteErrorToConsole.cs" />
-    <Compile Include="PhoneCallDomain\Events\AbonentAnsweredEvent.cs" />
-    <Compile Include="PhoneCallDomain\Events\AbonentHungUpEvent.cs" />
-    <Compile Include="PhoneCallDomain\Events\AbonentIsBusyEvent.cs" />
-    <Compile Include="PhoneCallDomain\Events\AbonentReceivingIncomingCallEvent.cs" />
-    <Compile Include="PhoneCallDomain\Commands\AnswerToCallCommand.cs" />
-    <Compile Include="PhoneCallDomain\Events\CallInitiatedEvent.cs" />
-    <Compile Include="PhoneCallDomain\Commands\HangupCommand.cs" />
-    <Compile Include="PhoneCallDomain\PhoneCallsRouting.cs" />
-    <Compile Include="PhoneCallDomain\Sagas\PhoneCall\PhoneCallSagaFactory.cs" />
-    <Compile Include="PhoneCallDomain\ScheduledCommands\HangUpIfNotRespondedScheduledCommand.cs" />
-    <Compile Include="PhoneCallDomain\ScheduledCommands\HangUpTooLongConversationSchduledCommand.cs" />
-    <Compile Include="PhoneCallDomain\Commands\InitiateCallCommand.cs" />
-    <Compile Include="PhoneCallDomain\Aggregates\Person\Person.cs" />
-    <Compile Include="PhoneCallDomain\Aggregates\Person\PersonAggregateCommandHandler.cs" />
-    <Compile Include="PhoneCallDomain\Commands\ReceiveCallCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\StartReadFromConsole.cs" />
     <Compile Include="Messages\WriteToConsole.cs" />
-    <Compile Include="PhoneCallDomain\Sagas\PhoneCall\PhoneCallSaga.cs" />
-    <Compile Include="PhoneCallDomain\Sagas\PhoneCall\PhoneCallSagaStateAggregate.cs" />
+    <Compile Include="AgregateHandler\WrittenToConsoleEvent.cs" />
     <Compile Include="ScheduledMessages\FailScheduledCommand.cs" />
     <Compile Include="ScheduledMessages\LongTimeScheduledCommand.cs" />
     <Compile Include="ScheduledMessages\WriteToConsoleScheduledCommand.cs" />

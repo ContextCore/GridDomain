@@ -1,17 +1,15 @@
 using System;
-using Akka.Actor;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class MessageProcessingFailed : Failure, IMessageProcessingStatusChanged
+    public class MessageProcessingFailed : DomainEvent
     {
-        public string TaskId { get; }
+        public Exception Exception { get; private set; }
 
-        public MessageProcessingFailed(string taskId, Exception cause)
+        public MessageProcessingFailed(Guid sourceId, Exception exception,  DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
         {
-            TaskId = taskId;
-            Exception = cause;
-            Timestamp = DateTime.UtcNow;
+            Exception = exception;
         }
     }
 }

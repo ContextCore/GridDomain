@@ -2,7 +2,9 @@
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
@@ -11,9 +13,10 @@ using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
 using SchedulerDemo.Actors;
+using SchedulerDemo.AgregateHandler;
+using SchedulerDemo.Configuration;
 using SchedulerDemo.Handlers;
 using SchedulerDemo.Messages;
-using SchedulerDemo.PhoneCallDomain;
 using SchedulerDemo.ScheduledMessages;
 using CompositionRoot = GridDomain.Scheduling.CompositionRoot;
 
@@ -25,24 +28,25 @@ namespace SchedulerDemo
 
         static void Main()
         {
-            Sys = ActorSystem.Create("Sys");
+            Sys = ActorSystemFactory.CreateActorSystem(new LocalAkkaConfiguration(AkkaConfiguration.LogVerbosity.Error));
             var container = new CompositionRoot().Compose(Container.Current.CreateChildContainer(), Sys);
-            var routing = new PhoneCallsRouting();
             RegisterAppSpecificTypes(container);
-            var gridNode = new GridDomainNode(container, routing, TransportMode.Standalone, Sys);
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
+            var routing = new ConsoleAggregateRouting();
+
+            var webUiWrapper = container.Resolve<IWebUiWrapper>();
+            var gridNode = new GridDomainNode(container, routing, TransportMode.Standalone, Sys);
             gridNode.Start(new LocalDbConfiguration());
-            using (container.Resolve<IWebUiWrapper>().Start())
+            using (webUiWrapper.Start())
             {
                 var reader = Sys.ActorOf(Sys.DI().Props<ConsoleReader>());
                 var writer = Sys.ActorOf(Sys.DI().Props<ConsoleWriter>());
                 var scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
-                var handler = Sys.ActorOf(Sys.DI().Props<WriteToConsoleScheduledHandler>());
                 var failHandler = Sys.ActorOf(Sys.DI().Props<FailingScheduledHandler>());
                 var longTimeHandler = Sys.ActorOf(Sys.DI().Props<LongTimeScheduledHandler>());
                 var commandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
                 IActorSubscriber subsriber = container.Resolve<IActorSubscriber>();
-                subsriber.Subscribe<WriteToConsoleScheduledCommand>(handler);
+                //subsriber.Subscribe<WriteToConsoleScheduledCommand>(handler);
                 subsriber.Subscribe<ProcessCommand>(commandManager);
                 subsriber.Subscribe<StartReadFromConsole>(reader);
                 subsriber.Subscribe<WriteToConsole>(writer);
@@ -55,12 +59,16 @@ namespace SchedulerDemo
                 publisher.Publish(new WriteToConsole("started"));
                 publisher.Publish(new StartReadFromConsole());
 
-                Sys.WhenTerminated.Wait();
+                gridNode.System.WhenTerminated.Wait();
             }
         }
 
         private static void RegisterAppSpecificTypes(IUnityContainer container)
         {
+            container.RegisterType<AggregateActor<ConsoleAggregate>>();
+            container.RegisterType<AggregateHubActor<ConsoleAggregate>>();
+            container.RegisterType<ICommandAggregateLocator<ConsoleAggregate>, ConsoleAggregateCommadHandler>();
+            container.RegisterType<IAggregateCommandsHandler<ConsoleAggregate>, ConsoleAggregateCommadHandler>();
             container.RegisterType<IQuartzLogger, DemoLogger>();
             container.RegisterType<ConsoleReader>();
             container.RegisterType<ConsoleWriter>();

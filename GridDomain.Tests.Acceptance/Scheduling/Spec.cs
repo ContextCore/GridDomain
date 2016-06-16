@@ -24,8 +24,8 @@ using Moq;
 using NUnit.Framework;
 using Quartz;
 using Quartz.Spi;
-using SchedulerDemo.DemoSaga;
-using SchedulerDemo.PhoneCallDomain.Commands;
+using SchedulerDemo.AgregateHandler;
+using SchedulerDemo.Messages;
 using SchedulerDemo.ScheduledMessages;
 using IScheduler = Quartz.IScheduler;
 
@@ -47,6 +47,15 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         }
 
+        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        {
+            _container = Register();
+            var system = ActorSystemFactory.CreateActorSystem(akkaConf);
+            system.AddDependencyResolver(new UnityDependencyResolver(_container, system));
+            var router = new ConsoleAggregateRouting();
+            return new GridDomainNode(_container, router, TransportMode.Standalone, system);
+        }
+
         private IUnityContainer Register()
         {
             var container = Container.CreateChildScope();
@@ -60,7 +69,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
             container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
             container.RegisterType<IQuartzConfig, QuartzConfig>();
-            container.RegisterType<ActorSystem>(new InjectionFactory(x => Sys));
+            container.RegisterType<ActorSystem>(new InjectionFactory(x => GridNode.System));
             //var transport = new AkkaEventBusTransport(Sys);
             //container.RegisterInstance<IPublisher>(transport);
             //container.RegisterInstance<IActorSubscriber>(transport);
@@ -73,11 +82,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             container.RegisterType<SuccessfulTestMessageHandler>();
             container.RegisterType<FailingTestRequestHandler>();
             container.RegisterType(typeof(TestRequestHandler<>));
-            container.RegisterType<AggregateActor<DemoAggregate>>();
-            container.RegisterType<AggregateHubActor<DemoAggregate>>();
-            container.RegisterType<ICommandAggregateLocator<DemoAggregate>, DemoAggregateCommadHandler>();
-            container.RegisterType<IAggregateCommandsHandler<DemoAggregate>, DemoAggregateCommadHandler>();
-
+            container.RegisterType<AggregateActor<ConsoleAggregate>>();
+            container.RegisterType<AggregateHubActor<ConsoleAggregate>>();
+            container.RegisterType<ICommandAggregateLocator<ConsoleAggregate>, ConsoleAggregateCommadHandler>();
+            container.RegisterType<IAggregateCommandsHandler<ConsoleAggregate>, ConsoleAggregateCommadHandler>();
+            ScheduledCommandProcessingSagaRegistrator.Register(container);
             return container;
         }
 
@@ -86,7 +95,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             CreateScheduler();
             _subsriber = _container.Resolve<IActorSubscriber>();
-            _scheduler = GridNode.System.ActorOf(Sys.DI().Props<SchedulingActor>());
+            _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
         }
 
@@ -106,9 +115,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_a_message_published_Then_saga_receives_it()
         {
             Thread.Sleep(1000);
-            var demoCommand = new DemoCommand(Guid.Empty, Id, Group);
-            _scheduler.Ask<Scheduled>(new Schedule(demoCommand, DateTime.UtcNow.AddSeconds(3), Timeout)).Wait(Timeout);
-            WaitFor<DemoEvent>();
+            var demoCommand = new WriteToConsoleScheduledCommand(Id, Group);
+            _scheduler.Ask<Scheduled>(new Schedule(demoCommand, DateTime.UtcNow.AddSeconds(1), Timeout)).Wait(Timeout);
+            WaitFor<WrittenToConsoleEvent>();
         }
 
         [Test]
@@ -128,8 +137,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var sched2 = _container.Resolve<IScheduler>();
             Assert.True(sched1 != sched2);
         }
-
-
 
         [Test]
         [Ignore]
@@ -199,8 +206,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
             Throttle.Verify(_quartzLogger, x => x.LogFailure(testMessage.TaskId, It.IsAny<Exception>()), maxTimeout: Timeout);
         }
-
-
 
         [Test]
         public void When_there_are_several_scheduled_jobs_System_executes_all_of_them()
@@ -332,8 +337,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Throttle.Assert(() => resultHolder.Contains(taskIds));
         }
 
-
-
         protected override TimeSpan Timeout
         {
             get
@@ -347,18 +350,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                 }
                 return timeout;
             }
-        }
-
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
-        {
-            _container = Register();
-
-
-            var system = Sys;//ActorSystemFactory.CreateActorSystem(akkaConf);
-            system.AddDependencyResolver(new UnityDependencyResolver(_container, system));
-
-            var router = new DemoRouting();
-            return new GridDomainNode(_container, router, TransportMode.Standalone, system);
         }
     }
 }

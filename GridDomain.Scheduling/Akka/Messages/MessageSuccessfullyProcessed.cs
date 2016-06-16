@@ -1,11 +1,12 @@
+using System;
+using GridDomain.EventSourcing;
+
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class MessageSuccessfullyProcessed : IMessageProcessingStatusChanged
+    public class MessageSuccessfullyProcessed : DomainEvent
     {
-        public string TaskId { get;}
-        public MessageSuccessfullyProcessed(string taskId)
+        public MessageSuccessfullyProcessed(Guid sourceId, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
         {
-            TaskId = taskId;
         }
     }
 }

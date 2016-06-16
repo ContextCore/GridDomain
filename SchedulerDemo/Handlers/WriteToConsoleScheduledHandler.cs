@@ -18,7 +18,6 @@ namespace SchedulerDemo.Handlers
         protected override void Handle(WriteToConsoleScheduledCommand scheduledCommand)
         {
             _publisher.Publish(new WriteToConsole("scheduled event " + scheduledCommand.TaskId));
-            Sender.Tell(new MessageSuccessfullyProcessed(scheduledCommand.TaskId), Self);
         }
     }
 }

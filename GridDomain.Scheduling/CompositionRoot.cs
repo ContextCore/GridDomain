@@ -32,6 +32,7 @@ namespace GridDomain.Scheduling
             container.RegisterInstance<IActorSubscriber>(transport, new ContainerControlledLifetimeManager());
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
+            ScheduledCommandProcessingSagaRegistrator.Register(container);
             return container;
         }
     }
