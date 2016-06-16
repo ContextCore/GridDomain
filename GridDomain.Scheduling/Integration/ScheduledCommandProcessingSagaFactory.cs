@@ -5,13 +5,13 @@ namespace GridDomain.Scheduling.Integration
 {
     public class ScheduledCommandProcessingSagaFactory :
         ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>,
-        ISagaFactory<ScheduledCommandProcessingSaga, ScheduledMessageProcessingStarted>,
+        ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>,
         IEmptySagaFactory<ScheduledCommandProcessingSaga>
 
     {
-        public ScheduledCommandProcessingSaga Create(ScheduledMessageProcessingStarted message)
+        public ScheduledCommandProcessingSaga Create(ScheduledCommandProcessingStarted command)
         {
-            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(message.SagaId, ScheduledCommandProcessingSaga.States.Created));
+            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(command.SagaId, ScheduledCommandProcessingSaga.States.Created));
         }
 
         public ScheduledCommandProcessingSaga Create(ScheduledCommandProcessingSagaState state)

@@ -4,11 +4,11 @@ using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Scheduling.Integration
 {
-    public class ScheduledMessageProcessingStarted : DomainEvent
+    public class ScheduledCommandProcessingStarted : DomainEvent
     {
         public ScheduledCommand Command { get; set; }
 
-        public ScheduledMessageProcessingStarted(Guid sourceId, ScheduledCommand command) : base(sourceId, DateTime.UtcNow)
+        public ScheduledCommandProcessingStarted(Guid sourceId, ScheduledCommand command) : base(sourceId, DateTime.UtcNow)
         {
             Command = command;
         }

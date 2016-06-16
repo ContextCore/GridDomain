@@ -2,11 +2,11 @@ using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Scheduling.Integration
 {
-    public class ManageMessage
+    public class ManageScheduledCommand
     {
         public ScheduledCommand Command { get; }
 
-        public ManageMessage(ScheduledCommand command)
+        public ManageScheduledCommand(ScheduledCommand command)
         {
             Command = command;
         }

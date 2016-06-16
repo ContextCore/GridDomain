@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance
 
         protected abstract TimeSpan Timeout { get; }
 
-        [TearDown]
+        [TestFixtureTearDown]
         public void DeleteSystems()
         {
             Console.WriteLine();

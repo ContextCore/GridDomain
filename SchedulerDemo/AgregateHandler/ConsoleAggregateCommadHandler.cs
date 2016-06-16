@@ -1,5 +1,6 @@
 using GridDomain.CQRS.Messaging.MessageRouting;
-using SchedulerDemo.ScheduledMessages;
+using SchedulerDemo.Events;
+using SchedulerDemo.ScheduledCommands;
 
 namespace SchedulerDemo.AgregateHandler
 {
@@ -14,7 +15,7 @@ namespace SchedulerDemo.AgregateHandler
 
             Map<LongTimeScheduledCommand>(c => c.Id, (c, a) =>
             {
-                a.LongOperation(c.TaskId, c.Group);
+                a.LongOperation(c.TaskId, c.Group, c.Timeout);
             });
 
             Map<FailScheduledCommand>(c => c.Id, (c, a) =>

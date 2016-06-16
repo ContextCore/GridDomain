@@ -163,8 +163,6 @@
     <Compile Include="AgregateHandler\ConsoleAggregate.cs" />
     <Compile Include="AgregateHandler\ConsoleAggregateCommadHandler.cs" />
     <Compile Include="AgregateHandler\ConsoleAggregateRouting.cs" />
-    <Compile Include="Handlers\FailingScheduledHandler.cs" />
-    <Compile Include="Handlers\LongTimeScheduledHandler.cs" />
     <Compile Include="Messages\ProcessCommand.cs" />
     <Compile Include="Messages\WriteErrorToConsole.cs" />
     <Compile Include="Program.cs" />
@@ -172,15 +170,17 @@
     <Compile Include="Messages\StartReadFromConsole.cs" />
     <Compile Include="Messages\WriteToConsole.cs" />
     <Compile Include="AgregateHandler\WrittenToConsoleEvent.cs" />
-    <Compile Include="ScheduledMessages\FailScheduledCommand.cs" />
-    <Compile Include="ScheduledMessages\LongTimeScheduledCommand.cs" />
-    <Compile Include="ScheduledMessages\WriteToConsoleScheduledCommand.cs" />
-    <Compile Include="Handlers\WriteToConsoleScheduledHandler.cs" />
+    <Compile Include="ScheduledCommands\FailScheduledCommand.cs" />
+    <Compile Include="ScheduledCommands\LongTimeScheduledCommand.cs" />
+    <Compile Include="Events\WriteToConsoleScheduledCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="job_scheduling_data_2_0.xsd">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

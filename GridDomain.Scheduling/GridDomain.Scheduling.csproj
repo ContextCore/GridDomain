@@ -122,17 +122,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
-    <Compile Include="Akka\Messages\IMessageProcessingStatusChanged.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
-    <Compile Include="Integration\ManageMessage.cs" />
-    <Compile Include="Integration\MessageProcessingStatusManager.cs" />
+    <Compile Include="Integration\ManageScheduledCommand.cs" />
+    <Compile Include="Integration\ScheduledCommandProcessingStatusManager.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSaga.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaFactory.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaRegistrator.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaState.cs" />
-    <Compile Include="Integration\ScheduledMessageProcessingStarted.cs" />
+    <Compile Include="Integration\ScheduledCommandProcessingStarted.cs" />
     <Compile Include="Quartz\JobFactory.cs" />
     <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\ILoggingSchedulerListener.cs" />
@@ -141,17 +140,16 @@
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
     <Compile Include="Akka\Messages\Schedule.cs" />
-    <Compile Include="Akka\Messages\MessageProcessingFailed.cs" />
+    <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\QuartzConfig.cs" />
     <Compile Include="Quartz\Logging\QuartzLogger.cs" />
-    <Compile Include="Akka\ScheduledMessageHandler.cs" />
     <Compile Include="Quartz\SchedulerFactory.cs" />
     <Compile Include="Akka\Tasks\ScheduledCommand.cs" />
     <Compile Include="Integration\QuartzJob.cs" />
     <Compile Include="Akka\Messages\Unschedule.cs" />
     <Compile Include="Integration\SchedulingActor.cs" />
     <Compile Include="Akka\Messages\Scheduled.cs" />
-    <Compile Include="Akka\Messages\MessageSuccessfullyProcessed.cs" />
+    <Compile Include="Akka\Messages\ScheduledCommandSuccessfullyProcessed.cs" />
     <Compile Include="Akka\Messages\Unscheduled.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebUI\IWebUiConfig.cs" />

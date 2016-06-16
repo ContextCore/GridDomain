@@ -13,5 +13,7 @@ namespace GridDomain.Scheduling.Integration
         public ScheduledCommandProcessingSagaState(Guid id, ScheduledCommandProcessingSaga.States state) : base(id, state)
         {
         }
+
+        public string TaskId { get; set; }
     }
 }

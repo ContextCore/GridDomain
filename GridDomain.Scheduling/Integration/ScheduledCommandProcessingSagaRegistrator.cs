@@ -8,7 +8,7 @@ namespace GridDomain.Scheduling.Integration
         public static void Register(IUnityContainer container)
         {
             container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>, ScheduledCommandProcessingSagaFactory>();
-            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledMessageProcessingStarted>, ScheduledCommandProcessingSagaFactory>();
+            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>, ScheduledCommandProcessingSagaFactory>();
             container.RegisterType<IEmptySagaFactory<ScheduledCommandProcessingSaga>, ScheduledCommandProcessingSagaFactory>();
         }
     }

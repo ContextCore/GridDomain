@@ -1,8 +1,6 @@
 using System;
-using System.Runtime.ExceptionServices;
 using Akka.Actor;
 using Akka.DI.Core;
-using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Akka.Tasks;
 using GridDomain.Scheduling.Quartz.Logging;
 using Newtonsoft.Json;
@@ -40,24 +38,9 @@ namespace GridDomain.Scheduling.Integration
                 isFirstTimeFiring = context.RefireCount == 0;
                 var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
                 var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
-                var jobStatusManager = _actorSystem.ActorOf(_actorSystem.DI().Props<MessageProcessingStatusManager>());
-                var result = jobStatusManager.Ask(new ManageMessage(scheduledRequest), timeout);
+                var jobStatusManager = _actorSystem.ActorOf(_actorSystem.DI().Props<ScheduledCommandProcessingStatusManager>());
+                var result = jobStatusManager.Ask(new ManageScheduledCommand(scheduledRequest), timeout);
                 result.Wait(timeout);
-                //TODO::VZ refactor without casts
-                var success = result.Result as MessageSuccessfullyProcessed;
-                if (success != null)
-                {
-                    _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
-                }
-                else
-                {
-                    var failure = result.Result as MessageProcessingFailed;
-                    if (failure != null)
-                    {
-                        ExceptionDispatchInfo.Capture(failure.Exception).Throw();
-                    }
-                    throw new InvalidOperationException($"Wrong reply from task handler actor. Reply: ${result.Result}");
-                }
             }
             catch (JsonSerializationException e)
             {

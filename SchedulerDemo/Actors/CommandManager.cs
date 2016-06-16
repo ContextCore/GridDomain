@@ -3,8 +3,9 @@ using System.Diagnostics;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Scheduling.Akka.Messages;
+using SchedulerDemo.Events;
 using SchedulerDemo.Messages;
-using SchedulerDemo.ScheduledMessages;
+using SchedulerDemo.ScheduledCommands;
 
 namespace SchedulerDemo.Actors
 {
@@ -38,7 +39,7 @@ namespace SchedulerDemo.Actors
                         ScheduleLongTime(parts);
                         break;
                     default:
-                        _publisher.Publish(new WriteToConsole("unknown command"));
+                        _publisher.Publish(new WriteToConsole($"unknown command, possible commands are: add, remove, fail, longtime"));
                         break;
                 }
             });
@@ -57,7 +58,7 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            _publisher.Publish(new Schedule(new LongTimeScheduledCommand("long", "long", seconds), DateTime.UtcNow, TimeSpan.FromMinutes(1)));
+            _publisher.Publish(new Schedule(new LongTimeScheduledCommand("long", "long", TimeSpan.FromSeconds(seconds)), DateTime.UtcNow, TimeSpan.FromMinutes(1)));
         }
 
         private void ScheduleFailure(string[] parts)

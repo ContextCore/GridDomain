@@ -3,11 +3,11 @@ using System.Threading;
 using CommonDomain.Core;
 using GridDomain.Scheduling.Akka.Messages;
 
-namespace SchedulerDemo.AgregateHandler
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class ConsoleAggregate : AggregateBase
+    public class TestAggregate : AggregateBase
     {
-        private ConsoleAggregate(Guid id)
+        private TestAggregate(Guid id)
         {
             Id = id;
         }
@@ -16,28 +16,28 @@ namespace SchedulerDemo.AgregateHandler
         {
             
         }
+
         public void Apply(ScheduledCommandProcessingFailed @event)
         {
             
         }
 
-        public void WriteToConsole(string taskId, string @group)
+        public void Success(string taskId)
         {
-            Console.WriteLine($"Handled {taskId} {group}");
+            ResultHolder.Add(taskId, taskId);
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public void LongOperation(string taskId, string @group, TimeSpan timeout)
+        public void LongTime(string taskId, TimeSpan timeout)
         {
             Thread.Sleep(timeout);
-            Console.WriteLine($"Long operation handled {taskId} {group}");
+            ResultHolder.Add(taskId, taskId);
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-
-        public void FailOperation(string taskId, string @group)
+        public void Failure()
         {
-            RaiseEvent(new ScheduledCommandProcessingFailed(Id,new InvalidOperationException("ohmagawd")));
+            RaiseEvent(new ScheduledCommandProcessingFailed(Id, new InvalidOperationException("ohshitwaddap")));
         }
     }
 }

@@ -2,9 +2,9 @@ using GridDomain.Scheduling.Akka.Tasks;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestCommand : ScheduledCommand
+    public class SuccessCommand : ScheduledCommand
     {
-        public TestCommand(string taskId, string group) : base(taskId, group)
+        public SuccessCommand(string taskId, string group) : base(taskId, group)
         {
         }
     }
