@@ -28,9 +28,10 @@ namespace GridDomain.Node.Actors
 
         protected override Guid GetChildActorId(object message)
         {
-            if (message is ICommand)
+            var command = message as ICommand;
+            if (command != null)
             {
-                return _locator.GetAggregateId(message as ICommand);
+                return _locator.GetAggregateId(command);
             }
             return Guid.Empty;
         }

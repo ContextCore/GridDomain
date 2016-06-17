@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Akka.Actor;
@@ -32,7 +33,7 @@ namespace GridDomain.Tests.Acceptance
 
         protected abstract TimeSpan Timeout { get; }
 
-        [TearDown]
+        [TestFixtureTearDown]
         public void DeleteSystems()
         {
             Console.WriteLine();
@@ -66,11 +67,11 @@ namespace GridDomain.Tests.Acceptance
 
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-           return ExecuteAndWaitFor(new [] {typeof(TEvent)},commands);
+            return ExecuteAndWaitFor(new[] { typeof(TEvent) }, commands);
         }
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1,TMessage2>(params ICommand[] commands)
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
         {
-           return ExecuteAndWaitFor(new[] { typeof(TMessage1),typeof(TMessage2)}, commands);
+            return ExecuteAndWaitFor(new[] { typeof(TMessage1), typeof(TMessage2) }, commands);
         }
 
         private ExpectedMessagesRecieved WaitForFirstOf(Action act, params Type[] messageTypes)
@@ -88,7 +89,7 @@ namespace GridDomain.Tests.Acceptance
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
-            var msg = (ExpectedMessagesRecieved) FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
+            var msg = (ExpectedMessagesRecieved)FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
             watch.Stop();
 
             Console.WriteLine();
@@ -100,9 +101,14 @@ namespace GridDomain.Tests.Acceptance
             return msg;
         }
 
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes,params ICommand[] commands)
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
-            return WaitForFirstOf(() => Execute(commands),messageTypes);
+            return WaitForFirstOf(() => Execute(commands), messageTypes);
+        }
+
+        protected ExpectedMessagesRecieved WaitFor<TMessage>()
+        {
+            return WaitForFirstOf(() => { }, typeof(TMessage));
         }
 
         private void Execute(ICommand[] commands)
@@ -111,7 +117,7 @@ namespace GridDomain.Tests.Acceptance
 
             var commandTypes = commands.Select(c => c.GetType())
                 .GroupBy(c => c.Name)
-                .Select(g => new {Name = g.Key, Count = g.Count()});
+                .Select(g => new { Name = g.Key, Count = g.Count() });
 
             foreach (var commandStat in commandTypes)
             {

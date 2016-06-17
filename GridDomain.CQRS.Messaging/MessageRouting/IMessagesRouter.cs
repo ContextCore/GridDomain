@@ -1,5 +1,4 @@
 ﻿using CommonDomain.Core;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
