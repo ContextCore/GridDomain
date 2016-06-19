@@ -1,5 +1,4 @@
 using System;
-using Akka;
 using Akka.Actor;
 using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
@@ -7,29 +6,24 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling.Integration
 {
-    public class SchedulingActor : ActorBase
+    //TODO::VZ:: receive actor
+    public class SchedulingActor : ReceiveActor
     {
         private readonly IScheduler _scheduler;
         public SchedulingActor(IScheduler scheduler)
         {
             _scheduler = scheduler;
-        }
-
-        protected override bool Receive(object message)
-        {
-            return message.Match()
-                .With<Schedule>(Schedule)
-                .With<Unschedule>(Unschedule)
-                .WasHandled;
+            Receive<Schedule>(message => Schedule(message));
+            Receive<Unschedule>(message => Unschedule(message));
         }
 
         private void Unschedule(Unschedule msg)
         {
             try
             {
-                var jobKey = new JobKey(msg.TaskId, msg.Group);
+                var jobKey = new JobKey(msg.Key.Name, msg.Key.Group);
                 _scheduler.DeleteJob(jobKey);
-                Sender.Tell(new Unscheduled(msg.TaskId));
+                Sender.Tell(new Unscheduled(msg.Key));
             }
             catch (Exception e)
             {
@@ -37,16 +31,15 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        private void Schedule(Schedule scheduleRequest)
+        private void Schedule(Schedule schedule)
         {
             try
             {
-                var jobKey = new JobKey(scheduleRequest.Command.TaskId, scheduleRequest.Command.Group);
-                var job = QuartzJob.Create(jobKey, scheduleRequest.Command, scheduleRequest.ExecutionTimeout).Build();
+                var job = QuartzJob.Create(schedule.Key, schedule.Command, schedule.Options).Build();
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity(job.Key.Name, job.Key.Group)
                     .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow().WithRepeatCount(0))
-                    .StartAt(scheduleRequest.RunAt)
+                    .StartAt(schedule.Options.RunAt)
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
@@ -55,7 +48,7 @@ namespace GridDomain.Scheduling.Integration
             {
                 if (e.InnerException.GetType() == typeof(ObjectAlreadyExistsException))
                 {
-                    Sender.Tell(new AlreadyScheduled(scheduleRequest.Command.TaskId, scheduleRequest.Command.Group));
+                    Sender.Tell(new AlreadyScheduled(schedule.Key));
                 }
             }
             catch (Exception e)

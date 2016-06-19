@@ -11,7 +11,7 @@ namespace GridDomain.Scheduling.Integration
     {
         public ScheduledCommandProcessingSaga Create(ScheduledCommandProcessingStarted command)
         {
-            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(command.SagaId, ScheduledCommandProcessingSaga.States.Created));
+            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(command.SagaId, ScheduledCommandProcessingSaga.States.Created, command.Command, command.Key));
         }
 
         public ScheduledCommandProcessingSaga Create(ScheduledCommandProcessingSagaState state)

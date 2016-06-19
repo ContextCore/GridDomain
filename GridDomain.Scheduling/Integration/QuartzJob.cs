@@ -1,7 +1,8 @@
 using System;
 using Akka.Actor;
 using Akka.DI.Core;
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
+using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz.Logging;
 using Newtonsoft.Json;
 using Quartz;
@@ -12,8 +13,9 @@ namespace GridDomain.Scheduling.Integration
     {
         private readonly IQuartzLogger _quartzLogger;
         private readonly ActorSystem _actorSystem;
-        private const string MessageKey = "Message";
-        private const string Timeout = "Timeout";
+        private const string CommandKey = nameof(CommandKey);
+        private const string ScheduleKey = nameof(ScheduleKey);
+        private const string ExecutionOptionsKey = nameof(ExecutionOptionsKey);
 
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
@@ -36,11 +38,12 @@ namespace GridDomain.Scheduling.Integration
             try
             {
                 isFirstTimeFiring = context.RefireCount == 0;
-                var scheduledRequest = DeserializeTaskData(context.JobDetail.JobDataMap);
-                var timeout = DeserializeTimeout(context.JobDetail.JobDataMap);
-                var jobStatusManager = _actorSystem.ActorOf(_actorSystem.DI().Props<ScheduledCommandProcessingStatusManager>());
-                var result = jobStatusManager.Ask(new ManageScheduledCommand(scheduledRequest), timeout);
-                result.Wait(timeout);
+                var command = GetCommand(context.JobDetail.JobDataMap);
+                var key = GetScheduleKey(context.JobDetail.JobDataMap);
+                var options = GetExecutionOptions(context.JobDetail.JobDataMap);
+                var sagaCreator = _actorSystem.ActorOf(_actorSystem.DI().Props<ScheduledSagaCreator>());
+                var result = sagaCreator.Ask(new ManageScheduledCommand(command, key), options.Timeout);
+                result.Wait(options.Timeout);
             }
             catch (JsonSerializationException e)
             {
@@ -49,37 +52,62 @@ namespace GridDomain.Scheduling.Integration
             catch (Exception e)
             {
                 _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
-                var jobExecutionException = new JobExecutionException(e);
-                jobExecutionException.RefireImmediately = isFirstTimeFiring;
+                var jobExecutionException = new JobExecutionException(e) { RefireImmediately = isFirstTimeFiring };
                 throw jobExecutionException;
             }
         }
 
-        private static ScheduledCommand DeserializeTaskData(JobDataMap jobDatMap)
+        private static Command GetCommand(JobDataMap jobDatMap)
         {
-            var taskJson = jobDatMap[MessageKey] as string;
-            //TODO::VZ:: use external wrapper around serializer?
-            var task = JsonConvert.DeserializeObject<ScheduledCommand>(taskJson, JsonSerializerSettings);
-            return task;
+            var json = jobDatMap[CommandKey] as string;
+            var command = Deserialize<Command>(json);
+            return command;
         }
 
-        private static TimeSpan DeserializeTimeout(JobDataMap jobDatMap)
+        private static ScheduleKey GetScheduleKey(JobDataMap jobDatMap)
         {
-            var timeout = TimeSpan.Parse(jobDatMap[Timeout] as string);
-            return timeout;
+            var json = jobDatMap[ScheduleKey] as string;
+            var scheduleKey = Deserialize<ScheduleKey>(json);
+            return scheduleKey;
         }
 
-        public static JobBuilder Create(JobKey jobKey, ScheduledCommand command, TimeSpan timeout)
+
+        private static ExecutionOptions GetExecutionOptions(JobDataMap jobDatMap)
         {
-            //TODO::VZ:: use external wrapper around serializer?
-            var serialized = JsonConvert.SerializeObject(command, JsonSerializerSettings);
-            var jdm = new JobDataMap { { MessageKey, serialized }, { Timeout, timeout.ToString() } };
+            var json = jobDatMap[ExecutionOptionsKey] as string;
+            var executionOptions = Deserialize<ExecutionOptions>(json);
+            return executionOptions;
+        }
+
+        public static JobBuilder Create(ScheduleKey key, Command command, ExecutionOptions executionOptions)
+        {
+            var serializedCommand = Serialize(command);
+            var serializedKey = Serialize(key);
+            var serializedOptions = Serialize(executionOptions);
+
+            var jobDataMap = new JobDataMap
+            {
+                { CommandKey, serializedCommand },
+                { ScheduleKey, serializedKey },
+                { ExecutionOptionsKey, serializedOptions }
+            };
+            var jobKey = new JobKey(key.Name, key.Group);
             return JobBuilder
                         .Create<QuartzJob>()
                         .WithIdentity(jobKey)
-                        .UsingJobData(jdm)
-                        //.StoreDurably(true)
+                        .WithDescription(key.Description)
+                        .UsingJobData(jobDataMap)
                         .RequestRecovery(true);
+        }
+
+        private static string Serialize(object source)
+        {
+            return JsonConvert.SerializeObject(source, JsonSerializerSettings);
+        }
+
+        private static T Deserialize<T>(string source)
+        {
+            return JsonConvert.DeserializeObject<T>(source, JsonSerializerSettings);
         }
     }
 }

@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Cluster.Routing;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Routing;
+using GridDomain.CQRS.Messaging;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {

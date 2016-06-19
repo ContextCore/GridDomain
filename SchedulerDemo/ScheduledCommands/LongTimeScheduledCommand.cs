@@ -1,14 +1,16 @@
 using System;
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
 
 namespace SchedulerDemo.ScheduledCommands
 {
-    public class LongTimeScheduledCommand : ScheduledCommand
+    public class LongTimeScheduledCommand : Command
     {
+        public string Text { get; }
         public TimeSpan Timeout { get; }
 
-        public LongTimeScheduledCommand(string taskId, string group, TimeSpan timeout) : base(taskId, @group)
+        public LongTimeScheduledCommand(string text, TimeSpan timeout)
         {
+            Text = text;
             Timeout = timeout;
         }
     }

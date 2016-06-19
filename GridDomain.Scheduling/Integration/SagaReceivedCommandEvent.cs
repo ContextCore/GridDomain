@@ -3,12 +3,12 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Scheduling.Integration
 {
-    public class ManageScheduledCommand
+    public class SagaReceivedCommandEvent
     {
         public Command Command { get; }
         public ScheduleKey Key { get; }
 
-        public ManageScheduledCommand(Command command, ScheduleKey key)
+        public SagaReceivedCommandEvent(Command command, ScheduleKey key)
         {
             Command = command;
             Key = key;

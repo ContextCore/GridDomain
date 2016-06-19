@@ -35,6 +35,14 @@
       <HintPath>..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.Cluster, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Cluster.1.0.8.25-beta\lib\net45\Akka.Cluster.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Cluster.Tools, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Cluster.Tools.1.0.8.25-beta\lib\net45\Akka.Cluster.Tools.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Remote, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Remote.1.0.8\lib\net45\Akka.Remote.dll</HintPath>
       <Private>True</Private>
@@ -115,6 +123,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AkkaEventBusTransport.cs" />
+    <Compile Include="CannotGetDistributedPubSubException.cs" />
+    <Compile Include="DistributedPubSubTransport.cs" />
+    <Compile Include="IActorSubscriber.cs" />
+    <Compile Include="IActorTransport.cs" />
     <Compile Include="MessageRouting\AggregateCommandHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandler.cs" />
     <Compile Include="MessageRouting\CannotFindAggregateCommandHandlerExeption.cs" />

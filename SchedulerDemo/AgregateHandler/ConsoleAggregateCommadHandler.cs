@@ -10,17 +10,17 @@ namespace SchedulerDemo.AgregateHandler
         {
             Map<WriteToConsoleScheduledCommand>(c => c.Id, (c, a) =>
             {
-                a.WriteToConsole(c.TaskId, c.Group);
+                a.WriteToConsole(c.Text);
             });
 
             Map<LongTimeScheduledCommand>(c => c.Id, (c, a) =>
             {
-                a.LongOperation(c.TaskId, c.Group, c.Timeout);
+                a.LongOperation(c.Text, c.Timeout);
             });
 
             Map<FailScheduledCommand>(c => c.Id, (c, a) =>
             {
-                a.FailOperation(c.TaskId, c.Group);
+                a.FailOperation();
             });
         }
     }

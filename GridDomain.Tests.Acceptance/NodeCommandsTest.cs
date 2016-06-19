@@ -8,6 +8,7 @@ using Akka.DI.Core;
 using Akka.TestKit.NUnit;
 using CommonDomain.Core;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;

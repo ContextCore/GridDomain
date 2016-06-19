@@ -1,9 +1,8 @@
 using System;
 using Akka.Actor;
 using Akka.Event;
-using GridDomain.CQRS.Messaging;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.CQRS.Messaging
 {
     public class AkkaEventBusTransport : IActorSubscriber, IPublisher
     {

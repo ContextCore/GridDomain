@@ -34,9 +34,10 @@ namespace GridDomain.Node
 
             //TODO: remove
             RegisterEventStore(container, conf);
-
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
+            container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
+            Scheduling.CompositionRoot.Compose(container);
         }
 
         public static void RegisterEventStore(IUnityContainer container, IDbConfiguration conf)

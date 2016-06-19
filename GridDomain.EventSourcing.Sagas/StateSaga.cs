@@ -33,7 +33,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         public TStateData State { get; }
 
-        protected StateMachine<TSagaStates, TSagaTriggers>
+        public StateMachine<TSagaStates, TSagaTriggers>
             .TriggerWithParameters<CommandFault<TCommand>> RegisterCommandFault<TCommand>(TSagaTriggers trigger) where TCommand : ICommand
         {
             _registeredCommands.Add(typeof(TCommand));

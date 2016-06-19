@@ -1,11 +1,8 @@
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
 
 namespace SchedulerDemo.ScheduledCommands
 {
-    public class FailScheduledCommand : ScheduledCommand
+    public class FailScheduledCommand : Command
     {
-        public FailScheduledCommand(string taskId, string group) : base(taskId, group)
-        {
-        }
     }
 }

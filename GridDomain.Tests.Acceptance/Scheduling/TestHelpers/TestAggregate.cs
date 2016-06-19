@@ -14,12 +14,12 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {
-            
+
         }
 
         public void Apply(ScheduledCommandProcessingFailed @event)
         {
-            
+
         }
 
         public void Success(string taskId)
@@ -37,7 +37,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 
         public void Failure()
         {
-            RaiseEvent(new ScheduledCommandProcessingFailed(Id, new InvalidOperationException("ohshitwaddap")));
+            Thread.Sleep(5000);
+            throw new InvalidOperationException("ohshitwaddap");
         }
     }
 }

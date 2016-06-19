@@ -1,6 +1,4 @@
-﻿using GridDomain.CQRS.Messaging;
-
-namespace GridDomain.Node
+﻿namespace GridDomain.CQRS.Messaging
 {
     public interface IActorTransport : IPublisher, IActorSubscriber
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Akka.Routing;
+using GridDomain.CQRS.Messaging;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {

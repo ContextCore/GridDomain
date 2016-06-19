@@ -17,8 +17,8 @@ namespace SchedulerDemo.Actors
         {
             _publisher = publisher;
             Receive<Scheduled>(x => _publisher.Publish(new WriteToConsole($"Task added, fire at : {x.NextExecution.ToLocalTime().ToString("HH:mm:")}", x.NextExecution.ToString("ss.fff"))));
-            Receive<Unscheduled>(x => _publisher.Publish(new WriteToConsole($"Task {x.TaskId} unscheduled")));
-            Receive<AlreadyScheduled>(x => _publisher.Publish(new WriteToConsole($"Task {x.TaskId} is already scheduled")));
+            Receive<Unscheduled>(x => _publisher.Publish(new WriteToConsole($"Task {x.Key.Id} unscheduled")));
+            Receive<AlreadyScheduled>(x => _publisher.Publish(new WriteToConsole($"Task {x.Key.Id} is already scheduled")));
             Receive<Failure>(x => _publisher.Publish(new WriteErrorToConsole(x.Exception)));
             Receive<ProcessCommand>(x =>
             {
@@ -39,7 +39,7 @@ namespace SchedulerDemo.Actors
                         ScheduleLongTime(parts);
                         break;
                     default:
-                        _publisher.Publish(new WriteToConsole($"unknown command, possible commands are: add, remove, fail, longtime"));
+                        _publisher.Publish(new WriteToConsole("unknown command, possible commands are: add, remove, fail, longtime"));
                         break;
                 }
             });
@@ -58,7 +58,8 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            _publisher.Publish(new Schedule(new LongTimeScheduledCommand("long", "long", TimeSpan.FromSeconds(seconds)), DateTime.UtcNow, TimeSpan.FromMinutes(1)));
+            var longTimeScheduledCommand = new LongTimeScheduledCommand("longtime", TimeSpan.FromSeconds(seconds));
+            _publisher.Publish(new Schedule(longTimeScheduledCommand, new ScheduleKey(Guid.Empty, "long", "long"), CreateOptions(seconds)));
         }
 
         private void ScheduleFailure(string[] parts)
@@ -74,7 +75,8 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            _publisher.Publish(new Schedule(new FailScheduledCommand("fail", "fail"), DateTime.UtcNow.AddSeconds(seconds), TimeSpan.FromSeconds(4)));
+            var failScheduledCommand = new FailScheduledCommand();
+            _publisher.Publish(new Schedule(failScheduledCommand, new ScheduleKey(Guid.Empty, "fail", "fail"), CreateOptions(seconds)));
         }
 
         private void Schedule(string[] parts)
@@ -92,9 +94,8 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            var taskId = text;// + Guid.NewGuid().ToString().Substring(0, 8);
-
-            _publisher.Publish(new Schedule(new WriteToConsoleScheduledCommand(taskId, taskId), DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout()));
+            var schedule = new Schedule(new WriteToConsoleScheduledCommand(text), new ScheduleKey(Guid.Empty, text, text), CreateOptions(seconds));
+            _publisher.Publish(schedule);
         }
 
         private void Unschedule(string[] parts)
@@ -106,17 +107,24 @@ namespace SchedulerDemo.Actors
             }
 
             var text = parts[1];
-            var taskId = text;// + Guid.NewGuid().ToString().Substring(0, 8);
-            _publisher.Publish(new Unschedule(taskId, taskId));
+            _publisher.Publish(new Unschedule(new ScheduleKey(Guid.Empty, text, text)));
         }
 
-        private static TimeSpan ExecutionTimeout()
+        private static ExecutionOptions CreateOptions(int seconds)
         {
-            if (Debugger.IsAttached)
+            return new ExecutionOptions(DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout);
+        }
+
+        private static TimeSpan ExecutionTimeout
+        {
+            get
             {
-                return TimeSpan.FromMinutes(1);
+                if (Debugger.IsAttached)
+                {
+                    return TimeSpan.FromMinutes(1);
+                }
+                return TimeSpan.FromSeconds(3);
             }
-            return TimeSpan.FromSeconds(3);
         }
     }
 }

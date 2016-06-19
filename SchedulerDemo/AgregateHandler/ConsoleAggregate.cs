@@ -21,21 +21,21 @@ namespace SchedulerDemo.AgregateHandler
             
         }
 
-        public void WriteToConsole(string taskId, string @group)
+        public void WriteToConsole(string text)
         {
-            Console.WriteLine($"Handled {taskId} {group}");
+            Console.WriteLine($"Handled {text}");
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public void LongOperation(string taskId, string @group, TimeSpan timeout)
+        public void LongOperation(string taskId, TimeSpan timeout)
         {
             Thread.Sleep(timeout);
-            Console.WriteLine($"Long operation handled {taskId} {group}");
+            Console.WriteLine($"Long operation handled {taskId}");
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
 
-        public void FailOperation(string taskId, string @group)
+        public void FailOperation()
         {
             RaiseEvent(new ScheduledCommandProcessingFailed(Id,new InvalidOperationException("ohmagawd")));
         }

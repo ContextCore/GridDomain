@@ -6,23 +6,22 @@ using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
-using GridDomain.Scheduling.WebUI;
+using GridDomain.Tests.Acceptance.Persistence;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Configuration;
 using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
-using Quartz;
-using Quartz.Spi;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Tests.Acceptance.Scheduling
@@ -34,7 +33,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         private const string Group = "test";
         private IActorRef _scheduler;
         private IScheduler _quartzScheduler;
-        private Mock<IQuartzLogger> _quartzLogger;
         private IUnityContainer _container;
 
         public Spec() : base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
@@ -44,38 +42,22 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            _container = Register();
             var system = ActorSystemFactory.CreateActorSystem(akkaConf);
+            _container = Register(system);
             system.AddDependencyResolver(new UnityDependencyResolver(_container, system));
             var router = new TestRouter();
             return new GridDomainNode(_container, router, TransportMode.Standalone, system);
         }
 
-        private IUnityContainer Register()
+        private IUnityContainer Register(ActorSystem system)
         {
             var container = Container.CreateChildScope();
-            container.RegisterType<QuartzJob>();
-            container.RegisterType<ISchedulerFactory, SchedulerFactory>();
-            container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
-            var loggingJobListener = new Mock<ILoggingJobListener>();
-            loggingJobListener.Setup(x => x.Name).Returns("testListener");
-            container.RegisterInstance(loggingJobListener.Object);
-            container.RegisterType<ILoggingJobListener, LoggingJobListener>();
+            Node.CompositionRoot.Init(container, system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone);
             container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
-            container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
-            container.RegisterType<IQuartzConfig, QuartzConfig>();
-            container.RegisterType<ActorSystem>(new InjectionFactory(x => GridNode.System));
-            container.RegisterType<IWebUiConfig, WebUiConfig>();
-            container.RegisterType<IWebUiWrapper, WebUiWrapper>();
-            container.RegisterType<IJobFactory>(new InjectionFactory(x => new JobFactory(container)));
-            _quartzLogger = new Mock<IQuartzLogger>();
-            container.RegisterInstance(_quartzLogger.Object);
-            container.RegisterType<SchedulingActor>();
             container.RegisterType<AggregateActor<TestAggregate>>();
             container.RegisterType<AggregateHubActor<TestAggregate>>();
             container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
             container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
-            ScheduledCommandProcessingSagaRegistrator.Register(container);
             return container;
         }
 
@@ -103,9 +85,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_a_message_published_Then_saga_receives_it()
         {
             Thread.Sleep(1000);
-            var testCommand = new SuccessCommand(Id, Group);
-            _scheduler.Ask<Scheduled>(new Schedule(testCommand, DateTime.UtcNow.AddSeconds(1), Timeout)).Wait(Timeout);
-            WaitFor<CompleteJob>();
+            var testCommand = new SuccessCommand(Id);
+            _scheduler.Ask<Scheduled>(new Schedule(testCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(1))).Wait(Timeout);
+            WaitFor<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>();
+        }
+
+        private ExecutionOptions CreateOptions(double seconds)
+        {
+            return new ExecutionOptions(DateTime.UtcNow.AddSeconds(seconds), Timeout);
         }
 
         [Test]
@@ -127,44 +114,20 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
-        [Ignore]
-        public void WebConsoleTest()
-        {
-            if (!Debugger.IsAttached)
-            {
-                Assert.True(true);
-                return;
-            }
-
-            using (_container.Resolve<IWebUiWrapper>().Start())
-            {
-                var runAt = DateTime.UtcNow.AddSeconds(500);
-                var testMessage = new SuccessCommand("web", "web");
-                _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
-                _scheduler.Ask<Scheduled>(new Schedule(new SuccessCommand(Id, Group), DateTime.UtcNow.AddSeconds(10), Timeout)).Wait(Timeout);
-                _scheduler.Ask<Scheduled>(new Schedule(new SuccessCommand(Id + Id, Group), DateTime.UtcNow.AddSeconds(15), Timeout)).Wait(Timeout);
-                Throttle.Assert(() => Assert.True(ResultHolder.Contains("web")), maxTimeout: TimeSpan.FromHours(1));
-            }
-        }
-
-        [Test]
         public void When_job_is_added_Then_it_gets_executed()
         {
-            var runAt = DateTime.UtcNow.AddSeconds(0.5);
-            var testMessage = new SuccessCommand(Id, Group);
-            _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
+            var successCommand = new SuccessCommand(Id);
+            _scheduler.Ask<Scheduled>(new Schedule(successCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
 
             WaitFor<ScheduledCommandSuccessfullyProcessed>();
-            Throttle.Assert(() => Assert.True(ResultHolder.Contains(testMessage.TaskId)), maxTimeout: Timeout);
+            Throttle.Assert(() => Assert.True(ResultHolder.Contains(successCommand.Text)), maxTimeout: Timeout);
         }
 
         [Test]
         public void When_scheduler_is_restarted_during_job_execution_Then_on_next_start_job_is_not_fired_again()
         {
-            var runAt = DateTime.UtcNow.AddSeconds(0.5);
-            var testMessage = new TimeoutCommand(Id, Group, TimeSpan.FromSeconds(2));
-
-            _scheduler.Ask<Scheduled>(new Schedule(testMessage, runAt, Timeout)).Wait(Timeout);
+            var timeoutCommand = new TimeoutCommand(Id, TimeSpan.FromSeconds(2));
+            _scheduler.Ask<Scheduled>(new Schedule(timeoutCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
             WaitFor<CompleteJob>();
             _quartzScheduler.Shutdown(false);
             Thread.Sleep(1000);
@@ -177,12 +140,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [Test]
         public void When_processing_actor_throws_Then_scheduler_receives_failure_response()
         {
-
-            var runAt = DateTime.UtcNow.AddSeconds(0.5);
-            var testMessage = new FailCommand(Id, Group);
-            _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
+            var testMessage = new FailCommand();
+            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
-            WaitFor<ScheduledCommandProcessingFailed>();
+            Thread.Sleep(Timeout);
+            WaitFor<CommandFault<FailCommand>>();
         }
 
         [Test]
@@ -192,9 +154,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             foreach (var task in tasks)
             {
-                var testMessage = new SuccessCommand(task.ToString(CultureInfo.InvariantCulture), Group);
-                var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
+                var text = task.ToString(CultureInfo.InvariantCulture);
+                var testMessage = new SuccessCommand(text);
+                _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -205,11 +167,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [Test]
         public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
         {
-            var runAt = DateTime.UtcNow.AddSeconds(0.5);
-            var secondRunAt = DateTime.UtcNow.AddSeconds(1);
-            var testMessage = new SuccessCommand(Id, Group);
-            _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
-            _scheduler.Tell(new Schedule(testMessage, secondRunAt, Timeout));
+            var testMessage = new SuccessCommand(Id);
+            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
+            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(1)));
 
             Throttle.Assert(() => Assert.True(ResultHolder.Count == 1), minTimeout: TimeSpan.FromSeconds(2));
         }
@@ -222,15 +182,15 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             foreach (var task in successTasks)
             {
-                var testCommand = new SuccessCommand(task.ToString(CultureInfo.InvariantCulture), Group);
-                var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new Schedule(testCommand, runAt, Timeout));
+                var text = task.ToString(CultureInfo.InvariantCulture);
+                var testCommand = new SuccessCommand(text);
+                _scheduler.Tell(new Schedule(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
             foreach (var failTask in failTasks)
             {
-                var failTaskCommand = new FailCommand(failTask.ToString(CultureInfo.InvariantCulture), Group);
-                var runAt = DateTime.UtcNow.AddSeconds(failTask);
-                _scheduler.Tell(new Schedule(failTaskCommand, runAt, Timeout));
+                var text = failTask.ToString(CultureInfo.InvariantCulture);
+                var failTaskCommand = new FailCommand();
+                _scheduler.Tell(new Schedule(failTaskCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(failTask)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -251,9 +211,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             foreach (var task in successTasks.Concat(tasksToRemove))
             {
-                var testMessage = new SuccessCommand(task.ToString(CultureInfo.InvariantCulture), Group);
-                var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
+                var text = task.ToString(CultureInfo.InvariantCulture);
+                var testMessage = new SuccessCommand(text);
+                _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -261,7 +221,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             foreach (var taskId in tasksToRemoveTaskIds)
             {
-                _scheduler.Tell(new Unschedule(taskId, "test"));
+                _scheduler.Tell(new Unschedule(new ScheduleKey(Guid.Empty, taskId, taskId)));
             }
 
             Throttle.Assert(() =>
@@ -278,9 +238,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             foreach (var task in tasks)
             {
-                var testMessage = new SuccessCommand(task.ToString(CultureInfo.InvariantCulture), Group);
-                var runAt = DateTime.UtcNow.AddSeconds(task);
-                _scheduler.Tell(new Schedule(testMessage, runAt, Timeout));
+                var text = task.ToString(CultureInfo.InvariantCulture);
+                var testMessage = new SuccessCommand(text);
+                _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             _quartzScheduler.Shutdown(false);

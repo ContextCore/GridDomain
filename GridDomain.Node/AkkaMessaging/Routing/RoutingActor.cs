@@ -4,8 +4,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Routing;
 using GridDomain.CQRS;
-using GridDomain.Logging;
-using GridDomain.Node.Actors;
+using GridDomain.CQRS.Messaging;
 using NLog;
 
 namespace GridDomain.Node.AkkaMessaging.Routing

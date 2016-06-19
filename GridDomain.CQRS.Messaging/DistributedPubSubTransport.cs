@@ -1,11 +1,10 @@
 using System;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
-using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using NLog;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.CQRS.Messaging
 {
     public class DistributedPubSubTransport : IActorSubscriber, IPublisher
     {

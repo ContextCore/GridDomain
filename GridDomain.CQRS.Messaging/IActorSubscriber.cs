@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 
-namespace GridDomain.Node
+namespace GridDomain.CQRS.Messaging
 {
     public interface IActorSubscriber
     {
