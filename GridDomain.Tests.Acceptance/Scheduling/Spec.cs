@@ -64,6 +64,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [SetUp]
         public void SetUp()
         {
+            LogManager.SetLoggerFactory(new TestLoggerFactory());
             CreateScheduler();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
@@ -72,6 +73,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [TearDown]
         public void TearDown()
         {
+            TestLogger.Clear();
             ResultHolder.Clear();
             _quartzScheduler.Shutdown(true);
         }
@@ -79,6 +81,35 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         private void CreateScheduler()
         {
             _quartzScheduler = _container.Resolve<IScheduler>();
+        }
+
+        [Test]
+        public void When_two_commands_with_same_success_event_are_published_Then_first_successfully_handled_command_doesnt_change_second_commands_saga_state()
+        {
+            var firstCommand = new TimeoutCommand("timeout", TimeSpan.FromMilliseconds(300));
+            var secondCommand = new TimeoutCommand("timeout", TimeSpan.FromSeconds(3));
+            var firstKey = Guid.NewGuid();
+            var secondKey = Guid.NewGuid();
+            _scheduler.Ask<Scheduled>(new Schedule(firstCommand, new ScheduleKey(firstKey, Id, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new Schedule(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
+            WaitFor<ScheduledCommandSuccessfullyProcessed>();
+            Thread.Sleep(500);
+            Assert.True(TestLogger.InfoMessages.Count(x => x.Contains("Scheduled command successfully processed")) == 1);
+        }
+
+
+        [Test]
+        public void When_two_commands_of_the_same_type_are_published_Then_first_failed_command_doesnt_change_second_commands_saga_state()
+        {
+            var firstCommand = new FailCommand(TimeSpan.FromMilliseconds(300));
+            var secondCommand = new FailCommand(TimeSpan.FromSeconds(3));
+            var firstKey = Guid.NewGuid();
+            var secondKey = Guid.NewGuid();
+            _scheduler.Ask<Scheduled>(new Schedule(firstCommand, new ScheduleKey(firstKey, Id, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new Schedule(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
+            WaitFor<CommandFault<FailCommand>>();
+            Thread.Sleep(500);
+            Assert.True(TestLogger.ErrorMessages.Count(x => x.Contains("Scheduled command processing failure")) == 1);
         }
 
         [Test]
@@ -132,7 +163,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _quartzScheduler.Shutdown(false);
             CreateScheduler();
             WaitFor<ScheduledCommandSuccessfullyProcessed>();
-            //it takes a lot of time to scheduler to actually fire job second time
             Assert.True(ResultHolder.Count == 1 && ResultHolder.Contains(Id));
         }
 
@@ -144,7 +174,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
             //TODO::VZ:: get saga from persistence
             WaitFor<CommandFault<FailCommand>>();
-            Thread.Sleep(Timeout);
+            Assert.True(TestLogger.ErrorMessages.Count(x => x.Contains("Scheduled command processing failure")) == 1);
         }
 
         [Test]

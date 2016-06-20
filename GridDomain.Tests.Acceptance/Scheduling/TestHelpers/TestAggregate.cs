@@ -35,9 +35,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public void Failure()
+        public void Failure(TimeSpan timeout)
         {
-            Thread.Sleep(5000);
+            Thread.Sleep(timeout);
             throw new InvalidOperationException("ohshitwaddap");
         }
     }

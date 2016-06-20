@@ -123,9 +123,15 @@
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
+    <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
+    <Compile Include="Integration\DefaultLoggerFactory.cs" />
+    <Compile Include="Integration\DefaultSoloLogger.cs" />
+    <Compile Include="Integration\ISoloLogger.cs" />
+    <Compile Include="Integration\LoggerFactory.cs" />
+    <Compile Include="Integration\LogManager.cs" />
     <Compile Include="Integration\ManageScheduledCommand.cs" />
     <Compile Include="Integration\SagaReceivedCommandEvent.cs" />
     <Compile Include="Integration\ScheduledSagaCreator.cs" />
