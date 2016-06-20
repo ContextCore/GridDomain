@@ -5,6 +5,7 @@ using Akka.DI.Core;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing;
 using NLog;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
@@ -51,10 +52,17 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                         if(routesMap.TryGetValue(type.FullName,out prop))
                             return type.GetProperty(prop).GetValue(m);
 
+                        //TODO: refactor. Need to pass events to schedulingSaga
                         if (typeof(ICommandFault).IsAssignableFrom(type))
                         {
                             prop = routesMap[typeof(ICommandFault).FullName];
                             return typeof(ICommandFault).GetProperty(prop).GetValue(m);
+                        }
+
+                        if (typeof(DomainEvent).IsAssignableFrom(type))
+                        {
+                            prop = routesMap[typeof(DomainEvent).FullName];
+                            return typeof(DomainEvent).GetProperty(prop).GetValue(m);
                         }
 
                         throw new ArgumentException();

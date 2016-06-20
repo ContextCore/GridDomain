@@ -9,11 +9,19 @@ namespace GridDomain.Scheduling.Integration
     {
         public Command Command { get; }
         public ScheduleKey Key { get; }
+        public Type SuccessEventType { get; }
 
-        public ScheduledCommandProcessingStarted(Command command, ScheduleKey key) : base(key.Id, DateTime.UtcNow, key.Id)
+        private ScheduledCommandProcessingStarted(Command command, ScheduleKey key, Type successEventType) : base(key.Id, DateTime.UtcNow, key.Id)
         {
             Command = command;
             Key = key;
+            SuccessEventType = successEventType;
         }
+
+        public static ScheduledCommandProcessingStarted Create<TSuccessEvent>(Command command, ScheduleKey key) where TSuccessEvent : DomainEvent
+        {
+            return new ScheduledCommandProcessingStarted(command, key, typeof(TSuccessEvent));
+        }
+
     }
 }

@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
+    <Compile Include="Akka\Messages\ExecutionOptions.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Integration\CompleteJob.cs" />

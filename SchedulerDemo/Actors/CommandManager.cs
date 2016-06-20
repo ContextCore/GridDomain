@@ -112,7 +112,7 @@ namespace SchedulerDemo.Actors
 
         private static ExecutionOptions CreateOptions(int seconds)
         {
-            return new ExecutionOptions(DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout);
+            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout);
         }
 
         private static TimeSpan ExecutionTimeout

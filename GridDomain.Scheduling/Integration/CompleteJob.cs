@@ -4,12 +4,12 @@ namespace GridDomain.Scheduling.Integration
 {
     public class CompleteJob : Command
     {
-        public string TaskId { get; private set; }
+        public string Name { get; private set; }
         public string Group { get; private set; }
 
-        public CompleteJob(string taskId, string group)
+        public CompleteJob(string name, string group)
         {
-            TaskId = taskId;
+            Name = name;
             Group = group;
         }
     }

@@ -41,7 +41,7 @@ namespace GridDomain.Scheduling.Integration
                 var command = GetCommand(context.JobDetail.JobDataMap);
                 var key = GetScheduleKey(context.JobDetail.JobDataMap);
                 var options = GetExecutionOptions(context.JobDetail.JobDataMap);
-                var sagaCreator = _actorSystem.ActorOf(_actorSystem.DI().Props<ScheduledSagaCreator>());
+                var sagaCreator = _actorSystem.ActorOf(CreateGenericProps(options));
                 var result = sagaCreator.Ask(new ManageScheduledCommand(command, key), options.Timeout);
                 result.Wait(options.Timeout);
             }
@@ -55,6 +55,12 @@ namespace GridDomain.Scheduling.Integration
                 var jobExecutionException = new JobExecutionException(e) { RefireImmediately = isFirstTimeFiring };
                 throw jobExecutionException;
             }
+        }
+
+        private Props CreateGenericProps(ExecutionOptions options)
+        {
+            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccessEventType);
+            return _actorSystem.DI().Props(genericActorType);
         }
 
         private static Command GetCommand(JobDataMap jobDatMap)

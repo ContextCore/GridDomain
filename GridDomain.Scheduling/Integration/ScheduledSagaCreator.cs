@@ -1,11 +1,12 @@
 using System;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.Scheduling.Integration
 {
-    public class ScheduledSagaCreator : ReceiveActor
+    public class ScheduledSagaCreator<TSuccessEvent> : ReceiveActor where TSuccessEvent : DomainEvent
     {
         private readonly IPublisher _publisher;
         private IActorRef _quartzJobActorRef;
@@ -28,7 +29,7 @@ namespace GridDomain.Scheduling.Integration
         {
             SagaId = envelope.Key.Id;
             _quartzJobActorRef = Sender;
-            _publisher.Publish(new ScheduledCommandProcessingStarted(envelope.Command, envelope.Key));
+            _publisher.Publish(ScheduledCommandProcessingStarted.Create<TSuccessEvent>(envelope.Command, envelope.Key));
         }
     }
 }

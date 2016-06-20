@@ -1,13 +1,8 @@
 using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Scheduling.Akka.Messages;
 using NLog;
-using Stateless;
-using ICommand = System.Windows.Input.ICommand;
 
 namespace GridDomain.Scheduling.Integration
 {
@@ -31,31 +26,45 @@ namespace GridDomain.Scheduling.Integration
 
         public override void Transit(object msg)
         {
-           var fault = msg as ICommandFault;//;
+            var fault = msg as ICommandFault;//;
             if (fault != null)
             {
                 TransitState(fault);
                 return;
             }
-
-            base.Transit(msg);
+            var domainEvent = msg as DomainEvent;//;
+            if (domainEvent != null && domainEvent.GetType() == State.SuccessEventType)
+            {
+                TransitState(domainEvent);
+                return;
+            }
+            if (msg.GetType() == StartMessage)
+            {
+                base.Transit(msg);
+            }
         }
 
         public ScheduledCommandProcessingSaga(ScheduledCommandProcessingSagaState state) : base(state)
         {
             Machine.Configure(States.Created)
-                .Permit(Transitions.SendMessage, States.MessageSent);
+                .Permit(Transitions.SendMessage, States.MessageSent)
+                .OnExit(() => Dispatch(new CompleteJob(State.Key.Name, State.Key.Group)));
 
-            
             var messageSent = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
-            var successTransition = RegisterEvent<ScheduledCommandSuccessfullyProcessed>(Transitions.Success);
 
-            var trigger = RegisterEvent<ICommandFault>(Transitions.Failure);
-            Machine.Configure(States.ProcessingFailure)
-                 .OnEntryFrom(trigger, fault =>
-                 {
-                     _log.Error(fault.Exception);
-                 });
+            var faultsTrigger = RegisterEvent<ICommandFault>(Transitions.Failure);
+            var eventrTrigger = RegisterEvent<DomainEvent>(Transitions.Success);
+
+            Machine
+                .Configure(States.ProcessingFailure)
+                .OnEntryFrom(faultsTrigger, fault =>
+                {
+                    _log.Error(fault.Exception);
+                });
+
+            Machine
+                .Configure(States.SuccessfullyProcessed)
+                .OnEntryFrom(eventrTrigger, domainEvent => { _log.Info($"Command successfully processed {domainEvent.SagaId}"); });
 
             Machine
                 .Configure(States.MessageSent)
@@ -64,7 +73,8 @@ namespace GridDomain.Scheduling.Integration
 
                     Dispatch(e.Command);
                 })
-                .Permit(Transitions.Success, States.SuccessfullyProcessed);
+                .Permit(Transitions.Success, States.SuccessfullyProcessed)
+                .Permit(Transitions.Failure, States.ProcessingFailure);
         }
         public static ISagaDescriptor SagaDescriptor => new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(Guid.Empty));
     }

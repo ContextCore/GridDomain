@@ -92,7 +92,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         private ExecutionOptions CreateOptions(double seconds)
         {
-            return new ExecutionOptions(DateTime.UtcNow.AddSeconds(seconds), Timeout);
+            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTime.UtcNow.AddSeconds(seconds), Timeout);
         }
 
         [Test]
@@ -130,10 +130,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Ask<Scheduled>(new Schedule(timeoutCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
             WaitFor<CompleteJob>();
             _quartzScheduler.Shutdown(false);
-            Thread.Sleep(1000);
             CreateScheduler();
-            //it takes a lot of time to scheduler to actually fire job second time
             WaitFor<ScheduledCommandSuccessfullyProcessed>();
+            //it takes a lot of time to scheduler to actually fire job second time
             Assert.True(ResultHolder.Count == 1 && ResultHolder.Contains(Id));
         }
 
@@ -143,6 +142,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var testMessage = new FailCommand();
             _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
+            //TODO::VZ:: get saga from persistence
             WaitFor<CommandFault<FailCommand>>();
             Thread.Sleep(Timeout);
         }

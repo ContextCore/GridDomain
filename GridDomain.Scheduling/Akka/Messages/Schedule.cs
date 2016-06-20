@@ -3,18 +3,6 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class ExecutionOptions
-    {
-        public DateTime RunAt { get; private set; }
-        public TimeSpan Timeout { get; private set; }
-
-        public ExecutionOptions(DateTime runAt, TimeSpan timeout = default(TimeSpan))
-        {
-            RunAt = runAt;
-            Timeout = timeout == default(TimeSpan) ? TimeSpan.FromMinutes(1) : timeout;
-        }
-    }
-
     public class ScheduleKey
     {
         public Guid Id { get; private set; }
