@@ -48,7 +48,7 @@ namespace SchedulerDemo
                 subsriber.Subscribe<StartReadFromConsole>(reader);
                 subsriber.Subscribe<WriteToConsole>(writer);
                 subsriber.Subscribe<WriteErrorToConsole>(writer);
-                subsriber.Subscribe<Schedule>(scheduler);
+                subsriber.Subscribe<ScheduleCommand>(scheduler);
                 subsriber.Subscribe<Unschedule>(scheduler);
                 var publisher = container.Resolve<IPublisher>();
                 publisher.Publish(new WriteToConsole("started"));

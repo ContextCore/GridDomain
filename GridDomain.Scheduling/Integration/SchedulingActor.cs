@@ -13,7 +13,7 @@ namespace GridDomain.Scheduling.Integration
         public SchedulingActor(IScheduler scheduler)
         {
             _scheduler = scheduler;
-            Receive<Schedule>(message => Schedule(message));
+            Receive<ScheduleCommand>(message => Schedule(message));
             Receive<Unschedule>(message => Unschedule(message));
         }
 
@@ -31,15 +31,15 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        private void Schedule(Schedule schedule)
+        private void Schedule(ScheduleCommand scheduleCommand)
         {
             try
             {
-                var job = QuartzJob.Create(schedule.Key, schedule.Command, schedule.Options).Build();
+                var job = QuartzJob.Create(scheduleCommand.Key, scheduleCommand.Command, scheduleCommand.Options).Build();
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity(job.Key.Name, job.Key.Group)
                     .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow().WithRepeatCount(0))
-                    .StartAt(schedule.Options.RunAt)
+                    .StartAt(scheduleCommand.Options.RunAt)
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
@@ -48,7 +48,7 @@ namespace GridDomain.Scheduling.Integration
             {
                 if (e.InnerException.GetType() == typeof(ObjectAlreadyExistsException))
                 {
-                    Sender.Tell(new AlreadyScheduled(schedule.Key));
+                    Sender.Tell(new AlreadyScheduled(scheduleCommand.Key));
                 }
             }
             catch (Exception e)

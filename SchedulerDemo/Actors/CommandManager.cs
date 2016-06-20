@@ -59,7 +59,7 @@ namespace SchedulerDemo.Actors
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
             var longTimeScheduledCommand = new LongTimeScheduledCommand("longtime", TimeSpan.FromSeconds(seconds));
-            _publisher.Publish(new Schedule(longTimeScheduledCommand, new ScheduleKey(Guid.Empty, "long", "long"), CreateOptions(seconds)));
+            _publisher.Publish(new ScheduleCommand(longTimeScheduledCommand, new ScheduleKey(Guid.Empty, "long", "long"), CreateOptions(seconds)));
         }
 
         private void ScheduleFailure(string[] parts)
@@ -76,7 +76,7 @@ namespace SchedulerDemo.Actors
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
             var failScheduledCommand = new FailScheduledCommand();
-            _publisher.Publish(new Schedule(failScheduledCommand, new ScheduleKey(Guid.Empty, "fail", "fail"), CreateOptions(seconds)));
+            _publisher.Publish(new ScheduleCommand(failScheduledCommand, new ScheduleKey(Guid.Empty, "fail", "fail"), CreateOptions(seconds)));
         }
 
         private void Schedule(string[] parts)
@@ -94,7 +94,7 @@ namespace SchedulerDemo.Actors
             {
                 _publisher.Publish(new WriteToConsole("wrong command format"));
             }
-            var schedule = new Schedule(new WriteToConsoleScheduledCommand(text), new ScheduleKey(Guid.Empty, text, text), CreateOptions(seconds));
+            var schedule = new ScheduleCommand(new WriteToConsoleScheduledCommand(text), new ScheduleKey(Guid.Empty, text, text), CreateOptions(seconds));
             _publisher.Publish(schedule);
         }
 

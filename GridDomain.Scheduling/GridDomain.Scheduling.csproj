@@ -123,6 +123,7 @@
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
+    <Compile Include="Akka\Messages\ScheduleEvent.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
@@ -148,7 +149,7 @@
     <Compile Include="Quartz\Logging\IQuartzLogger.cs" />
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
-    <Compile Include="Akka\Messages\Schedule.cs" />
+    <Compile Include="Akka\Messages\ScheduleCommand.cs" />
     <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\QuartzConfig.cs" />
     <Compile Include="Quartz\Logging\QuartzLogger.cs" />

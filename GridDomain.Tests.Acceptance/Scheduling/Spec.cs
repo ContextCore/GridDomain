@@ -90,8 +90,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var secondCommand = new TimeoutCommand("timeout", TimeSpan.FromSeconds(3));
             var firstKey = Guid.NewGuid();
             var secondKey = Guid.NewGuid();
-            _scheduler.Ask<Scheduled>(new Schedule(firstCommand, new ScheduleKey(firstKey, Id, Group), CreateOptions(0))).Wait(Timeout);
-            _scheduler.Ask<Scheduled>(new Schedule(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Id, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
             WaitFor<ScheduledCommandSuccessfullyProcessed>();
             Thread.Sleep(500);
             var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
@@ -108,8 +108,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var secondCommand = new FailCommand(TimeSpan.FromSeconds(3));
             var firstKey = Guid.NewGuid();
             var secondKey = Guid.NewGuid();
-            _scheduler.Ask<Scheduled>(new Schedule(firstCommand, new ScheduleKey(firstKey, Id, Group), CreateOptions(0))).Wait(Timeout);
-            _scheduler.Ask<Scheduled>(new Schedule(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Id, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
             WaitFor<CommandFault<FailCommand>>();
             Thread.Sleep(500);
             var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
@@ -122,7 +122,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             Thread.Sleep(1000);
             var testCommand = new SuccessCommand(Id);
-            _scheduler.Ask<Scheduled>(new Schedule(testCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(1))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(1))).Wait(Timeout);
             WaitFor<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>();
         }
 
@@ -153,7 +153,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_job_is_added_Then_it_gets_executed()
         {
             var successCommand = new SuccessCommand(Id);
-            _scheduler.Ask<Scheduled>(new Schedule(successCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(successCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
 
             WaitFor<ScheduledCommandSuccessfullyProcessed>();
             Throttle.Assert(() => Assert.True(ResultHolder.Contains(successCommand.Text)), maxTimeout: Timeout);
@@ -163,7 +163,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_scheduler_is_restarted_during_job_execution_Then_on_next_start_job_is_not_fired_again()
         {
             var timeoutCommand = new TimeoutCommand(Id, TimeSpan.FromSeconds(2));
-            _scheduler.Ask<Scheduled>(new Schedule(timeoutCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(timeoutCommand, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5))).Wait(Timeout);
             WaitFor<CompleteJob>();
             _quartzScheduler.Shutdown(false);
             CreateScheduler();
@@ -176,7 +176,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             var testMessage = new FailCommand();
             var id = Guid.NewGuid();
-            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(id, Id, Group), CreateOptions(0.5)));
+            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(id, Id, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
             //TODO::VZ:: get saga from persistence
             WaitFor<CommandFault<FailCommand>>();
@@ -193,7 +193,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -205,8 +205,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
         {
             var testMessage = new SuccessCommand(Id);
-            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
-            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(1)));
+            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
+            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(1)));
 
             Throttle.Assert(() => Assert.True(ResultHolder.Count == 1), minTimeout: TimeSpan.FromSeconds(2));
         }
@@ -221,13 +221,13 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testCommand = new SuccessCommand(text);
-                _scheduler.Tell(new Schedule(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
             foreach (var failTask in failTasks)
             {
                 var text = failTask.ToString(CultureInfo.InvariantCulture);
                 var failTaskCommand = new FailCommand();
-                _scheduler.Tell(new Schedule(failTaskCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(failTask)));
+                _scheduler.Tell(new ScheduleCommand(failTaskCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(failTask)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -250,7 +250,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -277,7 +277,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             _quartzScheduler.Shutdown(false);
