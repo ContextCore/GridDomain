@@ -143,8 +143,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var testMessage = new FailCommand();
             _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
-            Thread.Sleep(Timeout);
             WaitFor<CommandFault<FailCommand>>();
+            Thread.Sleep(Timeout);
         }
 
         [Test]

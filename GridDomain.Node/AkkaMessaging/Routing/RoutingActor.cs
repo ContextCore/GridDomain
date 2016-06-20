@@ -46,8 +46,18 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                     .WithHashMapping(m =>
                     {
                         var type = m.GetType();
-                        var prop = routesMap[type.FullName];
-                        return type.GetProperty(prop).GetValue(m);
+                        string prop = null;
+
+                        if(routesMap.TryGetValue(type.FullName,out prop))
+                            return type.GetProperty(prop).GetValue(m);
+
+                        if (typeof(ICommandFault).IsAssignableFrom(type))
+                        {
+                            prop = routesMap[typeof(ICommandFault).FullName];
+                            return typeof(ICommandFault).GetProperty(prop).GetValue(m);
+                        }
+
+                        throw new ArgumentException();
                     });
 
             return pool;
