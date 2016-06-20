@@ -94,8 +94,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Ask<Scheduled>(new Schedule(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
             WaitFor<ScheduledCommandSuccessfullyProcessed>();
             Thread.Sleep(500);
-            Assert.True(TestLogger.InfoMessages.Count(x => x.Contains("Scheduled command successfully processed")) == 1);
+            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
+            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
+            Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.SuccessfullyProcessed && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
         }
+
 
 
         [Test]
@@ -109,7 +112,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Ask<Scheduled>(new Schedule(secondCommand, new ScheduleKey(secondKey, Id + Id, Group), CreateOptions(0))).Wait(Timeout);
             WaitFor<CommandFault<FailCommand>>();
             Thread.Sleep(500);
-            Assert.True(TestLogger.ErrorMessages.Count(x => x.Contains("Scheduled command processing failure")) == 1);
+            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
+            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
+            Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
         }
 
         [Test]
@@ -170,11 +175,13 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_processing_actor_throws_Then_scheduler_receives_failure_response()
         {
             var testMessage = new FailCommand();
-            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(Guid.Empty, Id, Group), CreateOptions(0.5)));
+            var id = Guid.NewGuid();
+            _scheduler.Tell(new Schedule(testMessage, new ScheduleKey(id, Id, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
             //TODO::VZ:: get saga from persistence
             WaitFor<CommandFault<FailCommand>>();
-            Assert.True(TestLogger.ErrorMessages.Count(x => x.Contains("Scheduled command processing failure")) == 1);
+            var sagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(id);
+            Assert.True(sagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure);
         }
 
         [Test]

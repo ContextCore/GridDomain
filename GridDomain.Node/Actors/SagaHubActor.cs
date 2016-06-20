@@ -5,6 +5,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
@@ -25,7 +26,7 @@ namespace GridDomain.Node.Actors
         {
             if (message is DomainEvent)
             {
-                return $"Saga_{typeof(TSaga).Name}_{GetChildActorId(message)}";
+                return AggregateActorName.New<TSagaState>(GetChildActorId(message)).ToString();
             }
             return null;
         }

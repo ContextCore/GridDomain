@@ -6,9 +6,12 @@ using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.TestKit.NUnit;
+using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
@@ -62,6 +65,17 @@ namespace GridDomain.Tests.Acceptance
             var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
             Thread.Sleep(1000); //wait for actor recover
             return actor.UnderlyingActor.Aggregate;
+        }
+
+
+
+        public TSagaState LoadSagaState<TSaga, TSagaState, TStartMessage>(Guid id) where TStartMessage : DomainEvent where TSagaState : AggregateBase where TSaga : IDomainSaga
+        {
+            var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState, TStartMessage>>();
+            var name = AggregateActorName.New<TSagaState>(id).ToString();
+            var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState, TStartMessage>>(props, name);
+            Thread.Sleep(1000); //wait for actor recover
+            return (TSagaState)actor.UnderlyingActor.Saga.State;
         }
 
         protected abstract GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
