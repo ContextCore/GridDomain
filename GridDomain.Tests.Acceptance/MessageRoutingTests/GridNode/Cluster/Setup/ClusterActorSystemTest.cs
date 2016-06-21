@@ -1,5 +1,5 @@
 using System.Linq;
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup

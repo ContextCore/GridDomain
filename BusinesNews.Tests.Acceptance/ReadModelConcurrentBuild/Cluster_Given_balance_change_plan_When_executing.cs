@@ -2,7 +2,7 @@
 using BusinessNews.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
 namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild

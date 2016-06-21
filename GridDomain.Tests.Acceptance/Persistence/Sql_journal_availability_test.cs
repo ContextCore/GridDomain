@@ -1,7 +1,7 @@
 using Akka.Actor;
 using Akka.TestKit.NUnit;
 using GridDomain.Node;
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Persistence
