@@ -1,12 +1,14 @@
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
 
 namespace SchedulerDemo.Events
 {
-    public class WriteToConsoleScheduledCommand : ScheduledCommand
+    public class WriteToConsoleScheduledCommand : Command
     {
-        public WriteToConsoleScheduledCommand(string taskId, string group) : base(taskId, group)
-        {
+        public string Text { get; private set; }
 
+        public WriteToConsoleScheduledCommand(string text)
+        {
+            Text = text;
         }
     }
 }

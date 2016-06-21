@@ -16,7 +16,7 @@ using SchedulerDemo.Actors;
 using SchedulerDemo.AgregateHandler;
 using SchedulerDemo.Configuration;
 using SchedulerDemo.Messages;
-using CompositionRoot = GridDomain.Scheduling.CompositionRoot;
+using CompositionRoot = GridDomain.Node.CompositionRoot;
 
 namespace SchedulerDemo
 {
@@ -27,7 +27,8 @@ namespace SchedulerDemo
         static void Main()
         {
             Sys = ActorSystemFactory.CreateActorSystem(new LocalAkkaConfiguration(AkkaConfiguration.LogVerbosity.Error));
-            var container = new CompositionRoot().Compose(Container.Current.CreateChildContainer(), Sys);
+            var container = Container.Current.CreateChildContainer();
+            CompositionRoot.Init(container, Sys, new LocalDbConfiguration(), TransportMode.Standalone);
             RegisterAppSpecificTypes(container);
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
             var routing = new ConsoleAggregateRouting();
@@ -47,7 +48,7 @@ namespace SchedulerDemo
                 subsriber.Subscribe<StartReadFromConsole>(reader);
                 subsriber.Subscribe<WriteToConsole>(writer);
                 subsriber.Subscribe<WriteErrorToConsole>(writer);
-                subsriber.Subscribe<Schedule>(scheduler);
+                subsriber.Subscribe<ScheduleCommand>(scheduler);
                 subsriber.Subscribe<Unschedule>(scheduler);
                 var publisher = container.Resolve<IPublisher>();
                 publisher.Publish(new WriteToConsole("started"));

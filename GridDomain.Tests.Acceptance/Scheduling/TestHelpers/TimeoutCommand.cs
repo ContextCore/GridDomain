@@ -1,14 +1,16 @@
 using System;
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TimeoutCommand : ScheduledCommand
+    public class TimeoutCommand : Command
     {
+        public string Text { get; private set; }
         public TimeSpan Timeout { get; private set; }
 
-        public TimeoutCommand(string taskId, string @group, TimeSpan timeout) : base(taskId, @group)
+        public TimeoutCommand(string text, TimeSpan timeout)
         {
+            Text = text;
             Timeout = timeout;
         }
     }

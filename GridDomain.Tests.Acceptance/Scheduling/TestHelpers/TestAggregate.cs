@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using CommonDomain.Core;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
@@ -14,12 +15,17 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {
-            
+
         }
 
         public void Apply(ScheduledCommandProcessingFailed @event)
         {
-            
+
+        }
+
+        public void Apply(TestEvent @event)
+        {
+            RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void Success(string taskId)
@@ -35,9 +41,10 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public void Failure()
+        public void Failure(TimeSpan timeout)
         {
-            RaiseEvent(new ScheduledCommandProcessingFailed(Id, new InvalidOperationException("ohshitwaddap")));
+            Thread.Sleep(timeout);
+            throw new InvalidOperationException("ohshitwaddap");
         }
     }
 }

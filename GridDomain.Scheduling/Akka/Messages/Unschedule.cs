@@ -2,13 +2,11 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class Unschedule
     {
-        public string TaskId { get; }
-        public string Group { get;  }
+        public ScheduleKey Key { get; private set; }
 
-        public Unschedule(string taskId, string group)
+        public Unschedule(ScheduleKey key)
         {
-            TaskId = taskId;
-            Group = @group;
+            Key = key;
         }
     }
 }

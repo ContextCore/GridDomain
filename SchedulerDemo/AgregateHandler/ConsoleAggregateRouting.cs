@@ -1,7 +1,6 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Scheduling.Integration;
-using SchedulerDemo.Actors;
 
 namespace SchedulerDemo.AgregateHandler
 {
@@ -9,7 +8,7 @@ namespace SchedulerDemo.AgregateHandler
     {
         public void Register(IMessagesRouter router)
         {
-            router.RegisterSaga(ScheduledCommandProcessingSaga.SagaDescriptor);
+            new SchedulingRouteMap().Register(router);
             router.RegisterAggregate<ConsoleAggregate, ConsoleAggregateCommadHandler>();
         }
     }

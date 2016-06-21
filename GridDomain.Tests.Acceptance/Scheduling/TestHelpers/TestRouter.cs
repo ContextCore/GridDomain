@@ -9,7 +9,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         public void Register(IMessagesRouter router)
         {
             router.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
-            router.RegisterSaga(ScheduledCommandProcessingSaga.SagaDescriptor);
+            router.RegisterSaga(TestSaga.SagaDescriptor);
+            new SchedulingRouteMap().Register(router);
         }
     }
 }

@@ -1,14 +1,17 @@
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
+using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Scheduling.Integration
 {
     public class ManageScheduledCommand
     {
-        public ScheduledCommand Command { get; }
+        public Command Command { get; }
+        public ScheduleKey Key { get; }
 
-        public ManageScheduledCommand(ScheduledCommand command)
+        public ManageScheduledCommand(Command command, ScheduleKey key)
         {
             Command = command;
+            Key = key;
         }
     }
 }

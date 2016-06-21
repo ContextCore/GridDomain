@@ -1,11 +1,14 @@
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class SuccessCommand : ScheduledCommand
+    public class SuccessCommand : Command
     {
-        public SuccessCommand(string taskId, string group) : base(taskId, group)
+        public string Text { get; private set; }
+
+        public SuccessCommand(string text)
         {
+            Text = text;
         }
     }
 }

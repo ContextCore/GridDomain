@@ -51,6 +51,7 @@
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
@@ -115,23 +116,36 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
+    <Compile Include="Akka\Messages\ExecutionOptions.cs" />
+    <Compile Include="Akka\Messages\ScheduleEvent.cs" />
+    <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
+    <Compile Include="Integration\DefaultLoggerFactory.cs" />
+    <Compile Include="Integration\DefaultSoloLogger.cs" />
+    <Compile Include="Integration\ISoloLogger.cs" />
+    <Compile Include="Integration\LoggerFactory.cs" />
+    <Compile Include="Integration\LogManager.cs" />
     <Compile Include="Integration\ManageScheduledCommand.cs" />
-    <Compile Include="Integration\ScheduledCommandProcessingStatusManager.cs" />
+    <Compile Include="Integration\SagaReceivedCommandEvent.cs" />
+    <Compile Include="Integration\ScheduledSagaCreator.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSaga.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaFactory.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaRegistrator.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaState.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingStarted.cs" />
+    <Compile Include="Integration\SchedulingRouteMap.cs" />
     <Compile Include="Quartz\JobFactory.cs" />
     <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\ILoggingSchedulerListener.cs" />
@@ -139,12 +153,11 @@
     <Compile Include="Quartz\Logging\IQuartzLogger.cs" />
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
-    <Compile Include="Akka\Messages\Schedule.cs" />
+    <Compile Include="Akka\Messages\ScheduleCommand.cs" />
     <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\QuartzConfig.cs" />
     <Compile Include="Quartz\Logging\QuartzLogger.cs" />
     <Compile Include="Quartz\SchedulerFactory.cs" />
-    <Compile Include="Akka\Tasks\ScheduledCommand.cs" />
     <Compile Include="Integration\QuartzJob.cs" />
     <Compile Include="Akka\Messages\Unschedule.cs" />
     <Compile Include="Integration\SchedulingActor.cs" />
@@ -184,10 +197,6 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
       <Name>GridDomain.EventSourcing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
-      <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
-      <Name>GridDomain.Node</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

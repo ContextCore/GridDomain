@@ -1,16 +1,27 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Scheduling.Akka.Tasks;
+using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Scheduling.Integration
 {
     public class ScheduledCommandProcessingStarted : DomainEvent
     {
-        public ScheduledCommand Command { get; set; }
+        public Command Command { get; }
+        public ScheduleKey Key { get; }
+        public Type SuccessEventType { get; }
 
-        public ScheduledCommandProcessingStarted(Guid sourceId, ScheduledCommand command) : base(sourceId, DateTime.UtcNow)
+        private ScheduledCommandProcessingStarted(Command command, ScheduleKey key, Type successEventType) : base(key.Id, DateTime.UtcNow, key.Id)
         {
             Command = command;
+            Key = key;
+            SuccessEventType = successEventType;
         }
+
+        public static ScheduledCommandProcessingStarted Create<TSuccessEvent>(Command command, ScheduleKey key) where TSuccessEvent : DomainEvent
+        {
+            return new ScheduledCommandProcessingStarted(command, key, typeof(TSuccessEvent));
+        }
+
     }
 }

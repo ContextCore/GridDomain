@@ -33,12 +33,19 @@ namespace GridDomain.EventSourcing.Sagas
 
         public TStateData State { get; }
 
-        protected StateMachine<TSagaStates, TSagaTriggers>
+        public StateMachine<TSagaStates, TSagaTriggers>
             .TriggerWithParameters<CommandFault<TCommand>> RegisterCommandFault<TCommand>(TSagaTriggers trigger) where TCommand : ICommand
         {
             _registeredCommands.Add(typeof(TCommand));
             return RegisterEvent<CommandFault<TCommand>>(trigger);
         }
+
+
+        //public StateMachine<TSagaStates, TSagaTriggers>
+        //    .TriggerWithParameters<ICommandFault> RegisterAnyCommandFault(TSagaTriggers trigger): ICommand
+        //{
+        //    return RegisterEvent<CommandFault<TCommand>>(trigger);
+        //}
 
         private readonly List<Type> _registeredCommands = new List<Type>(); 
 
@@ -66,7 +73,7 @@ namespace GridDomain.EventSourcing.Sagas
         IAggregate IDomainSaga.State => State;
  
         private readonly MethodInfo _transitMethod;
-        public void Transit(object msg)
+        public virtual void Transit(object msg)
         {
             MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
             genericTransit.Invoke(this, new [] { msg});
@@ -92,6 +99,13 @@ namespace GridDomain.EventSourcing.Sagas
         {
             var triggerWithParameters = Machine.SetTriggerParameters<TEvent>(trigger);
             _eventsToTriggersMapping[typeof(TEvent)] = triggerWithParameters;
+            return triggerWithParameters;
+        }
+
+        protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters RegisterMessage(Type messageType, TSagaTriggers trigger)
+        {
+            var triggerWithParameters = Machine.SetTriggerParameters<object>(trigger);
+            _eventsToTriggersMapping[messageType] = triggerWithParameters;
             return triggerWithParameters;
         }
 

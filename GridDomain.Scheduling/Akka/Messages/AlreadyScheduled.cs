@@ -2,13 +2,11 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class AlreadyScheduled
     {
-        public string TaskId { get; }
-        public string Group { get;  }
+        public ScheduleKey Key { get; }
 
-        public AlreadyScheduled(string taskId, string group)
+        public AlreadyScheduled(ScheduleKey key)
         {
-            TaskId = taskId;
-            Group = @group;
+            Key = key;
         }
     }
 }
