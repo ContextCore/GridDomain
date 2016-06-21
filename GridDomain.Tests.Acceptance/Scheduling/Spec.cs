@@ -111,7 +111,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             var secondEvent = new TestEvent(sagaId);
             _scheduler.Ask<Scheduled>(new ScheduleEvent(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
-            Thread.Sleep(1000);
+            WaitFor<SagaTransitionEvent<TestSaga.TestStates, TestSaga.Transitions>>();
             var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotSecondEvent);
         }
@@ -125,11 +125,27 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var secondKey = Guid.NewGuid();
             _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
             _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
-            WaitFor<ScheduledCommandSuccessfullyProcessed>();
-            Thread.Sleep(500);
+            WaitFor<SagaTransitionEvent<ScheduledCommandProcessingSaga.States, ScheduledCommandProcessingSaga.Transitions>>();
+            Thread.Sleep(1000);
             var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
             var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
             Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.SuccessfullyProcessed && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
+        }
+
+
+        [Test]
+        public void When_two_commands_of_the_same_type_are_published_Then_first_failed_command_doesnt_change_second_commands_saga_state()
+        {
+            var firstCommand = new FailCommand(TimeSpan.FromMilliseconds(300));
+            var secondCommand = new FailCommand(TimeSpan.FromSeconds(3));
+            var firstKey = Guid.NewGuid();
+            var secondKey = Guid.NewGuid();
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
+            _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
+            Thread.Sleep(1000);
+            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
+            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
+            Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
         }
 
         [Test]
@@ -144,26 +160,10 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Assert.True(deserialized.SuccessEventType == withType.SuccessEventType);
         }
 
-        [Test]
-        public void When_two_commands_of_the_same_type_are_published_Then_first_failed_command_doesnt_change_second_commands_saga_state()
-        {
-            var firstCommand = new FailCommand(TimeSpan.FromMilliseconds(300));
-            var secondCommand = new FailCommand(TimeSpan.FromSeconds(3));
-            var firstKey = Guid.NewGuid();
-            var secondKey = Guid.NewGuid();
-            _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
-            _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
-            WaitFor<CommandFault<FailCommand>>();
-            Thread.Sleep(500);
-            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
-            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
-            Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
-        }
 
         [Test]
         public void When_a_message_published_Then_saga_receives_it()
         {
-            Thread.Sleep(1000);
             var testCommand = new SuccessCommand(Name);
             _scheduler.Ask<Scheduled>(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1))).Wait(Timeout);
             WaitFor<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>();
@@ -324,7 +324,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             }
 
             _quartzScheduler.Shutdown(false);
-            Thread.Sleep(2000);
             CreateScheduler();
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
