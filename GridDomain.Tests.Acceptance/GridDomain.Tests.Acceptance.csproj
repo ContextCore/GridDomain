@@ -288,6 +288,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduling\Spec.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestEvent.cs" />
     <Compile Include="Scheduling\TestHelpers\TestLogger.cs" />
     <Compile Include="Scheduling\TestHelpers\TestLoggerFactory.cs" />
     <Compile Include="Scheduling\TestHelpers\TimeoutCommand.cs" />

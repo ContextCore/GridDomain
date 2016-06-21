@@ -1,12 +1,14 @@
 using System;
+using System.IO;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz.Logging;
-using Newtonsoft.Json;
 using Quartz;
+using Wire;
 
 namespace GridDomain.Scheduling.Integration
 {
@@ -19,20 +21,18 @@ namespace GridDomain.Scheduling.Integration
 
         private readonly IQuartzLogger _quartzLogger;
         private readonly ActorSystem _actorSystem;
+        private readonly IPublisher _publisher;
 
-        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Objects,
-            TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
-        };
 
         public QuartzJob(
             IQuartzLogger quartzLogger,
-            ActorSystem actorSystem
+            ActorSystem actorSystem,
+            IPublisher publisher
             )
         {
             _quartzLogger = quartzLogger;
             _actorSystem = actorSystem;
+            _publisher = publisher;
         }
 
         public void Execute(IJobExecutionContext context)
@@ -41,23 +41,21 @@ namespace GridDomain.Scheduling.Integration
             try
             {
                 isFirstTimeFiring = context.RefireCount == 0;
-                if (context.JobDetail.JobDataMap.ContainsKey(CommandKey))
+                var jobDataMap = context.JobDetail.JobDataMap;
+                if (jobDataMap.ContainsKey(CommandKey))
                 {
-                    var command = GetCommand(context.JobDetail.JobDataMap);
-                    var key = GetScheduleKey(context.JobDetail.JobDataMap);
-                    var options = GetExecutionOptions(context.JobDetail.JobDataMap);
+                    var command = GetCommand(jobDataMap);
+                    var key = GetScheduleKey(jobDataMap);
+                    var options = GetExecutionOptions(jobDataMap);
                     var sagaCreator = _actorSystem.ActorOf(CreateGenericProps(options));
                     var result = sagaCreator.Ask(new ManageScheduledCommand(command, key), options.Timeout);
                     result.Wait(options.Timeout);
                 }
                 else
                 {
-                    var eventToFire = 
+                    var eventToFire = GetEvent(jobDataMap);
+                    _publisher.Publish(eventToFire);
                 }
-            }
-            catch (JsonSerializationException e)
-            {
-                _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
             }
             catch (Exception e)
             {
@@ -67,7 +65,7 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        public static JobBuilder Create(ScheduleKey key, Command command, ExecutionOptions executionOptions)
+        public static IJobDetail Create(ScheduleKey key, Command command, ExecutionOptions executionOptions)
         {
             var serializedCommand = Serialize(command);
             var serializedKey = Serialize(key);
@@ -79,10 +77,10 @@ namespace GridDomain.Scheduling.Integration
                 { ScheduleKey, serializedKey },
                 { ExecutionOptionsKey, serializedOptions }
             };
-            return CreateJobBuilder(key, jobDataMap);
+            return CreateJob(key, jobDataMap);
         }
 
-        public static JobBuilder Create(ScheduleKey key, DomainEvent eventToSchedule)
+        public static IJobDetail Create(ScheduleKey key, DomainEvent eventToSchedule)
         {
             var serializedEvent = Serialize(eventToSchedule);
             var serializedKey = Serialize(key); var jobDataMap = new JobDataMap
@@ -90,7 +88,24 @@ namespace GridDomain.Scheduling.Integration
                 { EventKey, serializedEvent },
                 { ScheduleKey, serializedKey }
             };
-            return CreateJobBuilder(key, jobDataMap);
+            return CreateJob(key, jobDataMap);
+        }
+
+        private static byte[] Serialize(object source)
+        {
+            using (var stream = new MemoryStream())
+            {
+                new Serializer().Serialize(source, stream);
+                return stream.ToArray();
+            }
+        }
+
+        private static T Deserialize<T>(byte[] source)
+        {
+            using (var stream = new MemoryStream(source))
+            {
+                return new Serializer().Deserialize<T>(stream);
+            }
         }
 
         private Props CreateGenericProps(ExecutionOptions options)
@@ -101,31 +116,29 @@ namespace GridDomain.Scheduling.Integration
 
         private static DomainEvent GetEvent(JobDataMap jobDataMap)
         {
-            
+            var bytes = jobDataMap[EventKey] as byte[];
+            return Deserialize<DomainEvent>(bytes);
         }
 
         private static Command GetCommand(JobDataMap jobDatMap)
         {
-            var json = jobDatMap[CommandKey] as string;
-            var command = Deserialize<Command>(json);
-            return command;
+            var bytes = jobDatMap[CommandKey] as byte[];
+            return Deserialize<Command>(bytes);
         }
 
         private static ScheduleKey GetScheduleKey(JobDataMap jobDatMap)
         {
-            var json = jobDatMap[ScheduleKey] as string;
-            var scheduleKey = Deserialize<ScheduleKey>(json);
-            return scheduleKey;
+            var bytes = jobDatMap[ScheduleKey] as byte[];
+            return Deserialize<ScheduleKey>(bytes);
         }
 
         private static ExecutionOptions GetExecutionOptions(JobDataMap jobDatMap)
         {
-            var json = jobDatMap[ExecutionOptionsKey] as string;
-            var executionOptions = Deserialize<ExecutionOptions>(json);
-            return executionOptions;
+            var bytes = jobDatMap[ExecutionOptionsKey] as byte[];
+            return Deserialize<ExecutionOptions>(bytes);
         }
 
-        private static JobBuilder CreateJobBuilder(ScheduleKey key, JobDataMap jobDataMap)
+        private static IJobDetail CreateJob(ScheduleKey key, JobDataMap jobDataMap)
         {
             var jobKey = new JobKey(key.Name, key.Group);
             return JobBuilder
@@ -133,17 +146,8 @@ namespace GridDomain.Scheduling.Integration
                 .WithIdentity(jobKey)
                 .WithDescription(key.Description)
                 .UsingJobData(jobDataMap)
-                .RequestRecovery(true);
-        }
-
-        private static string Serialize(object source)
-        {
-            return JsonConvert.SerializeObject(source, JsonSerializerSettings);
-        }
-
-        private static T Deserialize<T>(string source)
-        {
-            return JsonConvert.DeserializeObject<T>(source, JsonSerializerSettings);
+                .RequestRecovery(true)
+                .Build();
         }
     }
 }

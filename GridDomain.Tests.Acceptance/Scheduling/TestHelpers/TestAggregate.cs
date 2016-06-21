@@ -22,6 +22,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 
         }
 
+        public void Apply(TestEvent @event)
+        {
+            RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
+        }
+
         public void Success(string taskId)
         {
             ResultHolder.Add(taskId, taskId);

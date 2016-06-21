@@ -6,7 +6,6 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling.Integration
 {
-    //TODO::VZ:: receive actor
     public class SchedulingActor : ReceiveActor
     {
         private readonly IScheduler _scheduler;
@@ -14,6 +13,7 @@ namespace GridDomain.Scheduling.Integration
         {
             _scheduler = scheduler;
             Receive<ScheduleCommand>(message => Schedule(message));
+            Receive<ScheduleEvent>(message => Schedule(message));
             Receive<Unschedule>(message => Unschedule(message));
         }
 
@@ -31,15 +31,25 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        private void Schedule(ScheduleCommand scheduleCommand)
+        private void Schedule(ScheduleCommand message)
+        {
+            Schedule(() => QuartzJob.Create(message.Key, message.Command, message.Options), message.Options.RunAt, message.Key);
+        }
+
+        private void Schedule(ScheduleEvent message)
+        {
+            Schedule(() => QuartzJob.Create(message.Key, message.Event), message.RunAt, message.Key);
+        }
+
+        private void Schedule(Func<IJobDetail> jobFactory, DateTime runAt, ScheduleKey key)
         {
             try
             {
-                var job = QuartzJob.Create(scheduleCommand.Key, scheduleCommand.Command, scheduleCommand.Options).Build();
+                var job = jobFactory();
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity(job.Key.Name, job.Key.Group)
                     .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow().WithRepeatCount(0))
-                    .StartAt(scheduleCommand.Options.RunAt)
+                    .StartAt(runAt)
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
@@ -48,7 +58,7 @@ namespace GridDomain.Scheduling.Integration
             {
                 if (e.InnerException.GetType() == typeof(ObjectAlreadyExistsException))
                 {
-                    Sender.Tell(new AlreadyScheduled(scheduleCommand.Key));
+                    Sender.Tell(new AlreadyScheduled(key));
                 }
             }
             catch (Exception e)
