@@ -18,14 +18,14 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             _aggregateFactory = aggregateFactory;
         }
 
-        public BuySubscriptionSaga Create(SubscriptionOrderedEvent message)
+        public BuySubscriptionSaga Create(SubscriptionOrderedEvent state)
         {
-            return new BuySubscriptionSaga(new BuySubscriptionSagaStateAggregate(message.SagaId));
+            return new BuySubscriptionSaga(new BuySubscriptionSagaStateAggregate(state.SagaId));
         }
 
-        public BuySubscriptionSaga Create(BuySubscriptionSagaStateAggregate message)
+        public BuySubscriptionSaga Create(BuySubscriptionSagaStateAggregate state)
         {
-            return new BuySubscriptionSaga(message);
+            return new BuySubscriptionSaga(state);
         }
 
         public BuySubscriptionSaga Create()

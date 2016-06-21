@@ -60,6 +60,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             container.RegisterType<AggregateHubActor<TestAggregate>>();
             container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
             container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
+
+            container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
+            container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
+            container.RegisterType<IEmptySagaFactory<TestSaga>, TestSagaFactory>();
+
             return container;
         }
 
@@ -86,12 +91,29 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
-        public void When_domain_event_is_scheduled_Then_it_is_processed()
+        public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()
         {
-            var newGuid = Guid.NewGuid();
-            var testEvent = new TestEvent(newGuid);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(1)));
-            WaitFor<ScheduledCommandSuccessfullyProcessed>();
+            var sagaId = Guid.NewGuid();
+            var testEvent = new TestSagaStartMessage(sagaId, DateTime.UtcNow, sagaId);
+            _scheduler.Ask<Scheduled>(new ScheduleEvent(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
+            var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
+            Assert.True(sagaState.MachineState == TestSaga.TestStates.GotStartEvent);
+        }
+
+        [Test]
+        public void When_domain_event_for_a_started_saga_is_scheduled_Then_saga_receives_it()
+        {
+            var sagaId = Guid.NewGuid();
+            var startEvent = new TestSagaStartMessage(sagaId, DateTime.UtcNow, sagaId);
+            _scheduler.Ask<Scheduled>(new ScheduleEvent(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
+
+            var secondEvent = new TestEvent(sagaId);
+            _scheduler.Ask<Scheduled>(new ScheduleEvent(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            Thread.Sleep(1000);
+            var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
+            Assert.True(sagaState.MachineState == TestSaga.TestStates.GotSecondEvent);
         }
 
         [Test]

@@ -291,6 +291,10 @@
     <Compile Include="Scheduling\TestHelpers\TestEvent.cs" />
     <Compile Include="Scheduling\TestHelpers\TestLogger.cs" />
     <Compile Include="Scheduling\TestHelpers\TestLoggerFactory.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestSaga.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestSagaFactory.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestSagaStartMessage.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestSagaState.cs" />
     <Compile Include="Scheduling\TestHelpers\TimeoutCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\ResultHolder.cs" />
     <Compile Include="Scheduling\TestHelpers\TestAggregate.cs" />
