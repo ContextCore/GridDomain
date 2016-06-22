@@ -234,6 +234,7 @@
     <Compile Include="Configuration\IDbConfiguration.cs" />
     <Compile Include="Configuration\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\AkkaConfiguration.cs" />
+    <Compile Include="Container.cs" />
     <Compile Include="IContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Scheduling
+namespace GridDomain.Node
 {
     public class Container
     {

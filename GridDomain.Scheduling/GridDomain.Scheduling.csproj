@@ -130,7 +130,6 @@
     <Compile Include="Akka\Messages\ScheduleEvent.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="CompositionRoot.cs" />
-    <Compile Include="Container.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
     <Compile Include="Integration\DefaultLoggerFactory.cs" />
     <Compile Include="Integration\DefaultSoloLogger.cs" />

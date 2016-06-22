@@ -68,7 +68,7 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
 
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(20);
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();
             BusinessNews.Node.CompositionRoot.Init(container, new LocalDbConfiguration());

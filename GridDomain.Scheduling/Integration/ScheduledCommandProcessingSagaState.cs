@@ -14,7 +14,6 @@ namespace GridDomain.Scheduling.Integration
         public ScheduledCommandProcessingSagaState(Guid id, ScheduledCommandProcessingSaga.States state, Command command, ScheduleKey key, Type successEventType) : base(id, state)
         {
             var sagaReceivedCommandEvent = new SagaReceivedCommandEvent(command, key, successEventType);
-            Apply(sagaReceivedCommandEvent);
             RaiseEvent(sagaReceivedCommandEvent);
         }
 

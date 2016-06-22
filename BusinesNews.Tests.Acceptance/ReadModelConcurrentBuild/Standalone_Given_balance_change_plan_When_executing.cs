@@ -6,7 +6,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 {
     public abstract class Standalone_Given_balance_change_plan_When_executing : Given_balance_change_plan_When_executing
     {
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             return new GridDomainNode(CreateUnityContainer(dbConfig),
                                      new BusinessNewsRouting(),
