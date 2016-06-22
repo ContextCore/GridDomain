@@ -2,7 +2,7 @@
 using BusinessNews.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
 namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
@@ -11,7 +11,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
     {
         private AkkaCluster _akkaCluster;
 
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             _akkaCluster = ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration());
             var unityContainer = CreateUnityContainer(dbConfig);

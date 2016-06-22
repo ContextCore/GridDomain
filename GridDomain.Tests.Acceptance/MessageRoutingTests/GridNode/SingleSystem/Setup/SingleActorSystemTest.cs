@@ -1,4 +1,4 @@
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework.Configuration;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {

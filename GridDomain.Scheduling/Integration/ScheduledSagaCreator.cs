@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 

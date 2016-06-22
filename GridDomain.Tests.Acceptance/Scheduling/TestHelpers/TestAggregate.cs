@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using CommonDomain.Core;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers

@@ -17,9 +17,9 @@ using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Logging;
-using GridDomain.Tests.Acceptance.Persistence;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         }
 
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var system = ActorSystemFactory.CreateActorSystem(akkaConf);
             _container = Register(system);
@@ -56,11 +56,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var container = Container.CreateChildScope();
             Node.CompositionRoot.Init(container, system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone);
             container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+
             container.RegisterType<AggregateActor<TestAggregate>>();
             container.RegisterType<AggregateHubActor<TestAggregate>>();
             container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
             container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
-
             container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
             container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
             container.RegisterType<IEmptySagaFactory<TestSaga>, TestSagaFactory>();
@@ -142,7 +142,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var secondKey = Guid.NewGuid();
             _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
             _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
             var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
             Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);

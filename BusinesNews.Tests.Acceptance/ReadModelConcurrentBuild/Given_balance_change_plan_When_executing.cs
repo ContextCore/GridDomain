@@ -13,6 +13,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests;
 using GridDomain.Tests.Acceptance;
+using GridDomain.Tests.Framework;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

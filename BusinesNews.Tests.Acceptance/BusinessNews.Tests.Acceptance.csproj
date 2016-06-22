@@ -179,6 +179,10 @@
     <Compile Include="ReadModelConcurrentBuild\Standalone_Smoke_Given_balance_change_plan_When_executing.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
+      <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
+      <Name>GridDomain.Tests.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Balance.Node\BusinessNews.Node.csproj">
       <Project>{BC419A4C-6DDD-493A-B395-45A5D5ACC555}</Project>
       <Name>BusinessNews.Node</Name>

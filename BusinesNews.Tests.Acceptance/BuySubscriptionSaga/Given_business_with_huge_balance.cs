@@ -1,28 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Akka.DI.Core;
 using BusinessNews.Domain.AccountAggregate.Commands;
 using BusinessNews.Domain.AccountAggregate.Events;
 using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.OfferAggregate;
-using BusinessNews.Domain.Sagas.BuySubscription;
 using BusinessNews.Node;
 using BusinessNews.ReadModel;
-using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
-using GridDomain.Tests.Acceptance;
-using GridDomain.Tests.Configuration;
+using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NMoneys;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 
 namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
 {
@@ -78,7 +68,7 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
 
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(20);
-        protected override GridDomainNode GreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();
             BusinessNews.Node.CompositionRoot.Init(container, new LocalDbConfiguration());

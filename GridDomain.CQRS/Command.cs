@@ -22,4 +22,4 @@ namespace GridDomain.CQRS
         public Guid Id { get; }
         public Guid SagaId { get; set; }
     }
-}
+} 
