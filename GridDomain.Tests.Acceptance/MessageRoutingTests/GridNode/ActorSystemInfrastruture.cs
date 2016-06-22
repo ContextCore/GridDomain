@@ -6,6 +6,7 @@ using Akka.DI.Unity;
 using Akka.TestKit.NUnit;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;

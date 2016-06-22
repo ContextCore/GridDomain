@@ -2,6 +2,7 @@
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
