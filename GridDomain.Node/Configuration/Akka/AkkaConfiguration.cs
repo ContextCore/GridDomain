@@ -13,6 +13,7 @@ namespace GridDomain.Node.Configuration.Akka
             Trace
         }
 
+
         private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
         {
             {LogVerbosity.Info, "INFO"},
@@ -71,6 +72,14 @@ namespace GridDomain.Node.Configuration.Akka
             return cfg.Build();
         }
 
+        public string ToStandAloneInMemorySystemConfig()
+        {
+            var cfg = new RootConfig(
+                new LogConfig(this, false),
+                new StandAloneConfig(Network),
+                new EmptyConfig());
+            return cfg.Build();
+        }
 
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {

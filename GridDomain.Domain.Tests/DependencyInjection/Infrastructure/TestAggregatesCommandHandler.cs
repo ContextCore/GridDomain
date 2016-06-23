@@ -6,7 +6,8 @@ namespace GridDomain.Tests.DependencyInjection
     {
         public TestAggregatesCommandHandler()
         {
-            Map<TestCommand>(c => c.AggregateId, (c, a) => a.Execute(c.Parameter, null));
+            Map<TestCommand>(c => c.AggregateId, 
+                            (c, a) => a.Execute(c.Parameter, null));
         }
     }
 }

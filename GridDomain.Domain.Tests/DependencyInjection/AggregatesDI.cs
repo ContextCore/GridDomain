@@ -9,6 +9,7 @@ using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -26,12 +27,13 @@ namespace GridDomain.Tests.DependencyInjection
             ExecuteAndWaitFor<TestAggregate.DomainEvent>(testCommand);
         }
 
-        public AggregatesDI(string config, string name = null) : base(config, name)
+        public AggregatesDI() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "TestSystem", false)
         {
 
         }
 
-        protected override TimeSpan Timeout { get; }
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
+
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();
@@ -40,5 +42,6 @@ namespace GridDomain.Tests.DependencyInjection
 
             return new GridDomainNode(container, new TestRouteMap(), TransportMode.Standalone, Sys);
         }
+
     }
 }

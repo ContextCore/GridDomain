@@ -29,9 +29,11 @@ namespace GridDomain.Tests.Framework
         protected GridDomainNode GridNode;
         private readonly Stopwatch _watch = new Stopwatch();
         private IActorSubscriber _actorSubscriber;
+        private readonly bool _clearDataOnStart;
 
-        protected NodeCommandsTest(string config, string name = null) : base(config, name)
+        protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
+            _clearDataOnStart = clearDataOnStart;
         }
 
         protected abstract TimeSpan Timeout { get; }
@@ -48,8 +50,8 @@ namespace GridDomain.Tests.Framework
         protected void Init()
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
-
-            TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
+            if(_clearDataOnStart)
+                TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 
             GridNode = CreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
@@ -79,13 +81,20 @@ namespace GridDomain.Tests.Framework
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
+        private Type[] GetFaults(ICommand[] commands)
+        {
+            var faultGeneric = typeof (CommandFault<>);
+            return commands.Select(c => faultGeneric.MakeGenericType(c.GetType())).ToArray();
+        }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            return ExecuteAndWaitFor(new[] { typeof(TEvent) }, commands);
+            var messageTypes = GetFaults(commands).Concat(new[] {typeof(TEvent)}).ToArray();
+            return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
         {
-            return ExecuteAndWaitFor(new[] { typeof(TMessage1), typeof(TMessage2) }, commands);
+            var messageTypes = GetFaults(commands).Concat(new[] { typeof(TMessage1), typeof(TMessage2) }).ToArray();
+            return ExecuteAndWaitFor(messageTypes, commands);
         }
 
         private ExpectedMessagesRecieved WaitForFirstOf(Action act, params Type[] messageTypes)
@@ -108,10 +117,14 @@ namespace GridDomain.Tests.Framework
 
             Console.WriteLine();
             Console.WriteLine($"Wait ended, total wait time: {_watch.Elapsed}");
-            Console.WriteLine("Stoped after message recieved:");
+            Console.WriteLine("Stopped after message received:");
             Console.WriteLine("------begin of message-----");
             Console.WriteLine(msg.ToPropsString());
             Console.WriteLine("------end of message-----");
+
+            if (msg.Message is ICommandFault)
+                Assert.Fail($"Command fault received: {msg.ToPropsString()}");
+
             return msg;
         }
 

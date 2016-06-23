@@ -20,4 +20,12 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             return akkaPersistenceConfig;
         }
     }
+
+    internal class EmptyConfig : IAkkaConfig
+    {
+        public string Build()
+        {
+            return "";
+        }
+    }
 }
