@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using GridDomain.Node.Configuration.Hocon;
+using GridDomain.Node.Configuration.Akka.Hocon;
 
-namespace GridDomain.Node.Configuration
+namespace GridDomain.Node.Configuration.Akka
 {
     public class AkkaConfiguration
     {

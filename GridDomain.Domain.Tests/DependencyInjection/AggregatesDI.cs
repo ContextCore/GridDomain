@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GridDomain.Node;
+using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Composition;
+using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Tests.Framework;
+using Microsoft.Practices.Unity;
+using NUnit.Framework;
+
+namespace GridDomain.Tests.DependencyInjection
+{
+
+
+    [TestFixture]
+    public class AggregatesDI : NodeCommandsTest
+    {
+        [Test]
+        public void Given_configured_container_When_executing_aggregate_handler_Then_container_is_available_in_aggregate_command_handler()
+        {
+            var testCommand = new TestCommand(42,Guid.NewGuid());
+            ExecuteAndWaitFor<TestAggregate.DomainEvent>(testCommand);
+        }
+
+        public AggregatesDI(string config, string name = null) : base(config, name)
+        {
+
+        }
+
+        protected override TimeSpan Timeout { get; }
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        {
+            var container = new UnityContainer();
+            container.RegisterType<ITestDependency, TestDependencyImplementation>();
+            container.RegisterAggregate<TestAggregate,TestAggregatesCommandHandler>();
+
+            return new GridDomainNode(container, new TestRouteMap(), TransportMode.Standalone, Sys);
+        }
+    }
+}

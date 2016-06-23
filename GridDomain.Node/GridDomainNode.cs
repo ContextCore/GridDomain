@@ -11,6 +11,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Config;

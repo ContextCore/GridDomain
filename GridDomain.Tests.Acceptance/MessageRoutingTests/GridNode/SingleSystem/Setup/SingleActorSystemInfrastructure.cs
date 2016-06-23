@@ -5,6 +5,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {

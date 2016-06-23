@@ -15,6 +15,8 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;

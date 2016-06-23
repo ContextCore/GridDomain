@@ -2,6 +2,8 @@
 using System.Threading;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Config;

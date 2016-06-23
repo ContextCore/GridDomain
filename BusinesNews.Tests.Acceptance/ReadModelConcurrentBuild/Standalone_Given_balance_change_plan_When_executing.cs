@@ -1,6 +1,8 @@
 using BusinessNews.Node;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
 
 namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
 {

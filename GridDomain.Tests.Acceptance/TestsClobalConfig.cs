@@ -1,4 +1,5 @@
 ﻿using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
 using NLog;
 using NUnit.Framework;

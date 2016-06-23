@@ -5,6 +5,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

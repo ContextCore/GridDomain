@@ -11,6 +11,7 @@ using BusinessNews.ReadModel;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests;
 using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Framework;
