@@ -18,8 +18,15 @@ namespace GridDomain.CQRS
         {
         }
 
-        public DateTime Time { get; private set; }
+        public DateTime Time { get; }
         public Guid Id { get; }
-        public Guid SagaId { get; set; }
+        public Guid SagaId { get; private set; }
+
+        public Command CloneWithSaga(Guid sagaId)
+        {
+            var copy = (Command)MemberwiseClone();
+            copy.SagaId = sagaId;
+            return copy;
+        }
     }
-} 
+}
