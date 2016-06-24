@@ -8,17 +8,54 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
+
+    public interface  IAggregateCommandsHandlerDesriptor
+    {
+        IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands { get; } 
+        Type AggregateType { get; }
+    }
+
+
+    public class AggregateLookupInfo
+    {
+        public Type Command { get; }
+        public string Property { get; }
+
+        public AggregateLookupInfo(Type command, string property)
+        {
+            Command = command;
+            Property = property;
+        }
+    }
+
+    public class AggregateCommandsHandlerDesriptor<T> : IAggregateCommandsHandlerDesriptor
+    {
   
+        public void RegisterCommand<TCommand>(string property)
+        {
+            _registrations.Add(new AggregateLookupInfo(typeof(TCommand), property));
+        }
+
+        public void RegisterCommand(Type type,string property)
+        {
+            _registrations.Add(new AggregateLookupInfo(type, property));
+        }
+
+        private readonly List<AggregateLookupInfo> _registrations = new List<AggregateLookupInfo>();
+        public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands => _registrations;
+        public Type AggregateType => typeof(T);
+    }
+
     public class AggregateCommandsHandler<TAggregate> : IAggregateCommandsHandler<TAggregate>,
-        ICommandAggregateLocator<TAggregate>
-        where TAggregate : AggregateBase
+                                                        ICommandAggregateLocator<TAggregate>
+                                                        where TAggregate : AggregateBase
     {
         private readonly IDictionary<Type, AggregateCommandHandler<TAggregate>> _commandHandlers =
-            new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
+                                                     new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
 
         private readonly IServiceLocator _serviceLocator;
 
-        public AggregateCommandsHandler(IServiceLocator serviceLocator = null)
+        public AggregateCommandsHandler(IServiceLocator serviceLocator)
         {
             _serviceLocator = serviceLocator;
         }
@@ -51,27 +88,19 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, null));
+            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
         }
 
         protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, null));
+            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
         }
 
         public IReadOnlyCollection<AggregateLookupInfo> GetRegisteredCommands()
         {
-            return
-                _commandHandlers.Select(
-                    h => new AggregateLookupInfo {Command = h.Key, Property = h.Value.MachingProperty})
-                    .ToArray();
+            return _commandHandlers.Select(h => new AggregateLookupInfo (h.Key,h.Value.MachingProperty)).ToArray();
         }
 
-        public class AggregateLookupInfo
-        {
-            public Type Command;
-            public string Property;
-        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.DependencyInjection
 {
@@ -13,24 +14,25 @@ namespace GridDomain.Tests.DependencyInjection
         public void Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);
-            RaiseEvent(new DomainEvent(dependencyUseResult));
+            RaiseEvent(new TestDomainEvent(dependencyUseResult, Id));
         }
 
-        private void Apply(int number, ITestDependency d)
+        private void Apply(TestDomainEvent e)
         {
-            d.Do(number);
+            Value = e.Value;
         }
 
-        public class DomainEvent
+        public string Value;
+    }
+    public class TestDomainEvent : DomainEvent
+    {
+        public string Value;
+        public TestDomainEvent(string value, Guid sourceId, DateTime? createdTime = default(DateTime?), Guid sagaId = default(Guid)) : base(sourceId, createdTime, sagaId)
         {
-            public string Value;
+            Value = value;
 
-            public DomainEvent(string value)
-            {
-                Value = value;
-            }
         }
     }
 
-    
+
 }

@@ -7,7 +7,7 @@ namespace GridDomain.Tests.DependencyInjection
     {
         public void Register(IMessagesRouter router)
         {
-            router.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
+            router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
         }
     }
 }

@@ -33,14 +33,22 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             where TAggregate : AggregateBase
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
-            var messageRoutes = new TCommandHandler().GetRegisteredCommands().Select(c => new MessageRoute
-            (
-                c.Command,
-                c.Property
-            )).ToArray();
+            var descriptor = new AggregateCommandsHandlerDesriptor<TAggregate>();
+            foreach(var info in new TCommandHandler().GetRegisteredCommands())
+                descriptor.RegisterCommand(info.Command,info.Property);
+            RegisterAggregate(descriptor);
+        }
 
-            var name = $"Aggregate_{typeof(TAggregate).Name}";
-            var createActorRoute = CreateActorRouteMessage.ForAggregate<TAggregate>(name,messageRoutes);
+        public void RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor)
+        {
+            var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
+             (
+                 c.Command,
+                 c.Property
+             )).ToArray();
+
+            var name = $"Aggregate_{descriptor.AggregateType.Name}";
+            var createActorRoute = CreateActorRouteMessage.ForAggregate(descriptor.AggregateType, name, messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 

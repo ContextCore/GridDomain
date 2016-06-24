@@ -10,14 +10,14 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         private readonly Func<ICommand, TAggregate, TAggregate> _executor;
         private readonly Func<ICommand, Guid> _idLocator;
-        private readonly IUnityContainer _container;
+        private readonly IServiceLocator _locator;
 
         private AggregateCommandHandler(string name, 
                                         Func<ICommand, Guid> idLocator,
                                         Func<ICommand, TAggregate, TAggregate> executor,
-                                        IUnityContainer container)
+                                        IServiceLocator locator)
         {
-            _container = container;
+            _locator = locator;
             _executor = executor;
             MachingProperty = name;
             _idLocator = idLocator;
@@ -45,7 +45,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
  
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-            Action<TCommand, TAggregate> commandExecutor, IUnityContainer container) where TCommand : ICommand
+            Action<TCommand, TAggregate> commandExecutor, IServiceLocator container) where TCommand : ICommand
         {
             return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
                 c => idLocator.Compile()((TCommand) c),
@@ -58,7 +58,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         }
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-            Func<TCommand, TAggregate> commandExecutor, IUnityContainer container)
+            Func<TCommand, TAggregate> commandExecutor, IServiceLocator container)
         {
             return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
                 c => idLocator.Compile()((TCommand) c), (cmd, agr) => commandExecutor((TCommand) cmd), container);

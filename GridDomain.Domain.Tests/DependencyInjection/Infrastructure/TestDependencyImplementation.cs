@@ -6,7 +6,7 @@ namespace GridDomain.Tests.DependencyInjection
     {
         public string Do(int param)
         {
-            throw new NotImplementedException();
+            return param.ToString();
         }
     }
 }

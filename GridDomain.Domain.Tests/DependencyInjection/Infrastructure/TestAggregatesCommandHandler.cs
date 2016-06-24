@@ -1,13 +1,27 @@
+using System;
+using System.Collections.Generic;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.DependencyInjection
 {
-    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>
+    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
+                                                        IAggregateCommandsHandlerDesriptor
+
     {
-        public TestAggregatesCommandHandler()
+        private IServiceLocator _locator;
+
+        //TODO: refactor to separate class
+        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler(null);
+        public TestAggregatesCommandHandler(IServiceLocator serviceLocator) : base(serviceLocator)
         {
-            Map<TestCommand>(c => c.AggregateId, 
-                            (c, a) => a.Execute(c.Parameter, null));
+            _locator = serviceLocator;
+            Map<TestCommand>(c => c.AggregateId,
+                            (c, a) => a.Execute(c.Parameter, _locator.Resolve<ITestDependency>()));
         }
+
+        public Type AggregateType => typeof(TestAggregate);
+
+        public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands => GetRegisteredCommands();
     }
 }
