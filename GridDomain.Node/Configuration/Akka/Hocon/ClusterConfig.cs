@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace GridDomain.Node.Configuration.Hocon
+namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     public class ClusterConfig : ActorConfig
     {

@@ -5,7 +5,7 @@ namespace BusinessNews.Domain.AccountAggregate
 {
     public class AccountAggregateCommandsHandler : AggregateCommandsHandler<Account>
     {
-        public AccountAggregateCommandsHandler()
+        public AccountAggregateCommandsHandler() : base(null)
         {
             Map<CreateAccountCommand>(cmd => cmd.AccountId,
                    cmd => new Account(cmd.AccountId, cmd.BusinessId));

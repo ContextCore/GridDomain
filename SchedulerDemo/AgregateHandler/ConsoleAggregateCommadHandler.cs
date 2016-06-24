@@ -6,7 +6,7 @@ namespace SchedulerDemo.AgregateHandler
 {
     public class ConsoleAggregateCommadHandler : AggregateCommandsHandler<ConsoleAggregate>
     {
-        public ConsoleAggregateCommadHandler()
+        public ConsoleAggregateCommadHandler() : base(null)
         {
             Map<WriteToConsoleScheduledCommand>(c => c.Id, (c, a) =>
             {

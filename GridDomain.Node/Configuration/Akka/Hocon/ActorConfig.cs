@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Configuration.Hocon
+namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     public abstract class ActorConfig : IAkkaConfig
     {

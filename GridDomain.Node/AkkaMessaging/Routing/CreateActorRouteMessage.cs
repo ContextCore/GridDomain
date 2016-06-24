@@ -29,7 +29,11 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public static CreateActorRouteMessage ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
         {
-            return new CreateActorRouteMessage(typeof(AggregateHubActor<TAggregate>), name, routes);
+            return ForAggregate(typeof(TAggregate), name, routes);
+        }
+        public static CreateActorRouteMessage ForAggregate(Type aggregateType, string name, params MessageRoute[] routes)
+        {
+            return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), name, routes);
         }
 
         public static CreateActorRouteMessage ForSaga<TSaga, TSagaState, TStartMessage>(string name, params MessageRoute[] routes) 

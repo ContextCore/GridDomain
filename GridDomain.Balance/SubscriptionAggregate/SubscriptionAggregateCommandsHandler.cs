@@ -5,7 +5,7 @@ namespace BusinessNews.Domain.SubscriptionAggregate
 {
     public class SubscriptionAggregateCommandsHandler : AggregateCommandsHandler<Subscription>
     {
-        public SubscriptionAggregateCommandsHandler()
+        public SubscriptionAggregateCommandsHandler() : base(null)
         {
             Map<CreateSubscriptionCommand>(c => c.SubscriptionId,
                 c => new Subscription(c.SubscriptionId, WellKnownOffers.Catalog[c.Offer]));

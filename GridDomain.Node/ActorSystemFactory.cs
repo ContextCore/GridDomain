@@ -1,6 +1,7 @@
 using System.Linq;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Node
 {
