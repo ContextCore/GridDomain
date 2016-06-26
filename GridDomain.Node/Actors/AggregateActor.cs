@@ -24,11 +24,11 @@ namespace GridDomain.Node.Actors
     {
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
-        private readonly TypedMessageActor<ScheduleMessage> _schdulerActorRef;
+        private readonly TypedMessageActor<ScheduleCommand> _schdulerActorRef;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
-                              TypedMessageActor<ScheduleMessage> schdulerActorRef,
+                              TypedMessageActor<ScheduleCommand> schdulerActorRef,
                               IPublisher publisher)
         {
             _schdulerActorRef = schdulerActorRef;
@@ -79,9 +79,11 @@ namespace GridDomain.Node.Actors
                 $"{PersistenceId}_event_{futureEvent.SourceId}",
                 $"{typeof (TAggregate).Name}_futureEvents");
 
-            var scheduleEvent = new ScheduleMessage(futureEvent.Event,
-                scheduleKey,
-                futureEvent.RaiseTime);
+            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent),
+                                                    scheduleKey, 
+                                                    new ExecutionOptions(futureEvent.RaiseTime,
+                                                                         futureEvent.Event.GetType())
+                                                    );
 
             _schdulerActorRef.Handle(scheduleEvent);
         }

@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.FutureEvents
 {
@@ -9,10 +10,13 @@ namespace GridDomain.Node.FutureEvents
 
         public Guid AggregateId { get; }
 
-        public RaiseScheduledDomainEventCommand(Guid id, Guid eventId, Guid aggregateId) : base(id)
+        public RaiseScheduledDomainEventCommand(Guid eventId, Guid aggregateId) : base(eventId)
         {
             EventId = eventId;
             AggregateId = aggregateId;
+        }
+        public RaiseScheduledDomainEventCommand(FutureDomainEvent e) : this(e.SourceId, e.Event.SourceId)
+        {
         }
     }
 }

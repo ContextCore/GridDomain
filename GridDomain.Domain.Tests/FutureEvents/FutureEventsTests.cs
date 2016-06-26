@@ -46,8 +46,7 @@ namespace GridDomain.Tests.FutureEvents
             var scheduledTime = DateTime.Now.AddSeconds(0.5);
             var testCommand = new TestCommand(scheduledTime, Guid.NewGuid());
 
-            var msg = ExecuteAndWaitFor<TestDomainEvent>(testCommand);
-            Thread.Sleep(5000);
+            ExecuteAndWaitFor<TestDomainEvent>(testCommand);
 
             var aggregate = LoadAggregate<TestAggregate>(testCommand.AggregateId);
             Assert.AreEqual(scheduledTime.Second, aggregate.ProcessedTime.Second);

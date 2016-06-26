@@ -86,7 +86,10 @@ namespace GridDomain.Node
                                                _transportMode));
 
             PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
+
             Container.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
+            Container.RegisterInstance(new TypedMessageActor<ScheduleCommand>(PersistentScheduler));
+            Container.RegisterInstance(new TypedMessageActor<Unschedule>(PersistentScheduler));
 
             _configuration.Register(Container);
             StartMainNodeActor(System);
