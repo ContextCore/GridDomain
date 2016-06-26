@@ -1,8 +1,22 @@
 ﻿using System;
 using System.Linq;
+using CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
+
+    public class FutureDomainEvent : DomainEvent
+    {
+        public DateTime RaiseTime { get; set; }
+        public DomainEvent Event { get; set; }
+
+        public FutureDomainEvent(Guid sourceId, DateTime raiseTime, DomainEvent @event, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+        {
+            RaiseTime = raiseTime;
+            Event = @event;
+        }
+    } 
+
     public class DomainEvent : ISourcedEvent
     {
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))

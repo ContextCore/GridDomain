@@ -40,7 +40,7 @@ namespace GridDomain.Tests.DependencyInjection
             Assert.NotNull(actorRef);
         }
 
-        public AggregatesDI() : base(new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Trace).ToStandAloneInMemorySystemConfig(), "TestSystem", false)
+        public AggregatesDI() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "TestSystem", false)
         {
 
         }

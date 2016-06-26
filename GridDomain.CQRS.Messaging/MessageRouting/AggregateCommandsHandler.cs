@@ -97,10 +97,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
         }
 
-        public IReadOnlyCollection<AggregateLookupInfo> GetRegisteredCommands()
+        public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands
         {
-            return _commandHandlers.Select(h => new AggregateLookupInfo (h.Key,h.Value.MachingProperty)).ToArray();
+            get
+            {
+                return _commandHandlers.Select(h => new AggregateLookupInfo(h.Key, h.Value.MachingProperty)).ToArray();
+            }
         }
-
     }
 }

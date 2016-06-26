@@ -22,21 +22,23 @@ namespace GridDomain.Node.Actors
         {
             _messageRouting = messageRouting;
             _messagePublisher = transport;
-            _log.Debug($"Актор {GetType().Name} был создан по адресу: {Self.Path}.");
+            _log.Debug($"Actor {GetType().Name} was created on: {Self.Path}.");
         }
 
         public void Handle(Start msg)
         {
-            _log.Debug($"Актор {GetType().Name} начинает инициализацию");
+            _log.Debug($"Actor {GetType().Name} is initializing");
 
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
+            _log.Debug($"Actor {GetType().Name} is initializing routes");
             var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
             _messageRouting.Register(actorMessagesRouter);
 
             //TODO: replace with message from router
             Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);
+            _log.Debug($"Actor {GetType().Name} finished routes initialization");
         }
 
         public void Handle(ExecuteCommand message)
