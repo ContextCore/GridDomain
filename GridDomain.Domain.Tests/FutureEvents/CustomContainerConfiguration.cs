@@ -4,7 +4,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.FutureEvents
 {
-    class CustomContainerConfiguration : IContainerConfiguration
+    public class CustomContainerConfiguration : IContainerConfiguration
     {
         private readonly Action<IUnityContainer>[] _registrations;
 

@@ -53,6 +53,7 @@ namespace GridDomain.Scheduling.Integration
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
+
             }
             catch (JobPersistenceException e)
             {

@@ -5,7 +5,7 @@ namespace GridDomain.Scheduling.Quartz
     public class PersistedQuartzConfig : IQuartzConfig
     {
         public string ConnectionString => "Integrated Security=true;Database=Quartz;MultipleActiveResultSets=True;Application Name=Quartz;";
-        public string StorageType => "Quartz.Impl.AdoJobStore.JobStorSeTX, Quartz";
+        public string StorageType => "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
 
         public NameValueCollection Settings => new NameValueCollection
         {

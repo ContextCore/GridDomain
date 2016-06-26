@@ -3,7 +3,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.FutureEvents.Infrastructure
 {
-    class TestRouteMap : IMessageRouteMap
+    public class TestRouteMap : IMessageRouteMap
     {
         public void Register(IMessagesRouter router)
         {

@@ -185,7 +185,9 @@
     <Compile Include="DependencyInjection\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestRouteMap.cs" />
     <Compile Include="FutureEvents\CustomContainerConfiguration.cs" />
-    <Compile Include="FutureEvents\FutureEventsTests.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest_InMemory.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest_Persistent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestAggregate.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestAggregatesCommandHandler.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestCommand.cs" />

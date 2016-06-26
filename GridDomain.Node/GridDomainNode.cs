@@ -36,7 +36,7 @@ namespace GridDomain.Node
         private readonly TransportMode _transportMode;
         public readonly ActorSystem[] AllSystems;
         public IActorRef PersistentScheduler;
-
+        private Quartz.IScheduler _persistentScheduler;
         public readonly ActorSystem System;
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
@@ -86,19 +86,24 @@ namespace GridDomain.Node
                                                _transportMode));
 
             PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
-
+          
             Container.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
             Container.RegisterInstance(new TypedMessageActor<ScheduleCommand>(PersistentScheduler));
             Container.RegisterInstance(new TypedMessageActor<Unschedule>(PersistentScheduler));
 
             _configuration.Register(Container);
+
+            _persistentScheduler = Container.Resolve<Quartz.IScheduler>();
+
             StartMainNodeActor(System);
         }
 
         public void Stop()
         {
+            _persistentScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
+
             _log.Info($"GridDomain node {Id} stopped");
         }
 

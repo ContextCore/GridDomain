@@ -97,10 +97,10 @@ namespace GridDomain.Tests.Framework
             return ExecuteAndWaitFor(messageTypes, commands);
         }
 
-        private ExpectedMessagesRecieved WaitForFirstOf(Action act, params Type[] messageTypes)
+        private ExpectedMessagesRecieved WaitForFirstOf(Action act, ActorSystem actorSystem, params Type[] messageTypes)
         {
             var toWait = messageTypes.Select(m => new MessageToWait(m, 1)).ToArray();
-            var actor = GridNode.System
+            var actor = actorSystem
                                 .ActorOf(Props.Create(() => new MessageWaiter(toWait, TestActor)),
                                          "MessageWaiter_" + Guid.NewGuid());
 
@@ -130,12 +130,12 @@ namespace GridDomain.Tests.Framework
 
         protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
-            return WaitForFirstOf(() => Execute(commands), messageTypes);
+            return WaitForFirstOf(() => Execute(commands), GridNode.System, messageTypes);
         }
 
-        protected ExpectedMessagesRecieved WaitFor<TMessage>()
+        protected ExpectedMessagesRecieved WaitFor<TMessage>(ActorSystem system = null)
         {
-            return WaitForFirstOf(() => { }, typeof(TMessage));
+            return WaitForFirstOf(() => { }, system ??  GridNode.System, typeof(TMessage));
         }
 
         private void Execute(ICommand[] commands)
