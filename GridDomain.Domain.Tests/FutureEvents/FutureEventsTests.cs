@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.FutureEvents
 {
     [TestFixture]
-    class FutureEventsTests : NodeCommandsTest
+    public class FutureEventsTests : NodeCommandsTest
     {
         public FutureEventsTests()
             : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "testSystem", false)
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.FutureEvents
 
 
         [Test]
-        void Given_aggregate_When_raising_future_event_Then_it_fires_in_time()
+        public void Given_aggregate_When_raising_future_event_Then_it_fires_in_time()
         {
             var scheduledTime = DateTime.Now.AddSeconds(0.5);
             var msg = ExecuteAndWaitFor<TestDomainEvent>(new TestCommand(scheduledTime, Guid.NewGuid()));
@@ -42,13 +42,13 @@ namespace GridDomain.Tests.FutureEvents
         }
 
         [Test]
-        void Given_aggregate_When_raising_future_event_inpast_Then_it_fires_immidiatly()
+        public void Given_aggregate_When_raising_future_event_inpast_Then_it_fires_immidiatly()
         {
             throw new NotImplementedException();
         }
 
         [Test]
-        void Given_aggregate_When_raising_future_event_Then_it_fires_after_node_restart()
+        public void Given_aggregate_When_raising_future_event_Then_it_fires_after_node_restart()
         {
             throw new NotImplementedException();
         }
