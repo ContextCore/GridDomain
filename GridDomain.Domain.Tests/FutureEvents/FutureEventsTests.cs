@@ -49,7 +49,7 @@ namespace GridDomain.Tests.FutureEvents
             var msg = ExecuteAndWaitFor<TestDomainEvent>(testCommand);
             Thread.Sleep(5000);
 
-            var aggregate = LoadAggregate<TestAggregate>(testCommand.Id);
+            var aggregate = LoadAggregate<TestAggregate>(testCommand.AggregateId);
             Assert.AreEqual(scheduledTime.Second, aggregate.ProcessedTime.Second);
         }
 

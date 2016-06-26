@@ -5,9 +5,9 @@ namespace GridDomain.Node.FutureEvents
 {
     public class RaiseScheduledDomainEventCommand : Command
     {
-        public Guid EventId;
+        public Guid EventId { get; }
 
-        public Guid AggregateId;
+        public Guid AggregateId { get; }
 
         public RaiseScheduledDomainEventCommand(Guid id, Guid eventId, Guid aggregateId) : base(id)
         {
