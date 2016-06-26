@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.FutureEvents.Infrastructure;
@@ -23,22 +27,30 @@ namespace GridDomain.Tests.FutureEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(200);
+
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var container = new UnityContainer();
-            container.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
-            return new GridDomainNode(container, new TestRouteMap(), TransportMode.Standalone, Sys);
-        }
 
+            var config = new CustomContainerConfiguration(
+                             c => c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>(),
+                             c => c.RegisterType<IQuartzConfig, InMemoryQuartzConfig>());
+
+            var node =new GridDomainNode(config, new TestRouteMap(), TransportMode.Standalone, Sys);
+            return node;
+        }
 
         [Test]
         public void Given_aggregate_When_raising_future_event_Then_it_fires_in_time()
         {
             var scheduledTime = DateTime.Now.AddSeconds(0.5);
-            var msg = ExecuteAndWaitFor<TestDomainEvent>(new TestCommand(scheduledTime, Guid.NewGuid()));
+            var testCommand = new TestCommand(scheduledTime, Guid.NewGuid());
 
-            Assert.AreEqual(scheduledTime.Second, ((TestDomainEvent)msg.Message).processedTime.Second);
+            var msg = ExecuteAndWaitFor<TestDomainEvent>(testCommand);
+            Thread.Sleep(5000);
+
+            var aggregate = LoadAggregate<TestAggregate>(testCommand.Id);
+            Assert.AreEqual(scheduledTime.Second, aggregate.ProcessedTime.Second);
         }
 
         [Test]

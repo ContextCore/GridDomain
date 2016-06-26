@@ -42,8 +42,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             return ((PropertyInfo) memberExpression.Member).Name;
         }
 
- 
-
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Action<TCommand, TAggregate> commandExecutor, IServiceLocator container) where TCommand : ICommand
         {

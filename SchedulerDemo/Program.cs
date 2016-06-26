@@ -8,6 +8,7 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;

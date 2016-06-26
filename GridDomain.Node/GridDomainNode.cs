@@ -11,10 +11,14 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Config;
+using LogManager = NLog.LogManager;
 
 namespace GridDomain.Node
 {
@@ -31,20 +35,33 @@ namespace GridDomain.Node
         private readonly IMessageRouteMap _messageRouting;
         private readonly TransportMode _transportMode;
         public readonly ActorSystem[] AllSystems;
+        public IActorRef PersistentScheduler;
 
         public readonly ActorSystem System;
         private IActorRef _mainNodeActor;
+        private readonly IContainerConfiguration _configuration;
+
 
         public GridDomainNode(IUnityContainer container,
-            IMessageRouteMap messageRouting,
-            TransportMode transportMode,
-            params ActorSystem[] actorAllSystems)
+                              IMessageRouteMap messageRouting,
+                              TransportMode transportMode,
+                              params ActorSystem[] actorAllSystems)
+            : this(new EmptyContainerConfig(),messageRouting,transportMode,actorAllSystems)
         {
+            Container = container;
+        }
+
+        public GridDomainNode(IContainerConfiguration configuration,
+                              IMessageRouteMap messageRouting,
+                              TransportMode transportMode,
+                              params ActorSystem[] actorAllSystems)
+        {
+            _configuration = configuration;
             _transportMode = transportMode;
-            _messageRouting = messageRouting;
+            _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
             AllSystems = actorAllSystems;
             System = AllSystems.Last();
-            Container = container;
+            Container= new UnityContainer();
         }
 
         public IUnityContainer Container { get; }
@@ -59,17 +76,19 @@ namespace GridDomain.Node
             foreach (var system in AllSystems)
             {
                 system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
-                CompositionRoot.Init(Container.CreateChildContainer(),
-                                    system,
-                                    databaseConfiguration,
-                                    _transportMode);
+                Container.CreateChildContainer().Register(new GridNodeContainerConfiguration(system,
+                                                    databaseConfiguration,
+                                                    _transportMode));
             }
 
-            CompositionRoot.Init(Container,
-                System,
-                databaseConfiguration,
-                _transportMode);
+            Container.Register(new GridNodeContainerConfiguration(System,
+                                               databaseConfiguration,
+                                               _transportMode));
 
+            PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
+            Container.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
+
+            _configuration.Register(Container);
             StartMainNodeActor(System);
         }
 

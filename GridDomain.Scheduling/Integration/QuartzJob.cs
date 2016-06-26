@@ -53,8 +53,8 @@ namespace GridDomain.Scheduling.Integration
                 }
                 else
                 {
-                    var eventToFire = GetEvent(jobDataMap);
-                    _publisher.Publish(eventToFire);
+                    var messageToFire = GetEvent(jobDataMap);
+                    _publisher.Publish(messageToFire);
                 }
             }
             catch (Exception e)

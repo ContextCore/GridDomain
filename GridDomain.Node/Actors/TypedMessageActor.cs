@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors
 
         public void Handle(T msg)
         {
-            Actor.Tell(msg);
+            Actor.Ask(msg);
         }
     }
 }

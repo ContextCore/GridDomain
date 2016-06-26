@@ -14,6 +14,7 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
@@ -47,28 +48,35 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var system = ActorSystemFactory.CreateActorSystem(akkaConf);
-            _container = Register(system);
-            system.AddDependencyResolver(new UnityDependencyResolver(_container, system));
             var router = new TestRouter();
-            return new GridDomainNode(_container, router, TransportMode.Standalone, system);
+             var node = new GridDomainNode(new SchedulerContainerConfiguration(system), router, TransportMode.Standalone, system);
+            _container = node.Container;
+            return node;
         }
 
-        private IUnityContainer Register(ActorSystem system)
+        private class SchedulerContainerConfiguration : IContainerConfiguration
         {
-            var container = Container.CreateChildScope();
-            Node.CompositionRoot.Init(container, system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone);
-            container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+            private readonly ActorSystem _system;
 
-            container.RegisterType<AggregateActor<TestAggregate>>();
-            container.RegisterType<AggregateHubActor<TestAggregate>>();
-            container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
-            container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
-            container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
-            container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
-            container.RegisterType<IEmptySagaFactory<TestSaga>, TestSagaFactory>();
+            public SchedulerContainerConfiguration(ActorSystem system)
+            {
+                _system = system;
+            }
 
-            return container;
+            public void Register(IUnityContainer container)
+            {
+                container.Register(new GridNodeContainerConfiguration(_system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone));
+                container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
+                container.RegisterType<AggregateActor<TestAggregate>>();
+                container.RegisterType<AggregateHubActor<TestAggregate>>();
+                container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
+                container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
+                container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
+                container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
+                container.RegisterType<IEmptySagaFactory<TestSaga>, TestSagaFactory>();
+            }
         }
+     
 
         [SetUp]
         public void SetUp()
@@ -97,7 +105,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             var sagaId = Guid.NewGuid();
             var testEvent = new TestSagaStartMessage(sagaId, DateTime.UtcNow, sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            _scheduler.Ask<Scheduled>(new ScheduleMessage(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
             var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotStartEvent);
@@ -108,11 +116,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             var sagaId = Guid.NewGuid();
             var startEvent = new TestSagaStartMessage(sagaId, DateTime.UtcNow, sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            _scheduler.Ask<Scheduled>(new ScheduleMessage(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
 
             var secondEvent = new TestEvent(sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            _scheduler.Ask<Scheduled>(new ScheduleMessage(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaTransitionEvent<TestSaga.TestStates, TestSaga.Transitions>>();
             var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotSecondEvent);

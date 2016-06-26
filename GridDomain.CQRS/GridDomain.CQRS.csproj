@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="CommandFault.cs" />
+    <Compile Include="CommandFaultFactory.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandFault.cs" />
     <Compile Include="ICommandHandler.cs" />
