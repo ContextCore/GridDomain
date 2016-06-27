@@ -25,6 +25,7 @@ namespace GridDomain.EventStore.MSSQL.LogPersistance
 
         protected override void Write(AsyncLogEventInfo[] logEvents)
         {
+            return;
             using (var ts = new TransactionScope())
             {
                 using (var context = new LogContext(ConnectionString))
