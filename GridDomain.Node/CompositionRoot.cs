@@ -5,10 +5,28 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
+
+    class UnityServiceLocator : IServiceLocator
+    {
+        private readonly IUnityContainer _container;
+
+        public UnityServiceLocator(IUnityContainer container)
+        {
+            _container = container;
+        }
+
+        public T Resolve<T>()
+        {
+            return _container.Resolve<T>();
+        }
+    }
+
+
     //TODO: refactor to good config
 
     public static class CompositionRoot
@@ -23,8 +41,8 @@ namespace GridDomain.Node
             if (transportMode == TransportMode.Standalone)
             {
                 var transport = new AkkaEventBusTransport(actorSystem);
-                container.RegisterInstance<IPublisher>(transport, new ContainerControlledLifetimeManager());
-                container.RegisterInstance<IActorSubscriber>(transport, new ContainerControlledLifetimeManager());
+                container.RegisterInstance<IPublisher>(transport);
+                container.RegisterInstance<IActorSubscriber>(transport);
             }
             if (transportMode == TransportMode.Cluster)
             {
@@ -37,7 +55,8 @@ namespace GridDomain.Node
             RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
-            container.RegisterInstance(actorSystem);
+            container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
+            container.RegisterType<IServiceLocator,UnityServiceLocator>();
             Scheduling.CompositionRoot.Compose(container);
         }
 

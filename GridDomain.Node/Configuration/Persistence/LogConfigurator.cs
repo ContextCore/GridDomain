@@ -5,7 +5,7 @@ using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
 
-namespace GridDomain.Node.Configuration
+namespace GridDomain.Node.Configuration.Persistence
 {
     public class LogConfigurator
     {

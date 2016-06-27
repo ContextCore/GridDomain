@@ -1,6 +1,6 @@
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Configuration.Composition
 {
     public interface IContainerConfiguration
     {

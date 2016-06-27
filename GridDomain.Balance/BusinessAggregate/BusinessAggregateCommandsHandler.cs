@@ -5,7 +5,7 @@ namespace BusinessNews.Domain.BusinessAggregate
 {
     public class BusinessAggregateCommandsHandler : AggregateCommandsHandler<Business>
     {
-        public BusinessAggregateCommandsHandler()
+        public BusinessAggregateCommandsHandler() : base(null)
         {
             Map<OrderSubscriptionCommand>(command => command.BusinessId,
                                          (command, aggregate) => aggregate.OrderSubscription(command.SubscriptionId, command.OfferId));

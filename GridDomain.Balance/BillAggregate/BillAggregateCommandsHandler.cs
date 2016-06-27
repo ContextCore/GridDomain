@@ -4,7 +4,7 @@ namespace BusinessNews.Domain.BillAggregate
 {
     public class BillAggregateCommandsHandler : AggregateCommandsHandler<Bill>
     {
-        public BillAggregateCommandsHandler()
+        public BillAggregateCommandsHandler() : base(null)
         {
             Map<CreateBillCommand>(c => c.BillId,
                 c => new Bill(c.BillId, c.Charges));

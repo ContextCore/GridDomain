@@ -3,6 +3,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
+    [Obsolete("Inject contaienr instead")]
     public class Container
     {
         public static UnityContainer Current => Factory.Value;

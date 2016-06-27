@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Configuration.Hocon
+namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class PersistenceConfig : IAkkaConfig
     {
@@ -18,6 +18,14 @@ namespace GridDomain.Node.Configuration.Hocon
 " + new PersistenceSnapshotConfig(_akka).Build() + @"
         }";
             return akkaPersistenceConfig;
+        }
+    }
+
+    internal class EmptyConfig : IAkkaConfig
+    {
+        public string Build()
+        {
+            return "";
         }
     }
 }

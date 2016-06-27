@@ -10,6 +10,7 @@ using GridDomain.CQRS.ReadModel;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 
 namespace BusinessNews.Node

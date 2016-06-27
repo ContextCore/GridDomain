@@ -107,6 +107,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IServiceLocator.cs" />
     <Compile Include="MessageRouting\AggregateCommandHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandler.cs" />
     <Compile Include="MessageRouting\CannotFindAggregateCommandHandlerExeption.cs" />

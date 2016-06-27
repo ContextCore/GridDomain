@@ -1,4 +1,5 @@
 ﻿using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
 
 namespace SchedulerDemo.Configuration
 {

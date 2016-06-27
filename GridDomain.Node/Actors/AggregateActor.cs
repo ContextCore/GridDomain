@@ -39,7 +39,7 @@ namespace GridDomain.Node.Actors
                 }
                 catch (Exception ex)
                 {
-                    _publisher.Publish(CommandFault.CreateGenericFor(cmd,ex));
+                    _publisher.Publish(CommandFaultFactory.CreateGenericFor(cmd,ex));
                     return;
                 }
                 

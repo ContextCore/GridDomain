@@ -17,7 +17,8 @@ namespace GridDomain.Node.Actors
         private readonly IMessageRouteMap _messageRouting;
 
         public GridDomainNodeMainActor(IPublisher transport,
-            IMessageRouteMap messageRouting)
+                                       IMessageRouteMap messageRouting,
+                                       IServiceLocator locator)
         {
             _messageRouting = messageRouting;
             _messagePublisher = transport;
