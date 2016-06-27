@@ -255,16 +255,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GridDomain.Balance.ReadModel\BusinessNews.ReadModel.csproj">
-      <Project>{63b5a32b-3ae4-4ce3-a79d-3a4c0c3ec955}</Project>
-      <Name>BusinessNews.ReadModel</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Balance\BusinessNews.Domain.csproj">
-      <Project>{601f47b4-849c-49bc-ad2c-58b84de229d6}</Project>
-      <Name>BusinessNews.Domain</Name>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging.Akka\GridDomain.CQRS.Messaging.Akka.csproj">
       <Project>{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}</Project>
       <Name>GridDomain.CQRS.Messaging.Akka</Name>
