@@ -1,4 +1,6 @@
 ﻿using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 
 namespace GridDomain.Tests.Framework

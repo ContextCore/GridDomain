@@ -5,10 +5,28 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
+
+    class UnityServiceLocator : IServiceLocator
+    {
+        private readonly IUnityContainer _container;
+
+        public UnityServiceLocator(IUnityContainer container)
+        {
+            _container = container;
+        }
+
+        public T Resolve<T>()
+        {
+            return _container.Resolve<T>();
+        }
+    }
+
+
     //TODO: refactor to good config
 
     public static class CompositionRoot
@@ -38,6 +56,7 @@ namespace GridDomain.Node
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
+            container.RegisterType<IServiceLocator,UnityServiceLocator>();
             Scheduling.CompositionRoot.Compose(container);
         }
 

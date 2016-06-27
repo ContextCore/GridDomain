@@ -7,6 +7,7 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup

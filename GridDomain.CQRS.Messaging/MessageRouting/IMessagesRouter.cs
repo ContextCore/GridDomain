@@ -11,6 +11,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
             where TAggregate : AggregateBase;
 
+        void RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor);
+
         void RegisterSaga(ISagaDescriptor sagaDescriptor);
     }
 }

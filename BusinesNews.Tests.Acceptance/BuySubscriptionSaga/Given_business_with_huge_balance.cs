@@ -8,6 +8,8 @@ using BusinessNews.Node;
 using BusinessNews.ReadModel;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;

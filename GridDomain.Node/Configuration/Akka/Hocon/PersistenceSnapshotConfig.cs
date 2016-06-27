@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Configuration.Hocon
+namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class PersistenceSnapshotConfig : IAkkaConfig
     {

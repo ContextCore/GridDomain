@@ -11,6 +11,7 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using GridDomain.Tests.Framework;
 using Microsoft.Practices.Unity;

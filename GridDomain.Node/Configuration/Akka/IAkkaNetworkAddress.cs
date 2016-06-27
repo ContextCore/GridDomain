@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Configuration
+namespace GridDomain.Node.Configuration.Akka
 {
     public interface IAkkaNetworkAddress
     {
