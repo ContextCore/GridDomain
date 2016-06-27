@@ -23,8 +23,8 @@ namespace GridDomain.Node
             if (transportMode == TransportMode.Standalone)
             {
                 var transport = new AkkaEventBusTransport(actorSystem);
-                container.RegisterInstance<IPublisher>(transport);
-                container.RegisterInstance<IActorSubscriber>(transport);
+                container.RegisterInstance<IPublisher>(transport, new ContainerControlledLifetimeManager());
+                container.RegisterInstance<IActorSubscriber>(transport, new ContainerControlledLifetimeManager());
             }
             if (transportMode == TransportMode.Cluster)
             {
@@ -37,7 +37,7 @@ namespace GridDomain.Node
             RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
-            container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
+            container.RegisterInstance(actorSystem);
             Scheduling.CompositionRoot.Compose(container);
         }
 

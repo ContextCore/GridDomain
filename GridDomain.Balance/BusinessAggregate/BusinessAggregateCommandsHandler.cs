@@ -1,6 +1,4 @@
-﻿using System;
-using BusinessNews.Domain.AccountAggregate;
-using BusinessNews.Domain.OfferAggregate;
+﻿using BusinessNews.Domain.OfferAggregate;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace BusinessNews.Domain.BusinessAggregate
