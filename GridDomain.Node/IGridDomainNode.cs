@@ -10,6 +10,6 @@ namespace GridDomain.Node
     {
         void Execute(params ICommand[] commands);
 
-        void ConfirmedExecute(ICommand command, Type confirmationMessageType);
+        void ConfirmedExecute(ICommand command, params Type[] confirmationMessageType);
     }
 }

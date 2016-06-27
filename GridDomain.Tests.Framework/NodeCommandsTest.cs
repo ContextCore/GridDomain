@@ -14,6 +14,7 @@ using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
@@ -101,7 +102,7 @@ namespace GridDomain.Tests.Framework
         {
             var toWait = messageTypes.Select(m => new MessageToWait(m, 1)).ToArray();
             var actor = GridNode.System
-                                .ActorOf(Props.Create(() => new MessageWaiter(toWait, TestActor)),
+                                .ActorOf(Props.Create(() => new MessageWaiter(TestActor, toWait)),
                                          "MessageWaiter_" + Guid.NewGuid());
 
             foreach (var m in messageTypes)

@@ -1,8 +1,4 @@
-using Akka.Actor;
-using GridDomain.Node;
-using Microsoft.Practices.Unity;
-
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     public class Infrastructure 
     {

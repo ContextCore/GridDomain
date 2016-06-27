@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.CQRS;
@@ -6,6 +7,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using NLog;
 
 namespace GridDomain.Node.Actors
@@ -45,6 +47,15 @@ namespace GridDomain.Node.Actors
             _messagePublisher.Publish(message.Command);
         }
 
+        public void Handle(ExecuteConfirmedCommand message)
+        {
+            var msgToWait = message.ConfirmationMessageTypes.Select(c => new MessageToWait(c, 1)).ToArray();
+
+            var executor = Context.System.ActorOf(Props.Create(() => new MessageWaiter(Self, msgToWait)));
+            _messagePublisher.Publish(message.Command);
+
+        }
+
         protected override void PostStop()
         {
             _log.Debug($"Актор {GetType().Name} был остановлен");
@@ -72,18 +83,6 @@ namespace GridDomain.Node.Actors
             public ICommand Command { get; }
         }
 
-        public class ExecuteCommandWithTracking 
-        {
-            public ExecuteCommandWithTracking(ExecuteCommand command, IActorRef tracker)
-            {
-                Command = command;
-                Tracker = tracker;
-            }
-
-            public ExecuteCommand Command { get; }
-            public IActorRef Tracker { get; }
-        }
-
         public class Start
         {
             public Type RoutingActorType;
@@ -91,6 +90,18 @@ namespace GridDomain.Node.Actors
 
         public class Started
         {
+        }
+
+        public class ExecuteConfirmedCommand
+        {
+            public Type[] ConfirmationMessageTypes { get; }
+            public ICommand Command { get; }
+
+            public ExecuteConfirmedCommand(ICommand command, Type[] confirmationMessageTypes)
+            {
+                Command = command;
+                ConfirmationMessageTypes = confirmationMessageTypes;
+            }
         }
     }
 }

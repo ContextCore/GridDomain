@@ -2,7 +2,7 @@ using System;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     public class TestAggregate : AggregateBase
     {

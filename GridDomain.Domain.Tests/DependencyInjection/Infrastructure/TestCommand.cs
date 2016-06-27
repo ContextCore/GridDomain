@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     public class TestCommand : Command
     {

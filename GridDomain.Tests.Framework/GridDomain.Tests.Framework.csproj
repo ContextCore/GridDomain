@@ -122,10 +122,6 @@
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="CountEventWaiter.cs" />
-    <Compile Include="ExpectedMessagesRecieved.cs" />
-    <Compile Include="ExplicitSourcesEventWaiter.cs" />
-    <Compile Include="MessageToWait.cs" />
-    <Compile Include="MessageWaiter.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDbTools.cs" />

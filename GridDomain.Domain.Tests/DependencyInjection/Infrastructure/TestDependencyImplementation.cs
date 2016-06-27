@@ -1,6 +1,4 @@
-using System;
-
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     public class TestDependencyImplementation : ITestDependency
     {
