@@ -39,7 +39,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                 c.Property
             )).ToArray();
 
-            var name = $"Aggregate_{typeof(TAggregate).FullName}";
+            var name = $"Aggregate_{typeof(TAggregate).Name}";
             var createActorRoute = CreateActorRouteMessage.ForAggregate<TAggregate>(name, messageRoutes);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
