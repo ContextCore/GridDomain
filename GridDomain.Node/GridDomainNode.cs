@@ -112,9 +112,9 @@ namespace GridDomain.Node
                  _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
 
-        //public ICommandStatus ExecuteTracking(ICommand command)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public void ConfirmedExecute(ICommand command, Type confirmationMessageType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

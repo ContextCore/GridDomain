@@ -9,5 +9,7 @@ namespace GridDomain.Node
     public interface IGridDomainNode
     {
         void Execute(params ICommand[] commands);
+
+        void ConfirmedExecute(ICommand command, Type confirmationMessageType);
     }
 }
