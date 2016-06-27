@@ -55,7 +55,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         private readonly IServiceLocator _serviceLocator;
 
-        public AggregateCommandsHandler(IServiceLocator serviceLocator)
+
+        public AggregateCommandsHandler(IServiceLocator serviceLocator = null) 
         {
             _serviceLocator = serviceLocator;
         }

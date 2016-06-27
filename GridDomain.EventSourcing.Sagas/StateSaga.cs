@@ -8,7 +8,7 @@ using Stateless;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-  
+
 
     public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
                                                             IDomainStateSaga<TStateData>,
@@ -25,8 +25,8 @@ namespace GridDomain.EventSourcing.Sagas
         public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
         public IReadOnlyCollection<Type> ProduceCommands => _registeredCommands;
 
-        public Type StartMessage { get; } = typeof (TStartMessage);
-        public Type StateType { get; } = typeof (TStateData);
+        public Type StartMessage { get; } = typeof(TStartMessage);
+        public Type StateType { get; } = typeof(TStateData);
         public Type SagaType => this.GetType();
 
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
@@ -47,17 +47,17 @@ namespace GridDomain.EventSourcing.Sagas
         //    return RegisterEvent<CommandFault<TCommand>>(trigger);
         //}
 
-        private readonly List<Type> _registeredCommands = new List<Type>(); 
+        private readonly List<Type> _registeredCommands = new List<Type>();
 
         protected StateSaga(TStateData state)
         {
             State = state;
 
             //to include start message into list of accept messages
-            _eventsToTriggersMapping[typeof (TStartMessage)] = null; 
+            _eventsToTriggersMapping[typeof(TStartMessage)] = null;
             Machine = new StateMachine<TSagaStates, TSagaTriggers>(State.MachineState);
             Machine.OnTransitioned(t => State.StateChanged(t.Trigger, t.Destination));
-            _transitMethod = GetType().GetMethod(nameof(TransitState),BindingFlags.Instance | BindingFlags.NonPublic);
+            _transitMethod = GetType().GetMethod(nameof(TransitState), BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public TSagaStates DomainState => State.MachineState;
@@ -71,21 +71,21 @@ namespace GridDomain.EventSourcing.Sagas
         }
 
         IAggregate IDomainSaga.State => State;
- 
+
         private readonly MethodInfo _transitMethod;
         public virtual void Transit(object msg)
         {
             MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
-            genericTransit.Invoke(this, new [] { msg});
+            genericTransit.Invoke(this, new[] { msg });
         }
 
         protected void Dispatch(Command command)
         {
-            command.SagaId = State.Id;
-            _messagesToDispatch.Add(command);
+            var commandToDispatch = command.CloneWithSaga(State.Id);
+            _messagesToDispatch.Add(commandToDispatch);
         }
 
-        protected void DispatchSagaFault<T>(CommandFault<T> commandFault) where T:ICommand
+        protected void DispatchSagaFault<T>(CommandFault<T> commandFault) where T : ICommand
         {
             _messagesToDispatch.Add(new SagaFault<TStateData>(this, commandFault));
         }
@@ -118,7 +118,7 @@ namespace GridDomain.EventSourcing.Sagas
 
             if (Machine.CanFire(triggerWithParameters.Trigger))
             {
-                var withParameters = (StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>) triggerWithParameters;
+                var withParameters = (StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<T>)triggerWithParameters;
                 Machine.Fire(withParameters, message);
             }
         }
