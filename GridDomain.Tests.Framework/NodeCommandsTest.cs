@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Framework
         protected void Init()
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
-            if(_clearDataOnStart)
+            if (_clearDataOnStart)
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 
             GridNode = CreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
@@ -83,12 +83,12 @@ namespace GridDomain.Tests.Framework
 
         private Type[] GetFaults(ICommand[] commands)
         {
-            var faultGeneric = typeof (CommandFault<>);
+            var faultGeneric = typeof(CommandFault<>);
             return commands.Select(c => faultGeneric.MakeGenericType(c.GetType())).ToArray();
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] {typeof(TEvent)}).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { typeof(TEvent) }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
@@ -97,7 +97,7 @@ namespace GridDomain.Tests.Framework
             return ExecuteAndWaitFor(messageTypes, commands);
         }
 
-        private ExpectedMessagesRecieved WaitForFirstOf(Action act, params Type[] messageTypes)
+        private ExpectedMessagesRecieved WaitForFirstOf(Action act, bool failOnCommandFault = true, params Type[] messageTypes)
         {
             var toWait = messageTypes.Select(m => new MessageToWait(m, 1)).ToArray();
             var actor = GridNode.System
@@ -122,20 +122,22 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine(msg.ToPropsString());
             Console.WriteLine("------end of message-----");
 
-            if (msg.Message is ICommandFault)
+            if (failOnCommandFault && msg.Message is ICommandFault)
+            {
                 Assert.Fail($"Command fault received: {msg.ToPropsString()}");
+            }
 
             return msg;
         }
 
         protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
-            return WaitForFirstOf(() => Execute(commands), messageTypes);
+            return WaitForFirstOf(() => Execute(commands), true, messageTypes);
         }
 
-        protected ExpectedMessagesRecieved WaitFor<TMessage>()
+        protected ExpectedMessagesRecieved WaitFor<TMessage>(bool failOnFault = true)
         {
-            return WaitForFirstOf(() => { }, typeof(TMessage));
+            return WaitForFirstOf(() => { }, failOnFault, typeof(TMessage));
         }
 
         private void Execute(ICommand[] commands)
