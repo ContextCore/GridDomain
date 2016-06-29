@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS.Messaging.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Framework", "GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj", "{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}"
 EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "GridDomain.NuGet", "GridDomain.NuGet\GridDomain.NuGet.nuproj", "{6F95E2BB-1037-412D-8BA8-26E016EA8B93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutoTesting|Any CPU = AutoTesting|Any CPU
