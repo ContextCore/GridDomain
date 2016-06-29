@@ -22,15 +22,16 @@
       <dependency id="TopShelf" version="4.0.1"/>
       <dependency id="Unity" version="3.5"/>
       <dependency id="Akka" version="1.0.8"/>
-      <dependency id="Akka.Cluster" version="1.0.8"/>
-      <dependency id="Akka.Cluster.Tools" version="1.0.8"/>
+      <dependency id="Akka.Cluster" version="1.0.8.4-beta"/>
+      <dependency id="Akka.Cluster.Tools" version="1.0.8.4-beta"/>
       <dependency id="Akka.DI.Core" version="1.0.8"/>
       <dependency id="Akka.DI.Unity" version="1.0.8"/>
       <dependency id="Akka.Logger.NLog" version="1.0.8"/>
-      <dependency id="Akka.Persistence" version="1.0.8"/>
-      <dependency id="Akka.Persistence.SqlServer" version="1.0.8"/>
+      <dependency id="Akka.Persistence" version="1.0.8.4-beta"/>
+      <dependency id="Akka.Persistence.SqlServer" version="1.0.8.4-beta"/>
+      <dependency id="Akka.Persistence.Sql.Common" version="1.0.8.4-beta"/>
       <dependency id="Akka.Remote" version="1.0.8"/>
-      <dependency id="Akka.Serialization.Wire" version="1.0.8"/>
+      <dependency id="Akka.Serialization.Wire" version="1.0.8.4-beta"/>
       <dependency id="EntityFramework" version="6.1.3"/>
       <dependency id="NEventStore" version="5.2.0"/>
       <dependency id="Quartz" version="2.3.3"/>
