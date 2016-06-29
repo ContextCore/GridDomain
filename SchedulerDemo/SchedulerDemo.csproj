@@ -38,10 +38,6 @@
       <HintPath>..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Cluster.1.0.8.25-beta\lib\net45\Akka.Cluster.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Akka.DI.Core, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.DI.Core.1.0.8\lib\net45\Akka.DI.Core.dll</HintPath>
       <Private>True</Private>
@@ -98,8 +94,8 @@
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Helios, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Helios.1.4.1\lib\net45\Helios.dll</HintPath>
+    <Reference Include="Helios, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Helios.1.4.2\lib\net45\Helios.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
