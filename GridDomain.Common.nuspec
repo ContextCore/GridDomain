@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>GridDomain.Common</id>
+    <version>1.0.0-alfa</version>
+    <authors>aleskov</authors>
+    <owners>aleskov</owners>
+    <licenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/andreyleskov/GridDomain/</projectUrl>
+    <iconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Libraries for domain development</description>
+    <copyright>Copyright © aleskov</copyright>
+    <tags>CQRS ES DDD Akka</tags>
+    <dependencies>
+      <dependency id="EntityFramework" version="6.1.3"/>
+      <dependency id="NEventStore" version="5.2.0"/>
+    </dependencies>
+  </metadata>
+
+<files>
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.dll" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.ReadModel.dll" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.EventSourcing.dll" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.EventSourcing.Sagas.dll" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.dll" target="lib\net461" /> 
+
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.pdb" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.ReadModel.pdb" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.EventSourcing.pdb" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.EventSourcing.Sagas.pdb" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.pdb" target="lib\net461" /> 
+
+</files>
+</package>
+
