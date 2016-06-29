@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Akka;
+using Akka.Actor;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
@@ -59,5 +60,16 @@ namespace GridDomain.Node.Actors
 
         public TAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
+
+        public override void AroundPreRestart(Exception cause, object message)
+        {
+            base.AroundPreRestart(cause, message);
+        }
+
+        protected override bool AroundReceive(Receive receive, object message)
+        {
+            return base.AroundReceive(receive, message);
+        }
+
     }
 }
