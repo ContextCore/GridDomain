@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
@@ -9,6 +10,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NLog;
+using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
 {
@@ -47,13 +49,13 @@ namespace GridDomain.Node.Actors
             _messagePublisher.Publish(message.Command);
         }
 
+        IDictionary<Guid, IActorRef> executingCommands = new Dictionary<Guid, IActorRef>();
+
         public void Handle(ExecuteConfirmedCommand message)
         {
-            var msgToWait = message.ConfirmationMessageTypes.Select(c => new MessageToWait(c, 1)).ToArray();
-
+            var msgToWait = message.Command.ExpectedMessages.Select(c => new MessageToWait(c, 1)).ToArray();
             var executor = Context.System.ActorOf(Props.Create(() => new MessageWaiter(Self, msgToWait)));
             _messagePublisher.Publish(message.Command);
-
         }
 
         protected override void PostStop()
@@ -94,13 +96,11 @@ namespace GridDomain.Node.Actors
 
         public class ExecuteConfirmedCommand
         {
-            public Type[] ConfirmationMessageTypes { get; }
-            public ICommand Command { get; }
+            public CommandWithKnownResult Command { get; }
 
-            public ExecuteConfirmedCommand(ICommand command, Type[] confirmationMessageTypes)
+            public ExecuteConfirmedCommand(CommandWithKnownResult command)
             {
                 Command = command;
-                ConfirmationMessageTypes = confirmationMessageTypes;
             }
         }
     }

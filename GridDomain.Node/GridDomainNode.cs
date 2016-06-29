@@ -112,9 +112,10 @@ namespace GridDomain.Node
                  _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
 
-        public void ConfirmedExecute(ICommand command, params Type[] confirmationMessageType)
+        public void ExecuteWithConfirmation(CommandWithKnownResult command)
         {
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.ExecuteConfirmedCommand(command, confirmationMessageType));
+            _mainNodeActor.Ask(new GridDomainNodeMainActor.ExecuteConfirmedCommand(command));
         }
+        
     }
 }

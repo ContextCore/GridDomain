@@ -10,6 +10,21 @@ namespace GridDomain.Node
     {
         void Execute(params ICommand[] commands);
 
-        void ConfirmedExecute(ICommand command, params Type[] confirmationMessageType);
+        void ExecuteWithConfirmation(CommandWithKnownResult command);
+    }
+
+
+    public class CommandWithKnownResult : Command
+    {
+        public Type[] ExpectedMessages { get; }
+
+        protected CommandWithKnownResult(Guid id, params Type[] expectedMessages) : base(id)
+        {
+            ExpectedMessages = expectedMessages;
+        }
+
+        protected CommandWithKnownResult(params Type[] expectedMessages) : this(Guid.NewGuid(), expectedMessages)
+        {
+        }
     }
 }
