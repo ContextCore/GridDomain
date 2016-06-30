@@ -14,8 +14,8 @@ namespace GridDomain.Tests.Framework
 
         public static void ClearData(IDbConfiguration conf)
         {
-            Delete(conf.ReadModelConnectionString, "TransactionHistories");
-            Delete(conf.ReadModelConnectionString, "BusinessAccounts");
+            //Delete(conf.ReadModelConnectionString, "TransactionHistories");
+            //Delete(conf.ReadModelConnectionString, "BusinessBalances");
         }
 
         public static void ClearData(IDbConfiguration conf, IAkkaDbConfiguration akkaConf)

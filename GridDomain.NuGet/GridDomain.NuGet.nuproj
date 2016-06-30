@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>6f95e2bb-1037-412d-8ba8-26e016ea8b93</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <PropertyGroup Label="Configuration">
+    <Id>GridDomain.NuGet</Id>
+    <Version>1.0.0-alfa</Version>
+    <Title>GridDomain.NuGet</Title>
+    <Authors>aleskov</Authors>
+    <Owners>aleskov</Owners>
+    <Summary>Simple distributed domain framework</Summary>
+    <Description>Framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model. </Description>
+    <ReleaseNotes>
+    </ReleaseNotes>
+    <ProjectUrl>https://github.com/andreyleskov/GridDomain/</ProjectUrl>
+    <LicenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</LicenseUrl>
+    <Copyright>Copyright © aleskov</Copyright>
+    <Tags>CQRS ES DDD Akka</Tags>
+    <IconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</IconUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging.Akka\GridDomain.CQRS.Messaging.Akka.csproj" />
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj" />
+    <ProjectReference Include="..\GridDomain.CQRS.ReadModel\GridDomain.CQRS.ReadModel.csproj" />
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj" />
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
+    <ProjectReference Include="..\GridDomain.EventStore.MSSQL\GridDomain.EventStore.MSSQL.csproj" />
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj" />
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" />
+</Project>

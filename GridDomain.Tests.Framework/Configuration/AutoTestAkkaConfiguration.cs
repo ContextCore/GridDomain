@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Framework.Configuration
 {
     public class AutoTestAkkaConfiguration : AkkaConfiguration
     {
-        public AutoTestAkkaConfiguration(LogVerbosity verbosity = LogVerbosity.Warning)
+        public AutoTestAkkaConfiguration(LogVerbosity verbosity = LogVerbosity.Trace)
             : base(new AutoTestAkkaNetworkAddress(),
                 new AutoTestAkkaDbConfiguration(),
                 verbosity)

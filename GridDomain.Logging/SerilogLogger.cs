@@ -11,7 +11,7 @@ namespace GridDomain.Logging
         static SerilogLogger()
         {
             Log =
-                new LoggerConfiguration().WriteTo.RollingFile("logs-{Date}.txt").CreateLogger();
+                new LoggerConfiguration().WriteTo.RollingFile("..\\..\\logs.txt").CreateLogger();
         }
 
         public ISoloLogger ForContext(string name, object value)

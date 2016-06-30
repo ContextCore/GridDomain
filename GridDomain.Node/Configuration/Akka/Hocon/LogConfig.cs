@@ -16,7 +16,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             var logConfig =
                 @"
                 stdout-loglevel = " + _akkaConf.LogLevel + @"
-                loglevel = " + _akkaConf.LogLevel;
+                loglevel=" + _akkaConf.LogLevel;
 
             logConfig += @"
                 loggers=[""GridDomain.Node.AkkaSoloLogger, GridDomain.Node""]
