@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BusinessNews.Domain.AccountAggregate.Commands;
 using GridDomain.Tests.Acceptance;
+using GridDomain.Tests.Framework;
 using NMoneys;
 using Ploeh.AutoFixture;
 

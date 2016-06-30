@@ -60,7 +60,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void RegisterProjectionGrop<T>(T @group) where T : IProjectionGroup
         {
-            throw new NotImplementedException();
+            var createActorRoute = new CreateActorRouteMessage(typeof(SynchronizationProcessingActor<T>),
+                                                               typeof(T).Name,
+                                                               @group.AcceptMessages.ToArray());
+            _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
         //TODO:replace with wait until event notifications

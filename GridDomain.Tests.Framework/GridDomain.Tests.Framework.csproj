@@ -121,6 +121,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoFix.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />

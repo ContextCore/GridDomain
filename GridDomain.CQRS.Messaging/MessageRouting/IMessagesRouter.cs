@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using CommonDomain.Core;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {

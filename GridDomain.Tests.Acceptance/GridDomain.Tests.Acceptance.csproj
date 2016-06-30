@@ -270,7 +270,6 @@
     <Compile Include="Persistence\SqlJournalPing.cs" />
     <Compile Include="Persistence\SqlJournalPingActor.cs" />
     <Compile Include="Persistence\SqlPersistenceConfigurationApplyTest.cs" />
-    <Compile Include="AutoFix.cs" />
     <Compile Include="Persistence\Sql_journal_availability_by_persistent_actor.cs" />
     <Compile Include="Persistence\Sql_journal_availability_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

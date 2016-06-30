@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests.Framework
 {
     public static class AutoFix
     {

@@ -1,7 +1,7 @@
 using System;
 using CommonDomain.Core;
 
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     public class TestAggregate : AggregateBase
     {
