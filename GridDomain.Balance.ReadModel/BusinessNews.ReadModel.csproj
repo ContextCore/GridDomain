@@ -118,13 +118,26 @@
       <Name>BusinessNews.Domain</Name>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
+      <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
+      <Name>GridDomain.CQRS.Messaging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.ReadModel\GridDomain.CQRS.ReadModel.csproj">
       <Project>{c5acc8b4-289d-4654-8976-ac7cdb8d4c5e}</Project>
       <Name>GridDomain.CQRS.ReadModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
+      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Name>GridDomain.CQRS</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
