@@ -1,11 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Akka;
-using Akka.Actor;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -13,7 +7,6 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-
     class ProjectionGroup: IProjectionGroup
     {
         private readonly IServiceLocator _locator;
@@ -38,21 +31,5 @@ namespace GridDomain.Node.Actors
         }
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();
         public IReadOnlyCollection<MessageRoute> AcceptMessages => _acceptMessages;
-    }
-
-
-    class SynchronizationProcessingActor<T> : UntypedActor where T: IProjectionGroup 
-    {
-        private readonly T _group;
-
-        public SynchronizationProcessingActor(T group)
-        {
-            _group = @group;
-        }
-
-        protected override void OnReceive(object message)
-        {
-            _group.Project(message);
-        }
     }
 }

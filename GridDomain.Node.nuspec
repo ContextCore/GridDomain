@@ -45,9 +45,11 @@
 <files>
   <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.dll" target="lib\net461" /> 
   <file src="GridDomain.Node\bin\Debug\GridDomain.Node.dll" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.Scheduling.dll" target="lib\net461" /> 
 
   <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.pdb" target="lib\net461" /> 
   <file src="GridDomain.Node\bin\Debug\GridDomain.Node.pdb" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.Scheduling.pdb" target="lib\net461" /> 
 </files>
 </package>
 

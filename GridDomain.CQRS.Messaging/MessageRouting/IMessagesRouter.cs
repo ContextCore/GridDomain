@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using CommonDomain.Core;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -19,36 +21,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
          
     }
+
+    public interface IProjectionGroup
+    {
+        void Project(object message);
+
+        IReadOnlyCollection<MessageRoute> AcceptMessages { get; }
+    }
 }
-
-public interface IProjectionPackBuilder
-{
-    IProjectionConfiguration<TBuilder> Builder<TBuilder>();
-    void Create();
-}
-
-public interface IProjectionConfiguration<T>
-{
-    IProjectionConfiguration<T> Message<TMessage>(Expression<Func<TMessage, Guid>> correlator);
-    IProjectionPackBuilder Create();
-}
-
-
-public class ProjectionPackBuidler: IProjectionPackBuilder
-{
-    
-}
-
-
-
-/* RegisterProjectionBuildersPack()
-        .Builder<Type>()
-          .Message<Msg1>(m => m.Id)
-          .Message<Msg2>((m => m.Id2).
-        .Create().
-        .Builder<Type>()
-           .Message<Msg3>((m => m.Id3)
-        .Create()
-   .Create() 
-
-    */

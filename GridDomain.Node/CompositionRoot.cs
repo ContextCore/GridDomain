@@ -1,5 +1,4 @@
-﻿using System;
-using Akka.Actor;
+﻿using Akka.Actor;
 using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -11,27 +10,6 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-    class UnityServiceLocator : IServiceLocator
-    {
-        private readonly IUnityContainer _container;
-
-        public UnityServiceLocator(IUnityContainer container)
-        {
-            _container = container;
-        }
-
-        public T Resolve<T>()
-        {
-            return _container.Resolve<T>();
-        }
-
-        public object Resolve(Type type)
-        {
-            return _container.Resolve(type);
-        }
-    }
-
-
     //TODO: refactor to good config
 
     public static class CompositionRoot

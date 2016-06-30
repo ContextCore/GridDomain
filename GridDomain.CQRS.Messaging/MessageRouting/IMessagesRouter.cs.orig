@@ -1,0 +1,79 @@
+﻿using System;
+using System.Linq.Expressions;
+using CommonDomain.Core;
+using GridDomain.EventSourcing.Sagas;
+
+namespace GridDomain.CQRS.Messaging.MessageRouting
+{
+    public interface IMessagesRouter
+    {
+        IRouteBuilder<TMessage> Route<TMessage>();
+
+        void RegisterAggregate<TAggregate, TCommandHandler>()
+            where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
+            where TAggregate : AggregateBase;
+
+        void RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor);
+
+        void RegisterSaga(ISagaDescriptor sagaDescriptor);
+
+         
+    }
+}
+
+public interface IProjectionPackBuilder
+{
+    IProjectionConfiguration<TBuilder> Builder<TBuilder>();
+    void Create();
+}
+
+public interface IProjectionConfiguration<T>
+{
+    IProjectionConfiguration<T> Message<TMessage>(Expression<Func<TMessage, Guid>> correlator);
+    IProjectionPackBuilder Create();
+}
+
+
+<<<<<<< Updated upstream
+public class ProjectionPackBuidler: IProjectionPackBuilder
+{
+    
+=======
+
+
+public class ProjectionGroup: IProjectionPackBuilder
+{
+    var msg = new Message
+    public IProjectionConfiguration<TBuilder> Builder<TBuilder>()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Create()
+    {
+        throw new NotImplementedException();
+    }
+>>>>>>> Stashed changes
+}
+
+
+
+/* RegisterProjectionBuildersPack()
+<<<<<<< Updated upstream
+        .Builder<Type>()
+          .Message<Msg1>(m => m.Id)
+          .Message<Msg2>((m => m.Id2).
+        .Create().
+        .Builder<Type>()
+           .Message<Msg3>((m => m.Id3)
+=======
+        .Builder<BusinessCurrentStateBuilder>()
+          .Message<BusinessCreatedEvent>(m => m.Id)
+        .Create().
+        .Builder<BusinessSubscriptionBuilder>()
+           .Message<BusinessSubscriptionUpdated>((m => m.Id3)
+>>>>>>> Stashed changes
+        .Create()
+   .Create() 
+
+    */
