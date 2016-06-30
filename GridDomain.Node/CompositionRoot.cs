@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -10,7 +11,6 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-
     class UnityServiceLocator : IServiceLocator
     {
         private readonly IUnityContainer _container;
@@ -23,6 +23,11 @@ namespace GridDomain.Node
         public T Resolve<T>()
         {
             return _container.Resolve<T>();
+        }
+
+        public object Resolve(Type type)
+        {
+            return _container.Resolve(type);
         }
     }
 

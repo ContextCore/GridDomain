@@ -196,6 +196,7 @@
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
+    <Compile Include="Actors\SynchronizationProcessingActor.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
