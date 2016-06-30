@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
@@ -53,7 +52,7 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
-            BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
+            //BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
             ConfigureLog(databaseConfiguration);
             Container.RegisterInstance(_messageRouting);
 
