@@ -36,12 +36,18 @@
       <dependency id="NEventStore" version="5.2.0"/>
       <dependency id="Quartz" version="2.3.3"/>
       <dependency id="System.Collections.Immutable" version="1.1.36"/>
+	  <dependency id="GridDomain.Common" version = "1.0.0-alfa"/>
+      <dependency id="GridDomain.Aggregates" version = "1.0.0-alfa"/>
+	  <dependency id="GridDomain.Read" version = "1.0.0-alfa"/>
     </dependencies>
   </metadata>
 
 <files>
-  <file src="GridDomain.Node\bin\Debug\GridDomain.*.dll" target="lib\net461" /> 
-  <file src="GridDomain.Node\bin\Debug\GridDomain.*.pdb" target="lib\net461"/>
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.dll" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.Node.dll" target="lib\net461" /> 
+
+  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.pdb" target="lib\net461" /> 
+  <file src="GridDomain.Node\bin\Debug\GridDomain.Node.pdb" target="lib\net461" /> 
 </files>
 </package>
 
