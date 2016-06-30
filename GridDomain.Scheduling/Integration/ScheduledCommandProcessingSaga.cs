@@ -2,6 +2,7 @@ using System;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Logging;
 
 namespace GridDomain.Scheduling.Integration
 {

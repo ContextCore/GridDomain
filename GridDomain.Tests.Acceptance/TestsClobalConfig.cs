@@ -1,8 +1,4 @@
-﻿using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Tests.Framework;
-using NLog;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance
 {
@@ -12,22 +8,24 @@ namespace GridDomain.Tests.Acceptance
         [SetUp]
         public void InitLoggers()
         {
-            InitLog(LogLevel.Error);
+            //InitLog(LogLevel.Error);
+            InitLog();
         }
 
-        public static void InitLog(LogLevel minLevel)
+        //public static void InitLog(LogLevel minLevel)
+        public static void InitLog()
         {
-            var logConfigurator = new LogConfigurator();
-            logConfigurator.InitConsole(minLevel);
+            //var logConfigurator = new LogConfigurator();
+            //logConfigurator.InitConsole(minLevel);
 
-            logConfigurator.InitDbLogging(minLevel,
-                TestEnvironment.Configuration.LogsConnectionString);
+            //logConfigurator.InitDbLogging(minLevel,
+            //    TestEnvironment.Configuration.LogsConnectionString);
 
-            //  logConfigurator.InitExternalLoggin(LogLevel.Trace);
-            logConfigurator.Apply();
+            ////  logConfigurator.InitExternalLoggin(LogLevel.Trace);
+            //logConfigurator.Apply();
 
-            var logger = LogManager.GetCurrentClassLogger();
-            logger.Info("Logging subsystem configured");
+            //var logger = LogManager.GetCurrentClassLogger();
+            //logger.Info("Logging subsystem configured");
         }
     }
 }

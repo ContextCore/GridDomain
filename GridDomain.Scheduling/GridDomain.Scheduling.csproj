@@ -127,11 +127,6 @@
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
-    <Compile Include="Integration\DefaultLoggerFactory.cs" />
-    <Compile Include="Integration\DefaultSoloLogger.cs" />
-    <Compile Include="Integration\ISoloLogger.cs" />
-    <Compile Include="Integration\LoggerFactory.cs" />
-    <Compile Include="Integration\LogManager.cs" />
     <Compile Include="Integration\ManageScheduledCommand.cs" />
     <Compile Include="Integration\SagaReceivedCommandEvent.cs" />
     <Compile Include="Integration\ScheduledSagaCreator.cs" />
@@ -196,6 +191,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

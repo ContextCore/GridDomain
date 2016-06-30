@@ -1,4 +1,5 @@
-﻿namespace GridDomain.Scheduling.Integration
+﻿
+namespace GridDomain.Logging
 {
     public static class LogManager
     {

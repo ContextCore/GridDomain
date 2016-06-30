@@ -1,14 +1,13 @@
 using Akka.Actor;
 using GridDomain.CQRS;
 using GridDomain.Logging;
-using NLog;
 
 namespace GridDomain.Node.Actors
 {
     public class MessageHandlingActor<TMessage, THandler> : UntypedActor where THandler : IHandler<TMessage>
     {
         private readonly THandler _handler;
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         public MessageHandlingActor(THandler handler)
         {
@@ -19,7 +18,7 @@ namespace GridDomain.Node.Actors
         protected override void OnReceive(object msg)
         {
             _log.Trace($"Handler actor got message: {msg.ToPropsString()}");
-            _handler.Handle((TMessage) msg);
+            _handler.Handle((TMessage)msg);
         }
     }
 }

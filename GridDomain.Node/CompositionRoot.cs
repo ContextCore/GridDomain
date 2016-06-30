@@ -3,6 +3,7 @@ using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
+using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
@@ -50,7 +51,7 @@ namespace GridDomain.Node
                 container.RegisterInstance<IPublisher>(transport);
                 container.RegisterInstance<IActorSubscriber>(transport);
             }
-
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
             //TODO: remove
             RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();

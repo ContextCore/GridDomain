@@ -1,10 +1,10 @@
-namespace GridDomain.Scheduling.Integration
+namespace GridDomain.Logging
 {
     public class DefaultLoggerFactory : LoggerFactory
     {
         public override ISoloLogger GetLogger()
         {
-            return new DefaultSoloLogger();
+            return new SerilogLogger();
         }
     }
 }

@@ -4,14 +4,13 @@ using System.Linq;
 using Akka.Actor;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
-using NLog;
 
 namespace GridDomain.Tests.Framework
 {
     public class ExplicitSourcesEventWaiter<T> : ReceiveActor where T : ISourcedEvent
     {
         private readonly Guid[] _collection;
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly HashSet<Guid> _set;
 
         public ExplicitSourcesEventWaiter(IActorRef notifyActor, params Guid[] sources)

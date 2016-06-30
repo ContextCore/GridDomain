@@ -1,6 +1,6 @@
 ﻿using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
-using NLog;
+
 using NUnit.Framework;
 
 namespace GridDomain.Tests
@@ -11,9 +11,9 @@ namespace GridDomain.Tests
         [SetUp]
         public void InitLoggers()
         {
-            var logConfigurator = new LogConfigurator();
-            logConfigurator.InitConsole(LogLevel.Trace, false);
-            logConfigurator.Apply();
+            //var logConfigurator = new LogConfigurator();
+            //logConfigurator.InitConsole(LogLevel.Trace, false);
+            //logConfigurator.Apply();
         }
     }
 }

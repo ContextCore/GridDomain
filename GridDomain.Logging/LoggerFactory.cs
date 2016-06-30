@@ -1,4 +1,4 @@
-namespace GridDomain.Scheduling.Integration
+namespace GridDomain.Logging
 {
     public abstract class LoggerFactory
     {
