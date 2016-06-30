@@ -175,6 +175,18 @@
     <Compile Include="ReadModelConcurrentBuild\Standalone_Smoke_Given_balance_change_plan_When_executing.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Balance.Node\BusinessNews.Node.csproj">
+      <Project>{BC419A4C-6DDD-493A-B395-45A5D5ACC555}</Project>
+      <Name>BusinessNews.Node</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Balance.ReadModel\BusinessNews.ReadModel.csproj">
+      <Project>{63B5A32B-3AE4-4CE3-A79D-3A4C0C3EC955}</Project>
+      <Name>BusinessNews.ReadModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Balance\BusinessNews.Domain.csproj">
+      <Project>{601F47B4-849C-49BC-AD2C-58B84DE229D6}</Project>
+      <Name>BusinessNews.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>

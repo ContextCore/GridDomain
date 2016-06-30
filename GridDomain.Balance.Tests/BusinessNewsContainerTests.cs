@@ -1,5 +1,4 @@
 using GridDomain.Node;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests;
 using Microsoft.Practices.Unity;

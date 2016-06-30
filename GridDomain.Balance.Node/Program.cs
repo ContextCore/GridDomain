@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Threading;
 using GridDomain.Node;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
-using NLog;
-using NLog.Config;
 using Topshelf;
 
 namespace BusinessNews.Node
@@ -25,8 +22,6 @@ namespace BusinessNews.Node
             var akkaConfig = container.Resolve<AkkaConfiguration>();
             var conf = new LocalDbConfiguration();
             CompositionRoot.Init(container, conf);
-
-            ConfigureLog(conf);
 
             HostFactory.Run(x =>
             {
@@ -59,13 +54,6 @@ namespace BusinessNews.Node
         {
         }
 
-        private static void ConfigureLog(IDbConfiguration dbConf)
-        {
-            var conf = new LogConfigurator(new LoggingConfiguration());
-            conf.InitDbLogging(LogLevel.Trace, dbConf.LogsConnectionString);
-            conf.InitExternalLoggin(LogLevel.Trace);
-            conf.InitConsole(LogLevel.Warn);
-            conf.Apply();
-        }
+        
     }
 }

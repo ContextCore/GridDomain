@@ -2,14 +2,13 @@ using System;
 using BusinessNews.Domain.AccountAggregate.Events;
 using CommonDomain.Core;
 using GridDomain.Logging;
-using NLog;
 using NMoneys;
 
 namespace BusinessNews.Domain.AccountAggregate
 {
     public class Account : AggregateBase
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         private Account(Guid id)
         {
