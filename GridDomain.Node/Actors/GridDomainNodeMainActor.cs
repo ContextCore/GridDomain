@@ -6,13 +6,12 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
-using NLog;
 
 namespace GridDomain.Node.Actors
 {
     public class GridDomainNodeMainActor : TypedActor
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
 

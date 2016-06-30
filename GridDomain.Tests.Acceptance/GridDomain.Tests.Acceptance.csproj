@@ -63,10 +63,6 @@
       <HintPath>..\packages\Akka.DI.Unity.1.0.8\lib\net45\Akka.DI.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Logger.NLog, Version=1.0.8.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Logger.NLog.1.0.8\lib\net45\Akka.Logger.NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Akka.Persistence, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Akka.Persistence.1.0.8.25-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
@@ -175,10 +171,6 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NMoneys, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NMoneys.4.2.0.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
@@ -281,8 +273,6 @@
     <Compile Include="Scheduling\Spec.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\TestEvent.cs" />
-    <Compile Include="Scheduling\TestHelpers\TestLogger.cs" />
-    <Compile Include="Scheduling\TestHelpers\TestLoggerFactory.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSaga.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaFactory.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaStartMessage.cs" />

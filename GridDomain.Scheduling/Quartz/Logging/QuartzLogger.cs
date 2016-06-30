@@ -1,15 +1,16 @@
 using System;
-using NLog;
+using GridDomain.Logging;
+
 
 namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class QuartzLogger : IQuartzLogger
     {
-        private readonly Logger _coreLogger;
+        private readonly ISoloLogger _coreLogger;
 
         public QuartzLogger()
         {
-            _coreLogger = LogManager.GetCurrentClassLogger();
+            _coreLogger = LogManager.GetLogger();
         }
 
         public void LogSuccess(string jobName)

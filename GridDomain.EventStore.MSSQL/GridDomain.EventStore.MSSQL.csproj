@@ -79,10 +79,6 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System">
       <Private>True</Private>
     </Reference>
@@ -116,15 +112,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LogPersistance\DbPersistTarget.cs" />
-    <Compile Include="LogPersistance\LogContext.cs" />
-    <Compile Include="LogPersistance\LogRecord.cs" />
-    <Compile Include="LogPersistance\SyncWriteNotSupported.cs" />
     <Compile Include="Migrations\CompactLogRecord.cs" />
     <Compile Include="Migrations\CompactLogRecord.Designer.cs">
       <DependentUpon>CompactLogRecord.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Initial.cs" />
     <Compile Include="Migrations\Initial.Designer.cs">
       <DependentUpon>Initial.cs</DependentUpon>

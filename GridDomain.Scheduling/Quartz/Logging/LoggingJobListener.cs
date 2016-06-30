@@ -1,11 +1,11 @@
-using NLog;
+using GridDomain.Logging;
 using Quartz;
 
 namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class LoggingJobListener : ILoggingJobListener
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         public string Name => GetType().Name;
 

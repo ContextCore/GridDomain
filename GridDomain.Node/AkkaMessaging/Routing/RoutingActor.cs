@@ -4,10 +4,9 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Routing;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
-using NLog;
+using GridDomain.Logging;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
@@ -15,7 +14,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                                                      IHandler<CreateActorRouteMessage>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
-        protected readonly Logger _log = LogManager.GetCurrentClassLogger();
+        protected readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IActorSubscriber _subscriber;
 
         protected RoutingActor(IHandlerActorTypeFactory actorTypeFactory,

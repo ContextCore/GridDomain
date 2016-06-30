@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         {
             var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
             TestDbTools.ClearData(autoTestGridDomainConfiguration);
-            GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
+            //GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 
             var system = CreateSystem(AkkaConfig);
             var container = new UnityContainer();

@@ -10,6 +10,7 @@ using Akka.DI.Unity;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Akka;
@@ -54,7 +55,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         private IUnityContainer Register(ActorSystem system)
         {
             var container = Container.CreateChildScope();
-            Node.CompositionRoot.Init(container, system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone);
+            CompositionRoot.Init(container, system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone);
             container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
 
             container.RegisterType<AggregateActor<TestAggregate>>();
@@ -71,7 +72,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [SetUp]
         public void SetUp()
         {
-            LogManager.SetLoggerFactory(new TestLoggerFactory());
+            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", 18723);
             CreateScheduler();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
@@ -80,7 +81,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [TearDown]
         public void TearDown()
         {
-            TestLogger.Clear();
             ResultHolder.Clear();
             _quartzScheduler.Shutdown(true);
         }

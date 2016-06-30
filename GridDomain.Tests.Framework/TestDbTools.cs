@@ -1,8 +1,5 @@
-﻿using System;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Linq;
-using GridDomain.EventStore.MSSQL.LogPersistance;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
 
@@ -19,7 +16,6 @@ namespace GridDomain.Tests.Framework
         {
             Delete(conf.ReadModelConnectionString, "TransactionHistories");
             Delete(conf.ReadModelConnectionString, "BusinessAccounts");
-            Delete(conf.LogsConnectionString, nameof(LogRecord) + "s");
         }
 
         public static void ClearData(IDbConfiguration conf, IAkkaDbConfiguration akkaConf)

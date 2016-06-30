@@ -2,6 +2,7 @@
 
 namespace GridDomain.Logging
 {
+
     public static class ObjectLogExtensions
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
