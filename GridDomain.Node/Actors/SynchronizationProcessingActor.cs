@@ -10,10 +10,6 @@ using GridDomain.CQRS.Messaging;
 
 namespace GridDomain.Node.Actors
 {
-   
-    //Actor provide synchronous, in-order processing of different messages
-    //Can be used for dependent projection builders
-
     class MessageHandlerInformation
     {
         public MessageHandlerInformation(Type handler, Type message)
