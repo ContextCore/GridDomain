@@ -10,8 +10,9 @@ namespace GridDomain.Logging
 
         static SerilogLogger()
         {
-            Log =
-                new LoggerConfiguration().WriteTo.RollingFile("C:\\Logs\\logs-{Date}.txt").CreateLogger();
+            Log =  new LoggerConfiguration().WriteTo.RollingFile("C:\\Logs\\logs-{Date}.txt")
+                                            //.WriteTo.Slack("https://hooks.slack.com/services/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")
+                                            .CreateLogger();
         }
 
         public ISoloLogger ForContext(string name, object value)
