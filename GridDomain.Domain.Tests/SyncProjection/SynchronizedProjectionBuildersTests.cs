@@ -7,6 +7,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using GridDomain.Tests.SyncProjection.SampleDomain;
@@ -17,7 +18,8 @@ namespace GridDomain.Tests.SyncProjection
     [TestFixture]
     class SynchronizedProjectionBuildersTests : NodeCommandsTest
     {
-        public SynchronizedProjectionBuildersTests(string config, string name = null, bool clearDataOnStart = true) : base(config, name, clearDataOnStart)
+        public SynchronizedProjectionBuildersTests():
+            base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "Projection builders", false)
         {
         }
 
