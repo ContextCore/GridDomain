@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Framework
         [TestFixtureSetUp]
         protected void Init()
         {
-            var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
+            var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             if (_clearDataOnStart)
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 

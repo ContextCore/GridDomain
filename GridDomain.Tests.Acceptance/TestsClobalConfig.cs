@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Acceptance
             logConfigurator.InitConsole(minLevel);
 
             logConfigurator.InitDbLogging(minLevel,
-                TestEnvironment.Configuration.LogsConnectionString);
+                 new AutoTestLocalDbConfiguration().LogsConnectionString);
 
             //  logConfigurator.InitExternalLoggin(LogLevel.Trace);
             logConfigurator.Apply();
