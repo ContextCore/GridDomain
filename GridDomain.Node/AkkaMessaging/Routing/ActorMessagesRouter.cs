@@ -58,6 +58,11 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
+        public void RegisterProjectionGrop<T>(T @group) where T : IProjectionGroup
+        {
+            throw new NotImplementedException();
+        }
+
         //TODO:replace with wait until event notifications
         public void WaitForRouteConfiguration()
         {
