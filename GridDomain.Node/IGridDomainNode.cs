@@ -1,3 +1,4 @@
+using System;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node

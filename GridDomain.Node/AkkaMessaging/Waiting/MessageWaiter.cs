@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using GridDomain.Tests.Framework;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
