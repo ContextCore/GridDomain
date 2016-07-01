@@ -12,9 +12,4 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
             Value = value;
         }
     }
-
-    public interface IHaveProcessingHistory
-    {
-        ProcessedHistory History { get; }
-    }
 }

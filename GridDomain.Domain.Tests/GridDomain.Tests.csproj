@@ -181,11 +181,13 @@
     <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateChangedEvent.cs" />
     <Compile Include="SyncProjection\SampleDomain\CreateAggregateCommand.cs" />
+    <Compile Include="SyncProjection\SampleDomain\IHaveProcessingHistory.cs" />
     <Compile Include="SyncProjection\SampleDomain\ProcessedHistory.cs" />
-    <Compile Include="SyncProjection\SampleDomain\TestAggregate.cs" />
+    <Compile Include="SyncProjection\SampleDomain\SampleAggregate.cs" />
     <Compile Include="SyncProjection\SampleDomain\TestAggregatesCommandHandler.cs" />
     <Compile Include="SyncProjection\SampleDomain\ChangeAggregateCommand.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateCreatedEvent.cs" />
+    <Compile Include="SyncProjection\SampleDomain\TestProjectionGroup.cs" />
     <Compile Include="SyncProjection\SampleDomain\TestRouteMap.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
