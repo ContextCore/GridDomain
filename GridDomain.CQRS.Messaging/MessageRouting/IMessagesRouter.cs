@@ -18,6 +18,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         void RegisterSaga(ISagaDescriptor sagaDescriptor);
 
-        void RegisterProjectionGrop<T>(T group) where T : IProjectionGroup;
+        void RegisterProjectionGroup<T>(T group) where T : IProjectionGroup;
     }
 }

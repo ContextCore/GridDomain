@@ -12,6 +12,7 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
             AggregateCreatedProjectionBuilder.ProjectionGroupHashCode = this.GetHashCode();
             Add<AggregateChangedEvent,AggregateChangedProjectionBuilder>(nameof(AggregateChangedEvent.SourceId));
             Add<AggregateCreatedEvent,AggregateCreatedProjectionBuilder>(nameof(AggregateCreatedEvent.SourceId));
+            Add<AggregateCreatedEvent,AggregateCreatedProjectionBuilder_Alternative>(nameof(AggregateCreatedEvent.SourceId));
         }
     }
 }

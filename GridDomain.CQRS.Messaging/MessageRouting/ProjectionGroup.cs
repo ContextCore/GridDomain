@@ -6,7 +6,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     public class ProjectionGroup: IProjectionGroup
     {
         private readonly IServiceLocator _locator;
-        readonly Dictionary<Type, Action<object>> _handlers = new Dictionary<Type, Action<object>>();
+        readonly Dictionary<Type, List<Action<object>>> _handlers = new Dictionary<Type, List<Action<object>>>();
 
         public ProjectionGroup(IServiceLocator locator)
         {
@@ -16,7 +16,15 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public void Add<TMessage, THandler>(string correlationPropertyName ) where THandler : IHandler<TMessage>
         {
             var handler = _locator.Resolve<THandler>();
-            _handlers[typeof (TMessage)] =  o => handler.Handle((TMessage) o);
+
+            List<Action<object>> builderList;
+
+            if (!_handlers.TryGetValue(typeof (TMessage), out builderList))
+            {
+                builderList = new List<Action<object>>();
+                _handlers[typeof (TMessage)] = builderList;
+            }
+            builderList.Add(o => handler.Handle((TMessage) o));
 
             _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
         }
@@ -24,8 +32,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public void Project(object message)
         {
             var msgType = message.GetType();
-            var handler = _handlers[msgType];
-            handler(message);
+            foreach(var handler in _handlers[msgType])
+                        handler(message);
         }
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();
         public IReadOnlyCollection<MessageRoute> AcceptMessages => _acceptMessages;
