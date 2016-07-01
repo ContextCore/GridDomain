@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    class ProjectionGroup: IProjectionGroup
+    public class ProjectionGroup: IProjectionGroup
     {
         private readonly IServiceLocator _locator;
         readonly Dictionary<Type, Action<object>> _handlers = new Dictionary<Type, Action<object>>();

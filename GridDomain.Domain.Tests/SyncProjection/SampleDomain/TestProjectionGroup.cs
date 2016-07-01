@@ -1,4 +1,5 @@
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Actors;
 
 namespace GridDomain.Tests.SyncProjection.SampleDomain

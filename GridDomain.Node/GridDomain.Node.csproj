@@ -198,7 +198,6 @@
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
-    <Compile Include="Actors\ProjectionGroup.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
     <Compile Include="Actors\SynchronizationProcessingActor.cs" />
