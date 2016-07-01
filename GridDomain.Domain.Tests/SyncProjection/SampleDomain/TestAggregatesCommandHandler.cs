@@ -17,6 +17,9 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
 
             Map<CreateAggregateCommand>(c => c.AggregateId,
                                         c => new SampleAggregate(c.AggregateId, c.Parameter.ToString()));
+
+            Map<ChangeAggregateWaitableCommand>(c => c.AggregateId,
+                                        (c, a) => a.LongExecute(c.Parameter));
         }
 
         public Type AggregateType => typeof(SampleAggregate);

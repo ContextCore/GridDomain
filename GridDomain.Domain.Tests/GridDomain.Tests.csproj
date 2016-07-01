@@ -177,6 +177,7 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateChangedEvent.cs" />
