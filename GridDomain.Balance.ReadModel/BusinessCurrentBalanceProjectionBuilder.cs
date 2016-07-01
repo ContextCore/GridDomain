@@ -1,7 +1,7 @@
 ﻿using BusinessNews.Domain.AccountAggregate.Events;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
-using NLog;
+using GridDomain.Logging;
 
 namespace BusinessNews.ReadModel
 {
@@ -10,7 +10,7 @@ namespace BusinessNews.ReadModel
         IEventHandler<PayedForBillEvent>,
         IEventHandler<AccountCreatedEvent>
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _logger = LogManager.GetLogger();
         private readonly IReadModelCreator<BusinessAccount> _modelBuilder;
         private readonly IPublisher _publisher;
 

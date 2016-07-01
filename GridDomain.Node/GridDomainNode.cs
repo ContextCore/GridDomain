@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using BusinessNews.ReadModel;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
-using NLog;
-using NLog.Config;
 
 namespace GridDomain.Node
 {
@@ -27,7 +23,7 @@ namespace GridDomain.Node
             {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
 
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IMessageRouteMap _messageRouting;
         private readonly TransportMode _transportMode;
         public readonly ActorSystem[] AllSystems;
@@ -53,8 +49,6 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
-            BusinessBalanceContext.DefaultConnectionString = databaseConfiguration.ReadModelConnectionString;
-            ConfigureLog(databaseConfiguration);
             Container.RegisterInstance(_messageRouting);
 
             foreach (var system in AllSystems)
@@ -79,15 +73,6 @@ namespace GridDomain.Node
             System.Terminate();
             System.Dispose();
             _log.Info($"GridDomain node {Id} stopped");
-        }
-
-        public static void ConfigureLog(IDbConfiguration dbConf)
-        {
-            var conf = new LogConfigurator(new LoggingConfiguration());
-            conf.InitDbLogging(LogLevel.Trace, dbConf.LogsConnectionString);
-            conf.InitExternalLoggin(LogLevel.Trace);
-            conf.InitConsole(LogLevel.Warn);
-            conf.Apply();
         }
 
 

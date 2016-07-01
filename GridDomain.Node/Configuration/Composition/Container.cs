@@ -3,7 +3,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    [Obsolete("Inject contaienr instead")]
+    [Obsolete("Inject container instead")]
     public class Container
     {
         public static UnityContainer Current => Factory.Value;

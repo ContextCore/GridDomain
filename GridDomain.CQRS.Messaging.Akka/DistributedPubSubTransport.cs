@@ -2,13 +2,13 @@ using System;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using GridDomain.Logging;
-using NLog;
+using LogManager = GridDomain.Logging.LogManager;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
     public class DistributedPubSubTransport : IActorSubscriber, IPublisher
     {
-        private readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IActorRef _transport;
 
         public DistributedPubSubTransport(ActorSystem system)

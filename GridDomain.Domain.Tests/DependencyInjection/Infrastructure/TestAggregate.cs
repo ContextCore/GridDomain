@@ -1,6 +1,5 @@
 using System;
 using CommonDomain.Core;
-using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
@@ -24,15 +23,4 @@ namespace GridDomain.Tests.DependencyInjection.Infrastructure
 
         public string Value;
     }
-    public class TestDomainEvent : DomainEvent
-    {
-        public string Value;
-        public TestDomainEvent(string value, Guid sourceId, DateTime? createdTime = default(DateTime?), Guid sagaId = default(Guid)) : base(sourceId, createdTime, sagaId)
-        {
-            Value = value;
-
-        }
-    }
-
-
 }

@@ -1,8 +1,10 @@
-namespace GridDomain.Node.AkkaMessaging.Waiting
+using System.Collections.Generic;
+
+namespace GridDomain.Tests.Framework
 {
     public class ExpectedMessagesRecieved<T> : ExpectedMessagesRecieved
     {
-        public ExpectedMessagesRecieved(T msg) : base(msg)
+        public ExpectedMessagesRecieved(T msg) : base(msg, new List<object>())
         {
             Message = msg;
         }
@@ -12,11 +14,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     public class ExpectedMessagesRecieved
     {
-        public ExpectedMessagesRecieved(object msg)
+        public ExpectedMessagesRecieved(object msg, List<object> objects)
         {
             Message = msg;
+            Recieved = objects;
         }
 
         public object Message { get; private set; }
+
+        public List<object> Recieved { get; } 
     }
 }

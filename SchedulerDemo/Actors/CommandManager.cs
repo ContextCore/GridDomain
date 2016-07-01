@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Scheduling.Akka.Messages;
 using SchedulerDemo.Events;
@@ -112,7 +113,7 @@ namespace SchedulerDemo.Actors
 
         private static ExecutionOptions CreateOptions(int seconds)
         {
-            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTime.UtcNow.AddSeconds(seconds), ExecutionTimeout);
+            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTimeFacade.UtcNow.AddSeconds(seconds), ExecutionTimeout);
         }
 
         private static TimeSpan ExecutionTimeout

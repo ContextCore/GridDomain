@@ -38,10 +38,6 @@
       <HintPath>..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Cluster.1.0.8.25-beta\lib\net45\Akka.Cluster.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Akka.DI.Core, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.DI.Core.1.0.8\lib\net45\Akka.DI.Core.dll</HintPath>
       <Private>True</Private>
@@ -52,6 +48,14 @@
     </Reference>
     <Reference Include="Akka.Persistence, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.0.8.25-beta\lib\net45\Akka.Persistence.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.Sql.Common.1.0.8.25-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence.SqlServer, Version=1.0.8.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.SqlServer.1.0.8.4-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Remote, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
@@ -90,8 +94,8 @@
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Helios, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Helios.1.4.1\lib\net45\Helios.dll</HintPath>
+    <Reference Include="Helios, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Helios.1.4.2\lib\net45\Helios.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="KellermanSoftware.Compare-NET-Objects, Version=3.5.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL">
@@ -122,8 +126,8 @@
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq, Version=4.5.8.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.5.8\lib\net45\Moq.dll</HintPath>
+    <Reference Include="Moq, Version=4.5.9.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.5.9\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -131,11 +135,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -177,12 +177,24 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\Infrastructure.cs" />
+    <Compile Include="SyncProjection\SampleDomain\AggregateChangedProjectionBuilder.cs" />
+    <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder.cs" />
+    <Compile Include="SyncProjection\SampleDomain\AggregateChangedEvent.cs" />
+    <Compile Include="SyncProjection\SampleDomain\CreateAggregateCommand.cs" />
+    <Compile Include="SyncProjection\SampleDomain\IHaveProcessingHistory.cs" />
+    <Compile Include="SyncProjection\SampleDomain\ProcessedHistory.cs" />
+    <Compile Include="SyncProjection\SampleDomain\SampleAggregate.cs" />
+    <Compile Include="SyncProjection\SampleDomain\TestAggregatesCommandHandler.cs" />
+    <Compile Include="SyncProjection\SampleDomain\ChangeAggregateCommand.cs" />
+    <Compile Include="SyncProjection\SampleDomain\AggregateCreatedEvent.cs" />
+    <Compile Include="SyncProjection\SampleDomain\TestProjectionGroup.cs" />
+    <Compile Include="SyncProjection\SampleDomain\TestRouteMap.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregatesCommandHandler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestCommand.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestDependencyImplementation.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestRouteMap.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="HydrationSpecification.cs" />
@@ -209,6 +221,7 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
+    <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>

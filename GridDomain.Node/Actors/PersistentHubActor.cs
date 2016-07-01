@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Akka.Actor;
 using Akka.DI.Core;
-using CommonDomain.Core;
 
 namespace GridDomain.Node.Actors
 {

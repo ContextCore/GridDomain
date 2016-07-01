@@ -15,12 +15,15 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             var logConfig =
                 @"
-      stdout-loglevel = " + _akkaConf.LogLevel + @"
-      loglevel = " + _akkaConf.LogLevel;
+                stdout-loglevel = " + _akkaConf.LogLevel + @"
+                loglevel=" + _akkaConf.LogLevel;
 
-            if (_includeConfig)
-                logConfig += @"
-      log-config-on-start = on";
+            logConfig += @"
+                loggers=[""GridDomain.Node.AkkaSoloLogger, GridDomain.Node""]
+                ";
+                    if (_includeConfig)
+                    logConfig += @"
+                log-config-on-start = on";
 
             return logConfig;
         }

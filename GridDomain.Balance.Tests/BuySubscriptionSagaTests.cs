@@ -10,6 +10,7 @@ using BusinessNews.Domain.SubscriptionAggregate;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Tests.Acceptance;
+using GridDomain.Tests.Framework;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 

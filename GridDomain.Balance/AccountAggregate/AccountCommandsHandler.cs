@@ -3,7 +3,6 @@ using BusinessNews.Domain.AccountAggregate.Commands;
 using CommonDomain.Persistence;
 using GridDomain.CQRS;
 using GridDomain.Logging;
-using NLog;
 
 namespace BusinessNews.Domain.AccountAggregate
 {
@@ -13,7 +12,7 @@ namespace BusinessNews.Domain.AccountAggregate
         ICommandHandler<CreateAccountCommand>
 
     {
-        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         private readonly IRepository _repository;
 

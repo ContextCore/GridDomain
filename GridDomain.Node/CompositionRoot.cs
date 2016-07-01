@@ -3,6 +3,7 @@ using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
+using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
@@ -10,23 +11,6 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-
-    class UnityServiceLocator : IServiceLocator
-    {
-        private readonly IUnityContainer _container;
-
-        public UnityServiceLocator(IUnityContainer container)
-        {
-            _container = container;
-        }
-
-        public T Resolve<T>()
-        {
-            return _container.Resolve<T>();
-        }
-    }
-
-
     //TODO: refactor to good config
 
     public static class CompositionRoot
@@ -50,7 +34,7 @@ namespace GridDomain.Node
                 container.RegisterInstance<IPublisher>(transport);
                 container.RegisterInstance<IActorSubscriber>(transport);
             }
-
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
             //TODO: remove
             RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();

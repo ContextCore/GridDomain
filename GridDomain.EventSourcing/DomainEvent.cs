@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GridDomain.Common;
 
 namespace GridDomain.EventSourcing
 {
@@ -8,7 +9,7 @@ namespace GridDomain.EventSourcing
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))
         {
             SourceId = sourceId;
-            CreatedTime = createdTime ?? DateTime.UtcNow;
+            CreatedTime = createdTime ?? DateTimeFacade.UtcNow;
             SagaId = sagaId;
         }
 

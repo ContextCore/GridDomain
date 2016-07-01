@@ -18,4 +18,6 @@ namespace GridDomain.EventSourcing
         DateTime CreatedTime { get; }
         int Version { get; }
     }
+
+
 }

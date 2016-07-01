@@ -1,4 +1,5 @@
 ﻿using System;
+using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
@@ -10,11 +11,11 @@ namespace GridDomain.CQRS
             Time = time;
         }
 
-        protected Command(Guid id) : this(id, DateTime.UtcNow)
+        protected Command(Guid id) : this(id, DateTimeFacade.UtcNow)
         {
         }
 
-        protected Command() : this(Guid.NewGuid(), DateTime.UtcNow)
+        protected Command() : this(Guid.NewGuid(), DateTimeFacade.UtcNow)
         {
         }
 
