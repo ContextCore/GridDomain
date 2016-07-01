@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -26,14 +27,15 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             }
             builderList.Add(o => handler.Handle((TMessage) o));
 
-            _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
+            if(_acceptMessages.All(m => m.MessageType != typeof (TMessage)))
+                _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
         }
 
         public void Project(object message)
         {
             var msgType = message.GetType();
             foreach(var handler in _handlers[msgType])
-                        handler(message);
+                handler(message);
         }
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();
         public IReadOnlyCollection<MessageRoute> AcceptMessages => _acceptMessages;
