@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Tests.DependencyInjection;
 
 namespace GridDomain.Tests.SyncProjection.SampleDomain
 {
-    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
+    public class TestAggregatesCommandHandler : AggregateCommandsHandler<SampleAggregate>,
                                                         IAggregateCommandsHandlerDesriptor
 
     {
@@ -17,11 +15,11 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
             Map<ChangeAggregateCommand>(c => c.AggregateId,
                                        (c, a) => a.ChangeState(c.Parameter));
 
-            Map<ChangeAggregateCommand>(c => c.AggregateId,
-                                        c => new TestAggregate(c.AggregateId, c.Parameter.ToString()));
+            Map<CreateAggregateCommand>(c => c.AggregateId,
+                                        c => new SampleAggregate(c.AggregateId, c.Parameter.ToString()));
         }
 
-        public Type AggregateType => typeof(TestAggregate);
+        public Type AggregateType => typeof(SampleAggregate);
 
         public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands => GetRegisteredCommands();
     }

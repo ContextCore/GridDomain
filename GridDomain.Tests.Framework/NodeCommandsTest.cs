@@ -81,29 +81,30 @@ namespace GridDomain.Tests.Framework
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-        private Type[] GetFaults(ICommand[] commands)
+        private MessageToWait[] GetFaults(ICommand[] commands)
         {
             var faultGeneric = typeof(CommandFault<>);
             return commands.Select(c => c.GetType())
                            .Distinct()
-                           .Select(commandType => faultGeneric.MakeGenericType(commandType)).ToArray();
+                           .Select(commandType => faultGeneric.MakeGenericType(commandType))
+                           .Select(t => new MessageToWait(t, 0))
+                           .ToArray();
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] { typeof(TEvent) }).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { MessageToWait.Once<TEvent>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] { typeof(TMessage1), typeof(TMessage2) }).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { MessageToWait.Once<TMessage1>(), MessageToWait.Once<TMessage1>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitForMany<TMessage1, TMessage2>(int eventAnum, int eventBnum, params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Select(m => new MessageToWait(m, 1));
             var msg1ToWait = new MessageToWait(typeof(TMessage1), eventAnum);
             var msg2ToWait = new MessageToWait(typeof(TMessage2), eventBnum);
-            var allMsgToWait = messageTypes.Concat(new [] {msg1ToWait, msg2ToWait}).ToArray();
+            var allMsgToWait = GetFaults(commands).Concat(new [] {msg1ToWait, msg2ToWait}).ToArray();
 
             return Wait(() => Execute(commands), true, allMsgToWait);
         }
@@ -144,6 +145,11 @@ namespace GridDomain.Tests.Framework
         protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
             return Wait(() => Execute(commands), true, messageTypes.Select(m => new MessageToWait(m,1)).ToArray());
+        }
+
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor(MessageToWait[] messageToWait, params ICommand[] commands)
+        {
+            return Wait(() => Execute(commands), true, messageToWait);
         }
 
         protected ExpectedMessagesRecieved WaitFor<TMessage>(bool failOnFault = true)

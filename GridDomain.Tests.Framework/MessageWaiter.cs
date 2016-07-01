@@ -24,8 +24,9 @@ namespace GridDomain.Tests.Framework
             _allReceivedEvents.Add(message);
 
             if (!_messageCounters.ContainsKey(type)) return;
-            if (--_messageCounters[type] > 0) return;
-
+            --_messageCounters[type];
+            if (_messageCounters.Any(c => c.Value > 0)) return;
+                
             _notifyActor.Tell(new ExpectedMessagesRecieved(message, _allReceivedEvents));
         }
     }
