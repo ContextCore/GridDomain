@@ -266,7 +266,6 @@
     <Compile Include="Persistence\SqlJournalPing.cs" />
     <Compile Include="Persistence\SqlJournalPingActor.cs" />
     <Compile Include="Persistence\SqlPersistenceConfigurationApplyTest.cs" />
-    <Compile Include="AutoFix.cs" />
     <Compile Include="Persistence\Sql_journal_availability_by_persistent_actor.cs" />
     <Compile Include="Persistence\Sql_journal_availability_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -355,6 +354,9 @@
       <Project>{2f2cdec2-28ca-4520-b44a-ba7b5a399145}</Project>
       <Name>SchedulerDemo</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ProjectionBuilders\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

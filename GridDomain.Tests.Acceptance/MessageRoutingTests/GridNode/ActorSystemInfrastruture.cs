@@ -14,6 +14,7 @@ using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
@@ -35,7 +36,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 
         public virtual void Init(IActorRef notifyActor)
         {
-            var autoTestGridDomainConfiguration = TestEnvironment.Configuration;
+            var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             TestDbTools.ClearData(autoTestGridDomainConfiguration);
             //GridDomainNode.ConfigureLog(autoTestGridDomainConfiguration);
 

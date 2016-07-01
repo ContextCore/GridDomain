@@ -1,11 +1,11 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.DependencyInjection.Infrastructure
+namespace GridDomain.Tests.SyncProjection.SampleDomain
 {
-    public class TestCommand : Command
+    public class CreateAggregateCommand : Command
     {
-        public TestCommand(int parameter, Guid aggregateId)
+        public CreateAggregateCommand(int parameter, Guid aggregateId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

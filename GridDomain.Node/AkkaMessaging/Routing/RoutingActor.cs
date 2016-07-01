@@ -5,6 +5,7 @@ using Akka.DI.Core;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
 

@@ -198,8 +198,10 @@
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
+    <Compile Include="Actors\ProjectionGroup.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
+    <Compile Include="Actors\SynchronizationProcessingActor.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
@@ -207,7 +209,6 @@
     <Compile Include="AkkaMessaging\Routing\CreateActorRouteMessage.cs" />
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
-    <Compile Include="AkkaMessaging\MessageRoute.cs" />
     <Compile Include="AkkaMessaging\Routing\ClusterSystemRouterActor.cs" />
     <Compile Include="AkkaMessaging\Routing\DublicateRoutesException.cs" />
     <Compile Include="AkkaMessaging\Routing\LocalSystemRoutingActor.cs" />
@@ -225,6 +226,7 @@
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
+    <Compile Include="Configuration\Akka\Hocon\EmptyConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\PersistenceConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\ClusterConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\IAkkaConfig.cs" />
@@ -250,6 +252,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AkkaSoloLogger.cs" />
     <Compile Include="TransportMode.cs" />
+    <Compile Include="UnityServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

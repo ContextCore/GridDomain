@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     public interface ITestDependency
     {

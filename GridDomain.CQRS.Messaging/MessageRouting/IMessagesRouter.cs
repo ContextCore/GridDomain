@@ -1,4 +1,7 @@
-﻿using CommonDomain.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using CommonDomain.Core;
 using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
@@ -14,5 +17,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         void RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor);
 
         void RegisterSaga(ISagaDescriptor sagaDescriptor);
+
+        void RegisterProjectionGrop<T>(T group) where T : IProjectionGroup;
     }
 }

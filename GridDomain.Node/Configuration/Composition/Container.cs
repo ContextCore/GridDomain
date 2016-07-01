@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Configuration.Composition
 {
     [Obsolete("Inject container instead")]
     public class Container
