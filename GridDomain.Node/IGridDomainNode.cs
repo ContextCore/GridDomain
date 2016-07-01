@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node
@@ -15,14 +16,13 @@ namespace GridDomain.Node
     public class CommandWithKnownResult : Command
     {
         public Type[] ExpectedMessages { get; }
+        public Guid EventId { get; }
 
-        protected CommandWithKnownResult(Guid id, params Type[] expectedMessages) : base(id)
+        protected CommandWithKnownResult(Guid id, Guid eventId,Type expectedMessageType) : base(id)
         {
-            ExpectedMessages = expectedMessages;
-        }
-
-        protected CommandWithKnownResult(params Type[] expectedMessages) : this(Guid.NewGuid(), expectedMessages)
-        {
+            var commandFaultType = typeof(CommandFault<>).MakeGenericType(this.GetType());
+            ExpectedMessages = new [] { commandFaultType, expectedMessageType };
+            EventId = eventId;
         }
     }
 }

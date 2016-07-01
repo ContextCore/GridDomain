@@ -69,7 +69,7 @@ namespace GridDomain.Tests
 
         public Guid AggregateId { get; }
 
-        public ChangeAggregateWaitableCommand(int param, Guid aggregateId) : base(typeof(AggregateChangedEvent))
+        public ChangeAggregateWaitableCommand(int param, Guid aggregateId) : base(Guid.NewGuid(), aggregateId, typeof(AggregateChangedEvent))
         {
             Parameter = param;
             AggregateId = aggregateId;
