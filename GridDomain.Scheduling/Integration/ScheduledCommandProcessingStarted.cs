@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
@@ -11,7 +12,7 @@ namespace GridDomain.Scheduling.Integration
         public ScheduleKey Key { get; }
         public Type SuccessEventType { get; }
 
-        private ScheduledCommandProcessingStarted(Command command, ScheduleKey key, Type successEventType) : base(key.Id, DateTime.UtcNow, key.Id)
+        private ScheduledCommandProcessingStarted(Command command, ScheduleKey key, Type successEventType) : base(key.Id, DateTimeFacade.UtcNow, key.Id)
         {
             Command = command;
             Key = key;

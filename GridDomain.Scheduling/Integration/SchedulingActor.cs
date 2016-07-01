@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
@@ -27,7 +28,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                Sender.Tell(new Failure { Exception = e, Timestamp = DateTime.UtcNow });
+                Sender.Tell(new Failure { Exception = e, Timestamp = DateTimeFacade.UtcNow });
             }
         }
 
@@ -63,7 +64,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                Sender.Tell(new Failure { Exception = e, Timestamp = DateTime.UtcNow });
+                Sender.Tell(new Failure { Exception = e, Timestamp = DateTimeFacade.UtcNow });
             }
         }
 

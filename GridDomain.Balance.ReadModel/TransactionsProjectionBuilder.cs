@@ -1,5 +1,6 @@
 using System;
 using BusinessNews.Domain.AccountAggregate.Events;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.ReadModel;
 using GridDomain.Logging;
@@ -27,7 +28,7 @@ namespace BusinessNews.ReadModel
                 Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
                 TransactionAmount = msg.Amount,
-                Time = DateTime.Now
+                Time = DateTimeFacade.Now
             });
         }
 
@@ -39,7 +40,7 @@ namespace BusinessNews.ReadModel
                 EventType = typeof (AccountCreatedEvent).Name,
                 Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
-                Time = DateTime.Now
+                Time = DateTimeFacade.Now
             });
         }
 
@@ -52,7 +53,7 @@ namespace BusinessNews.ReadModel
                 Event = msg.ToPropsString(),
                 Id = Guid.NewGuid(),
                 TransactionAmount = msg.Amount,
-                Time = DateTime.Now
+                Time = DateTimeFacade.Now
             });
         }
     }

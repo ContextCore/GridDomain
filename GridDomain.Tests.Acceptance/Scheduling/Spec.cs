@@ -7,6 +7,7 @@ using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
@@ -72,6 +73,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [SetUp]
         public void SetUp()
         {
+            DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", 18723);
             CreateScheduler();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
@@ -90,12 +92,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _quartzScheduler = _container.Resolve<IScheduler>();
         }
 
+      
+
         [Test]
         public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()
         {
             var sagaId = Guid.NewGuid();
-            var testEvent = new TestSagaStartMessage(sagaId, DateTime.UtcNow, sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            var testEvent = new TestSagaStartMessage(sagaId, DateTimeFacade.UtcNow, sagaId);
+            _scheduler.Ask<Scheduled>(new ScheduleEvent(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTimeFacade.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
             var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotStartEvent);
@@ -105,12 +109,12 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_domain_event_for_a_started_saga_is_scheduled_Then_saga_receives_it()
         {
             var sagaId = Guid.NewGuid();
-            var startEvent = new TestSagaStartMessage(sagaId, DateTime.UtcNow, sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            var startEvent = new TestSagaStartMessage(sagaId, DateTimeFacade.UtcNow, sagaId);
+            _scheduler.Ask<Scheduled>(new ScheduleEvent(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTimeFacade.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
 
             var secondEvent = new TestEvent(sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleEvent(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
+            _scheduler.Ask<Scheduled>(new ScheduleEvent(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTimeFacade.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaTransitionEvent<TestSaga.TestStates, TestSaga.Transitions>>();
             var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotSecondEvent);
@@ -171,7 +175,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         private ExecutionOptions CreateOptions(double seconds)
         {
-            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTime.UtcNow.AddSeconds(seconds), Timeout);
+            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTimeFacade.UtcNow.AddSeconds(seconds), Timeout);
         }
 
         [Test]
