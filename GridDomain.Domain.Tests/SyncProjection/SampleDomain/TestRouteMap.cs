@@ -15,7 +15,7 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
         public void Register(IMessagesRouter router)
         {
             router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
-            router.RegisterProjectionGrop(new TestProjectionGroup(_locator));
+            router.RegisterProjectionGroup(new TestProjectionGroup(_locator));
         }
     }
 }
