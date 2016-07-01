@@ -12,5 +12,15 @@ namespace GridDomain.Tests.Framework
 
         public Type MessageType { get; }
         public int Count { get; }
+
+        public static MessageToWait Once(Type messageType)
+        {
+            return new MessageToWait(messageType, 1);
+        }
+
+        public static MessageToWait Once<T>()
+        {
+            return new MessageToWait(typeof(T), 1);
+        }
     }
 }

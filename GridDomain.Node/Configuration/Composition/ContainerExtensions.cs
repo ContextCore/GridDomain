@@ -1,9 +1,8 @@
 using CommonDomain.Core;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Node.Configuration.Composition;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Configuration.Composition
 {
     public static class ContainerExtensions
     {

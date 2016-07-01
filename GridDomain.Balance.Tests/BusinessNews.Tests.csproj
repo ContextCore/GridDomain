@@ -174,6 +174,10 @@
       <Project>{B008531E-4879-4547-A5E1-B30AD176A669}</Project>
       <Name>GridDomain.Tests.Acceptance</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
+      <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
+      <Name>GridDomain.Tests.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
