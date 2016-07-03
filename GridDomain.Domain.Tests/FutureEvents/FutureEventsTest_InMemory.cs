@@ -26,7 +26,7 @@ namespace GridDomain.Tests.FutureEvents
         }
 
         [Test]
-        public void Given_aggregate_When_raising_future_event_Then_it_fires_in_time(DateTime timeToRaise)
+        public void Given_aggregate_When_raising_future_event_Then_it_fires_in_time()
         {
             var scheduledTime = DateTime.Now.AddSeconds(1);
             var aggregate = RaiseFutureEventInTime(scheduledTime);
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.FutureEvents
         [Test]
         public void Given_aggregate_When_raising_future_event_in_past_Then_it_fires_immediatly()
         {
-            var scheduledTime = DateTime.Now.AddSeconds(-1);
+            var scheduledTime = DateTime.Now.AddSeconds(-5);
             var now = DateTime.Now;
             var aggregate = RaiseFutureEventInTime(scheduledTime);
             Assert.AreEqual(now.Second, aggregate.ProcessedTime.Second);
