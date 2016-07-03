@@ -37,7 +37,7 @@ namespace GridDomain.Node
             }
             LogManager.SetLoggerFactory(new DefaultLoggerFactory());
             //TODO: remove
-            RegisterEventStore(container, conf);
+            //RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));

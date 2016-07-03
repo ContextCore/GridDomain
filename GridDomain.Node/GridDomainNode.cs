@@ -14,7 +14,6 @@ using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
-using LogManager = NLog.LogManager;
 
 namespace GridDomain.Node
 {

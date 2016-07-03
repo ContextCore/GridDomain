@@ -48,7 +48,7 @@ namespace GridDomain.Tests.FutureEvents
                 TransportMode.Standalone,
                 ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()));
 
-            WaitFor<TestDomainEvent>(node.System);
+            WaitFor<TestDomainEvent>();
 
             var aggregate = LoadAggregate<TestAggregate>(testCommand.AggregateId);
             Assert.AreEqual(scheduledTime.Second, aggregate.ProcessedTime.Second);
