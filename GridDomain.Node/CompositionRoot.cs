@@ -12,8 +12,9 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
+    //TODO: refactor to good config via IContainerConfiguration
     public static class CompositionRoot
-    { 
+    {
     //TODO: refactor to good config via IContainerConfiguration
         public static void Init(IUnityContainer container,
                             ActorSystem actorSystem,

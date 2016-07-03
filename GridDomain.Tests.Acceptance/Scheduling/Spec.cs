@@ -77,6 +77,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             }
         }
      
+     
 
         [SetUp]
         public void SetUp()

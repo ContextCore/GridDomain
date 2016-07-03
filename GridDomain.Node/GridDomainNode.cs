@@ -10,10 +10,12 @@ using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
+using LogManager = NLog.LogManager;
 
 namespace GridDomain.Node
 {
@@ -97,6 +99,7 @@ namespace GridDomain.Node
             _persistentScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
+
 
             _log.Info($"GridDomain node {Id} stopped");
         }
