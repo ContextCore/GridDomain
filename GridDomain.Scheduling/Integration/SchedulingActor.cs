@@ -14,7 +14,7 @@ namespace GridDomain.Scheduling.Integration
         {
             _scheduler = scheduler;
             Receive<ScheduleCommand>(message => Schedule(message));
-            Receive<ScheduleEvent>(message => Schedule(message));
+            Receive<ScheduleMessage>(message => Schedule(message));
             Receive<Unschedule>(message => Unschedule(message));
         }
 
@@ -37,7 +37,7 @@ namespace GridDomain.Scheduling.Integration
             Schedule(() => QuartzJob.Create(message.Key, message.Command, message.Options), message.Options.RunAt, message.Key);
         }
 
-        private void Schedule(ScheduleEvent message)
+        private void Schedule(ScheduleMessage message)
         {
             Schedule(() => QuartzJob.Create(message.Key, message.Event), message.RunAt, message.Key);
         }
@@ -54,6 +54,7 @@ namespace GridDomain.Scheduling.Integration
                     .Build();
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
+
             }
             catch (JobPersistenceException e)
             {

@@ -196,6 +196,15 @@
     <Compile Include="DependencyInjection\Infrastructure\TestDependencyImplementation.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestRouteMap.cs" />
+    <Compile Include="FutureEvents\CustomContainerConfiguration.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest_InMemory.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest_Persistent.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestAggregate.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestAggregatesCommandHandler.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestDomainEvent.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestRouteMap.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="HydrationSpecification.cs" />
     <Compile Include="EventsExtensions.cs" />

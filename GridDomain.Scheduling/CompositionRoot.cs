@@ -12,11 +12,11 @@ namespace GridDomain.Scheduling
 {
     public class CompositionRoot
     {
-        public static IUnityContainer Compose(IUnityContainer container)
+        public static IUnityContainer Compose(IUnityContainer container, IQuartzConfig config)
         {
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
-            container.RegisterType<IQuartzConfig, QuartzConfig>();
+            container.RegisterInstance<IQuartzConfig>(config);
             container.RegisterType<IQuartzLogger, QuartzLogger>();
             container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();

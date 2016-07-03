@@ -112,7 +112,7 @@ namespace GridDomain.Tests.Framework
 
         private ExpectedMessagesRecieved Wait(Action act, bool failOnCommandFault = true, params MessageToWait[] messagesToWait)
         {
-            var actor = GridNode.System
+            var actor = actorSystem
                                 .ActorOf(Props.Create(() => new MessageWaiter(messagesToWait, TestActor)),
                                          "MessageWaiter_" + Guid.NewGuid());
 

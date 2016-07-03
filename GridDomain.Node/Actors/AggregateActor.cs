@@ -10,9 +10,12 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.FutureEvents;
+using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
+    //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -21,11 +24,14 @@ namespace GridDomain.Node.Actors
     {
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
+        private readonly TypedMessageActor<ScheduleCommand> _schdulerActorRef;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
+                              TypedMessageActor<ScheduleCommand> schdulerActorRef,
                               IPublisher publisher)
         {
+            _schdulerActorRef = schdulerActorRef;
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
@@ -45,17 +51,41 @@ namespace GridDomain.Node.Actors
                 }
                 
                 var aggregate = (IAggregate) Aggregate;
-                
-                var events = aggregate.GetUncommittedEvents()
-                    .Cast<DomainEvent>()
-                    .Select(e => e.CloneWithSaga(cmd.SagaId));
+           
+                var uncommittedEvents = aggregate.GetUncommittedEvents();
 
-                PersistAll(events, e => _publisher.Publish(e));
+                var events = uncommittedEvents
+                                .Cast<DomainEvent>()
+                                .Select(e => e.CloneWithSaga(cmd.SagaId));
+
+                PersistAll(events, e =>
+                {
+                    ScheduleFutureEvent(e);
+                    _publisher.Publish(e);
+                });
                 aggregate.ClearUncommittedEvents();
             });
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+        }
+
+        private void ScheduleFutureEvent(DomainEvent e)
+        {
+            var futureEvent = e as FutureDomainEvent;
+            if (futureEvent == null) return;
+
+            var scheduleKey = new ScheduleKey(futureEvent.SourceId,
+                $"{PersistenceId}_event_{futureEvent.SourceId}",
+                $"{typeof (TAggregate).Name}_futureEvents");
+
+            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent),
+                                                    scheduleKey, 
+                                                    new ExecutionOptions(futureEvent.RaiseTime,
+                                                                         futureEvent.Event.GetType())
+                                                    );
+
+            _schdulerActorRef.Handle(scheduleEvent);
         }
 
         public TAggregate Aggregate { get; private set; }
@@ -72,4 +102,6 @@ namespace GridDomain.Node.Actors
         }
 
     }
+
+ 
 }

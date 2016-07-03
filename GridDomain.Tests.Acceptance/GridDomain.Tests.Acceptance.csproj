@@ -240,6 +240,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemTest.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Cluster_not_correlated_routing.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorTypeFactory.cs" />

@@ -39,10 +39,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
                 memberExpression = (MemberExpression) property.Body;
             }
 
-            return ((PropertyInfo) memberExpression.Member).Name;
+            var memberInfo = memberExpression.Member as PropertyInfo;
+            if(memberInfo == null)
+                throw new ArgumentException("Cannot find property while extracting name from expressiom");
+            return  memberInfo.Name;
         }
-
- 
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Action<TCommand, TAggregate> commandExecutor, IServiceLocator container) where TCommand : ICommand

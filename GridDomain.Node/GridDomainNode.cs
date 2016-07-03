@@ -9,8 +9,12 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
+using LogManager = NLog.LogManager;
 
 namespace GridDomain.Node
 {
@@ -27,20 +31,33 @@ namespace GridDomain.Node
         private readonly IMessageRouteMap _messageRouting;
         private readonly TransportMode _transportMode;
         public readonly ActorSystem[] AllSystems;
-
+        public IActorRef PersistentScheduler;
+        private Quartz.IScheduler _persistentScheduler;
         public readonly ActorSystem System;
         private IActorRef _mainNodeActor;
+        private readonly IContainerConfiguration _configuration;
+
 
         public GridDomainNode(IUnityContainer container,
-            IMessageRouteMap messageRouting,
-            TransportMode transportMode,
-            params ActorSystem[] actorAllSystems)
+                              IMessageRouteMap messageRouting,
+                              TransportMode transportMode,
+                              params ActorSystem[] actorAllSystems)
+            : this(new EmptyContainerConfig(),messageRouting,transportMode,actorAllSystems)
         {
+            Container = container;
+        }
+
+        public GridDomainNode(IContainerConfiguration configuration,
+                              IMessageRouteMap messageRouting,
+                              TransportMode transportMode,
+                              params ActorSystem[] actorAllSystems)
+        {
+            _configuration = configuration;
             _transportMode = transportMode;
-            _messageRouting = messageRouting;
+            _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
             AllSystems = actorAllSystems;
             System = AllSystems.Last();
-            Container = container;
+            Container= new UnityContainer();
         }
 
         public IUnityContainer Container { get; }
@@ -53,28 +70,37 @@ namespace GridDomain.Node
 
             foreach (var system in AllSystems)
             {
-                var r = new UnityDependencyResolver(Container, system);
-               // system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
-                CompositionRoot.Init(Container.CreateChildContainer(),
-                    system,
-                    databaseConfiguration,
-                    _transportMode);
+                system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
+                Container.CreateChildContainer().Register(new GridNodeContainerConfiguration(system,
+                                                    databaseConfiguration,
+                                                    _transportMode));
             }
-            CompositionRoot.Init(Container,
-                System,
-                databaseConfiguration,
-                _transportMode);
+
+            Container.Register(new GridNodeContainerConfiguration(System,
+                                               databaseConfiguration,
+                                               _transportMode));
+
+            PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
+          
+            Container.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
+            Container.RegisterInstance(new TypedMessageActor<ScheduleCommand>(PersistentScheduler));
+            Container.RegisterInstance(new TypedMessageActor<Unschedule>(PersistentScheduler));
+
+            _configuration.Register(Container);
+
+            _persistentScheduler = Container.Resolve<Quartz.IScheduler>();
 
             StartMainNodeActor(System);
         }
 
         public void Stop()
         {
+            _persistentScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
+
             _log.Info($"GridDomain node {Id} stopped");
         }
-
 
         private void StartMainNodeActor(ActorSystem actorSystem)
         {
@@ -86,7 +112,7 @@ namespace GridDomain.Node
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
-                .Wait(TimeSpan.FromSeconds(2));
+            .Wait(TimeSpan.FromSeconds(2));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
         }

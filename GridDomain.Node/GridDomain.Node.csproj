@@ -244,6 +244,12 @@
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
     <Compile Include="Configuration\Composition\Container.cs" />
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
+    <Compile Include="EmptyContainerConfig.cs" />
+    <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
+    <Compile Include="FutureEvents\FutureDomainEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventsAggregate.cs" />
+    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
+    <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="AkkaMessaging\Routing\ActorMessagesRouter.cs" />
