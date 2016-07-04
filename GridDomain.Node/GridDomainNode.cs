@@ -97,9 +97,10 @@ namespace GridDomain.Node
                  _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
         }
 
-        //public ICommandStatus ExecuteTracking(ICommand command)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public void ExecuteWithConfirmation(CommandWithKnownResult command)
+        {
+            _mainNodeActor.Ask(new GridDomainNodeMainActor.ExecuteConfirmedCommand(command));
+        }
+        
     }
 }

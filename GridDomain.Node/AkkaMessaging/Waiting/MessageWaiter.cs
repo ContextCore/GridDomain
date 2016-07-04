@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using GridDomain.Tests.Framework;
 
-namespace GridDomain.Tests.Framework
+namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class MessageWaiter : UntypedActor
     {
@@ -11,7 +12,7 @@ namespace GridDomain.Tests.Framework
         private readonly IActorRef _notifyActor;
         private readonly List<object> _allReceivedEvents;
 
-        public MessageWaiter(MessageToWait[] messagesToWait, IActorRef notifyActor)
+        public MessageWaiter(IActorRef notifyActor, params MessageToWait[] messagesToWait)
         {
             _notifyActor = notifyActor;
             _messageCounters = messagesToWait.ToDictionary(m => m.MessageType, m => m.Count);
