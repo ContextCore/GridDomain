@@ -1,4 +1,5 @@
 using Akka.Actor;
+using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Tests.Framework
 {

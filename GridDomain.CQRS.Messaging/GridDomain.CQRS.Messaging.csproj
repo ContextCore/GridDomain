@@ -120,6 +120,7 @@
     <Compile Include="MessageRouting\IProjectionGroup.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />
     <Compile Include="MessageRouting\MessageRoute.cs" />
+    <Compile Include="MessageRouting\ProjectionGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
