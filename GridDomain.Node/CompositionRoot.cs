@@ -7,18 +7,20 @@ using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-    //TODO: refactor to good config
-
+    //TODO: refactor to good config via IContainerConfiguration
     public static class CompositionRoot
     {
+    //TODO: refactor to good config via IContainerConfiguration
         public static void Init(IUnityContainer container,
-            ActorSystem actorSystem,
-            IDbConfiguration conf,
-            TransportMode transportMode)
+                            ActorSystem actorSystem,
+                            IDbConfiguration conf,
+                            TransportMode transportMode,
+                            IQuartzConfig config = null)
         {
             //TODO: replace with config
 
@@ -36,18 +38,16 @@ namespace GridDomain.Node
             }
             LogManager.SetLoggerFactory(new DefaultLoggerFactory());
             //TODO: remove
-            RegisterEventStore(container, conf);
+            //RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
-            container.RegisterType<IServiceLocator,UnityServiceLocator>();
-            Scheduling.CompositionRoot.Compose(container);
+            container.RegisterType<IServiceLocator, UnityServiceLocator>();
+
+            //TODO: replace with better implementation
+            Scheduling.CompositionRoot.Compose(container, config ?? new PersistedQuartzConfig());
         }
 
-        public static void RegisterEventStore(IUnityContainer container, IDbConfiguration conf)
-        {
-            container.RegisterInstance(conf);
-            container.RegisterType<IConstructAggregates, AggregateFactory>();
-        }
     }
+
 }

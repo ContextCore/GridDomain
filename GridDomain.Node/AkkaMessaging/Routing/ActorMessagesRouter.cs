@@ -34,7 +34,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
             var descriptor = new AggregateCommandsHandlerDesriptor<TAggregate>();
-            foreach(var info in new TCommandHandler().GetRegisteredCommands())
+            foreach(var info in new TCommandHandler().RegisteredCommands)
                 descriptor.RegisterCommand(info.Command,info.Property);
             RegisterAggregate(descriptor);
         }

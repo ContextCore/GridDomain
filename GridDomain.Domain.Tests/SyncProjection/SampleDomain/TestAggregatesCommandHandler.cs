@@ -23,7 +23,5 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
         }
 
         public Type AggregateType => typeof(SampleAggregate);
-
-        public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands => GetRegisteredCommands();
     }
 }

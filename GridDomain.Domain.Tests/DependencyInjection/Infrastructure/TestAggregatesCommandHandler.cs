@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
@@ -21,7 +20,5 @@ namespace GridDomain.Tests.DependencyInjection.Infrastructure
         }
 
         public Type AggregateType => typeof(TestAggregate);
-
-        public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands => GetRegisteredCommands();
     }
 }
