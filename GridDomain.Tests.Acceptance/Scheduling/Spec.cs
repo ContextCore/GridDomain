@@ -71,11 +71,12 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             return container;
         }
 
+
         [SetUp]
         public void SetUp()
         {
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
-            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", 18723);
+            
             CreateScheduler();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();
@@ -93,7 +94,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _quartzScheduler = _container.Resolve<IScheduler>();
         }
 
-      
+        [Test]
+        public void LogTest()
+        {
+            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", 18723);
+        }
 
         [Test]
         public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()
