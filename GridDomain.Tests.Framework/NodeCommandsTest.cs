@@ -107,13 +107,13 @@ namespace GridDomain.Tests.Framework
             var msg2ToWait = new MessageToWait(typeof(TMessage2), eventBnum);
             var allMsgToWait = GetFaults(commands).Concat(new [] {msg1ToWait, msg2ToWait}).ToArray();
 
-            return Wait(() => Execute(commands), true, allMsgToWait);
+            return Wait(() => Execute(commands), GridNode.System, true, allMsgToWait);
         }
 
 
-        private ExpectedMessagesRecieved Wait(Action act, bool failOnCommandFault = true, params MessageToWait[] messagesToWait)
+        private ExpectedMessagesRecieved Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params MessageToWait[] messagesToWait)
         {
-            var actor = GridNode.System
+            var actor = system
                                 .ActorOf(Props.Create(() => new MessageWaiter(TestActor, messagesToWait)),
                                          "MessageWaiter_" + Guid.NewGuid());
 
@@ -145,17 +145,17 @@ namespace GridDomain.Tests.Framework
 
         protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
-            return Wait(() => Execute(commands), true, messageTypes.Select(m => new MessageToWait(m,1)).ToArray());
+            return Wait(() => Execute(commands), GridNode.System,true, messageTypes.Select(m => new MessageToWait(m,1)).ToArray());
         }
 
         protected ExpectedMessagesRecieved ExecuteAndWaitFor(MessageToWait[] messageToWait, params ICommand[] commands)
         {
-            return Wait(() => Execute(commands), true, messageToWait);
+            return Wait(() => Execute(commands), GridNode.System, true, messageToWait);
         }
 
         protected ExpectedMessagesRecieved WaitFor<TMessage>(bool failOnFault = true)
         {
-            return Wait(() => { }, failOnFault, new MessageToWait(typeof(TMessage), 1));
+            return Wait(() => { }, GridNode.System, failOnFault, new MessageToWait(typeof(TMessage), 1));
         }
 
         private void Execute(ICommand[] commands)

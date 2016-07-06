@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Akka, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
+      <HintPath>..\packages\Akka.1.0.8\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Cluster, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
@@ -245,6 +245,12 @@
     <Compile Include="Configuration\Composition\Container.cs" />
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessagesRecieved.cs" />
+    <Compile Include="EmptyContainerConfig.cs" />
+    <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
+    <Compile Include="FutureEvents\FutureDomainEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventsAggregate.cs" />
+    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
+    <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="AkkaMessaging\Routing\ActorMessagesRouter.cs" />

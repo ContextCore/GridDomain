@@ -48,7 +48,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             _commandHandlers[typeof (TCommand)] = handler;
         }
 
-        protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
+        public void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
@@ -60,10 +60,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
         }
 
-        public IReadOnlyCollection<AggregateLookupInfo> GetRegisteredCommands()
+        public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands
         {
-            return _commandHandlers.Select(h => new AggregateLookupInfo (h.Key,h.Value.MachingProperty)).ToArray();
+            get
+            {
+                return _commandHandlers.Select(h => new AggregateLookupInfo(h.Key, h.Value.MachingProperty)).ToArray();
+            }
         }
-
     }
 }

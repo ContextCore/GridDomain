@@ -41,7 +41,7 @@ namespace GridDomain.Tests.DependencyInjection
             Assert.NotNull(actorRef);
         }
 
-        public AggregatesDI() : base(new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Trace).ToStandAloneInMemorySystemConfig(), "TestSystem", false)
+        public AggregatesDI() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "TestSystem", false)
         {
 
         }
@@ -51,6 +51,7 @@ namespace GridDomain.Tests.DependencyInjection
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();
+
             container.RegisterType<ITestDependency, TestDependencyImplementation>();
             container.RegisterInstance<IServiceLocator>(new UnityServiceLocator(container));
             container.RegisterAggregate<TestAggregate,TestAggregatesCommandHandler>();
