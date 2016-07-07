@@ -10,6 +10,7 @@ using GridDomain.CQRS.ReadModel;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using Microsoft.Practices.Unity;
 
@@ -24,17 +25,15 @@ namespace BusinessNews.Node
 
             RegisterSaga_BuySubscription(container);
 
-            RegisterAggregate_Account(container);
-
-            RegisterAggregate_Bill(container);
-
-            RegisterAggregate_Business(container);
-
-            RegisterAggregate_Subscription(container);
+            container.RegisterAggregate<Account, AccountAggregateCommandsHandler>();
+            container.RegisterAggregate<Bill, BillAggregateCommandsHandler>();
+            container.RegisterAggregate<Business, BusinessAggregateCommandsHandler>();
+            container.RegisterAggregate<Subscription, SubscriptionAggregateCommandsHandler>();
         }
 
         private static void RegisterSaga_BuySubscription(IUnityContainer container)
         {
+
             container
                 .RegisterType<ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>, BuySubscriptionSagaFactory>();
             container.RegisterType<ISagaFactory<BuySubscriptionSaga, SubscriptionOrderedEvent>, BuySubscriptionSagaFactory>();
@@ -57,38 +56,6 @@ namespace BusinessNews.Node
                     new ReadModelCreatorRetryDecorator<TransactionHistory>(
                         new SqlReadModelCreator<TransactionHistory>(contextFactory))));
             container.RegisterType<TransactionsProjectionBuilder>();
-        }
-
-        private static void RegisterAggregate_Subscription(IUnityContainer container)
-        {
-            container.RegisterType<AggregateActor<Subscription>>();
-            container.RegisterType<AggregateHubActor<Subscription>>();
-            container.RegisterType<ICommandAggregateLocator<Subscription>, SubscriptionAggregateCommandsHandler>();
-            container.RegisterType<IAggregateCommandsHandler<Subscription>, SubscriptionAggregateCommandsHandler>();
-        }
-
-        private static void RegisterAggregate_Business(IUnityContainer container)
-        {
-            container.RegisterType<AggregateActor<Business>>();
-            container.RegisterType<AggregateHubActor<Business>>();
-            container.RegisterType<ICommandAggregateLocator<Business>, BusinessAggregateCommandsHandler>();
-            container.RegisterType<IAggregateCommandsHandler<Business>, BusinessAggregateCommandsHandler>();
-        }
-
-        private static void RegisterAggregate_Bill(IUnityContainer container)
-        {
-            container.RegisterType<AggregateActor<Bill>>();
-            container.RegisterType<AggregateHubActor<Bill>>();
-            container.RegisterType<ICommandAggregateLocator<Bill>, BillAggregateCommandsHandler>();
-            container.RegisterType<IAggregateCommandsHandler<Bill>, BillAggregateCommandsHandler>();
-        }
-
-        private static void RegisterAggregate_Account(IUnityContainer container)
-        {
-            container.RegisterType<AggregateActor<Account>>();
-            container.RegisterType<AggregateHubActor<Account>>();
-            container.RegisterType<ICommandAggregateLocator<Account>, AccountAggregateCommandsHandler>();
-            container.RegisterType<IAggregateCommandsHandler<Account>, AccountAggregateCommandsHandler>();
         }
     }
 }

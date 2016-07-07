@@ -18,7 +18,7 @@ namespace GridDomain.Tests.FutureEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
         protected override IQuartzConfig CreateQuartzConfig()
         {
