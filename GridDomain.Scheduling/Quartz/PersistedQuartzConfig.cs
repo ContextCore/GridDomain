@@ -4,7 +4,7 @@ namespace GridDomain.Scheduling.Quartz
 {
     public class PersistedQuartzConfig : IQuartzConfig
     {
-        public string ConnectionString => @"Data Source=(localdb);Initial Catalog=Quartz;Integrated Security = true";
+        public string ConnectionString => @"Data Source=(localdb)\v11.0;Initial Catalog=Quartz;Integrated Security = true";
         public string StorageType => "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
 
         public NameValueCollection Settings => new NameValueCollection
