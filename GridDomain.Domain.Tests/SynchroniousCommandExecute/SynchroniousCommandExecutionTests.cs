@@ -10,8 +10,10 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SyncProjection.SampleDomain;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -33,10 +35,14 @@ namespace GridDomain.Tests
         {
             var container = new UnityContainer();
             var system = ActorSystemFactory.CreateActorSystem(akkaConf);
-            CompositionRoot.Init(container, system, dbConfig, TransportMode.Standalone);
-            container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
+          //  CompositionRoot.Init(container, system, dbConfig, TransportMode.Standalone);
+           // container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
 
-            return new GridDomainNode(container,
+            var config = new CustomContainerConfiguration(
+                     c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
+                     c => c.RegisterInstance(new InMemoryQuartzConfig()));
+
+            return new GridDomainNode(config,
                                       new TestRouteMap(new UnityServiceLocator(container)),
                                       TransportMode.Standalone, system);
         }
@@ -46,9 +52,10 @@ namespace GridDomain.Tests
         public void When_command_executed_synchroniosly_Then_aggregate_already_has_events_after_finish()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
-            GridNode.ConfirmedExecute(syncCommand, 
-                                      ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId)),
-                                      Timeout);
+            GridNode.ConfirmedExecute(syncCommand,
+                                      Timeout,
+                                      ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),syncCommand.AggregateId)
+                                      );
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter, aggregate.Value);
         }

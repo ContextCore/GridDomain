@@ -124,10 +124,11 @@ namespace GridDomain.Node
                  _mainNodeActor.Tell(cmd);
         }
 
-        public void ConfirmedExecute(ICommand command, ExpectedMessage expect, TimeSpan timeout)
+        public void ConfirmedExecute(ICommand command, TimeSpan timeout, params ExpectedMessage[] expect)
         {
-            ConfirmedExecute(new CommandAndConfirmation(command, expect, timeout));
+            ConfirmedExecute(new CommandAndConfirmation(command, timeout, expect));
         }
+        
 
         public void ConfirmedExecute(CommandAndConfirmation command)
         {

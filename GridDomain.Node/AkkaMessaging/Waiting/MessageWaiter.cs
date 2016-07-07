@@ -12,13 +12,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public class CommandAndConfirmation
     {
         public TimeSpan Timeout { get; }
-        public ExpectedMessage ExpectedMessage { get; }
+        public ExpectedMessage[] ExpectedMessages { get; }
         public ICommand Command { get; }
 
-        public CommandAndConfirmation(ICommand command, ExpectedMessage expectedMessage, TimeSpan timeout)
+        public CommandAndConfirmation(ICommand command, TimeSpan timeout, params ExpectedMessage[] expectedMessage)
         {
             Timeout = timeout;
-            ExpectedMessage = expectedMessage;
+            ExpectedMessages = expectedMessage;
             Command = command;
         }
     }
@@ -27,7 +27,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         private readonly ICommand _command;
 
-        public CommandWaiter(IActorRef notifyActor, ICommand command, ExpectedMessage expectedMessage) : base(notifyActor, expectedMessage)
+        public CommandWaiter(IActorRef notifyActor, ICommand command, params ExpectedMessage[] expectedMessage) : base(notifyActor, expectedMessage)
         {
             _command = command;
         }
@@ -82,7 +82,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             if (!MessageCounters.ContainsKey(type)) return;
 
             var wait = MessageWaits[type];
-            var waitsForEventWithId = string.IsNullOrEmpty(wait.IdPropertyName);
+            var waitsForEventWithId = !string.IsNullOrEmpty(wait.IdPropertyName);
 
             if (waitsForEventWithId)
             {

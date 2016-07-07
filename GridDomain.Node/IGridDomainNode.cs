@@ -11,15 +11,7 @@ namespace GridDomain.Node
     {
         void Execute(params ICommand[] commands);
       
-        void ConfirmedExecute(ICommand command, ExpectedMessage expect,TimeSpan timeout);
+        void ConfirmedExecute(ICommand command, TimeSpan timeout, params ExpectedMessage[] expect);
         void ConfirmedExecute(CommandAndConfirmation commandAnd);
     }
-
-    //public static class GridDomainNodeExtensions
-    //{
-    //    public static void ConfirmedExecute(this IGridDomainNode node, CommandAndConfirmation commandAndExpectedMessage)
-    //    {
-    //        node.ConfirmedExecute(commandAndExpectedMessage.Command,commandAndExpectedMessage.ExpectedMessage, commandAndExpectedMessage.Timeout);
-    //    }
-    //}
 }
