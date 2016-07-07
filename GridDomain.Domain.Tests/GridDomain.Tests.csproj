@@ -177,12 +177,15 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="SynchroniousCommandExecute\ChangeAggregateCommand.cs" />
     <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateChangedEvent.cs" />
+    <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder_Alternative.cs" />
     <Compile Include="SyncProjection\SampleDomain\CreateAggregateCommand.cs" />
     <Compile Include="SyncProjection\SampleDomain\IHaveProcessingHistory.cs" />
+    <Compile Include="SyncProjection\SampleDomain\LongOperationCommand.cs" />
     <Compile Include="SyncProjection\SampleDomain\ProcessedHistory.cs" />
     <Compile Include="SyncProjection\SampleDomain\SampleAggregate.cs" />
     <Compile Include="SyncProjection\SampleDomain\TestAggregatesCommandHandler.cs" />

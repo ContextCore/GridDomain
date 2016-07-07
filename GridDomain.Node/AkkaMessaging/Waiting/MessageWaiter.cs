@@ -1,51 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Akka;
 using Akka.Actor;
-using GridDomain.CQRS;
-using GridDomain.Node.Actors;
-using GridDomain.Tests.Framework;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandAndConfirmation
-    {
-        public TimeSpan Timeout { get; }
-        public ExpectedMessage[] ExpectedMessages { get; }
-        public ICommand Command { get; }
-
-        public CommandAndConfirmation(ICommand command, TimeSpan timeout, params ExpectedMessage[] expectedMessage)
-        {
-            Timeout = timeout;
-            ExpectedMessages = expectedMessage;
-            Command = command;
-        }
-    }
-
-    public class CommandWaiter : MessageWaiter
-    {
-        private readonly ICommand _command;
-
-        public CommandWaiter(IActorRef notifyActor, ICommand command, params ExpectedMessage[] expectedMessage) : base(notifyActor, expectedMessage)
-        {
-            _command = command;
-        }
-
-        protected override object BuildAnswerMessage(object message)
-        {
-            object answerMessage = null;
-            message.Match()
-                   .With<ICommandFault>(f => answerMessage = f)
-                   .Default(m =>
-                   {
-                       answerMessage = new CommandExecutionFinished(_command, m);
-                   });
-
-            return answerMessage;
-        }
-    }
-
     public class MessageWaiter : MessageWaiter<ExpectedMessage>
     {
         public MessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)

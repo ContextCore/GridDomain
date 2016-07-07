@@ -14,7 +14,6 @@ using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Framework;
 using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
@@ -97,18 +96,6 @@ namespace GridDomain.Node.Actors
 
         public class Started
         {
-        }
-    }
-
-    public class CommandExecutionFinished
-    {
-        public object ResultMessage { get; }
-        public ICommand CommandId { get; }
-
-        public CommandExecutionFinished(ICommand commandId, object resultMessage)
-        {
-            ResultMessage = resultMessage;
-            CommandId = commandId;
         }
     }
 }

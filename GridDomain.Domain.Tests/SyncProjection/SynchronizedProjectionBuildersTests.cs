@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
@@ -14,6 +15,7 @@ using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using GridDomain.Tests.SyncProjection.SampleDomain;
+using ChangeAggregateCommand = GridDomain.Tests.SynchroniousCommandExecute.ChangeAggregateCommand;
 using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SyncProjection

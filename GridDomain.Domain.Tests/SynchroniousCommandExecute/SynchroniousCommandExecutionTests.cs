@@ -1,10 +1,4 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
@@ -19,7 +13,7 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
-namespace GridDomain.Tests
+namespace GridDomain.Tests.SynchroniousCommandExecute
 {
     [TestFixture]
     class SynchroniousCommandExecutionTests : NodeCommandsTest
@@ -34,9 +28,6 @@ namespace GridDomain.Tests
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             var container = new UnityContainer();
-            var system = ActorSystemFactory.CreateActorSystem(akkaConf);
-          //  CompositionRoot.Init(container, system, dbConfig, TransportMode.Standalone);
-           // container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
 
             var config = new CustomContainerConfiguration(
                      c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
@@ -44,7 +35,7 @@ namespace GridDomain.Tests
 
             return new GridDomainNode(config,
                                       new TestRouteMap(new UnityServiceLocator(container)),
-                                      TransportMode.Standalone, system);
+                                      TransportMode.Standalone, Sys);
         }
 
        
@@ -53,11 +44,12 @@ namespace GridDomain.Tests
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
             GridNode.ConfirmedExecute(syncCommand,
-                                      Timeout,
-                                      ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),syncCommand.AggregateId)
-                                      );
+                Timeout,
+                ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+                    syncCommand.AggregateId)
+                );
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.AreEqual(syncCommand.Parameter, aggregate.Value);
+            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
 
 
@@ -68,21 +60,6 @@ namespace GridDomain.Tests
             GridNode.Execute(syncCommand);
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreNotEqual(syncCommand.Parameter, aggregate.Value);
-        }
-    }
-
-
-
-    public class ChangeAggregateCommand : Command
-    {
-        public int Parameter { get; }
-
-        public Guid AggregateId { get; }
-
-        public ChangeAggregateCommand(Guid aggregateId, int parameter)
-        {
-            AggregateId = aggregateId;
-            Parameter = parameter;
         }
     }
 }

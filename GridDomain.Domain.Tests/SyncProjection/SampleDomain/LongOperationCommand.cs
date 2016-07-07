@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.SyncProjection.SampleDomain
 {
-    public class ChangeAggregateCommand : Command
+    public class LongOperationCommand : Command
     {
-        public ChangeAggregateCommand(int parameter, Guid aggregateId)
+        public LongOperationCommand(int parameter, Guid aggregateId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;
