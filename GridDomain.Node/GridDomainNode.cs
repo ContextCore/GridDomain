@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -133,7 +134,8 @@ namespace GridDomain.Node
         public void ConfirmedExecute(CommandAndConfirmation command)
         {
             var commandExecutionTask = _mainNodeActor.Ask(command);
-            commandExecutionTask.Wait(command.Timeout);
+            if(!commandExecutionTask.Wait(command.Timeout))
+                throw new TimeoutException($"Command execution timed out");
         }
     }
 }

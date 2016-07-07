@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
@@ -23,19 +25,20 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
+        protected override TimeSpan Timeout => Debugger.IsAttached
+            ? TimeSpan.FromMinutes(10)
+            : TimeSpan.FromSeconds(5);
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var container = new UnityContainer();
-
             var config = new CustomContainerConfiguration(
                      c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
                      c => c.RegisterInstance(new InMemoryQuartzConfig()));
 
+            var actorAllSystems = ActorSystem.Create("test",akkaConf.ToStandAloneInMemorySystemConfig());
             return new GridDomainNode(config,
-                                      new TestRouteMap(new UnityServiceLocator(container)),
-                                      TransportMode.Standalone, Sys);
+                                      new TestRouteMap(),
+                                      TransportMode.Standalone, actorAllSystems);
         }
 
        
@@ -46,11 +49,25 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             GridNode.ConfirmedExecute(syncCommand,
                 Timeout,
                 ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
-                    syncCommand.AggregateId)
+                                                            syncCommand.AggregateId)
                 );
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
+
+        [Then]
+        public void Can_synchroniosly_execute_commands_waiting_for_notification_events()
+        {
+            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            GridNode.ConfirmedExecute(syncCommand,
+                Timeout,
+                ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
+                                                                        syncCommand.AggregateId)
+                );
+            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+        }
+
 
 
         [Then]
@@ -61,5 +78,10 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreNotEqual(syncCommand.Parameter, aggregate.Value);
         }
+    }
+
+    internal class AggregateChangedEventNotification
+    {
+        public Guid AggregateId { get; set; }
     }
 }

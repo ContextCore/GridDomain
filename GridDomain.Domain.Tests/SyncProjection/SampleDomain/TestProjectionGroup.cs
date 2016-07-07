@@ -6,7 +6,7 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
 {
     class TestProjectionGroup : ProjectionGroup
     {
-        public TestProjectionGroup(IServiceLocator locator) : base(locator)
+        public TestProjectionGroup() : base(null)
         {
             AggregateChangedProjectionBuilder.ProjectionGroupHashCode = this.GetHashCode();
             AggregateCreatedProjectionBuilder.ProjectionGroupHashCode = this.GetHashCode();

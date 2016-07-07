@@ -40,7 +40,7 @@ namespace GridDomain.Tests.SyncProjection
             container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
 
             return new GridDomainNode(container, 
-                                      new TestRouteMap(new UnityServiceLocator(container)), 
+                                      new TestRouteMap(), 
                                       TransportMode.Standalone, system);
         }
 
