@@ -22,7 +22,7 @@ namespace GridDomain.Tests.SyncProjection
     public class SynchronizedProjectionBuildersTests : NodeCommandsTest
     {
         private ExpectedMessagesRecieved _processedEvents;
-        private ICommand[] _allCommands;
+        private CQRS.ICommand[] _allCommands;
 
         public SynchronizedProjectionBuildersTests():
             base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "ProjectionBuilders", false)
@@ -47,9 +47,9 @@ namespace GridDomain.Tests.SyncProjection
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateAggregateCommand(101, Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
-            var updateCommands = Enumerable.Range(0, 20).Select(r => new ChangeAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
+            var updateCommands = Enumerable.Range(0, 20).Select(r => new ChangeAggregateCommand(aggregateIds.RandomElement(), 102)).ToArray();
 
-            _allCommands = createCommands.Cast<ICommand>().Concat(updateCommands).ToArray();
+            _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
 
             _processedEvents = ExecuteAndWaitForMany<AggregateCreatedEvent, AggregateChangedEvent>(createCommands.Length,
                                                                                                    updateCommands.Length,

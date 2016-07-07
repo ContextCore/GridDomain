@@ -45,6 +45,7 @@
     <Compile Include="DateTimeFacade.cs" />
     <Compile Include="DateTimeStrategy.cs" />
     <Compile Include="DateTimeStrategyHolder.cs" />
+    <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

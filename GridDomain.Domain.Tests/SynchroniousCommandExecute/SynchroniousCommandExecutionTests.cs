@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
@@ -20,7 +22,6 @@ namespace GridDomain.Tests
     [TestFixture]
     class SynchroniousCommandExecutionTests : NodeCommandsTest
     {
-        private ChangeAggregateWaitableCommand _syncCommand;
 
         public SynchroniousCommandExecutionTests():base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "SyncExecution", false)
         {
@@ -44,35 +45,37 @@ namespace GridDomain.Tests
         [Then]
         public void When_command_executed_synchroniosly_Then_aggregate_already_has_events_after_finish()
         {
-            _syncCommand = new ChangeAggregateWaitableCommand(42, Guid.NewGuid());
-            GridNode.ExecuteWithConfirmation(_syncCommand);
-      
-            var aggregate = LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
-            Assert.AreEqual(_syncCommand.Parameter, aggregate.Value);
+            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            GridNode.ConfirmedExecute(syncCommand, 
+                                      ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId)),
+                                      Timeout);
+            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.AreEqual(syncCommand.Parameter, aggregate.Value);
         }
 
 
         [Then]
         public void When_command_executed_asynchroniosly_Then_aggregate_doesnt_have_events_after_finish()
         {
-            _syncCommand = new ChangeAggregateWaitableCommand(42, Guid.NewGuid());
-            GridNode.Execute(_syncCommand);
-
-            var aggregate = LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
-            Assert.AreNotEqual(_syncCommand.Parameter, aggregate.Value);
+            var  syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            GridNode.Execute(syncCommand);
+            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.AreNotEqual(syncCommand.Parameter, aggregate.Value);
         }
     }
 
-    public class ChangeAggregateWaitableCommand : CommandWithKnownResult
+
+
+    public class ChangeAggregateCommand : Command
     {
         public int Parameter { get; }
 
         public Guid AggregateId { get; }
 
-        public ChangeAggregateWaitableCommand(int param, Guid aggregateId) : base(Guid.NewGuid(), aggregateId, typeof(AggregateChangedEvent))
+        public ChangeAggregateCommand(Guid aggregateId, int parameter)
         {
-            Parameter = param;
             AggregateId = aggregateId;
+            Parameter = parameter;
         }
     }
 }

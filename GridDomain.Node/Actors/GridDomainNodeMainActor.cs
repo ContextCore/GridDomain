@@ -53,63 +53,24 @@ namespace GridDomain.Node.Actors
             _log.Debug($"Actor {GetType().Name} finished routes initialization");
         }
 
-        public void Handle(ExecuteCommand message)
+        public void Handle(ICommand cmd)
         {
-            _log.Trace($"Актор {GetType().Name} получил сообщение:\r\n {message.ToPropsString()}");
-            _messagePublisher.Publish(message.Command);
+            _log.Trace($"Актор {GetType().Name} получил сообщение:\r\n {cmd.ToPropsString()}");
+            _messagePublisher.Publish(cmd);
         }
 
-        IDictionary<Guid, CommandWaiter> executingCommandsByEvent = new Dictionary<Guid, CommandWaiter>();
-        IDictionary<Guid, CommandWaiter> executingCommands = new Dictionary<Guid, CommandWaiter>();
 
-
-        class CommandWaiter
+        public void Handle(CommandAndConfirmation commandWithConfirmation)
         {
-            public ICommand Command;
-            public IActorRef Waiter;
-        }
-        public void Handle(ExecuteConfirmedCommand message)
-        {
-            var msgToWait = message.Command.ExpectedMessages.Select(c => new MessageToWait(c, 1)).ToArray();
-            var executor = Context.System.ActorOf(Props.Create(() => new MessageWaiter(Self, msgToWait)),"MessageWaiter_command_"+message.Command.Id);
-            
-            //TODO : filter messages in waiter!!!!
-            var executingCommand = new CommandWaiter()
-            {
-                Command = message.Command,
-                Waiter = Sender
-            };
+            var waitAggregate = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessage)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
-            executingCommandsByEvent[message.Command.EventId] = executingCommand;
-            executingCommands[message.Command.Id] = executingCommand;
+           _subscriber.Subscribe(commandWithConfirmation.ExpectedMessage.MessageType, waitAggregate);
 
-
-            foreach (var messageToWait in msgToWait)
-            {
-                _subscriber.Subscribe(messageToWait.MessageType, executor);
-            }
             //TODO: replace with ack from subscriber
             Thread.Sleep(500); //to finish subscribe
-            _messagePublisher.Publish(message.Command);
+            _messagePublisher.Publish(commandWithConfirmation.Command);
         }
-
-        //Finished execution of awaitable command
-        public void Handle(ExpectedMessagesRecieved message)
-        {
-            var resultMessage = message.Message;
-            resultMessage.Match()
-                         .With<ICommandFault>(f =>
-                         {
-                             CommandWaiter commandWaiter;
-                             if (executingCommands.TryGetValue(f.Command.Id, out commandWaiter))
-                                 commandWaiter.Waiter.Tell(f);
-                         })
-                         .With<DomainEvent>(e => {
-                             CommandWaiter commandWaiter;
-                             if (executingCommandsByEvent.TryGetValue(e.SourceId, out commandWaiter))
-                                 commandWaiter.Waiter.Tell(new CommandExecutionFinished(commandWaiter.Command, e));
-                         });
-        }
+        
 
         protected override void PostStop()
         {
@@ -128,16 +89,6 @@ namespace GridDomain.Node.Actors
             base.Unhandled(message);
         }
 
-        public class ExecuteCommand
-        {
-            public ExecuteCommand(ICommand command)
-            {
-                Command = command;
-            }
-
-            public ICommand Command { get; }
-        }
-
         public class Start
         {
             public Type RoutingActorType;
@@ -146,26 +97,17 @@ namespace GridDomain.Node.Actors
         public class Started
         {
         }
-
-        public class ExecuteConfirmedCommand
-        {
-            public CommandWithKnownResult Command { get; }
-            public ExecuteConfirmedCommand(CommandWithKnownResult command)
-            {
-                Command = command;
-            }
-        }
     }
 
     public class CommandExecutionFinished
     {
-        public DomainEvent DomainEvent;
-        public ICommand Command { get; set; }
+        public object ResultMessage { get; }
+        public ICommand CommandId { get; }
 
-        public CommandExecutionFinished(ICommand command, DomainEvent domainEvent)
+        public CommandExecutionFinished(ICommand commandId, object resultMessage)
         {
-            DomainEvent = domainEvent;
-            Command = command;
+            ResultMessage = resultMessage;
+            CommandId = commandId;
         }
     }
 }

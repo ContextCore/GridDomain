@@ -9,6 +9,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
@@ -120,13 +121,18 @@ namespace GridDomain.Node
         public void Execute(params ICommand[] commands)
         {
             foreach(var cmd in commands)
-                 _mainNodeActor.Tell(new GridDomainNodeMainActor.ExecuteCommand(cmd));
+                 _mainNodeActor.Tell(cmd);
         }
 
-        public void ExecuteWithConfirmation(CommandWithKnownResult command)
+        public void ConfirmedExecute(ICommand command, ExpectedMessage expect, TimeSpan timeout)
         {
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.ExecuteConfirmedCommand(command));
+            ConfirmedExecute(new CommandAndConfirmation(command, expect, timeout));
         }
-        
+
+        public void ConfirmedExecute(CommandAndConfirmation command)
+        {
+            var commandExecutionTask = _mainNodeActor.Ask(command);
+            commandExecutionTask.Wait(command.Timeout);
+        }
     }
 }

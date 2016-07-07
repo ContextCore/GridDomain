@@ -10,7 +10,7 @@ using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests
 {
-    public abstract class CommandSpecification<TCommand> where TCommand : class, ICommand
+    public abstract class CommandSpecification<TCommand> where TCommand : class, CQRS.ICommand
     {
         protected DomainEvent[] ExpectedEvents;
 
