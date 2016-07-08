@@ -1,6 +1,6 @@
-namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events
+namespace GridDomain.Tests.Sagas.SubscriptionRenew.Events
 {
-    internal class SubscriptionChangedEvent
+    public class SubscriptionChangedEvent
     {
     }
 }

@@ -177,6 +177,8 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="Sagas\SagaStart_with_predefined_id.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSagaFactry.cs" />
     <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder.cs" />
@@ -221,7 +223,6 @@
     <Compile Include="Sagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\Given_published_start_message_Then_Saga_is_started.cs" />
     <Compile Include="Sagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
-    <Compile Include="Sagas\Given_messages_out_of_order_should_rearrange_and_process.cs" />
     <Compile Include="Sagas\SagaStateTransitionTests.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />

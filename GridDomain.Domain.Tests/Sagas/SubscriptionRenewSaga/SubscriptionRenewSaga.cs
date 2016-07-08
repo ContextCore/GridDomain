@@ -1,17 +1,35 @@
+using System;
+using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.SubscriptionRenew.Commands;
+using GridDomain.Tests.Sagas.SubscriptionRenew.Events;
 
-namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
+
+namespace GridDomain.Tests.Sagas.SubscriptionRenew
 {
-    internal class SubscriptionRenewSaga :
-        StateSaga<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers, SubscriptionExpiredEvent>,
+
+    public class SubscriptionRenewSagaState :
+        SagaStateAggregate<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers>
+    {
+        public SubscriptionRenewSagaState(Guid id) : base(id)
+        {
+        }
+
+        public SubscriptionRenewSagaState(Guid id, SubscriptionRenewSaga.States state) : base(id, state)
+        {
+        }
+    }
+
+    public class SubscriptionRenewSaga :
+        StateSaga<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers, SubscriptionRenewSagaState, SubscriptionExpiredEvent>,
         IHandler<SubscriptionChangedEvent>,
         IHandler<NotEnoughFondsFailure>,
         IHandler<SubscriptionPaidEvent>
     {
-        public SubscriptionRenewSaga(SagaStateAggregate<States, Triggers> state) : base(state)
+
+        public static ISagaDescriptor Descriptor = new SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.Empty,States.SubscriptionSet));
+        public SubscriptionRenewSaga(SubscriptionRenewSagaState state) : base(state)
         {
             var parForSubscriptionTrigger = RegisterEvent<SubscriptionExpiredEvent>(Triggers.PayForSubscription);
             var remainSubscriptionTrigger = RegisterEvent<SubscriptionPaidEvent>(Triggers.RemainSubscription);
@@ -31,6 +49,11 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
                 .Permit(Triggers.ChangeSubscription, States.SubscriptionSet);
         }
 
+        public void Handle(SubscriptionExpiredEvent e)
+        {
+            TransitState(e);
+        }
+
         public void Handle(NotEnoughFondsFailure msg)
         {
             TransitState(msg);
@@ -46,7 +69,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
             TransitState(msg);
         }
 
-        internal enum Triggers
+        public enum Triggers
         {
             PayForSubscription,
             RemainSubscription,
@@ -54,7 +77,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
             RevokeSubscription
         }
 
-        internal enum States
+        public enum States
         {
             SubscriptionSet,
             OfferPaying,
