@@ -60,11 +60,18 @@ namespace GridDomain.Tests.Framework
 
         }
 
+        /// <summary>
+        /// Loads aggregate using Sys actor system
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var props = GridNode.System.DI().Props<AggregateActor<T>>();
             var name = AggregateActorName.New<T>(id).ToString();
             var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
+            //TODO: replace with event wait
             Thread.Sleep(1000); //wait for actor recover
             return actor.UnderlyingActor.Aggregate;
         }

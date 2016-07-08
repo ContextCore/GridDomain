@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -40,10 +41,10 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
 
             container.Register(config);
 
-            var actorAllSystems = ActorSystem.Create("test",akkaConf.ToStandAloneInMemorySystemConfig());
+          //  var actorAllSystems = ActorSystem.Create("test",akkaConf.ToStandAloneInMemorySystemConfig());
             return new GridDomainNode(config,
                                       new TestRouteMap(new UnityServiceLocator(container)),
-                                      TransportMode.Standalone, actorAllSystems);
+                                      TransportMode.Standalone, Sys);
         }
 
        
@@ -56,6 +57,22 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
                 ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
                                                             syncCommand.AggregateId)
                 );
+            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+        }
+
+        [Then]
+        public void When_command_executed_synchroniosly_Then_aggregate_already_has_events_after_finish_self_wait()
+        {
+            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var task = GridNode.Execute<AggregateChangedEvent>(syncCommand,
+                                                               ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+                                                                                                           syncCommand.AggregateId)
+                                                               );
+            if (!task.Wait(Timeout))
+                throw new TimeoutException();
+       
+            //to finish persistence
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }

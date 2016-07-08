@@ -27,7 +27,7 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
         public void LongExecute(int number)
         {
             Thread.Sleep(1000);
-            RaiseEvent(new AggregateChangedEvent(number.ToString(), Id));
+            ChangeState(number);
         }
         private void Apply(AggregateCreatedEvent e)
         {
