@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -122,20 +123,12 @@ namespace GridDomain.Node
         public void Execute(params ICommand[] commands)
         {
             foreach(var cmd in commands)
-                 _mainNodeActor.Tell(cmd);
+                _mainNodeActor.Tell(cmd);
         }
 
-        public void ConfirmedExecute(ICommand command, TimeSpan timeout, params ExpectedMessage[] expect)
+        public Task<object> Execute(ICommand command, params ExpectedMessage[] expect)
         {
-            ConfirmedExecute(new CommandAndConfirmation(command, timeout, expect));
-        }
-        
-
-        public void ConfirmedExecute(CommandAndConfirmation command)
-        {
-            var commandExecutionTask = _mainNodeActor.Ask(command);
-            if(!commandExecutionTask.Wait(command.Timeout))
-                throw new TimeoutException($"Command execution timed out");
+            return _mainNodeActor.Ask(new CommandAndConfirmation(command,expect));
         }
     }
 }

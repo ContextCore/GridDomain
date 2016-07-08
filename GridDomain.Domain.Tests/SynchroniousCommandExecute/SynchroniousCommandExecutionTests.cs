@@ -46,7 +46,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         public void When_command_executed_synchroniosly_Then_aggregate_already_has_events_after_finish()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
-            GridNode.ConfirmedExecute(syncCommand,
+            GridNode.Execute(syncCommand,
                 Timeout,
                 ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
                                                             syncCommand.AggregateId)
@@ -59,11 +59,11 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         public void Can_synchroniosly_execute_commands_waiting_for_notification_events()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
-            GridNode.ConfirmedExecute(syncCommand,
-                Timeout,
-                ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
-                                                                        syncCommand.AggregateId)
-                );
+            GridNode.Execute(syncCommand,
+                            Timeout,
+                            ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
+                                                                                    syncCommand.AggregateId)
+                            );
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
