@@ -15,7 +15,6 @@ using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using GridDomain.Tests.SyncProjection.SampleDomain;
-using ChangeAggregateCommand = GridDomain.Tests.SynchroniousCommandExecute.ChangeAggregateCommand;
 using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SyncProjection
@@ -40,7 +39,7 @@ namespace GridDomain.Tests.SyncProjection
             container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
 
             return new GridDomainNode(container, 
-                                      new TestRouteMap(), 
+                                      new TestRouteMap(new UnityServiceLocator(container)), 
                                       TransportMode.Standalone, system);
         }
 
@@ -49,7 +48,7 @@ namespace GridDomain.Tests.SyncProjection
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateAggregateCommand(101, Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
-            var updateCommands = Enumerable.Range(0, 20).Select(r => new ChangeAggregateCommand(aggregateIds.RandomElement(), 102)).ToArray();
+            var updateCommands = Enumerable.Range(0, 20).Select(r => new ChangeAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
             _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
 

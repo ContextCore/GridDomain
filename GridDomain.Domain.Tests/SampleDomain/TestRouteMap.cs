@@ -5,10 +5,17 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
 {
     class TestRouteMap : IMessageRouteMap
     {
+        private readonly IServiceLocator _locator;
+
+        public TestRouteMap(IServiceLocator locator)
+        {
+            _locator = locator;
+        }
+
         public void Register(IMessagesRouter router)
         {
             router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
-            router.RegisterProjectionGroup(new TestProjectionGroup());
+            router.RegisterProjectionGroup(new TestProjectionGroup(_locator));
             router.Route<AggregateChangedEvent>().ToHandler<SampleProjectionBuilder>();
         }
     }

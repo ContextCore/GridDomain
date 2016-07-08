@@ -31,13 +31,18 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
+            var container = new UnityContainer();
+
             var config = new CustomContainerConfiguration(
                      c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
-                     c => c.RegisterInstance(new InMemoryQuartzConfig()));
+                     c => c.RegisterInstance(new InMemoryQuartzConfig()),
+                     c => c.RegisterType<AggregateCreatedProjectionBuilder>());
+
+            container.Register(config);
 
             var actorAllSystems = ActorSystem.Create("test",akkaConf.ToStandAloneInMemorySystemConfig());
             return new GridDomainNode(config,
-                                      new TestRouteMap(),
+                                      new TestRouteMap(new UnityServiceLocator(container)),
                                       TransportMode.Standalone, actorAllSystems);
         }
 
@@ -56,7 +61,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         }
 
         [Then]
-        public void Can_synchroniosly_execute_commands_waiting_for_notification_events()
+        public void Can_synchroniosly_execute_commands_ask_Node_to_wait_for_notification_events()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand,
@@ -67,6 +72,25 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
+
+        [Then]
+        public void Can_synchroniosly_execute_commands_waiting_for_notification_events_bySelf()
+        {
+            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var task = GridNode.Execute<AggregateChangedEventNotification>
+                                        (syncCommand,
+                                         ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
+                                                                                                syncCommand.AggregateId)
+                                        );
+            if(!task.Wait(Timeout))
+                throw new TimeoutException();
+
+            var changedEvent = task.Result;
+            Assert.AreEqual(syncCommand.AggregateId, changedEvent.AggregateId);
+            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+        }
+
 
 
 

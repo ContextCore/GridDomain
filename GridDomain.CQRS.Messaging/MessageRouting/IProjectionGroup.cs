@@ -2,10 +2,14 @@ using System.Collections.Generic;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public interface IProjectionGroup
+    public interface IProjectionGroupDescriptor
     {
-        void Project(object message);
-
         IReadOnlyCollection<MessageRoute> AcceptMessages { get; }
     }
+
+    public interface IProjectionGroup : IProjectionGroupDescriptor
+    {
+        void Project(object message);
+    }
+
 }

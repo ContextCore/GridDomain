@@ -126,9 +126,9 @@ namespace GridDomain.Node
                 _mainNodeActor.Tell(cmd);
         }
 
-        public Task<object> Execute(ICommand command, params ExpectedMessage[] expect)
+        public Task<T> Execute<T>(ICommand command, params ExpectedMessage[] expect)
         {
-            return _mainNodeActor.Ask(new CommandAndConfirmation(command,expect));
+            return _mainNodeActor.Ask<T>(new CommandAndConfirmation(command,expect));
         }
     }
 }

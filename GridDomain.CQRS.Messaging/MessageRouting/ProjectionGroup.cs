@@ -4,17 +4,31 @@ using System.Linq;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
+
+    public class ProjectionGroupDescriptor : IProjectionGroupDescriptor
+    {
+        private readonly List<MessageRoute> routes = new List<MessageRoute>();
+        public void Add(MessageRoute route)
+        {
+            routes.Add(route);
+        }
+
+        public IReadOnlyCollection<MessageRoute> AcceptMessages => routes;
+    }
+
     public class ProjectionGroup: IProjectionGroup
     {
         private readonly IServiceLocator _locator;
         readonly Dictionary<Type, List<Action<object>>> _handlers = new Dictionary<Type, List<Action<object>>>();
+        public IProjectionGroupDescriptor Descriptor = new ProjectionGroupDescriptor();
 
         public ProjectionGroup(IServiceLocator locator)
         {
             _locator = locator;
+            if(_locator == null) throw new ArgumentNullException("locator");
         }
 
-        public void Add<TMessage, THandler>(string correlationPropertyName ) where THandler : IHandler<TMessage>
+        public void Add<TMessage, THandler>(string correlationPropertyName)where THandler : IHandler<TMessage>
         {
             var handler = _locator.Resolve<THandler>();
 
