@@ -38,7 +38,7 @@ namespace GridDomain.Node
         public readonly ActorSystem System;
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
-
+        public IPublisher Publisher { get; private set; }
 
         public GridDomainNode(IUnityContainer container,
                               IMessageRouteMap messageRouting,
@@ -91,7 +91,7 @@ namespace GridDomain.Node
             _configuration.Register(Container);
 
             _persistentScheduler = Container.Resolve<Quartz.IScheduler>();
-
+            Publisher = Container.Resolve<IPublisher>();
             StartMainNodeActor(System);
         }
 

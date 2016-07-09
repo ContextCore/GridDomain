@@ -177,6 +177,8 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
     <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
     <Compile Include="SampleDomain\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder.cs" />

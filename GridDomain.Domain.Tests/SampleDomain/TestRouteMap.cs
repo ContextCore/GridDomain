@@ -16,7 +16,7 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
         {
             router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
             router.RegisterProjectionGroup(new TestProjectionGroup(_locator));
-            router.Route<AggregateChangedEvent>().ToHandler<SampleProjectionBuilder>();
+            router.RegisterHandler<AggregateChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
         }
     }
 }

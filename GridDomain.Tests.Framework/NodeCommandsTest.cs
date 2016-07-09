@@ -7,6 +7,7 @@ using Akka.DI.Core;
 using Akka.TestKit.NUnit;
 using CommonDomain.Core;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -28,6 +29,7 @@ namespace GridDomain.Tests.Framework
     {
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
         protected GridDomainNode GridNode;
+      
         private readonly Stopwatch _watch = new Stopwatch();
         private IActorSubscriber _actorSubscriber;
         private readonly bool _clearDataOnStart;

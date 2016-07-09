@@ -58,6 +58,11 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
+        public void RegisterHandler<TMessage, THandler>(string correlationPropertyName) where THandler : IHandler<TMessage>
+        {
+            Route<TMessage>().ToHandler<THandler>().WithCorrelation(correlationPropertyName).Register();
+        }
+
         public void RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup
         {
             var createActorRoute = new CreateActorRouteMessage(typeof(SynchronizationProcessingActor<T>),
