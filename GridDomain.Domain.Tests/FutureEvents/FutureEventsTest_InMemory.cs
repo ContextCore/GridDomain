@@ -43,3 +43,4 @@ namespace GridDomain.Tests.FutureEvents
         }
     }
 }
+}

@@ -88,6 +88,23 @@ namespace GridDomain.Node.Actors
             _schdulerActorRef.Handle(scheduleEvent);
         }
 
+        {
+            var futureEvent = e as FutureDomainEvent;
+            if (futureEvent == null) return;
+
+            var scheduleKey = new ScheduleKey(futureEvent.SourceId,
+                $"{PersistenceId}_event_{futureEvent.SourceId}",
+                $"{typeof (TAggregate).Name}_futureEvents");
+
+            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent),
+                                                    scheduleKey, 
+                                                    new ExecutionOptions(futureEvent.RaiseTime,
+                                                                         futureEvent.Event.GetType())
+                                                    );
+
+            _schdulerActorRef.Handle(scheduleEvent);
+        }
+
         public TAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
     }
