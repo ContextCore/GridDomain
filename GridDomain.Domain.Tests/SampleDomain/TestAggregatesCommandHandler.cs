@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class TestAggregatesCommandHandler : AggregateCommandsHandler<SampleAggregate>,
                                                         IAggregateCommandsHandlerDesriptor

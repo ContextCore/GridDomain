@@ -71,24 +71,6 @@ namespace GridDomain.Node.Actors
             _messagePublisher.Publish(commandWithConfirmation.Command);
         }
         
-
-        //protected override void PostStop()
-        //{
-        //    _log.Debug($"Актор {GetType().Name} был остановлен");
-        //}
-
-        //protected override void PreRestart(Exception reason, object message)
-        //{
-        //    _log.Debug($"Актор {GetType().Name} будет перезапущен");
-        //    base.PreRestart(reason, message);
-        //}
-
-        //protected override void Unhandled(object message)
-        //{
-        //    _log.Debug($"Актор {GetType().Name} не смог обработать сообщение:\r\n {message.ToPropsString()}");
-        //    base.Unhandled(message);
-        //}
-
         public class Start
         {
             public Type RoutingActorType;

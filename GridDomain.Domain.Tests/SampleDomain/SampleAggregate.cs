@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using CommonDomain.Core;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class SampleAggregate : AggregateBase
     {

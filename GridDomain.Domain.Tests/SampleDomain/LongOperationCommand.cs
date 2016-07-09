@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class LongOperationCommand : Command
     {

@@ -1,7 +1,7 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     class TestRouteMap : IMessageRouteMap
     {

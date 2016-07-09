@@ -1,8 +1,7 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Node.Actors;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     class TestProjectionGroup : ProjectionGroup
     {

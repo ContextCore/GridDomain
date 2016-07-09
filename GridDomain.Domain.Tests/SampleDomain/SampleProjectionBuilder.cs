@@ -2,7 +2,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.SynchroniousCommandExecute;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class SampleProjectionBuilder : IHandler<AggregateChangedEvent>
     {

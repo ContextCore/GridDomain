@@ -1,6 +1,4 @@
-using System;
-
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class ProcessedHistory
     {

@@ -10,18 +10,21 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
 {
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
+        private readonly bool _inMemory;
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
         protected ExtendedNodeCommandTest(bool inMemory) : 
             base( inMemory ? new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig():
                 new AutoTestAkkaConfiguration().ToStandAloneSystemConfig()
-                , "TestInMemorySystem", !inMemory)
+                , "TestSystem", !inMemory)
         {
+            _inMemory = inMemory;
         }
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(CreateConfiguration(),CreateMap(),TransportMode.Standalone,Sys);
+            var actorSystem = _inMemory ? Sys : ActorSystemFactory.CreateActorSystem(akkaConf);
+            return new GridDomainNode(CreateConfiguration(),CreateMap(),TransportMode.Standalone, actorSystem);
         }
     }
 }

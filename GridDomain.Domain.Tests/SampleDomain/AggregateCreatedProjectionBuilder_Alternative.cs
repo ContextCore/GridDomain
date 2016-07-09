@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class AggregateCreatedProjectionBuilder_Alternative : IHandler<AggregateCreatedEvent>
     {

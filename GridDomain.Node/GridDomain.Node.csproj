@@ -254,9 +254,10 @@
     <Compile Include="FutureEvents\FutureEventsAggregate.cs" />
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
+    <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />
-    <Compile Include="AkkaMessaging\Routing\ActorMessagesRouter.cs" />
+    <Compile Include="Actors\ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiter.cs" />

@@ -12,9 +12,9 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
-using GridDomain.Tests.SyncProjection.SampleDomain;
 using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SyncProjection

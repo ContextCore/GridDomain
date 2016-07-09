@@ -178,7 +178,13 @@
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
+    <Compile Include="SynchroniousCommandExecute\AggregateChangedEventNotification.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_Async_execute_dont_wait.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\In_Memory_When_SyncExecute_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
     <Compile Include="SampleDomain\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder.cs" />

@@ -6,9 +6,10 @@ using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 
-namespace GridDomain.Node.AkkaMessaging.Routing
+namespace GridDomain.Node.Actors
 {
     public class ActorMessagesRouter : IMessagesRouter
     {
