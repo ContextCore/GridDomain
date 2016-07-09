@@ -243,7 +243,6 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
-    <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

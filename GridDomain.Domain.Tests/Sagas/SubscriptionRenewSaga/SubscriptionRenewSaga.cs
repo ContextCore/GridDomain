@@ -1,26 +1,11 @@
 using System;
-using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenew.Commands;
-using GridDomain.Tests.Sagas.SubscriptionRenew.Events;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 
-
-namespace GridDomain.Tests.Sagas.SubscriptionRenew
+namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
 {
-
-    public class SubscriptionRenewSagaState :
-        SagaStateAggregate<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers>
-    {
-        public SubscriptionRenewSagaState(Guid id) : base(id)
-        {
-        }
-
-        public SubscriptionRenewSagaState(Guid id, SubscriptionRenewSaga.States state) : base(id, state)
-        {
-        }
-    }
-
     public class SubscriptionRenewSaga :
         StateSaga<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers, SubscriptionRenewSagaState, SubscriptionExpiredEvent>,
         IHandler<SubscriptionChangedEvent>,

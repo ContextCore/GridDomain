@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenew;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas
@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Sagas
         public void GEtGraph()
         {
             var saga =
-                new SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.States.SubscriptionSet));
+                new SubscriptionRenewSaga.SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet));
             Console.WriteLine(saga.Machine.ToDotGraph());
         }
     }

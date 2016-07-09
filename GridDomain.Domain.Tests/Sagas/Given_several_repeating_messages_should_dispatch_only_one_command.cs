@@ -1,8 +1,8 @@
 ﻿using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenew;
-using GridDomain.Tests.Sagas.SubscriptionRenew.Commands;
-using GridDomain.Tests.Sagas.SubscriptionRenew.Events;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
+using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas
@@ -17,14 +17,14 @@ namespace GridDomain.Tests.Sagas
             When_applying_several_events();
         }
 
-        private SubscriptionRenew.SubscriptionRenewSaga Saga;
+        private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
         private NotEnoughFondsFailure[] Messages;
 
         public void Given_new_saga_with_state()
         {
-            var sagaState = new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.States.OfferPaying);
+            var sagaState = new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying);
 
-            Saga = new SubscriptionRenewSaga(sagaState);
+            Saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(sagaState);
 
 
             Messages = new[]
