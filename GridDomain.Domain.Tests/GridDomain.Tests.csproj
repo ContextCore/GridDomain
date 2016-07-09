@@ -177,10 +177,12 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="Sagas\RenewSagaMessageRouteMap.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSagaState.cs" />
     <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
     <Compile Include="SynchroniousCommandExecute\AggregateChangedEventNotification.cs" />
     <Compile Include="Sagas\SagaStart_with_predefined_id.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSagaFactry.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSagaFactory.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_Async_execute_dont_wait.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
