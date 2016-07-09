@@ -35,8 +35,7 @@ namespace BusinessNews.Node
 
         private static void RegisterSaga_BuySubscription(IUnityContainer container)
         {
-            container
-                .RegisterType<ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>, BuySubscriptionSagaFactory>();
+            container.RegisterType<ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>, BuySubscriptionSagaFactory>();
             container.RegisterType<ISagaFactory<BuySubscriptionSaga, SubscriptionOrderedEvent>, BuySubscriptionSagaFactory>();
             container.RegisterType<IEmptySagaFactory<BuySubscriptionSaga>, BuySubscriptionSagaFactory>();
         }

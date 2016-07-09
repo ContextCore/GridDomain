@@ -1,8 +1,9 @@
 ﻿using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.SubscriptionRenew;
+using GridDomain.Tests.Sagas.SubscriptionRenew.Events;
 using NUnit.Framework;
-using Saga = GridDomain.Tests.Sagas.SubscriptionRenewSaga.SubscriptionRenewSaga;
+using Saga = GridDomain.Tests.Sagas.SubscriptionRenew.SubscriptionRenewSaga;
 
 namespace GridDomain.Tests.Sagas
 {
@@ -13,8 +14,7 @@ namespace GridDomain.Tests.Sagas
 
         public void Given_new_saga_with_state(Saga.States states)
         {
-            var sagaState = new SagaStateAggregate<Saga.States,
-                Saga.Triggers>(Guid.NewGuid(), states);
+            var sagaState = new SubscriptionRenewSagaState(Guid.NewGuid(), states);
             Saga = new Saga(sagaState);
         }
 
