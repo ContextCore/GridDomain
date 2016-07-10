@@ -6,7 +6,7 @@ using GridDomain.Tests.DependencyInjection;
 
 namespace GridDomain.Tests.FutureEvents.Infrastructure
 {
-    public class TestAggregate : FutureEventsAggregate
+    public class TestAggregate : Aggregate
     {
         private TestAggregate(Guid id):base(id)
         {

@@ -1,14 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.FutureEvents
 {
-    public class FutureEventsAggregate : AggregateBase
+    public class Aggregate : AggregateBase
     {
         private readonly IDictionary<Guid,FutureDomainEvent> _futureEvents;
 
-        protected FutureEventsAggregate(Guid id)
+        private readonly List<Task<DomainEvent>> _asyncEvents = new List<Task<DomainEvent>>();
+        public ICollection<Task<DomainEvent>> AsyncEvents => _asyncEvents;
+
+        protected void RaiseEvent(Task<DomainEvent> eventProducer)
+        {
+            _asyncEvents.Add(eventProducer.ContinueWith(t => 
+            {
+                RaiseEvent(t.Result);
+                return t.Result;
+            }));
+        }
+
+        protected Aggregate(Guid id)
         {
             _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
             Id = id;

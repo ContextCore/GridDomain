@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
@@ -37,6 +38,9 @@ namespace GridDomain.Node.Actors
             PersistenceId = Self.Path.Name;
             Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
 
+            //async event came from aggregate, already raised and exists in internal aggregate collection
+            Command<DomainEvent>(e => ProcessAggregateEvents());
+
             Command<ICommand>(cmd =>
             {
                 //TODO: create more efficient way to set up a saga
@@ -49,25 +53,39 @@ namespace GridDomain.Node.Actors
                     _publisher.Publish(CommandFaultFactory.CreateGenericFor(cmd,ex));
                     return;
                 }
-                
-                var aggregate = (IAggregate) Aggregate;
-           
-                var uncommittedEvents = aggregate.GetUncommittedEvents();
 
-                var events = uncommittedEvents
-                                .Cast<DomainEvent>()
-                                .Select(e => e.CloneWithSaga(cmd.SagaId));
-
-                PersistAll(events, e =>
-                {
-                    ScheduleFutureEvent(e);
-                    _publisher.Publish(e);
-                });
-                aggregate.ClearUncommittedEvents();
+                ProcessAggregateEvents(cmd.SagaId);
             });
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+        }
+
+        private void ProcessAggregateEvents(Guid? sagaId = null)
+        {
+            var extendedAggregate = Aggregate as Aggregate;
+            if (extendedAggregate != null)
+            {
+                foreach (var asyncEvent in extendedAggregate.AsyncEvents)
+                    asyncEvent.PipeTo(Self);
+            }
+
+            var aggregate = (IAggregate) Aggregate;
+
+            var uncommittedEvents = aggregate.GetUncommittedEvents();
+
+            var events = uncommittedEvents.Cast<DomainEvent>();
+            if (sagaId.HasValue)
+            {
+                events = events.Select(e => e.CloneWithSaga(sagaId.Value));
+            }
+
+            PersistAll(events, e =>
+            {
+                ScheduleFutureEvent(e);
+                _publisher.Publish(e);
+            });
+            aggregate.ClearUncommittedEvents();
         }
 
         private void ScheduleFutureEvent(DomainEvent e)
