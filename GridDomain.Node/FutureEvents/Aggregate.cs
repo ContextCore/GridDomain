@@ -7,6 +7,14 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.FutureEvents
 {
+
+    public interface IAsyncEventsProducer
+    {
+        void ApplyAsyncMethodResults(Guid invocationId, DomainEvent[] result);
+        ICollection<AsyncMethodStarted> AsyncMethodsStarted { get; }
+        void ClearAsyncMethodStartedInfo();
+    }
+
     public class Aggregate : AggregateBase
     {
        
@@ -19,18 +27,21 @@ namespace GridDomain.Node.FutureEvents
         {
             RaiseEventAsync(eventProducer.ContinueWith(t => new DomainEvent[] {t.Result}));
         }
+
         protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {
-            var domainEventApplyToAggregateTask = 
-            eventProducer.ContinueWith(t => 
-            {
-                //TODO: move RaiseEvent in sync command to call from infrastructure
-                foreach (var ev in t.Result)
-                    RaiseEvent(ev);
-                return t.Result;
-            });
-            AsyncMethodsStarted.Add(new AsyncMethodStarted(domainEventApplyToAggregateTask));
+            //var domainEventApplyToAggregateTask = 
+            //eventProducer.ContinueWith(t => 
+            //{
+            //    //TODO: move RaiseEvent in sync command to call from infrastructure
+            //    foreach (var ev in t.Result)
+            //        RaiseEvent(ev);
+            //    return t.Result;
+            //});
+            AsyncMethodsStarted.Add(new AsyncMethodStarted(eventProducer));
         }
+
+   
         #endregion
         #region FutureEvents
         protected Aggregate(Guid id)
@@ -38,6 +49,7 @@ namespace GridDomain.Node.FutureEvents
             Id = id;
             Register<FutureDomainEvent>(Apply);
         }
+
         private readonly IDictionary<Guid, FutureDomainEvent> _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
 
         public void RaiseScheduledEvent(Guid eventId)
