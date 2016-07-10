@@ -3,31 +3,40 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.FutureEvents
 {
     public class Aggregate : AggregateBase
     {
-        private readonly IDictionary<Guid,FutureDomainEvent> _futureEvents;
-
-        private readonly List<Task<DomainEvent>> _asyncEvents = new List<Task<DomainEvent>>();
-        public ICollection<Task<DomainEvent>> AsyncEvents => _asyncEvents;
-
-        protected void RaiseEvent(Task<DomainEvent> eventProducer)
+        protected void RaiseEvent(params DomainEvent[] events)
         {
-            _asyncEvents.Add(eventProducer.ContinueWith(t => 
+            foreach(var ev in events)
+                base.RaiseEvent(ev);
+        }
+
+        #region AsyncMethods
+
+        public readonly List<AsyncMethodStarted> AsyncMethodsStarted = new List<AsyncMethodStarted>();
+
+        protected void RaiseEvent(Task<DomainEvent[]> eventProducer)
+        {
+            var domainEventApplyToAggregateTask = 
+            eventProducer.ContinueWith(t => 
             {
                 RaiseEvent(t.Result);
                 return t.Result;
-            }));
+            });
+            AsyncMethodsStarted.Add(new AsyncMethodStarted(domainEventApplyToAggregateTask));
         }
-
+        #endregion
+        #region FutureEvents
         protected Aggregate(Guid id)
         {
-            _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
             Id = id;
             Register<FutureDomainEvent>(Apply);
         }
+        private readonly IDictionary<Guid, FutureDomainEvent> _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
 
         public void RaiseScheduledEvent(Guid eventId)
         {
@@ -40,7 +49,6 @@ namespace GridDomain.Node.FutureEvents
         {
             _futureEvents.Add(e.SourceId,e);
         }
-
-   
+        #endregion
     }
 }

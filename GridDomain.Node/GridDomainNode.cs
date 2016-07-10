@@ -126,10 +126,10 @@ namespace GridDomain.Node
                 _mainNodeActor.Tell(cmd);
         }
 
-        public Task<T> Execute<T>(ICommand command, params ExpectedMessage[] expect)
+        public Task<object> Execute(ICommand command, ExpectedMessage[] expect)
         {
             return _mainNodeActor.Ask<CommandExecutionFinished>(new CommandAndConfirmation(command,expect))
-                                 .ContinueWith(t => (T)t.Result.ResultMessage);
+                                 .ContinueWith(t => t.Result.ResultMessage);
         }
     }
 }

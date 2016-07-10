@@ -58,6 +58,26 @@ namespace GridDomain.Tests.AsyncAggregates
             Assert.AreEqual(asyncCommand.Parameter.ToString(), valueAfterAsyncCommand);
         }
 
+
+        [Test]
+        public void When_async_method_crashed_we_recieve_command_fault()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        [Test]
+        public void When_async_method_finished_produced_events_has_sagaId_from_command()
+        {
+            var externalCallCommand = new ExternalCallCommand(43, Guid.NewGuid(),Guid.NewGuid());
+            var domainEvent = GridNode.Execute<AggregateChangedEvent>(externalCallCommand, Timeout,
+                                                    ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+                                                    externalCallCommand.AggregateId)
+                                                    );
+
+            Assert.AreEqual(externalCallCommand.SagaId, domainEvent.SagaId);
+        }
+
         [Test]
         public void Async_aggregate_calls_can_be_awaited()
         {

@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
 using NUnit.Framework;
@@ -21,10 +22,9 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         public void SyncExecute_until_aggregate_event_wait_by_caller()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
-            var task = GridNode.Execute<AggregateChangedEvent>(syncCommand,
-                ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
-                    syncCommand.AggregateId)
-                );
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+                syncCommand.AggregateId);
+            var task = GridNode.Execute(syncCommand,expectedMessage);
             if (!task.Wait(Timeout))
                 throw new TimeoutException();
 
