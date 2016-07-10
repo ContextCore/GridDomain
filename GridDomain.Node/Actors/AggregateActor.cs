@@ -67,7 +67,6 @@ namespace GridDomain.Node.Actors
 
         private void ProcessAggregateEvents(ICommand command)
         {
-            ProcessAsyncMethods(command);
 
             var aggregate = (IAggregate) Aggregate;
 
@@ -85,6 +84,8 @@ namespace GridDomain.Node.Actors
                 _publisher.Publish(e);
             });
             aggregate.ClearUncommittedEvents();
+
+            ProcessAsyncMethods(command);
         }
 
         private void ProcessAsyncMethods(ICommand command)

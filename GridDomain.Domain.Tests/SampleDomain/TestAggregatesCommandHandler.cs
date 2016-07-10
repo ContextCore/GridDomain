@@ -19,6 +19,9 @@ namespace GridDomain.Tests.SampleDomain
 
             Map<LongOperationCommand>(c => c.AggregateId,
                                      (c, a) => a.LongExecute(c.Parameter));
+
+            Map<ExternalCallCommand>(c => c.AggregateId,
+                                    (c, a) => a.ChangeStateAsync(c.Parameter));
         }
 
         public Type AggregateType => typeof(SampleAggregate);

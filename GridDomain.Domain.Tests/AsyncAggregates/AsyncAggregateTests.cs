@@ -110,7 +110,7 @@ namespace GridDomain.Tests.AsyncAggregates
         {
             var cmd = new ExternalCallCommand(43, Guid.NewGuid());
             GridNode.Execute(cmd);
-            Thread.Sleep(1500); //allow async command to fire & process results in actors
+            Thread.Sleep(5000); //allow async command to fire & process results in actors
             var aggregate = LoadAggregate<SampleAggregate>(cmd.AggregateId);
 
             Assert.AreEqual(cmd.Parameter.ToString(), aggregate.Value);

@@ -9,22 +9,24 @@ namespace GridDomain.Node.FutureEvents
 {
     public class Aggregate : AggregateBase
     {
-        protected void RaiseEvent(params DomainEvent[] events)
-        {
-            foreach(var ev in events)
-                base.RaiseEvent(ev);
-        }
-
+       
         #region AsyncMethods
 
         public readonly List<AsyncMethodStarted> AsyncMethodsStarted = new List<AsyncMethodStarted>();
 
-        protected void RaiseEvent(Task<DomainEvent[]> eventProducer)
+
+        protected void RaiseEventAsync<TDomainEvent>(Task<TDomainEvent> eventProducer) where TDomainEvent : DomainEvent
+        {
+            RaiseEventAsync(eventProducer.ContinueWith(t => new DomainEvent[] {t.Result}));
+        }
+        protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {
             var domainEventApplyToAggregateTask = 
             eventProducer.ContinueWith(t => 
             {
-                RaiseEvent(t.Result);
+                //TODO: move RaiseEvent in sync command to call from infrastructure
+                foreach (var ev in t.Result)
+                    RaiseEvent(ev);
                 return t.Result;
             });
             AsyncMethodsStarted.Add(new AsyncMethodStarted(domainEventApplyToAggregateTask));

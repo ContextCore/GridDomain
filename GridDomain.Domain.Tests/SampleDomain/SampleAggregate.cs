@@ -11,11 +11,11 @@ namespace GridDomain.Tests.SampleDomain
 {
 
 
-    public class SampleAggregate : AggregateBase
+    public class SampleAggregate : Aggregate
     {
-        private SampleAggregate(Guid id)
+        private SampleAggregate(Guid id) : base(id)
         {
-            Id = id;
+            
         }
 
         public  SampleAggregate(Guid id, string value):this(id)
@@ -37,14 +37,14 @@ namespace GridDomain.Tests.SampleDomain
         public void ChangeStateAsync(int param)
         {
             var random = new Random();
-            var millisecandsToWait = random.Next()*1000;
+            var millisecandsToWait = (int)random.NextDouble()*1000;
             var eventTask = Task.Run(() =>
             {
                 Thread.Sleep(millisecandsToWait);
                 return new AggregateChangedEvent(param.ToString(), Id);
             });
 
-            RaiseEvent(eventTask);
+            RaiseEventAsync(eventTask);
         }
         private void Apply(AggregateCreatedEvent e)
         {
