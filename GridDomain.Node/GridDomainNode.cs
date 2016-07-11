@@ -128,8 +128,17 @@ namespace GridDomain.Node
 
         public Task<T> Execute<T>(ICommand command, params ExpectedMessage[] expect)
         {
-            return _mainNodeActor.Ask<CommandExecutionFinished>(new CommandAndConfirmation(command,expect))
-                                 .ContinueWith(t => (T)t.Result.ResultMessage);
+            return _mainNodeActor.Ask<object>(new CommandAndConfirmation(command,expect))
+                                 .ContinueWith(t =>
+                                 {
+                                     var result = t.Result;
+                                     var fault = result as ICommandFault;
+                                     if (fault != null)
+                                         throw fault.Exception;
+
+                                     var executionFinished = (CommandExecutionFinished)result;
+                                     return (T)executionFinished.ResultMessage;
+                                 });
         }
     }
 }

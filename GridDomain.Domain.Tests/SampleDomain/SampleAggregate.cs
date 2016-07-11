@@ -42,7 +42,11 @@ namespace GridDomain.Tests.SampleDomain
 
         public void RaiseExeption()
         {
-            throw new InvalidOperationException();
+            throw new SampleAggregateException();
         }
+    }
+
+    public class SampleAggregateException : Exception
+    {
     }
 }
