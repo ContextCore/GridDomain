@@ -5,7 +5,7 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandWaiter : MessageWaiter
+    public class CommandWaiter : AnyMessageWaiter
     {
         private readonly ICommand _command;
 

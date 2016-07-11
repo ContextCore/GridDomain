@@ -7,14 +7,14 @@ using NUnit.Framework;
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node : SynchroniousCommandExecutionTests
+    public class InMemory_When_SyncExecute_with_fault_wait_by_caller : SynchroniousCommandExecutionTests
     {
 
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node():base(true)
+        public InMemory_When_SyncExecute_with_fault_wait_by_caller() : base(true)
         {
-            
+
         }
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node(bool inMemory=true) : base(inMemory)
+        public InMemory_When_SyncExecute_with_fault_wait_by_caller(bool inMemory = true) : base(inMemory)
         {
 
 
@@ -26,7 +26,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand,
                 Timeout,
-                ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),syncCommand.AggregateId));
+                ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId), syncCommand.AggregateId));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

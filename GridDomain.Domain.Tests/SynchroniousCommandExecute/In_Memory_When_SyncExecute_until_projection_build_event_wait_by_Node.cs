@@ -23,11 +23,10 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         public void After_wait_aggregate_should_be_changed()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
-            GridNode.Execute(syncCommand,
-                Timeout,
-                ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
-                    syncCommand.AggregateId)
-                );
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
+                syncCommand.AggregateId);
+
+            GridNode.Execute(syncCommand, Timeout, expectedMessage);
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

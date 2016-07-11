@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Akka.IO;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -22,11 +25,26 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private void VerifyIdPropertyName(Type messageType)
         {
             if (string.IsNullOrEmpty(IdPropertyName)) return;
-            var propertyInfo = messageType.GetProperty(IdPropertyName);
+            var propertyInfos = GetPublicProperties(messageType).Where(pi => pi.Name == IdPropertyName).ToArray();
+            if(propertyInfos.Length > 1)
+                throw new ArgumentException($"Found more than one property with name {IdPropertyName} in Type {messageType.Name} hierarchy");
+
+            var propertyInfo = propertyInfos.FirstOrDefault();
             if (propertyInfo == null)
                 throw new ArgumentException($"Cannot find property with name {IdPropertyName} in Type {messageType.Name}");
             if (propertyInfo.PropertyType != typeof (Guid))
                 throw new ArgumentException($"Property {IdPropertyName} of type {messageType} should be Guid ");
+        }
+
+        //To get properties from inherited interfaces also
+        private static IEnumerable<PropertyInfo> GetPublicProperties(Type type)
+        {
+            if (!type.IsInterface)
+                return type.GetProperties();
+
+            return (new[] { type })
+                   .Concat(type.GetInterfaces())
+                   .SelectMany(i => i.GetProperties());
         }
 
         public Type MessageType { get; }
@@ -50,16 +68,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public static ExpectedMessage Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId)
         {
             return Once(typeof(T), MemberNameExtractor.GetName(idPropertyNameExpression), messageId);
-        }
-
-        public static ExpectedMessage[] CommandOnce<T>() where T : ICommand
-        {
-            return CommandOnce<T>(null,Guid.Empty);
-        }
-        public static ExpectedMessage[] CommandOnce<T>(string correlationProperty, Guid messageId) where T : ICommand
-        {
-            return new []{Once<T>(correlationProperty,messageId),
-                          Once<ICommandFault<T>>(f => f.Id,messageId)};
         }
     }
 }
