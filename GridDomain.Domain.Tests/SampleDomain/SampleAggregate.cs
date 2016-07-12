@@ -9,8 +9,6 @@ using GridDomain.Node.FutureEvents;
 
 namespace GridDomain.Tests.SampleDomain
 {
-
-
     public class SampleAggregate : Aggregate
     {
         private SampleAggregate(Guid id) : base(id)
@@ -34,22 +32,21 @@ namespace GridDomain.Tests.SampleDomain
             ChangeState(number);
         }
 
-        public void ChangeStateAsync(int param)
+        private Task<AggregateChangedEvent> CreateEventTask(int param, TimeSpan sleepTime)
         {
-            var eventTask = CreateEventTask(param);
-            RaiseEventAsync(eventTask);
-        }
-
-        private Task<AggregateChangedEvent> CreateEventTask(int param)
-        {
-            var random = new Random();
-            var millisecandsToWait = (int) random.NextDouble()*1000;
+            var timeSpan = sleepTime;
             var eventTask = Task.Run(() =>
             {
-                Thread.Sleep(millisecandsToWait);
+                Thread.Sleep(timeSpan);
                 return new AggregateChangedEvent(param.ToString(), Id);
             });
             return eventTask;
+        }
+
+        internal void ChangeStateAsync(int parameter, TimeSpan sleepTime)
+        {
+            var eventTask = CreateEventTask(parameter,sleepTime);
+            RaiseEventAsync(eventTask);
         }
 
         private void Apply(AggregateCreatedEvent e)
@@ -70,9 +67,9 @@ namespace GridDomain.Tests.SampleDomain
             throw new SampleAggregateException();
         }
 
-        public void RaiseExeptionAsync()
+        public void RaiseExeptionAsync(TimeSpan callBackTime)
         {
-            CreateEventTask(0).ContinueWith(t => RaiseExeption());
+            CreateEventTask(0,callBackTime).ContinueWith(t => RaiseExeption());
         }
     }
 }
