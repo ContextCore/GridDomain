@@ -4,6 +4,7 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
+using AggregateChangedEventNotification = GridDomain.Tests.SampleDomain.AggregateChangedEventNotification;
 
 namespace GridDomain.Tests.AsyncAggregates
 {

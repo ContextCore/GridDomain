@@ -21,6 +21,14 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         }
     }
 
+    public class PersistentSampleDomainTests : SampleDomainCommandExecutionTests
+    {
+        public PersistentSampleDomainTests() : base(false)
+        {
+        }
+    }
+
+
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
         protected override TimeSpan Timeout => Debugger.IsAttached

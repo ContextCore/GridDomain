@@ -1,5 +1,7 @@
 using System;
 using System.Threading;
+using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
@@ -13,18 +15,24 @@ namespace GridDomain.Tests.AsyncAggregates
         [Test]
         public void When_async_method_is_called_other_commands_can_be_executed_before_async_results()
         {
-            var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid());
-            var syncCommand = new ChangeAggregateCommand(42, asyncCommand.AggregateId);
-            GridNode.Execute(asyncCommand);
-            GridNode.Execute(syncCommand);
-            Thread.Sleep(200);
-            var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            var valueAfterSyncCommand = sampleAggregate.Value;
-            Thread.Sleep(1500);//allow async command to fire & process results in actors
-            var valueAfterAsyncCommand = sampleAggregate.Value;
+            var aggregateId = Guid.NewGuid();
+            var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromSeconds(3));
+            var syncCommand = new ChangeAggregateCommand(42, aggregateId);
 
-            Assert.AreEqual(syncCommand.Parameter.ToString(), valueAfterSyncCommand);
-            Assert.AreEqual(asyncCommand.Parameter.ToString(), valueAfterAsyncCommand);
+           var asyncCommandTask = GridNode.Execute<AggregateChangedEvent>(asyncCommand,
+                                                    ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+                                                    asyncCommand.AggregateId));
+
+            GridNode.Execute<AggregateChangedEvent>(syncCommand, Timeout,
+                                                    ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+                                                    syncCommand.AggregateId)
+                                                    );
+
+            var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.AreEqual(syncCommand.Parameter.ToString(), sampleAggregate.Value);
+
+            var asyncResult = asyncCommandTask.Result;
+            Assert.AreEqual(asyncCommand.Parameter.ToString(), asyncResult.Value);
         }
 
       

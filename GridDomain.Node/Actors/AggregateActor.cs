@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using Akka.Persistence;
@@ -45,12 +47,30 @@ namespace GridDomain.Node.Actors
             //need process it in usual way
             Command<AsyncEventsRecieved>(m =>
             {
+                if (m.Exception != null)
+                {
+                    _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
+                    return;
+                }
+
                 (Aggregate as Aggregate).FinishAsyncExecution(m.InvocationId);
                 ProcessAggregateEvents(m.Command);
             });
 
+            Command<Status.Failure>(f =>
+            {
+                int b = 2;
+            });
+
             Command<ICommand>(cmd =>
             {
+                //Task.Run(() =>
+                //{
+                //    Thread.Sleep(500);
+                //    throw new Exception();
+
+                //}).PipeTo(Self);
+
                 //TODO: create more efficient way to set up a saga
                 try
                 {
@@ -102,7 +122,7 @@ namespace GridDomain.Node.Actors
             //command is included to safe access later, after async execution complete
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.AsyncUncomittedEvents)
-                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsRecieved(t.Result, cmd, asyncMethod.InvocationId))
+                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsRecieved(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
                                           .PipeTo(Self);
 
             extendedAggregate.AsyncUncomittedEvents.Clear();
@@ -124,6 +144,11 @@ namespace GridDomain.Node.Actors
                                                     );
 
             _schedulerActorRef.Handle(scheduleEvent);
+        }
+
+        protected override void Unhandled(object message)
+        {
+            base.Unhandled(message);
         }
 
         public TAggregate Aggregate { get; private set; }

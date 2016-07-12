@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.AsyncAggregates
+namespace GridDomain.Tests.SampleDomain
 {
     public class AggregateChangedEventNotification
     {

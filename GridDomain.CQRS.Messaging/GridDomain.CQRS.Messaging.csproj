@@ -128,6 +128,7 @@
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="MessageRouting\ProjectionGroup.cs" />
     <Compile Include="MessageRouting\ProjectionGroupDescriptor.cs" />
+    <Compile Include="MessageRouting\ProjectionGroupExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

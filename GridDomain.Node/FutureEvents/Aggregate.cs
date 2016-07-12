@@ -15,10 +15,12 @@ namespace GridDomain.Node.FutureEvents
         private readonly IDictionary<Guid,AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
         public readonly List<AsyncEventsInProgress> AsyncUncomittedEvents = new List<AsyncEventsInProgress>();
 
-        protected void RaiseEventAsync<TDomainEvent>(Task<TDomainEvent> eventProducer) where TDomainEvent : DomainEvent
-        {
-            RaiseEventAsync(eventProducer.ContinueWith(t => new DomainEvent[] {t.Result}));
-        }
+        //protected void RaiseEventAsync<TDomainEvent>(Task<TDomainEvent> eventProducer) where TDomainEvent : DomainEvent
+        //{
+        //    RaiseEventAsync(eventProducer.ContinueWith(t => 
+        //                                new DomainEvent[] {t.Result},
+        //                                  TaskContinuationOptions.OnlyOnRanToCompletion));
+        //}
 
         protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {

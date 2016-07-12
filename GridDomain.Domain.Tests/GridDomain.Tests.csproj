@@ -174,7 +174,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncAggregates\AggregateChangedEventNotification.cs" />
+    <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
     <Compile Include="AsyncAggregates\Given_Async_method_execution.cs" />
@@ -195,7 +195,6 @@
     <Compile Include="SampleDomain\ExternalCallCommand.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
-    <Compile Include="SynchroniousCommandExecute\AggregateChangedEventNotification.cs" />
     <Compile Include="Sagas\SagaStart_with_predefined_id.cs" />
     <Compile Include="Sagas\SubscriptionRenewSagaFactory.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
