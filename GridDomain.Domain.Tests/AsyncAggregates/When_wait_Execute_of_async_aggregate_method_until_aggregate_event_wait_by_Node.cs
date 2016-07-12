@@ -1,30 +1,25 @@
 using System;
-using System.Threading;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.AsyncAggregates
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node : SampleDomainCommandExecutionTests
+    public class When_wait_Execute_of_async_aggregate_method_until_aggregate_event_wait_by_Node : SampleDomainCommandExecutionTests
     {
 
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node():base(true)
+        public When_wait_Execute_of_async_aggregate_method_until_aggregate_event_wait_by_Node():base(true)
         {
             
         }
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node(bool inMemory=true) : base(inMemory)
-        {
-
-
-        }
 
         [Then]
-        public void SyncExecute_until_aggregate_event_wait_by_Node()
+        public void After_wait_end_aggregate_event_is_applied()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand,
                 Timeout,
                 ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),syncCommand.AggregateId));

@@ -2,27 +2,28 @@ using System;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.AsyncAggregates
 {
     [TestFixture]
-    public class In_Memory_When_SyncExecute_until_projection_build_event_wait_by_Node : SynchroniousCommandExecutionTests
+    public class When_wait_execution_of_async_method_until_projection_build_event_wait_by_Node : SampleDomainCommandExecutionTests
     {
-        public In_Memory_When_SyncExecute_until_projection_build_event_wait_by_Node(bool inMemory=true) : base(inMemory)
+        public When_wait_execution_of_async_method_until_projection_build_event_wait_by_Node(bool inMemory=true) : base(inMemory)
         {
 
 
         }
 
-        public In_Memory_When_SyncExecute_until_projection_build_event_wait_by_Node():base(true)
+        public When_wait_execution_of_async_method_until_projection_build_event_wait_by_Node():base(true)
         {
             
         }
         [Then]
         public void After_wait_aggregate_should_be_changed()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 

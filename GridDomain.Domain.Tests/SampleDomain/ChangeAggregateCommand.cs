@@ -14,17 +14,4 @@ namespace GridDomain.Tests.SampleDomain
         public Guid AggregateId { get; }
         public int Parameter { get; }
     }
-
-    public class ExternalCallCommand : Command
-    {
-        public ExternalCallCommand(int parameter, Guid aggregateId,Guid sagaId = default(Guid)):base(Guid.NewGuid(),sagaId)
-        {
-            Parameter = parameter;
-            AggregateId = aggregateId;
-        }
-
-        public Guid AggregateId { get; }
-        public int Parameter { get; }
-    }
-
 }

@@ -12,7 +12,7 @@ using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
-    public class SynchroniousCommandExecutionTests : ExtendedNodeCommandTest
+    public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
         protected override TimeSpan Timeout => Debugger.IsAttached
             ? TimeSpan.FromMinutes(10)
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         }
       
         
-        public SynchroniousCommandExecutionTests(bool inMemory) : base(inMemory)
+        public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
         {
         }
     }

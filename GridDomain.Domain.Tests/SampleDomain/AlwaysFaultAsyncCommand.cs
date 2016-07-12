@@ -3,15 +3,13 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.SampleDomain
 {
-    public class LongOperationCommand : Command
+    public class AlwaysFaultAsyncCommand : Command
     {
-        public LongOperationCommand(int parameter, Guid aggregateId)
+        public AlwaysFaultAsyncCommand(Guid aggregateId)
         {
-            Parameter = parameter;
             AggregateId = aggregateId;
         }
 
         public Guid AggregateId { get; }
-        public int Parameter { get; }
     }
 }

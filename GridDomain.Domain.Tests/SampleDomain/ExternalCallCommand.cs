@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.SampleDomain
 {
-    public class LongOperationCommand : Command
+    public class AsyncMethodCommand : Command
     {
-        public LongOperationCommand(int parameter, Guid aggregateId)
+        public AsyncMethodCommand(int parameter, Guid aggregateId,Guid sagaId = default(Guid)):base(Guid.NewGuid(),sagaId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

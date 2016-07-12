@@ -36,16 +36,22 @@ namespace GridDomain.Tests.SampleDomain
 
         public void ChangeStateAsync(int param)
         {
+            var eventTask = CreateEventTask(param);
+            RaiseEventAsync(eventTask);
+        }
+
+        private Task<AggregateChangedEvent> CreateEventTask(int param)
+        {
             var random = new Random();
-            var millisecandsToWait = (int)random.NextDouble()*1000;
+            var millisecandsToWait = (int) random.NextDouble()*1000;
             var eventTask = Task.Run(() =>
             {
                 Thread.Sleep(millisecandsToWait);
                 return new AggregateChangedEvent(param.ToString(), Id);
             });
-
-            RaiseEventAsync(eventTask);
+            return eventTask;
         }
+
         private void Apply(AggregateCreatedEvent e)
         {
             Id = e.SourceId;
@@ -63,9 +69,10 @@ namespace GridDomain.Tests.SampleDomain
         {
             throw new SampleAggregateException();
         }
-    }
 
-    public class SampleAggregateException : Exception
-    {
+        public void RaiseExeptionAsync()
+        {
+            CreateEventTask(0).ContinueWith(t => RaiseExeption());
+        }
     }
 }

@@ -19,33 +19,33 @@ using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 namespace GridDomain.Tests.AsyncAggregates
 {
     [TestFixture]
-    class AsyncAggregateTests : ExtendedNodeCommandTest
+    class AsyncAggregateTests : SampleDomainCommandExecutionTests
     {
         public AsyncAggregateTests() : base(true)
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
-        protected override IContainerConfiguration CreateConfiguration()
-        {
-            return new CustomContainerConfiguration(
-                                 c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
-                                 c => c.RegisterInstance(new InMemoryQuartzConfig()),
-                                 c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
-                                 c => c.RegisterType<SampleProjectionBuilder>());
-        }
+        //protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        //protected override IContainerConfiguration CreateConfiguration()
+        //{
+        //    return new CustomContainerConfiguration(
+        //                         c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
+        //                         c => c.RegisterInstance(new InMemoryQuartzConfig()),
+        //                         c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
+        //                         c => c.RegisterType<SampleProjectionBuilder>());
+        //}
 
-        protected override IMessageRouteMap CreateMap()
-        {
-            var container = new UnityContainer();
-            container.Register(CreateConfiguration());
-            return new TestRouteMap(new UnityServiceLocator(container));
-        }
+        //protected override IMessageRouteMap CreateMap()
+        //{
+        //    var container = new UnityContainer();
+        //    container.Register(CreateConfiguration());
+        //    return new TestRouteMap(new UnityServiceLocator(container));
+        //}
 
         [Test]
         public void When_async_method_is_called_other_commands_can_be_executed_before_async_results()
         {
-            var asyncCommand = new ExternalCallCommand(43, Guid.NewGuid());
+            var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid());
             var syncCommand = new ChangeAggregateCommand(42, asyncCommand.AggregateId);
             GridNode.Execute(asyncCommand);
             GridNode.Execute(syncCommand);
@@ -58,18 +58,10 @@ namespace GridDomain.Tests.AsyncAggregates
             Assert.AreEqual(asyncCommand.Parameter.ToString(), valueAfterAsyncCommand);
         }
 
-
-        [Test]
-        public void When_async_method_crashed_we_recieve_command_fault()
-        {
-            throw new NotImplementedException();
-        }
-
-
         [Test]
         public void When_async_method_finished_produced_events_has_sagaId_from_command()
         {
-            var externalCallCommand = new ExternalCallCommand(43, Guid.NewGuid(),Guid.NewGuid());
+            var externalCallCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid());
             var domainEvent = GridNode.Execute<AggregateChangedEvent>(externalCallCommand, Timeout,
                                                     ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
                                                     externalCallCommand.AggregateId)
@@ -78,37 +70,37 @@ namespace GridDomain.Tests.AsyncAggregates
             Assert.AreEqual(externalCallCommand.SagaId, domainEvent.SagaId);
         }
 
-        [Test]
-        public void Async_aggregate_calls_can_be_awaited()
-        {
-            var externalCallCommand = new ExternalCallCommand(43, Guid.NewGuid());
-            GridNode.Execute(externalCallCommand,
-                             Timeout,
-                             ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
-                             externalCallCommand.AggregateId));
+        //[Test]
+        //public void Async_aggregate_calls_can_be_awaited()
+        //{
+        //    var externalCallCommand = new ExternalCallCommand(43, Guid.NewGuid());
+        //    GridNode.Execute(externalCallCommand,
+        //                     Timeout,
+        //                     ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+        //                     externalCallCommand.AggregateId));
 
-            var aggregate = LoadAggregate<SampleAggregate>(externalCallCommand.AggregateId);
-            Assert.AreEqual(externalCallCommand.Parameter.ToString(), aggregate.Value);
-        }
+        //    var aggregate = LoadAggregate<SampleAggregate>(externalCallCommand.AggregateId);
+        //    Assert.AreEqual(externalCallCommand.Parameter.ToString(), aggregate.Value);
+        //}
 
-        [Test]
-        public void Notifications_after_async_aggregate_calls_can_be_awaited()
-        {
-            var externalCallCommand = new ExternalCallCommand(42, Guid.NewGuid());
-            GridNode.Execute(externalCallCommand,
-                Timeout,
-                ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
-                    externalCallCommand.AggregateId)
-                );
+        //[Test]
+        //public void Notifications_after_async_aggregate_calls_can_be_awaited()
+        //{
+        //    var externalCallCommand = new ExternalCallCommand(42, Guid.NewGuid());
+        //    GridNode.Execute(externalCallCommand,
+        //        Timeout,
+        //        ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
+        //            externalCallCommand.AggregateId)
+        //        );
 
-            var aggregate = LoadAggregate<SampleAggregate>(externalCallCommand.AggregateId);
-            Assert.AreEqual(externalCallCommand.Parameter.ToString(), aggregate.Value);
-        }
+        //    var aggregate = LoadAggregate<SampleAggregate>(externalCallCommand.AggregateId);
+        //    Assert.AreEqual(externalCallCommand.Parameter.ToString(), aggregate.Value);
+        //}
 
         [Test]
         public void When_async_method_is_called_domainEvents_are_persisted()
         {
-            var cmd = new ExternalCallCommand(43, Guid.NewGuid());
+            var cmd = new AsyncMethodCommand(43, Guid.NewGuid());
             GridNode.Execute(cmd);
             Thread.Sleep(5000); //allow async command to fire & process results in actors
             var aggregate = LoadAggregate<SampleAggregate>(cmd.AggregateId);

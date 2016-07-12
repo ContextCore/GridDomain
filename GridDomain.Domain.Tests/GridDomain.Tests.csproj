@@ -174,23 +174,34 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncAggregates\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\AsyncAggregateTests.cs" />
+    <Compile Include="AsyncAggregates\InMemory_Async_execute_dont_wait.cs" />
+    <Compile Include="AsyncAggregates\Wait_execution_of_async_method_until_projection_build_event_wait_by_caller.cs" />
+    <Compile Include="AsyncAggregates\When_wait_execution_of_async_method_until_aggregate_event_wait_by_caller.cs" />
+    <Compile Include="AsyncAggregates\When_wait_Execute_of_async_aggregate_method_until_aggregate_event_wait_by_Node.cs" />
+    <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_fault_wait_by_Node.cs" />
+    <Compile Include="AsyncAggregates\When_wait_execution_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="Sagas\RenewSagaMessageRouteMap.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSagaState.cs" />
+    <Compile Include="SampleDomain\AlwaysFaultAsyncCommand.cs" />
+    <Compile Include="SampleDomain\AlwaysFaultCommand.cs" />
+    <Compile Include="SampleDomain\ExternalCallCommand.cs" />
+    <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
     <Compile Include="SynchroniousCommandExecute\AggregateChangedEventNotification.cs" />
     <Compile Include="Sagas\SagaStart_with_predefined_id.cs" />
     <Compile Include="Sagas\SubscriptionRenewSagaFactory.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
-    <Compile Include="SynchroniousCommandExecute\InMemory_Async_execute_dont_wait.cs" />
+    <Compile Include="SynchroniousCommandExecute\When_dont_wait_execution.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_with_fault_wait_by_Node.cs" />
-    <Compile Include="SynchroniousCommandExecute\In_Memory_When_SyncExecute_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\When_wait_execution__of_async_method_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
     <Compile Include="SampleDomain\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder.cs" />

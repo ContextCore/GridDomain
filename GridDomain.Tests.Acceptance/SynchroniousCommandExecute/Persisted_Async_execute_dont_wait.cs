@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.SynchroniousCommandExecute
 {
     [TestFixture]
-    public class Persisted_Async_execute_dont_wait : InMemory_Async_execute_dont_wait
+    public class PersistedAsyncExecuteDontWaitExecution : When_dont_wait_execution
     {
-        public Persisted_Async_execute_dont_wait():base(false)
+        public PersistedAsyncExecuteDontWaitExecution():base(false)
         {
             
         }
