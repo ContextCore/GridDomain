@@ -266,7 +266,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AkkaSoloLogger.cs" />
     <Compile Include="TransportMode.cs" />
-    <Compile Include="UnityServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

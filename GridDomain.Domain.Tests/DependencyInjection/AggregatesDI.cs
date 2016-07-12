@@ -17,7 +17,6 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
-using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.DependencyInjection
 {
@@ -53,7 +52,7 @@ namespace GridDomain.Tests.DependencyInjection
             var container = new UnityContainer();
 
             container.RegisterType<ITestDependency, TestDependencyImplementation>();
-            container.RegisterInstance<IServiceLocator>(new UnityServiceLocator(container));
+            container.RegisterInstance<IUnityContainer>(container);
             container.RegisterAggregate<TestAggregate,TestAggregatesCommandHandler>();
 
             return new GridDomainNode(container, new TestRouteMap(), TransportMode.Standalone, Sys);

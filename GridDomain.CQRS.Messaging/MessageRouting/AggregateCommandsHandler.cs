@@ -15,12 +15,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         private readonly IDictionary<Type, AggregateCommandHandler<TAggregate>> _commandHandlers =
                                                      new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
 
-        private readonly IServiceLocator _serviceLocator;
+        private readonly IUnityContainer _unityContainer;
 
 
-        public AggregateCommandsHandler(IServiceLocator serviceLocator = null) 
+        public AggregateCommandsHandler(IUnityContainer unityContainer = null) 
         {
-            _serviceLocator = serviceLocator;
+            _unityContainer = unityContainer;
         }
 
         public TAggregate Execute(TAggregate aggregate, ICommand command)
@@ -51,13 +51,13 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
+            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _unityContainer));
         }
 
         protected void Map<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
             Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _serviceLocator));
+            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(idLocator, commandExecutor, _unityContainer));
         }
 
         public IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands

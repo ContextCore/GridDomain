@@ -1,11 +1,12 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.SampleDomain
 {
     class TestProjectionGroup : ProjectionGroup
     {
-        public TestProjectionGroup(IServiceLocator locator) : base(locator)
+        public TestProjectionGroup(IUnityContainer locator) : base(locator)
         {
             //TODO: only for test purposes!!!
             AggregateChangedProjectionBuilder.ProjectionGroupHashCode = this.GetHashCode();

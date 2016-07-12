@@ -3,7 +3,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.SampleDomain
 {
-    public class TestAggregatesCommandHandler : AggregateCommandsHandler<SampleAggregate>,
+    public class TestAggregatesCommandHandler: AggregateCommandsHandler<SampleAggregate>,
                                                         IAggregateCommandsHandlerDesriptor
 
     {

@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.Threading;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
-using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             var container = new UnityContainer();
             container.Register(CreateConfiguration());
-            return new TestRouteMap(new UnityServiceLocator(container));
+            return new TestRouteMap(container);
 
         }
       
