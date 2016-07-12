@@ -21,6 +21,7 @@ using SchedulerDemo.AgregateHandler;
 using SchedulerDemo.Configuration;
 using SchedulerDemo.Messages;
 using CompositionRoot = GridDomain.Node.CompositionRoot;
+using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
 namespace SchedulerDemo
 {

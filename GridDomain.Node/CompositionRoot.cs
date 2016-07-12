@@ -37,12 +37,10 @@ namespace GridDomain.Node
                 container.RegisterInstance<IActorSubscriber>(transport);
             }
             LogManager.SetLoggerFactory(new DefaultLoggerFactory());
-            //TODO: remove
-            //RegisterEventStore(container, conf);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
-            container.RegisterType<IServiceLocator, UnityServiceLocator>();
+            container.RegisterInstance(container);
 
             //TODO: replace with better implementation
             Scheduling.CompositionRoot.Compose(container, config ?? new PersistedQuartzConfig());

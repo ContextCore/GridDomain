@@ -15,7 +15,6 @@ using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
-using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SyncProjection
 {
@@ -39,7 +38,7 @@ namespace GridDomain.Tests.SyncProjection
             container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
 
             return new GridDomainNode(container, 
-                                      new TestRouteMap(new UnityServiceLocator(container)), 
+                                      new TestRouteMap(container), 
                                       TransportMode.Standalone, system);
         }
 

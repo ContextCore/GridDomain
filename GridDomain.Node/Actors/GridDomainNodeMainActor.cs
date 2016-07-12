@@ -14,6 +14,7 @@ using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using Microsoft.Practices.Unity;
 using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
@@ -28,7 +29,7 @@ namespace GridDomain.Node.Actors
         public GridDomainNodeMainActor(IPublisher transport,
                                        IActorSubscriber subscriber,
                                        IMessageRouteMap messageRouting,
-                                       IServiceLocator locator)
+                                       IUnityContainer locator)
         {
             _subscriber = subscriber;
             _messageRouting = messageRouting;

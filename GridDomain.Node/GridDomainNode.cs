@@ -17,6 +17,7 @@ using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
+using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
 namespace GridDomain.Node
 {
