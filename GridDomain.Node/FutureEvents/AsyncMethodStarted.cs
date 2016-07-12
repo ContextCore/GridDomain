@@ -1,19 +1,19 @@
+using System;
 using System.Threading.Tasks;
-using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.FutureEvents
 {
-    public class AsyncMethodStarted
+    public class AsyncEventsInProgress
     {
+        public Guid InvocationId;
 
-        public AsyncMethodStarted(Task<DomainEvent[]> resultProducer, ICommand command = null)
+        public AsyncEventsInProgress(Task<DomainEvent[]> resultProducer, Guid invocationId)
         {
             ResultProducer = resultProducer;
-            Command = command;
+            InvocationId = invocationId;
         }
 
-        public Task<DomainEvent[]> ResultProducer { get;}
-        public ICommand Command { get; }
+        public Task<DomainEvent[]> ResultProducer { get; }
     }
 }

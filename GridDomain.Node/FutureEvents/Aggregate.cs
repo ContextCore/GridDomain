@@ -6,22 +6,14 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.FutureEvents
-{
-
-    public interface IAsyncEventsProducer
-    {
-        void ApplyAsyncMethodResults(Guid invocationId, DomainEvent[] result);
-        ICollection<AsyncMethodStarted> AsyncMethodsStarted { get; }
-        void ClearAsyncMethodStartedInfo();
-    }
-
+{ 
     public class Aggregate : AggregateBase
     {
        
         #region AsyncMethods
-
-        public readonly List<AsyncMethodStarted> AsyncMethodsStarted = new List<AsyncMethodStarted>();
-
+        //keep track of all invocation to be sure only aggregate-initialized async events can be applied
+        private readonly IDictionary<Guid,AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
+        public readonly List<AsyncEventsInProgress> AsyncUncomittedEvents = new List<AsyncEventsInProgress>();
 
         protected void RaiseEventAsync<TDomainEvent>(Task<TDomainEvent> eventProducer) where TDomainEvent : DomainEvent
         {
@@ -30,18 +22,24 @@ namespace GridDomain.Node.FutureEvents
 
         protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {
-            //var domainEventApplyToAggregateTask = 
-            //eventProducer.ContinueWith(t => 
-            //{
-            //    //TODO: move RaiseEvent in sync command to call from infrastructure
-            //    foreach (var ev in t.Result)
-            //        RaiseEvent(ev);
-            //    return t.Result;
-            //});
-            AsyncMethodsStarted.Add(new AsyncMethodStarted(eventProducer));
+            var asyncMethodStarted = new AsyncEventsInProgress(eventProducer,Guid.NewGuid());
+            AsyncUncomittedEvents.Add(asyncMethodStarted);
+            _asyncEventsResults.Add(asyncMethodStarted.InvocationId, asyncMethodStarted);
         }
 
-   
+        public void FinishAsyncExecution(Guid invocationId)
+        {
+            AsyncEventsInProgress eventsInProgress;
+
+            if (!_asyncEventsResults.TryGetValue(invocationId, out eventsInProgress)) return;
+            if (!eventsInProgress.ResultProducer.IsCompleted)
+                throw new NotFinishedAsyncMethodResultsRequestedException();
+            _asyncEventsResults.Remove(invocationId);
+
+            foreach (var @event in eventsInProgress.ResultProducer.Result)
+                RaiseEvent(@event);
+        }
+
         #endregion
         #region FutureEvents
         protected Aggregate(Guid id)
@@ -64,5 +62,10 @@ namespace GridDomain.Node.FutureEvents
             _futureEvents.Add(e.SourceId,e);
         }
         #endregion
+
+    }
+
+    public class NotFinishedAsyncMethodResultsRequestedException : Exception
+    {
     }
 }

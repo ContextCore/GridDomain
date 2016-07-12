@@ -43,7 +43,11 @@ namespace GridDomain.Node.Actors
        
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
-            Command<AsyncMethodCompleted>(m => ProcessAggregateEvents(m.Command));
+            Command<AsyncEventsRecieved>(m =>
+            {
+                (Aggregate as Aggregate).FinishAsyncExecution(m.InvocationId);
+                ProcessAggregateEvents(m.Command);
+            });
 
             Command<ICommand>(cmd =>
             {
@@ -97,11 +101,11 @@ namespace GridDomain.Node.Actors
             //actor should schedule results to process it
             //command is included to safe access later, after async execution complete
             var cmd = command;
-            foreach (var asyncMethod in extendedAggregate.AsyncMethodsStarted)
-                asyncMethod.ResultProducer.ContinueWith(t => new AsyncMethodCompleted(t.Result, cmd))
+            foreach (var asyncMethod in extendedAggregate.AsyncUncomittedEvents)
+                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsRecieved(t.Result, cmd, asyncMethod.InvocationId))
                                           .PipeTo(Self);
 
-            extendedAggregate.AsyncMethodsStarted.Clear();
+            extendedAggregate.AsyncUncomittedEvents.Clear();
         }
 
         private void ScheduleFutureEvent(DomainEvent e)
