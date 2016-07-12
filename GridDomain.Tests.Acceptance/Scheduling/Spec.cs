@@ -19,6 +19,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Framework;
@@ -65,7 +66,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             public void Register(IUnityContainer container)
             {
-                container.Register(new GridNodeContainerConfiguration(_system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone));
+                container.Register(new GridNodeContainerConfiguration(_system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone, new PersistedQuartzConfig()));
                 container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
                 container.RegisterType<AggregateActor<TestAggregate>>();
                 container.RegisterType<AggregateHubActor<TestAggregate>>();

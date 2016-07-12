@@ -175,13 +175,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncAggregates\AggregateChangedEventNotification.cs" />
-    <Compile Include="AsyncAggregates\AsyncAggregateTests.cs" />
+    <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
+    <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
+    <Compile Include="AsyncAggregates\Given_Async_method_execution.cs" />
     <Compile Include="AsyncAggregates\InMemory_Async_execute_dont_wait.cs" />
     <Compile Include="AsyncAggregates\Wait_execution_of_async_method_until_projection_build_event_wait_by_caller.cs" />
+    <Compile Include="AsyncAggregates\When_aggregate_raise_async_events_.cs" />
     <Compile Include="AsyncAggregates\When_wait_execution_of_async_method_until_aggregate_event_wait_by_caller.cs" />
     <Compile Include="AsyncAggregates\When_wait_Execute_of_async_aggregate_method_until_aggregate_event_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_fault_wait_by_Node.cs" />
-    <Compile Include="AsyncAggregates\When_wait_execution_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="AsyncAggregates\When_wait_execution_of_async_method_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />

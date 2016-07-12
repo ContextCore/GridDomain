@@ -9,9 +9,18 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
+using Quartz;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
+
+    public class InMemorySampleDomainTests : SampleDomainCommandExecutionTests
+    {
+        public InMemorySampleDomainTests() : base(true)
+        {
+        }
+    }
+
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
         protected override TimeSpan Timeout => Debugger.IsAttached
@@ -22,7 +31,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             return  new CustomContainerConfiguration(
                                c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
-                               c => c.RegisterInstance(new InMemoryQuartzConfig()),
+                               c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
                                c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
                                c => c.RegisterType<SampleProjectionBuilder>());
         }

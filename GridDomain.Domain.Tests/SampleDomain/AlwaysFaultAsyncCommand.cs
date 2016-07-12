@@ -8,10 +8,10 @@ namespace GridDomain.Tests.SampleDomain
         public AlwaysFaultAsyncCommand(Guid aggregateId, TimeSpan? sleepTime=null)
         {
             AggregateId = aggregateId;
-            SleepTime = sleepTime;
+            SleepTime = sleepTime ?? TimeSpan.FromMilliseconds(500);
         }
 
         public Guid AggregateId { get; }
-        public TimeSpan? SleepTime { get; set; }
+        public TimeSpan SleepTime { get;}
     }
 }
