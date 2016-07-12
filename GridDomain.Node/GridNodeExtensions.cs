@@ -1,43 +1,58 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
+using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
     public static class GridNodeExtensions
     {
-        public static Task<object> Execute(this IGridDomainNode node, CommandAndConfirmation data)
+
+        public static Task<T> Execute<T>(this IGridDomainNode node, CommandAndConfirmation data)
         {
-            return node.Execute(data.Command, data.ExpectedMessages);
+            return node.Execute(data.Command, data.ExpectedMessages).ContinueWith(t => (T)t.Result);
+        }
+        public static Task<T> Execute<T>(this IGridDomainNode node, ICommand command, ExpectedMessage expect)
+        {
+            return Execute<T>(node, new CommandAndConfirmation(command, expect));
         }
 
-        public static Task<TMessage> Execute<TMessage>(this IGridDomainNode node, 
-                                                       ICommand command,
-                                                       ExpectedMessage<TMessage> expect)
+        public static T Execute<T>(this IGridDomainNode node, ICommand command, TimeSpan timeout, ExpectedMessage expect)
         {
-            return Execute(node, new CommandAndConfirmation(command, expect))
-                    .ContinueWith(t => (TMessage)t.Result);
+            return Execute<T>(node, new CommandAndConfirmation(command,expect), timeout);
         }
+
+        public static T Execute<T>(this IGridDomainNode node, CommandAndConfirmation command, TimeSpan timeout)
+        {
+            var commandExecutionTask = node.Execute<T>(command);
+            try
+            {
+                if (!commandExecutionTask.Wait(timeout))
+                    throw new TimeoutException("Command execution timed out");
+
+                return commandExecutionTask.Result;
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerExceptions.Count > 1)
+                    throw;
+
+                throw ex.InnerExceptions.First();
+            }
+        }
+
         public static object Execute(this IGridDomainNode node, CommandAndConfirmation command, TimeSpan timeout)
         {
-            var commandExecutionTask = node.Execute(command);
-            if (!commandExecutionTask.Wait(timeout))
-                throw new TimeoutException($"Command execution timed out");
-            return commandExecutionTask.Result;
+            return Execute<object>(node, command, timeout);
         }
 
-        public static T Execute<T>(this IGridDomainNode node, ICommand command, TimeSpan timeout,ExpectedMessage<T> expect)
-        {
-            var commandExecutionTask = node.Execute(command, expect);
-            if (!commandExecutionTask.Wait(timeout))
-                throw new TimeoutException($"Command execution timed out");
-            return (T)commandExecutionTask.Result;
-        }
 
-        public static void Execute(this IGridDomainNode node, ICommand command, TimeSpan timeout, ExpectedMessage[] expect)
+        public static object Execute(this IGridDomainNode node, ICommand command, TimeSpan timeout, params ExpectedMessage[] expect)
         {
-            Execute(node, new CommandAndConfirmation(command, expect), timeout);
+            return Execute(node, new CommandAndConfirmation(command, expect), timeout);
         }
     }
+
 }

@@ -22,6 +22,9 @@ namespace GridDomain.Tests.SampleDomain
 
             Map<ExternalCallCommand>(c => c.AggregateId,
                                     (c, a) => a.ChangeStateAsync(c.Parameter));
+                                    
+            Map<AlwaysFaultCommand>(c => c.AggregateId,
+                                   (c, a) => a.RaiseExeption());
         }
 
         public Type AggregateType => typeof(SampleAggregate);

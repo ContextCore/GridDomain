@@ -58,5 +58,14 @@ namespace GridDomain.Tests.SampleDomain
         }
 
         public string Value;
+
+        public void RaiseExeption()
+        {
+            throw new SampleAggregateException();
+        }
+    }
+
+    public class SampleAggregateException : Exception
+    {
     }
 }

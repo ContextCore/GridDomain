@@ -14,4 +14,14 @@ namespace GridDomain.Tests.SampleDomain
         public Guid AggregateId { get; }
         public int Parameter { get; }
     }
+
+    public class AlwaysFaultCommand : Command
+    {
+        public AlwaysFaultCommand(Guid aggregateId)
+        {
+            AggregateId = aggregateId;
+        }
+
+        public Guid AggregateId { get; }
+    }
 }

@@ -23,7 +23,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
-                syncCommand.AggregateId);
+                                                                              syncCommand.AggregateId);
             var task = GridNode.Execute(syncCommand,expectedMessage);
             if (!task.Wait(Timeout))
                 throw new TimeoutException();

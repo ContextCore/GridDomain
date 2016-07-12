@@ -58,13 +58,12 @@ namespace GridDomain.Node.Actors
             _messagePublisher.Publish(cmd);
         }
 
-
         public void Handle(CommandAndConfirmation commandWithConfirmation)
         {
-            var waitAggregate = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
+            var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
             foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
-                    _subscriber.Subscribe(expectedMessage.MessageType, waitAggregate);
+                    _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
 
             //TODO: replace with ack from subscriber
             Thread.Sleep(500); //to finish subscribe

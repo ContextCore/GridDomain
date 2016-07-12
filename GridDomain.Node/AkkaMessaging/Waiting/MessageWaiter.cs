@@ -5,22 +5,14 @@ using Akka.Actor;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class MessageWaiter : MessageWaiter<ExpectedMessage>
+    public abstract class MessageWaiter<T> : UntypedActor where T : ExpectedMessage
     {
-        public MessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
-        {
-        }
-    }
-
-
-    public class MessageWaiter<T> : UntypedActor where T: ExpectedMessage
-    {
-        protected readonly Dictionary<Type, int> MessageCounters;
-        protected readonly Dictionary<Type, T> MessageWaits;
+        private readonly Dictionary<Type, int> MessageCounters;
+        private readonly Dictionary<Type, T> MessageWaits;
         private readonly IActorRef _notifyActor;
         private readonly List<object> _allReceivedEvents;
 
-        public MessageWaiter(IActorRef notifyActor, params T[] expectedMessages)
+        protected MessageWaiter(IActorRef notifyActor, params T[] expectedMessages)
         {
             _notifyActor = notifyActor;
             MessageCounters = expectedMessages.ToDictionary(m => m.MessageType, m => m.MessageCount);
@@ -46,18 +38,44 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             if (waitsForEventWithId)
             {
                 var messageId = type.GetProperty(wait.IdPropertyName).GetValue(message);
-                if (wait.MessageId != (Guid) messageId)return;
+                if (wait.MessageId != (Guid)messageId) return;
             }
 
             --MessageCounters[type];
-            if (MessageCounters.Any(c => c.Value > 0)) return;
-                
+            if (CanContinue(MessageCounters)) return;
+
             _notifyActor.Tell(BuildAnswerMessage(message));
         }
 
+        protected abstract bool CanContinue(Dictionary<Type, int> messageCounters);
         protected virtual object BuildAnswerMessage(object message)
         {
             return new ExpectedMessagesRecieved(message, _allReceivedEvents);
+        }
+    }
+
+    
+    public class AllMessageWaiter : MessageWaiter<ExpectedMessage>
+    {
+        protected override bool CanContinue(Dictionary<Type, int> messageCounters)
+        {
+            return messageCounters.Any(c => c.Value > 0);
+        }
+
+        public AllMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
+        {
+        }
+    }
+
+    public class AnyMessageWaiter : MessageWaiter<ExpectedMessage>
+    {
+        protected override bool CanContinue(Dictionary<Type, int> messageCounters)
+        {
+            return messageCounters.All(c => c.Value > 0);
+        }
+
+        public AnyMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
+        {
         }
     }
 }
