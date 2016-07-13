@@ -1,14 +1,19 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
+using GridDomain.Node.FutureEvents;
 
 namespace GridDomain.Tests.SampleDomain
 {
-    public class SampleAggregate : AggregateBase
+    public class SampleAggregate : Aggregate
     {
-        private SampleAggregate(Guid id)
+        private SampleAggregate(Guid id) : base(id)
         {
-            Id = id;
+            
         }
 
         public  SampleAggregate(Guid id, string value):this(id)
@@ -26,12 +31,29 @@ namespace GridDomain.Tests.SampleDomain
             Thread.Sleep(1000);
             ChangeState(number);
         }
+
+        private Task<DomainEvent[]> CreateEventTask(int param, TimeSpan sleepTime)
+        {
+            var timeSpan = sleepTime;
+            var eventTask = Task.Run(() =>
+            {
+                Thread.Sleep(timeSpan);
+                return new DomainEvent[] { new AggregateChangedEvent(param.ToString(), Id)};
+            });
+            return eventTask;
+        }
+
+        internal void ChangeStateAsync(int parameter, TimeSpan sleepTime)
+        {
+            var eventTask = CreateEventTask(parameter,sleepTime);
+            RaiseEventAsync(eventTask);
+        }
+
         private void Apply(AggregateCreatedEvent e)
         {
             Id = e.SourceId;
             Value = e.Value;
         }
-
         
         private void Apply(AggregateChangedEvent e)
         {
@@ -44,9 +66,17 @@ namespace GridDomain.Tests.SampleDomain
         {
             throw new SampleAggregateException();
         }
-    }
 
-    public class SampleAggregateException : Exception
-    {
+        public void RaiseExeptionAsync(TimeSpan callBackTime)
+        {
+         var expectionTask = CreateEventTask(0,callBackTime).ContinueWith(
+             t =>
+             {
+                 RaiseExeption();
+                 return t.Result;
+             });
+
+            RaiseEventAsync(expectionTask);
+        }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.SampleDomain
 {
     public class AggregateChangedEventNotification
     {

@@ -8,14 +8,14 @@ using NUnit.Framework;
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_with_fault_wait_by_Node : SynchroniousCommandExecutionTests
+    public class InMemory_When_SyncExecute_with_sync_fault_wait_by_Node : SampleDomainCommandExecutionTests
     {
 
-        public InMemory_When_SyncExecute_with_fault_wait_by_Node() : base(true)
+        public InMemory_When_SyncExecute_with_sync_fault_wait_by_Node() : base(true)
         {
 
         }
-        public InMemory_When_SyncExecute_with_fault_wait_by_Node(bool inMemory) : base(inMemory)
+        public InMemory_When_SyncExecute_with_sync_fault_wait_by_Node(bool inMemory) : base(inMemory)
         {
 
 
@@ -31,6 +31,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
                         GridNode.Execute<AggregateChangedEvent>(syncCommand,Timeout,expectedMessage));
         }
 
-     
+
+
     }
 }

@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using Akka.Persistence;
@@ -15,6 +18,8 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
+
+   
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -24,18 +29,38 @@ namespace GridDomain.Node.Actors
     {
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
-        private readonly TypedMessageActor<ScheduleCommand> _schdulerActorRef;
+        private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
-                              TypedMessageActor<ScheduleCommand> schdulerActorRef,
+                              TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               IPublisher publisher)
         {
-            _schdulerActorRef = schdulerActorRef;
+            _schedulerActorRef = schedulerActorRef;
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
             Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
+
+       
+            //async aggregate method execution finished, aggregate already raised events
+            //need process it in usual way
+            Command<AsyncEventsRecieved>(m =>
+            {
+                if (m.Exception != null)
+                {
+                   _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
+                    return;
+                }
+
+                (Aggregate as Aggregate).FinishAsyncExecution(m.InvocationId);
+                ProcessAggregateEvents(m.Command);
+            });
+
+            Command<Status.Failure>(f =>
+            {
+                int b = 2;
+            });
 
             Command<ICommand>(cmd =>
             {
@@ -49,25 +74,51 @@ namespace GridDomain.Node.Actors
                     _publisher.Publish(CommandFaultFactory.CreateGenericFor(cmd,ex));
                     return;
                 }
-                
-                var aggregate = (IAggregate) Aggregate;
-           
-                var uncommittedEvents = aggregate.GetUncommittedEvents();
 
-                var events = uncommittedEvents
-                                .Cast<DomainEvent>()
-                                .Select(e => e.CloneWithSaga(cmd.SagaId));
-
-                PersistAll(events, e =>
-                {
-                    ScheduleFutureEvent(e);
-                    _publisher.Publish(e);
-                });
-                aggregate.ClearUncommittedEvents();
+                ProcessAggregateEvents(cmd);
             });
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+        }
+
+        private void ProcessAggregateEvents(ICommand command)
+        {
+
+            var aggregate = (IAggregate) Aggregate;
+
+            var uncommittedEvents = aggregate.GetUncommittedEvents();
+
+            var events = uncommittedEvents.Cast<DomainEvent>();
+            if (command.SagaId != Guid.Empty)
+            {
+                events = events.Select(e => e.CloneWithSaga(command.SagaId));
+            }
+
+            PersistAll(events, e =>
+            {
+                ScheduleFutureEvent(e);
+                _publisher.Publish(e);
+            });
+            aggregate.ClearUncommittedEvents();
+
+            ProcessAsyncMethods(command);
+        }
+
+        private void ProcessAsyncMethods(ICommand command)
+        {
+            var extendedAggregate = Aggregate as Aggregate;
+            if (extendedAggregate == null) return;
+
+            //When aggregate notifies external world about async method execution start,
+            //actor should schedule results to process it
+            //command is included to safe access later, after async execution complete
+            var cmd = command;
+            foreach (var asyncMethod in extendedAggregate.AsyncUncomittedEvents)
+                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsRecieved(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
+                                          .PipeTo(Self);
+
+            extendedAggregate.AsyncUncomittedEvents.Clear();
         }
 
         private void ScheduleFutureEvent(DomainEvent e)
@@ -85,7 +136,12 @@ namespace GridDomain.Node.Actors
                                                                          futureEvent.Event.GetType())
                                                     );
 
-            _schdulerActorRef.Handle(scheduleEvent);
+            _schedulerActorRef.Handle(scheduleEvent);
+        }
+
+        protected override void Unhandled(object message)
+        {
+            base.Unhandled(message);
         }
 
         public TAggregate Aggregate { get; private set; }

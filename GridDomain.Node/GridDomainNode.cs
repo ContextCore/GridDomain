@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -16,6 +18,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
@@ -71,29 +74,38 @@ namespace GridDomain.Node
         {
             Container.RegisterInstance(_messageRouting);
 
+            var childContainer = Container.CreateChildContainer();
+            childContainer.Register(_configuration);
+            var quartzConfig = childContainer.Resolve<IQuartzConfig>();
+
             foreach (var system in AllSystems)
             {
-                system.AddDependencyResolver(new UnityDependencyResolver(Container, system));
-                Container.CreateChildContainer().Register(new GridNodeContainerConfiguration(system,
-                                                    databaseConfiguration,
-                                                    _transportMode));
+                var unityContainer = Container.CreateChildContainer();
+                system.AddDependencyResolver(new UnityDependencyResolver(unityContainer, system));
+                ConfigureContainer(unityContainer,databaseConfiguration,quartzConfig,system);
+                unityContainer.Register(_configuration);
             }
 
-            Container.Register(new GridNodeContainerConfiguration(System,
-                                               databaseConfiguration,
-                                               _transportMode));
+            ConfigureContainer(Container,databaseConfiguration, quartzConfig,System);
 
             PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
-          
-            Container.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
-            Container.RegisterInstance(new TypedMessageActor<ScheduleCommand>(PersistentScheduler));
-            Container.RegisterInstance(new TypedMessageActor<Unschedule>(PersistentScheduler));
-
-            _configuration.Register(Container);
-
             _persistentScheduler = Container.Resolve<Quartz.IScheduler>();
             Publisher = Container.Resolve<IPublisher>();
             StartMainNodeActor(System);
+        }
+
+        private void ConfigureContainer(IUnityContainer unityContainer,IDbConfiguration databaseConfiguration, IQuartzConfig quartzConfig, ActorSystem actorSystem)
+        {
+            unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
+                                                                       databaseConfiguration,
+                                                                       _transportMode,
+                                                                       quartzConfig));
+
+            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
+            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(PersistentScheduler));
+            unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(PersistentScheduler));
+
+            _configuration.Register(unityContainer);
         }
 
         public void Stop()
@@ -127,18 +139,22 @@ namespace GridDomain.Node
                 _mainNodeActor.Tell(cmd);
         }
 
-        public Task<T> Execute<T>(ICommand command, params ExpectedMessage[] expect)
+        public Task<object> Execute(ICommand command, params ExpectedMessage[] expect)
         {
             return _mainNodeActor.Ask<object>(new CommandAndConfirmation(command,expect))
                                  .ContinueWith(t =>
                                  {
-                                     var result = t.Result;
-                                     var fault = result as ICommandFault;
-                                     if (fault != null)
-                                         throw fault.Exception;
+                                     object result=null;
+                                     t.Result.Match()
+                                         .With<ICommandFault>(fault =>
+                                         {
+                                             var domainExcpetion = fault.Exception.UnwrapSingle();
+                                             ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
+                                         })
+                                         .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
+                                         .Default(m => { throw new InvalidMessageException(m.ToPropsString()); }); 
 
-                                     var executionFinished = (CommandExecutionFinished)result;
-                                     return (T)executionFinished.ResultMessage;
+                                     return result;
                                  });
         }
     }

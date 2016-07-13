@@ -70,8 +70,8 @@ namespace GridDomain.Tests.Framework
         /// <returns></returns>
         public T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
-            var props = GridNode.System.DI().Props<AggregateActor<T>>();
             var name = AggregateActorName.New<T>(id).ToString();
+            var props = GridNode.System.DI().Props<AggregateActor<T>>();
             var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
             //TODO: replace with event wait
             Thread.Sleep(1000); //wait for actor recover

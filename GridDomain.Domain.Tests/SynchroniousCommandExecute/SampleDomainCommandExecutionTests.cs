@@ -1,9 +1,6 @@
-﻿using System;
+using System;
 using System.Diagnostics;
-using System.Threading;
-using Akka.Actor;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.FutureEvents;
@@ -12,7 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
-    public class SynchroniousCommandExecutionTests : ExtendedNodeCommandTest
+    public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
         protected override TimeSpan Timeout => Debugger.IsAttached
             ? TimeSpan.FromMinutes(10)
@@ -21,10 +18,10 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         protected override IContainerConfiguration CreateConfiguration()
         {
             return  new CustomContainerConfiguration(
-                               c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
-                               c => c.RegisterInstance(new InMemoryQuartzConfig()),
-                               c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
-                               c => c.RegisterType<SampleProjectionBuilder>());
+                c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
+                c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
+                c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
+                c => c.RegisterType<SampleProjectionBuilder>());
         }
 
         protected override IMessageRouteMap CreateMap()
@@ -36,7 +33,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         }
       
         
-        public SynchroniousCommandExecutionTests(bool inMemory) : base(inMemory)
+        public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
         {
         }
     }

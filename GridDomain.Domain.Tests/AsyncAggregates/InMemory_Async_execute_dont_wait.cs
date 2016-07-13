@@ -1,11 +1,12 @@
 using System;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.AsyncAggregates
 {
     [TestFixture]
-    public class InMemory_Async_execute_dont_wait : SynchroniousCommandExecutionTests
+    public class InMemory_Async_execute_dont_wait : SampleDomainCommandExecutionTests
     {
         public InMemory_Async_execute_dont_wait():base(true)
         {
@@ -18,7 +19,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         [Then]
         public void Async_execute_dont_wait()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand);
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreNotEqual(syncCommand.Parameter, aggregate.Value);

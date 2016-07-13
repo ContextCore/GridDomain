@@ -249,9 +249,12 @@
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessagesRecieved.cs" />
     <Compile Include="EmptyContainerConfig.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
+    <Compile Include="FutureEvents\AsyncMethodCompleted.cs" />
+    <Compile Include="FutureEvents\AsyncMethodStarted.cs" />
     <Compile Include="FutureEvents\FutureDomainEvent.cs" />
-    <Compile Include="FutureEvents\FutureEventsAggregate.cs" />
+    <Compile Include="FutureEvents\Aggregate.cs" />
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="GridNodeExtensions.cs" />

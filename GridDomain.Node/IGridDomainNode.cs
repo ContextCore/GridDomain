@@ -12,6 +12,6 @@ namespace GridDomain.Node
     {
         void Execute(params ICommand[] commands);
      
-        Task<T> Execute<T>(ICommand command, params ExpectedMessage[] expect);
+        Task<object> Execute(ICommand command, ExpectedMessage[] expect);
     }
 }
