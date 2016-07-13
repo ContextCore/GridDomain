@@ -5,9 +5,9 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands
 {
     internal class ChangeSubscriptionCommand: Command
     {
-        private NotEnoughFondsFailure e;
+        private NotEnoughFundsFailure e;
 
-        public ChangeSubscriptionCommand(NotEnoughFondsFailure e)
+        public ChangeSubscriptionCommand(NotEnoughFundsFailure e)
         {
             this.e = e;
         }

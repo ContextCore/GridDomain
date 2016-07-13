@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Sagas
         }
 
         private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
-        private NotEnoughFondsFailure[] Messages;
+        private NotEnoughFundsFailure[] Messages;
 
         public void Given_new_saga_with_state()
         {
@@ -29,10 +29,10 @@ namespace GridDomain.Tests.Sagas
 
             Messages = new[]
             {
-                new NotEnoughFondsFailure(),
-                new NotEnoughFondsFailure(),
-                new NotEnoughFondsFailure(),
-                new NotEnoughFondsFailure()
+                new NotEnoughFundsFailure(),
+                new NotEnoughFundsFailure(),
+                new NotEnoughFundsFailure(),
+                new NotEnoughFundsFailure()
             };
         }
 
