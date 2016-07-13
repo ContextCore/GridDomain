@@ -178,7 +178,7 @@
     <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
-    <Compile Include="AsyncAggregates\Given_Async_method_execution.cs" />
+    <Compile Include="AsyncAggregates\Async_execution_dont_block_aggregate.cs" />
     <Compile Include="AsyncAggregates\InMemory_Async_execute_dont_wait.cs" />
     <Compile Include="AsyncAggregates\Wait_execution_of_async_method_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="AsyncAggregates\When_aggregate_raise_async_events_.cs" />

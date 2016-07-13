@@ -28,6 +28,9 @@ namespace GridDomain.Tests.SampleDomain
 
             Map<AlwaysFaultAsyncCommand>(c => c.AggregateId,
                                    (c, a) => a.RaiseExeptionAsync(c.SleepTime));
+
+            Map<AsyncFaultWithOneEventCommand>(c => c.AggregateId,
+                              (c, a) => a.AsyncExceptionWithOneEvent(c.Parameter, c.SleepTime));
         }
 
         public Type AggregateType => typeof(SampleAggregate);

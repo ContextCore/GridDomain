@@ -1,9 +1,10 @@
 using System;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.FutureEvents;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 {
     [TestFixture]
     public class FutureEventsTest_Persistent : FutureEventsTest

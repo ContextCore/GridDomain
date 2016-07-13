@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.AsyncAggregates
 {
     [TestFixture]
-    class Given_Async_method_execution : InMemorySampleDomainTests
+    class Async_execution_dont_block_aggregate : InMemorySampleDomainTests
     {
        
         [Test]
@@ -34,7 +34,5 @@ namespace GridDomain.Tests.AsyncAggregates
             var asyncResult = asyncCommandTask.Result;
             Assert.AreEqual(asyncCommand.Parameter.ToString(), asyncResult.Value);
         }
-
-      
     }
 }

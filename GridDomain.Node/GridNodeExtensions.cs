@@ -14,15 +14,7 @@ namespace GridDomain.Node
         public static Task<T> Execute<T>(this IGridDomainNode node, CommandAndConfirmation data)
         {
             return node.Execute(data.Command, data.ExpectedMessages)
-                                 .ContinueWith(t =>
-                                 {
-                                     if (t.IsFaulted)
-                                     {
-                                         var domainException = t.Exception.UnwrapSingle();
-                                         ExceptionDispatchInfo.Capture(domainException).Throw();
-                                     }
-                                     return (T) t.Result;
-                                 });
+                       .ContinueWithSafeResultCast(result => (T)result);
         }
         public static Task<T> Execute<T>(this IGridDomainNode node, ICommand command, ExpectedMessage expect)
         {

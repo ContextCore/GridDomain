@@ -32,7 +32,7 @@ namespace GridDomain.Tests.SampleDomain
             ChangeState(number);
         }
 
-        private Task<DomainEvent[]> CreateEventTask(int param, TimeSpan sleepTime)
+        private Task<DomainEvent[]> CreateEventsTask(int param, TimeSpan sleepTime)
         {
             var timeSpan = sleepTime;
             var eventTask = Task.Run(() =>
@@ -43,10 +43,33 @@ namespace GridDomain.Tests.SampleDomain
             return eventTask;
         }
 
+        private Task<AggregateChangedEvent> CreateEventTask(int param, TimeSpan sleepTime)
+        {
+            var timeSpan = sleepTime;
+            var eventTask = Task.Run(() =>
+            {
+                Thread.Sleep(timeSpan);
+                return new AggregateChangedEvent(param.ToString(), Id);
+            });
+            return eventTask;
+        }
+
+
         internal void ChangeStateAsync(int parameter, TimeSpan sleepTime)
         {
-            var eventTask = CreateEventTask(parameter,sleepTime);
+            var eventTask = CreateEventsTask(parameter,sleepTime);
             RaiseEventAsync(eventTask);
+        }
+
+        internal void AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
+        {
+            var expectionTask = CreateEventTask(0, sleepTime).ContinueWith(
+             t =>
+             {
+                 RaiseExeption();
+                 return t.Result;
+             });
+            RaiseEventAsync(expectionTask);
         }
 
         private void Apply(AggregateCreatedEvent e)
@@ -69,7 +92,7 @@ namespace GridDomain.Tests.SampleDomain
 
         public void RaiseExeptionAsync(TimeSpan callBackTime)
         {
-         var expectionTask = CreateEventTask(0,callBackTime).ContinueWith(
+         var expectionTask = CreateEventsTask(0,callBackTime).ContinueWith(
              t =>
              {
                  RaiseExeption();

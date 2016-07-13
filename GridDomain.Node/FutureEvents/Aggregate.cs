@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.FutureEvents
-{ 
+{
     public class Aggregate : AggregateBase
     {
        
@@ -15,12 +16,11 @@ namespace GridDomain.Node.FutureEvents
         private readonly IDictionary<Guid,AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
         public readonly List<AsyncEventsInProgress> AsyncUncomittedEvents = new List<AsyncEventsInProgress>();
 
-        //protected void RaiseEventAsync<TDomainEvent>(Task<TDomainEvent> eventProducer) where TDomainEvent : DomainEvent
-        //{
-        //    RaiseEventAsync(eventProducer.ContinueWith(t => 
-        //                                new DomainEvent[] {t.Result},
-        //                                  TaskContinuationOptions.OnlyOnRanToCompletion));
-        //}
+        public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
+        {
+            var entityToArrayTask = eventProducer.ContinueWithSafeResultCast(@event => new DomainEvent[] { @event });
+            RaiseEventAsync(entityToArrayTask);
+        }
 
         protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {
