@@ -12,6 +12,7 @@ using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.DependencyInjection.Infrastructure;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
@@ -53,6 +54,7 @@ namespace GridDomain.Tests.DependencyInjection
 
             container.RegisterType<ITestDependency, TestDependencyImplementation>();
             container.RegisterInstance<IUnityContainer>(container);
+            container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
             container.RegisterAggregate<TestAggregate,TestAggregatesCommandHandler>();
 
             return new GridDomainNode(container, new TestRouteMap(), TransportMode.Standalone, Sys);

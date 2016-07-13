@@ -69,8 +69,14 @@ namespace GridDomain.Tests.SampleDomain
 
         public void RaiseExeptionAsync(TimeSpan callBackTime)
         {
-            CreateEventTask(0,callBackTime).ContinueWith(
-                t => RaiseExeption());
+         var expectionTask = CreateEventTask(0,callBackTime).ContinueWith(
+             t =>
+             {
+                 RaiseExeption();
+                 return t.Result;
+             });
+
+            RaiseEventAsync(expectionTask);
         }
     }
 }

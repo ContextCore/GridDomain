@@ -25,5 +25,7 @@ namespace GridDomain.Tests.AsyncAggregates
             Assert.Throws<SampleAggregateException>(() => 
                         GridNode.Execute<AggregateChangedEvent>(syncCommand,Timeout,expectedMessage));
         }
+
+        
     }
 }

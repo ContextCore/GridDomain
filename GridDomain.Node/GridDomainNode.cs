@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
@@ -142,13 +144,17 @@ namespace GridDomain.Node
             return _mainNodeActor.Ask<object>(new CommandAndConfirmation(command,expect))
                                  .ContinueWith(t =>
                                  {
-                                     var result = t.Result;
-                                     var fault = result as ICommandFault;
-                                     if (fault != null)
-                                         throw fault.Exception;
+                                     object result=null;
+                                     t.Result.Match()
+                                         .With<ICommandFault>(fault =>
+                                         {
+                                             var domainExcpetion = fault.Exception.UnwrapSingle();
+                                             ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
+                                         })
+                                         .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
+                                         .Default(m => { throw new InvalidMessageException(m.ToPropsString()); }); 
 
-                                     var executionFinished = (CommandExecutionFinished)result;
-                                     return executionFinished.ResultMessage;
+                                     return result;
                                  });
         }
     }

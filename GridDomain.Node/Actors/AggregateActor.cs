@@ -49,7 +49,7 @@ namespace GridDomain.Node.Actors
             {
                 if (m.Exception != null)
                 {
-                    _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
+                   _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
                     return;
                 }
 
@@ -64,13 +64,6 @@ namespace GridDomain.Node.Actors
 
             Command<ICommand>(cmd =>
             {
-                //Task.Run(() =>
-                //{
-                //    Thread.Sleep(500);
-                //    throw new Exception();
-
-                //}).PipeTo(Self);
-
                 //TODO: create more efficient way to set up a saga
                 try
                 {
