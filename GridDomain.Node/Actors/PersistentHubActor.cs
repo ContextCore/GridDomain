@@ -14,10 +14,6 @@ namespace GridDomain.Node.Actors
         protected abstract Guid GetChildActorId(object message);
         protected abstract Type GetChildActorType(object message);
 
-        public PersistentHubActor()
-        {
-            int a = 1;
-        }
         protected override void OnReceive(object message)
         {
             IActorRef knownChild;

@@ -5,11 +5,12 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.FutureEvents;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 {
     [TestFixture]
     public class FutureEventsTest_Persistent_restart : FutureEventsTest

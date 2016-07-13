@@ -38,7 +38,7 @@ namespace GridDomain.Node.Actors
             Saga = emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
 
 
-            Command<ICommandFault>(fault => ProcessSaga(fault),fault => fault.SagaId == Saga.State.Id);
+            Command<ICommandFault>(ProcessSaga,fault => fault.SagaId == Saga.State.Id);
             Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.State.Id);
             Command<TStartMessage>(startMessage =>
             {

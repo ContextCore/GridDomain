@@ -6,9 +6,10 @@ using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 
-namespace GridDomain.Node.AkkaMessaging.Routing
+namespace GridDomain.Node.Actors
 {
     public class ActorMessagesRouter : IMessagesRouter
     {
@@ -56,6 +57,11 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             var createActorRoute = CreateActorRouteMessage.ForSaga(sagaDescriptor);
             _routingActorTypedMessageActor.Handle(createActorRoute);
+        }
+
+        public void RegisterHandler<TMessage, THandler>(string correlationPropertyName) where THandler : IHandler<TMessage>
+        {
+            Route<TMessage>().ToHandler<THandler>().WithCorrelation(correlationPropertyName).Register();
         }
 
         public void RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup

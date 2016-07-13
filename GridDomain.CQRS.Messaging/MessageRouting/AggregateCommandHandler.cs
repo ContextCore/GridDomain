@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using CommonDomain.Core;
+using GridDomain.Common;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
@@ -10,12 +11,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         private readonly Func<ICommand, TAggregate, TAggregate> _executor;
         private readonly Func<ICommand, Guid> _idLocator;
-        private readonly IServiceLocator _locator;
+        private readonly IUnityContainer _locator;
 
         private AggregateCommandHandler(string name, 
                                         Func<ICommand, Guid> idLocator,
                                         Func<ICommand, TAggregate, TAggregate> executor,
-                                        IServiceLocator locator)
+                                        IUnityContainer locator)
         {
             _locator = locator;
             _executor = executor;
@@ -25,30 +26,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         public string MachingProperty { get; }
 
-        private static string GetName<T, U>(Expression<Func<T, U>> property)
-        {
-            MemberExpression memberExpression;
-
-            if (property.Body is UnaryExpression)
-            {
-                var unaryExpression = (UnaryExpression) property.Body;
-                memberExpression = (MemberExpression) unaryExpression.Operand;
-            }
-            else
-            {
-                memberExpression = (MemberExpression) property.Body;
-            }
-
-            var memberInfo = memberExpression.Member as PropertyInfo;
-            if(memberInfo == null)
-                throw new ArgumentException("Cannot find property while extracting name from expressiom");
-            return  memberInfo.Name;
-        }
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-            Action<TCommand, TAggregate> commandExecutor, IServiceLocator container) where TCommand : ICommand
+            Action<TCommand, TAggregate> commandExecutor, IUnityContainer container) where TCommand : ICommand
         {
-            return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
+            return new AggregateCommandHandler<TAggregate>(MemberNameExtractor.GetName(idLocator),
                 c => idLocator.Compile()((TCommand) c),
                 (cmd, agr) =>
                 {
@@ -59,9 +41,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         }
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-            Func<TCommand, TAggregate> commandExecutor, IServiceLocator container)
+            Func<TCommand, TAggregate> commandExecutor, IUnityContainer container)
         {
-            return new AggregateCommandHandler<TAggregate>(GetName(idLocator),
+            return new AggregateCommandHandler<TAggregate>(MemberNameExtractor.GetName(idLocator),
                 c => idLocator.Compile()((TCommand) c), (cmd, agr) => commandExecutor((TCommand) cmd), container);
         }
 

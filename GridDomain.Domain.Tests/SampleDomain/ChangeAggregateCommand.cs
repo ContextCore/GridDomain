@@ -1,11 +1,11 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
-    public class CreateAggregateCommand : Command
+    public class ChangeAggregateCommand : Command
     {
-        public CreateAggregateCommand(int parameter, Guid aggregateId)
+        public ChangeAggregateCommand(int parameter, Guid aggregateId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
-using GridDomain.Tests.SyncProjection.SampleDomain;
-using UnityServiceLocator = GridDomain.Node.UnityServiceLocator;
 
 namespace GridDomain.Tests.SyncProjection
 {
@@ -22,7 +22,7 @@ namespace GridDomain.Tests.SyncProjection
     public class SynchronizedProjectionBuildersTests : NodeCommandsTest
     {
         private ExpectedMessagesRecieved _processedEvents;
-        private ICommand[] _allCommands;
+        private CQRS.ICommand[] _allCommands;
 
         public SynchronizedProjectionBuildersTests():
             base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "ProjectionBuilders", false)
@@ -38,7 +38,7 @@ namespace GridDomain.Tests.SyncProjection
             container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
 
             return new GridDomainNode(container, 
-                                      new TestRouteMap(new UnityServiceLocator(container)), 
+                                      new TestRouteMap(container), 
                                       TransportMode.Standalone, system);
         }
 
@@ -49,7 +49,7 @@ namespace GridDomain.Tests.SyncProjection
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
             var updateCommands = Enumerable.Range(0, 20).Select(r => new ChangeAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
-            _allCommands = createCommands.Cast<ICommand>().Concat(updateCommands).ToArray();
+            _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
 
             _processedEvents = ExecuteAndWaitForMany<AggregateCreatedEvent, AggregateChangedEvent>(createCommands.Length,
                                                                                                    updateCommands.Length,

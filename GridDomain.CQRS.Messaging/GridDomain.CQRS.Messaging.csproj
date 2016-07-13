@@ -108,7 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompositeRouteMap.cs" />
-    <Compile Include="IServiceLocator.cs" />
     <Compile Include="MessageRouting\AggregateCommandHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandlerDesriptor.cs" />
@@ -123,9 +122,12 @@
     <Compile Include="MessageRouting\IHandlerBuilder.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
     <Compile Include="MessageRouting\IProjectionGroup.cs" />
+    <Compile Include="MessageRouting\IProjectionGroupDescriptor.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />
     <Compile Include="MessageRouting\MessageRoute.cs" />
+    <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="MessageRouting\ProjectionGroup.cs" />
+    <Compile Include="MessageRouting\ProjectionGroupDescriptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +135,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>

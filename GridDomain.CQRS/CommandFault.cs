@@ -12,6 +12,7 @@ namespace GridDomain.CQRS
             SagaId = command.SagaId;
         }
 
+        public Guid Id => Command.Id;
         ICommand ICommandFault.Command => Command;
 
         public Exception Exception { get; }

@@ -40,13 +40,6 @@ namespace GridDomain.EventSourcing.Sagas
             return RegisterEvent<CommandFault<TCommand>>(trigger);
         }
 
-
-        //public StateMachine<TSagaStates, TSagaTriggers>
-        //    .TriggerWithParameters<ICommandFault> RegisterAnyCommandFault(TSagaTriggers trigger): ICommand
-        //{
-        //    return RegisterEvent<CommandFault<TCommand>>(trigger);
-        //}
-
         private readonly List<Type> _registeredCommands = new List<Type>();
 
         protected StateSaga(TStateData state)

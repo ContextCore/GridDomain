@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GridDomain.Tests.Framework
+namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class ExpectedMessagesRecieved<T> : ExpectedMessagesRecieved
     {

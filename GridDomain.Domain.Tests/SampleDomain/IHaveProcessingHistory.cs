@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public interface IHaveProcessingHistory
     {

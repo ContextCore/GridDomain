@@ -7,6 +7,7 @@ using Akka.DI.Core;
 using Akka.TestKit.NUnit;
 using CommonDomain.Core;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -28,6 +29,7 @@ namespace GridDomain.Tests.Framework
     {
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
         protected GridDomainNode GridNode;
+      
         private readonly Stopwatch _watch = new Stopwatch();
         private IActorSubscriber _actorSubscriber;
         private readonly bool _clearDataOnStart;
@@ -60,11 +62,18 @@ namespace GridDomain.Tests.Framework
 
         }
 
+        /// <summary>
+        /// Loads aggregate using Sys actor system
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var props = GridNode.System.DI().Props<AggregateActor<T>>();
             var name = AggregateActorName.New<T>(id).ToString();
             var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
+            //TODO: replace with event wait
             Thread.Sleep(1000); //wait for actor recover
             return actor.UnderlyingActor.Aggregate;
         }
@@ -82,42 +91,42 @@ namespace GridDomain.Tests.Framework
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 
-        private MessageToWait[] GetFaults(ICommand[] commands)
+        private ExpectedMessage[] GetFaults(ICommand[] commands)
         {
             var faultGeneric = typeof(CommandFault<>);
             return commands.Select(c => c.GetType())
                            .Distinct()
                            .Select(commandType => faultGeneric.MakeGenericType(commandType))
-                           .Select(t => new MessageToWait(t, 0))
+                           .Select(t => new ExpectedMessage(t, 0))
                            .ToArray();
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] { MessageToWait.Once<TEvent>() }).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { ExpectedMessage.Once<TEvent>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] { MessageToWait.Once<TMessage1>(), MessageToWait.Once<TMessage1>() }).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { ExpectedMessage.Once<TMessage1>(), ExpectedMessage.Once<TMessage1>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitForMany<TMessage1, TMessage2>(int eventAnum, int eventBnum, params ICommand[] commands)
         {
-            var msg1ToWait = new MessageToWait(typeof(TMessage1), eventAnum);
-            var msg2ToWait = new MessageToWait(typeof(TMessage2), eventBnum);
+            var msg1ToWait = new ExpectedMessage(typeof(TMessage1), eventAnum);
+            var msg2ToWait = new ExpectedMessage(typeof(TMessage2), eventBnum);
             var allMsgToWait = GetFaults(commands).Concat(new [] {msg1ToWait, msg2ToWait}).ToArray();
 
             return Wait(() => Execute(commands), GridNode.System, true, allMsgToWait);
         }
 
 
-        private ExpectedMessagesRecieved Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params MessageToWait[] messagesToWait)
+        private ExpectedMessagesRecieved Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
         {
             var actor = system
-                                .ActorOf(Props.Create(() => new MessageWaiter(TestActor, messagesToWait)),
+                                .ActorOf(Props.Create(() => new AllMessageWaiter(TestActor, expectedMessages)),
                                          "MessageWaiter_" + Guid.NewGuid());
 
-            foreach (var m in messagesToWait)
+            foreach (var m in expectedMessages)
                 _actorSubscriber.Subscribe(m.MessageType, actor);
 
             act();
@@ -145,17 +154,17 @@ namespace GridDomain.Tests.Framework
 
         protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
-            return Wait(() => Execute(commands), GridNode.System,true, messageTypes.Select(m => new MessageToWait(m,1)).ToArray());
+            return Wait(() => Execute(commands), GridNode.System,true, messageTypes.Select(m => new ExpectedMessage(m,1)).ToArray());
         }
 
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor(MessageToWait[] messageToWait, params ICommand[] commands)
+        protected ExpectedMessagesRecieved ExecuteAndWaitFor(ExpectedMessage[] expectedMessage, params ICommand[] commands)
         {
-            return Wait(() => Execute(commands), GridNode.System, true, messageToWait);
+            return Wait(() => Execute(commands), GridNode.System, true, expectedMessage);
         }
 
         protected ExpectedMessagesRecieved WaitFor<TMessage>(bool failOnFault = true)
         {
-            return Wait(() => { }, GridNode.System, failOnFault, new MessageToWait(typeof(TMessage), 1));
+            return Wait(() => { }, GridNode.System, failOnFault, new ExpectedMessage(typeof(TMessage), 1));
         }
 
         private void Execute(ICommand[] commands)

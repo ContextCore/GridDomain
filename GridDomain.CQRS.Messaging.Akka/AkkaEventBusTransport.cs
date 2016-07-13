@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
 
@@ -7,6 +8,7 @@ namespace GridDomain.CQRS.Messaging.Akka
     public class AkkaEventBusTransport : IActorSubscriber, IPublisher
     {
         private readonly EventStream _bus;
+        public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>(); 
 
         public AkkaEventBusTransport(ActorSystem system)
         {
@@ -30,6 +32,14 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Subscribe(Type messageType, IActorRef actor)
         {
+            List<IActorRef> subscribers;
+            if (!Subscribers.TryGetValue(messageType, out subscribers))
+            {
+                subscribers = new List<IActorRef>();
+                Subscribers[messageType] = subscribers;
+            }
+            subscribers.Add(actor);
+
             _bus.Subscribe(actor, messageType);
         }
     }

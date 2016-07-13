@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using CommonDomain.Core;
 
-namespace GridDomain.Tests.SyncProjection.SampleDomain
+namespace GridDomain.Tests.SampleDomain
 {
     public class SampleAggregate : AggregateBase
     {
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
         public void LongExecute(int number)
         {
             Thread.Sleep(1000);
-            RaiseEvent(new AggregateChangedEvent(number.ToString(), Id));
+            ChangeState(number);
         }
         private void Apply(AggregateCreatedEvent e)
         {
@@ -39,5 +39,14 @@ namespace GridDomain.Tests.SyncProjection.SampleDomain
         }
 
         public string Value;
+
+        public void RaiseExeption()
+        {
+            throw new SampleAggregateException();
+        }
+    }
+
+    public class SampleAggregateException : Exception
+    {
     }
 }

@@ -39,8 +39,7 @@ namespace GridDomain.Tests.FutureEvents
             var scheduledTime = DateTime.Now.AddSeconds(-5);
             var now = DateTime.Now;
             var aggregate = RaiseFutureEventInTime(scheduledTime);
-            Assert.AreEqual(now.Second, aggregate.ProcessedTime.Second);
-
+            Assert.LessOrEqual(now.Second - aggregate.ProcessedTime.Second,1);
         }
     }
 }

@@ -177,19 +177,34 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="Sagas\RenewSagaMessageRouteMap.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSagaState.cs" />
+    <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
+    <Compile Include="SynchroniousCommandExecute\AggregateChangedEventNotification.cs" />
+    <Compile Include="Sagas\SagaStart_with_predefined_id.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSagaFactory.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_Async_execute_dont_wait.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_with_fault_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\In_Memory_When_SyncExecute_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\SynchroniousCommandExecutionTests.cs" />
-    <Compile Include="SyncProjection\SampleDomain\AggregateChangedProjectionBuilder.cs" />
-    <Compile Include="SyncProjection\SampleDomain\AggregateCreatedProjectionBuilder.cs" />
-    <Compile Include="SyncProjection\SampleDomain\AggregateChangedEvent.cs" />
-    <Compile Include="SyncProjection\SampleDomain\CreateAggregateCommand.cs" />
-    <Compile Include="SyncProjection\SampleDomain\IHaveProcessingHistory.cs" />
-    <Compile Include="SyncProjection\SampleDomain\ProcessedHistory.cs" />
-    <Compile Include="SyncProjection\SampleDomain\SampleAggregate.cs" />
-    <Compile Include="SyncProjection\SampleDomain\TestAggregatesCommandHandler.cs" />
-    <Compile Include="SyncProjection\SampleDomain\ChangeAggregateCommand.cs" />
-    <Compile Include="SyncProjection\SampleDomain\AggregateCreatedEvent.cs" />
-    <Compile Include="SyncProjection\SampleDomain\TestProjectionGroup.cs" />
-    <Compile Include="SyncProjection\SampleDomain\TestRouteMap.cs" />
+    <Compile Include="SampleDomain\AggregateChangedProjectionBuilder.cs" />
+    <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder.cs" />
+    <Compile Include="SampleDomain\AggregateChangedEvent.cs" />
+    <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder_Alternative.cs" />
+    <Compile Include="SampleDomain\CreateAggregateCommand.cs" />
+    <Compile Include="SampleDomain\IHaveProcessingHistory.cs" />
+    <Compile Include="SampleDomain\LongOperationCommand.cs" />
+    <Compile Include="SampleDomain\ProcessedHistory.cs" />
+    <Compile Include="SampleDomain\SampleAggregate.cs" />
+    <Compile Include="SampleDomain\TestAggregatesCommandHandler.cs" />
+    <Compile Include="SampleDomain\ChangeAggregateCommand.cs" />
+    <Compile Include="SampleDomain\AggregateCreatedEvent.cs" />
+    <Compile Include="SampleDomain\TestProjectionGroup.cs" />
+    <Compile Include="SampleDomain\TestRouteMap.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregatesCommandHandler.cs" />
@@ -221,7 +236,6 @@
     <Compile Include="Sagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\Given_published_start_message_Then_Saga_is_started.cs" />
     <Compile Include="Sagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
-    <Compile Include="Sagas\Given_messages_out_of_order_should_rearrange_and_process.cs" />
     <Compile Include="Sagas\SagaStateTransitionTests.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
@@ -232,7 +246,6 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
-    <Compile Include="TestsClogalConfig.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -285,7 +298,9 @@
       <Name>GridDomain.Tests.Framework</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="AsyncAggregates\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

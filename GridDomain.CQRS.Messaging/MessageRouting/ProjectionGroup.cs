@@ -1,20 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class ProjectionGroup: IProjectionGroup
     {
-        private readonly IServiceLocator _locator;
+        private readonly IUnityContainer _locator;
         readonly Dictionary<Type, List<Action<object>>> _handlers = new Dictionary<Type, List<Action<object>>>();
+        public IProjectionGroupDescriptor Descriptor = new ProjectionGroupDescriptor();
 
-        public ProjectionGroup(IServiceLocator locator)
+        public ProjectionGroup(IUnityContainer locator)
         {
             _locator = locator;
+            if(_locator == null) throw new ArgumentNullException("locator");
         }
 
-        public void Add<TMessage, THandler>(string correlationPropertyName ) where THandler : IHandler<TMessage>
+        public void Add<TMessage, THandler>(string correlationPropertyName)where THandler : IHandler<TMessage>
         {
             var handler = _locator.Resolve<THandler>();
 

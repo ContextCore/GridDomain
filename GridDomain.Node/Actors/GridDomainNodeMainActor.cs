@@ -14,7 +14,7 @@ using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Framework;
+using Microsoft.Practices.Unity;
 using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
@@ -29,7 +29,7 @@ namespace GridDomain.Node.Actors
         public GridDomainNodeMainActor(IPublisher transport,
                                        IActorSubscriber subscriber,
                                        IMessageRouteMap messageRouting,
-                                       IServiceLocator locator)
+                                       IUnityContainer locator)
         {
             _subscriber = subscriber;
             _messageRouting = messageRouting;
@@ -53,91 +53,24 @@ namespace GridDomain.Node.Actors
             _log.Debug($"Actor {GetType().Name} finished routes initialization");
         }
 
-        public void Handle(ExecuteCommand message)
+        public void Handle(ICommand cmd)
         {
-            _log.Trace($"Актор {GetType().Name} получил сообщение:\r\n {message.ToPropsString()}");
-            _messagePublisher.Publish(message.Command);
+            _log.Trace($"Актор {GetType().Name} получил сообщение:\r\n {cmd.ToPropsString()}");
+            _messagePublisher.Publish(cmd);
         }
 
-        IDictionary<Guid, CommandWaiter> executingCommandsByEvent = new Dictionary<Guid, CommandWaiter>();
-        IDictionary<Guid, CommandWaiter> executingCommands = new Dictionary<Guid, CommandWaiter>();
-
-
-        class CommandWaiter
+        public void Handle(CommandAndConfirmation commandWithConfirmation)
         {
-            public ICommand Command;
-            public IActorRef Waiter;
-        }
-        public void Handle(ExecuteConfirmedCommand message)
-        {
-            var msgToWait = message.Command.ExpectedMessages.Select(c => new MessageToWait(c, 1)).ToArray();
-            var executor = Context.System.ActorOf(Props.Create(() => new MessageWaiter(Self, msgToWait)),"MessageWaiter_command_"+message.Command.Id);
-            
-            //TODO : filter messages in waiter!!!!
-            var executingCommand = new CommandWaiter()
-            {
-                Command = message.Command,
-                Waiter = Sender
-            };
+            var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
-            executingCommandsByEvent[message.Command.EventId] = executingCommand;
-            executingCommands[message.Command.Id] = executingCommand;
+            foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
+                    _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
 
-
-            foreach (var messageToWait in msgToWait)
-            {
-                _subscriber.Subscribe(messageToWait.MessageType, executor);
-            }
             //TODO: replace with ack from subscriber
             Thread.Sleep(500); //to finish subscribe
-            _messagePublisher.Publish(message.Command);
+            _messagePublisher.Publish(commandWithConfirmation.Command);
         }
-
-        //Finished execution of awaitable command
-        public void Handle(ExpectedMessagesRecieved message)
-        {
-            var resultMessage = message.Message;
-            resultMessage.Match()
-                         .With<ICommandFault>(f =>
-                         {
-                             CommandWaiter commandWaiter;
-                             if (executingCommands.TryGetValue(f.Command.Id, out commandWaiter))
-                                 commandWaiter.Waiter.Tell(f);
-                         })
-                         .With<DomainEvent>(e => {
-                             CommandWaiter commandWaiter;
-                             if (executingCommandsByEvent.TryGetValue(e.SourceId, out commandWaiter))
-                                 commandWaiter.Waiter.Tell(new CommandExecutionFinished(commandWaiter.Command, e));
-                         });
-        }
-
-        protected override void PostStop()
-        {
-            _log.Debug($"Актор {GetType().Name} был остановлен");
-        }
-
-        protected override void PreRestart(Exception reason, object message)
-        {
-            _log.Debug($"Актор {GetType().Name} будет перезапущен");
-            base.PreRestart(reason, message);
-        }
-
-        protected override void Unhandled(object message)
-        {
-            _log.Debug($"Актор {GetType().Name} не смог обработать сообщение:\r\n {message.ToPropsString()}");
-            base.Unhandled(message);
-        }
-
-        public class ExecuteCommand
-        {
-            public ExecuteCommand(ICommand command)
-            {
-                Command = command;
-            }
-
-            public ICommand Command { get; }
-        }
-
+        
         public class Start
         {
             public Type RoutingActorType;
@@ -145,27 +78,6 @@ namespace GridDomain.Node.Actors
 
         public class Started
         {
-        }
-
-        public class ExecuteConfirmedCommand
-        {
-            public CommandWithKnownResult Command { get; }
-            public ExecuteConfirmedCommand(CommandWithKnownResult command)
-            {
-                Command = command;
-            }
-        }
-    }
-
-    public class CommandExecutionFinished
-    {
-        public DomainEvent DomainEvent;
-        public ICommand Command { get; set; }
-
-        public CommandExecutionFinished(ICommand command, DomainEvent domainEvent)
-        {
-            DomainEvent = domainEvent;
-            Command = command;
         }
     }
 }
