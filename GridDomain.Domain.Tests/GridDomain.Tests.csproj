@@ -188,7 +188,7 @@
     <Compile Include="Sagas\Simplified\Infrastructure\SagaDataAggregate.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaTransitionEvent.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\StateChangedData.cs" />
-    <Compile Include="Sagas\Simplified\SimplifiedSubscriptionRenewSagaStateTransitionTests.cs" />
+    <Compile Include="Sagas\Simplified\AutomatonymousSagas_Transitions_Tests.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaData.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaInstance.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaSimplified.cs" />
