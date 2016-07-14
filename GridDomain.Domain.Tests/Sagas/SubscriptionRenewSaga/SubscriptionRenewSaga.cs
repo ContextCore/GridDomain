@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
     public class SubscriptionRenewSaga :
         StateSaga<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers, SubscriptionRenewSagaState, SubscriptionExpiredEvent>,
         IHandler<SubscriptionChangedEvent>,
-        IHandler<NotEnoughFondsFailure>,
+        IHandler<NotEnoughFundsFailure>,
         IHandler<SubscriptionPaidEvent>
     {
 
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
             var parForSubscriptionTrigger = RegisterEvent<SubscriptionExpiredEvent>(Triggers.PayForSubscription);
             var remainSubscriptionTrigger = RegisterEvent<SubscriptionPaidEvent>(Triggers.RemainSubscription);
             var changeSubscriptionTrigger = RegisterEvent<SubscriptionChangedEvent>(Triggers.ChangeSubscription);
-            var revokeSubscriptionTrigger = RegisterEvent<NotEnoughFondsFailure>(Triggers.RevokeSubscription);
+            var revokeSubscriptionTrigger = RegisterEvent<NotEnoughFundsFailure>(Triggers.RevokeSubscription);
 
             Machine.Configure(States.SubscriptionSet)
                 .Permit(Triggers.PayForSubscription, States.OfferPaying);
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
             TransitState(e);
         }
 
-        public void Handle(NotEnoughFondsFailure msg)
+        public void Handle(NotEnoughFundsFailure msg)
         {
             TransitState(msg);
         }
