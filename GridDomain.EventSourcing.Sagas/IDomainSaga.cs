@@ -4,11 +4,13 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface IDomainSaga
+    public interface ISagaInstance
     {
         IReadOnlyCollection<object> CommandsToDispatch { get; }
         void ClearCommandsToDispatch();
         IAggregate State { get; }
         void Transit(object message);
+
+        void Transit<T>(T message) where T : class;
     }
 }

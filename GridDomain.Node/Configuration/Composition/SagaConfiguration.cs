@@ -4,7 +4,7 @@ using Microsoft.Practices.Unity;
 namespace GridDomain.Node.Configuration.Composition
 {
     public class SagaConfiguration<TSaga,TSagaState, TestSagaStartMessage, TSagaFactory>:
-        IContainerConfiguration where TSaga : IDomainSaga 
+        IContainerConfiguration where TSaga : ISagaInstance 
         where TSagaFactory : ISagaFactory<TSaga, TSagaState>, 
             ISagaFactory<TSaga, TestSagaStartMessage>, 
             IEmptySagaFactory<TSaga>

@@ -18,7 +18,7 @@ namespace GridDomain.Node.Actors
     /// <typeparam name="TSagaState"></typeparam>
     /// <typeparam name="TStartMessage"></typeparam>
     public class SagaActor<TSaga, TSagaState, TStartMessage> :
-        ReceivePersistentActor where TSaga : IDomainSaga
+        ReceivePersistentActor where TSaga : ISagaInstance
         where TSagaState : AggregateBase
         where TStartMessage : DomainEvent
     {

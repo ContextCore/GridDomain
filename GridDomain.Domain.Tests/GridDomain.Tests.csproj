@@ -182,6 +182,11 @@
     <Compile Include="Sagas\Simplified\Example\Person.cs" />
     <Compile Include="Sagas\Simplified\Example\Relationship.cs" />
     <Compile Include="Sagas\Simplified\Example\RelationshipStateMachine.cs" />
+    <Compile Include="Sagas\Simplified\ISagaProgress.cs" />
+    <Compile Include="Sagas\Simplified\SagaStateMachine.cs" />
+    <Compile Include="Sagas\Simplified\SimplifiedSubscriptionRenewSagaStateTransitionTests.cs" />
+    <Compile Include="Sagas\Simplified\SubscriptionRenewSagaInstance.cs" />
+    <Compile Include="Sagas\Simplified\SagaInstance.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaSimplified.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFundsFailure.cs" />
     <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
@@ -262,13 +267,12 @@
     <Compile Include="Sagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\Given_published_start_message_Then_Saga_is_started.cs" />
     <Compile Include="Sagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
-    <Compile Include="Sagas\SagaStateTransitionTests.cs" />
+    <Compile Include="Sagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />

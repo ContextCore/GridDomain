@@ -80,7 +80,7 @@ namespace GridDomain.Tests.Framework
 
 
 
-        public TSagaState LoadSagaState<TSaga, TSagaState, TStartMessage>(Guid id) where TStartMessage : DomainEvent where TSagaState : AggregateBase where TSaga : IDomainSaga
+        public TSagaState LoadSagaState<TSaga, TSagaState, TStartMessage>(Guid id) where TStartMessage : DomainEvent where TSagaState : AggregateBase where TSaga : ISagaInstance
         {
             var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState, TStartMessage>>();
             var name = AggregateActorName.New<TSagaState>(id).ToString();

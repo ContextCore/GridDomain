@@ -63,13 +63,18 @@ namespace GridDomain.EventSourcing.Sagas
             _messagesToDispatch.Clear();
         }
 
-        IAggregate IDomainSaga.State => State;
+        IAggregate ISagaInstance.State => State;
 
         private readonly MethodInfo _transitMethod;
         public virtual void Transit(object msg)
         {
             MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
             genericTransit.Invoke(this, new[] { msg });
+        }
+
+        public void Transit<T>(T message) where T : class
+        {
+           TransitState(message);
         }
 
         protected void Dispatch(Command command)
