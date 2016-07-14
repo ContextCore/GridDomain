@@ -16,12 +16,18 @@ namespace GridDomain.Node
             return node.Execute(data.Command, data.ExpectedMessages)
                        .ContinueWithSafeResultCast(result => (T)result);
         }
-        public static Task<T> Execute<T>(this IGridDomainNode node, ICommand command, ExpectedMessage expect)
+        public static Task<T> Execute<T>(this IGridDomainNode node, ICommand command, params ExpectedMessage[] expect)
+        {
+            return node.Execute(command, expect)
+                       .ContinueWithSafeResultCast(result => (T)result);
+        }
+
+        public static Task<T> Execute<T>(this IGridDomainNode node, ICommand command, ExpectedMessage<T> expect)
         {
             return Execute<T>(node, new CommandAndConfirmation(command, expect));
         }
 
-        public static T Execute<T>(this IGridDomainNode node, ICommand command, TimeSpan timeout, ExpectedMessage expect)
+        public static T Execute<T>(this IGridDomainNode node, ICommand command, TimeSpan timeout, ExpectedMessage<T> expect)
         {
             return Execute<T>(node, new CommandAndConfirmation(command,expect), timeout);
         }
@@ -42,6 +48,11 @@ namespace GridDomain.Node
             }
             
             return commandExecutionTask.Result;
+        }
+
+        public static T Execute<T>(this IGridDomainNode node, ICommand command, TimeSpan timeout, params ExpectedMessage[] expect)
+        {
+            return (T) node.Execute(command, timeout, expect);
         }
 
         public static object Execute(this IGridDomainNode node, CommandAndConfirmation command, TimeSpan timeout)

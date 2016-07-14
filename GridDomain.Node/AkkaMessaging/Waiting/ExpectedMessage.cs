@@ -10,6 +10,14 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
+
+    public class ExpectedMessage<T> : ExpectedMessage
+    {
+        public ExpectedMessage(int messageCount, string idPropertyName = null, Guid messageId = new Guid()) : base(typeof(T), messageCount, idPropertyName, messageId)
+        {
+        }
+    }
+
     public class ExpectedMessage
     {
         public ExpectedMessage(Type messageType, int messageCount, string idPropertyName = null, Guid messageId = default(Guid))
@@ -57,17 +65,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return new ExpectedMessage(messageType, 1,idPropertyName, messageId);
         }
 
-        public static ExpectedMessage Once<T>(string idPropertyName, Guid messageId)
+        public static ExpectedMessage<T> Once<T>(string idPropertyName, Guid messageId)
         {
-            return new ExpectedMessage(typeof(T), 1, idPropertyName, messageId);
+            return new ExpectedMessage<T>(1, idPropertyName, messageId);
         }
-        public static ExpectedMessage Once<T>()
+        public static ExpectedMessage<T> Once<T>()
         {
-            return new ExpectedMessage(typeof(T), 1);
+            return new ExpectedMessage<T>(1);
         }
-        public static ExpectedMessage Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId)
+        public static ExpectedMessage<T> Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId)
         {
-            return Once(typeof(T), MemberNameExtractor.GetName(idPropertyNameExpression), messageId);
+            return Once<T>(MemberNameExtractor.GetName(idPropertyNameExpression), messageId);
         }
     }
 }
