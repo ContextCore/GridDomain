@@ -1,6 +1,6 @@
 using Automatonymous;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.Tests.Sagas.Simplified.Example
 {
     class RelationshipStateMachine :
         AutomatonymousStateMachine<Relationship>

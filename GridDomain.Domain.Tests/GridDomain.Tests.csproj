@@ -183,6 +183,7 @@
     <Compile Include="Sagas\Simplified\Example\Relationship.cs" />
     <Compile Include="Sagas\Simplified\Example\RelationshipStateMachine.cs" />
     <Compile Include="Sagas\Simplified\ISagaProgress.cs" />
+    <Compile Include="Sagas\Simplified\SagaProgressAggregate.cs" />
     <Compile Include="Sagas\Simplified\SagaStateMachine.cs" />
     <Compile Include="Sagas\Simplified\SimplifiedSubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaInstance.cs" />
@@ -285,6 +286,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>

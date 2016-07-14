@@ -32,5 +32,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
+
+
     }
 }

@@ -8,7 +8,7 @@ using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.Tests.Sagas.Simplified
 {
-    public class SagaStateMachine<TSagaState> : AutomatonymousStateMachine<TSagaState> where TSagaState : class, ISagaProgress
+    public class SagaStateMachine<TSagaState> : AutomatonymousStateMachine<TSagaState> where TSagaState : class, ISagaProgress<State>
     {
         public readonly List<ICommand> CommandsToDispatch = new List<ICommand>();
 

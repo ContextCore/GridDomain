@@ -10,7 +10,6 @@ namespace GridDomain.EventSourcing.Sagas
         void ClearCommandsToDispatch();
         IAggregate State { get; }
         void Transit(object message);
-
         void Transit<T>(T message) where T : class;
     }
 }

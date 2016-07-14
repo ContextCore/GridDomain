@@ -30,11 +30,10 @@ namespace GridDomain.Tests.Sagas.Simplified
         {
             var sagaProgress = new SubscriptionRenewSagaInstance();
             _sagaInstance = new SagaInstance<SubscriptionRenewSagaInstance>(SagaMachine,
-                sagaProgress,
-                SagaMachine.ChangingSubscription);
+                sagaProgress);
 
             _sagaInstance.Transit(new SubscriptionExpiredEvent(Guid.NewGuid()));
-            Assert.AreEqual(SagaMachine.ChangingSubscription, _sagaInstance.Progress.CurrentState);
+            Assert.AreEqual(SagaMachine.ChangingSubscription, _sagaInstance.Instance.CurrentState);
         }
 
         [Test]
@@ -42,8 +41,7 @@ namespace GridDomain.Tests.Sagas.Simplified
         {
             var sagaProgress = new SubscriptionRenewSagaInstance();
             _sagaInstance = new SagaInstance<SubscriptionRenewSagaInstance>(SagaMachine,
-                                                       sagaProgress,
-                                                       SagaMachine.SubscriptionSet);
+                                                       sagaProgress);
 
             Assert.Throws<UnbindedMessageRecievedException>(() => _sagaInstance.Transit(new WrongMessage()));
         }
@@ -54,12 +52,11 @@ namespace GridDomain.Tests.Sagas.Simplified
         {
             var sagaProgress = new SubscriptionRenewSagaInstance();
             _sagaInstance = new SagaInstance<SubscriptionRenewSagaInstance>(SagaMachine,
-                                                       sagaProgress,
-                                                       SagaMachine.PayingForSubscription);
+                                                       sagaProgress);
 
             _sagaInstance.Transit(new SubscriptionPaidEvent());
 
-            Assert.AreEqual(SagaMachine.SubscriptionSet, _sagaInstance.Progress.CurrentState);
+            Assert.AreEqual(SagaMachine.SubscriptionSet, _sagaInstance.Instance.CurrentState);
         }
     }
 }

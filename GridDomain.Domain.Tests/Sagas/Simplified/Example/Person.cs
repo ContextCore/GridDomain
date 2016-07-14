@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.Tests.Sagas.Simplified.Example
 {
     class Person
     {

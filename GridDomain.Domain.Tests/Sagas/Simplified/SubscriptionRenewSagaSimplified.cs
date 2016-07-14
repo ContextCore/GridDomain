@@ -18,10 +18,6 @@ namespace GridDomain.Tests.Sagas.Simplified
             State(() => PayingForSubscription);
             State(() => ChangingSubscription);
 
-            //WhenEnter(SubscriptionSet, x => x.Then(ctx => ctx.Instance.CurrentState = SubscriptionSet));
-            //WhenEnter(PayingForSubscription, x => x.Then(ctx => ctx.Instance.CurrentState = PayingForSubscription));
-            //WhenEnter(ChangingSubscription, x => x.Then(ctx => ctx.Instance.CurrentState = ChangingSubscription));
-
             During(SubscriptionSet,
                 When(SubscriptionExpired).Then(context =>
                 {
@@ -46,8 +42,8 @@ namespace GridDomain.Tests.Sagas.Simplified
         public Event<SubscriptionChangedEvent> SubscriptionChanged { get; private set; } //Trigger.SubscriptionChanged;
         public Event<NotEnoughFundsFailure>    NotEnoughFunds      { get; private set; }//Trigger.RevokeSubscription
 
-        public State SubscriptionSet       { get; private set; }       //State.SubscriptionSet
+        public State SubscriptionSet       { get; private set; } //State.SubscriptionSet
         public State PayingForSubscription { get; private set; } //State.OfferPaying
-        public State ChangingSubscription  { get; private set; }  //State.SubscriptionChanging
+        public State ChangingSubscription  { get; private set; } //State.SubscriptionChanging
     }
 }

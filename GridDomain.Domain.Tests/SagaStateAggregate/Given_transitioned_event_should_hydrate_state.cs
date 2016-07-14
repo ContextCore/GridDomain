@@ -15,9 +15,7 @@ namespace GridDomain.Tests.SagaStateAggregate
         protected override IEnumerable<DomainEvent> GivenEvents()
         {
             yield return new SagaCreatedEvent<TestState>(TestState.Idle, _sourceId);
-            yield return
-                new SagaTransitionEvent<TestState, TestTransition>(TestTransition.Forward, TestState.Running, _sourceId)
-                ;
+            yield return new SagaTransitionEvent<TestState, TestTransition>(TestTransition.Forward, TestState.Running, _sourceId);
         }
 
         [Then]

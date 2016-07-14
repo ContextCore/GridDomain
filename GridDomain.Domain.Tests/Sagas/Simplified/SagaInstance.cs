@@ -12,10 +12,10 @@ using NEventStore;
 namespace GridDomain.Tests.Sagas.Simplified
 {
 
-    public class SagaInstance<TSagaInstance>: ISagaInstance where TSagaInstance : class, ISagaProgress
+    public class SagaInstance<TSagaProgress>: ISagaInstance where TSagaProgress : class, ISagaProgress<State>
     {
-        public readonly SagaStateMachine<TSagaInstance> Machine;
-        public readonly TSagaInstance Progress;
+        public readonly SagaStateMachine<TSagaProgress> Machine;
+        public readonly TSagaProgress Instance;
         public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
         public void ClearCommandsToDispatch()
         {
@@ -24,17 +24,17 @@ namespace GridDomain.Tests.Sagas.Simplified
 
         public IAggregate State { get; }
 
-        public SagaInstance(SagaStateMachine<TSagaInstance> machine, TSagaInstance progress, State initialState)
+        public SagaInstance(SagaStateMachine<TSagaProgress> machine, TSagaProgress instance)
         {
-            Progress = progress;
+            Instance = instance;
             Machine = machine;
-            Machine.TransitionToState(progress, initialState);
+            Machine.TransitionToState(instance, instance.CurrentState);
         }
 
         public void Transit(object message)
         {
             var messageType = message.GetType();
-            var method = typeof (SagaInstance<TSagaInstance>)
+            var method = typeof (SagaInstance<TSagaProgress>)
                             .GetMethod(nameof(Transit))
                             .MakeGenericMethod(messageType);
 
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Sagas.Simplified
 
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
-            Machine.RaiseByExternalEvent(Progress, message);
+            Machine.RaiseByExternalEvent(Instance, message);
         }
     }
 }

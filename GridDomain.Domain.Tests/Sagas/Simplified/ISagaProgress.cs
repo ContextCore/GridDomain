@@ -1,9 +1,7 @@
-using Automatonymous;
-
 namespace GridDomain.Tests.Sagas.Simplified
 {
-    public interface ISagaProgress
+    public interface ISagaProgress<T>
     {
-        State CurrentState { get; set; }
+        T CurrentState { get; set; }
     }
 }
