@@ -12,29 +12,30 @@ using NEventStore;
 namespace GridDomain.Tests.Sagas.Simplified
 {
 
-    public class SagaInstance<TSagaProgress>: ISagaInstance where TSagaProgress : class, ISagaProgress<State>
+    public class SagaInstance<TSagaData>: ISagaInstance where TSagaData : class, ISagaState<State>
     {
-        public readonly SagaStateMachine<TSagaProgress> Machine;
-        public readonly TSagaProgress Instance;
+        public readonly Saga<TSagaData> Machine;
+        public readonly TSagaData Instance;
         public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
         public void ClearCommandsToDispatch()
         {
             Machine.CommandsToDispatch.Clear();
         }
 
-        public IAggregate State { get; }
+        public IAggregate Data { get; }
 
-        public SagaInstance(SagaStateMachine<TSagaProgress> machine, TSagaProgress instance)
+        public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> stateStorage)
         {
-            Instance = instance;
+            Instance = stateStorage.Data;
             Machine = machine;
-            Machine.TransitionToState(instance, instance.CurrentState);
+            Machine.OnStateEnter += (sender, data) => stateStorage.RememberNewData(data.Event, data.Instance);
+            Machine.TransitionToState(Instance, Instance.CurrentState);
         }
 
         public void Transit(object message)
         {
             var messageType = message.GetType();
-            var method = typeof (SagaInstance<TSagaProgress>)
+            var method = typeof (SagaInstance<TSagaData>)
                             .GetMethod(nameof(Transit))
                             .MakeGenericMethod(messageType);
 

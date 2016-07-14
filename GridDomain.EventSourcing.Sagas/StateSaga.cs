@@ -63,7 +63,7 @@ namespace GridDomain.EventSourcing.Sagas
             _messagesToDispatch.Clear();
         }
 
-        IAggregate ISagaInstance.State => State;
+        IAggregate ISagaInstance.Data => State;
 
         private readonly MethodInfo _transitMethod;
         public virtual void Transit(object msg)

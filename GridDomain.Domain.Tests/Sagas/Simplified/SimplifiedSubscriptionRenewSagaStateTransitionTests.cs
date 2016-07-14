@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Sagas.Simplified
         private SubscriptionRenewSagaSimplified SagaMachine =
             new SubscriptionRenewSagaSimplified();
 
-        private SagaInstance<SubscriptionRenewSagaInstance> _sagaInstance;
+        private SagaInstance<SubscriptionRenewSagaData> _sagaInstance;
 
         private class WrongMessage
         {
@@ -28,10 +28,10 @@ namespace GridDomain.Tests.Sagas.Simplified
         [Test]
         public void When_invalid_transition_Then_state_not_changed()
         {
-            var sagaProgress = new SubscriptionRenewSagaInstance();
-            _sagaInstance = new SagaInstance<SubscriptionRenewSagaInstance>(SagaMachine,
-                sagaProgress);
+            var sagaData = new SubscriptionRenewSagaData(SagaMachine.ChangingSubscription);
+            var sagaDataAggregate = new SagaDataAggregate<SubscriptionRenewSagaData>(Guid.NewGuid(),sagaData);
 
+            _sagaInstance = new SagaInstance<SubscriptionRenewSagaData>(SagaMachine, sagaDataAggregate);
             _sagaInstance.Transit(new SubscriptionExpiredEvent(Guid.NewGuid()));
             Assert.AreEqual(SagaMachine.ChangingSubscription, _sagaInstance.Instance.CurrentState);
         }
@@ -39,10 +39,9 @@ namespace GridDomain.Tests.Sagas.Simplified
         [Test]
         public void When_unknown_event_Then_exception_occurs()
         {
-            var sagaProgress = new SubscriptionRenewSagaInstance();
-            _sagaInstance = new SagaInstance<SubscriptionRenewSagaInstance>(SagaMachine,
-                                                       sagaProgress);
-
+            var sagaData = new SubscriptionRenewSagaData(SagaMachine.ChangingSubscription);
+            var sagaDataAggregate = new SagaDataAggregate<SubscriptionRenewSagaData>(Guid.NewGuid(), sagaData);
+            _sagaInstance = new SagaInstance<SubscriptionRenewSagaData>(SagaMachine, sagaDataAggregate);
             Assert.Throws<UnbindedMessageRecievedException>(() => _sagaInstance.Transit(new WrongMessage()));
         }
 
@@ -50,12 +49,11 @@ namespace GridDomain.Tests.Sagas.Simplified
         [Test]
         public void When_valid_transition_Then_state_is_changed()
         {
-            var sagaProgress = new SubscriptionRenewSagaInstance();
-            _sagaInstance = new SagaInstance<SubscriptionRenewSagaInstance>(SagaMachine,
-                                                       sagaProgress);
+            var sagaData = new SubscriptionRenewSagaData(SagaMachine.PayingForSubscription);
+            var sagaDataAggregate = new SagaDataAggregate<SubscriptionRenewSagaData>(Guid.NewGuid(), sagaData);
 
+            _sagaInstance = new SagaInstance<SubscriptionRenewSagaData>(SagaMachine, sagaDataAggregate);
             _sagaInstance.Transit(new SubscriptionPaidEvent());
-
             Assert.AreEqual(SagaMachine.SubscriptionSet, _sagaInstance.Instance.CurrentState);
         }
     }

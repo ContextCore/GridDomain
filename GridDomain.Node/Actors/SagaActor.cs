@@ -38,29 +38,29 @@ namespace GridDomain.Node.Actors
             Saga = emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
 
 
-            Command<ICommandFault>(ProcessSaga,fault => fault.SagaId == Saga.State.Id);
-            Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.State.Id);
+            Command<ICommandFault>(ProcessSaga,fault => fault.SagaId == Saga.Data.Id);
+            Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.Data.Id);
             Command<TStartMessage>(startMessage =>
             {
                 Saga = _sagaStarter.Create(startMessage);
                 ProcessSaga(startMessage);
-            },start => Saga.State.Id == Guid.Empty); //duplicate start event
+            },start => Saga.Data.Id == Guid.Empty); //duplicate start event
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
-            Recover<DomainEvent>(e => Saga.State.ApplyEvent(e));
+            Recover<DomainEvent>(e => Saga.Data.ApplyEvent(e));
         }
 
         private void ProcessSaga(object message)
         {
             Saga.Transit(message);
 
-            var stateChangeEvents = Saga.State.GetUncommittedEvents().Cast<object>();
+            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>();
             PersistAll(stateChangeEvents, e => _publisher.Publish(e));
 
             foreach (var msg in Saga.CommandsToDispatch)
                 _publisher.Publish(msg);
 
             Saga.ClearCommandsToDispatch();
-            Saga.State.ClearUncommittedEvents();
+            Saga.Data.ClearUncommittedEvents();
         }
 
         public override string PersistenceId => Self.Path.Name;

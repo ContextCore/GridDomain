@@ -4,11 +4,13 @@ using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 
 namespace GridDomain.Tests.Sagas.Simplified
 {
-    class SubscriptionRenewSagaSimplified : SagaStateMachine<SubscriptionRenewSagaInstance>
+
+    class SubscriptionRenewSagaSimplified : Saga<SubscriptionRenewSagaData>
     {
-      
+        
         public SubscriptionRenewSagaSimplified()
-        {
+            :base()
+        { 
             Event(() => SubscriptionExpired);
             Event(() => SubscriptionPaid);
             Event(() => SubscriptionChanged);
@@ -24,7 +26,7 @@ namespace GridDomain.Tests.Sagas.Simplified
                     context.Instance.SubscriptionId = context.Data.SourceId;
                     Dispatch(new PayForSubscriptionCommand(context.Data));
                 })
-                    .TransitionTo(PayingForSubscription));
+                .TransitionTo(PayingForSubscription));
 
             During(PayingForSubscription, 
                 When(NotEnoughFunds)

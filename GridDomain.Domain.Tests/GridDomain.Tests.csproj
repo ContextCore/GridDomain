@@ -178,16 +178,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="Sagas\Simplified\Example\Person.cs" />
     <Compile Include="Sagas\Simplified\Example\Relationship.cs" />
     <Compile Include="Sagas\Simplified\Example\RelationshipStateMachine.cs" />
-    <Compile Include="Sagas\Simplified\ISagaProgress.cs" />
-    <Compile Include="Sagas\Simplified\SagaProgressAggregate.cs" />
-    <Compile Include="Sagas\Simplified\SagaStateMachine.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\ISagaState.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\Saga.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\SagaDataAggregate.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\SagaTransitionEvent.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\StateChangedData.cs" />
     <Compile Include="Sagas\Simplified\SimplifiedSubscriptionRenewSagaStateTransitionTests.cs" />
-    <Compile Include="Sagas\Simplified\SubscriptionRenewSagaInstance.cs" />
-    <Compile Include="Sagas\Simplified\SagaInstance.cs" />
+    <Compile Include="Sagas\Simplified\SubscriptionRenewSagaData.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\SagaInstance.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaSimplified.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFundsFailure.cs" />
     <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
@@ -208,6 +211,7 @@
     <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSagaState.cs" />
     <Compile Include="SampleDomain\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\AlwaysFaultCommand.cs" />
+    <Compile Include="SampleDomain\AsyncFaultWithOneEventCommand.cs" />
     <Compile Include="SampleDomain\AsyncMethodCommand.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />

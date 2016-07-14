@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Automatonymous;
-using Automatonymous.Contexts;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.Tests.Sagas.Simplified
 {
-    public class SagaStateMachine<TSagaState> : AutomatonymousStateMachine<TSagaState> where TSagaState : class, ISagaProgress<State>
+    public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState<State>
     {
         public readonly List<ICommand> CommandsToDispatch = new List<ICommand>();
 
@@ -17,21 +16,24 @@ namespace GridDomain.Tests.Sagas.Simplified
             CommandsToDispatch.Add(cmd);
         }
 
-        private readonly IDictionary<Type,Event> messagesToEventsMap = new Dictionary<Type, Event>(); 
+        private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
+
         protected override void Event<T>(Expression<Func<Event<T>>> propertyExpression)
         {
-            messagesToEventsMap[typeof(T)] = propertyExpression.Compile().Invoke();
+            _messagesToEventsMap[typeof(T)] = propertyExpression.Compile().Invoke();
             base.Event(propertyExpression);
         }
+        public event EventHandler<StateChangedData<TSagaData>> OnStateEnter = delegate { };
 
         protected override void State(Expression<Func<State>> propertyExpression)
         {
             var state = propertyExpression.Compile().Invoke();
-            WhenEnter(state, x => x.Then(ctx => ctx.Instance.CurrentState = state));
+            WhenEnter(state, x => x.Then(ctx => 
+                OnStateEnter.Invoke(this, new StateChangedData<TSagaData>(state, ctx.Event, ctx.Instance))));
             base.State(propertyExpression);
         }
 
-        public void RaiseByExternalEvent<TExternalEvent>(TSagaState progress, TExternalEvent externalEvent) where TExternalEvent : class
+        public void RaiseByExternalEvent<TExternalEvent>(TSagaData progress, TExternalEvent externalEvent) where TExternalEvent : class
         {
             this.RaiseEvent(progress, GetMachineEvent(externalEvent), externalEvent);
         }
@@ -39,7 +41,7 @@ namespace GridDomain.Tests.Sagas.Simplified
         private Event<TExternalEvent> GetMachineEvent<TExternalEvent>(TExternalEvent @event)
         {
             Event ev = null;
-            if (!messagesToEventsMap.TryGetValue(typeof(TExternalEvent), out ev))
+            if (!_messagesToEventsMap.TryGetValue(typeof(TExternalEvent), out ev))
                 throw new UnbindedMessageRecievedException(@event);
             return (Event<TExternalEvent>)ev;
         }

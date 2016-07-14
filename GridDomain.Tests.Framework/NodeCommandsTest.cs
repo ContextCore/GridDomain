@@ -86,7 +86,7 @@ namespace GridDomain.Tests.Framework
             var name = AggregateActorName.New<TSagaState>(id).ToString();
             var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState, TStartMessage>>(props, name);
             Thread.Sleep(1000); //wait for actor recover
-            return (TSagaState)actor.UnderlyingActor.Saga.State;
+            return (TSagaState)actor.UnderlyingActor.Saga.Data;
         }
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
