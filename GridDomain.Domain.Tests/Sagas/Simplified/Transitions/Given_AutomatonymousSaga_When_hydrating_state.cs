@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         private static void When_execute_valid_transaction(SagaInstance<SubscriptionRenewSagaData> sagaInstance,
             SubscriptionPaidEvent e = null)
         {
-            var subscriptionPaidEvent = new SubscriptionPaidEvent();
+            var subscriptionPaidEvent = new SubscriptionPaidEvent(Guid.NewGuid());
             sagaInstance.Transit(e ?? subscriptionPaidEvent);
         }
 

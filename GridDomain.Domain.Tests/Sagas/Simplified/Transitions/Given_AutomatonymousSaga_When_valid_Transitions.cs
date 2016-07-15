@@ -11,9 +11,9 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
     [TestFixture]
     public class Given_AutomatonymousSaga_When_valid_Transitions
     {
-        private static void When_execute_valid_transaction(SagaInstance<SubscriptionRenewSagaData> sagaInstance, SubscriptionPaidEvent e = null)
+        private static void When_execute_valid_transaction(SagaInstance<SubscriptionRenewSagaData> sagaInstance, DomainEvent e = null)
         {
-            var subscriptionPaidEvent = new SubscriptionPaidEvent();
+            var subscriptionPaidEvent = new SubscriptionPaidEvent(Guid.NewGuid());
             sagaInstance.Transit(e ?? subscriptionPaidEvent);
         }
 
@@ -44,33 +44,38 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         }
 
         [Then]
-        public void Event_received_event_is_raised()
+        public void Message_received_event_is_raised()
         {
             throw new NotImplementedException();
         }
 
         [Then]
-        public void State_transition_event_is_before_Event_received_event()
+        public void State_transition_event_is_before_Message_received_event()
         {
             throw new NotImplementedException();
         }
 
-
         [Then]
-        public void State_event_recieved_events_contains_incoming_message()
+        public void Message_received_event_recieved_events_contains_incoming_message()
         {
             var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
             ClearEvents(given.SagaDataAggregate);
-            var message = new SubscriptionPaidEvent();
+            var message = new SubscriptionPaidEvent(Guid.NewGuid());
             When_execute_valid_transaction(given.SagaInstance,message);
-            var stateChangeEvent = ExtractFirstEvent<SagaEventReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
             Assert.AreEqual(message, stateChangeEvent.Message);
         }
 
         [Then]
-        public void Event_received_event_is_filled_with_sagaData_before_event_apply_to_it()
+        public void Message_received_event_is_filled_with_sagaData_before_event_apply_to_it()
         {
-            throw new NotImplementedException();
+            var given = new Given_AutomatonymousSaga(m => m.SubscriptionSet);
+            ClearEvents(given.SagaDataAggregate);
+
+            var subscriptionExpiredEvent = new SubscriptionExpiredEvent(Guid.NewGuid());
+
+            When_execute_valid_transaction(given.SagaInstance);
+            var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
         }
 
         [Then]

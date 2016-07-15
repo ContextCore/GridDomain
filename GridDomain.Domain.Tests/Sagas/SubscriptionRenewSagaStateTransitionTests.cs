@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Sagas
         public void When_valid_transition_Then_state_is_changed()
         {
             Given_new_saga_with_state(Saga.States.OfferPaying);
-            SagaInstance.Handle(new SubscriptionPaidEvent());
+            SagaInstance.Handle(new SubscriptionPaidEvent(Guid.NewGuid()));
 
             Assert.AreEqual(Saga.States.SubscriptionSet, SagaInstance.DomainState);
         }
