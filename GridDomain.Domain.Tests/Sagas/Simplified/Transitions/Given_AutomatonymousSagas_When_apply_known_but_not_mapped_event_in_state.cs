@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CommonDomain;
 using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
@@ -9,12 +10,24 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
     internal class Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state
     {
 
-        private readonly Given_AutomatonymousSaga _given = new Given_AutomatonymousSaga(m => m.ChangingSubscription);
-        private IAggregate _sagaDataAggregate => _given.SagaDataAggregate;
+        public Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state(Given_AutomatonymousSaga given)
+        {
+            _given = given;
+        }
+
+        public Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state()
+            :this(new Given_AutomatonymousSaga(m => m.ChangingSubscription))
+        {
+        }
+
+        private readonly Given_AutomatonymousSaga _given;
+        private static SubscriptionExpiredEvent _subscriptionExpiredEvent;
+        private IAggregate SagaDataAggregate => _given.SagaDataAggregate;
 
         private static void When_apply_known_but_not_mapped_event_in_state(SagaInstance<SubscriptionRenewSagaData> sagaInstance)
         {
-            sagaInstance.Transit(new SubscriptionExpiredEvent(Guid.NewGuid()));
+            _subscriptionExpiredEvent = new SubscriptionExpiredEvent(Guid.NewGuid());
+            sagaInstance.Transit(_subscriptionExpiredEvent);
         }
 
         [Then]
@@ -25,11 +38,12 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         }
 
         [Then]
-        public void State_events_not_raised()
+        public void State_events_containes_received_message()
         {
-            _sagaDataAggregate.ClearUncommittedEvents();
+            SagaDataAggregate.ClearUncommittedEvents();
             When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
-            CollectionAssert.IsEmpty(_sagaDataAggregate.GetUncommittedEvents());
+            var @event = SagaDataAggregate.GetUncommittedEvents().OfType<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>().First();
+            Assert.AreEqual(_subscriptionExpiredEvent, @event.Message);
         }
     }
 }

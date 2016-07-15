@@ -55,5 +55,12 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
 
             Assert.AreEqual(stateHashBefore, stateHashAfter);
         }
+
+        [Then]
+        public void No_commands_are_proroduced()
+        {
+            SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
+            CollectionAssert.IsEmpty(_given.SagaInstance.CommandsToDispatch);
+        }
     }
 }

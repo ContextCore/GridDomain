@@ -99,6 +99,17 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         }
 
         [Then]
+        public void Commands_are_produced()
+        {
+            var given = new Given_AutomatonymousSaga(m => m.SubscriptionSet);
+
+            var subscriptionExpiredEvent = new SubscriptionExpiredEvent(Guid.NewGuid());
+            When_execute_valid_transaction(given.SagaInstance, subscriptionExpiredEvent);
+
+            CollectionAssert.IsNotEmpty(given.SagaInstance.CommandsToDispatch);
+        }
+
+        [Then]
         public void SagaData_is_changed_after_transition_by_event_data()
         {
             var given = new Given_AutomatonymousSaga(m => m.SubscriptionSet);

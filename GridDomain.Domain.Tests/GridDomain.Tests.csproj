@@ -190,7 +190,6 @@
     <Compile Include="Sagas\Simplified\Infrastructure\SagaEventReceivedEvent.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaTransitionEvent.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\StateChangedData.cs" />
-    <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_hydrating_state.cs" />
     <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaData.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaInstance.cs" />
