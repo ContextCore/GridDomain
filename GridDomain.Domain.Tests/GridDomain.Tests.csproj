@@ -188,10 +188,13 @@
     <Compile Include="Sagas\Simplified\Infrastructure\SagaDataAggregate.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaTransitionEvent.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\StateChangedData.cs" />
-    <Compile Include="Sagas\Simplified\AutomatonymousSagas_Transitions_Tests.cs" />
+    <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaData.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaInstance.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaSimplified.cs" />
+    <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga.cs" />
+    <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
+    <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFundsFailure.cs" />
     <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
