@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
 
-namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
+namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
     public class SubscriptionRenewSagaState :
         SagaStateAggregate<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers>

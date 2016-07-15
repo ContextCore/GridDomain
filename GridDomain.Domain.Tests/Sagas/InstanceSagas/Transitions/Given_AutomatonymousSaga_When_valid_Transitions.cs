@@ -4,10 +4,10 @@ using CommonDomain;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.Simplified.Transitions
+namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 {
     [TestFixture]
     public class Given_AutomatonymousSaga_When_valid_Transitions

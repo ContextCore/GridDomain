@@ -1,7 +1,7 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.Sagas
+namespace GridDomain.Tests.Sagas.StateSagas
 {
     public class RenewSagaMessageRouteMap : IMessageRouteMap
     {

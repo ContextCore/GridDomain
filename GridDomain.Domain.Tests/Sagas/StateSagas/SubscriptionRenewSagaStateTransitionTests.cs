@@ -1,11 +1,11 @@
 ﻿using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga;
+using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
-using Saga = GridDomain.Tests.Sagas.SubscriptionRenewSaga.SubscriptionRenewSaga;
+using Saga = GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga.SubscriptionRenewSaga;
 
-namespace GridDomain.Tests.Sagas
+namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     internal class SubscriptionRenewSagaStateTransitionTests

@@ -1,9 +1,9 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga;
+using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga.Events;
 
-namespace GridDomain.Tests.Sagas
+namespace GridDomain.Tests.Sagas.StateSagas
 {
     class SubscriptionRenewSagaFactory : 
         ISagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga, SubscriptionRenewSagaState>,

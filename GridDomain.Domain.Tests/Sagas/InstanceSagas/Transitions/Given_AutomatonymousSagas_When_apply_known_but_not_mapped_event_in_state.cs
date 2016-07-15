@@ -2,10 +2,10 @@ using System;
 using System.Linq;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.Simplified.Transitions
+namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 {
     [TestFixture]
     internal class Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state

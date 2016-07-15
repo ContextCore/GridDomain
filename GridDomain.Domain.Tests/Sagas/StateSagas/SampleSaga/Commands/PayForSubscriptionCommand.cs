@@ -1,7 +1,7 @@
 using GridDomain.CQRS;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 
-namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands
+namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands
 {
     internal class PayForSubscriptionCommand : Command
     {
