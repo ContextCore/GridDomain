@@ -1,9 +1,8 @@
 using System;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas
+namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     internal class CreateSagaGraph
@@ -11,7 +10,7 @@ namespace GridDomain.Tests.Sagas
         [Test]
         public void GetGraph()
         {
-            var saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet));
+            var saga = new SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.States.SubscriptionSet));
             Console.WriteLine(saga.Machine.ToDotGraph());
         }
     }

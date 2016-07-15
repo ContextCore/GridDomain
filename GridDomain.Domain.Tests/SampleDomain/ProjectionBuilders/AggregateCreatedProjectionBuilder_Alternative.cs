@@ -1,21 +1,21 @@
 using System.Diagnostics;
 using GridDomain.CQRS;
+using GridDomain.Tests.SampleDomain.Events;
 
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
-
-
-
-    public class AggregateChangedProjectionBuilder : IHandler<AggregateChangedEvent>
+    public class AggregateCreatedProjectionBuilder_Alternative : IHandler<AggregateCreatedEvent>
     {
-        public static int ProjectionGroupHashCode;
         private static Stopwatch watch = new Stopwatch();
-        static AggregateChangedProjectionBuilder()
+        static AggregateCreatedProjectionBuilder_Alternative()
         {
             watch.Start();
         }
+
         private int number = 0;
-        public void Handle(AggregateChangedEvent msg)
+        public static int ProjectionGroupHashCode { get; set; }
+
+        public void Handle(AggregateCreatedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;

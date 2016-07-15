@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.Commands
 {
     public class AlwaysFaultAsyncCommand : Command
     {

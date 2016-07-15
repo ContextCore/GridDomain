@@ -1,29 +1,28 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga;
-using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 
-namespace GridDomain.Tests.Sagas.StateSagas
+namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
     class SubscriptionRenewSagaFactory : 
-        ISagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga, SubscriptionRenewSagaState>,
-        ISagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga, SubscriptionExpiredEvent>,
-        IEmptySagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga>
+        ISagaFactory<SubscriptionRenewSaga, SubscriptionRenewSagaState>,
+        ISagaFactory<SubscriptionRenewSaga, SubscriptionExpiredEvent>,
+        IEmptySagaFactory<SubscriptionRenewSaga>
     {
-        public SubscriptionRenewSaga.SubscriptionRenewSaga Create(SubscriptionRenewSagaState message)
+        public SubscriptionRenewSaga Create(SubscriptionRenewSagaState message)
         {
-            return new SubscriptionRenewSaga.SubscriptionRenewSaga(message);
+            return new SubscriptionRenewSaga(message);
         }
 
-        public SubscriptionRenewSaga.SubscriptionRenewSaga Create(SubscriptionExpiredEvent message)
+        public SubscriptionRenewSaga Create(SubscriptionExpiredEvent message)
         {
-            return new SubscriptionRenewSaga.SubscriptionRenewSaga(new SubscriptionRenewSagaState(message.SagaId,
-                SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet));
+            return new SubscriptionRenewSaga(new SubscriptionRenewSagaState(message.SagaId,
+                SubscriptionRenewSaga.States.SubscriptionSet));
         }
 
-        public SubscriptionRenewSaga.SubscriptionRenewSaga Create()
+        public SubscriptionRenewSaga Create()
         {
-            return new SubscriptionRenewSaga.SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.Empty,SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet));
+            return new SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.Empty,SubscriptionRenewSaga.States.SubscriptionSet));
         }
     }
 }

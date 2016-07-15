@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using GridDomain.CQRS;
+using GridDomain.Tests.SampleDomain.Events;
 
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
-    public class AggregateCreatedProjectionBuilder_Alternative : IHandler<AggregateCreatedEvent>
+    public class AggregateCreatedProjectionBuilder : IHandler<AggregateCreatedEvent>
     {
         private static Stopwatch watch = new Stopwatch();
-        static AggregateCreatedProjectionBuilder_Alternative()
+        static AggregateCreatedProjectionBuilder()
         {
             watch.Start();
         }

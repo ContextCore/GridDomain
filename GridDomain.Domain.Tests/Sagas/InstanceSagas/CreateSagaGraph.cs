@@ -1,11 +1,9 @@
 using System;
 using Automatonymous.Graphing;
 using Automatonymous.Visualizer;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
 using NUnit.Framework;
-using Automatonymous.Graphing;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
     internal class CreateSagaGraph
@@ -13,7 +11,7 @@ namespace GridDomain.Tests.Sagas.Simplified
         [Test]
         public void GetGraph()
         {
-            var saga = new SubscriptionRenewSagaSimplified();
+            var saga = new SubscriptionRenewSaga();
             var generator = new StateMachineGraphvizGenerator(saga.GetGraph());
             Console.WriteLine(generator.CreateDotFile());
         }

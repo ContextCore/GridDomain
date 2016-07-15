@@ -1,15 +1,15 @@
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.Tests.Sagas.InstanceSagas
 {
 
-    class SubscriptionRenewSagaSimplified : Saga<SubscriptionRenewSagaData>
+    class SubscriptionRenewSaga : Saga<SubscriptionRenewSagaData>
     {
         
-        public SubscriptionRenewSagaSimplified()
+        public SubscriptionRenewSaga()
             :base()
         { 
             Event(() => SubscriptionExpired);

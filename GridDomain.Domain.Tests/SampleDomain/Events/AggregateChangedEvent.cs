@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.Events
 {
     public class AggregateChangedEvent : DomainEvent, IHaveProcessingHistory
     {

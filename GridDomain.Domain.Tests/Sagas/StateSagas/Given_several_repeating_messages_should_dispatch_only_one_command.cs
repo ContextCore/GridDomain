@@ -1,11 +1,10 @@
 ﻿using System;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas
+namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     internal class Given_several_repeating_messages_should_dispatch_only_one_command
@@ -17,14 +16,14 @@ namespace GridDomain.Tests.Sagas
             When_applying_several_events();
         }
 
-        private SubscriptionRenewSaga.SubscriptionRenewSaga Saga;
+        private SubscriptionRenewSaga Saga;
         private NotEnoughFundsFailure[] Messages;
 
         public void Given_new_saga_with_state()
         {
-            var sagaState = new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying);
+            var sagaState = new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.States.OfferPaying);
 
-            Saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(sagaState);
+            Saga = new SubscriptionRenewSaga(sagaState);
 
 
             Messages = new[]

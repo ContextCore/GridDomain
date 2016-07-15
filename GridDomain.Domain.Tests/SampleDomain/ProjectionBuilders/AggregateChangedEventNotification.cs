@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
     public class AggregateChangedEventNotification
     {

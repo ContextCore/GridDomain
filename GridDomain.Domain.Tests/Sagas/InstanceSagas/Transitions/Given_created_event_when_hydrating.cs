@@ -5,18 +5,18 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.Simplified.Transitions
+namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 {
     class Given_created_event_when_hydrating: HydrationSpecification<SagaDataAggregate<SubscriptionRenewSagaData>>
     {
         private readonly Guid _sagaId;
-        private readonly SubscriptionRenewSagaSimplified _machine;
+        private readonly SubscriptionRenewSaga _machine;
         private readonly SubscriptionRenewSagaData _subscriptionRenewSagaData;
 
         public Given_created_event_when_hydrating()
         {
             _sagaId = Guid.NewGuid();
-            _machine = new SubscriptionRenewSagaSimplified();
+            _machine = new SubscriptionRenewSaga();
             _subscriptionRenewSagaData = new SubscriptionRenewSagaData(_machine.ChangingSubscription);
         }
 

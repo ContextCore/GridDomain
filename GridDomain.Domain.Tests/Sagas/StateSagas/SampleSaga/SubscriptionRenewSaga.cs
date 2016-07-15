@@ -1,10 +1,10 @@
 using System;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Commands;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 
-namespace GridDomain.Tests.Sagas.SubscriptionRenewSaga
+namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
     public class SubscriptionRenewSaga :
         StateSaga<SubscriptionRenewSaga.States, SubscriptionRenewSaga.Triggers, SubscriptionRenewSagaState, SubscriptionExpiredEvent>,

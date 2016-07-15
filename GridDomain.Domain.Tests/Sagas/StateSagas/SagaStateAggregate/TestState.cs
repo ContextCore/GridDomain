@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.SagaStateAggregate
+namespace GridDomain.Tests.Sagas.StateSagas.SagaStateAggregate
 {
     internal enum TestState
     {

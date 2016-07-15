@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 

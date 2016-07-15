@@ -4,7 +4,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.SagaStateAggregate
+namespace GridDomain.Tests.Sagas.StateSagas.SagaStateAggregate
 {
     [TestFixture]
     internal class Given_new_saga_state_When_create_it_by_constructor :

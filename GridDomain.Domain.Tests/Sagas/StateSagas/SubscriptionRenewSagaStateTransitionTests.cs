@@ -1,9 +1,9 @@
 ﻿using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga;
-using GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using NUnit.Framework;
-using Saga = GridDomain.Tests.Sagas.StateSagas.SubscriptionRenewSaga.SubscriptionRenewSaga;
+using Saga = GridDomain.Tests.Sagas.StateSagas.SampleSaga.SubscriptionRenewSaga;
 
 namespace GridDomain.Tests.Sagas.StateSagas
 {

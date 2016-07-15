@@ -1,9 +1,8 @@
 using System;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     class SubscriptionRenewSagaData: ISagaState<State>
     {

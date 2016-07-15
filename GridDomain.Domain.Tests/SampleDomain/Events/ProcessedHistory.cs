@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.Events
 {
     public class ProcessedHistory
     {

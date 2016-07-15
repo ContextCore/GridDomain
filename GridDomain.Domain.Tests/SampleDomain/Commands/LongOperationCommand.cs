@@ -1,11 +1,11 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.SampleDomain
+namespace GridDomain.Tests.SampleDomain.Commands
 {
-    public class CreateAggregateCommand : Command
+    public class LongOperationCommand : Command
     {
-        public CreateAggregateCommand(int parameter, Guid aggregateId)
+        public LongOperationCommand(int parameter, Guid aggregateId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

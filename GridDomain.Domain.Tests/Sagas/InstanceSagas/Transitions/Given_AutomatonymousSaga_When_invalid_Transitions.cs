@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.Simplified.Transitions
+namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 {
     [TestFixture]
     public class Given_AutomatonymousSaga_When_invalid_Transitions

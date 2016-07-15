@@ -3,6 +3,8 @@ using System.Threading;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.Commands;
+using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 

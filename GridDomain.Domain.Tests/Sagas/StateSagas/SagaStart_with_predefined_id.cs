@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node;
@@ -14,12 +10,12 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.FutureEvents;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga;
-using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas
+namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     public class SagaStart_with_predefined_id : NodeCommandsTest
@@ -37,12 +33,12 @@ namespace GridDomain.Tests.Sagas
 
             Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000): TimeSpan.FromSeconds(1));
 
-            var sagaState = LoadSagaState<SubscriptionRenewSaga.SubscriptionRenewSaga,
+            var sagaState = LoadSagaState<SubscriptionRenewSaga,
                                           SubscriptionRenewSagaState,
                                           SubscriptionExpiredEvent>(sagaId);
 
             Assert.AreEqual(sagaId,sagaState.Id);
-            Assert.AreEqual(SubscriptionRenewSaga.SubscriptionRenewSaga.States.OfferPaying, sagaState.MachineState);
+            Assert.AreEqual(SubscriptionRenewSaga.States.OfferPaying, sagaState.MachineState);
         }
 
         public SagaStart_with_predefined_id() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(),"TestSagaStart", false)
@@ -54,9 +50,9 @@ namespace GridDomain.Tests.Sagas
         {
 
             var config = new CustomContainerConfiguration(container => { 
-                    container.RegisterType<ISagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga, SubscriptionRenewSagaState>, SubscriptionRenewSagaFactory>();
-                    container.RegisterType<ISagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga, SubscriptionExpiredEvent>, SubscriptionRenewSagaFactory>();
-                    container.RegisterType<IEmptySagaFactory<SubscriptionRenewSaga.SubscriptionRenewSaga>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<ISagaFactory<SubscriptionRenewSaga, SubscriptionRenewSagaState>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<ISagaFactory<SubscriptionRenewSaga, SubscriptionExpiredEvent>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<IEmptySagaFactory<SubscriptionRenewSaga>, SubscriptionRenewSagaFactory>();
                     container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
              });
 

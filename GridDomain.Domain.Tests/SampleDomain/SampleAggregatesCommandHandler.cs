@@ -1,15 +1,16 @@
 using System;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.Tests.SampleDomain.Commands;
 
 namespace GridDomain.Tests.SampleDomain
 {
-    public class TestAggregatesCommandHandler: AggregateCommandsHandler<SampleAggregate>,
+    public class SampleAggregatesCommandHandler: AggregateCommandsHandler<SampleAggregate>,
                                                         IAggregateCommandsHandlerDesriptor
 
     {
         //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler();
-        public TestAggregatesCommandHandler() : base(null)
+        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new SampleAggregatesCommandHandler();
+        public SampleAggregatesCommandHandler() : base(null)
         {
             Map<ChangeAggregateCommand>(c => c.AggregateId,
                                        (c, a) => a.ChangeState(c.Parameter));
