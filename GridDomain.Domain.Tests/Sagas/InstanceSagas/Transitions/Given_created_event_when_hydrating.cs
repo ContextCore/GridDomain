@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         {
             _sagaId = Guid.NewGuid();
             _machine = new SubscriptionRenewSaga();
-            _subscriptionRenewSagaData = new SubscriptionRenewSagaData(_machine.ChangingSubscription);
+            _subscriptionRenewSagaData = new SubscriptionRenewSagaData(_machine.Sleeping);
         }
 
         protected override IEnumerable<DomainEvent> GivenEvents()

@@ -200,7 +200,13 @@
   <ItemGroup>
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
+    <Compile Include="Sagas\InstanceSagas\Commands\ChangeSubscriptionCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\NotEnoughFundsFailure.cs" />
+    <Compile Include="Sagas\InstanceSagas\Commands\PayForSubscriptionCommand.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\SubscriptionChangedEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\SubscriptionExpiredEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\SubscriptionPaidEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\InstanceSagas\SubscriptionRenewSagaData.cs" />
     <Compile Include="Sagas\InstanceSagas\SubscriptionRenewSaga.cs" />

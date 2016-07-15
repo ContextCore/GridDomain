@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
     [TestFixture]
     public class Given_AutomatonymousSaga_When_invalid_Transitions
     {
-        private readonly Given_AutomatonymousSaga _given = new Given_AutomatonymousSaga(m => m.ChangingSubscription);
+        private readonly Given_AutomatonymousSaga _given = new Given_AutomatonymousSaga(m => m.Sleeping);
 
         private class WrongMessage
         {
