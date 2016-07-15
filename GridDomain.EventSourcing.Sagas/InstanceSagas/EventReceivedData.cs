@@ -1,6 +1,6 @@
 using Automatonymous;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
 
     public class EventReceivedData<TSagaData>

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CommonDomain;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SubscriptionRenewSaga.Events;
 using NUnit.Framework;
 

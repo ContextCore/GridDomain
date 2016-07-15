@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
       <Private>True</Private>
@@ -50,7 +54,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IDomainSaga.cs" />
-    <Compile Include="IDomainStateSaga.cs" />
+    <Compile Include="InstanceSagas\EventReceivedData.cs" />
+    <Compile Include="InstanceSagas\ISagaState.cs" />
+    <Compile Include="InstanceSagas\Saga.cs" />
+    <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
+    <Compile Include="InstanceSagas\SagaEventReceivedEvent.cs" />
+    <Compile Include="InstanceSagas\SagaInstance.cs" />
+    <Compile Include="InstanceSagas\SagaTransitionEvent.cs" />
+    <Compile Include="InstanceSagas\StateChangedData.cs" />
+    <Compile Include="StateSagas\IDomainStateSaga.cs" />
     <Compile Include="IEmptySagaFactory.cs" />
     <Compile Include="ISagaDescriptor.cs" />
     <Compile Include="ISagaFactory.cs" />
@@ -58,10 +70,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SagaCreatedEvent.cs" />
     <Compile Include="SagaFault.cs" />
-    <Compile Include="SagaStateAggregate.cs" />
+    <Compile Include="StateSagas\SagaStateAggregate.cs" />
     <Compile Include="SagaStateEvent.cs" />
-    <Compile Include="SagaTransitionEvent.cs" />
-    <Compile Include="StateSaga.cs" />
+    <Compile Include="StateSagas\SagaTransitionEvent.cs" />
+    <Compile Include="StateSagas\StateSaga.cs" />
     <Compile Include="UnbindedMessageRecievedException.cs" />
   </ItemGroup>
   <ItemGroup>

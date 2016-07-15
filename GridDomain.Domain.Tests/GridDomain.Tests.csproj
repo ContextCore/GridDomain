@@ -180,19 +180,8 @@
   <ItemGroup>
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
-    <Compile Include="Sagas\Simplified\Example\Person.cs" />
-    <Compile Include="Sagas\Simplified\Example\Relationship.cs" />
-    <Compile Include="Sagas\Simplified\Example\RelationshipStateMachine.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\EventReceivedData.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\ISagaState.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\Saga.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\SagaDataAggregate.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\SagaEventReceivedEvent.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\SagaTransitionEvent.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\StateChangedData.cs" />
     <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaData.cs" />
-    <Compile Include="Sagas\Simplified\Infrastructure\SagaInstance.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaSimplified.cs" />
     <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga.cs" />
     <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />

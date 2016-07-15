@@ -1,6 +1,7 @@
 using System;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.Simplified.Transitions

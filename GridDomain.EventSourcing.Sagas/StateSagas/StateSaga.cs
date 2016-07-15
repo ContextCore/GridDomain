@@ -9,7 +9,7 @@ using Stateless;
 namespace GridDomain.EventSourcing.Sagas
 {
 
-
+    [Obsolete("Use Saga classes instead")]
     public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
                                                             IDomainStateSaga<TStateData>,
                                                             ISagaDescriptor
@@ -122,6 +122,7 @@ namespace GridDomain.EventSourcing.Sagas
         }
     }
 
+    [Obsolete("Use Saga classes instead")]
     //TODO: add policy for command unexpected failure handling
     public class StateSaga<TState, TTrigger, TStartMessage> :
         StateSaga<TState, TTrigger, SagaStateAggregate<TState, TTrigger>, TStartMessage>

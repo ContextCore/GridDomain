@@ -1,5 +1,6 @@
 using System;
 using Automatonymous;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.Sagas.Simplified

@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using Automatonymous;
 using CommonDomain.Core;
-using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class SagaDataAggregate<TSagaData> : AggregateBase where TSagaData: ISagaState<State>
     {

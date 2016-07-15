@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Automatonymous;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState<State>
     {

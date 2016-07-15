@@ -1,7 +1,6 @@
 using Automatonymous;
-using Automatonymous.Contexts;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class StateChangedData<TSagaState>
     {

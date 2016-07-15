@@ -3,6 +3,7 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas
 {
+    [Obsolete("Use Saga classes instead")]
     public class SagaStateAggregate<TState, TTransition> : AggregateBase
                                                              where TState : struct
                                                              where TTransition : struct

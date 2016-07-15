@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Automatonymous;
 using CommonDomain;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas;
-using NEventStore;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
 
     public class SagaInstance<TSagaData>: ISagaInstance where TSagaData : class, ISagaState<State>

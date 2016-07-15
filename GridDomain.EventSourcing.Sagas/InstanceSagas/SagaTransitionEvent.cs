@@ -1,8 +1,7 @@
 using System;
 using Automatonymous;
-using GridDomain.EventSourcing.Sagas;
 
-namespace GridDomain.Tests.Sagas.Simplified
+namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class SagaTransitionEvent<TSagaData> : SagaStateEvent
     {
