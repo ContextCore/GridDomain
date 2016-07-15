@@ -1,19 +1,19 @@
 using System;
+using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 
 namespace GridDomain.Tests.Sagas.Simplified
 {
     public class SagaTransitionEvent<TSagaData> : SagaStateEvent
     {
-        public object Message { get; }
+        public TSagaData SagaData { get; }
+        public State NewMachineState { get; set; }
 
-        public TSagaData NewState { get; }
-
-        public SagaTransitionEvent(Guid sourceId, TSagaData newState, object message)
+        public SagaTransitionEvent(Guid sourceId, TSagaData sagaData, State newMachineState)
             : base(sourceId)
         {
-            NewState = newState;
-            Message = message;
+            SagaData = sagaData;
+            NewMachineState = newMachineState;
         }
     }
 }

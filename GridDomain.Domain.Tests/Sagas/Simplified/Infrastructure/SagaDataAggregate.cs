@@ -12,7 +12,12 @@ namespace GridDomain.Tests.Sagas.Simplified
     {
         public TSagaData Data { get; private set; }
         //for debugging purposes
-        public IList<object> ReceivedMessages = new List<object>(); 
+        public IList<object> ReceivedMessages = new List<object>();
+
+        class MappedEvent
+        {
+                
+        }
 
         private SagaDataAggregate(Guid id)
         {
@@ -23,9 +28,13 @@ namespace GridDomain.Tests.Sagas.Simplified
         {
             RaiseEvent(new SagaCreatedEvent<TSagaData>(state, id));
         }
-        public void RememberNewData(object message, TSagaData modifiedData)
+        public void RememberTransition(State state, TSagaData modifiedData)
         {
-            RaiseEvent(new SagaTransitionEvent<TSagaData>(Id, modifiedData, message));
+            RaiseEvent(new SagaTransitionEvent<TSagaData>(Id, modifiedData, state));
+        }
+        public void RememberEvent(Event @event, TSagaData sagaData, object eventData = null)
+        {
+            RaiseEvent(new SagaEventReceivedEvent<TSagaData>(Id, sagaData, @event, eventData));
         }
 
         public void Apply(SagaCreatedEvent<TSagaData> e)
@@ -36,10 +45,14 @@ namespace GridDomain.Tests.Sagas.Simplified
 
         public void Apply(SagaTransitionEvent<TSagaData> e)
         {
-            Data = e.NewState;
+            Data = e.SagaData;
+        }
+
+        public void Apply(SagaEventReceivedEvent<TSagaData> e)
+        {
+            Data = e.SagaDataBeforeEvent;
             ReceivedMessages.Add(e.Message);
         }
 
-       
     }
 }

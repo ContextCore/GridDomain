@@ -15,21 +15,22 @@ namespace GridDomain.Tests.Sagas.Simplified
     public class SagaInstance<TSagaData>: ISagaInstance where TSagaData : class, ISagaState<State>
     {
         public readonly Saga<TSagaData> Machine;
-        public readonly TSagaData Instance;
+        private readonly SagaDataAggregate<TSagaData> _stateStorage;
         public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
         public void ClearCommandsToDispatch()
         {
             Machine.CommandsToDispatch.Clear();
         }
 
-        public IAggregate Data { get; }
+        public IAggregate Data => _stateStorage;
 
         public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> stateStorage)
         {
-            Instance = stateStorage.Data;
+            _stateStorage = stateStorage;
             Machine = machine;
-            Machine.OnStateEnter += (sender, data) => stateStorage.RememberNewData(data.Event, data.Instance);
-            Machine.TransitionToState(Instance, Instance.CurrentState);
+            Machine.TransitionToState(_stateStorage.Data, _stateStorage.Data.CurrentState); 
+            Machine.OnStateEnter += (sender, context) => stateStorage.RememberTransition(context.State, context.Instance);
+            Machine.OnEventReceived += (sender, context) => stateStorage.RememberEvent(context.Event, context.SagaData, context.EventData);
         }
 
         public void Transit(object message)
@@ -44,7 +45,7 @@ namespace GridDomain.Tests.Sagas.Simplified
 
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
-            Machine.RaiseByExternalEvent(Instance, message);
+            Machine.RaiseByExternalEvent(_stateStorage.Data, message);
         }
     }
 }

@@ -183,11 +183,14 @@
     <Compile Include="Sagas\Simplified\Example\Person.cs" />
     <Compile Include="Sagas\Simplified\Example\Relationship.cs" />
     <Compile Include="Sagas\Simplified\Example\RelationshipStateMachine.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\EventReceivedData.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\ISagaState.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\Saga.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaDataAggregate.cs" />
+    <Compile Include="Sagas\Simplified\Infrastructure\SagaEventReceivedEvent.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaTransitionEvent.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\StateChangedData.cs" />
+    <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_hydrating_state.cs" />
     <Compile Include="Sagas\Simplified\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\Simplified\SubscriptionRenewSagaData.cs" />
     <Compile Include="Sagas\Simplified\Infrastructure\SagaInstance.cs" />

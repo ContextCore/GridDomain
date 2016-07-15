@@ -18,18 +18,27 @@ namespace GridDomain.Tests.Sagas.Simplified
 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
 
-        protected override void Event<T>(Expression<Func<Event<T>>> propertyExpression)
+        protected override void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression)
         {
-            _messagesToEventsMap[typeof(T)] = propertyExpression.Compile().Invoke();
+            var machineEvent = propertyExpression.Compile().Invoke();
+            _messagesToEventsMap[typeof(TEventData)] = machineEvent;
+
+            When(machineEvent).Then(
+                ctx =>
+                    OnEventReceived.Invoke(this,
+                        new EventReceivedData<TEventData, TSagaData>(ctx.Event, ctx.Data, ctx.Instance)));
+
             base.Event(propertyExpression);
         }
         public event EventHandler<StateChangedData<TSagaData>> OnStateEnter = delegate { };
+        public event EventHandler<EventReceivedData<TSagaData>> OnEventReceived = delegate { };
 
         protected override void State(Expression<Func<State>> propertyExpression)
         {
             var state = propertyExpression.Compile().Invoke();
             WhenEnter(state, x => x.Then(ctx => 
-                OnStateEnter.Invoke(this, new StateChangedData<TSagaData>(state, ctx.Event, ctx.Instance))));
+                OnStateEnter.Invoke(this, new StateChangedData<TSagaData>(state, ctx.Instance))));
+
             base.State(propertyExpression);
         }
 

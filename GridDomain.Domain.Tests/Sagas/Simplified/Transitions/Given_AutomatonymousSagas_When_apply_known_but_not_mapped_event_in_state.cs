@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         public void State_not_changed()
         {
             When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
-            Assert.AreEqual(_given.SagaMachine.ChangingSubscription, _given.SagaInstance.Instance.CurrentState);
+            Assert.AreEqual(_given.SagaMachine.ChangingSubscription, _given.SagaDataAggregate.Data.CurrentState);
         }
 
         [Then]
