@@ -7,12 +7,12 @@ namespace GridDomain.Tests.Sagas.Simplified
     public class SagaMessageReceivedEvent<TSagaData> : SagaStateEvent
     {
         public object Message { get; }
-        public TSagaData SagaDataBeforeEvent { get; }
+        public TSagaData SagaData { get; }
         public Event MachineEvent { get; }
 
-        public SagaMessageReceivedEvent(Guid sourceId, TSagaData sagaDataBeforeEvent, Event machineEvent, object externalMessage): base(sourceId)
+        public SagaMessageReceivedEvent(Guid sourceId, TSagaData sagaData, Event machineEvent, object externalMessage): base(sourceId)
         {
-            SagaDataBeforeEvent = sagaDataBeforeEvent;
+            SagaData = sagaData;
             MachineEvent = machineEvent;
             Message = externalMessage;
         }

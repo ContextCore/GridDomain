@@ -11,10 +11,9 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
     [TestFixture]
     public class Given_AutomatonymousSaga_When_valid_Transitions
     {
-        private static void When_execute_valid_transaction(SagaInstance<SubscriptionRenewSagaData> sagaInstance, DomainEvent e = null)
+        private static void When_execute_valid_transaction<T>(SagaInstance<SubscriptionRenewSagaData> sagaInstance, T e = null) where T:DomainEvent
         {
-            var subscriptionPaidEvent = new SubscriptionPaidEvent(Guid.NewGuid());
-            sagaInstance.Transit(e ?? subscriptionPaidEvent);
+                sagaInstance.Transit(e);
         }
 
         [Then]
@@ -29,7 +28,7 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         public void State_is_changed()
         {
             var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
-            When_execute_valid_transaction(given.SagaInstance);
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionPaidEvent(Guid.NewGuid()));
             Assert.AreEqual(given.SagaMachine.SubscriptionSet, given.SagaDataAggregate.Data.CurrentState);
         }
 
@@ -38,25 +37,42 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
             ClearEvents(given.SagaDataAggregate);
-            When_execute_valid_transaction(given.SagaInstance);
-            var stateChangeEvent = ExtractFirstEvent<DomainEvent>(given.SagaDataAggregate);
-            Assert.IsInstanceOf<SagaTransitionEvent<SubscriptionRenewSagaData>>(stateChangeEvent);
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionPaidEvent(Guid.NewGuid()));
+
+            var stateChangeEvent = GetFirstOf<SagaTransitionEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            Assert.NotNull(stateChangeEvent);
         }
 
         [Then]
         public void Message_received_event_is_raised()
         {
-            throw new NotImplementedException();
+            var given = new Given_AutomatonymousSaga(m => m.SubscriptionSet);
+            ClearEvents(given.SagaDataAggregate);
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionExpiredEvent(Guid.NewGuid()));
+
+            var messageReceivedEvent = GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            Assert.NotNull(messageReceivedEvent);
         }
 
         [Then]
         public void State_transition_event_is_before_Message_received_event()
         {
-            throw new NotImplementedException();
+            var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
+            ClearEvents(given.SagaDataAggregate);
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionPaidEvent(Guid.NewGuid()));
+
+            var allEvents = GetAllAs<DomainEvent>(given.SagaDataAggregate);
+            var messageReceivedEvent = GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            var stateTransitionEvent = GetFirstOf<SagaTransitionEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+
+            int indexOfTransition = Array.IndexOf(allEvents,stateTransitionEvent);
+            int indexOfMessageReceived = Array.IndexOf(allEvents, messageReceivedEvent);
+
+            Assert.True(indexOfMessageReceived == indexOfTransition - 1,"message received event is not followed by state transition event");
         }
 
         [Then]
-        public void Message_received_event_recieved_events_contains_incoming_message()
+        public void Message_received_event_contains_incoming_message()
         {
             var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
             ClearEvents(given.SagaDataAggregate);
@@ -67,15 +83,33 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         }
 
         [Then]
-        public void Message_received_event_is_filled_with_sagaData_before_event_apply_to_it()
+        public void Message_received_event_is_filled_with_sagaData_after_event_apply_to_it()
+        {
+            var given = new Given_AutomatonymousSaga(m => m.SubscriptionSet);
+
+            ClearEvents(given.SagaDataAggregate);
+
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionExpiredEvent(Guid.NewGuid()));
+            var changedSubscriptionId = given.SagaDataAggregate.Data.SubscriptionId = Guid.NewGuid();
+
+            var messageReceivedEvent =
+                GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+
+            Assert.AreEqual(changedSubscriptionId, messageReceivedEvent.SagaData.SubscriptionId);
+        }
+
+        [Then]
+        public void SagaData_is_changed_after_transition_by_event_data()
         {
             var given = new Given_AutomatonymousSaga(m => m.SubscriptionSet);
             ClearEvents(given.SagaDataAggregate);
 
             var subscriptionExpiredEvent = new SubscriptionExpiredEvent(Guid.NewGuid());
+            When_execute_valid_transaction(given.SagaInstance, subscriptionExpiredEvent);
 
-            When_execute_valid_transaction(given.SagaInstance);
-            var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            var newSubscriptionId = given.SagaDataAggregate.Data.SubscriptionId;
+
+            Assert.AreEqual(subscriptionExpiredEvent.SourceId, newSubscriptionId);
         }
 
         [Then]
@@ -83,8 +117,19 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
             ClearEvents(given.SagaDataAggregate);
-            When_execute_valid_transaction(given.SagaInstance);
-            var stateChangeEvent = ExtractFirstEvent<SagaTransitionEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionPaidEvent(Guid.NewGuid()));
+            var stateChangeEvent = GetFirstOf<SagaTransitionEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
+            Assert.AreEqual(given.SagaDataAggregate.Data, stateChangeEvent.SagaData);
+        }
+
+
+        [Then]
+        public void Message_received_events_are_filled_with_sagadata()
+        {
+            var given = new Given_AutomatonymousSaga(m => m.PayingForSubscription);
+            ClearEvents(given.SagaDataAggregate);
+            When_execute_valid_transaction(given.SagaInstance, new SubscriptionPaidEvent(Guid.NewGuid()));
+            var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SubscriptionRenewSagaData>>(given.SagaDataAggregate);
             Assert.AreEqual(given.SagaDataAggregate.Data, stateChangeEvent.SagaData);
         }
 
@@ -96,6 +141,11 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         private T GetFirstOf<T>(IAggregate sagaDataAggregate)
         {
             var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents().OfType<T>().First();
+            return stateChangeEvent;
+        }
+        private T[] GetAllOf<T>(IAggregate sagaDataAggregate)
+        {
+            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents().OfType<T>().ToArray();
             return stateChangeEvent;
         }
 

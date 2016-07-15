@@ -112,7 +112,7 @@ namespace GridDomain.EventSourcing.Sagas
         {
             StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters triggerWithParameters;
             if (!_eventsToTriggersMapping.TryGetValue(typeof(T), out triggerWithParameters))
-                throw new UnbindedMessageRecievedException(message);
+                throw new UnbindedMessageReceivedException(message);
 
             if (Machine.CanFire(triggerWithParameters.Trigger))
             {

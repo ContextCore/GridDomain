@@ -22,13 +22,12 @@ namespace GridDomain.Tests.Sagas.Simplified
         {
             var machineEvent = propertyExpression.Compile().Invoke();
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
-
-            When(machineEvent).Then(
-                ctx =>
-                    OnEventReceived.Invoke(this,
-                        new EventReceivedData<TEventData, TSagaData>(ctx.Event, ctx.Data, ctx.Instance)));
-
             base.Event(propertyExpression);
+            DuringAny(
+                     When(machineEvent).Then(
+                         ctx =>
+                             OnEventReceived.Invoke(this,
+                                 new EventReceivedData<TEventData, TSagaData>(ctx.Event, ctx.Data, ctx.Instance))));
         }
         public event EventHandler<StateChangedData<TSagaData>> OnStateEnter = delegate { };
         public event EventHandler<EventReceivedData<TSagaData>> OnEventReceived = delegate { };
@@ -51,7 +50,7 @@ namespace GridDomain.Tests.Sagas.Simplified
         {
             Event ev = null;
             if (!_messagesToEventsMap.TryGetValue(typeof(TExternalEvent), out ev))
-                throw new UnbindedMessageRecievedException(@event);
+                throw new UnbindedMessageReceivedException(@event, typeof(TExternalEvent));
             return (Event<TExternalEvent>)ev;
         }
     }

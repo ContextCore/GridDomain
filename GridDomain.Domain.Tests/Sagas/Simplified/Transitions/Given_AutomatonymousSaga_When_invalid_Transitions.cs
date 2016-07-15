@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Sagas.Simplified.Transitions
         [Then]
         public void Exception_occurs()
         {
-            Assert.Throws<UnbindedMessageRecievedException>(() => When_execute_invalid_transaction(_given.SagaInstance));
+            Assert.Throws<UnbindedMessageReceivedException>(() => When_execute_invalid_transaction(_given.SagaInstance));
         }
 
         [Then]

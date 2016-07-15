@@ -14,11 +14,6 @@ namespace GridDomain.Tests.Sagas.Simplified
         //for debugging purposes
         public IList<object> ReceivedMessages = new List<object>();
 
-        class MappedEvent
-        {
-                
-        }
-
         private SagaDataAggregate(Guid id)
         {
             Id = id;
@@ -50,7 +45,7 @@ namespace GridDomain.Tests.Sagas.Simplified
 
         public void Apply(SagaMessageReceivedEvent<TSagaData> e)
         {
-            Data = e.SagaDataBeforeEvent;
+            Data = e.SagaData;
             ReceivedMessages.Add(e.Message);
         }
 

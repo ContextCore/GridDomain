@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Sagas
         public void When_unknown_transition_Then_exception_occurs()
         {
             Given_new_saga_with_state(Saga.States.SubscriptionChanging);
-            Assert.Throws<UnbindedMessageRecievedException>(() => SagaInstance.TransitState(new WrongMessage()));
+            Assert.Throws<UnbindedMessageReceivedException>(() => SagaInstance.TransitState(new WrongMessage()));
         }
 
 
