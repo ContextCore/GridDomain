@@ -9,10 +9,9 @@ namespace GridDomain.Tests.Sagas
     internal class CreateSagaGraph
     {
         [Test]
-        public void GEtGraph()
+        public void GetGraph()
         {
-            var saga =
-                new SubscriptionRenewSaga.SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet));
+            var saga = new SubscriptionRenewSaga.SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.SubscriptionRenewSaga.States.SubscriptionSet));
             Console.WriteLine(saga.Machine.ToDotGraph());
         }
     }
