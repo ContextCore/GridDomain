@@ -6,15 +6,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 {
     class Given_AutomatonymousSaga
     {
-        public readonly SubscriptionRenewSaga SagaMachine = new SubscriptionRenewSaga();
-        public readonly SagaInstance<SubscriptionRenewSagaData> SagaInstance;
-        public readonly SagaDataAggregate<SubscriptionRenewSagaData> SagaDataAggregate;
+        public readonly SoftwareProgrammingSaga SagaMachine = new SoftwareProgrammingSaga();
+        public readonly SagaInstance<SoftwareProgrammingSagaData> SagaInstance;
+        public readonly SagaDataAggregate<SoftwareProgrammingSagaData> SagaDataAggregate;
 
-        public Given_AutomatonymousSaga(Func<SubscriptionRenewSaga, State> initialState)
+        public Given_AutomatonymousSaga(Func<SoftwareProgrammingSaga, State> initialState)
         {
-            var sagaData = new SubscriptionRenewSagaData(initialState(SagaMachine));
-            SagaDataAggregate = new SagaDataAggregate<SubscriptionRenewSagaData>(Guid.NewGuid(), sagaData);
-            SagaInstance = new SagaInstance<SubscriptionRenewSagaData>(SagaMachine, SagaDataAggregate);
+            var sagaData = new SoftwareProgrammingSagaData(initialState(SagaMachine));
+            SagaDataAggregate = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(), sagaData);
+            SagaInstance = new SagaInstance<SoftwareProgrammingSagaData>(SagaMachine, SagaDataAggregate);
         }
     }
 }

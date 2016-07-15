@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         {
         }
 
-        private static void When_execute_invalid_transaction(SagaInstance<SubscriptionRenewSagaData> sagaInstance)
+        private static void When_execute_invalid_transaction(SagaInstance<SoftwareProgrammingSagaData> sagaInstance)
         {
             sagaInstance.Transit(new WrongMessage());
         }

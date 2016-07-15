@@ -5,24 +5,24 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
     class SubscriptionRenewSagaFactory : 
-        ISagaFactory<SubscriptionRenewSaga, SubscriptionRenewSagaState>,
-        ISagaFactory<SubscriptionRenewSaga, SubscriptionExpiredEvent>,
-        IEmptySagaFactory<SubscriptionRenewSaga>
+        ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>,
+        ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>,
+        IEmptySagaFactory<SoftwareProgrammingSaga>
     {
-        public SubscriptionRenewSaga Create(SubscriptionRenewSagaState message)
+        public SoftwareProgrammingSaga Create(SoftwareProgrammingSagaState message)
         {
-            return new SubscriptionRenewSaga(message);
+            return new SoftwareProgrammingSaga(message);
         }
 
-        public SubscriptionRenewSaga Create(SubscriptionExpiredEvent message)
+        public SoftwareProgrammingSaga Create(GotTiredEvent message)
         {
-            return new SubscriptionRenewSaga(new SubscriptionRenewSagaState(message.SagaId,
-                SubscriptionRenewSaga.States.SubscriptionSet));
+            return new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(message.SagaId,
+                SoftwareProgrammingSaga.States.Working));
         }
 
-        public SubscriptionRenewSaga Create()
+        public SoftwareProgrammingSaga Create()
         {
-            return new SubscriptionRenewSaga(new SubscriptionRenewSagaState(Guid.Empty,SubscriptionRenewSaga.States.SubscriptionSet));
+            return new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,SoftwareProgrammingSaga.States.Working));
         }
     }
 }

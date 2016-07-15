@@ -1,6 +1,6 @@
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events
 {
-    public class SubscriptionChangedEvent
+    public class SleptWellEvent
     {
     }
 }

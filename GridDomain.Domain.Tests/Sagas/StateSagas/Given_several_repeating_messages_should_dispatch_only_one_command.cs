@@ -16,22 +16,22 @@ namespace GridDomain.Tests.Sagas.StateSagas
             When_applying_several_events();
         }
 
-        private SubscriptionRenewSaga Saga;
-        private NotEnoughFundsFailure[] Messages;
+        private SoftwareProgrammingSaga Saga;
+        private GotMoreTiredEvent[] Messages;
 
         public void Given_new_saga_with_state()
         {
-            var sagaState = new SubscriptionRenewSagaState(Guid.NewGuid(),SubscriptionRenewSaga.States.OfferPaying);
+            var sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.DrinkingCoffe);
 
-            Saga = new SubscriptionRenewSaga(sagaState);
+            Saga = new SoftwareProgrammingSaga(sagaState);
 
 
             Messages = new[]
             {
-                new NotEnoughFundsFailure(),
-                new NotEnoughFundsFailure(),
-                new NotEnoughFundsFailure(),
-                new NotEnoughFundsFailure()
+                new GotMoreTiredEvent(),
+                new GotMoreTiredEvent(),
+                new GotMoreTiredEvent(),
+                new GotMoreTiredEvent()
             };
         }
 
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Then]
         public void All_dispatched_messages_are_commands()
         {
-            CollectionAssert.AllItemsAreInstancesOfType(Saga.CommandsToDispatch, typeof (ChangeSubscriptionCommand));
+            CollectionAssert.AllItemsAreInstancesOfType(Saga.CommandsToDispatch, typeof (SleepWellCommand));
         }
     }
 }

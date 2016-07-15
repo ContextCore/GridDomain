@@ -29,16 +29,16 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             Thread.Sleep(TimeSpan.FromMilliseconds(500));
 
-            publisher.Publish(new SubscriptionExpiredEvent(Guid.NewGuid()).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(Guid.NewGuid()).CloneWithSaga(sagaId));
 
             Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000): TimeSpan.FromSeconds(1));
 
-            var sagaState = LoadSagaState<SubscriptionRenewSaga,
-                                          SubscriptionRenewSagaState,
-                                          SubscriptionExpiredEvent>(sagaId);
+            var sagaState = LoadSagaState<SoftwareProgrammingSaga,
+                                          SoftwareProgrammingSagaState,
+                                          GotTiredEvent>(sagaId);
 
             Assert.AreEqual(sagaId,sagaState.Id);
-            Assert.AreEqual(SubscriptionRenewSaga.States.OfferPaying, sagaState.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.DrinkingCoffe, sagaState.MachineState);
         }
 
         public SagaStart_with_predefined_id() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(),"TestSagaStart", false)
@@ -50,9 +50,9 @@ namespace GridDomain.Tests.Sagas.StateSagas
         {
 
             var config = new CustomContainerConfiguration(container => { 
-                    container.RegisterType<ISagaFactory<SubscriptionRenewSaga, SubscriptionRenewSagaState>, SubscriptionRenewSagaFactory>();
-                    container.RegisterType<ISagaFactory<SubscriptionRenewSaga, SubscriptionExpiredEvent>, SubscriptionRenewSagaFactory>();
-                    container.RegisterType<IEmptySagaFactory<SubscriptionRenewSaga>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<IEmptySagaFactory<SoftwareProgrammingSaga>, SubscriptionRenewSagaFactory>();
                     container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
              });
 

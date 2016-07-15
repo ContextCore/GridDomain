@@ -3,11 +3,11 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands
 {
-    internal class PayForSubscriptionCommand : Command
+    internal class SleepWellCommand: Command
     {
-        private SubscriptionExpiredEvent e;
+        private GotMoreTiredEvent e;
 
-        public PayForSubscriptionCommand(SubscriptionExpiredEvent e)
+        public SleepWellCommand(GotMoreTiredEvent e)
         {
             this.e = e;
         }

@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
     {
         public void Register(IMessagesRouter router)
         {
-            router.RegisterSaga(SubscriptionRenewSaga.Descriptor);
+            router.RegisterSaga(SoftwareProgrammingSaga.Descriptor);
         }
     }
 }

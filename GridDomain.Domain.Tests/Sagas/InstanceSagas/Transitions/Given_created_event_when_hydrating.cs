@@ -7,28 +7,28 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 {
-    class Given_created_event_when_hydrating: HydrationSpecification<SagaDataAggregate<SubscriptionRenewSagaData>>
+    class Given_created_event_when_hydrating: HydrationSpecification<SagaDataAggregate<SoftwareProgrammingSagaData>>
     {
         private readonly Guid _sagaId;
-        private readonly SubscriptionRenewSaga _machine;
-        private readonly SubscriptionRenewSagaData _subscriptionRenewSagaData;
+        private readonly SoftwareProgrammingSaga _machine;
+        private readonly SoftwareProgrammingSagaData _softwareProgrammingSagaData;
 
         public Given_created_event_when_hydrating()
         {
             _sagaId = Guid.NewGuid();
-            _machine = new SubscriptionRenewSaga();
-            _subscriptionRenewSagaData = new SubscriptionRenewSagaData(_machine.Sleeping);
+            _machine = new SoftwareProgrammingSaga();
+            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_machine.Sleeping);
         }
 
         protected override IEnumerable<DomainEvent> GivenEvents()
         {
-            yield return new SagaCreatedEvent<SubscriptionRenewSagaData>(_subscriptionRenewSagaData, _sagaId);
+            yield return new SagaCreatedEvent<SoftwareProgrammingSagaData>(_softwareProgrammingSagaData, _sagaId);
         }
 
         [Test]
         public void Then_State_is_taken_from_event()
         {
-            Assert.AreEqual(_subscriptionRenewSagaData,Aggregate.Data);
+            Assert.AreEqual(_softwareProgrammingSagaData,Aggregate.Data);
         }
 
         [Test]

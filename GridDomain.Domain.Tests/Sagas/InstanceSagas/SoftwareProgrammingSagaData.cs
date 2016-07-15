@@ -4,13 +4,13 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SubscriptionRenewSagaData: ISagaState<State>
+    class SoftwareProgrammingSagaData: ISagaState<State>
     {
         public Guid BusinessId { get; set; }
         public Guid SubscriptionId { get; set; }
         public State CurrentState { get; set; }
 
-        public SubscriptionRenewSagaData(State currentState)
+        public SoftwareProgrammingSagaData(State currentState)
         {
             CurrentState = currentState;
         }

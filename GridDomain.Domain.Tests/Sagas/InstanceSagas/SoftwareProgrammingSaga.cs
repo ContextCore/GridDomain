@@ -25,13 +25,13 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 When(GotTired).Then(context =>
                 {
                     context.Instance.SubscriptionId = context.Data.SourceId;
-                    Dispatch(new PayForSubscriptionCommand(context.Data));
+                    Dispatch(new GoForCoffeCommand(context.Data));
                 })
                 .TransitionTo(DrinkingCoffee));
 
             During(DrinkingCoffee, 
                 When(FeltMoreTired)
-                    .Then(context => Dispatch(new ChangeSubscriptionCommand(context.Data)))
+                    .Then(context => Dispatch(new GoSleepCommand(context.Data)))
                     .TransitionTo(Sleeping),
                 When(FeltGood)
                     .TransitionTo(Coding));

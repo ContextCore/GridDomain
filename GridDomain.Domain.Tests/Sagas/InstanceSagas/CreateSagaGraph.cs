@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Test]
         public void GetGraph()
         {
-            var saga = new SubscriptionRenewSaga();
+            var saga = new SoftwareProgrammingSaga();
             var generator = new StateMachineGraphvizGenerator(saga.GetGraph());
             Console.WriteLine(generator.CreateDotFile());
         }
