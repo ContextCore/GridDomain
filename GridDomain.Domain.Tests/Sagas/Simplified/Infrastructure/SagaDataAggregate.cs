@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Sagas.Simplified
         }
         public void RememberEvent(Event @event, TSagaData sagaData, object eventData = null)
         {
-            RaiseEvent(new SagaEventReceivedEvent<TSagaData>(Id, sagaData, @event, eventData));
+            RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event, eventData));
         }
 
         public void Apply(SagaCreatedEvent<TSagaData> e)
@@ -48,7 +48,7 @@ namespace GridDomain.Tests.Sagas.Simplified
             Data = e.SagaData;
         }
 
-        public void Apply(SagaEventReceivedEvent<TSagaData> e)
+        public void Apply(SagaMessageReceivedEvent<TSagaData> e)
         {
             Data = e.SagaDataBeforeEvent;
             ReceivedMessages.Add(e.Message);
