@@ -42,9 +42,11 @@ namespace GridDomain.Node.Actors
             Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.State.Id);
             Command<TStartMessage>(startMessage =>
             {
-                Saga = _sagaStarter.Create(startMessage);
+                if(Saga.State.Id == Guid.Empty)
+                    Saga = _sagaStarter.Create(startMessage);
+
                 ProcessSaga(startMessage);
-            },start => Saga.State.Id == Guid.Empty); //duplicate start event
+            });
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
             Recover<DomainEvent>(e => Saga.State.ApplyEvent(e));
         }
