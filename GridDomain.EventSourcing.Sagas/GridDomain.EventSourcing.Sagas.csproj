@@ -59,9 +59,11 @@
     <Compile Include="InstanceSagas\Saga.cs" />
     <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
     <Compile Include="InstanceSagas\SagaEventReceivedEvent.cs" />
+    <Compile Include="InstanceSagas\SagaExtensions.cs" />
     <Compile Include="InstanceSagas\SagaInstance.cs" />
     <Compile Include="InstanceSagas\SagaTransitionEvent.cs" />
     <Compile Include="InstanceSagas\StateChangedData.cs" />
+    <Compile Include="SagaDescriptor.cs" />
     <Compile Include="StateSagas\IDomainStateSaga.cs" />
     <Compile Include="IEmptySagaFactory.cs" />
     <Compile Include="ISagaDescriptor.cs" />

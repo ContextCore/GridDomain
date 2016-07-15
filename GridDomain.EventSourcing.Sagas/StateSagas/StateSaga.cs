@@ -9,7 +9,7 @@ using Stateless;
 namespace GridDomain.EventSourcing.Sagas
 {
 
-    [Obsolete("Use Saga classes instead")]
+    [Obsolete("Use Saga class instead")]
     public class StateSaga<TSagaStates, TSagaTriggers, TStateData, TStartMessage> :
                                                             IDomainStateSaga<TStateData>,
                                                             ISagaDescriptor

@@ -1,6 +1,7 @@
 using System;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Scheduling.Integration

@@ -3,11 +3,11 @@ using GridDomain.Tests.Sagas.InstanceSagas.Events;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas.Commands
 {
-    internal class PayForSubscriptionCommand : Command
+    internal class GoForCoffeCommand : Command
     {
         private GotTiredDomainEvent e;
 
-        public PayForSubscriptionCommand(GotTiredDomainEvent e)
+        public GoForCoffeCommand(GotTiredDomainEvent e)
         {
             this.e = e;
         }

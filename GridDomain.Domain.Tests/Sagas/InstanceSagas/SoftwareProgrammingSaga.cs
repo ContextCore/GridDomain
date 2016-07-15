@@ -1,3 +1,4 @@
+using System.Runtime.Remoting.Channels;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.InstanceSagas.Commands;
@@ -6,11 +7,9 @@ using GridDomain.Tests.Sagas.InstanceSagas.Events;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-
-    class SoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
+    class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
     {
-        
-        public SoftwareProgrammingSaga()
+        public SoftwareProgrammingSaga():base(typeof(GotTiredDomainEvent))
         { 
             Event(() => GotTired);
             Event(() => FeltGood);
@@ -20,6 +19,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             State(() => Coding);
             State(() => DrinkingCoffee);
             State(() => Sleeping);
+
+            Command<GoForCoffeCommand>();
+            Command<GoSleepCommand>();
 
             During(Coding,
                 When(GotTired).Then(context =>
@@ -36,7 +38,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 When(FeltGood)
                     .TransitionTo(Coding));
 
-              During(Sleeping,
+             During(Sleeping,
                 When(SleptWell).TransitionTo(Coding));
         }
 

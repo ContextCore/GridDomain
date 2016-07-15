@@ -4,7 +4,7 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
-    class SubscriptionRenewSagaFactory : 
+    class SoftwareProgrammingSagaFactory : 
         ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>,
         ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>,
         IEmptySagaFactory<SoftwareProgrammingSaga>

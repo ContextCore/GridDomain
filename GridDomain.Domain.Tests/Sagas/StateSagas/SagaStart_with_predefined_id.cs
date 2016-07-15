@@ -50,13 +50,13 @@ namespace GridDomain.Tests.Sagas.StateSagas
         {
 
             var config = new CustomContainerConfiguration(container => { 
-                    container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>, SubscriptionRenewSagaFactory>();
-                    container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>, SubscriptionRenewSagaFactory>();
-                    container.RegisterType<IEmptySagaFactory<SoftwareProgrammingSaga>, SubscriptionRenewSagaFactory>();
+                    container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>, SoftwareProgrammingSagaFactory>();
+                    container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>, SoftwareProgrammingSagaFactory>();
+                    container.RegisterType<IEmptySagaFactory<SoftwareProgrammingSaga>, SoftwareProgrammingSagaFactory>();
                     container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
              });
 
-            return new GridDomainNode(config, new RenewSagaMessageRouteMap(),TransportMode.Standalone, Sys);
+            return new GridDomainNode(config, new SoftwareProgrammingSagaRoutemap(),TransportMode.Standalone, Sys);
         }
     }
 }
