@@ -5,7 +5,19 @@ using CommonDomain;
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
 
-    public class SagaInstance<TSagaData>: ISagaInstance where TSagaData : class, ISagaState<State>
+    public static class SagaInstance
+    {
+        public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga, SagaDataAggregate<TSagaData> data) 
+            where TSaga : Saga<TSagaData> 
+            where TSagaData : class, ISagaState<State>
+        {
+            return new SagaInstance<TSaga, TSagaData>(saga, data);
+        }
+    }
+
+    public class SagaInstance<TSaga,TSagaData>: ISagaInstance<TSaga, TSagaData> 
+        where TSaga : Saga<TSagaData>
+        where TSagaData : class, ISagaState<State>
     {
         public readonly Saga<TSagaData> Machine;
         private readonly SagaDataAggregate<TSagaData> _stateStorage;
@@ -14,6 +26,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             Machine.CommandsToDispatch.Clear();
         }
+
+        SagaDataAggregate<TSagaData> ISagaInstance<TSaga, TSagaData>.Data => _stateStorage;
 
         public IAggregate Data => _stateStorage;
 
@@ -26,12 +40,14 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Machine.OnEventReceived += (sender, context) => stateStorage.RememberEvent(context.Event, context.SagaData, context.EventData);
         }
 
+      
+
         public void Transit(object message)
         {
             var messageType = message.GetType();
-            var method = typeof (SagaInstance<TSagaData>)
-                            .GetMethod(nameof(Transit))
-                            .MakeGenericMethod(messageType);
+            var method = this.GetType()
+                             .GetMethod(nameof(Transit))
+                             .MakeGenericMethod(messageType);
 
             method.Invoke(this,new [] {message});
         }

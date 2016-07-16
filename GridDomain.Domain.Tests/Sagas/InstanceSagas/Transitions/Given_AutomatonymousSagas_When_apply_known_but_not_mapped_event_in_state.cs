@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CommonDomain;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.InstanceSagas.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
@@ -26,7 +27,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         private static GotTiredDomainEvent _gotTiredDomainEvent;
         private IAggregate SagaDataAggregate => _given.SagaDataAggregate;
 
-        private static void When_apply_known_but_not_mapped_event_in_state(SagaInstance<SoftwareProgrammingSagaData> sagaInstance)
+        private static void When_apply_known_but_not_mapped_event_in_state(ISagaInstance sagaInstance)
         {
             _gotTiredDomainEvent = new GotTiredDomainEvent(Guid.NewGuid());
             sagaInstance.Transit(_gotTiredDomainEvent);

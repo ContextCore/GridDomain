@@ -12,30 +12,34 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public SoftwareProgrammingSaga():base(typeof(GotTiredDomainEvent))
         { 
             Event(() => GotTired);
-            Event(() => FeltGood);
+            Event(() => CoffeReady);
             Event(() => SleptWell);
-            Event(() => FeltMoreTired);
+            Event(() => CoffeNotAvailable);
 
             State(() => Coding);
-            State(() => DrinkingCoffee);
+            State(() => MakingCoffee);
             State(() => Sleeping);
 
-            Command<GoForCoffeCommand>();
+            Command<MakeCoffeCommand>();
             Command<GoSleepCommand>();
 
             During(Coding,
                 When(GotTired).Then(context =>
                 {
-                    context.Instance.SubscriptionId = context.Data.SourceId;
-                    Dispatch(new GoForCoffeCommand(context.Data));
-                })
-                .TransitionTo(DrinkingCoffee));
+                    var sagaData = context.Instance;
+                    var domainEvent = context.Data;
+                    sagaData.PersonId = domainEvent.SourceId;
 
-            During(DrinkingCoffee, 
-                When(FeltMoreTired)
-                    .Then(context => Dispatch(new GoSleepCommand(context.Data)))
+                    Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
+                })
+                .TransitionTo(MakingCoffee));
+
+            During(MakingCoffee, 
+                When(CoffeNotAvailable)
+                    .Then(context => 
+                        Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId)))
                     .TransitionTo(Sleeping),
-                When(FeltGood)
+                When(CoffeReady)
                     .TransitionTo(Coding));
 
              During(Sleeping,
@@ -43,12 +47,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         }
 
         public Event<GotTiredDomainEvent>      GotTired      { get; private set; } 
-        public Event<FeltGoodDomainEvent>      FeltGood      { get; private set; }
+        public Event<CoffeMadeDomainEvent>      CoffeReady      { get; private set; }
         public Event<SleptWellDomainEvent>     SleptWell     { get; private set; } 
-        public Event<FeltMoreTiredDomainEvent> FeltMoreTired { get; private set; }
+        public Event<CoffeMakeFailedDomainEvent> CoffeNotAvailable { get; private set; }
 
         public State Coding       { get; private set; }
-        public State DrinkingCoffee { get; private set; }
+        public State MakingCoffee { get; private set; }
         public State Sleeping  { get; private set; }
     }
 }

@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
     [TestFixture]
     public class Given_AutomatonymousSaga_When_valid_Transitions
     {
-        private static void When_execute_valid_transaction<T>(SagaInstance<SoftwareProgrammingSagaData> sagaInstance, T e = null) where T:DomainEvent
+        private static void When_execute_valid_transaction<T>(ISagaInstance sagaInstance, T e = null) where T:DomainEvent
         {
                 sagaInstance.Transit(e);
         }
@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void State_raised_creation_event_on_machine_creation()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             var creationEvent = ExtractFirstEvent<DomainEvent>(given.SagaDataAggregate);
             Assert.IsInstanceOf<SagaCreatedEvent<SoftwareProgrammingSagaData>>(creationEvent);
         }
@@ -29,17 +29,17 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void State_is_changed()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
-            When_execute_valid_transaction(given.SagaInstance, new FeltGoodDomainEvent(Guid.NewGuid()));
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
+            When_execute_valid_transaction(given.SagaInstance, new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid()));
             Assert.AreEqual(given.SagaMachine.Coding, given.SagaDataAggregate.Data.CurrentState);
         }
 
         [Then]
         public void State_transitioned_event_is_raised()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             ClearEvents(given.SagaDataAggregate);
-            When_execute_valid_transaction(given.SagaInstance, new FeltGoodDomainEvent(Guid.NewGuid()));
+            When_execute_valid_transaction(given.SagaInstance, new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid()));
 
             var stateChangeEvent = GetFirstOf<SagaTransitionEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
             Assert.NotNull(stateChangeEvent);
@@ -59,9 +59,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void State_transition_event_is_before_Message_received_event()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             ClearEvents(given.SagaDataAggregate);
-            When_execute_valid_transaction(given.SagaInstance, new FeltGoodDomainEvent(Guid.NewGuid()));
+            When_execute_valid_transaction(given.SagaInstance, new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid()));
 
             var allEvents = GetAllAs<DomainEvent>(given.SagaDataAggregate);
             var messageReceivedEvent = GetFirstOf<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
@@ -76,9 +76,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void Message_received_event_contains_incoming_message()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             ClearEvents(given.SagaDataAggregate);
-            var message = new FeltGoodDomainEvent(Guid.NewGuid());
+            var message = new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid());
             When_execute_valid_transaction(given.SagaInstance,message);
             var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
             Assert.AreEqual(message, stateChangeEvent.Message);
@@ -92,12 +92,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
             ClearEvents(given.SagaDataAggregate);
 
             When_execute_valid_transaction(given.SagaInstance, new GotTiredDomainEvent(Guid.NewGuid()));
-            var changedSubscriptionId = given.SagaDataAggregate.Data.SubscriptionId = Guid.NewGuid();
+            var changedSubscriptionId = given.SagaDataAggregate.Data.PersonId = Guid.NewGuid();
 
             var messageReceivedEvent =
                 GetFirstOf<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
 
-            Assert.AreEqual(changedSubscriptionId, messageReceivedEvent.SagaData.SubscriptionId);
+            Assert.AreEqual(changedSubscriptionId, messageReceivedEvent.SagaData.PersonId);
         }
 
         [Then]
@@ -120,7 +120,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
             var subscriptionExpiredEvent = new GotTiredDomainEvent(Guid.NewGuid());
             When_execute_valid_transaction(given.SagaInstance, subscriptionExpiredEvent);
 
-            var newSubscriptionId = given.SagaDataAggregate.Data.SubscriptionId;
+            var newSubscriptionId = given.SagaDataAggregate.Data.PersonId;
 
             Assert.AreEqual(subscriptionExpiredEvent.SourceId, newSubscriptionId);
         }
@@ -128,9 +128,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void State_transitioned_events_are_filled_with_sagadata()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             ClearEvents(given.SagaDataAggregate);
-            When_execute_valid_transaction(given.SagaInstance, new FeltGoodDomainEvent(Guid.NewGuid()));
+            When_execute_valid_transaction(given.SagaInstance, new CoffeMadeDomainEvent(Guid.NewGuid(),Guid.NewGuid()));
             var stateChangeEvent = GetFirstOf<SagaTransitionEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
             Assert.AreEqual(given.SagaDataAggregate.Data, stateChangeEvent.SagaData);
         }
@@ -139,9 +139,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void Message_received_events_are_filled_with_sagadata()
         {
-            var given = new Given_AutomatonymousSaga(m => m.DrinkingCoffee);
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             ClearEvents(given.SagaDataAggregate);
-            When_execute_valid_transaction(given.SagaInstance, new FeltGoodDomainEvent(Guid.NewGuid()));
+            When_execute_valid_transaction(given.SagaInstance, new CoffeMadeDomainEvent(Guid.NewGuid(),Guid.NewGuid()));
             var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
             Assert.AreEqual(given.SagaDataAggregate.Data, stateChangeEvent.SagaData);
         }

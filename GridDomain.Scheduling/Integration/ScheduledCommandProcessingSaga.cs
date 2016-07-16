@@ -2,7 +2,6 @@ using System;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
 
 namespace GridDomain.Scheduling.Integration

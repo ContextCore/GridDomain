@@ -202,13 +202,15 @@
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="Sagas\InstanceSagas\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
-    <Compile Include="Sagas\InstanceSagas\Events\FeltMoreTiredDomainEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\Commands\GoForCoffeCommand.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\CoffeMakeFailedDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Commands\MakeCoffeCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\SleptWellDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\GotTiredDomainEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\Events\FeltGoodDomainEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\RenewSagaMessageRouteMap.cs" />
-    <Compile Include="Sagas\InstanceSagas\SubscriptionRenewSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaData.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSaga.cs" />
@@ -232,7 +234,7 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\RenewSagaMessageRouteMap.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaRoutemap.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaState.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />
@@ -241,7 +243,7 @@
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\SubscriptionRenewSagaFactory.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_when_sync_execute_with_command_fault.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistentSampleDomainTests.cs" />
@@ -295,7 +297,7 @@
     <Compile Include="Sagas\StateSagas\SagaStateAggregate\TestState.cs" />
     <Compile Include="Sagas\StateSagas\SagaStateAggregate\TestTransition.cs" />
     <Compile Include="Sagas\StateSagas\CreateSagaGraph.cs" />
-    <Compile Include="Sagas\StateSagas\Given_published_start_message_Then_Saga_is_started.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message.cs" />
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\Commands\SleepWellCommand.cs" />

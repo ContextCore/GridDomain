@@ -80,6 +80,10 @@
       <HintPath>..\packages\Akka.Serialization.Wire.1.0.8.25-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -241,7 +245,8 @@
     <Compile Include="Configuration\Akka\Hocon\RootConfig.cs" />
     <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
     <Compile Include="Configuration\Composition\ContainerExtensions.cs" />
-    <Compile Include="Configuration\Composition\SagaConfiguration.cs" />
+    <Compile Include="Configuration\Composition\InstanceSagaConfiguration.cs" />
+    <Compile Include="Configuration\Composition\SagaStateConfiguration.cs" />
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />
     <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />

@@ -11,7 +11,6 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;

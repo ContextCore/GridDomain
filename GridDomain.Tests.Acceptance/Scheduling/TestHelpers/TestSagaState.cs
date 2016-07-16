@@ -1,6 +1,5 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {

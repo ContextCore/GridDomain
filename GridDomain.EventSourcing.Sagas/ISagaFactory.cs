@@ -6,5 +6,4 @@ namespace GridDomain.EventSourcing.Sagas
     {
         TSaga Create(TStartMessage message);
     }
-    
 }

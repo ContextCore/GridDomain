@@ -3,7 +3,6 @@ using BusinessNews.Domain.BusinessAggregate;
 using BusinessNews.Domain.SubscriptionAggregate;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace BusinessNews.Domain.Sagas.BuySubscription
 {

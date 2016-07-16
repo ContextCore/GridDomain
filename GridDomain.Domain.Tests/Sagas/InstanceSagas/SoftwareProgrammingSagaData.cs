@@ -6,13 +6,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     class SoftwareProgrammingSagaData: ISagaState<State>
     {
-        public Guid BusinessId { get; set; }
-        public Guid SubscriptionId { get; set; }
+        public Guid PersonId { get; set; }
         public State CurrentState { get; set; }
-
-        public SoftwareProgrammingSagaData(State currentState)
+        public Guid CoffeeMachineId { get; }
+        public Guid SofaId { get; }
+        public SoftwareProgrammingSagaData(State currentState, Guid sofaId = default(Guid), Guid coffeeMachineId = default(Guid))
         {
             CurrentState = currentState;
+            SofaId = sofaId;
+            CoffeeMachineId = coffeeMachineId;
         }
     }
 }

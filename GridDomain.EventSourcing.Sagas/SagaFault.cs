@@ -1,7 +1,6 @@
 using System;
 using CommonDomain;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {

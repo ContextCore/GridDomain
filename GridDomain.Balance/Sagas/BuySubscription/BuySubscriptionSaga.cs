@@ -7,7 +7,6 @@ using BusinessNews.Domain.SubscriptionAggregate;
 using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace BusinessNews.Domain.Sagas.BuySubscription
 {

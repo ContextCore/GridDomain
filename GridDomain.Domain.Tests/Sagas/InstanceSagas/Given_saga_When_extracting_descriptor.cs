@@ -1,7 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.InstanceSagas.Commands;
@@ -10,14 +6,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    public class SoftwareProgrammingSagaRoutes : IMessageRouteMap
-    {
-        public void Register(IMessagesRouter router)
-        {
-           // router.RegisterSaga(SoftwareProgrammingSaga.Descriptor);
-        }
-    }
-
     [TestFixture]
     public class Given_saga_When_extracting_descriptor
     {
@@ -41,7 +29,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var expectedCommands = new[]
             {
-                typeof(GoForCoffeCommand),
+                typeof(MakeCoffeCommand),
                 typeof(GoSleepCommand)
             };
 
@@ -57,13 +45,13 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Descriptor_contains_saga_type()
         {
-            Assert.AreEqual(typeof(SoftwareProgrammingSaga), _descriptor.SagaType);
+            Assert.AreEqual(typeof(ISagaInstance<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>), _descriptor.SagaType);
         }
 
         [Then]
         public void Descriptor_contains_saga_data_type()
         {
-            Assert.AreEqual(typeof(SoftwareProgrammingSagaData), _descriptor.StateType);
+            Assert.AreEqual(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>), _descriptor.StateType);
         }
 
 
@@ -73,9 +61,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var expectedEvents = new []
             {
                 typeof(GotTiredDomainEvent),
-                typeof(FeltGoodDomainEvent),
+                typeof(CoffeMadeDomainEvent),
                 typeof(SleptWellDomainEvent),
-                typeof(FeltMoreTiredDomainEvent)
+                typeof(CoffeMakeFailedDomainEvent)
             };
 
             CollectionAssert.AreEquivalent(_descriptor.AcceptMessages, expectedEvents);

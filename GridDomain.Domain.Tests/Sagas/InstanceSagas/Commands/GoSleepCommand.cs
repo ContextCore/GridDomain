@@ -1,15 +1,16 @@
+using System;
 using GridDomain.CQRS;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas.Commands
 {
     internal class GoSleepCommand: Command
     {
-        private FeltMoreTiredDomainEvent e;
-
-        public GoSleepCommand(FeltMoreTiredDomainEvent e)
+        public Guid SofaId { get; }
+        public Guid PersonId { get; }
+        public GoSleepCommand(Guid personId, Guid sofaId)
         {
-            this.e = e;
+            PersonId = personId;
+            SofaId = sofaId;
         }
     }
 }
