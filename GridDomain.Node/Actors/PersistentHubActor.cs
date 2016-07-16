@@ -24,11 +24,12 @@ namespace GridDomain.Node.Actors
             {
                 //TODO: Implement reuse logic
 
-                var props = Context.DI().Props(GetChildActorType(message));
+                var childActorType = GetChildActorType(message);
+                var props = Context.DI().Props(childActorType);
                 knownChild = _children[childId] = Context.ActorOf(props, name);
             }
 
-            knownChild.Tell(message);
+            knownChild.Ask(message);
         }
     }
 }

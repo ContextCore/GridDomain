@@ -14,7 +14,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
         protected ExtendedNodeCommandTest(bool inMemory) : 
-            base( inMemory ? new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig():
+            base( inMemory ? new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Trace).ToStandAloneInMemorySystemConfig():
                 new AutoTestAkkaConfiguration().ToStandAloneSystemConfig()
                 , "TestSystem", !inMemory)
         {

@@ -60,7 +60,7 @@ namespace GridDomain.Node
         {
             _configuration = configuration;
             _transportMode = transportMode;
-            _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
+            _messageRouting = new CompositeRouteMap(messageRouting);//, new SchedulingRouteMap());
             AllSystems = actorAllSystems;
             System = AllSystems.Last();
             Container= new UnityContainer();

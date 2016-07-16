@@ -17,8 +17,7 @@ using Ploeh.AutoFixture;
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_start_message : InMemorySampleDomainTests
-    {
+    class Given_saga_When_publishing_start_message : InMemorySampleDomainTests   {
         private Guid _sagaId;
         private DomainEvent[] _sagaDataEvents;
         private SagaCreatedEvent<SoftwareProgrammingSagaData> _startedEvent;
@@ -48,10 +47,15 @@ namespace GridDomain.Tests.Sagas.StateSagas
         public void When_publishing_start_message()
         {
             var generator = new Fixture();
-            _sagaStartMessage = generator.Create<GotTiredDomainEvent>();
+            _sagaStartMessage = (GotTiredDomainEvent)
+                new GotTiredDomainEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid())//generator.Create<GotTiredDomainEvent>()
+                                         .CloneWithSaga(Guid.NewGuid());
+
             _sagaId = _sagaStartMessage.SagaId;
             GridNode.Transport.Publish(_sagaStartMessage);
-            Thread.Sleep(500);
+
+            Thread.Sleep(100000);
+
             var sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
             _sagaDataEvents = ((IAggregate)sagaData).GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
