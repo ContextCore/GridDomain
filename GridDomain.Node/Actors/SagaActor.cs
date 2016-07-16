@@ -40,12 +40,17 @@ namespace GridDomain.Node.Actors
             Saga = emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
 
             Command<ICommandFault>(ProcessSaga,fault => fault.SagaId == Saga.Data.Id);
-            Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.Data.Id);
+            Command<DomainEvent>(ProcessSaga,e => e.SagaId == Saga.Data.Id);
             Command<TStartMessage>(startMessage =>
             {
-                Saga = _sagaStarter.Create(startMessage);
-                ProcessSaga(startMessage);
-            },start => Saga.Data.Id == Guid.Empty); //duplicate start event
+                if(Saga.Data.Id == Guid.Empty)
+                    Saga = _sagaStarter.Create(startMessage);
+
+                if(startMessage.SagaId == Saga.Data.Id)
+                      ProcessSaga(startMessage);
+            });
+
+            //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
             Recover<DomainEvent>(e => Saga.Data.ApplyEvent(e));
         }

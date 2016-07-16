@@ -245,6 +245,8 @@
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class.cs" />
+    <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_with_message_base_class.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_when_sync_execute_with_command_fault.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistentSampleDomainTests.cs" />
     <Compile Include="SynchroniousCommandExecute\SampleDomainCommandExecutionTests.cs" />
