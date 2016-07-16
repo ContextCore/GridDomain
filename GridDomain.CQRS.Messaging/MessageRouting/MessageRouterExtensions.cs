@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq.Expressions;
+using Automatonymous;
 using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -10,6 +12,13 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             Expression<Func<TMessage, Guid>>  correlationPropertyExpression) where THandler : IHandler<TMessage>
         {
             router.RegisterHandler<TMessage,THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
+        }
+
+        public static void RegisterSaga<TSaga,TData>(this IMessagesRouter router) 
+            where TSaga : Saga<TData>, new()
+            where TData : class, ISagaState<State>
+        {
+            router.RegisterSaga(new TSaga().GetDescriptor(), typeof(TSaga).Name);
         }
     }
 }

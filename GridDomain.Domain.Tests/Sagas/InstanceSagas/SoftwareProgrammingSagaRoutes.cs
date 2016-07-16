@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     {
         public void Register(IMessagesRouter router)
         {
-            router.RegisterSaga(new SoftwareProgrammingSaga().GetDescriptor());
+            router.RegisterSaga<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>();
         }
     }
 }

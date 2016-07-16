@@ -18,7 +18,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
 
         protected override IContainerConfiguration CreateConfiguration()
         {
-            return  new CustomContainerConfiguration(
+            return new CustomContainerConfiguration(
                 c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
                 c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
                 c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
