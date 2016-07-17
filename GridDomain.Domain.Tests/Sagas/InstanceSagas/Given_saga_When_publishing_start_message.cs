@@ -53,11 +53,8 @@ namespace GridDomain.Tests.Sagas.StateSagas
     class Given_saga_When_publishing_start_message : InMemorySampleDomainTests   
 {
         private Guid _sagaId;
-        private DomainEvent[] _sagaDataEvents;
-        private SagaCreatedEvent<SoftwareProgrammingSagaData> _startedEvent;
-        private SagaMessageReceivedEvent<SoftwareProgrammingSagaData> _sagaDomainMessageRecievedEvent;
-        private SagaTransitionEvent<SoftwareProgrammingSagaData> _transitionEvent;
         private GotTiredDomainEvent _sagaStartMessage;
+        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaData;
 
         protected override IMessageRouteMap CreateMap()
         {
@@ -84,7 +81,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         {
             var generator = new Fixture();
             _sagaStartMessage = (GotTiredDomainEvent)
-                new GotTiredDomainEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid())//generator.Create<GotTiredDomainEvent>()
+                new GotTiredDomainEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid())
                                          .CloneWithSaga(Guid.NewGuid());
 
             _sagaId = _sagaStartMessage.SagaId;
@@ -92,30 +89,26 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             Thread.Sleep(1000);
 
-            var sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
-            _sagaDataEvents = ((IAggregate)sagaData).GetUncommittedEvents().Cast<DomainEvent>().ToArray();
-
-            _startedEvent = _sagaDataEvents.OfType<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                                       .FirstOrDefault();
-
-            _sagaDomainMessageRecievedEvent = _sagaDataEvents.OfType<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                                                             .FirstOrDefault();
-
-            _transitionEvent = _sagaDataEvents.OfType<SagaTransitionEvent<SoftwareProgrammingSagaData>>()
-                .FirstOrDefault();
+            _sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
         }
 
         [Then]
-        public void Saga_is_started()
+        public void Saga_has_correct_state()
         {
-            Thread.Sleep(1000);
-            Assert.NotNull(_startedEvent);
+            var saga = new SoftwareProgrammingSaga();
+            Assert.AreEqual(_sagaData.Data.CurrentState,saga.MakingCoffee);
         }
 
         [Then]
         public void Saga_has_correct_id()
         {
-            Assert.AreEqual(_startedEvent.SagaId, _sagaStartMessage.SagaId);
+            Assert.AreEqual(_sagaStartMessage.SagaId,_sagaData.Id);
+        }
+
+        [Then]
+        public void Saga_has_correct_data()
+        {
+            Assert.AreEqual(_sagaStartMessage.PersonId, _sagaData.Data.PersonId);
         }
     }
 }
