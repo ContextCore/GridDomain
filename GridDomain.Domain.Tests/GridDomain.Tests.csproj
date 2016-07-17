@@ -219,8 +219,10 @@
     <Compile Include="Sagas\InstanceSagas\Events\SleptWellDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\GotTiredDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
+    <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
