@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using Akka.Actor;
+using Akka.DI.Core;
 using CommonDomain;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.InstanceSagas;
@@ -17,7 +20,38 @@ using Ploeh.AutoFixture;
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_start_message : InMemorySampleDomainTests   {
+    class Given_istance_saga_saga_actor_can_be_created : InMemorySampleDomainTests
+    {
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            var baseConf = base.CreateConfiguration();
+            return new CustomContainerConfiguration(
+                c => c.RegisterSaga<SoftwareProgrammingSaga,
+                                    SoftwareProgrammingSagaData,
+                                    GotTiredDomainEvent,
+                                    SoftwareProgrammingSagaFactory
+                                    >(),
+                c => c.Register(baseConf)
+                );
+        }
+
+        [Then]
+        public void Saga_actor_can_be_created()
+        {
+            var actorType  = typeof(SagaActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+                                                SagaDataAggregate<SoftwareProgrammingSagaData>,
+                                                GotTiredDomainEvent>);
+
+            var props = GridNode.System.DI().Props(actorType);
+            var actor = GridNode.System.ActorOf(props);
+            actor.Ask(new DomainEvent(Guid.NewGuid()));
+            ExpectNoMsg();
+        }
+    }
+
+    [TestFixture]
+    class Given_saga_When_publishing_start_message : InMemorySampleDomainTests   
+{
         private Guid _sagaId;
         private DomainEvent[] _sagaDataEvents;
         private SagaCreatedEvent<SoftwareProgrammingSagaData> _startedEvent;
@@ -39,6 +73,8 @@ namespace GridDomain.Tests.Sagas.StateSagas
                                     GotTiredDomainEvent,
                                     SoftwareProgrammingSagaFactory
                                     >(),
+                c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
+                                        SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
                 c => c.Register(baseConf)
                 );
         }
@@ -54,7 +90,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
             _sagaId = _sagaStartMessage.SagaId;
             GridNode.Transport.Publish(_sagaStartMessage);
 
-            Thread.Sleep(100000);
+            Thread.Sleep(1000);
 
             var sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
             _sagaDataEvents = ((IAggregate)sagaData).GetUncommittedEvents().Cast<DomainEvent>().ToArray();
@@ -72,6 +108,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Then]
         public void Saga_is_started()
         {
+            Thread.Sleep(1000);
             Assert.NotNull(_startedEvent);
         }
 

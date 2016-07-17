@@ -35,6 +35,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         }
 
         [Then]
+        public void State_is_changed_on_using_non_generic_transit_method()
+        {
+            var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
+            object msg = new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid());
+            given.SagaInstance.Transit(msg);
+            Assert.AreEqual(given.SagaMachine.Coding, given.SagaDataAggregate.Data.CurrentState);
+        }
+
+        [Then]
         public void State_transitioned_event_is_raised()
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);

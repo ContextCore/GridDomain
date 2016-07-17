@@ -24,14 +24,14 @@ namespace GridDomain.Node.Configuration.Composition
             Register<AggregateConfiguration<TAggregate, TCommandsHandler>>(container);
         }
 
-        public static void RegisterSaga<TSaga, TSagaData, TStartMessage,TFactory>(this IUnityContainer container) 
-            where TSaga: Saga<TSagaData> 
-            where TSagaData : class, ISagaState<State> 
-            where TFactory : ISagaFactory<ISagaInstance, SagaDataAggregate<TSagaData>>,
-                             ISagaFactory<ISagaInstance, TStartMessage>,
-                             IEmptySagaFactory<ISagaInstance>
+        public static void RegisterSaga<TSaga, TData, TStartMessage,TFactory>(this IUnityContainer container) 
+            where TSaga: Saga<TData> 
+            where TData : class, ISagaState<State> 
+            where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
+                             ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
+                             IEmptySagaFactory<ISagaInstance<TSaga, TData>>
         {
-            Register<InstanceSagaConfiguration<TSaga, TSagaData, TStartMessage,TFactory>>(container);
+            Register<InstanceSagaConfiguration<TSaga, TData, TStartMessage,TFactory>>(container);
         }
 
     }

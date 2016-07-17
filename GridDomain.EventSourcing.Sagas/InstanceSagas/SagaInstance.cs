@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Automatonymous;
 using CommonDomain;
 
@@ -21,6 +23,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public readonly Saga<TSagaData> Machine;
         private readonly SagaDataAggregate<TSagaData> _stateStorage;
+        private MethodInfo _transitGenericMethodInfo;
         public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
         public void ClearCommandsToDispatch()
         {
@@ -38,6 +41,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Machine.TransitionToState(_stateStorage.Data, _stateStorage.Data.CurrentState); 
             Machine.OnStateEnter += (sender, context) => stateStorage.RememberTransition(context.State, context.Instance);
             Machine.OnEventReceived += (sender, context) => stateStorage.RememberEvent(context.Event, context.SagaData, context.EventData);
+            _transitGenericMethodInfo = this.GetType()
+                              .GetMethods()
+                              .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
         }
 
       
@@ -45,8 +51,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public void Transit(object message)
         {
             var messageType = message.GetType();
-            var method = this.GetType()
-                             .GetMethod(nameof(Transit))
+            
+            var method = _transitGenericMethodInfo
                              .MakeGenericMethod(messageType);
 
             method.Invoke(this,new [] {message});

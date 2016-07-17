@@ -29,7 +29,7 @@ namespace GridDomain.Node.Actors
                 knownChild = _children[childId] = Context.ActorOf(props, name);
             }
 
-            knownChild.Ask(message);
+            knownChild.Tell(message);
         }
     }
 }

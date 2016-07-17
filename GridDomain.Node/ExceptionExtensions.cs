@@ -2,10 +2,21 @@ using System;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using Automatonymous;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node
 {
-
+    //public static class SagaExtensions
+    //{
+    //    public static string GetDataActorName<TSaga, TData>(this TSaga saga)
+    //        where TSaga : Saga<TData>
+    //        where TData : class, ISagaState<State>
+    //    {
+    //        return AggregateActorName.New<TSaga>(id).ToString();
+    //    }
+    //}
     public static class TasksExtensions
     {
         public static void TransparentThrowOnException(this Task t)
