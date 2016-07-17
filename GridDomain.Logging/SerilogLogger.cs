@@ -6,14 +6,12 @@ namespace GridDomain.Logging
 {
     public class SerilogLogger : ISoloLogger
     {
-        private static readonly ILogger Log;
-
-        static SerilogLogger()
+        private Serilog.ILogger Log;
+        
+      
+        public SerilogLogger(Serilog.ILogger log)
         {
-            Log =  new LoggerConfiguration().WriteTo.RollingFile("C:\\Logs\\logs-{Date}.txt")
-                                            //.WriteTo.Slack("https://hooks.slack.com/services/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")
-                                            .WriteTo.Elasticsearch("http://soloinfra.cloudapp.net:9222")
-                                            .CreateLogger();
+            Log = log;
         }
 
         public ISoloLogger ForContext(string name, object value)
@@ -43,7 +41,7 @@ namespace GridDomain.Logging
             log.Error(ex, message ?? ex.Message, parameters);
         }
 
-        private ILogger GetLoggerWithExceptionContext(Exception ex)
+        private Serilog.ILogger GetLoggerWithExceptionContext(Exception ex)
         {
             var log = ContextLogger;
             if (ex != null)
@@ -70,45 +68,13 @@ namespace GridDomain.Logging
             ContextLogger.Warning(message, parameters);
         }
 
-        private ILogger ContextLogger
+        private Serilog.ILogger ContextLogger
         {
             get
             {
                 return Log;
-                //var logger = Log
-                //.ForContext(TcsLoggingContextKeys.Application, RequestLogInfoManager.ApplicationName)
-                //.ForContext(TcsLoggingContextKeys.Machine, Environment.MachineName)
-                //.ForContext(TcsLoggingContextKeys.Environment, EnvironmentProvider.Environment)
-                //.ForContext(TcsLoggingContextKeys.LoggerName, Name);
-
-                //if (RequestLogInfoManager.Elapsed > -1)
-                //{
-                //    logger = logger.ForContext(TcsLoggingContextKeys.Elapsed, RequestLogInfoManager.Elapsed);
-                //}
-
-                //foreach (var name in TcsMappedDiagnosticsLogicalContext.GetKeys())
-                //{
-                //    var value = TcsMappedDiagnosticsLogicalContext.Get(name);
-                //    if (ParameterShouldBeLogged(value))
-                //    {
-                //        logger = logger.ForContext(name, value, true);
-                //    }
-                //}
-                //return logger;
+                
             }
-        }
-
-        private bool ParameterShouldBeLogged(object parameter)
-        {
-            if (parameter == null)
-            {
-                return false;
-            }
-            if (parameter.GetType() == typeof(Stopwatch))
-            {
-                return false;
-            }
-            return true;
         }
     }
 }
