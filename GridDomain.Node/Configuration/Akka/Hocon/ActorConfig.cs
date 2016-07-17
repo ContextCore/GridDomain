@@ -21,6 +21,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         public string Build()
         {
             var actorConfig = @"   
+ 
        actor {
              serializers {
                          wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
@@ -29,15 +30,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              serialization-bindings {
                                     ""System.Object"" = wire
              }
-             
-             loggers = [""Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog""]
-             debug {
-                   receive = on
-                   autoreceive = on
-                   lifecycle = on
-                   event-stream = on
-                   unhandled = on
-             }
+           
 
        }";
 

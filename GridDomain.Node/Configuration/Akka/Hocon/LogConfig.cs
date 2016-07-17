@@ -19,11 +19,19 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 loglevel=" + _akkaConf.LogLevel;
 
             logConfig += @"
-                loggers=[""GridDomain.Node.AkkaSoloLogger, GridDomain.Node""]
-                ";
-                    if (_includeConfig)
+                #loggers=[""Akka.Logger.Serilog.SerilogLogger, Akka.Logger.Serilog""]
+
+                actor.debug {
+                      receive = on
+                      autoreceive = on
+                      lifecycle = on
+                      event-stream = on
+                      unhandled = on
+                }";
+
+            if (_includeConfig)
                     logConfig += @"
-                log-config-on-start = on";
+                log -config-on-start = on";
 
             return logConfig;
         }
