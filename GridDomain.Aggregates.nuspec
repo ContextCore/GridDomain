@@ -16,6 +16,7 @@
       <dependency id="NEventStore" version="5.2.0"/>
       <dependency id="GridDomain.Common" version="1.0.0-alfa"/>
       <dependency id="Stateless" version="2.5.62"/>
+	  <dependency id="Automatonymous" version="3.3.0"/>
     </dependencies>
   </metadata>
 

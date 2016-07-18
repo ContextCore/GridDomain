@@ -15,6 +15,7 @@
 	<dependencies>
       <dependency id="Serilog" version="1.5.14"/>
       <dependency id="Serilog.Sinks.Slack" version="1.0.15.0"/>
+	  <dependency id="Serilog.Sinks.Elasticsearch" version="3.0.134"/>
     </dependencies>
   </metadata>
 
