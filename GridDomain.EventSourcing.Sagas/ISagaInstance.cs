@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Automatonymous;
 using CommonDomain;
-using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
@@ -15,8 +14,8 @@ namespace GridDomain.EventSourcing.Sagas
         void Transit<T>(T message) where T : class;
     }
 
-    public interface ISagaInstance<TSaga, TData>: ISagaInstance where TData : ISagaState<State>
+    public interface ISagaInstance<TSaga, TData> : ISagaInstance where TData : ISagaState<State>
     {
-        new SagaDataAggregate<TData> Data { get; } 
+        new SagaDataAggregate<TData> Data { get; }
     }
 }
