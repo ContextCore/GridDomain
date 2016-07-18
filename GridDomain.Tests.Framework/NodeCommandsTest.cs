@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Framework
             GridNode.Stop();
         }
 
-        [SetUp]
+        [TestFixtureSetUp]
         protected void Init()
         {
             LogManager.SetLoggerFactory(new DefaultLoggerFactory(new AutoTestLogConfig(LogEventLevel.Debug)));
@@ -78,13 +78,6 @@ namespace GridDomain.Tests.Framework
             var name = AggregateActorName.New<T>(id).ToString();
             return LoadAggregate<T>(name);
         }
-
-        //public SagaDataAggregate<TData> LoadInstanceSagaData<TSaga,TData>(Guid id) where TSaga : Saga<TData>
-        //    where TData : class, ISagaState<State>
-        //{
-        //    var name = AggregateActorName.New<TSaga>(id).ToString();
-        //    return LoadAggregate<SagaDataAggregate<TData>>(name);
-        //}
 
         public T LoadAggregate<T>(string name) where T : AggregateBase
         {

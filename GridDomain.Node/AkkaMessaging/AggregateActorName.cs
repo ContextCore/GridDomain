@@ -7,7 +7,7 @@ namespace GridDomain.Node.AkkaMessaging
     {
         private static readonly string Separator = "_";
 
-        private AggregateActorName(Type aggregateType, Guid id)
+        internal AggregateActorName(Type aggregateType, Guid id)
         {
             Id = id;
             AggregateType = aggregateType;
