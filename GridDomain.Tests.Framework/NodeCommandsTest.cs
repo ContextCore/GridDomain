@@ -50,6 +50,12 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine();
             Console.WriteLine("Stopping node");
             GridNode.Stop();
+            Sys.Terminate();
+        }
+
+        //do not terminate actor system after each [Test] run
+        protected override void AfterAll()
+        {
         }
 
         [TestFixtureSetUp]

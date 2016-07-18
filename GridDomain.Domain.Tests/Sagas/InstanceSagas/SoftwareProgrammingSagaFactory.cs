@@ -12,8 +12,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     class SoftwareProgrammingSagaFactory:
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>>,
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredDomainEvent>,
-             IEmptySagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>>, 
-             IEmptySagaFactory<ISagaInstance>
+             ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, Guid> 
     {
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SagaDataAggregate<SoftwareProgrammingSagaData> message)
         {
@@ -28,16 +27,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             return SagaInstance.New(saga, data);
         }
 
-        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create()
+        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(Guid id)
         {
             var saga = new SoftwareProgrammingSaga();
-            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.Empty,new SoftwareProgrammingSagaData(saga.Coding));
+            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(id, new SoftwareProgrammingSagaData(saga.Coding));
             return SagaInstance.New(saga,data);
         }
 
-        ISagaInstance IEmptySagaFactory<ISagaInstance>.Create()
-        {
-            return Create();
-        }
     }
 }

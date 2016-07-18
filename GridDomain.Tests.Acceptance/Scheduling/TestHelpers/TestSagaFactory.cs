@@ -4,8 +4,8 @@ using GridDomain.EventSourcing.Sagas;
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestSagaFactory : ISagaFactory<TestSaga, TestSagaStartMessage>,
-        ISagaFactory<TestSaga, TestSagaState>,
-        IEmptySagaFactory<TestSaga>
+                                   ISagaFactory<TestSaga, TestSagaState>,
+                                   ISagaFactory<TestSaga, Guid>
     {
         public TestSaga Create(TestSagaStartMessage message)
         {
@@ -17,9 +17,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
             return new TestSaga(state);
         }
 
-        public TestSaga Create()
+        public TestSaga Create(Guid id)
         {
-            return new TestSaga(new TestSagaState(Guid.Empty, TestSaga.TestStates.Created));
+            return new TestSaga(new TestSagaState(id, TestSaga.TestStates.Created));
         }
 
     }

@@ -2,11 +2,10 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.FutureEvents;
-using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.InstanceSagas.Events;
 using GridDomain.Tests.SynchroniousCommandExecute;
 
-namespace GridDomain.Tests.Sagas.StateSagas
+namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
     {

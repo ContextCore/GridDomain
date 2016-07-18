@@ -33,16 +33,17 @@ namespace GridDomain.Node.Actors
 
         public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
-                         AggregateFactory emptySagaFactory,
+                         IEmptySagaFactory<TSaga> emptySagaFactory,
                          IPublisher publisher)
         {
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
 
-            var sagaId = InitializeSaga(sagaFactory, emptySagaFactory);
+            var id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
+            Saga = emptySagaFactory.Create(id);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.Data.Id && fault.SagaId == sagaId);
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.Data.Id);
 
             Command<DomainEvent>(msg =>
             {
@@ -51,21 +52,14 @@ namespace GridDomain.Node.Actors
                                   { Saga = _sagaStarter.Create(start); });
 
                 ProcessSaga(msg);
-            }, 
-            e => e.SagaId == Saga.Data.Id && e.SagaId == sagaId);
+
+            }, e => e.SagaId == Saga.Data.Id);
 
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState)offer.Snapshot));
             Recover<DomainEvent>(e => Saga.Data.ApplyEvent(e));
         }
 
-        private Guid InitializeSaga(ISagaFactory<TSaga, TSagaState> sagaFactory, AggregateFactory emptySagaFactory)
-        {
-            var id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
-            var emptyData = emptySagaFactory.Build<TSagaState>(id);
-            Saga = sagaFactory.Create(emptyData);
-            return id;
-        }
 
         private void ProcessSaga(object message)
         {

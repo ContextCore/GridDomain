@@ -1,12 +1,10 @@
 using System;
 using System.Threading;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.InstanceSagas.Events;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.StateSagas
+namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
     class Given_saga_When_publishing_start_again : ProgrammingSoftwareSagaTest
@@ -16,7 +14,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         private GotTiredDomainEvent _reStartEvent;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
 
-        [SetUp]
+        [TestFixtureSetUp]
         public void When_publishing_start_message()
         {
             _startMessage = (GotTiredDomainEvent)

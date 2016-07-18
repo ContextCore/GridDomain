@@ -7,7 +7,7 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
 {
     public class BuySubscriptionSagaFactory : ISagaFactory<BuySubscriptionSaga, SubscriptionOrderedEvent>,
                                               ISagaFactory<BuySubscriptionSaga, BuySubscriptionSagaStateAggregate>,
-                                              IEmptySagaFactory<BuySubscriptionSaga>
+                                              ISagaFactory<BuySubscriptionSaga, Guid>
 
 
     {
@@ -28,9 +28,9 @@ namespace BusinessNews.Domain.Sagas.BuySubscription
             return new BuySubscriptionSaga(state);
         }
 
-        public BuySubscriptionSaga Create()
+        public BuySubscriptionSaga Create(Guid id)
         {
-            return Create(_aggregateFactory.Build<BuySubscriptionSagaStateAggregate>(Guid.Empty));
+            return Create(_aggregateFactory.Build<BuySubscriptionSagaStateAggregate>(id));
         }
     }
 }

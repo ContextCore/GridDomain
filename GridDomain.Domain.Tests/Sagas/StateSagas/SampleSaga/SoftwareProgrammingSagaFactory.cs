@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
     class SoftwareProgrammingSagaFactory : 
         ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>,
         ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>,
-        IEmptySagaFactory<SoftwareProgrammingSaga>
+        ISagaFactory<SoftwareProgrammingSaga, Guid>
     {
         public SoftwareProgrammingSaga Create(SoftwareProgrammingSagaState message)
         {
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                 SoftwareProgrammingSaga.States.Working));
         }
 
-        public SoftwareProgrammingSaga Create()
+        public SoftwareProgrammingSaga Create(Guid id)
         {
             return new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,SoftwareProgrammingSaga.States.Working));
         }

@@ -2,9 +2,12 @@ using System;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    [Obsolete("Not needed, was replaced by AggregateFactory")]
+    /// <summary>
+    /// Provides any custom logic for empty saga creation
+    /// </summary>
+    /// <typeparam name="TSaga"></typeparam>
     public interface IEmptySagaFactory<TSaga> where TSaga : ISagaInstance
     {
-        TSaga Create();
+        TSaga Create(Guid id);
     }
 }
