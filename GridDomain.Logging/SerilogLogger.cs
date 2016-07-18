@@ -1,22 +1,21 @@
 using System;
-using System.Diagnostics;
 using Serilog;
 
 namespace GridDomain.Logging
 {
     public class SerilogLogger : ISoloLogger
     {
-        private Serilog.ILogger Log;
+        private readonly ILogger _log;
         
       
-        public SerilogLogger(Serilog.ILogger log)
+        public SerilogLogger(ILogger log)
         {
-            Log = log;
+            _log = log;
         }
 
         public ISoloLogger ForContext(string name, object value)
         {
-            Log.ForContext(name, value);
+            _log.ForContext(name, value);
             return this;
         }
 
@@ -72,7 +71,7 @@ namespace GridDomain.Logging
         {
             get
             {
-                return Log;
+                return _log;
                 
             }
         }
