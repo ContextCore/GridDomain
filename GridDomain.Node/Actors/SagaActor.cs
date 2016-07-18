@@ -11,6 +11,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
@@ -32,57 +33,38 @@ namespace GridDomain.Node.Actors
 
         public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
-                         IEmptySagaFactory<TSaga> emptySagaFactory,
+                         AggregateFactory emptySagaFactory,
                          IPublisher publisher)
         {
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
-            Saga = emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
 
-            Command<ICommandFault>(ProcessSaga, 
-                         fault => Saga.Data.Id != Guid.Empty && fault.SagaId == Saga.Data.Id);
+            var sagaId = InitializeSaga(sagaFactory, emptySagaFactory);
 
-            Command<DomainEvent>(ProcessSaga, 
-                         e => Saga.Data.Id != Guid.Empty && e.SagaId == Saga.Data.Id);
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.Data.Id && fault.SagaId == sagaId);
 
-            Command<TStartMessage>(startMessage =>
+            Command<DomainEvent>(msg =>
             {
-                if(Saga.Data.Id == Guid.Empty)
-                    Saga = _sagaStarter.Create(startMessage);
+               msg.Match()
+                  .With<TStartMessage>(start =>
+                                  { Saga = _sagaStarter.Create(start); });
 
-                if(startMessage.SagaId == Saga.Data.Id)
-                      ProcessSaga(startMessage);
-            });
+                ProcessSaga(msg);
+            }, 
+            e => e.SagaId == Saga.Data.Id && e.SagaId == sagaId);
 
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState)offer.Snapshot));
             Recover<DomainEvent>(e => Saga.Data.ApplyEvent(e));
         }
 
-        protected override bool AroundReceive(Receive receive, object message)
+        private Guid InitializeSaga(ISagaFactory<TSaga, TSagaState> sagaFactory, AggregateFactory emptySagaFactory)
         {
-            return base.AroundReceive(receive, message);
-        }
-
-        protected override void Unhandled(object message)
-        {
-            base.Unhandled(message);
-        }
-
-        public override void AroundPreRestart(Exception cause, object message)
-        {
-            base.AroundPreRestart(cause, message);
-        }
-
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistRejected(cause, @event, sequenceNr);
-        }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistFailure(cause, @event, sequenceNr);
+            var id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
+            var emptyData = emptySagaFactory.Build<TSagaState>(id);
+            Saga = sagaFactory.Create(emptyData);
+            return id;
         }
 
         private void ProcessSaga(object message)

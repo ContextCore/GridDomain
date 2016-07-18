@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling.Saga
                 .Configure(States.Created)
                 .OnEntryFrom(finished, e =>
                 {
-
+                    int a = 1;
                 })
                 .Permit(States.Finished, States.Finished);
 

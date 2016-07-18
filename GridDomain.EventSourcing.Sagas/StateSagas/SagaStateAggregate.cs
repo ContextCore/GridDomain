@@ -15,15 +15,14 @@ namespace GridDomain.EventSourcing.Sagas
             Id = id;
         }
 
-        protected new void RaiseEvent(DomainEvent @event)
+        public new void RaiseEvent(DomainEvent e)
         {
-            base.RaiseEvent(@event);
+            base.RaiseEvent(e.CloneWithSaga(Id));
         }
 
-        
-        public SagaStateAggregate(Guid id, TState state)
+        public SagaStateAggregate(Guid id, TState state):this(id)
         {
-            RaiseEvent(new SagaCreatedEvent<TState>(state, id).CloneWithSaga(id));
+            RaiseEvent(new SagaCreatedEvent<TState>(state, id));
         }
 
         public void Apply(SagaCreatedEvent<TState> e)
@@ -39,7 +38,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         public void StateChanged(TTransition t, TState newState)
         {
-            RaiseEvent(new SagaTransitionEvent<TState, TTransition>(t, newState, Id).CloneWithSaga(Id));
+            RaiseEvent(new SagaTransitionEvent<TState, TTransition>(t, newState, Id));
         }
     }
 }
