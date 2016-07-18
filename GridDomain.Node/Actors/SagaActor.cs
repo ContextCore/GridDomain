@@ -46,8 +46,6 @@ namespace GridDomain.Node.Actors
             Command<DomainEvent>(ProcessSaga, 
                          e => Saga.Data.Id != Guid.Empty && e.SagaId == Saga.Data.Id);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.State.Id);
-            Command<DomainEvent>(ProcessSaga, cmd => cmd.SagaId == Saga.State.Id);
             Command<TStartMessage>(startMessage =>
             {
                 if(Saga.Data.Id == Guid.Empty)
