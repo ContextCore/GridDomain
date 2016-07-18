@@ -46,6 +46,8 @@ namespace GridDomain.Node.Actors
             Command<DomainEvent>(ProcessSaga, 
                          e => Saga.Data.Id != Guid.Empty && e.SagaId == Saga.Data.Id);
 
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.State.Id);
+            Command<DomainEvent>(ProcessSaga, cmd => cmd.SagaId == Saga.State.Id);
             Command<TStartMessage>(startMessage =>
             {
                 if(Saga.Data.Id == Guid.Empty)
@@ -56,7 +58,7 @@ namespace GridDomain.Node.Actors
             });
 
             //recover messages will be provided only to right saga by using peristenceId
-            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
+            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState)offer.Snapshot));
             Recover<DomainEvent>(e => Saga.Data.ApplyEvent(e));
         }
 
@@ -90,7 +92,10 @@ namespace GridDomain.Node.Actors
             Saga.Transit(message);
 
             var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>();
-            PersistAll(stateChangeEvents, e => _publisher.Publish(e));
+            PersistAll(stateChangeEvents, e =>
+            {
+                _publisher.Publish(e);
+            });
 
             foreach (var msg in Saga.CommandsToDispatch)
                 _publisher.Publish(msg);

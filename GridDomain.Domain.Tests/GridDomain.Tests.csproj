@@ -220,6 +220,14 @@
     <Compile Include="Sagas\InstanceSagas\Events\GotTiredDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
+    <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\FinishedEvent.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecycling.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecyclingFactory.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecyclingRouteMap.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\StartEvent.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\State.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\States.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
     <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest.cs" />

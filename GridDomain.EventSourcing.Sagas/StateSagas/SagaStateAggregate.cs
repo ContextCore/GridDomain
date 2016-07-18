@@ -15,6 +15,12 @@ namespace GridDomain.EventSourcing.Sagas
             Id = id;
         }
 
+        protected new void RaiseEvent(DomainEvent @event)
+        {
+            base.RaiseEvent(@event.CloneWithSaga(Id));
+        }
+
+        
         public SagaStateAggregate(Guid id, TState state)
         {
             RaiseEvent(new SagaCreatedEvent<TState>(state, id));
