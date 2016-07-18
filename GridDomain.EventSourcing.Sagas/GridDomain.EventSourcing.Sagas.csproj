@@ -53,16 +53,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IDomainSaga.cs" />
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
     <Compile Include="InstanceSagas\ISagaState.cs" />
     <Compile Include="InstanceSagas\Saga.cs" />
     <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
-    <Compile Include="InstanceSagas\SagaEventReceivedEvent.cs" />
+    <Compile Include="InstanceSagas\SagaMessageReceivedEvent.cs" />
     <Compile Include="InstanceSagas\SagaExtensions.cs" />
     <Compile Include="InstanceSagas\SagaInstance.cs" />
     <Compile Include="InstanceSagas\SagaTransitionEvent.cs" />
     <Compile Include="InstanceSagas\StateChangedData.cs" />
+    <Compile Include="ISagaInstance.cs" />
     <Compile Include="SagaDescriptor.cs" />
     <Compile Include="StateSagas\IDomainStateSaga.cs" />
     <Compile Include="IEmptySagaFactory.cs" />
@@ -76,7 +76,7 @@
     <Compile Include="SagaStateEvent.cs" />
     <Compile Include="StateSagas\SagaTransitionEvent.cs" />
     <Compile Include="StateSagas\StateSaga.cs" />
-    <Compile Include="UnbindedMessageRecievedException.cs" />
+    <Compile Include="UnbindedMessageReceivedException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
