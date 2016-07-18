@@ -33,7 +33,7 @@ namespace GridDomain.Node.Actors
 
         public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
-                         IEmptySagaFactory<TSaga> emptySagaFactory,
+                         ISagaFactory<TSaga, Guid> emptySagaFactory,
                          IPublisher publisher)
         {
             _sagaStarter = sagaStarter;
