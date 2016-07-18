@@ -46,6 +46,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
             {
                 container.RegisterType<ISagaFactory<SagaForRecycling, StartEvent>, SagaForRecyclingFactory>();
                 container.RegisterType<ISagaFactory<SagaForRecycling, State>, SagaForRecyclingFactory>();
+                container.RegisterType<ISagaFactory<SagaForRecycling, Guid>, SagaForRecyclingFactory>();
                 container.Register(base.CreateConfiguration());
             });
         }

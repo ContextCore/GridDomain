@@ -27,8 +27,6 @@ namespace GridDomain.Tests.Sagas.StateSagas
             var publisher = GridNode.Container.Resolve<IPublisher>();
             var sagaId = Guid.NewGuid();
 
-            Thread.Sleep(TimeSpan.FromMilliseconds(500));
-
             publisher.Publish(new GotTiredEvent(Guid.NewGuid()).CloneWithSaga(sagaId));
 
             Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000): TimeSpan.FromSeconds(1));
@@ -37,7 +35,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
                                           SoftwareProgrammingSagaState,
                                           GotTiredEvent>(sagaId);
 
-            Assert.AreEqual(sagaId,sagaState.Id);
+            Assert.AreEqual(sagaId, sagaState.Id);
             Assert.AreEqual(SoftwareProgrammingSaga.States.DrinkingCoffe, sagaState.MachineState);
         }
 

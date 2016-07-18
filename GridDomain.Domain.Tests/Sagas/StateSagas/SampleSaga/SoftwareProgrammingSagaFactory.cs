@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 
         public SoftwareProgrammingSaga Create(Guid id)
         {
-            return new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,SoftwareProgrammingSaga.States.Working));
+            return new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(id,SoftwareProgrammingSaga.States.Working));
         }
     }
 }
