@@ -13,7 +13,6 @@ namespace GridDomain.Tests
 
             CompositionRoot.Init(container,
                 ActorSystemBuilders[mode](),
-                conf,
                 mode);
 
             return container;

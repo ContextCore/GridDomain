@@ -1,3 +1,4 @@
+using System;
 using Automatonymous;
 using CommonDomain.Core;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -29,7 +30,7 @@ namespace GridDomain.Node.Configuration.Composition
             where TData : class, ISagaState<State> 
             where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
-                             IEmptySagaFactory<ISagaInstance<TSaga, TData>>
+                             ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
         {
             Register<InstanceSagaConfiguration<TSaga, TData, TStartMessage,TFactory>>(container);
         }

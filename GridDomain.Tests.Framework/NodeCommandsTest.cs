@@ -50,6 +50,12 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine();
             Console.WriteLine("Stopping node");
             GridNode.Stop();
+            Sys.Terminate();
+        }
+
+        //do not terminate actor system after each [Test] run
+        protected override void AfterAll()
+        {
         }
 
         [TestFixtureSetUp]
@@ -78,13 +84,6 @@ namespace GridDomain.Tests.Framework
             var name = AggregateActorName.New<T>(id).ToString();
             return LoadAggregate<T>(name);
         }
-
-        //public SagaDataAggregate<TData> LoadInstanceSagaData<TSaga,TData>(Guid id) where TSaga : Saga<TData>
-        //    where TData : class, ISagaState<State>
-        //{
-        //    var name = AggregateActorName.New<TSaga>(id).ToString();
-        //    return LoadAggregate<SagaDataAggregate<TData>>(name);
-        //}
 
         public T LoadAggregate<T>(string name) where T : AggregateBase
         {

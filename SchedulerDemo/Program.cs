@@ -33,7 +33,7 @@ namespace SchedulerDemo
         {
             Sys = ActorSystemFactory.CreateActorSystem(new LocalAkkaConfiguration(AkkaConfiguration.LogVerbosity.Error));
             var container = Container.Current.CreateChildContainer();
-            CompositionRoot.Init(container, Sys, new LocalDbConfiguration(), TransportMode.Standalone);
+            CompositionRoot.Init(container, Sys, TransportMode.Standalone);
             RegisterAppSpecificTypes(container);
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
             var routing = new ConsoleAggregateRouting();

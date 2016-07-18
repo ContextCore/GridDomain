@@ -26,7 +26,7 @@ namespace GridDomain.Node
 
         public void Register(IUnityContainer container)
         {
-            CompositionRoot.Init(container, _actorSystem, _conf, _transportMode, _config);
+            CompositionRoot.Init(container, _actorSystem, _transportMode, _config);
         }
     }
 }

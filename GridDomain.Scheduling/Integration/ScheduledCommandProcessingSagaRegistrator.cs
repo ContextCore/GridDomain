@@ -1,3 +1,4 @@
+using System;
 using GridDomain.EventSourcing.Sagas;
 using Microsoft.Practices.Unity;
 
@@ -9,7 +10,7 @@ namespace GridDomain.Scheduling.Integration
         {
             container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>, ScheduledCommandProcessingSagaFactory>();
             container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>, ScheduledCommandProcessingSagaFactory>();
-            container.RegisterType<IEmptySagaFactory<ScheduledCommandProcessingSaga>, ScheduledCommandProcessingSagaFactory>();
+            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga,Guid>, ScheduledCommandProcessingSagaFactory>();
         }
     }
 }

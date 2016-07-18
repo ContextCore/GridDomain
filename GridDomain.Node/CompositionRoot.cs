@@ -6,7 +6,6 @@ using GridDomain.EventSourcing;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
@@ -17,10 +16,9 @@ namespace GridDomain.Node
     {
     //TODO: refactor to good config via IContainerConfiguration
         public static void Init(IUnityContainer container,
-                            ActorSystem actorSystem,
-                            IDbConfiguration conf,
-                            TransportMode transportMode,
-                            IQuartzConfig config = null)
+                                ActorSystem actorSystem,
+                                TransportMode transportMode,
+                                IQuartzConfig config = null)
         {
             //TODO: replace with config
 
@@ -39,7 +37,7 @@ namespace GridDomain.Node
             
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
-            container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));
+            container.RegisterInstance<ActorSystem>(actorSystem);
             container.RegisterInstance(container);
 
             //TODO: replace with better implementation

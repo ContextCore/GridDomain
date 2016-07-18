@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling.Saga
     public class SagaForRecyclingFactory :
         ISagaFactory<SagaForRecycling, StartEvent>,
         ISagaFactory<SagaForRecycling, State>,
-        IEmptySagaFactory<SagaForRecycling>
+        ISagaFactory<SagaForRecycling, Guid>
     {
         public SagaForRecycling Create(StartEvent message)
         {
@@ -18,9 +18,9 @@ namespace GridDomain.Tests.Sagas.SagaRecycling.Saga
             return new SagaForRecycling(state);
         }
 
-        public SagaForRecycling Create()
+        public SagaForRecycling Create(Guid id)
         {
-            return new SagaForRecycling(new State(Guid.Empty, States.Created));
+            return new SagaForRecycling(new State(id, States.Created));
         }
     }
 }

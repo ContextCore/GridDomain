@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
-using CommonDomain;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.FutureEvents;
-using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.InstanceSagas.Events;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Sagas.StateSagas
+namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
     class Given_saga_When_publishing_start_message : ProgrammingSoftwareSagaTest   
@@ -37,10 +29,16 @@ namespace GridDomain.Tests.Sagas.StateSagas
         }
 
         [Then]
+        public void Saga_data_is_not_null()
+        {
+            Assert.NotNull(_sagaData.Data);
+        }
+
+        [Then]
         public void Saga_has_correct_state()
         {
             var saga = new SoftwareProgrammingSaga();
-            Assert.AreEqual(_sagaData.Data.CurrentState,saga.MakingCoffee);
+            Assert.AreEqual(saga.MakingCoffee,_sagaData.Data.CurrentState);
         }
 
         [Then]

@@ -45,9 +45,9 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                 c => c.RegisterInstance(CreateQuartzConfig()));
 
             var node = new GridDomainNode(config,
-                new TestRouteMap(),
-                TransportMode.Standalone,
-                ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()));
+                                          new TestRouteMap(),
+                                          TransportMode.Standalone,
+                                          ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()));
 
             WaitFor<TestDomainEvent>();
 

@@ -6,7 +6,7 @@ namespace GridDomain.Scheduling.Integration
     public class ScheduledCommandProcessingSagaFactory :
         ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>,
         ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>,
-        IEmptySagaFactory<ScheduledCommandProcessingSaga>
+        ISagaFactory<ScheduledCommandProcessingSaga,Guid>
 
     {
         public ScheduledCommandProcessingSaga Create(ScheduledCommandProcessingStarted command)
@@ -20,9 +20,9 @@ namespace GridDomain.Scheduling.Integration
             return new ScheduledCommandProcessingSaga(state);
         }
 
-        public ScheduledCommandProcessingSaga Create()
+        public ScheduledCommandProcessingSaga Create(Guid id)
         {
-            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(Guid.Empty));
+            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(id));
         }
     }
 }
