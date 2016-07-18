@@ -44,7 +44,7 @@ namespace GridDomain.Tests.SyncProjection
                                       TransportMode.Standalone, system);
         }
 
-        [TestFixtureSetUp]
+        [SetUp]
         public void When_execute_many_commands_for_create_and_update()
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateAggregateCommand(101, Guid.NewGuid())).ToArray();

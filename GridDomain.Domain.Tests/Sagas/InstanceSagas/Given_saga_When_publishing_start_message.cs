@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         private GotTiredDomainEvent _sagaStartMessage;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaData;
     
-        [TestFixtureSetUp]
+        [SetUp]
         public void When_publishing_start_message()
         {
             _sagaStartMessage = (GotTiredDomainEvent)

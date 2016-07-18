@@ -23,7 +23,8 @@ using Microsoft.Practices.Unity;
 using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
 namespace GridDomain.Node
-{
+{ 
+
     public class GridDomainNode : IGridDomainNode
     {
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
@@ -59,7 +60,7 @@ namespace GridDomain.Node
                              IMessageRouteMap messageRouting,
                              TransportMode transportMode,
                              params ActorSystem[] actorAllSystems)
-           : this(new EmptyContainerConfig(), messageRouting, transportMode, null, actorAllSystems)
+           : this(container, messageRouting, transportMode, null, actorAllSystems)
         {
         }
 
@@ -85,8 +86,12 @@ namespace GridDomain.Node
             Container = new UnityContainer();
             System = AllSystems.First();
             System.WhenTerminated.ContinueWith(OnSystemTermination);
+            System.RegisterOnTermination(OnSystemTermination);
         }
-
+        private void OnSystemTermination()
+        {
+            _log.Debug("grid node Actor system terminated");
+        }
         private void OnSystemTermination(Task obj)
         {
             _log.Debug("grid node Actor system terminated");

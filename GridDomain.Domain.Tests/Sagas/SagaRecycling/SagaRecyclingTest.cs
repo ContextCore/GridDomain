@@ -30,11 +30,13 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
 
             publisher.Publish(new StartEvent(Guid.NewGuid()).CloneWithSaga(sagaId));
 
-            Thread.Sleep(TimeSpan.FromMilliseconds(3000));
+            Thread.Sleep(TimeSpan.FromMilliseconds(500));
+
             var sagaState = LoadSagaState<SagaForRecycling,
                                           State,
                                           StartEvent>(sagaId);
-            Thread.Sleep(TimeSpan.FromMilliseconds(10000));
+
+            Thread.Sleep(TimeSpan.FromMilliseconds(500));
             Assert.AreEqual(sagaId, sagaState.Id);
             Assert.AreEqual(States.Created, sagaState.MachineState);
         }

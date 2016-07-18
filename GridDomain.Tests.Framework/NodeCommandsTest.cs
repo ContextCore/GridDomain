@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Framework
             GridNode.Stop();
         }
 
-        [TestFixtureSetUp]
+        [SetUp]
         protected void Init()
         {
             LogManager.SetLoggerFactory(new DefaultLoggerFactory(new AutoTestLogConfig(LogEventLevel.Debug)));
