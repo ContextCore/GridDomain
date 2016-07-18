@@ -212,6 +212,7 @@
   <ItemGroup>
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
+    <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="Sagas\InstanceSagas\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\CoffeMakeFailedDomainEvent.cs" />
@@ -345,6 +346,10 @@
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
       <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
       <Name>GridDomain.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging.Akka\GridDomain.CQRS.Messaging.Akka.csproj">
+      <Project>{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}</Project>
+      <Name>GridDomain.CQRS.Messaging.Akka</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>

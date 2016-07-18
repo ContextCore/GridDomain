@@ -37,39 +37,59 @@ namespace GridDomain.Node
         private readonly IMessageRouteMap _messageRouting;
         private readonly TransportMode _transportMode;
         public readonly ActorSystem[] AllSystems;
-        public IActorRef PersistentScheduler;
-        private Quartz.IScheduler _persistentScheduler;
+        private Quartz.IScheduler _quartzScheduler;
         public readonly ActorSystem System;
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
+        private readonly IQuartzConfig _quartzConfig;
         public IPublisher Transport { get; private set; }
 
         public GridDomainNode(IUnityContainer container,
                               IMessageRouteMap messageRouting,
                               TransportMode transportMode,
+                              IQuartzConfig quartzConfig = null,
                               params ActorSystem[] actorAllSystems)
-            : this(new EmptyContainerConfig(),messageRouting,transportMode,actorAllSystems)
+            : this(new EmptyContainerConfig(),messageRouting,transportMode, quartzConfig,actorAllSystems)
         {
             Container = container;
+        }
+   
+        //for backward compatibility
+        public GridDomainNode(IUnityContainer container,
+                             IMessageRouteMap messageRouting,
+                             TransportMode transportMode,
+                             params ActorSystem[] actorAllSystems)
+           : this(new EmptyContainerConfig(), messageRouting, transportMode, null, actorAllSystems)
+        {
+        }
+
+        //for backward compatibility
+        public GridDomainNode(IContainerConfiguration configuration,
+                              IMessageRouteMap messageRouting,
+                              TransportMode transportMode,
+                              params ActorSystem[] actorAllSystems):this(configuration, messageRouting, transportMode, null, actorAllSystems)
+        {
         }
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               TransportMode transportMode,
+                              IQuartzConfig quartzConfig = null,
                               params ActorSystem[] actorAllSystems)
         {
+            _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _transportMode = transportMode;
             _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
             AllSystems = actorAllSystems;
-            System = AllSystems.Last();
+            Container = new UnityContainer();
+            System = AllSystems.First();
             System.WhenTerminated.ContinueWith(OnSystemTermination);
-            Container= new UnityContainer();
         }
 
         private void OnSystemTermination(Task obj)
         {
-            _log.Debug("Actor system terminated");
+            _log.Debug("grid node Actor system terminated");
         }
 
         public IUnityContainer Container { get; }
@@ -78,26 +98,13 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
-            Container.RegisterInstance(_messageRouting);
+            System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
+            ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System);
 
-            var childContainer = Container.CreateChildContainer();
-            childContainer.Register(_configuration);
-            var quartzConfig = childContainer.Resolve<IQuartzConfig>();
-
-            foreach (var system in AllSystems)
-            {
-                var unityContainer = Container.CreateChildContainer();
-                system.AddDependencyResolver(new UnityDependencyResolver(unityContainer, system));
-                ConfigureContainer(unityContainer,databaseConfiguration,quartzConfig,system);
-                unityContainer.Register(_configuration);
-            }
-
-            ConfigureContainer(Container,databaseConfiguration, quartzConfig,System);
-
-            PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
-            _persistentScheduler = Container.Resolve<Quartz.IScheduler>();
-            Transport = Container.Resolve<IPublisher>();
             StartMainNodeActor(System);
+
+            Transport = Container.Resolve<IPublisher>();
+            _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -114,16 +121,15 @@ namespace GridDomain.Node
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
-
+            unityContainer.RegisterInstance(_messageRouting);
             _configuration.Register(unityContainer);
         }
 
         public void Stop()
         {
-            _persistentScheduler.Shutdown(false);
+            _quartzScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
-
 
             _log.Info($"GridDomain node {Id} stopped");
         }

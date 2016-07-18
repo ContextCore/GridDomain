@@ -36,7 +36,7 @@ namespace GridDomain.Tests.SyncProjection
         {
             var container  = new UnityContainer();
             var system = ActorSystemFactory.CreateActorSystem(akkaConf);
-            CompositionRoot.Init(container, system, dbConfig, TransportMode.Standalone);
+            CompositionRoot.Init(container, system, TransportMode.Standalone);
             container.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>();
 
             return new GridDomainNode(container, 
