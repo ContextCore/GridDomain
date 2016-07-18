@@ -1,6 +1,7 @@
 using System.Runtime.Remoting.Channels;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Logging;
 using GridDomain.Tests.Sagas.InstanceSagas.Commands;
 using GridDomain.Tests.Sagas.InstanceSagas.Events;
 
@@ -29,7 +30,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     var sagaData = context.Instance;
                     var domainEvent = context.Data;
                     sagaData.PersonId = domainEvent.SourceId;
-
+                    var soloLogger = LogManager.GetLogger();
+                    soloLogger.Trace("Hello trace string");
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
                 })
                 .TransitionTo(MakingCoffee));
