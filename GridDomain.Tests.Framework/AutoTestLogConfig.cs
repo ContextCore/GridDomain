@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Framework
         public AutoTestLogConfig(LogEventLevel minLogLevel = LogEventLevel.Warning)
         {
             WriteTo.RollingFile(".\\GridDomainLogs\\logs-{Date}.txt")
-           .WriteTo.ColoredConsole(minLogLevel);
+           .WriteTo.Console(minLogLevel);
         }
     }
 }

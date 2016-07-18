@@ -15,41 +15,27 @@ using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.SyncProjection
 {
     [TestFixture]
-    public class SynchronizedProjectionBuildersTests : NodeCommandsTest
+    public class SynchronizedProjectionBuildersTests : InMemorySampleDomainTests
     {
         private ExpectedMessagesRecieved _processedEvents;
         private CQRS.ICommand[] _allCommands;
-
-        public SynchronizedProjectionBuildersTests():
-            base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "ProjectionBuilders", false)
-        {
-        }
-
+        
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
-        {
-            var container  = new UnityContainer();
-            var system = ActorSystemFactory.CreateActorSystem(akkaConf);
-            CompositionRoot.Init(container, system, TransportMode.Standalone);
-            container.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>();
-
-            return new GridDomainNode(container, 
-                                      new SampleRouteMap(container), 
-                                      TransportMode.Standalone, system);
-        }
+        
 
         [TestFixtureSetUp]
         public void When_execute_many_commands_for_create_and_update()
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateAggregateCommand(101, Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
-            var updateCommands = Enumerable.Range(0, 20).Select(r => new ChangeAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
+            var updateCommands = Enumerable.Range(0, 10).Select(r => new ChangeAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
             _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
 
