@@ -42,7 +42,7 @@ namespace GridDomain.Node
         public readonly ActorSystem System;
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
-        public IPublisher Publisher { get; private set; }
+        public IPublisher Transport { get; private set; }
 
         public GridDomainNode(IUnityContainer container,
                               IMessageRouteMap messageRouting,
@@ -63,7 +63,13 @@ namespace GridDomain.Node
             _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
             AllSystems = actorAllSystems;
             System = AllSystems.Last();
+            System.WhenTerminated.ContinueWith(OnSystemTermination);
             Container= new UnityContainer();
+        }
+
+        private void OnSystemTermination(Task obj)
+        {
+            _log.Debug("Actor system terminated");
         }
 
         public IUnityContainer Container { get; }
@@ -90,7 +96,7 @@ namespace GridDomain.Node
 
             PersistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
             _persistentScheduler = Container.Resolve<Quartz.IScheduler>();
-            Publisher = Container.Resolve<IPublisher>();
+            Transport = Container.Resolve<IPublisher>();
             StartMainNodeActor(System);
         }
 

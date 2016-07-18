@@ -1,5 +1,8 @@
+using Automatonymous;
 using CommonDomain.Core;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -19,6 +22,16 @@ namespace GridDomain.Node.Configuration.Composition
         public static void RegisterAggregate<TAggregate, TCommandsHandler>(this IUnityContainer container) where TCommandsHandler : ICommandAggregateLocator<TAggregate>, IAggregateCommandsHandler<TAggregate> where TAggregate : AggregateBase
         {
             Register<AggregateConfiguration<TAggregate, TCommandsHandler>>(container);
+        }
+
+        public static void RegisterSaga<TSaga, TData, TStartMessage,TFactory>(this IUnityContainer container) 
+            where TSaga: Saga<TData> 
+            where TData : class, ISagaState<State> 
+            where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
+                             ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
+                             IEmptySagaFactory<ISagaInstance<TSaga, TData>>
+        {
+            Register<InstanceSagaConfiguration<TSaga, TData, TStartMessage,TFactory>>(container);
         }
 
     }

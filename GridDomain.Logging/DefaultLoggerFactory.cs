@@ -1,10 +1,19 @@
+using Serilog;
+
 namespace GridDomain.Logging
 {
-    public class DefaultLoggerFactory : LoggerFactory
+    public class DefaultLoggerFactory : ILoggerFactory
     {
-        public override ISoloLogger GetLogger()
+        private readonly LoggerConfiguration _configuration;
+
+        public DefaultLoggerFactory(LoggerConfiguration configuration= null)
         {
-            return new SerilogLogger();
+            _configuration = configuration ?? new DefaultLoggerConfiguration();
+        }
+
+        public ISoloLogger GetLogger()
+        {
+            return new SerilogLogger(_configuration.CreateLogger());
         }
     }
 }

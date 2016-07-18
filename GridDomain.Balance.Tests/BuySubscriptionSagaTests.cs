@@ -19,7 +19,7 @@ namespace BusinessNews.Test
     [TestFixture]
     public class BuySubscriptionSagaTests
     {
-        private T ExpectCommand<T>(IDomainSaga saga) where T : class, ICommand
+        private T ExpectCommand<T>(ISagaInstance saga) where T : class, ICommand
         {
             var cmd = saga.CommandsToDispatch.FirstOrDefault();
             Assert.NotNull(cmd, $"Cannot find expected {typeof (T).Name} in dispatched messages");

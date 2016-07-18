@@ -47,11 +47,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _notifyActor.Tell(BuildAnswerMessage(message));
         }
 
-        protected override bool AroundReceive(Receive receive, object message)
-        {
-            return base.AroundReceive(receive, message);
-        }
-
         protected abstract bool CanContinue(Dictionary<Type, int> messageCounters);
         protected virtual object BuildAnswerMessage(object message)
         {

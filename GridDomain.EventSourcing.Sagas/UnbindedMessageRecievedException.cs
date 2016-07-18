@@ -2,12 +2,14 @@ using System;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class UnbindedMessageRecievedException : Exception
+    public class UnbindedMessageReceivedException : Exception
     {
+        public Type FailedType { get; }
         public readonly object Msg;
 
-        public UnbindedMessageRecievedException(object message)
+        public UnbindedMessageReceivedException(object message, Type failedType = null)
         {
+            FailedType = failedType;
             Msg = message;
         }
     }

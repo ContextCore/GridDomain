@@ -46,6 +46,10 @@
       <HintPath>..\packages\Akka.DI.Unity.1.0.8\lib\net45\Akka.DI.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.Logger.Serilog, Version=1.0.8.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Logger.Serilog.1.0.8\lib\net45\Akka.Logger.Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Persistence, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.0.8.25-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
@@ -72,6 +76,14 @@
     </Reference>
     <Reference Include="Akka.TestKit.NUnit, Version=1.0.8.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.TestKit.NUnit.1.0.8\lib\net45\Akka.TestKit.NUnit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Automatonymous.Visualizer, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.Visualizer.3.3.0\lib\net452\Automatonymous.Visualizer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -158,6 +170,30 @@
       <HintPath>..\packages\QuartzNetWebConsole.Owin.0.5.0\lib\net45\QuartzNetWebConsole.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph.Data, Version=3.6.61114.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph.Graphviz, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Graphviz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Stateless, Version=2.5.62.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
       <HintPath>..\packages\Stateless.2.5.62.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Stateless.dll</HintPath>
       <Private>True</Private>
@@ -176,6 +212,14 @@
   <ItemGroup>
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
+    <Compile Include="Sagas\InstanceSagas\Commands\GoSleepCommand.cs" />
+    <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\CoffeMakeFailedDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Commands\MakeCoffeCommand.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\SleptWellDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\GotTiredDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\FinishedEvent.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecycling.cs" />
@@ -184,7 +228,21 @@
     <Compile Include="Sagas\SagaRecycling\Saga\StartEvent.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\State.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\States.cs" />
-    <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
+    <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaData.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_and_transitioned_event_when_hydrating.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\Events\GotMoreTiredEvent.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
     <Compile Include="AsyncAggregates\Async_execution_dont_block_aggregate.cs" />
@@ -198,16 +256,16 @@
     <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
-    <Compile Include="Sagas\RenewSagaMessageRouteMap.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSagaState.cs" />
-    <Compile Include="SampleDomain\AlwaysFaultAsyncCommand.cs" />
-    <Compile Include="SampleDomain\AlwaysFaultCommand.cs" />
-    <Compile Include="SampleDomain\AsyncFaultWithOneEventCommand.cs" />
-    <Compile Include="SampleDomain\AsyncMethodCommand.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaRoutemap.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaState.cs" />
+    <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
+    <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />
+    <Compile Include="SampleDomain\Commands\AsyncFaultWithOneEventCommand.cs" />
+    <Compile Include="SampleDomain\Commands\AsyncMethodCommand.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
-    <Compile Include="SampleDomain\SampleProjectionBuilder.cs" />
-    <Compile Include="Sagas\SagaStart_with_predefined_id.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSagaFactory.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_with_message_base_class.cs" />
@@ -221,20 +279,20 @@
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_with_sync_fault_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\When_wait_execution__of_async_method_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemorySampleDomainTests.cs" />
-    <Compile Include="SampleDomain\AggregateChangedProjectionBuilder.cs" />
-    <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder.cs" />
-    <Compile Include="SampleDomain\AggregateChangedEvent.cs" />
-    <Compile Include="SampleDomain\AggregateCreatedProjectionBuilder_Alternative.cs" />
-    <Compile Include="SampleDomain\CreateAggregateCommand.cs" />
-    <Compile Include="SampleDomain\IHaveProcessingHistory.cs" />
-    <Compile Include="SampleDomain\LongOperationCommand.cs" />
-    <Compile Include="SampleDomain\ProcessedHistory.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedProjectionBuilder.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder.cs" />
+    <Compile Include="SampleDomain\Events\AggregateChangedEvent.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder_Alternative.cs" />
+    <Compile Include="SampleDomain\Commands\CreateAggregateCommand.cs" />
+    <Compile Include="SampleDomain\Events\IHaveProcessingHistory.cs" />
+    <Compile Include="SampleDomain\Commands\LongOperationCommand.cs" />
+    <Compile Include="SampleDomain\Events\ProcessedHistory.cs" />
     <Compile Include="SampleDomain\SampleAggregate.cs" />
-    <Compile Include="SampleDomain\TestAggregatesCommandHandler.cs" />
-    <Compile Include="SampleDomain\ChangeAggregateCommand.cs" />
-    <Compile Include="SampleDomain\AggregateCreatedEvent.cs" />
-    <Compile Include="SampleDomain\TestProjectionGroup.cs" />
-    <Compile Include="SampleDomain\TestRouteMap.cs" />
+    <Compile Include="SampleDomain\SampleAggregatesCommandHandler.cs" />
+    <Compile Include="SampleDomain\Commands\ChangeAggregateCommand.cs" />
+    <Compile Include="SampleDomain\Events\AggregateCreatedEvent.cs" />
+    <Compile Include="SampleDomain\SampleProjectionGroup.cs" />
+    <Compile Include="SampleDomain\SampleRouteMap.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregatesCommandHandler.cs" />
@@ -256,24 +314,22 @@
     <Compile Include="DomainEventsProductionSpecification.cs" />
     <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SagaStateAggregate\Given_created_event_should_hydrate_state.cs" />
-    <Compile Include="SagaStateAggregate\Given_new_saga_state_When_create_it_by_constructor.cs" />
-    <Compile Include="SagaStateAggregate\Given_new_saga_state_When_transit.cs" />
-    <Compile Include="SagaStateAggregate\Given_transitioned_event_should_hydrate_state.cs" />
-    <Compile Include="SagaStateAggregate\TestState.cs" />
-    <Compile Include="SagaStateAggregate\TestTransition.cs" />
-    <Compile Include="Sagas\CreateSagaGraph.cs" />
-    <Compile Include="Sagas\Given_published_start_message_Then_Saga_is_started.cs" />
-    <Compile Include="Sagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
-    <Compile Include="Sagas\SagaStateTransitionTests.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\ChangeSubscriptionCommand.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Commands\PayForSubscriptionCommand.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\NotEnoughFondsFailure.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionChangedEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionExpiredEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\Events\SubscriptionPaidEvent.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\StateMachineTest.cs" />
-    <Compile Include="Sagas\SubscriptionRenewSaga\SubscriptionRenewSaga.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStateAggregate\Given_created_event_should_hydrate_state.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStateAggregate\Given_new_saga_state_When_create_it_by_constructor.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStateAggregate\Given_new_saga_state_When_transit.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStateAggregate\Given_transitioned_event_should_hydrate_state.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStateAggregate\TestState.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStateAggregate\TestTransition.cs" />
+    <Compile Include="Sagas\StateSagas\CreateSagaGraph.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message.cs" />
+    <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
+    <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\Commands\SleepWellCommand.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\Commands\DrinkCupOfCoffeCommand.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\Events\SleptWellEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\Events\GotTiredEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\Events\FeltGoodEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>
@@ -285,6 +341,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>

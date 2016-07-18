@@ -53,9 +53,9 @@ namespace GridDomain.Node.Actors
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 
-        public void RegisterSaga(ISagaDescriptor sagaDescriptor)
+        public void RegisterSaga(ISagaDescriptor sagaDescriptor, string name)
         {
-            var createActorRoute = CreateActorRouteMessage.ForSaga(sagaDescriptor);
+            var createActorRoute = CreateActorRouteMessage.ForSaga(sagaDescriptor, name);
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
 

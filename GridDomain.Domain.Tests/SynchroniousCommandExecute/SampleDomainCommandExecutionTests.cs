@@ -5,6 +5,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
@@ -17,8 +18,8 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
 
         protected override IContainerConfiguration CreateConfiguration()
         {
-            return  new CustomContainerConfiguration(
-                c => c.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>(),
+            return new CustomContainerConfiguration(
+                c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
                 c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
                 c => c.RegisterType<AggregateCreatedProjectionBuilder>(),
                 c => c.RegisterType<SampleProjectionBuilder>());
@@ -28,7 +29,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             var container = new UnityContainer();
             container.Register(CreateConfiguration());
-            return new TestRouteMap(container);
+            return new SampleRouteMap(container);
 
         }
       

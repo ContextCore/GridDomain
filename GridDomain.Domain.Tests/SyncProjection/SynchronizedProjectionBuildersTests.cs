@@ -13,6 +13,8 @@ using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.Commands;
+using GridDomain.Tests.SampleDomain.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -35,10 +37,10 @@ namespace GridDomain.Tests.SyncProjection
             var container  = new UnityContainer();
             var system = ActorSystemFactory.CreateActorSystem(akkaConf);
             CompositionRoot.Init(container, system, dbConfig, TransportMode.Standalone);
-            container.RegisterAggregate<SampleAggregate, TestAggregatesCommandHandler>();
+            container.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>();
 
             return new GridDomainNode(container, 
-                                      new TestRouteMap(container), 
+                                      new SampleRouteMap(container), 
                                       TransportMode.Standalone, system);
         }
 

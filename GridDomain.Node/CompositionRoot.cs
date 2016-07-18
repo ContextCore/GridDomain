@@ -36,7 +36,7 @@ namespace GridDomain.Node
                 container.RegisterInstance<IPublisher>(transport);
                 container.RegisterInstance<IActorSubscriber>(transport);
             }
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
+            
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<ActorSystem>(new InjectionFactory(x => actorSystem));

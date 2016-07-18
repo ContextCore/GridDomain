@@ -36,8 +36,8 @@ namespace GridDomain.Tests.DependencyInjection
         [Test]
         public void AggregateActor_can_be_created_with_iServiceLocator_injected()
         {
-            var actorRef = Sys.ActorOf(Sys.DI().Props<AggregateActor<TestAggregate>>(),
-                                       AggregateActorName.New<TestAggregate>(Guid.NewGuid()).Name);
+            var actorRef = GridNode.System.ActorOf(GridNode.System.DI().Props<AggregateActor<TestAggregate>>(),
+                                          AggregateActorName.New<TestAggregate>(Guid.NewGuid()).Name);
             Assert.NotNull(actorRef);
         }
 
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.DependencyInjection
 
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {

@@ -3,6 +3,8 @@ using System.Threading;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.Commands;
+using GridDomain.Tests.SampleDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
@@ -32,5 +34,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
+
+
     }
 }
