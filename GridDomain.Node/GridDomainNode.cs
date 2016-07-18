@@ -63,7 +63,13 @@ namespace GridDomain.Node
             _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
             AllSystems = actorAllSystems;
             System = AllSystems.Last();
+            System.WhenTerminated.ContinueWith(OnSystemTermination);
             Container= new UnityContainer();
+        }
+
+        private void OnSystemTermination(Task obj)
+        {
+            _log.Debug("Actor system terminated");
         }
 
         public IUnityContainer Container { get; }
