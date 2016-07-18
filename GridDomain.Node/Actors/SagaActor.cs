@@ -38,16 +38,16 @@ namespace GridDomain.Node.Actors
             Saga = emptySagaFactory.Create(); //need empty saga for recovery from persistence storage
 
 
-            Command<ICommandFault>(ProcessSaga,fault => fault.SagaId == Saga.State.Id);
-            Command<DomainEvent>(ProcessSaga,cmd => cmd.SagaId == Saga.State.Id);
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.State.Id);
+            Command<DomainEvent>(ProcessSaga, cmd => cmd.SagaId == Saga.State.Id);
             Command<TStartMessage>(startMessage =>
             {
-                if(Saga.State.Id == Guid.Empty)
+                if (Saga.State.Id == Guid.Empty)
                     Saga = _sagaStarter.Create(startMessage);
 
                 ProcessSaga(startMessage);
             });
-            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
+            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState)offer.Snapshot));
             Recover<DomainEvent>(e => Saga.State.ApplyEvent(e));
         }
 
@@ -56,7 +56,10 @@ namespace GridDomain.Node.Actors
             Saga.Transit(message);
 
             var stateChangeEvents = Saga.State.GetUncommittedEvents().Cast<object>();
-            PersistAll(stateChangeEvents, e => _publisher.Publish(e));
+            PersistAll(stateChangeEvents, e =>
+            {
+                _publisher.Publish(e);
+            });
 
             foreach (var msg in Saga.CommandsToDispatch)
                 _publisher.Publish(msg);

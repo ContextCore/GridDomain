@@ -176,6 +176,14 @@
   <ItemGroup>
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
+    <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\FinishedEvent.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecycling.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecyclingFactory.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecyclingRouteMap.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\StartEvent.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\State.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\States.cs" />
     <Compile Include="SampleDomain\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
