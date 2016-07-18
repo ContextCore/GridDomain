@@ -12,9 +12,9 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
         {
         }
 
-        public void RaiseFutureEvent(DateTime raiseTime)
+        public void ScheduleInFuture(DateTime raiseTime)
         {
-            RaiseEvent(new FutureDomainEvent(Id, raiseTime,new TestDomainEvent("tesst value",Id)));
+            RaiseEvent(raiseTime, new TestDomainEvent("test value",Id));
         }
 
         private void Apply(TestDomainEvent e)

@@ -59,9 +59,9 @@ namespace GridDomain.Node.FutureEvents
             RaiseEvent(e.Event);
         }
 
-        protected void RaiseFutureEvent(DateTime time, DomainEvent @event)
+        protected void RaiseEvent(DateTime raiseTime, DomainEvent @event)
         {
-            RaiseEvent(new FutureDomainEvent(Id, time, @event));
+            RaiseEvent(new FutureDomainEvent(Id, raiseTime, @event));
         }
 
         private void Apply(FutureDomainEvent e)

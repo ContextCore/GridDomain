@@ -12,7 +12,7 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
         public TestAggregatesCommandHandler() : base(null)
         {
             Map<TestCommand>(c => c.AggregateId,
-                            (c, a) => a.RaiseFutureEvent(c.RaiseTime));
+                            (c, a) => a.ScheduleInFuture(c.RaiseTime));
 
             
             //TODO: reuse somehow

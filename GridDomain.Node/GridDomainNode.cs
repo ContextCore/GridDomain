@@ -100,16 +100,20 @@ namespace GridDomain.Node
             StartMainNodeActor(System);
         }
 
-        private void ConfigureContainer(IUnityContainer unityContainer,IDbConfiguration databaseConfiguration, IQuartzConfig quartzConfig, ActorSystem actorSystem)
+        private void ConfigureContainer(IUnityContainer unityContainer,
+                                        IDbConfiguration databaseConfiguration, 
+                                        IQuartzConfig quartzConfig, 
+                                        ActorSystem actorSystem)
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        databaseConfiguration,
                                                                        _transportMode,
                                                                        quartzConfig));
-
-            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(PersistentScheduler));
-            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(PersistentScheduler));
-            unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(PersistentScheduler));
+            
+            var persistentScheduler = actorSystem.ActorOf(System.DI().Props<SchedulingActor>());
+            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
+            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
+            unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
 
             _configuration.Register(unityContainer);
         }
