@@ -266,7 +266,6 @@
     <Compile Include="Configuration\Composition\Container.cs" />
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessagesRecieved.cs" />
-    <Compile Include="DebugLogConfig.cs" />
     <Compile Include="EmptyContainerConfig.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
