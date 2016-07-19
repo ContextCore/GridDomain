@@ -37,5 +37,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
             Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping, sagaState.MachineState);
             Assert.AreEqual(sagaState.SourceId, sourceId);
         }
+
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);        
     }
 }
