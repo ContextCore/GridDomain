@@ -247,7 +247,9 @@
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_and_transitioned_event_when_hydrating.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
+    <Compile Include="Sagas\StateSagas\SagaStart_with_predifined_id_and_state_aggregate_change_in_process.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\Events\GotMoreTiredEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />

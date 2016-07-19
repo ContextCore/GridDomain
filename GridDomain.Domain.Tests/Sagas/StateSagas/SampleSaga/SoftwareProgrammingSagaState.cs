@@ -15,12 +15,12 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         {
         }
 
-        public void RememberEvent(GotTiredEvent e)
+        public void RememberEvent(GotMoreTiredEvent e)
         {
-            RaiseEvent(new GotTiredSagaEvent(e));
+            RaiseEvent(new GotMoreTiredSagaEvent(e));
         }
 
-        private void Apply(GotTiredSagaEvent e)
+        private void Apply(GotMoreTiredSagaEvent e)
         {
             SourceId = e.SourceId;
         }
@@ -28,9 +28,9 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         public Guid SourceId { get; private set; }
     }
 
-    public class GotTiredSagaEvent : GotTiredEvent
+    public class GotMoreTiredSagaEvent : GotMoreTiredEvent
     {
-        public GotTiredSagaEvent(GotTiredEvent e) : base(e.SourceId)
+        public GotMoreTiredSagaEvent(GotMoreTiredEvent e) : base(e.SourceId)
         {
         }
     }

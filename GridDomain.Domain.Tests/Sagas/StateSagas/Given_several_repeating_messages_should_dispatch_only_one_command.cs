@@ -28,10 +28,10 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             Messages = new[]
             {
-                new GotMoreTiredEvent(),
-                new GotMoreTiredEvent(),
-                new GotMoreTiredEvent(),
-                new GotMoreTiredEvent()
+                new GotMoreTiredEvent(sagaState.Id),
+                new GotMoreTiredEvent(sagaState.Id),
+                new GotMoreTiredEvent(sagaState.Id),
+                new GotMoreTiredEvent(sagaState.Id)
             };
         }
 

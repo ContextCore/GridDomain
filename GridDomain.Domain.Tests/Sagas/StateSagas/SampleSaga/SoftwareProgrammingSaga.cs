@@ -21,20 +21,26 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             var changeSubscriptionTrigger = RegisterEvent<SleptWellEvent>(Triggers.SleepAnough);
             var revokeSubscriptionTrigger = RegisterEvent<GotMoreTiredEvent>(Triggers.GoToSleep);
 
+            //TODO: refactor this ugly hack! 
+            RegisterEvent<GotMoreTiredSagaEvent>(Triggers.DummyForSagaStateChange);
+
             Machine.Configure(States.Working)
                 .Permit(Triggers.GoForCoffe, States.DrinkingCoffe);
 
             Machine.Configure(States.DrinkingCoffe)
                 .OnEntryFrom(parForSubscriptionTrigger, e =>
                 {
-                    State.RememberEvent(e);
                     Dispatch(new DrinkCupOfCoffeCommand(e));
                 })
                 .Permit(Triggers.FeelWell, States.Working)
                 .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
-                .OnEntryFrom(revokeSubscriptionTrigger, e => Dispatch(new SleepWellCommand(e)))
+                .OnEntryFrom(revokeSubscriptionTrigger,
+                    e => {
+                        State.RememberEvent(e);
+                        Dispatch(new SleepWellCommand(e));
+                    })
                 .Permit(Triggers.SleepAnough, States.Working);
         }
 
@@ -63,7 +69,8 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             GoForCoffe,
             FeelWell,
             SleepAnough,
-            GoToSleep
+            GoToSleep,
+            DummyForSagaStateChange
         }
 
         public enum States
