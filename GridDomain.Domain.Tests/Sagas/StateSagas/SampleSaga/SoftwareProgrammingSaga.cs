@@ -25,7 +25,11 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                 .Permit(Triggers.GoForCoffe, States.DrinkingCoffe);
 
             Machine.Configure(States.DrinkingCoffe)
-                .OnEntryFrom(parForSubscriptionTrigger, e => Dispatch(new DrinkCupOfCoffeCommand(e)))
+                .OnEntryFrom(parForSubscriptionTrigger, e =>
+                {
+                    State.RememberEvent(e);
+                    Dispatch(new DrinkCupOfCoffeCommand(e));
+                })
                 .Permit(Triggers.FeelWell, States.Working)
                 .Permit(Triggers.GoToSleep, States.Sleeping);
 

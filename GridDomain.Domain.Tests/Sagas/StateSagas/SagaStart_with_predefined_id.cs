@@ -39,6 +39,27 @@ namespace GridDomain.Tests.Sagas.StateSagas
             Assert.AreEqual(SoftwareProgrammingSaga.States.DrinkingCoffe, sagaState.MachineState);
         }
 
+        [Test]
+        [Ignore("not fixed yet")]
+        public void When_remember_message_than_saga_state_should_be_changed()
+        {
+            var publisher = GridNode.Container.Resolve<IPublisher>();
+            var sagaId = Guid.NewGuid();
+
+            var sourceId = Guid.NewGuid();
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
+
+            Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000) : TimeSpan.FromSeconds(1));
+
+            var sagaState = LoadSagaState<SoftwareProgrammingSaga,
+                                          SoftwareProgrammingSagaState,
+                                          GotTiredEvent>(sagaId);
+
+            Assert.AreEqual(sagaId, sagaState.Id);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.DrinkingCoffe, sagaState.MachineState);
+            Assert.AreEqual(sagaState.SourceId, sourceId);
+        }
+
         public SagaStart_with_predefined_id() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(),"TestSagaStart", false)
         {
         }
