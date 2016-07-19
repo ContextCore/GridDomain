@@ -43,6 +43,9 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
 
+            if(routesMap.All(r => r.Value == null))
+                return new RandomPool(Environment.ProcessorCount);
+
             var pool =
                 new ConsistentHashingPool(Environment.ProcessorCount)
                     .WithHashMapping(m =>
@@ -61,6 +64,13 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                         }
 
                         if (typeof(DomainEvent).IsAssignableFrom(type))
+                        {
+                            prop = routesMap[typeof(DomainEvent).FullName];
+                            return typeof(DomainEvent).GetProperty(prop).GetValue(m);
+                        }
+
+
+                        if (typeof(ICommand).IsAssignableFrom(type))
                         {
                             prop = routesMap[typeof(DomainEvent).FullName];
                             return typeof(DomainEvent).GetProperty(prop).GetValue(m);

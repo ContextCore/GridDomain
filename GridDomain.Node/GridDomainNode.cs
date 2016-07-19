@@ -80,7 +80,10 @@ namespace GridDomain.Node
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _transportMode = transportMode;
-            _messageRouting = new CompositeRouteMap(messageRouting, new SchedulingRouteMap());
+            _messageRouting = new CompositeRouteMap(messageRouting, 
+                                                    new SchedulingRouteMap(),
+                                                    new TransportMessageDumpMap()
+                                                    );
             AllSystems = actorAllSystems;
             Container = new UnityContainer();
             System = AllSystems.First();

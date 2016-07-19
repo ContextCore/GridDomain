@@ -242,6 +242,7 @@
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
+    <Compile Include="DefaultMessageLoggerHandler.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransportMessageDumpMap.cs" />
     <Compile Include="TransportMode.cs" />
   </ItemGroup>
   <ItemGroup>
