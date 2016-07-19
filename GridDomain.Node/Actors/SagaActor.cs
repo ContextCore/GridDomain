@@ -66,16 +66,21 @@ namespace GridDomain.Node.Actors
             Saga.Transit(message);
 
             var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>();
+
             PersistAll(stateChangeEvents, e =>
             {
                 _publisher.Publish(e);
             });
 
-            foreach (var msg in Saga.CommandsToDispatch)
+            Saga.Data.ClearUncommittedEvents();
+
+
+            foreach (var msg in Saga.CommandsToDispatch
+                                    .OfType<Command>()
+                                    .Select(c => c.CloneWithSaga(Saga.Data.Id)))
                 _publisher.Publish(msg);
 
             Saga.ClearCommandsToDispatch();
-            Saga.Data.ClearUncommittedEvents();
         }
 
         public override string PersistenceId => Self.Path.Name;

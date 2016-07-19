@@ -15,7 +15,7 @@ namespace GridDomain.EventSourcing.Sagas
             Id = id;
         }
 
-        public new void RaiseEvent(DomainEvent e)
+        public void RaiseEvent(DomainEvent e)
         {
             base.RaiseEvent(e.CloneWithSaga(Id));
         }

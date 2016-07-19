@@ -57,11 +57,6 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
 
-            Command<Status.Failure>(f =>
-            {
-                int b = 2;
-            });
-
             Command<ICommand>(cmd =>
             {
                 //TODO: create more efficient way to set up a saga

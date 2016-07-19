@@ -226,6 +226,7 @@
     <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaStart_with_predefined_id_messaging.cs" />
     <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\FinishedEvent.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecycling.cs" />
