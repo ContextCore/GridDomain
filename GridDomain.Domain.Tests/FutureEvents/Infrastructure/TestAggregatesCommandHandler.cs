@@ -11,8 +11,8 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
         public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler();
         public TestAggregatesCommandHandler() : base(null)
         {
-            Map<TestCommand>(c => c.AggregateId,
-                            (c, a) => a.ScheduleInFuture(c.RaiseTime));
+            Map<RaiseEventInFutureCommand>(c => c.AggregateId,
+                            (c, a) => a.ScheduleInFuture(c.RaiseTime, c.Value));
 
             this.MapFutureEvents();
         }

@@ -1,6 +1,7 @@
 using System;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.FutureEvents;
 using GridDomain.Tests.DependencyInjection;
 
@@ -11,10 +12,14 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
         private TestAggregate(Guid id):base(id)
         {
         }
-
-        public void ScheduleInFuture(DateTime raiseTime)
+        public  TestAggregate(Guid id, string initialValue =""):this(id)
         {
-            RaiseEvent(raiseTime, new TestDomainEvent("test value",Id));
+            Value = initialValue;
+        }
+
+        public void ScheduleInFuture(DateTime raiseTime, string testValue)
+        {
+            RaiseEvent(raiseTime, new TestDomainEvent(testValue,Id));
         }
 
         private void Apply(TestDomainEvent e)

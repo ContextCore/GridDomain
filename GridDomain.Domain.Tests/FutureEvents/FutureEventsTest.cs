@@ -30,7 +30,7 @@ namespace GridDomain.Tests.FutureEvents
 
         protected TestAggregate RaiseFutureEventInTime(DateTime scheduledTime)
         {
-            var testCommand = new TestCommand(scheduledTime, Guid.NewGuid());
+            var testCommand = new RaiseEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
             ExecuteAndWaitFor<TestDomainEvent>(testCommand);
 

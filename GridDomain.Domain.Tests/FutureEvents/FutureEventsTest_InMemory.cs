@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace GridDomain.Tests.FutureEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(Debugger.IsAttached ? 1000 : 2);
 
         protected override IQuartzConfig CreateQuartzConfig()
         {

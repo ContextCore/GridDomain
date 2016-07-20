@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.FutureEvents;
@@ -31,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
             var scheduledTime = DateTime.Now.AddSeconds(5);
 
-            var testCommand = new TestCommand(scheduledTime, Guid.NewGuid());
+            var testCommand = new RaiseEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
             ExecuteAndWaitFor<FutureDomainEvent>(testCommand);
 
             Thread.Sleep(500); // to create scheduled task

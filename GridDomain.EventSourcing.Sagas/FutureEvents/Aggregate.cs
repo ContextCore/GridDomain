@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommonDomain.Core;
-using GridDomain.EventSourcing;
+using GridDomain.Common;
 
-namespace GridDomain.Node.FutureEvents
+namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class Aggregate : AggregateBase
     {
@@ -12,7 +12,7 @@ namespace GridDomain.Node.FutureEvents
         #region AsyncMethods
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
         private readonly IDictionary<Guid,AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
-        public readonly List<AsyncEventsInProgress> AsyncUncomittedEvents = new List<AsyncEventsInProgress>();
+        public readonly  HashSet<AsyncEventsInProgress> AsyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
 
         public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
         {
@@ -54,32 +54,30 @@ namespace GridDomain.Node.FutureEvents
         public void RaiseScheduledEvent(Guid eventId)
         {
             FutureDomainEvent e;
-            if (!_futureEvents.TryGetValue(eventId, out e)) return;
-            RaiseEvent(new FutureDomainEventOccuredEvent(eventId));            
+            if (!_futureEvents.TryGetValue(eventId, out e))
+                throw new ScheduledEventNotFoundException(eventId);
+
+            RaiseEvent(new FutureDomainEventOccuredEvent(Guid.NewGuid(), eventId, Id));            
             RaiseEvent(e.Event);
         }
 
         protected void RaiseEvent(DateTime raiseTime, DomainEvent @event)
         {
-            RaiseEvent(new FutureDomainEvent(Id, raiseTime, @event));
+            RaiseEvent(new FutureDomainEvent(Guid.NewGuid(), Id, raiseTime, @event));
         }
 
         private void Apply(FutureDomainEvent e)
         {
-            _futureEvents.Add(e.SourceId,e);
+            _futureEvents.Add(e.Id, e);
         }
 
         private void Apply(FutureDomainEventOccuredEvent e)
         {
             FutureDomainEvent evt;
-            if (!_futureEvents.TryGetValue(e.SourceId, out evt)) return;
+            if (!_futureEvents.TryGetValue(e.EventId, out evt)) return;
             _futureEvents.Remove(e.SourceId);
         }
         #endregion
 
-    }
-
-    public class NotFinishedAsyncMethodResultsRequestedException : Exception
-    {
     }
 }

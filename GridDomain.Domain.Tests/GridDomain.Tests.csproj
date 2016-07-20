@@ -214,8 +214,11 @@
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
-    <Compile Include="FutureEvents\Raising_future_event.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_by_method_call.cs" />
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
+    <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="Sagas\InstanceSagas\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
@@ -315,7 +318,7 @@
     <Compile Include="FutureEvents\FutureEventsTest_InMemory.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestAggregate.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestAggregatesCommandHandler.cs" />
-    <Compile Include="FutureEvents\Infrastructure\TestCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\RaiseEventInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestRouteMap.cs" />
     <Compile Include="GridNodeContainerTests.cs" />

@@ -53,29 +53,4 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return new ExpectedMessagesRecieved(message, _allReceivedEvents);
         }
     }
-
-    
-    public class AllMessageWaiter : MessageWaiter<ExpectedMessage>
-    {
-        protected override bool CanContinue(Dictionary<Type, int> messageCounters)
-        {
-            return messageCounters.Any(c => c.Value > 0);
-        }
-
-        public AllMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
-        {
-        }
-    }
-
-    public class AnyMessageWaiter : MessageWaiter<ExpectedMessage>
-    {
-        protected override bool CanContinue(Dictionary<Type, int> messageCounters)
-        {
-            return messageCounters.All(c => c.Value > 0);
-        }
-
-        public AnyMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
-        {
-        }
-    }
 }
