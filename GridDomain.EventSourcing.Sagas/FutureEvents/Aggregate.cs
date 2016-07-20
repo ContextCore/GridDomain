@@ -51,13 +51,13 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         private readonly IDictionary<Guid, FutureDomainEvent> _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
 
-        public void RaiseScheduledEvent(Guid eventId)
+        public void RaiseScheduledEvent(Guid futureEventId)
         {
             FutureDomainEvent e;
-            if (!_futureEvents.TryGetValue(eventId, out e))
-                throw new ScheduledEventNotFoundException(eventId);
+            if (!_futureEvents.TryGetValue(futureEventId, out e))
+                throw new ScheduledEventNotFoundException(futureEventId);
 
-            RaiseEvent(new FutureDomainEventOccuredEvent(Guid.NewGuid(), eventId, Id));            
+            RaiseEvent(new FutureDomainEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));            
             RaiseEvent(e.Event);
         }
 
@@ -74,8 +74,8 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
         private void Apply(FutureDomainEventOccuredEvent e)
         {
             FutureDomainEvent evt;
-            if (!_futureEvents.TryGetValue(e.EventId, out evt)) return;
-            _futureEvents.Remove(e.SourceId);
+            if (!_futureEvents.TryGetValue(e.FutureEventId, out evt)) return;
+            _futureEvents.Remove(e.FutureEventId);
         }
         #endregion
 

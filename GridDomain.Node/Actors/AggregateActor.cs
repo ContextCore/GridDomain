@@ -60,7 +60,6 @@ namespace GridDomain.Node.Actors
 
             Command<ICommand>(cmd =>
             {
-                //TODO: create more efficient way to set up a saga
                 try
                 {
                     Aggregate = _handler.Execute(Aggregate, cmd);

@@ -4,14 +4,14 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class FutureDomainEventOccuredEvent : DomainEvent
     {
-        public  Guid OccuranceId { get; }
-        public Guid EventId { get; set; }
+        public Guid Id { get; set; }
+        public Guid FutureEventId { get;}
 
-        public FutureDomainEventOccuredEvent(Guid id, Guid eventId, Guid sourceId)
+        public FutureDomainEventOccuredEvent(Guid id, Guid futureEventId, Guid sourceId)
             : base(sourceId)
         {
-            OccuranceId = id;
-            EventId = eventId;
+            Id = id;
+            FutureEventId = futureEventId;
         }
     }
 }

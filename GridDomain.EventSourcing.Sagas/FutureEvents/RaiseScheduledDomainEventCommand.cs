@@ -5,16 +5,16 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class RaiseScheduledDomainEventCommand : Command
     {
-        public Guid EventId { get; }
+        public Guid FutureEventId { get; }
 
         public Guid AggregateId { get; }
 
-        public RaiseScheduledDomainEventCommand(Guid eventId, Guid aggregateId) : base(eventId)
+        public RaiseScheduledDomainEventCommand(Guid futureEventId, Guid aggregateId) : base(futureEventId)
         {
-            EventId = eventId;
+            FutureEventId = futureEventId;
             AggregateId = aggregateId;
         }
-        public RaiseScheduledDomainEventCommand(FutureDomainEvent e) : this(e.SourceId, e.Event.SourceId)
+        public RaiseScheduledDomainEventCommand(FutureDomainEvent e) : this(e.Id, e.Event.SourceId)
         {
         }
     }
