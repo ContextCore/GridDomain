@@ -14,11 +14,7 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
             Map<TestCommand>(c => c.AggregateId,
                             (c, a) => a.ScheduleInFuture(c.RaiseTime));
 
-            
-          
-            //TODO: reuse somehow
-            Map<RaiseScheduledDomainEventCommand>(c => c.AggregateId,
-                                                 (c,a) => a.RaiseScheduledEvent(c.AggregateId));
+            this.MapFutureEvents();
         }
 
         public Type AggregateType => typeof(TestAggregate);
