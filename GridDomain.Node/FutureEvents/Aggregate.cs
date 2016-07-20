@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
-using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.FutureEvents
 {
@@ -48,6 +46,7 @@ namespace GridDomain.Node.FutureEvents
         {
             Id = id;
             Register<FutureDomainEvent>(Apply);
+            Register<FutureDomainEventOccuredEvent>(Apply);
         }
 
         private readonly IDictionary<Guid, FutureDomainEvent> _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
@@ -56,6 +55,7 @@ namespace GridDomain.Node.FutureEvents
         {
             FutureDomainEvent e;
             if (!_futureEvents.TryGetValue(eventId, out e)) return;
+            RaiseEvent(new FutureDomainEventOccuredEvent(eventId));            
             RaiseEvent(e.Event);
         }
 
@@ -67,6 +67,13 @@ namespace GridDomain.Node.FutureEvents
         private void Apply(FutureDomainEvent e)
         {
             _futureEvents.Add(e.SourceId,e);
+        }
+
+        private void Apply(FutureDomainEventOccuredEvent e)
+        {
+            FutureDomainEvent evt;
+            if (!_futureEvents.TryGetValue(e.SourceId, out evt)) return;
+            _futureEvents.Remove(e.SourceId);
         }
         #endregion
 

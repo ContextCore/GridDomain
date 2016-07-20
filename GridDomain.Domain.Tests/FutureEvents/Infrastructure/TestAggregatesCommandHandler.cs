@@ -15,6 +15,7 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
                             (c, a) => a.ScheduleInFuture(c.RaiseTime));
 
             
+          
             //TODO: reuse somehow
             Map<RaiseScheduledDomainEventCommand>(c => c.AggregateId,
                                                  (c,a) => a.RaiseScheduledEvent(c.AggregateId));
