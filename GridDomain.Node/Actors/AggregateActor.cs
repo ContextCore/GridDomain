@@ -13,6 +13,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.FutureEvents;
 using GridDomain.Scheduling.Akka.Messages;
@@ -92,7 +93,7 @@ namespace GridDomain.Node.Actors
 
             PersistAll(events, e =>
             {
-                ScheduleFutureEvent(e);
+                e.Match().With<FutureDomainEvent>(ScheduleFutureEvent);
                 _publisher.Publish(e);
             });
             aggregate.ClearUncommittedEvents();
@@ -116,14 +117,15 @@ namespace GridDomain.Node.Actors
             extendedAggregate.AsyncUncomittedEvents.Clear();
         }
 
-        private void ScheduleFutureEvent(DomainEvent e)
+        private void ScheduleFutureEvent(FutureDomainEvent futureEvent)
         {
-            var futureEvent = e as FutureDomainEvent;
-            if (futureEvent == null) return;
-
-            var scheduleKey = new ScheduleKey(futureEvent.SourceId,
-                $"{PersistenceId}_event_{futureEvent.SourceId}",
-                $"{typeof (TAggregate).Name}_futureEvents");
+            
+            var scheduleKey = new ScheduleKey(futureEvent.Id,
+                $"{typeof(TAggregate).Name}_{PersistenceId}_future_event_{futureEvent.Id}",
+                $"{typeof (TAggregate).Name}_futureEvents",
+                $"Aggregate {typeof(TAggregate).Name} id {PersistenceId} scheduled future event " +
+                $"{futureEvent.Id} with payload {futureEvent.Event.GetType().Name} on time {futureEvent.RaiseTime}\r\n" +
+                $"Future event: {futureEvent.ToPropsString()}");
 
             var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent),
                                                     scheduleKey, 
