@@ -22,45 +22,42 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         where TSagaData : class, ISagaState<State>
     {
         public readonly Saga<TSagaData> Machine;
-        private readonly SagaDataAggregate<TSagaData> _stateStorage;
-        private MethodInfo _transitGenericMethodInfo;
+        private readonly SagaDataAggregate<TSagaData> _dataAggregate;
+        private readonly MethodInfo _transitGenericMethodInfo;
+
         public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
         public void ClearCommandsToDispatch()
         {
             Machine.CommandsToDispatch.Clear();
         }
 
-        SagaDataAggregate<TSagaData> ISagaInstance<TSaga, TSagaData>.Data => _stateStorage;
+        SagaDataAggregate<TSagaData> ISagaInstance<TSaga, TSagaData>.Data => _dataAggregate;
 
-        public IAggregate Data => _stateStorage;
+        public IAggregate Data => _dataAggregate;
 
-        public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> stateStorage)
+        public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> dataAggregate)
         {
-            _stateStorage = stateStorage;
+            _dataAggregate = dataAggregate;
             Machine = machine;
-            Machine.TransitionToState(_stateStorage.Data, _stateStorage.Data.CurrentState); 
-            Machine.OnStateEnter += (sender, context) => stateStorage.RememberTransition(context.State, context.Instance);
-            Machine.OnEventReceived += (sender, context) => stateStorage.RememberEvent(context.Event, context.SagaData, context.EventData);
-            _transitGenericMethodInfo = this.GetType()
-                              .GetMethods()
-                              .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
+            Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.State, context.Instance);
+            Machine.OnEventReceived += (sender, context) => dataAggregate.RememberEvent(context.Event, context.SagaData, context.EventData);
+            _transitGenericMethodInfo = GetType()
+                                       .GetMethods()
+                                       .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
         }
-
-      
 
         public void Transit(object message)
         {
             var messageType = message.GetType();
             
-            var method = _transitGenericMethodInfo
-                             .MakeGenericMethod(messageType);
+            var method = _transitGenericMethodInfo.MakeGenericMethod(messageType);
 
             method.Invoke(this,new [] {message});
         }
 
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
-            Machine.RaiseByExternalEvent(_stateStorage.Data, message);
+            Machine.RaiseByExternalEvent(_dataAggregate.Data, message);
         }
     }
 }

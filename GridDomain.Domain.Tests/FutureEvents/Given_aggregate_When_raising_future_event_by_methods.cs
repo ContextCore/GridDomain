@@ -13,6 +13,13 @@ namespace GridDomain.Tests.FutureEvents
 
     public static class AggregateDebugExtensions
     {
+
+        public static void ApplyEvents(this IAggregate aggregate, params DomainEvent[] events)
+        {
+            foreach(var e in events)
+                aggregate.ApplyEvent(e);
+        }
+
         public static void ClearEvents(this IAggregate aggregate)
         {
             aggregate.ClearUncommittedEvents();

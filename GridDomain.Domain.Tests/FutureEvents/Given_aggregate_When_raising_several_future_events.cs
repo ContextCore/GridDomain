@@ -25,6 +25,8 @@ namespace GridDomain.Tests.FutureEvents
             _eventB = GridNode.Execute(testCommandB, Timeout, ExpectedMessage.Once<FutureDomainEventOccuredEvent>());
         }
 
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
+
         [Then]
         public void Envelop_ids_are_different()
         {

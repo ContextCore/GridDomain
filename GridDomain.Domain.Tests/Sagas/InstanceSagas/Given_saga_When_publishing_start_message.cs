@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             _sagaId = _sagaStartMessage.SagaId;
             GridNode.Transport.Publish(_sagaStartMessage);
 
-            Thread.Sleep(1000);
+            Thread.Sleep(Timeout);
 
             _sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
         }

@@ -230,6 +230,7 @@
     <Compile Include="Sagas\InstanceSagas\Events\GotTiredDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
+    <Compile Include="Sagas\InstanceSagas\Recover\Given_instance_saga_When_recovering.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaStart_with_predefined_id_messaging.cs" />
     <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
