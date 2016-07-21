@@ -12,8 +12,7 @@ namespace GridDomain.Tests.FutureEvents
     {
         private TestAggregate _aggregate;
         private FutureEventScheduledEvent _futureEventA;
-        private FutureEventScheduledEvent _futureEvent_out_of_criteria
-            ;
+        private FutureEventScheduledEvent _futureEvent_out_of_criteria;
 
         [SetUp]
         public void When_cancel_existing_scheduled_future_event()
@@ -28,7 +27,7 @@ namespace GridDomain.Tests.FutureEvents
             _futureEvent_out_of_criteria = _aggregate.GetEvents<FutureEventScheduledEvent>()[1];
 
             _aggregate.ClearEvents();
-            _aggregate.CancelFutureEvents<TestDomainEvent>(e => e.Value == testValue);
+            _aggregate.CancelFutureEvents(testValue);
         }
 
         [Then]

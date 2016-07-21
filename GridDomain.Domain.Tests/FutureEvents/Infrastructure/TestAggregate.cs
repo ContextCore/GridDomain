@@ -22,9 +22,9 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
             RaiseEvent(raiseTime, new TestDomainEvent(testValue,Id));
         }
 
-        public void CancelFutureEvents<TEvent>(Predicate<TEvent> criteria) where TEvent : DomainEvent
+        public void CancelFutureEvents(string likeValue)
         {
-            base.CancelScheduledEvents(criteria);
+            base.CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
         private void Apply(TestDomainEvent e)
         {

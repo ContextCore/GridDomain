@@ -4,6 +4,7 @@ using System.Threading;
 using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.AkkaMessaging;
@@ -26,8 +27,7 @@ namespace GridDomain.Node.Actors
 
         public IRouteBuilder<TMessage> Route<TMessage>()
         {
-            return new AkkaRouteBuilder<TMessage>(_routingTypedMessageActor, _routingActorTypedMessageActor,
-                _actorLocator);
+            return new AkkaRouteBuilder<TMessage>(_routingTypedMessageActor, _routingActorTypedMessageActor,_actorLocator);
         }
 
         public void RegisterAggregate<TAggregate, TCommandHandler>()

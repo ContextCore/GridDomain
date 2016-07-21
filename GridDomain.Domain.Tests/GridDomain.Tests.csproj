@@ -216,11 +216,13 @@
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
+    <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_by_method_call.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_with_bad_waiting.cs" />
+    <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />

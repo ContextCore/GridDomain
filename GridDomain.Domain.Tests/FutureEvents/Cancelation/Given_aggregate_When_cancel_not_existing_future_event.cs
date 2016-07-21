@@ -21,7 +21,7 @@ namespace GridDomain.Tests.FutureEvents
             _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
             _futureEvent = _aggregate.GetEvent<FutureEventScheduledEvent>();
             _aggregate.ClearEvents();
-            _aggregate.CancelFutureEvents<TestDomainEvent>(e => false);
+            _aggregate.CancelFutureEvents("will not be found in any future event");
         }
 
         [Then]

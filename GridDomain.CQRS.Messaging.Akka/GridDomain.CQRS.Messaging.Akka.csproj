@@ -95,6 +95,7 @@
     <Compile Include="IActorSubscriber.cs" />
     <Compile Include="IActorTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypedMessageActor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -104,6 +105,10 @@
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
+      <Project>{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}</Project>
+      <Name>GridDomain.CQRS</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
       <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
