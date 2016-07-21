@@ -46,55 +46,55 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
         protected Aggregate(Guid id)
         {
             Id = id;
-            Register<FutureDomainEvent>(Apply);
-            Register<FutureDomainEventOccuredEvent>(Apply);
-            Register<FutureDomainEventCanceledEvent>(Apply);
+            Register<FutureEventScheduledEvent>(Apply);
+            Register<FutureEventOccuredEvent>(Apply);
+            Register<FutureEventCanceledEvent>(Apply);
         }
 
-        private readonly IDictionary<Guid, FutureDomainEvent> _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
+        private readonly IDictionary<Guid, FutureEventScheduledEvent> _futureEvents = new Dictionary<Guid, FutureEventScheduledEvent>();
 
         public void RaiseScheduledEvent(Guid futureEventId)
         {
-            FutureDomainEvent e;
+            FutureEventScheduledEvent e;
             if (!_futureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            RaiseEvent(new FutureDomainEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));            
+            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));            
             RaiseEvent(e.Event);
         }
 
         protected void RaiseEvent(DateTime raiseTime, DomainEvent @event)
         {
-            RaiseEvent(new FutureDomainEvent(Guid.NewGuid(), Id, raiseTime, @event));
+            RaiseEvent(new FutureEventScheduledEvent(Guid.NewGuid(), Id, raiseTime, @event));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent:DomainEvent
         {
             var eventsToCancel = this._futureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent) fe.Event)).ToArray();
 
-            var cancelEvents = eventsToCancel.Select(e => new FutureDomainEventCanceledEvent(e.Id, Id));
+            var cancelEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id));
             foreach(var e in cancelEvents)
                 RaiseEvent(e);
         }
 
-        private void Apply(FutureDomainEvent e)
+        private void Apply(FutureEventScheduledEvent e)
         {
             _futureEvents.Add(e.Id, e);
         }
 
-        private void Apply(FutureDomainEventOccuredEvent e)
+        private void Apply(FutureEventOccuredEvent e)
         {
             DeleteFutureEvent(e.FutureEventId);
         }
 
-        private void Apply(FutureDomainEventCanceledEvent e)
+        private void Apply(FutureEventCanceledEvent e)
         {
             DeleteFutureEvent(e.FutureEventId);
         }
 
         private void DeleteFutureEvent(Guid futureEventId)
         {
-            FutureDomainEvent evt;
+            FutureEventScheduledEvent evt;
             if (!_futureEvents.TryGetValue(futureEventId, out evt)) return;
             _futureEvents.Remove(futureEventId);
         }

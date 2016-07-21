@@ -10,7 +10,7 @@ namespace GridDomain.Tests.FutureEvents
     public class Given_aggregate_When_cancel_not_existing_future_event
     {
         private TestAggregate _aggregate;
-        private FutureDomainEvent _futureEvent;
+        private FutureEventScheduledEvent _futureEvent;
 
         [SetUp]
         public void When_cancel_existing_scheduled_future_event()
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.FutureEvents
             var testValue = "value D";
 
             _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
-            _futureEvent = _aggregate.GetEvent<FutureDomainEvent>();
+            _futureEvent = _aggregate.GetEvent<FutureEventScheduledEvent>();
             _aggregate.ClearEvents();
             _aggregate.CancelFutureEvents<TestDomainEvent>(e => false);
         }
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.FutureEvents
         public void All_existed_future_events_remain_the_same()
         {
             _aggregate.RaiseScheduledEvent(_futureEvent.Id);
-            var occuredEvent = _aggregate.GetEvent<FutureDomainEventOccuredEvent>();
+            var occuredEvent = _aggregate.GetEvent<FutureEventOccuredEvent>();
             Assert.AreEqual(_futureEvent.Id, occuredEvent.FutureEventId);
         }
     }

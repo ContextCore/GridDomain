@@ -93,7 +93,7 @@ namespace GridDomain.Node.Actors
 
             PersistAll(events, e =>
             {
-                e.Match().With<FutureDomainEvent>(ScheduleFutureEvent);
+                e.Match().With<FutureEventScheduledEvent>(ScheduleFutureEvent);
                 _publisher.Publish(e);
             });
             aggregate.ClearUncommittedEvents();
@@ -117,7 +117,7 @@ namespace GridDomain.Node.Actors
             extendedAggregate.AsyncUncomittedEvents.Clear();
         }
 
-        private void ScheduleFutureEvent(FutureDomainEvent futureEvent)
+        private void ScheduleFutureEvent(FutureEventScheduledEvent futureEvent)
         {
             
             var scheduleKey = new ScheduleKey(futureEvent.Id,

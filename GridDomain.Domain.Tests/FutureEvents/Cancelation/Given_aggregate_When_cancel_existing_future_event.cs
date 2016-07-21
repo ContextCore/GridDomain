@@ -11,8 +11,8 @@ namespace GridDomain.Tests.FutureEvents
     public class Given_aggregate_When_cancel_existing_future_event
     {
         private TestAggregate _aggregate;
-        private FutureDomainEvent _futureEventA;
-        private FutureDomainEvent _futureEvent_out_of_criteria
+        private FutureEventScheduledEvent _futureEventA;
+        private FutureEventScheduledEvent _futureEvent_out_of_criteria
             ;
 
         [SetUp]
@@ -24,8 +24,8 @@ namespace GridDomain.Tests.FutureEvents
             _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
             _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
 
-            _futureEventA = _aggregate.GetEvents<FutureDomainEvent>()[0];
-            _futureEvent_out_of_criteria = _aggregate.GetEvents<FutureDomainEvent>()[1];
+            _futureEventA = _aggregate.GetEvents<FutureEventScheduledEvent>()[0];
+            _futureEvent_out_of_criteria = _aggregate.GetEvents<FutureEventScheduledEvent>()[1];
 
             _aggregate.ClearEvents();
             _aggregate.CancelFutureEvents<TestDomainEvent>(e => e.Value == testValue);
@@ -34,14 +34,14 @@ namespace GridDomain.Tests.FutureEvents
         [Then]
         public void Cancelation_event_is_produced()
         {
-            var cancelEvent = _aggregate.GetEvent<FutureDomainEventCanceledEvent>();
+            var cancelEvent = _aggregate.GetEvent<FutureEventCanceledEvent>();
             Assert.AreEqual(_futureEventA.Id, cancelEvent.FutureEventId);
         }
 
         [Then]
         public void Only_predicate_satisfying_events_are_canceled()
         {
-            var cancelEvent = _aggregate.GetEvents<FutureDomainEventCanceledEvent>();
+            var cancelEvent = _aggregate.GetEvents<FutureEventCanceledEvent>();
             Assert.True(cancelEvent.All(e => e.FutureEventId != _futureEvent_out_of_criteria.Id));
         }
 

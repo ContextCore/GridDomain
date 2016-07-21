@@ -15,7 +15,7 @@ namespace GridDomain.Tests.FutureEvents
         private DateTime _scheduledTime;
         private TestDomainEvent _producedEvent;
         private RaiseEventInFutureCommand _testCommand;
-        private FutureDomainEvent _futureEventEnvelop;
+        private FutureEventScheduledEvent _futureEventEnvelop;
 
         [TestFixtureSetUp]
 
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.FutureEvents
             _scheduledTime = DateTime.Now.AddSeconds(1);
             _testCommand = new RaiseEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (FutureDomainEvent)ExecuteAndWaitFor<FutureDomainEvent>(_testCommand).Recieved.First();
+            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Recieved.First();
             _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Recieved.First();
 
             _aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);

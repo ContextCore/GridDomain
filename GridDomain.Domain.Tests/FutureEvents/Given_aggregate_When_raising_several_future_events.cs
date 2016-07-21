@@ -10,8 +10,8 @@ namespace GridDomain.Tests.FutureEvents
     [TestFixture]
     public class Given_aggregate_When_raising_several_future_events : FutureEventsTest_InMemory
     {
-        private FutureDomainEventOccuredEvent _eventA;
-        private FutureDomainEventOccuredEvent _eventB;
+        private FutureEventOccuredEvent _eventA;
+        private FutureEventOccuredEvent _eventB;
         private Guid _aggregateId;
 
         [TestFixtureSetUp]
@@ -21,8 +21,8 @@ namespace GridDomain.Tests.FutureEvents
             var testCommandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
             var testCommandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
 
-            _eventA = GridNode.Execute(testCommandA, Timeout, ExpectedMessage.Once<FutureDomainEventOccuredEvent>());
-            _eventB = GridNode.Execute(testCommandB, Timeout, ExpectedMessage.Once<FutureDomainEventOccuredEvent>());
+            _eventA = GridNode.Execute(testCommandA, Timeout, ExpectedMessage.Once<FutureEventOccuredEvent>());
+            _eventB = GridNode.Execute(testCommandB, Timeout, ExpectedMessage.Once<FutureEventOccuredEvent>());
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
