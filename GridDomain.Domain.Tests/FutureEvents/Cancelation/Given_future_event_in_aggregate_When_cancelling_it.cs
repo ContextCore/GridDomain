@@ -7,11 +7,11 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using Quartz;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.FutureEvents.Cancelation
 {
     [TestFixture]
 
-    public class Given_future_event_in_aggregate_When_cancelling_it : FutureEventsTest_InMemory
+    public class Given_future_event_in_aggregate_When_cancelling_it : FutureEventsTest
     {
         private TestAggregate _aggregate;
         private DateTime _scheduledTime;
@@ -31,8 +31,10 @@ namespace GridDomain.Tests.FutureEvents
 
             _cancelFutureEventCommand = new CancelFutureEventCommand(_testCommand.AggregateId, _testCommand.Value);
 
-            _futureEventCancelation = (FutureEventCanceledEvent)ExecuteAndWaitFor<FutureEventCanceledEvent>(_testCommand).Recieved.First();
+            _futureEventCancelation = (FutureEventCanceledEvent)ExecuteAndWaitFor<FutureEventCanceledEvent>(_cancelFutureEventCommand).Recieved.First();
         }
+
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
         [Then]
         public void Cancelation_event_has_same_id_as_future_event()
@@ -50,6 +52,14 @@ namespace GridDomain.Tests.FutureEvents
             var jobKey = new JobKey(scheduleKey.Name, scheduleKey.Group);
 
             Assert.False(scheduler.CheckExists(jobKey));
+        }
+
+        public Given_future_event_in_aggregate_When_cancelling_it(bool inMemory) : base(inMemory)
+        {
+        }
+
+        public Given_future_event_in_aggregate_When_cancelling_it() : base(true)
+        {
         }
     }
 }

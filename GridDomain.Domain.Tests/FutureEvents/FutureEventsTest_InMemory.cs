@@ -13,7 +13,7 @@ namespace GridDomain.Tests.FutureEvents
 {
     public class FutureEventsTest_InMemory : FutureEventsTest
     {
-        public FutureEventsTest_InMemory(): base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "testSystem", false)
+        public FutureEventsTest_InMemory() : base(true)
         {
         }
 

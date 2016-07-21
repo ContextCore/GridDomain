@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
     [TestFixture]
     public class FutureEventsTest_Persistent_restart : FutureEventsTest
     {
-        public FutureEventsTest_Persistent_restart(): base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "testSystem", false)
+        public FutureEventsTest_Persistent_restart(): base(false)
         {
         }
 

@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
     [TestFixture]
     public class FutureEventsTest_Persistent : FutureEventsTest
     {
-        public FutureEventsTest_Persistent(): base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig(), "testSystem", true)
+        public FutureEventsTest_Persistent(): base(false)
         {
         }
 

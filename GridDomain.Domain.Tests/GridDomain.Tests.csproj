@@ -214,12 +214,14 @@
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
+    <Compile Include="FutureEvents\AggregateDebugExtensions.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
+    <Compile Include="FutureEvents\CannotFindRequestedEventException.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
-    <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_commands.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_by_method_call.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_with_bad_waiting.cs" />
     <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
@@ -236,7 +238,7 @@
     <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\InstanceSagas\Recover\Given_instance_saga_When_recovering.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaStart_with_predefined_id_messaging.cs" />
+    <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId.cs" />
     <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\FinishedEvent.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecycling.cs" />
@@ -261,6 +263,7 @@
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id_messaging.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predifined_id_and_state_aggregate_change_in_process.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\Events\GotMoreTiredEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\GotMoreTiredSagaEvent.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
@@ -286,7 +289,6 @@
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="SynchroniousCommandExecute\ExtendedNodeCommandTest.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_with_message_base_class.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_when_sync_execute_with_command_fault.cs" />

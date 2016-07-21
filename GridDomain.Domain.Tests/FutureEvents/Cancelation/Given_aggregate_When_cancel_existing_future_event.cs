@@ -5,7 +5,7 @@ using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.FutureEvents.Cancelation
 {
     [TestFixture]
     public class Given_aggregate_When_cancel_existing_future_event

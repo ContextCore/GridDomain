@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
@@ -6,26 +7,32 @@ using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents.Infrastructure;
+using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.FutureEvents
 {
-    public abstract class FutureEventsTest : NodeCommandsTest
+    public abstract class FutureEventsTest : ExtendedNodeCommandTest
     {
-        protected FutureEventsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name, clearDataOnStart)
+        protected FutureEventsTest(bool inMemory) : base(inMemory)
         {
         }
 
-        protected abstract IQuartzConfig CreateQuartzConfig();
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf,
-            IDbConfiguration dbConfig)
+        protected override IContainerConfiguration CreateConfiguration()
         {
-            var config = new CustomContainerConfiguration(
+            return new CustomContainerConfiguration(
                 c => c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>(),
                 c => c.RegisterInstance(CreateQuartzConfig()));
+        }
 
-            var node =new GridDomainNode(config, new TestRouteMap(), TransportMode.Standalone, Sys);
-            return node;
+        protected override IMessageRouteMap CreateMap()
+        {
+            return new TestRouteMap();
+        }
+
+        protected virtual IQuartzConfig CreateQuartzConfig()
+        {
+            return InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig();
         }
 
         protected TestAggregate RaiseFutureEventInTime(DateTime scheduledTime)

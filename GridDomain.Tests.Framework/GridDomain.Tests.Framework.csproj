@@ -136,6 +136,7 @@
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="CountEventWaiter.cs" />
+    <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDateTimeStrategy.cs" />
