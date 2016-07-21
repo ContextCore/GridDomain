@@ -148,7 +148,7 @@ namespace GridDomain.Node.Actors
             return new ScheduleKey(scheduleId,
                                    $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
                                    $"{typeof(TAggregate).Name}_futureEvents",
-                                   description);
+                                   "");
         }
 
         public void Handle(FutureEventCanceledEvent message)
