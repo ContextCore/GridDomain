@@ -47,8 +47,8 @@ namespace GridDomain.Scheduling.Integration
         public ScheduledCommandProcessingSaga(ScheduledCommandProcessingSagaState state) : base(state)
         {
             Machine.Configure(States.Created)
-                .Permit(Transitions.SendMessage, States.MessageSent)
-                .OnExit(() => Dispatch(new CompleteJob(State.Key.Name, State.Key.Group)));
+                   .Permit(Transitions.SendMessage, States.MessageSent)
+                   .OnExit(() => Dispatch(new CompleteJob(State.Key.Name, State.Key.Group)));
 
             var messageSent   = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
             var faultsTrigger = RegisterEvent<ICommandFault>(Transitions.Failure);

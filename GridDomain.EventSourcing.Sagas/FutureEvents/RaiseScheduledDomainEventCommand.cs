@@ -9,13 +9,10 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         public Guid AggregateId { get; }
 
-        public RaiseScheduledDomainEventCommand(Guid futureEventId, Guid aggregateId) : base(futureEventId)
+        public RaiseScheduledDomainEventCommand(Guid futureEventId, Guid aggregateId)
         {
             FutureEventId = futureEventId;
             AggregateId = aggregateId;
-        }
-        public RaiseScheduledDomainEventCommand(FutureDomainEvent e) : this(e.Id, e.Event.SourceId)
-        {
         }
     }
 }

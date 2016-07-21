@@ -122,12 +122,12 @@ namespace GridDomain.Node.Actors
             
             var scheduleKey = new ScheduleKey(futureEvent.Id,
                 $"{typeof(TAggregate).Name}_{PersistenceId}_future_event_{futureEvent.Id}",
-                $"{typeof (TAggregate).Name}_futureEvents",
-                $"Aggregate {typeof(TAggregate).Name} id {PersistenceId} scheduled future event " +
-                $"{futureEvent.Id} with payload {futureEvent.Event.GetType().Name} on time {futureEvent.RaiseTime}\r\n" +
+                $"{typeof(TAggregate).Name}_futureEvents",
+                $"Aggregate {typeof(TAggregate).Name} id = {futureEvent.Event.SourceId} scheduled future event " +
+                $"{futureEvent.Id} with payload type {futureEvent.Event.GetType().Name} on time {futureEvent.RaiseTime}\r\n" +
                 $"Future event: {futureEvent.ToPropsString()}");
 
-            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent),
+            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent.Id,futureEvent.SourceId),
                                                     scheduleKey, 
                                                     new ExecutionOptions(futureEvent.RaiseTime,
                                                                          futureEvent.Event.GetType())
