@@ -9,7 +9,7 @@ namespace GridDomain.Tests.FutureEvents
 {
     [TestFixture]
 
-    public class Given_aggregate_When_raising_future_event : FutureEventsTest_InMemory
+    public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest_InMemory
     {
         private TestAggregate _aggregate;
         private DateTime _scheduledTime;
