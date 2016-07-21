@@ -23,11 +23,6 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
-        protected override IQuartzConfig CreateQuartzConfig()
-        {
-            return new PersistedQuartzConfig();
-        }
-
         [Test]
         public void Given_aggregate_When_raising_future_event_Then_it_fires_after_node_restart()
         {

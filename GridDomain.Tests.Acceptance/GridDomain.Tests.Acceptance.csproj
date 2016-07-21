@@ -238,6 +238,7 @@
   <ItemGroup>
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
+    <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_InMemory.cs" />
     <Compile Include="FutureDomainEvents\Given_future_event_in_aggregate_When_cancelling_it_Persistent.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemTest.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Cluster_not_correlated_routing.cs" />
@@ -268,7 +269,6 @@
     <Compile Include="Persistence\Sql_journal_availability_by_persistent_actor.cs" />
     <Compile Include="Persistence\Sql_journal_availability_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DateTimeSpec.cs" />
     <Compile Include="Scheduling\Spec.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\TestEvent.cs" />
