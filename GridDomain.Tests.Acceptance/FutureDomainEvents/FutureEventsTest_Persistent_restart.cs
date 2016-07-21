@@ -3,6 +3,7 @@ using System.Threading;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Node.FutureEvents;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
@@ -39,21 +40,14 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 
             GridNode.Stop();
 
-         //   Thread.Sleep(1000);
+            Thread.Sleep(2000); //to wait for everything stopped
 
-            var config = new CustomContainerConfiguration(
-                c => c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>(),
-                c => c.RegisterInstance(CreateQuartzConfig()));
-
-            var node = new GridDomainNode(config,
-                                          new TestRouteMap(),
-                                          TransportMode.Standalone,
-                                          ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration()));
+            GridNode.Start(new LocalDbConfiguration());
 
             WaitFor<TestDomainEvent>();
 
             var aggregate = LoadAggregate<TestAggregate>(testCommand.AggregateId);
-            Assert.AreEqual(scheduledTime.Second, aggregate.ProcessedTime.Second);
+            Assert.LessOrEqual(aggregate.ProcessedTime - scheduledTime, TimeSpan.FromSeconds(1));
         }
     }
 }

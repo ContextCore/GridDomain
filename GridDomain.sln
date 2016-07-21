@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS.Messaging", "GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj", "{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventSourcing", "GridDomain.EventSourcing\GridDomain.EventSourcing.csproj", "{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS", "GridDomain.CQRS\GridDomain.CQRS.csproj", "{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventStore.MSSQL", "GridDomain.EventStore.MSSQL\GridDomain.EventStore.MSSQL.csproj", "{08E73994-2FFA-424A-A138-E9FA1875F270}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessNews.Domain", "GridDomain.Balance\BusinessNews.Domain.csproj", "{601F47B4-849C-49BC-AD2C-58B84DE229D6}"
 EndProject
@@ -107,22 +105,6 @@ Global
 		{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.AutoTesting|Any CPU.ActiveCfg = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.AutoTesting|Any CPU.Build.0 = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Dev|Any CPU.Build.0 = Debug|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Production|Any CPU.ActiveCfg = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Production|Any CPU.Build.0 = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Sandbox|Any CPU.ActiveCfg = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Sandbox|Any CPU.Build.0 = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Staging|Any CPU.ActiveCfg = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.Staging|Any CPU.Build.0 = Release|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08E73994-2FFA-424A-A138-E9FA1875F270}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
 		{601F47B4-849C-49BC-AD2C-58B84DE229D6}.AutoTesting|Any CPU.ActiveCfg = Release|Any CPU
 		{601F47B4-849C-49BC-AD2C-58B84DE229D6}.AutoTesting|Any CPU.Build.0 = Release|Any CPU
 		{601F47B4-849C-49BC-AD2C-58B84DE229D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

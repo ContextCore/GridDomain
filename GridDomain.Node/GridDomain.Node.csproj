@@ -323,10 +323,6 @@
       <Name>GridDomain.EventSourcing</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.EventStore.MSSQL\GridDomain.EventStore.MSSQL.csproj">
-      <Project>{08E73994-2FFA-424A-A138-E9FA1875F270}</Project>
-      <Name>GridDomain.EventStore.MSSQL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
       <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
       <Name>GridDomain.Logging</Name>

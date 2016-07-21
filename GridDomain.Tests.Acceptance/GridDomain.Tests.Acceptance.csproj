@@ -289,7 +289,6 @@
     <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_projection_build_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
-    <Compile Include="TestsClobalConfig.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -331,10 +330,6 @@
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
       <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.EventStore.MSSQL\GridDomain.EventStore.MSSQL.csproj">
-      <Project>{08E73994-2FFA-424A-A138-E9FA1875F270}</Project>
-      <Name>GridDomain.EventStore.MSSQL</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
       <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
