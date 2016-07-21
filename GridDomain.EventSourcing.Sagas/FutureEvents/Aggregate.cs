@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.Common;
@@ -47,6 +48,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             Id = id;
             Register<FutureDomainEvent>(Apply);
             Register<FutureDomainEventOccuredEvent>(Apply);
+            Register<FutureDomainEventCanceledEvent>(Apply);
         }
 
         private readonly IDictionary<Guid, FutureDomainEvent> _futureEvents = new Dictionary<Guid, FutureDomainEvent>();
@@ -66,6 +68,15 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             RaiseEvent(new FutureDomainEvent(Guid.NewGuid(), Id, raiseTime, @event));
         }
 
+        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent:DomainEvent
+        {
+            var eventsToCancel = this._futureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent) fe.Event)).ToArray();
+
+            var cancelEvents = eventsToCancel.Select(e => new FutureDomainEventCanceledEvent(e.Id, Id));
+            foreach(var e in cancelEvents)
+                RaiseEvent(e);
+        }
+
         private void Apply(FutureDomainEvent e)
         {
             _futureEvents.Add(e.Id, e);
@@ -73,10 +84,21 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         private void Apply(FutureDomainEventOccuredEvent e)
         {
-            FutureDomainEvent evt;
-            if (!_futureEvents.TryGetValue(e.FutureEventId, out evt)) return;
-            _futureEvents.Remove(e.FutureEventId);
+            DeleteFutureEvent(e.FutureEventId);
         }
+
+        private void Apply(FutureDomainEventCanceledEvent e)
+        {
+            DeleteFutureEvent(e.FutureEventId);
+        }
+
+        private void DeleteFutureEvent(Guid futureEventId)
+        {
+            FutureDomainEvent evt;
+            if (!_futureEvents.TryGetValue(futureEventId, out evt)) return;
+            _futureEvents.Remove(futureEventId);
+        }
+
         #endregion
 
     }

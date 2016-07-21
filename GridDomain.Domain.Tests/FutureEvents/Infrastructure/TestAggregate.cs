@@ -22,12 +22,16 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
             RaiseEvent(raiseTime, new TestDomainEvent(testValue,Id));
         }
 
+        public void CancelFutureEvents<TEvent>(Predicate<TEvent> criteria) where TEvent : DomainEvent
+        {
+            base.CancelScheduledEvents(criteria);
+        }
         private void Apply(TestDomainEvent e)
         {
             Value = e.Value;
             ProcessedTime = DateTime.Now;
         }
-        public DateTime ProcessedTime { get; set; }
+        public DateTime ProcessedTime { get; private set; }
 
         public string Value;
     }
