@@ -111,6 +111,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateCommandHandlerExtensions.cs" />
     <Compile Include="CompositeRouteMap.cs" />
     <Compile Include="MessageRouting\AggregateCommandHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandler.cs" />

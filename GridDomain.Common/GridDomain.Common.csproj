@@ -45,8 +45,10 @@
     <Compile Include="DateTimeFacade.cs" />
     <Compile Include="DateTimeStrategy.cs" />
     <Compile Include="DateTimeStrategyHolder.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TasksExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

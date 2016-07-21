@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
@@ -14,14 +16,16 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             return new SoftwareProgrammingSagaRoutes();
         }
 
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(Debugger.IsAttached ? 100 : 2);
+
         protected override IContainerConfiguration CreateConfiguration()
         {
             var baseConf = base.CreateConfiguration();
             return new CustomContainerConfiguration(
                 c => c.RegisterSaga<SoftwareProgrammingSaga,
-                    SoftwareProgrammingSagaData,
-                    GotTiredDomainEvent,
-                    SoftwareProgrammingSagaFactory
+                                    SoftwareProgrammingSagaData,
+                                    GotTiredDomainEvent,
+                                    SoftwareProgrammingSagaFactory
                     >(),
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,

@@ -211,8 +211,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\CommandExecutionFinished.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
     <Compile Include="Actors\SagaActor.cs" />
@@ -240,10 +242,11 @@
     <Compile Include="Actors\MessageHandlingActor.cs" />
     <Compile Include="AkkaMessaging\Routing\RoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
+    <Compile Include="AkkaMessaging\Waiting\AllMessageWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
     <Compile Include="DefaultMessageLoggerHandler.cs" />
-    <Compile Include="FutureEvents\FutureDomainEventOccuredEvent.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
@@ -269,13 +272,6 @@
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessagesRecieved.cs" />
     <Compile Include="EmptyContainerConfig.cs" />
-    <Compile Include="ExceptionExtensions.cs" />
-    <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
-    <Compile Include="FutureEvents\AsyncMethodCompleted.cs" />
-    <Compile Include="FutureEvents\AsyncMethodStarted.cs" />
-    <Compile Include="FutureEvents\FutureDomainEvent.cs" />
-    <Compile Include="FutureEvents\Aggregate.cs" />
-    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="IGridDomainNode.cs" />

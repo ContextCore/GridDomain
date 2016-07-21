@@ -11,7 +11,8 @@ namespace GridDomain.Node
                                                IHandler<ICommandFault>
     {
         private static readonly ILogger _log  = new LoggerConfiguration().WriteTo
-                                            .RollingFile(".\\GridDomainLogs\\TransportMessages\\logs-{Date}.txt",LogEventLevel.Verbose)
+                                            .RollingFile(".\\GridDomainLogs\\TransportMessages\\logs-{Date}.txt")
+                                            .WriteTo.Console(LogEventLevel.Error)
                                             .CreateLogger();
         private void Handle(object msg)
         {

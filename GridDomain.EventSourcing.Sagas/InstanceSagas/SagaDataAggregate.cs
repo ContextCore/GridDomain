@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public TSagaData Data { get; private set; }
         //for debugging purposes
-        public IList<object> ReceivedMessages = new List<object>();
+        public readonly IList<object> ReceivedMessages = new List<object>();
 
         private SagaDataAggregate(Guid id)
         {
@@ -34,7 +34,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Data = e.State;
             Id = e.SourceId;
         }
-
         public void Apply(SagaTransitionEvent<TSagaData> e)
         {
             Data = e.SagaData;

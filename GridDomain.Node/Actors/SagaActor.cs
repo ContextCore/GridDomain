@@ -40,23 +40,22 @@ namespace GridDomain.Node.Actors
             _sagaFactory = sagaFactory;
             _publisher = publisher;
 
+            //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             var id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
             Saga = emptySagaFactory.Create(id);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Saga.Data.Id);
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == id);
 
             Command<DomainEvent>(msg =>
             {
                msg.Match()
-                  .With<TStartMessage>(start =>
-                                  { Saga = _sagaStarter.Create(start); });
+                  .With<TStartMessage>(start => Saga = _sagaStarter.Create(start));
 
-                ProcessSaga(msg);
-
-            }, e => e.SagaId == Saga.Data.Id);
+               ProcessSaga(msg);
+            }, e => e.SagaId == id);
 
             //recover messages will be provided only to right saga by using peristenceId
-            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState)offer.Snapshot));
+            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
             Recover<DomainEvent>(e => Saga.Data.ApplyEvent(e));
         }
 

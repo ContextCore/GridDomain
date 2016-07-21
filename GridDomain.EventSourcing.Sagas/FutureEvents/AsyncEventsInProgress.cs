@@ -1,8 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.FutureEvents
+namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class AsyncEventsInProgress
     {

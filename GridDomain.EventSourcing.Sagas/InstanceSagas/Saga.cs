@@ -35,7 +35,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             var machineEvent = propertyExpression.Compile().Invoke();
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
 
-
             base.Event(propertyExpression);
             DuringAny(
                      When(machineEvent).Then(

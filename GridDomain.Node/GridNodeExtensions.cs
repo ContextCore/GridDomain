@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
