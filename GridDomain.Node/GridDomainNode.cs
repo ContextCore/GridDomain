@@ -120,9 +120,8 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
-            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
-
             Systems = _actorSystemFactory.Invoke();
+            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
