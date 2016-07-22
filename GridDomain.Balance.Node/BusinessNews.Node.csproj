@@ -190,6 +190,10 @@
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
       <Name>GridDomain.Node</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
+      <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
+      <Name>GridDomain.Scheduling</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

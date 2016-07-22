@@ -44,6 +44,9 @@ namespace GridDomain.Node
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
+        private UnityContainer container;
+        private Func<ActorSystem[]> actorSystem;
+
         public IPublisher Transport { get; private set; }
 
         private GridDomainNode(IUnityContainer container,
@@ -94,6 +97,14 @@ namespace GridDomain.Node
                                                     );
             Container = new UnityContainer();
         }
+
+        public GridDomainNode(UnityContainer container, IMessageRouteMap messageRouteMap, Func<ActorSystem[]> actorSystem)
+        {
+            this.container = container;
+            this._messageRouting = messageRouteMap;
+            this.actorSystem = actorSystem;
+        }
+
         private void OnSystemTermination()
         {
             _log.Debug("grid node Actor system terminated");

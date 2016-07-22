@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
@@ -29,9 +30,8 @@ namespace BusinessNews.Node
                 {
                     s.ConstructUsing(settings =>
                     {
-                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).RandomNode();
-                        return new GridDomainNode(container, new BusinessNewsRouting(), TransportMode.Cluster,
-                            actorSystem);
+                        Func<ActorSystem[]> actorSystem = () => new [] { ActorSystemFactory.CreateCluster(akkaConfig).RandomNode()};
+                        return new GridDomainNode(container, new BusinessNewsRouting(), actorSystem);
                     });
                     s.WhenStarted(node =>
                     {
