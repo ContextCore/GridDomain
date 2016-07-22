@@ -49,7 +49,8 @@ namespace GridDomain.Node
 
         public IPublisher Transport { get; private set; }
 
-        private GridDomainNode(IUnityContainer container,
+        [Obsolete("Use constructor with ActorSystem factory instead")]
+        public GridDomainNode(IUnityContainer container,
                               IMessageRouteMap messageRouting,
                               IQuartzConfig quartzConfig = null,
                               params ActorSystem[] actorAllSystems)
@@ -58,7 +59,7 @@ namespace GridDomain.Node
             Container = container;
         }
    
-        [Obsolete("USe constructor with ActorSystem factory instead")]
+        [Obsolete("Use constructor with ActorSystem factory instead")]
         public GridDomainNode(IUnityContainer container,
                               IMessageRouteMap messageRouting,
                               TransportMode transportMode,
@@ -67,7 +68,7 @@ namespace GridDomain.Node
         {
         }
 
-        [Obsolete("USe constructor with ActorSystem factory instead")]
+        [Obsolete("Use constructor with ActorSystem factory instead")]
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               TransportMode transportMode,
@@ -78,8 +79,8 @@ namespace GridDomain.Node
 
 
         public GridDomainNode(IContainerConfiguration configuration,
-                             IMessageRouteMap messageRouting,
-                             Func<ActorSystem[]> actorSystemFactory) : this(configuration, messageRouting,actorSystemFactory,null)
+                              IMessageRouteMap messageRouting,
+                              Func<ActorSystem[]> actorSystemFactory) : this(configuration, messageRouting,actorSystemFactory,null)
         {
         }
 

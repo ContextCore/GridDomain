@@ -1,8 +1,7 @@
 using System;
-using GridDomain.Node.Configuration.Composition;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Node.Configuration.Composition
 {
     public class CustomContainerConfiguration : IContainerConfiguration
     {
