@@ -10,8 +10,18 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Saga_produced_events_and_commands_has_sagaId : ProgrammingSoftwareSagaTest
+    public class Saga_produced_events_and_commands_has_sagaId : ProgrammingSoftwareSagaTest
     {
+        public Saga_produced_events_and_commands_has_sagaId():base(true)
+        {
+
+        }
+
+        public Saga_produced_events_and_commands_has_sagaId(bool inMemory) : base(inMemory)
+        {
+
+        }
+
         [Test]
         public void When_dispatch_command_than_command_should_have_right_sagaId()
         {

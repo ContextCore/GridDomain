@@ -4,6 +4,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Tests.Sagas.InstanceSagas.Commands;
 using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using NMoneys;
 
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
@@ -32,6 +33,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     sagaData.PersonId = domainEvent.SourceId;
                     var soloLogger = LogManager.GetLogger();
                     soloLogger.Trace("Hello trace string");
+                 //   sagaData.Price = new Money(100);
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
                 })
                 .TransitionTo(MakingCoffee));

@@ -23,15 +23,17 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             var actorConfig = @"   
  
        actor {
+             #serialize-messages = on
+             #serialize-creators = on
              serializers {
                          wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
-             }
+                         #json = ""Akka.Serialization.NewtonSoftJsonSerializer, Akka.Serialization.Json""
+                }
              
              serialization-bindings {
                                     ""System.Object"" = wire
+                                    #""Automatonymous.State"" = json
              }
-           
-
        }";
 
             var deploy = BuildActorProvider() + BuildTransport(_host, _port);

@@ -9,7 +9,7 @@ using GridDomain.Tests.SynchroniousCommandExecute;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
+    public class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
     {
         protected override IMessageRouteMap CreateMap()
         {

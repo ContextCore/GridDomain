@@ -157,9 +157,14 @@ namespace GridDomain.Node
             _configuration.Register(unityContainer);
         }
 
+        bool _stopping = false;
+
         public void Stop()
         {
-            _quartzScheduler.Shutdown(false);
+            if (_stopping) return;
+            _stopping = true;
+
+             _quartzScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
             _log.Info($"GridDomain node {Id} stopped");
@@ -167,6 +172,7 @@ namespace GridDomain.Node
 
         private void StartMainNodeActor(ActorSystem actorSystem)
         {
+            _stopping = false;
             _log.Info($"Launching GridDomain node {Id}");
 
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();

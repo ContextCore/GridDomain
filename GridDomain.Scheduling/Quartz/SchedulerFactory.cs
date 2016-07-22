@@ -95,10 +95,12 @@ namespace GridDomain.Scheduling.Quartz
             
             return scheduler;
         }
-
+        bool _disposing = false;
         public void Dispose()
         {
-            ((StdScheduler)_current)?.Dispose();
+            if (!_disposing)
+                 ((StdScheduler)_current)?.Dispose();
+            _disposing = true;
         }
     }
 }
