@@ -4,9 +4,11 @@ namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaCreatedEvent<TState> : SagaStateEvent
     {
-        public SagaCreatedEvent(TState state, Guid sourceId) : base(sourceId)
+        public string StateName { get;  }
+        public SagaCreatedEvent(TState state, Guid sourceId, string stateName = null) : base(sourceId)
         {
             State = state;
+            StateName = stateName;
         }
 
         public TState State { get; }

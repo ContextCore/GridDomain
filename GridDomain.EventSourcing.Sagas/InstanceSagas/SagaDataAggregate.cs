@@ -5,7 +5,7 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class SagaDataAggregate<TSagaData> : AggregateBase where TSagaData: ISagaState<State>
+    public class SagaDataAggregate<TSagaData> : AggregateBase// where TSagaData: ISagaState<State>
     {
         public TSagaData Data { get; private set; }
         //for debugging purposes
@@ -16,11 +16,13 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Id = id;
         }
 
+        public string CurrentStateName { get; private set; }
+
         public SagaDataAggregate(Guid id, TSagaData state):this(id)
         {
             RaiseEvent(new SagaCreatedEvent<TSagaData>(state, id));
         }
-        public void RememberTransition(State state, TSagaData modifiedData)
+        public void RememberTransition(string state, TSagaData modifiedData)
         {
             RaiseEvent(new SagaTransitionEvent<TSagaData>(Id, modifiedData, state));
         }
@@ -37,6 +39,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public void Apply(SagaTransitionEvent<TSagaData> e)
         {
             Data = e.SagaData;
+            CurrentStateName = e.NewMachineState;
         }
 
         public void Apply(SagaMessageReceivedEvent<TSagaData> e)

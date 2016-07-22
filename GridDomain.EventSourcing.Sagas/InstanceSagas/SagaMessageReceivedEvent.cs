@@ -7,12 +7,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public object Message { get; }
         public TSagaData SagaData { get; }
-        public Event MachineEvent { get; }
+        public string MachineEventName { get; }
 
-        public SagaMessageReceivedEvent(Guid sourceId, TSagaData sagaData, Event machineEvent, object externalMessage): base(sourceId)
+        public SagaMessageReceivedEvent(Guid sourceId, TSagaData sagaData, Event machineEventName, object externalMessage): base(sourceId)
         {
             SagaData = sagaData;
-            MachineEvent = machineEvent;
+            MachineEventName = machineEventName.Name;
             Message = externalMessage;
         }
     }

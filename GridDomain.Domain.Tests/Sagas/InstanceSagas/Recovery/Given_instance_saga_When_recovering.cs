@@ -27,18 +27,19 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Recover
         {
             var aggregateFactory = new AggregateFactory();
             var sagaId = Guid.NewGuid();
+
             _data = aggregateFactory.Build<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId);
             var saga = new SoftwareProgrammingSaga();
-            var dataOnCreated = new SoftwareProgrammingSagaData(saga.MakingCoffee);
+            var makingCoffeInitialState = new SoftwareProgrammingSagaData(saga.MakingCoffee);
 
-            _sagaInstance = SagaInstance.New(saga, _data);
-
-            var eventsToReplay = new DomainEvent []
+            var eventsToReplay = new DomainEvent[]
             {
-                new SagaCreatedEvent<SoftwareProgrammingSagaData>(dataOnCreated, sagaId)
+                new SagaCreatedEvent<SoftwareProgrammingSagaData>(makingCoffeInitialState, sagaId)
             };
 
             _data.ApplyEvents(eventsToReplay);
+
+            _sagaInstance = SagaInstance.New(saga, _data);
 
             //Try to transit saga by message, available only in desired state
             _coffeMakeFailedDomainEvent = new CoffeMakeFailedDomainEvent(Guid.NewGuid(),Guid.NewGuid());

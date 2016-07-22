@@ -39,13 +39,18 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             _dataAggregate = dataAggregate;
             Machine = machine;
-            Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.State, context.Instance);
+
+            var currentStateName = dataAggregate.CurrentStateName;
+            var initialState = Machine.GetState(currentStateName);
+            Machine.TransitionToState(dataAggregate.Data, initialState);
+
+            Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.State.Name, context.Instance);
             Machine.OnEventReceived += (sender, context) => dataAggregate.RememberEvent(context.Event, context.SagaData, context.EventData);
             _transitGenericMethodInfo = GetType()
                                        .GetMethods()
                                        .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
         }
-
+        
         public void Transit(object message)
         {
             var messageType = message.GetType();

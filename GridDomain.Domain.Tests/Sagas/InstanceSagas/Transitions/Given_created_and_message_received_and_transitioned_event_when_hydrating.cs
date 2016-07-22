@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
                 _machine.GotTired,
                 _message);
 
-            yield return new SagaTransitionEvent<SoftwareProgrammingSagaData>(_sagaId,_softwareProgrammingSagaData, _machine.Sleeping);
+            yield return new SagaTransitionEvent<SoftwareProgrammingSagaData>(_sagaId,_softwareProgrammingSagaData, _machine.Sleeping.Name);
         }
 
         [Test]
