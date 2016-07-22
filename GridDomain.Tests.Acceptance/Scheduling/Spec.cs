@@ -9,6 +9,7 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Logging;
@@ -33,7 +34,7 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
     [TestFixture]
-    public class Spec : NodeCommandsTest
+    public class Spec : ExtendedNodeCommandTest
     {
         private const string Name = "test";
         private const string Group = "test";
@@ -41,51 +42,43 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         private IScheduler _quartzScheduler;
         private IUnityContainer _container;
 
-        public Spec() : base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
+        public Spec() : base(false)
         {
-
+          
         }
 
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override IContainerConfiguration CreateConfiguration()
         {
-            var system = ActorSystemFactory.CreateActorSystem(akkaConf);
-            var router = new TestRouter();
-             var node = new GridDomainNode(new SchedulerContainerConfiguration(system), router, TransportMode.Standalone, system);
-            _container = node.Container;
-            return node;
+            return new SchedulerContainerConfiguration();
+        }
+
+        protected override IMessageRouteMap CreateMap()
+        {
+            return new TestRouter();
         }
 
         private class SchedulerContainerConfiguration : IContainerConfiguration
         {
-            private readonly ActorSystem _system;
-
-            public SchedulerContainerConfiguration(ActorSystem system)
-            {
-                _system = system;
-            }
-
             public void Register(IUnityContainer container)
             {
-                container.Register(new GridNodeContainerConfiguration(_system, new AutoTestLocalDbConfiguration(), TransportMode.Standalone, new PersistedQuartzConfig()));
                 container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
-                container.RegisterType<AggregateActor<TestAggregate>>();
-                container.RegisterType<AggregateHubActor<TestAggregate>>();
-                container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
-                container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
-                container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
-                container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
-                container.RegisterType<ISagaFactory<TestSaga, Guid>, TestSagaFactory>();
+                //container.RegisterType<AggregateActor<TestAggregate>>();
+                //container.RegisterType<AggregateHubActor<TestAggregate>>();
+                //container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
+                //container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
+                container.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
+                //container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
+                //container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
+                //container.RegisterType<ISagaFactory<TestSaga, Guid>, TestSagaFactory>();
+                container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaStartMessage, TestSagaFactory>();
             }
         }
      
-     
-
-
         [SetUp]
         public void SetUp()
         {
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
-            
+            _container = GridNode.Container;
             CreateScheduler();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
             _quartzScheduler.Clear();

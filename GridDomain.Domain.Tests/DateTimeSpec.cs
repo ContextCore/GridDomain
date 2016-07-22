@@ -4,7 +4,7 @@ using GridDomain.Common;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance
+namespace GridDomain.Tests
 {
     [TestFixture]
     public class DateTimeSpec

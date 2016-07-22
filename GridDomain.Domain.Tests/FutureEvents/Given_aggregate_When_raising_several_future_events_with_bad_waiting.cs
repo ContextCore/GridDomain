@@ -10,8 +10,8 @@ namespace GridDomain.Tests.FutureEvents
     [Ignore("example to be fixed")]
     public class Given_aggregate_When_raising_several_future_events_with_bad_waiting : FutureEventsTest_InMemory
     {
-        private FutureDomainEventOccuredEvent _eventA;
-        private FutureDomainEventOccuredEvent _eventB;
+        private FutureEventOccuredEvent _eventA;
+        private FutureEventOccuredEvent _eventB;
         private Guid _aggregateId;
 
         [TestFixtureSetUp]
@@ -20,8 +20,8 @@ namespace GridDomain.Tests.FutureEvents
             _aggregateId = Guid.NewGuid();
             var testCommandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
             var testCommandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
-            _eventA = (FutureDomainEventOccuredEvent)ExecuteAndWaitFor<FutureDomainEventOccuredEvent>(testCommandA).Recieved.First();
-            _eventB = (FutureDomainEventOccuredEvent)ExecuteAndWaitFor<FutureDomainEventOccuredEvent>(testCommandB).Recieved.First();
+            _eventA = (FutureEventOccuredEvent)ExecuteAndWaitFor<FutureEventOccuredEvent>(testCommandA).Recieved.First();
+            _eventB = (FutureEventOccuredEvent)ExecuteAndWaitFor<FutureEventOccuredEvent>(testCommandB).Recieved.First();
 
             //_eventA and _eventB are same instance!
         }

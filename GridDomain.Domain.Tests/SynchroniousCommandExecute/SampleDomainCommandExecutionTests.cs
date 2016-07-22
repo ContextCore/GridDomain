@@ -3,6 +3,7 @@ using System.Diagnostics;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;

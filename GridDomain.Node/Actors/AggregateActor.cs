@@ -10,6 +10,7 @@ using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
@@ -32,13 +33,16 @@ namespace GridDomain.Node.Actors
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
+        private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
+                              TypedMessageActor<Unschedule> unscheduleActorRef,
                               IPublisher publisher)
         {
             _schedulerActorRef = schedulerActorRef;
+            _unscheduleActorRef = unscheduleActorRef;
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
@@ -93,7 +97,11 @@ namespace GridDomain.Node.Actors
 
             PersistAll(events, e =>
             {
-                e.Match().With<FutureDomainEvent>(ScheduleFutureEvent);
+                //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
+                // how to pass aggregate type in this case? 
+                e.Match().With<FutureEventScheduledEvent>(Handle)
+                         .With<FutureEventCanceledEvent>(Handle);
+
                 _publisher.Publish(e);
             });
             aggregate.ClearUncommittedEvents();
@@ -117,32 +125,43 @@ namespace GridDomain.Node.Actors
             extendedAggregate.AsyncUncomittedEvents.Clear();
         }
 
-        private void ScheduleFutureEvent(FutureDomainEvent futureEvent)
+        public void Handle(FutureEventScheduledEvent message)
         {
-            
-            var scheduleKey = new ScheduleKey(futureEvent.Id,
-                $"{typeof(TAggregate).Name}_{PersistenceId}_future_event_{futureEvent.Id}",
-                $"{typeof(TAggregate).Name}_futureEvents",
-                $"Aggregate {typeof(TAggregate).Name} id = {futureEvent.Event.SourceId} scheduled future event " +
-                $"{futureEvent.Id} with payload type {futureEvent.Event.GetType().Name} on time {futureEvent.RaiseTime}\r\n" +
-                $"Future event: {futureEvent.ToPropsString()}");
+            Guid scheduleId = message.Id;
+            Guid aggregateId = message.Event.SourceId;
 
-            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(futureEvent.Id,futureEvent.SourceId),
-                                                    scheduleKey, 
-                                                    new ExecutionOptions(futureEvent.RaiseTime,
-                                                                         futureEvent.Event.GetType())
-                                                    );
+            var description = $"Aggregate {typeof(TAggregate).Name} id = {aggregateId} scheduled future event " +
+                              $"{scheduleId} with payload type {message.Event.GetType().Name} on time {message.RaiseTime}\r\n" +
+                              $"Future event: {message.ToPropsString()}";
+
+            var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
+
+            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId),
+                                                    scheduleKey,
+                                                    new ExecutionOptions(message.RaiseTime, message.Event.GetType()));
 
             _schedulerActorRef.Handle(scheduleEvent);
         }
 
-        protected override void Unhandled(object message)
+        public static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid aggregateId, string description)
         {
-            base.Unhandled(message);
+            return new ScheduleKey(scheduleId,
+                                   $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
+                                   $"{typeof(TAggregate).Name}_futureEvents",
+                                   "");
+        }
+
+        public void Handle(FutureEventCanceledEvent message)
+        {
+            var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
+            var unscheduleMessage = new Unschedule(key);
+            _unscheduleActorRef.Handle(unscheduleMessage);
         }
 
         public TAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
+
+
     }
 
  

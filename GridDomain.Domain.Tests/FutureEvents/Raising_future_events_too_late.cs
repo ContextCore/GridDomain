@@ -4,8 +4,16 @@ using NUnit.Framework;
 namespace GridDomain.Tests.FutureEvents
 {
     [TestFixture]
-    public class Raising_future_events_too_late : FutureEventsTest_InMemory
+    public class Raising_future_events_too_late : FutureEventsTest
     {
+        public Raising_future_events_too_late(bool inMemory) : base(inMemory)
+        {
+            
+        }
+        public Raising_future_events_too_late() : base(true)
+        {
+
+        }
 
 
         [Test]
@@ -16,5 +24,7 @@ namespace GridDomain.Tests.FutureEvents
             var aggregate = RaiseFutureEventInTime(scheduledTime);
             Assert.LessOrEqual(now.Second - aggregate.ProcessedTime.Second, 1);
         }
+
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
     }
 }

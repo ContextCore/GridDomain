@@ -10,6 +10,7 @@ using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
@@ -23,8 +24,7 @@ using Microsoft.Practices.Unity;
 using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
 namespace GridDomain.Node
-{ 
-
+{
     public class GridDomainNode : IGridDomainNode
     {
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
@@ -36,60 +36,63 @@ namespace GridDomain.Node
 
         private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IMessageRouteMap _messageRouting;
-        private readonly TransportMode _transportMode;
-        public readonly ActorSystem[] AllSystems;
+        private TransportMode _transportMode;
+        public ActorSystem[] Systems;
         private Quartz.IScheduler _quartzScheduler;
-        public readonly ActorSystem System;
+        public ActorSystem System;
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
+        private readonly Func<ActorSystem[]> _actorSystemFactory;
         public IPublisher Transport { get; private set; }
 
-        public GridDomainNode(IUnityContainer container,
+        private GridDomainNode(IUnityContainer container,
                               IMessageRouteMap messageRouting,
-                              TransportMode transportMode,
                               IQuartzConfig quartzConfig = null,
                               params ActorSystem[] actorAllSystems)
-            : this(new EmptyContainerConfig(),messageRouting,transportMode, quartzConfig,actorAllSystems)
+            : this(new EmptyContainerConfig(),messageRouting, () => actorAllSystems, quartzConfig)
         {
             Container = container;
         }
    
-        //for backward compatibility
+        [Obsolete("USe constructor with ActorSystem factory instead")]
         public GridDomainNode(IUnityContainer container,
-                             IMessageRouteMap messageRouting,
-                             TransportMode transportMode,
-                             params ActorSystem[] actorAllSystems)
-           : this(container, messageRouting, transportMode, null, actorAllSystems)
-        {
-        }
-
-        //for backward compatibility
-        public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               TransportMode transportMode,
-                              params ActorSystem[] actorAllSystems):this(configuration, messageRouting, transportMode, null, actorAllSystems)
-        {
-        }
-
-        public GridDomainNode(IContainerConfiguration configuration,
-                              IMessageRouteMap messageRouting,
-                              TransportMode transportMode,
-                              IQuartzConfig quartzConfig = null,
                               params ActorSystem[] actorAllSystems)
+           : this(container, messageRouting, null, actorAllSystems)
         {
+        }
+
+        [Obsolete("USe constructor with ActorSystem factory instead")]
+        public GridDomainNode(IContainerConfiguration configuration,
+                              IMessageRouteMap messageRouting,
+                              TransportMode transportMode,
+                              params ActorSystem[] actorAllSystems)
+            :this(configuration, messageRouting, () => actorAllSystems, null)
+        {
+        }
+
+
+        public GridDomainNode(IContainerConfiguration configuration,
+                             IMessageRouteMap messageRouting,
+                             Func<ActorSystem[]> actorSystemFactory) : this(configuration, messageRouting,actorSystemFactory,null)
+        {
+        }
+
+        public GridDomainNode(IContainerConfiguration configuration,
+                              IMessageRouteMap messageRouting,
+                              Func<ActorSystem[]> actorSystemFactory,
+                              IQuartzConfig quartzConfig)
+        {
+            _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
-            _transportMode = transportMode;
             _messageRouting = new CompositeRouteMap(messageRouting, 
                                                     new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                     );
-            AllSystems = actorAllSystems;
             Container = new UnityContainer();
-            System = AllSystems.First();
-            System.WhenTerminated.ContinueWith(OnSystemTermination);
-            System.RegisterOnTermination(OnSystemTermination);
         }
         private void OnSystemTermination()
         {
@@ -106,8 +109,17 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
+            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
+
+            Systems = _actorSystemFactory.Invoke();
+            System = Systems.First();
+            System.WhenTerminated.ContinueWith(OnSystemTermination);
+            System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
-            ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System);
+
+            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
+
+            ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System, persistentScheduler);
 
             StartMainNodeActor(System);
 
@@ -118,18 +130,19 @@ namespace GridDomain.Node
         private void ConfigureContainer(IUnityContainer unityContainer,
                                         IDbConfiguration databaseConfiguration, 
                                         IQuartzConfig quartzConfig, 
-                                        ActorSystem actorSystem)
+                                        ActorSystem actorSystem, 
+                                        IActorRef persistentScheduler)
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        databaseConfiguration,
                                                                        _transportMode,
                                                                        quartzConfig));
-            
-            var persistentScheduler = actorSystem.ActorOf(System.DI().Props<SchedulingActor>());
+
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
             unityContainer.RegisterInstance(_messageRouting);
+
             _configuration.Register(unityContainer);
         }
 
@@ -138,7 +151,6 @@ namespace GridDomain.Node
             _quartzScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
-
             _log.Info($"GridDomain node {Id} stopped");
         }
 
@@ -148,6 +160,7 @@ namespace GridDomain.Node
 
             var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
             _mainNodeActor = actorSystem.ActorOf(props,nameof(GridDomainNodeMainActor));
+
             _mainNodeActor.Ask(new GridDomainNodeMainActor.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]

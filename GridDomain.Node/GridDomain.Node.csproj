@@ -230,7 +230,6 @@
     <Compile Include="AkkaMessaging\Routing\ClusterSystemRouterActor.cs" />
     <Compile Include="AkkaMessaging\Routing\DublicateRoutesException.cs" />
     <Compile Include="AkkaMessaging\Routing\LocalSystemRoutingActor.cs" />
-    <Compile Include="Actors\TypedMessageActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
     <Compile Include="AkkaMessaging\Routing\AkkaRouteBuilder.cs" />
     <Compile Include="AkkaMessaging\CannotFindCorrelationProperty.cs" />

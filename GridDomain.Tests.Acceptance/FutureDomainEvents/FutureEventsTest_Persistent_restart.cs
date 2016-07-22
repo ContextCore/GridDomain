@@ -17,37 +17,35 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
     [TestFixture]
     public class FutureEventsTest_Persistent_restart : FutureEventsTest
     {
-        public FutureEventsTest_Persistent_restart(): base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "testSystem", false)
+        private RaiseEventInFutureCommand _testCommand;
+
+        public FutureEventsTest_Persistent_restart(): base(false)
         {
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
-        protected override IQuartzConfig CreateQuartzConfig()
-        {
-            return new PersistedQuartzConfig();
-        }
-
-        [Test]
-        public void Given_aggregate_When_raising_future_event_Then_it_fires_after_node_restart()
+        [TestFixtureSetUp]
+        public void Given_aggregate_When_raising_future_event()
         {
             var scheduledTime = DateTime.Now.AddSeconds(5);
+            _testCommand = new RaiseEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
+            ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand);
+        }
 
-            var testCommand = new RaiseEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
-            ExecuteAndWaitFor<FutureDomainEvent>(testCommand);
-
-            Thread.Sleep(500); // to create scheduled task
-
+        [Then]
+        public void It_fires_after_node_restart()
+        {
             GridNode.Stop();
 
-            Thread.Sleep(2000); //to wait for everything stopped
+        //    Thread.Sleep(2000); //to wait for everything stopped
 
             GridNode.Start(new LocalDbConfiguration());
 
             WaitFor<TestDomainEvent>();
 
-            var aggregate = LoadAggregate<TestAggregate>(testCommand.AggregateId);
-            Assert.LessOrEqual(aggregate.ProcessedTime - scheduledTime, TimeSpan.FromSeconds(1));
+            var aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
+            Assert.LessOrEqual(aggregate.ProcessedTime - _testCommand.RaiseTime, TimeSpan.FromSeconds(1));
         }
     }
 }

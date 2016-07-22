@@ -27,11 +27,4 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 
         public Guid SourceId { get; private set; }
     }
-
-    public class GotMoreTiredSagaEvent : GotMoreTiredEvent
-    {
-        public GotMoreTiredSagaEvent(GotMoreTiredEvent e) : base(e.SourceId)
-        {
-        }
-    }
 }

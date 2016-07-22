@@ -35,5 +35,17 @@ namespace GridDomain.Node.Configuration.Composition
             Register<InstanceSagaConfiguration<TSaga, TData, TStartMessage,TFactory>>(container);
         }
 
+        public static void RegisterStateSaga<TSaga, TState, TStartMessage, TFactory>(this IUnityContainer container)
+            where TFactory : ISagaFactory<TSaga, TState>, ISagaFactory<TSaga, TStartMessage>, ISagaFactory<TSaga, Guid> 
+            where TSaga : ISagaInstance
+            //where TSaga : Saga<TState>
+            //where TState : class, ISagaState<State>
+            //where TFactory : ISagaFactory<ISagaInstance<TSaga, TState>, SagaDataAggregate<TState>>,
+                             //ISagaFactory<ISagaInstance<TSaga, TState>, TStartMessage>,
+                             //ISagaFactory<ISagaInstance<TSaga, TState>, Guid>
+        {
+            Register<StateSagaConfiguration<TSaga, TState, TStartMessage, TFactory>>(container);
+        }
+
     }
 }

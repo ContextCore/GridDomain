@@ -1,6 +1,7 @@
 ﻿using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 
 namespace GridDomain.Scheduling.Integration
 {

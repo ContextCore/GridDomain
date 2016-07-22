@@ -60,7 +60,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (JobPersistenceException e)
             {
-                if (e.InnerException.GetType() == typeof(ObjectAlreadyExistsException))
+                if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException))
                 {
                     Sender.Tell(new AlreadyScheduled(key));
                 }
