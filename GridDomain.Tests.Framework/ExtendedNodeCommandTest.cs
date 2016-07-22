@@ -1,3 +1,5 @@
+using System;
+using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
@@ -23,8 +25,9 @@ namespace GridDomain.Tests.Framework
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var actorSystem = InMemory ? Sys : ActorSystemFactory.CreateActorSystem(akkaConf);
-            return new GridDomainNode(CreateConfiguration(),CreateMap(),TransportMode.Standalone, actorSystem);
+            Func<ActorSystem[]> actorSystem = () => new [] { InMemory ? Sys : ActorSystemFactory.CreateActorSystem(akkaConf)};
+
+            return new GridDomainNode(CreateConfiguration(),CreateMap(), actorSystem);
         }
     }
 }
