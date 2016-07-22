@@ -1,8 +1,6 @@
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
-using Serilog;
-using Serilog.Events;
 
 namespace GridDomain.Node
 {
@@ -10,18 +8,15 @@ namespace GridDomain.Node
                                                IHandler<ICommand>,
                                                IHandler<ICommandFault>
     {
-        private static readonly ILogger _log  = new LoggerConfiguration().WriteTo
-                                            .RollingFile(".\\GridDomainLogs\\TransportMessages\\logs-{Date}.txt")
-                                            .WriteTo.Console(LogEventLevel.Error)
-                                            .CreateLogger();
+        private static readonly ISoloLogger Log = LogManager.GetLogger(new DefaultLoggerFactory(new GridDomainInternalLoggerConfiguration())).ForContext("GridInternal", true);
         private void Handle(object msg)
         {
-            _log.Information("got message from transpot: {@msg}",msg);
+            Log.Info("got message from transpot: {@msg}", msg);
         }
 
         public void Handle(DomainEvent msg)
         {
-            Handle((object) msg);
+            Handle((object)msg);
         }
 
         public void Handle(ICommand msg)

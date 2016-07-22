@@ -1,6 +1,5 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Scheduling.Integration;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
@@ -10,7 +9,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         {
             router.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
             router.RegisterSaga(TestSaga.SagaDescriptor);
-            new SchedulingRouteMap().Register(router);
         }
     }
 }

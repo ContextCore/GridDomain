@@ -9,11 +9,11 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class Aggregate : AggregateBase
     {
-       
+
         #region AsyncMethods
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
-        private readonly IDictionary<Guid,AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
-        public readonly  HashSet<AsyncEventsInProgress> AsyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
+        private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
+        public readonly HashSet<AsyncEventsInProgress> AsyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
 
         public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
         {
@@ -23,7 +23,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {
-            var asyncMethodStarted = new AsyncEventsInProgress(eventProducer,Guid.NewGuid());
+            var asyncMethodStarted = new AsyncEventsInProgress(eventProducer, Guid.NewGuid());
             AsyncUncomittedEvents.Add(asyncMethodStarted);
             _asyncEventsResults.Add(asyncMethodStarted.InvocationId, asyncMethodStarted);
         }
@@ -59,7 +59,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             if (!_futureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));            
+            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
             RaiseEvent(e.Event);
         }
 
@@ -68,18 +68,18 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             RaiseEvent(new FutureEventScheduledEvent(Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent:DomainEvent
+        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent : DomainEvent
         {
-            var eventsToCancel = this._futureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent) fe.Event)).ToArray();
+            var eventsToCancel = this._futureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
 
             var cancelEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id));
-            foreach(var e in cancelEvents)
+            foreach (var e in cancelEvents)
                 RaiseEvent(e);
         }
 
         private void Apply(FutureEventScheduledEvent e)
         {
-            _futureEvents.Add(e.Id, e);
+            _futureEvents[e.Id] = e;
         }
 
         private void Apply(FutureEventOccuredEvent e)

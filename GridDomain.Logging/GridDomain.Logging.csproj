@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="DefaultLoggerConfiguration.cs" />
     <Compile Include="DefaultLoggerFactory.cs" />
+    <Compile Include="GridDomainInternalLoggerConfiguration.cs" />
     <Compile Include="ISoloLogger.cs" />
     <Compile Include="ILoggerFactory.cs" />
     <Compile Include="LogManager.cs" />

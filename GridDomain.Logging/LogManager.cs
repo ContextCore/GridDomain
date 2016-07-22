@@ -7,12 +7,12 @@ namespace GridDomain.Logging
 
         public static void SetLoggerFactory(ILoggerFactory loggerFactory)
         {
-         _loggerFactory = loggerFactory;
+            _loggerFactory = loggerFactory;
         }
 
-        public static ISoloLogger GetLogger()
+        public static ISoloLogger GetLogger(ILoggerFactory factory = null)
         {
-            return _loggerFactory.GetLogger();
+            return factory != null ? factory.GetLogger() : _loggerFactory.GetLogger();
         }
     }
 }

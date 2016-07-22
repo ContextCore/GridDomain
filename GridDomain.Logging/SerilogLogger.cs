@@ -5,7 +5,7 @@ namespace GridDomain.Logging
 {
     public class SerilogLogger : ISoloLogger
     {
-        private readonly ILogger _log;
+        private ILogger _log;
         
       
         public SerilogLogger(ILogger log)
@@ -15,7 +15,7 @@ namespace GridDomain.Logging
 
         public ISoloLogger ForContext(string name, object value)
         {
-            _log.ForContext(name, value);
+            _log =_log.ForContext(name, value);
             return this;
         }
 

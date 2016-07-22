@@ -6,7 +6,7 @@ namespace GridDomain.Logging
     {
         private readonly LoggerConfiguration _configuration;
 
-        public DefaultLoggerFactory(LoggerConfiguration configuration= null)
+        public DefaultLoggerFactory(LoggerConfiguration configuration = null)
         {
             _configuration = configuration ?? new DefaultLoggerConfiguration();
         }
