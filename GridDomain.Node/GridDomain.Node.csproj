@@ -271,7 +271,7 @@
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
     <Compile Include="Configuration\Composition\Container.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessagesRecieved.cs" />
-    <Compile Include="EmptyContainerConfig.cs" />
+    <Compile Include="Configuration\Composition\EmptyContainerConfig.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="IGridDomainNode.cs" />

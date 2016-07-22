@@ -1,7 +1,6 @@
-using GridDomain.Node.Configuration.Composition;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Configuration.Composition
 {
     internal class EmptyContainerConfig : IContainerConfiguration
     {
