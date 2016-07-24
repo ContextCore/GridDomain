@@ -7,8 +7,8 @@ using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -24,8 +24,9 @@ namespace GridDomain.Tests.Sagas.StateSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
+            var coffeeMachineId = Guid.NewGuid();
             publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            publisher.Publish(new GotMoreTiredEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new CoffeMakeFailedEvent(sourceId, coffeeMachineId).CloneWithSaga(sagaId));
 
             Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000) : TimeSpan.FromSeconds(1));
 

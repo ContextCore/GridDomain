@@ -2,8 +2,8 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
                 GotTiredEvent>(sagaId);
 
             Assert.AreEqual(sagaId, sagaState.Id);
-            Assert.AreEqual(SoftwareProgrammingSaga.States.DrinkingCoffe, sagaState.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffe, sagaState.MachineState);
         }
     }
 }

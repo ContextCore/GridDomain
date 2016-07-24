@@ -5,9 +5,9 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands
 {
     internal class SleepWellCommand: Command
     {
-        private GotMoreTiredEvent e;
+        private CoffeMakeFailedEvent e;
 
-        public SleepWellCommand(GotMoreTiredEvent e)
+        public SleepWellCommand(CoffeMakeFailedEvent e)
         {
             this.e = e;
         }

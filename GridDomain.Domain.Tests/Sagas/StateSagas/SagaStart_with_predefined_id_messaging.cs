@@ -1,9 +1,9 @@
 using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             var sourceId = Guid.NewGuid();
             publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            var expectedCommand = (DrinkCupOfCoffeCommand)WaitFor<DrinkCupOfCoffeCommand>().Message;
+            var expectedCommand = (MakeCoffeCommand)WaitFor<MakeCoffeCommand>().Message;
 
 
             Assert.AreEqual(sagaId, expectedCommand.SagaId);

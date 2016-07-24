@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
@@ -10,14 +10,14 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     class Given_saga_When_publishing_start_message : ProgrammingSoftwareSagaTest   
 {
         private Guid _sagaId;
-        private GotTiredDomainEvent _sagaStartMessage;
+        private GotTiredEvent _sagaStartMessage;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaData;
     
         [TestFixtureSetUp]
         public void When_publishing_start_message()
         {
-            _sagaStartMessage = (GotTiredDomainEvent)
-                new GotTiredDomainEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid())
+            _sagaStartMessage = (GotTiredEvent)
+                new GotTiredEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid())
                                          .CloneWithSaga(Guid.NewGuid());
 
             _sagaId = _sagaStartMessage.SagaId;

@@ -2,8 +2,8 @@ using System.Runtime.Remoting.Channels;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
-using GridDomain.Tests.Sagas.InstanceSagas.Commands;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NMoneys;
 
 
@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
     {
-        public SoftwareProgrammingSaga():base(typeof(GotTiredDomainEvent))
+        public SoftwareProgrammingSaga():base(typeof(GotTiredEvent))
         { 
             Event(() => GotTired);
             Event(() => CoffeReady);
@@ -50,10 +50,10 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 When(SleptWell).TransitionTo(Coding));
         }
 
-        public Event<GotTiredDomainEvent>      GotTired      { get; private set; } 
-        public Event<CoffeMadeDomainEvent>      CoffeReady      { get; private set; }
-        public Event<SleptWellDomainEvent>     SleptWell     { get; private set; } 
-        public Event<CoffeMakeFailedDomainEvent> CoffeNotAvailable { get; private set; }
+        public Event<GotTiredEvent>      GotTired      { get; private set; } 
+        public Event<CoffeMadeEvent>      CoffeReady      { get; private set; }
+        public Event<SleptWellEvent>     SleptWell     { get; private set; } 
+        public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
 
         public State Coding       { get; private set; }
         public State MakingCoffee { get; private set; }

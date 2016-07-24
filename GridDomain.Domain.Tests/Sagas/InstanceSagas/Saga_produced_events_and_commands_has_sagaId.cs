@@ -2,8 +2,8 @@ using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.InstanceSagas.Commands;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredDomainEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
             var expectedCommand = (MakeCoffeCommand)WaitFor<MakeCoffeCommand>().Message;
 
 
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredDomainEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
 
             var expectedCreatedEvent =
                 (SagaCreatedEvent<SoftwareProgrammingSagaData>)
@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredDomainEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
 
             var expectedTransitionedEvent =
                (SagaTransitionEvent<SoftwareProgrammingSagaData>)

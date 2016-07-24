@@ -1,7 +1,7 @@
 ﻿using System;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.StateSagas
@@ -17,21 +17,21 @@ namespace GridDomain.Tests.Sagas.StateSagas
         }
 
         private SoftwareProgrammingSaga Saga;
-        private GotMoreTiredEvent[] Messages;
+        private CoffeMakeFailedEvent[] Messages;
 
         public void Given_new_saga_with_state()
         {
-            var sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.DrinkingCoffe);
+            var sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.MakingCoffe);
 
             Saga = new SoftwareProgrammingSaga(sagaState);
 
 
             Messages = new[]
             {
-                new GotMoreTiredEvent(sagaState.Id),
-                new GotMoreTiredEvent(sagaState.Id),
-                new GotMoreTiredEvent(sagaState.Id),
-                new GotMoreTiredEvent(sagaState.Id)
+                new CoffeMakeFailedEvent(sagaState.Id,sagaState.CoffeMachineId),
+                new CoffeMakeFailedEvent(sagaState.Id,sagaState.CoffeMachineId),
+                new CoffeMakeFailedEvent(sagaState.Id,sagaState.CoffeMachineId),
+                new CoffeMakeFailedEvent(sagaState.Id,sagaState.CoffeMachineId)
             };
         }
 
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Then]
         public void All_dispatched_messages_are_commands()
         {
-            CollectionAssert.AllItemsAreInstancesOfType(Saga.CommandsToDispatch, typeof (SleepWellCommand));
+            CollectionAssert.AllItemsAreInstancesOfType(Saga.CommandsToDispatch, typeof (GoToWorkCommand));
         }
     }
 }

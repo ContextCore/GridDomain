@@ -3,33 +3,34 @@ using System.Linq;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Sagas.InstanceSagas;
+using GridDomain.Tests.Sagas.InstanceSagas.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
+namespace GridDomain.Tests.Sagas.StateSagas.Transitions
 {
     [TestFixture]
     internal class Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state
     {
 
-        public Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state(Given_AutomatonymousSaga given)
+        public Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state(Given_State_SoftareProgramming_Saga given)
         {
             _given = given;
         }
 
         public Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state()
-            :this(new Given_AutomatonymousSaga(m => m.Sleeping))
+            :this(new Given_State_SoftareProgramming_Saga(m => m.Sleeping))
         {
         }
 
-        private readonly Given_AutomatonymousSaga _given;
-        private static GotTiredEvent _gotTiredEvent;
+        private readonly Given_State_SoftareProgramming_Saga _given;
+        private static GotTiredDomainEvent _gotTiredDomainEvent;
         private IAggregate SagaDataAggregate => _given.SagaDataAggregate;
 
         private static void When_apply_known_but_not_mapped_event_in_state(ISagaInstance sagaInstance)
         {
-            _gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            sagaInstance.Transit(_gotTiredEvent);
+            _gotTiredDomainEvent = new GotTiredDomainEvent(Guid.NewGuid());
+            sagaInstance.Transit(_gotTiredDomainEvent);
         }
 
         [Then]
@@ -45,7 +46,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
             SagaDataAggregate.ClearUncommittedEvents();
             When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
             var @event = SagaDataAggregate.GetUncommittedEvents().OfType<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>().First();
-            Assert.AreEqual(_gotTiredEvent, @event.Message);
+            Assert.AreEqual(_gotTiredDomainEvent, @event.Message);
         }
     }
 }

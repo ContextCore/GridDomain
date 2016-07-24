@@ -4,8 +4,8 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.FutureEvents;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 
