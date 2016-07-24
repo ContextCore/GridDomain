@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         {
             _sagaId = Guid.NewGuid();
             _machine = new SoftwareProgrammingSaga();
-            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData();
+            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_machine.Sleeping.Name);
             _message = new GotTiredDomainEvent(Guid.NewGuid());
         }
 
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
                 _machine.GotTired,
                 _message);
 
-            yield return new InstanceSagaTransitionEvent<SoftwareProgrammingSagaData>(_sagaId,_softwareProgrammingSagaData, _machine.Sleeping.Name);
+            yield return new SagaTransitionEvent<SoftwareProgrammingSagaData>(_sagaId,_softwareProgrammingSagaData);
         }
 
         [Test]

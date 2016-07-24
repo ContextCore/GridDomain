@@ -13,22 +13,4 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             SagaData = sagaData;
         }
     }
-
-    public class InstanceSagaTransitionEvent<TSagaData> : SagaStateEvent
-    {
-        public TSagaData SagaData { get; }
-        public string StateName { get; set; }
-
-        public InstanceSagaTransitionEvent(Guid sourceId, TSagaData sagaData, string stateName)
-            : base(sourceId)
-        {
-            SagaData = sagaData;
-            StateName = stateName;
-        }
-
-        public InstanceSagaTransitionEvent<TSagaData> New(Guid sourceId, TSagaData sagaData, State newMachineState)
-        {
-            return new InstanceSagaTransitionEvent<TSagaData>(sourceId, sagaData, newMachineState.Name);
-        }
-    }
 }

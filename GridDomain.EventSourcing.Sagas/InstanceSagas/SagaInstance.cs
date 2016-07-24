@@ -38,17 +38,18 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> dataAggregate)
         {
-            if (string.IsNullOrEmpty(dataAggregate.CurrentStateName))
+            var sagaData = dataAggregate.Data;
+
+            if (string.IsNullOrEmpty(sagaData.CurrentState))
                 throw new MachineStateUnititializedException();
 
             _dataAggregate = dataAggregate;
             Machine = machine;
 
-            var currentStateName = dataAggregate.CurrentStateName;
-            var initialState = Machine.GetState(currentStateName);
-            Machine.TransitionToState(dataAggregate.Data, initialState);
+            var initialState = Machine.GetState(sagaData.CurrentState);
+            Machine.TransitionToState(sagaData, initialState);
 
-            Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.State.Name, context.Instance);
+            Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.Instance);
             Machine.OnEventReceived += (sender, context) => dataAggregate.RememberEvent(context.Event, context.SagaData, context.EventData);
             _transitGenericMethodInfo = GetType()
                                        .GetMethods()

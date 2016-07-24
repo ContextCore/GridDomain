@@ -17,13 +17,13 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         {
             _sagaId = Guid.NewGuid();
             _machine = new SoftwareProgrammingSaga();
-            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData();
+            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_machine.Sleeping.Name);
         }
 
         protected override IEnumerable<DomainEvent> GivenEvents()
         {
-            yield return new InstanceSagaCreatedEvent<SoftwareProgrammingSagaData>(
-                _softwareProgrammingSagaData, _sagaId, _machine.Sleeping.Name);
+            yield return new SagaCreatedEvent<SoftwareProgrammingSagaData>(
+                _softwareProgrammingSagaData, _sagaId);
         }
 
         [Test]
