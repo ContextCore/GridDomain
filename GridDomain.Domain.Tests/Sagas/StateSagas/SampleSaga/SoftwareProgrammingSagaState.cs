@@ -15,21 +15,20 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         {
         }
 
-        public void RememberEvent(CoffeMakeFailedEvent e)
+        public void RememberBadCoffeMachine(Guid machineId)
         {
-            RaiseEvent(new CoffeMakeFailedRememberedEvent(Id,e));
+            RaiseEvent(new BadCoffeMachineRememberedEvent(Id,machineId));
         }
 
-        private void Apply(CoffeMakeFailedRememberedEvent e)
+        private void Apply(BadCoffeMachineRememberedEvent e)
         {
-            SourceId = e.SourceId;
+            CoffeMachineId = e.CoffeMachineId;
         }
         private void Apply(PersonRememberedEvent e)
         {
             PersonId = e.PersonId;
         }
 
-        public Guid SourceId { get; private set; }
         public Guid CoffeMachineId { get; private set; }
         public Guid PersonId { get; private set; }
 

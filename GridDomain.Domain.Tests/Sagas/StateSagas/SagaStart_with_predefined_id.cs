@@ -17,26 +17,52 @@ namespace GridDomain.Tests.Sagas.StateSagas
     [TestFixture]
     public class SagaStart_with_predefined_id : SoftwareProgramming_StateSaga_Test
     {
-        [Test]
-        public void When_remember_message_than_saga_state_should_be_changed()
+        private Guid _sagaId;
+        private SoftwareProgrammingSagaState _sagaState;
+        private Guid _personId;
+        private Guid _coffeeMachineId;
+
+        [TestFixtureSetUp]
+        public void When_remember_message()
         {
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
+            _sagaId = Guid.NewGuid();
 
-            var sourceId = Guid.NewGuid();
-            var coffeeMachineId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            publisher.Publish(new CoffeMakeFailedEvent(sourceId, coffeeMachineId).CloneWithSaga(sagaId));
+            _personId = Guid.NewGuid();
+            _coffeeMachineId = Guid.NewGuid();
+            publisher.Publish(new GotTiredEvent(_personId).CloneWithSaga(_sagaId));
+            publisher.Publish(new CoffeMakeFailedEvent(_coffeeMachineId, _personId).CloneWithSaga(_sagaId));
 
             Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000) : TimeSpan.FromSeconds(1));
 
-            var sagaState = LoadSagaState<SoftwareProgrammingSaga,
-                                          SoftwareProgrammingSagaState,
-                                          GotTiredEvent>(sagaId);
+            _sagaState = LoadSagaState<SoftwareProgrammingSaga,
+                SoftwareProgrammingSagaState,
+                GotTiredEvent>(_sagaId);
 
-            Assert.AreEqual(sagaId, sagaState.Id);
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping, sagaState.MachineState);
-            Assert.AreEqual(sagaState.SourceId, sourceId);
+        }
+
+        [Then]
+        public void Saga_state_should_have_changed_state()
+        {
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping, _sagaState.MachineState);
+        }
+
+        [Then]
+        public void Saga_state_should_remember_person_from_event()
+        {
+            Assert.AreEqual(_personId, _sagaState.PersonId);
+        }
+
+        [Then]
+        public void Saga_state_should_remember_coffe_machine_from_event()
+        {
+            Assert.AreEqual(_coffeeMachineId, _sagaState.CoffeMachineId);
+        }
+
+        [Then]
+        public void Saga_state_should_has_saga_Id()
+        {
+            Assert.AreEqual(_sagaId, _sagaState.Id);
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);        

@@ -10,26 +10,44 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    public class SagaStart_with_predifined_id_and_state_aggregate_change_in_process:
+    public class Given_SagaStart_with_predifined_id:
         SoftwareProgramming_StateSaga_Test
     {
-
-        [Test]
-        public void When_start_message_has_saga_id_Saga_starts_with_it()
+        private Guid _sagaId;
+        private SoftwareProgrammingSagaState _sagaState;
+        private Guid _personId;
+        //_and_state_aggregate_change_in_process
+        [TestFixtureSetUp]
+        public void When_start_message_has_saga_id()
         {
+            _sagaId = Guid.NewGuid();
+            _personId = Guid.NewGuid();
+
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
+            publisher.Publish(new GotTiredEvent(_personId).CloneWithSaga(_sagaId));
 
-            publisher.Publish(new GotTiredEvent(Guid.NewGuid()).CloneWithSaga(sagaId));
+            _sagaState = LoadSagaState<SoftwareProgrammingSaga,
+                                       SoftwareProgrammingSagaState,
+                                       GotTiredEvent>(_sagaId);
+        }
 
-            Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000) : TimeSpan.FromSeconds(1));
+        [Then]
+        public void Saga_state_fills_from_message_data()
+        {
+            Assert.AreEqual(_personId, _sagaState.PersonId);
+        }
 
-            var sagaState = LoadSagaState<SoftwareProgrammingSaga,
-                SoftwareProgrammingSagaState,
-                GotTiredEvent>(sagaId);
+        [Then]
+        public void Saga_starts_with_id_from_start_message()
+        {
+            Assert.AreEqual(_sagaId, _sagaState.Id);
+        }
 
-            Assert.AreEqual(sagaId, sagaState.Id);
-            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffe, sagaState.MachineState);
+        [Then]
+        public void Saga_state_is_correctly_changed()
+        {
+            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffe, _sagaState.MachineState);
+
         }
     }
 }

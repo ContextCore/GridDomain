@@ -22,10 +22,10 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             var coffeMakeFailedTrigger = RegisterEvent<CoffeMakeFailedEvent>(Triggers.GoToSleep);
 
             //TODO: refactor this ugly hack! 
-            RegisterEvent<CoffeMakeFailedRememberedEvent>(Triggers.DummyForSagaStateChange);
+            RegisterEvent<BadCoffeMachineRememberedEvent>(Triggers.DummyForSagaStateChange);
 
             Machine.Configure(States.Working)
-                .Permit(Triggers.GoForCoffe, States.MakingCoffe);
+                   .Permit(Triggers.GoForCoffe, States.MakingCoffe);
 
             Machine.Configure(States.MakingCoffe)
                 .OnEntryFrom(gotTiredTriggerTrigger, e =>
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             Machine.Configure(States.Sleeping)
                 .OnEntryFrom(coffeMakeFailedTrigger,
                     e => {
-                        State.RememberEvent(e);
+                        State.RememberBadCoffeMachine(e.CoffeMachineId);
                         Dispatch(new GoToWorkCommand(e.ForPersonId));
                     })
                 .Permit(Triggers.SleepAnough, States.Working);

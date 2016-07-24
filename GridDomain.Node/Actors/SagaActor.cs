@@ -23,15 +23,19 @@ namespace GridDomain.Node.Actors
     /// <typeparam name="TSagaState"></typeparam>
     /// <typeparam name="TStartMessage"></typeparam>
     public class SagaActor<TSaga, TSagaState, TStartMessage> :
-        ReceivePersistentActor where TSaga : ISagaInstance
+        ReceivePersistentActor where TSaga : class,ISagaInstance 
         where TSagaState : AggregateBase
         where TStartMessage : DomainEvent
     {
         private readonly IPublisher _publisher;
         private readonly ISagaFactory<TSaga, TStartMessage> _sagaStarter;
-        public TSaga Saga;
         private readonly ISagaFactory<TSaga, TSagaState> _sagaFactory;
-        private readonly TSagaState _sagaData;
+
+
+        private TSaga _saga;
+        private TSagaState _sagaData;
+        public TSaga Saga => _saga ?? (_saga = _sagaFactory.Create(_sagaData));
+
 
         public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
@@ -43,33 +47,24 @@ namespace GridDomain.Node.Actors
             _publisher = publisher;
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
-            var id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
-            _sagaData = aggregateFactory.Build<TSagaState>(id);
+            var sagaId = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
+            _sagaData = aggregateFactory.Build<TSagaState>(sagaId);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == id);
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == sagaId);
 
             Command<DomainEvent>(msg =>
             {
-               msg.Match()
-                  .With<TStartMessage>(start => Saga = _sagaStarter.Create(start));
-
+               msg.Match().With<TStartMessage>(start => _saga = _sagaStarter.Create(start));
                ProcessSaga(msg);
-
-            }, e => e.SagaId == id);
+            }, e => e.SagaId == sagaId);
 
             //recover messages will be provided only to right saga by using peristenceId
-            Recover<SnapshotOffer>(offer => Saga = _sagaFactory.Create((TSagaState) offer.Snapshot));
+            Recover<SnapshotOffer>(offer => _sagaData = (TSagaState)offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate)_sagaData).ApplyEvent(e));
         }
 
         private void ProcessSaga(object message)
         {
-            if (Saga == null)
-            {
-                //lazy create saga on first access
-                Saga = _sagaFactory.Create(_sagaData);
-            }
-
             Saga.Transit(message);
 
             ProcessSagaStateChange();
