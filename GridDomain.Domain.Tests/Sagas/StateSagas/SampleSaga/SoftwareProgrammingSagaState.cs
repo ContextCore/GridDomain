@@ -24,9 +24,19 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         {
             SourceId = e.SourceId;
         }
+        private void Apply(PersonRememberedEvent e)
+        {
+            PersonId = e.PersonId;
+        }
 
         public Guid SourceId { get; private set; }
         public Guid CoffeMachineId { get; private set; }
-      //  public Guid FavoritSofaId { get; private set; }
+        public Guid PersonId { get; private set; }
+
+        //  public Guid FavoritSofaId { get; private set; }
+        public void RememberPerson(Guid personId)
+        {
+            RaiseEvent(new PersonRememberedEvent(Id,personId));
+        }
     }
 }

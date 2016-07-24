@@ -220,11 +220,9 @@
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
-    <Compile Include="FutureEvents\AggregateDebugExtensions.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
-    <Compile Include="FutureEvents\CannotFindRequestedEventException.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_commands.cs" />
@@ -269,7 +267,12 @@
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id_messaging.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predifined_id_and_state_aggregate_change_in_process.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\CoffeMakeFailedRememberedEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_State_SoftareProgramming_Saga.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />

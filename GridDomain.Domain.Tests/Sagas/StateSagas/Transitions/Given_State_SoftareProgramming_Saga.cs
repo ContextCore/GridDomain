@@ -8,6 +8,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
     class Given_State_SoftareProgramming_Saga
     {
         public readonly SoftwareProgrammingSaga SagaMachine;
+        public SoftwareProgrammingSaga SagaInstance => SagaMachine;
         public readonly SoftwareProgrammingSagaState SagaDataAggregate;
 
         public Given_State_SoftareProgramming_Saga(SoftwareProgrammingSagaState initialState)

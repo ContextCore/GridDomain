@@ -16,10 +16,10 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         public static ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
         public SoftwareProgrammingSaga(SoftwareProgrammingSagaState state) : base(state)
         {
-            var parForSubscriptionTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);
-            var remainSubscriptionTrigger = RegisterEvent<CoffeMadeEvent>(Triggers.FeelWell);
-            var changeSubscriptionTrigger = RegisterEvent<SleptWellEvent>(Triggers.SleepAnough);
-            var revokeSubscriptionTrigger = RegisterEvent<CoffeMakeFailedEvent>(Triggers.GoToSleep);
+            var gotTiredTriggerTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);
+            var coffeMadeTrigger = RegisterEvent<CoffeMadeEvent>(Triggers.FeelWell);
+            var sleptWellTrigger = RegisterEvent<SleptWellEvent>(Triggers.SleepAnough);
+            var coffeMakeFailedTrigger = RegisterEvent<CoffeMakeFailedEvent>(Triggers.GoToSleep);
 
             //TODO: refactor this ugly hack! 
             RegisterEvent<CoffeMakeFailedRememberedEvent>(Triggers.DummyForSagaStateChange);
@@ -28,15 +28,16 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                 .Permit(Triggers.GoForCoffe, States.MakingCoffe);
 
             Machine.Configure(States.MakingCoffe)
-                .OnEntryFrom(parForSubscriptionTrigger, e =>
+                .OnEntryFrom(gotTiredTriggerTrigger, e =>
                 {
+                    State.RememberPerson(e.PersonId);
                     Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
                 })
                 .Permit(Triggers.FeelWell, States.Working)
                 .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
-                .OnEntryFrom(revokeSubscriptionTrigger,
+                .OnEntryFrom(coffeMakeFailedTrigger,
                     e => {
                         State.RememberEvent(e);
                         Dispatch(new GoToWorkCommand(e.ForPersonId));

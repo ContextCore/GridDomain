@@ -7,6 +7,7 @@ using CommonDomain;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;

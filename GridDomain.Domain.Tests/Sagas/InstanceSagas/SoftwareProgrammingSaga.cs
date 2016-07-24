@@ -33,7 +33,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     sagaData.PersonId = domainEvent.SourceId;
                     var soloLogger = LogManager.GetLogger();
                     soloLogger.Trace("Hello trace string");
-                 //   sagaData.Price = new Money(100);
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
                 })
                 .TransitionTo(MakingCoffee));
