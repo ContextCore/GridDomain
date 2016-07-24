@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Threading;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
@@ -44,8 +46,10 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Saga_state_should_contain_all_messages()
         {
-            var messagesSent = new object[] {_startMessage, _coffeMadeEvent, _reStartEvent};
-            CollectionAssert.AreEquivalent(messagesSent, _sagaDataAggregate.ReceivedMessages);
+            var messagesSent = new DomainEvent[] {_startMessage, _coffeMadeEvent, _reStartEvent}
+                                    ;
+            CollectionAssert.AreEquivalent(messagesSent.Select(m => m.SourceId), 
+                _sagaDataAggregate.ReceivedMessages.Cast<DomainEvent>().Select(m => m.SourceId));
         }
 
         [Then]
