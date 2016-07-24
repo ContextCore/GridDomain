@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void Saga_has_correct_state()
         {
             var saga = new SoftwareProgrammingSaga();
-            Assert.AreEqual(saga.MakingCoffee,_sagaData.Data.CurrentState);
+            Assert.AreEqual(saga.MakingCoffee.Name,_sagaData.Data.CurrentStateName);
         }
 
         [Then]

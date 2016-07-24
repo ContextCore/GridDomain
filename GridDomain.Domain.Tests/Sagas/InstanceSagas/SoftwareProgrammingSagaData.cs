@@ -5,21 +5,21 @@ using NMoneys;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSagaData : ISagaState<State>
+    class SoftwareProgrammingSagaData : ISagaState
     {
         public Guid PersonId { get; set; }
-        public string CurrentState { get; set; }
+        public string CurrentStateName { get; set; }
         public Guid CoffeeMachineId { get; }
         public Guid SofaId { get; }
        // public Money Price { get; set; }
 
-        public SoftwareProgrammingSagaData(string state,
+        public SoftwareProgrammingSagaData(string stateName,
                                            Guid sofaId = default(Guid),
                                            Guid coffeeMachineId = default(Guid))
         {
             SofaId = sofaId;
             CoffeeMachineId = coffeeMachineId;
-            CurrentState = state;
+            CurrentStateName = stateName;
         }
 
         public SoftwareProgrammingSagaData(State state,
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             SofaId = sofaId;
             CoffeeMachineId = coffeeMachineId;
-            CurrentState = state.Name;
+            CurrentStateName = state.Name;
         }
     }
 }

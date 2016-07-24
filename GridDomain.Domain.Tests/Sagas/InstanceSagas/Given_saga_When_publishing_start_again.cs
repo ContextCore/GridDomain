@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void Saga_state_should_be_correct()
         {
             var saga = new SoftwareProgrammingSaga();
-            Assert.AreEqual(saga.MakingCoffee, _sagaDataAggregate.Data.CurrentState);
+            Assert.AreEqual(saga.MakingCoffee.Name, _sagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]

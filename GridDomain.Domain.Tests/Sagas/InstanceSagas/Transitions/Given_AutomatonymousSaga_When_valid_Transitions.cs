@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             When_execute_valid_transaction(given.SagaInstance, new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid()));
-            Assert.AreEqual(given.SagaMachine.Coding, given.SagaDataAggregate.Data.CurrentState);
+            Assert.AreEqual(given.SagaMachine.Coding.Name, given.SagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]
@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             object msg = new CoffeMadeDomainEvent(Guid.NewGuid(), Guid.NewGuid());
             given.SagaInstance.Transit(msg);
-            Assert.AreEqual(given.SagaMachine.Coding, given.SagaDataAggregate.Data.CurrentState);
+            Assert.AreEqual(given.SagaMachine.Coding.Name, given.SagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]

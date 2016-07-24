@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
-using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public static class SagaExtensions
     {
-        public static ISagaDescriptor GetDescriptor<TSagaData>(this Saga<TSagaData> saga) where TSagaData : class, ISagaState<State>
+        public static ISagaDescriptor GetDescriptor<TSagaData>(this Saga<TSagaData> saga) where TSagaData : class, ISagaState
         {
             var descriptor = new SagaDescriptor();
             FillAcceptMessages(saga, descriptor);
@@ -19,7 +18,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             return descriptor;
         }
 
-        private static void FillCommands<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState<State>
+        private static void FillCommands<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState
         {
             foreach (var cmdType in saga.DispatchedCommands)
             {
@@ -27,7 +26,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             }
         }
 
-        private static void FillAcceptMessages<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState<State>
+        private static void FillAcceptMessages<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState
         {
             foreach (var eventType in saga.Events.Select(e => e.GetType())
                 .Where(t => t.IsGenericType))

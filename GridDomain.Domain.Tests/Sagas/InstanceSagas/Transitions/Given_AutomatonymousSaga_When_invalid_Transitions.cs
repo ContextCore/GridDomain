@@ -50,9 +50,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         [Then]
         public void Saga_state_not_changed()
         {
-            var stateHashBefore = _given.SagaDataAggregate.Data.CurrentState.GetHashCode();
+            var stateHashBefore = _given.SagaDataAggregate.Data.CurrentStateName.GetHashCode();
             SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
-            var stateHashAfter = _given.SagaDataAggregate.Data.CurrentState.GetHashCode();
+            var stateHashAfter = _given.SagaDataAggregate.Data.CurrentStateName.GetHashCode();
 
             Assert.AreEqual(stateHashBefore, stateHashAfter);
         }

@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         public void State_not_changed()
         {
             When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
-            Assert.AreEqual(_given.SagaMachine.Sleeping, _given.SagaDataAggregate.Data.CurrentState);
+            Assert.AreEqual(_given.SagaMachine.Sleeping.Name, _given.SagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]

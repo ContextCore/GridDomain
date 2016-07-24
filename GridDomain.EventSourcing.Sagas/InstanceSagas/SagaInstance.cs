@@ -12,7 +12,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga, SagaDataAggregate<TSagaData> data) 
             where TSaga : Saga<TSagaData> 
-            where TSagaData : class, ISagaState<State>
+            where TSagaData : class, ISagaState
         {
             return new SagaInstance<TSaga, TSagaData>(saga, data);
         }
@@ -20,7 +20,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
     public class SagaInstance<TSaga,TSagaData>: ISagaInstance<TSaga, TSagaData> 
         where TSaga : Saga<TSagaData>
-        where TSagaData : class, ISagaState<State>
+        where TSagaData : class, ISagaState
     {
         public readonly Saga<TSagaData> Machine;
         private readonly SagaDataAggregate<TSagaData> _dataAggregate;
@@ -40,13 +40,13 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             var sagaData = dataAggregate.Data;
 
-            if (string.IsNullOrEmpty(sagaData.CurrentState))
+            if (string.IsNullOrEmpty(sagaData.CurrentStateName))
                 throw new MachineStateUnititializedException();
 
             _dataAggregate = dataAggregate;
             Machine = machine;
 
-            var initialState = Machine.GetState(sagaData.CurrentState);
+            var initialState = Machine.GetState(sagaData.CurrentStateName);
             Machine.TransitionToState(sagaData, initialState);
 
             Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.Instance);

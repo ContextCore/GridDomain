@@ -6,7 +6,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState<State>
+    public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
         private readonly Type _startMessageType;
         public readonly List<ICommand> CommandsToDispatch = new List<ICommand>();
@@ -19,6 +19,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public Saga(Type startMessageType)
         {
             _startMessageType = startMessageType;
+            InstanceState(d => d.CurrentStateName);
         }
 
         public Type StartMessage => _startMessageType;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Automatonymous;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
@@ -14,7 +13,7 @@ namespace GridDomain.EventSourcing.Sagas
         void Transit<T>(T message) where T : class;
     }
 
-    public interface ISagaInstance<TSaga, TData> : ISagaInstance where TData : ISagaState<State>
+    public interface ISagaInstance<TSaga, TData> : ISagaInstance where TData : ISagaState
     {
         new SagaDataAggregate<TData> Data { get; }
     }
