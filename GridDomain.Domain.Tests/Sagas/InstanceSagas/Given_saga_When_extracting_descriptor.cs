@@ -1,7 +1,7 @@
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.InstanceSagas.Commands;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Descriptor_contains_message_start_saga()
         {
-            Assert.AreEqual(typeof(GotTiredDomainEvent),_descriptor.StartMessage);
+            Assert.AreEqual(typeof(GotTiredEvent),_descriptor.StartMessage);
         }
 
         [Then]
@@ -60,10 +60,10 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var expectedEvents = new []
             {
-                typeof(GotTiredDomainEvent),
-                typeof(CoffeMadeDomainEvent),
-                typeof(SleptWellDomainEvent),
-                typeof(CoffeMakeFailedDomainEvent)
+                typeof(GotTiredEvent),
+                typeof(CoffeMadeEvent),
+                typeof(SleptWellEvent),
+                typeof(CoffeMakeFailedEvent)
             };
 
             CollectionAssert.AreEquivalent(_descriptor.AcceptMessages, expectedEvents);

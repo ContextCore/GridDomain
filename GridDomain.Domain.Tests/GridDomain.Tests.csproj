@@ -150,6 +150,10 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NMoneys, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NMoneys.4.2.0.0\lib\Net40-client\NMoneys.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -204,6 +208,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
     <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
       <Private>True</Private>
@@ -215,11 +220,9 @@
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
-    <Compile Include="FutureEvents\AggregateDebugExtensions.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
-    <Compile Include="FutureEvents\CannotFindRequestedEventException.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_commands.cs" />
@@ -229,15 +232,15 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
-    <Compile Include="Sagas\InstanceSagas\Commands\GoSleepCommand.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
-    <Compile Include="Sagas\InstanceSagas\Events\CoffeMakeFailedDomainEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\Commands\MakeCoffeCommand.cs" />
-    <Compile Include="Sagas\InstanceSagas\Events\SleptWellDomainEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\Events\GotTiredDomainEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\Events\CoffeMadeDomainEvent.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Events\CoffeMakeFailedEvent.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\MakeCoffeCommand.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Events\SleptWellEvent.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Events\GotTiredEvent.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Events\CoffeMadeEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
-    <Compile Include="Sagas\InstanceSagas\Recover\Given_instance_saga_When_recovering.cs" />
+    <Compile Include="Sagas\InstanceSagas\Recovery\Given_instance_saga_When_recovering.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId.cs" />
     <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
@@ -263,9 +266,13 @@
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id_messaging.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predifined_id_and_state_aggregate_change_in_process.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\Events\GotMoreTiredEvent.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\GotMoreTiredSagaEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
+    <Compile Include="Sagas\StateSagas\Transitions\Given_State_SoftareProgramming_Saga.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
@@ -346,11 +353,6 @@
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message.cs" />
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\Commands\SleepWellCommand.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\Commands\DrinkCupOfCoffeCommand.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\Events\SleptWellEvent.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\Events\GotTiredEvent.cs" />
-    <Compile Include="Sagas\StateSagas\SampleSaga\Events\FeltGoodEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />

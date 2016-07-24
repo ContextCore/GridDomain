@@ -38,7 +38,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         }
 
         public static CreateActorRouteMessage ForSaga<TSaga, TSagaState, TStartMessage>(string name, params MessageRoute[] routes) 
-            where TSaga : ISagaInstance 
+            where TSaga : class, ISagaInstance 
             where TSagaState : AggregateBase 
             where TStartMessage : DomainEvent
         {

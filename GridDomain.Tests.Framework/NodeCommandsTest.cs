@@ -94,7 +94,7 @@ namespace GridDomain.Tests.Framework
             return actor.UnderlyingActor.Aggregate;
         }
 
-        public TSagaState LoadSagaState<TSaga, TSagaState, TStartMessage>(Guid id) where TStartMessage : DomainEvent where TSagaState : AggregateBase where TSaga : ISagaInstance
+        public TSagaState LoadSagaState<TSaga, TSagaState, TStartMessage>(Guid id) where TStartMessage : DomainEvent where TSagaState : AggregateBase where TSaga : class, ISagaInstance
         {
             var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState, TStartMessage>>();
             var name = AggregateActorName.New<TSagaState>(id).ToString();

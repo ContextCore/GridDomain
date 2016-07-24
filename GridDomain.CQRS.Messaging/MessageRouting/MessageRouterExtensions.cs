@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Automatonymous;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
@@ -16,7 +15,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         public static void RegisterSaga<TSaga,TData>(this IMessagesRouter router) 
             where TSaga : Saga<TData>, new()
-            where TData : class, ISagaState<State>
+            where TData : class, ISagaState
         {
             router.RegisterSaga(new TSaga().GetDescriptor(), typeof(TSaga).Name);
         }

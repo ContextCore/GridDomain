@@ -1,5 +1,4 @@
 using System;
-using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Microsoft.Practices.Unity;
@@ -11,7 +10,7 @@ namespace GridDomain.Node.Configuration.Composition
         where TSagaFactory : ISagaFactory<ISagaInstance<TSaga,TData>, SagaDataAggregate<TData>>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
-        where TData : class, ISagaState<State>
+        where TData : class, ISagaState
     {
         public void Register(IUnityContainer container)
         {

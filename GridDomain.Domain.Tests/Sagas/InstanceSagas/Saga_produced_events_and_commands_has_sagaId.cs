@@ -2,16 +2,26 @@ using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.InstanceSagas.Commands;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Saga_produced_events_and_commands_has_sagaId : ProgrammingSoftwareSagaTest
+    public class Saga_produced_events_and_commands_has_sagaId : ProgrammingSoftwareSagaTest
     {
+        public Saga_produced_events_and_commands_has_sagaId():base(true)
+        {
+
+        }
+
+        public Saga_produced_events_and_commands_has_sagaId(bool inMemory) : base(inMemory)
+        {
+
+        }
+
         [Test]
         public void When_dispatch_command_than_command_should_have_right_sagaId()
         {
@@ -19,7 +29,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredDomainEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
             var expectedCommand = (MakeCoffeCommand)WaitFor<MakeCoffeCommand>().Message;
 
 
@@ -33,7 +43,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredDomainEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
 
             var expectedCreatedEvent =
                 (SagaCreatedEvent<SoftwareProgrammingSagaData>)
@@ -50,7 +60,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var sagaId = Guid.NewGuid();
 
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredDomainEvent(sourceId).CloneWithSaga(sagaId));
+            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
 
             var expectedTransitionedEvent =
                (SagaTransitionEvent<SoftwareProgrammingSagaData>)

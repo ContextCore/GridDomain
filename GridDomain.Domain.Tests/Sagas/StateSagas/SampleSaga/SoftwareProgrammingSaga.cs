@@ -1,45 +1,46 @@
 using System;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Commands;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
     public class SoftwareProgrammingSaga :
         StateSaga<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers, SoftwareProgrammingSagaState, GotTiredEvent>,
         IHandler<SleptWellEvent>,
-        IHandler<GotMoreTiredEvent>,
-        IHandler<FeltGoodEvent>
+        IHandler<CoffeMakeFailedEvent>,
+        IHandler<CoffeMadeEvent>
     {
 
         public static ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
         public SoftwareProgrammingSaga(SoftwareProgrammingSagaState state) : base(state)
         {
-            var parForSubscriptionTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);
-            var remainSubscriptionTrigger = RegisterEvent<FeltGoodEvent>(Triggers.FeelWell);
-            var changeSubscriptionTrigger = RegisterEvent<SleptWellEvent>(Triggers.SleepAnough);
-            var revokeSubscriptionTrigger = RegisterEvent<GotMoreTiredEvent>(Triggers.GoToSleep);
+            var gotTiredTriggerTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);
+            var coffeMadeTrigger = RegisterEvent<CoffeMadeEvent>(Triggers.FeelWell);
+            var sleptWellTrigger = RegisterEvent<SleptWellEvent>(Triggers.SleepAnough);
+            var coffeMakeFailedTrigger = RegisterEvent<CoffeMakeFailedEvent>(Triggers.GoToSleep);
 
             //TODO: refactor this ugly hack! 
-            RegisterEvent<GotMoreTiredSagaEvent>(Triggers.DummyForSagaStateChange);
+            RegisterEvent<BadCoffeMachineRememberedEvent>(Triggers.DummyForSagaStateChange);
 
             Machine.Configure(States.Working)
-                .Permit(Triggers.GoForCoffe, States.DrinkingCoffe);
+                   .Permit(Triggers.GoForCoffe, States.MakingCoffe);
 
-            Machine.Configure(States.DrinkingCoffe)
-                .OnEntryFrom(parForSubscriptionTrigger, e =>
+            Machine.Configure(States.MakingCoffe)
+                .OnEntryFrom(gotTiredTriggerTrigger, e =>
                 {
-                    Dispatch(new DrinkCupOfCoffeCommand(e));
+                    State.RememberPerson(e.PersonId);
+                    Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
                 })
                 .Permit(Triggers.FeelWell, States.Working)
                 .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
-                .OnEntryFrom(revokeSubscriptionTrigger,
+                .OnEntryFrom(coffeMakeFailedTrigger,
                     e => {
-                        State.RememberEvent(e);
-                        Dispatch(new SleepWellCommand(e));
+                        State.RememberBadCoffeMachine(e.CoffeMachineId);
+                        Dispatch(new GoToWorkCommand(e.ForPersonId));
                     })
                 .Permit(Triggers.SleepAnough, States.Working);
         }
@@ -49,7 +50,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             TransitState(e);
         }
 
-        public void Handle(GotMoreTiredEvent msg)
+        public void Handle(CoffeMakeFailedEvent msg)
         {
             TransitState(msg);
         }
@@ -59,7 +60,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             TransitState(msg);
         }
 
-        public void Handle(FeltGoodEvent msg)
+        public void Handle(CoffeMadeEvent msg)
         {
             TransitState(msg);
         }
@@ -76,7 +77,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         public enum States
         {
             Working,
-            DrinkingCoffe,
+            MakingCoffe,
             Sleeping
         }
     }

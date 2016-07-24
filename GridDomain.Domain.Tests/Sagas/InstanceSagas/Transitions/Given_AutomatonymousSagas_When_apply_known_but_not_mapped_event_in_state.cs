@@ -3,8 +3,7 @@ using System.Linq;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
@@ -24,20 +23,20 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         }
 
         private readonly Given_AutomatonymousSaga _given;
-        private static GotTiredDomainEvent _gotTiredDomainEvent;
+        private static GotTiredEvent _gotTiredEvent;
         private IAggregate SagaDataAggregate => _given.SagaDataAggregate;
 
         private static void When_apply_known_but_not_mapped_event_in_state(ISagaInstance sagaInstance)
         {
-            _gotTiredDomainEvent = new GotTiredDomainEvent(Guid.NewGuid());
-            sagaInstance.Transit(_gotTiredDomainEvent);
+            _gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
+            sagaInstance.Transit(_gotTiredEvent);
         }
 
         [Then]
         public void State_not_changed()
         {
             When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
-            Assert.AreEqual(_given.SagaMachine.Sleeping, _given.SagaDataAggregate.Data.CurrentState);
+            Assert.AreEqual(_given.SagaMachine.Sleeping.Name, _given.SagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]
@@ -46,7 +45,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
             SagaDataAggregate.ClearUncommittedEvents();
             When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
             var @event = SagaDataAggregate.GetUncommittedEvents().OfType<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>().First();
-            Assert.AreEqual(_gotTiredDomainEvent, @event.Message);
+            Assert.AreEqual(_gotTiredEvent, @event.Message);
         }
     }
 }

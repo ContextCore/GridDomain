@@ -10,7 +10,7 @@ using GridDomain.Node.AkkaMessaging;
 namespace GridDomain.Node.Actors
 {
     public class SagaHubActor<TSaga, TSagaState, TStartMessage> :
-        PersistentHubActor where TSaga : ISagaInstance
+        PersistentHubActor where TSaga : class, ISagaInstance
         where TSagaState  : AggregateBase 
         where TStartMessage : DomainEvent
     {

@@ -1,8 +1,7 @@
 using System;
 using GridDomain.CQRS;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
 
-namespace GridDomain.Tests.Sagas.InstanceSagas.Commands
+namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
 {
     internal class MakeCoffeCommand : Command
     {
