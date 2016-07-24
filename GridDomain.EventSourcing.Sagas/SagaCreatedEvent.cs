@@ -1,16 +1,34 @@
 using System;
+using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaCreatedEvent<TState> : SagaStateEvent
     {
-        public string StateName { get;  }
-        public SagaCreatedEvent(TState state, Guid sourceId, string stateName = null) : base(sourceId)
+        public SagaCreatedEvent(TState state, Guid sourceId) : base(sourceId)
         {
             State = state;
-            StateName = stateName;
         }
 
         public TState State { get; }
+    }
+
+
+    public class InstanceSagaCreatedEvent<TData> : SagaStateEvent
+    {
+        public string StateName { get; }
+
+        public InstanceSagaCreatedEvent(TData data, Guid sourceId, string stateName) : base(sourceId)
+        {
+            Data = data;
+            StateName = stateName;
+        }
+
+        public InstanceSagaCreatedEvent(TData data, Guid sourceId, State state) 
+            : this(data,sourceId,state.Name)
+        {
+        }
+
+        public TData Data { get; }
     }
 }

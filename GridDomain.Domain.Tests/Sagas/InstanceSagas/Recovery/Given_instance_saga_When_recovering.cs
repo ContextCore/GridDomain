@@ -30,11 +30,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Recover
 
             _data = aggregateFactory.Build<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId);
             var saga = new SoftwareProgrammingSaga();
-            var makingCoffeInitialState = new SoftwareProgrammingSagaData(saga.MakingCoffee);
+            var makingCoffeInitialState = new SoftwareProgrammingSagaData();
 
             var eventsToReplay = new DomainEvent[]
             {
-                new SagaCreatedEvent<SoftwareProgrammingSagaData>(makingCoffeInitialState, sagaId)
+                new InstanceSagaCreatedEvent<SoftwareProgrammingSagaData>(makingCoffeInitialState, sagaId,
+                saga.MakingCoffee.Name)
             };
 
             _data.ApplyEvents(eventsToReplay);

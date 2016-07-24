@@ -5,7 +5,7 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class SagaDataAggregate<TSagaData> : AggregateBase// where TSagaData: ISagaState<State>
+    public class SagaDataAggregate<TSagaData> : AggregateBase
     {
         public TSagaData Data { get; private set; }
         //for debugging purposes
@@ -18,28 +18,29 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public string CurrentStateName { get; private set; }
 
-        public SagaDataAggregate(Guid id, TSagaData state):this(id)
+        public SagaDataAggregate(Guid id, TSagaData data, string stateName):this(id)
         {
-            RaiseEvent(new SagaCreatedEvent<TSagaData>(state, id));
+            RaiseEvent(new InstanceSagaCreatedEvent<TSagaData>(data, id, stateName));
         }
         public void RememberTransition(string state, TSagaData modifiedData)
         {
-            RaiseEvent(new SagaTransitionEvent<TSagaData>(Id, modifiedData, state));
+            RaiseEvent(new InstanceSagaTransitionEvent<TSagaData>(Id, modifiedData, state));
         }
         public void RememberEvent(Event @event, TSagaData sagaData, object eventData = null)
         {
             RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event, eventData));
         }
 
-        public void Apply(SagaCreatedEvent<TSagaData> e)
+        public void Apply(InstanceSagaCreatedEvent<TSagaData> e)
         {
-            Data = e.State;
+            Data = e.Data;
             Id = e.SourceId;
+            CurrentStateName = e.StateName;
         }
-        public void Apply(SagaTransitionEvent<TSagaData> e)
+        public void Apply(InstanceSagaTransitionEvent<TSagaData> e)
         {
             Data = e.SagaData;
-            CurrentStateName = e.NewMachineState;
+            CurrentStateName = e.StateName;
         }
 
         public void Apply(SagaMessageReceivedEvent<TSagaData> e)

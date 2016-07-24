@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Automatonymous;
@@ -37,6 +38,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> dataAggregate)
         {
+            if (string.IsNullOrEmpty(dataAggregate.CurrentStateName))
+                throw new MachineStateUnititializedException();
+
             _dataAggregate = dataAggregate;
             Machine = machine;
 
@@ -64,5 +68,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             Machine.RaiseByExternalEvent(_dataAggregate.Data, message);
         }
+    }
+
+    public class MachineStateUnititializedException : Exception
+    {
     }
 }

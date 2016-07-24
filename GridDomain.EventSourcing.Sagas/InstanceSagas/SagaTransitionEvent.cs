@@ -6,18 +6,29 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     public class SagaTransitionEvent<TSagaData> : SagaStateEvent
     {
         public TSagaData SagaData { get; }
-        public string NewMachineState { get; set; }
 
-        public SagaTransitionEvent(Guid sourceId, TSagaData sagaData, string newMachineState)
+        public SagaTransitionEvent(Guid sourceId, TSagaData sagaData)
             : base(sourceId)
         {
             SagaData = sagaData;
-            NewMachineState = newMachineState;
+        }
+    }
+
+    public class InstanceSagaTransitionEvent<TSagaData> : SagaStateEvent
+    {
+        public TSagaData SagaData { get; }
+        public string StateName { get; set; }
+
+        public InstanceSagaTransitionEvent(Guid sourceId, TSagaData sagaData, string stateName)
+            : base(sourceId)
+        {
+            SagaData = sagaData;
+            StateName = stateName;
         }
 
-        public SagaTransitionEvent<TSagaData> New(Guid sourceId, TSagaData sagaData, State newMachineState)
+        public InstanceSagaTransitionEvent<TSagaData> New(Guid sourceId, TSagaData sagaData, State newMachineState)
         {
-            return new SagaTransitionEvent<TSagaData>(sourceId, sagaData, newMachineState.Name);
+            return new InstanceSagaTransitionEvent<TSagaData>(sourceId, sagaData, newMachineState.Name);
         }
     }
 }
