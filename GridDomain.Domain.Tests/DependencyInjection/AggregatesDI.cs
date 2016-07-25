@@ -32,7 +32,7 @@ namespace GridDomain.Tests.DependencyInjection
             var container = new UnityContainer();
 
             container.RegisterType<ITestDependency, TestDependencyImplementation>();
-            container.RegisterInstance<IUnityContainer>(container);
+          //  container.RegisterInstance<IUnityContainer>(container);
             container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
             container.RegisterAggregate<TestAggregate,TestAggregatesCommandHandler>();
 

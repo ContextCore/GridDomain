@@ -23,6 +23,28 @@ namespace GridDomain.Tests
             ResolveAll(container);
         }
 
+
+        [TestCase(TransportMode.Cluster)]
+        [TestCase(TransportMode.Standalone)]
+        public void Container_can_be_disposed()
+        {
+            var container = CreateContainer(TransportMode.Standalone, new LocalDbConfiguration());
+            var registrations = container.Registrations.ToArray();
+
+            foreach (var reg in registrations)
+            {
+                Console.WriteLine("Registration");
+                Console.WriteLine(reg.Name);
+                Console.WriteLine(reg.MappedToType);
+                Console.WriteLine(reg.RegisteredType);
+                Console.WriteLine("end of registration");
+                Console.WriteLine();
+            }
+
+            container.Dispose();
+        }
+
+
         protected abstract IUnityContainer CreateContainer(TransportMode mode, IDbConfiguration conf);
 
         private void ResolveAll(IUnityContainer container)

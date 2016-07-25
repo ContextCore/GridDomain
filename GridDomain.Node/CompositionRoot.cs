@@ -37,8 +37,7 @@ namespace GridDomain.Node
             
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
-            container.RegisterInstance<ActorSystem>(actorSystem);
-            container.RegisterInstance(container);
+            container.RegisterInstance(actorSystem);
 
             //TODO: replace with better implementation
             Scheduling.CompositionRoot.Compose(container, config ?? new PersistedQuartzConfig());
