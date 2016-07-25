@@ -26,9 +26,9 @@ namespace GridDomain.Tests
 
         [TestCase(TransportMode.Cluster)]
         [TestCase(TransportMode.Standalone)]
-        public void Container_can_be_disposed()
+        public void Container_can_be_disposed(TransportMode transportMode)
         {
-            var container = CreateContainer(TransportMode.Standalone, new LocalDbConfiguration());
+            var container = CreateContainer(transportMode, new LocalDbConfiguration());
             var registrations = container.Registrations.ToArray();
 
             foreach (var reg in registrations)
