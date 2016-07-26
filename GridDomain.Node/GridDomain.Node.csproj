@@ -245,6 +245,7 @@
     <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
+    <Compile Include="Configuration\Akka\Hocon\InMemoryJournalConfig.cs" />
     <Compile Include="Configuration\Composition\CustomContainerConfiguration.cs" />
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="DefaultMessageLoggerHandler.cs" />

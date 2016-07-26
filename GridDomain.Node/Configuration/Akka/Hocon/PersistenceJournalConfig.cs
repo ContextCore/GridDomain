@@ -19,6 +19,16 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             var persistenceJournalConfig = @"
             journal {
                     plugin = ""akka.persistence.journal.sql-server""
+                    event-adapters
+                    {
+                        domainEventsUpgrade = ""GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.BalanceChangedEventAdapter, GridDmoin.Tests.Acceptance""
+                    }
+                   
+                    event-adapter-bindings
+                    {
+                        ""GridDomain.EventSourcing.DomainEvent, GridDomain.EventSourcing"" = domainEventsUpgrade
+                    }
+
                     sql-server {
                                class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
                                plugin-dispatcher = ""akka.actor.default-dispatcher""
