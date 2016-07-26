@@ -4,18 +4,18 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Commands;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 {
-    public class SampleAggregatesCommandHandler: AggregateCommandsHandler<BalanceAggregate>,
+    public class BalanceAggregatesCommandHandler: AggregateCommandsHandler<BalanceAggregate>,
                                                         IAggregateCommandsHandlerDesriptor
 
     {
         //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new SampleAggregatesCommandHandler();
-        public SampleAggregatesCommandHandler() : base(null)
+        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new BalanceAggregatesCommandHandler();
+        public BalanceAggregatesCommandHandler() : base(null)
         {
-            Map<ChangeAggregateCommand>(c => c.AggregateId,
+            Map<ChangeBalanceCommand>(c => c.AggregateId,
                                        (c, a) => a.ChangeState(c.Parameter));
 
-            Map<CreateAggregateCommand>(c => c.AggregateId,
+            Map<CreateBalanceCommand>(c => c.AggregateId,
                                         c => new BalanceAggregate(c.AggregateId, c.Parameter));
         }
 

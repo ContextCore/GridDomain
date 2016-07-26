@@ -1,5 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Akka.Actor;
 using Akka.Persistence.Journal;
 using GridDomain.EventSourcing;
 
@@ -27,6 +29,15 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 
     public class BalanceChangedEventAdapter : IEventAdapter
     {
+
+        public BalanceChangedEventAdapter(ExtendedActorSystem system)
+        {
+        }
+
+        public BalanceChangedEventAdapter()
+        {
+            
+        }
         public string Manifest(object evt)
         {
             return evt.GetType().ToString() + "_V" + ((DomainEvent)evt).Version;
@@ -39,19 +50,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 
         public IEventSequence FromJournal(object evt, string manifest)
         {
+            var type = Type.GetType(manifest);
+            var factType = evt.GetType();
             return EventSequence.Single(evt);
         }
-
-        //   <journal_identifier> {
-        // event-adapters
-        // {
-        //     domainEventsUpgrade = " GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.BalanceChangedEventAdapter, GridDmoin.Tests.Acceptance"
-        // }
-        //
-        // event-adapter-bindings
-        // {
-        //     "GridDomain.EventSourcing.DomainEvent, GridDomain.EventSourcing" = domainEventsUpgrade
-        // }
-        // }
     }
 }

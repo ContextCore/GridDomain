@@ -6,19 +6,15 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 {
-    class SampleRouteMap : IMessageRouteMap
+    class BalanceRouteMap : IMessageRouteMap
     {
-        private readonly IUnityContainer _locator;
-
-        public SampleRouteMap(IUnityContainer locator)
+        public BalanceRouteMap()
         {
-            _locator = locator;
         }
 
         public void Register(IMessagesRouter router)
         {
-            router.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor);
-            router.RegisterProjectionGroup(new SampleProjectionGroup(_locator));
+            router.RegisterAggregate(BalanceAggregatesCommandHandler.Descriptor);
             router.RegisterHandler<BalanceChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
         }
     }

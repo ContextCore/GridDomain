@@ -56,7 +56,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
         {
             var cfg = new RootConfig(
-                new LogConfig(this, false),
+                new LogConfig(LogLevel, false),
                 ClusterConfig.SeedNode(Network, otherSeeds),
                 new PersistenceConfig(this));
             return cfg.Build();
@@ -66,7 +66,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(this, false),
+                new LogConfig(LogLevel, false),
                 new StandAloneConfig(Network),
                 new PersistenceConfig(this));
             return cfg.Build();
@@ -75,16 +75,20 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToStandAloneInMemorySystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(this, false),
+                new LogConfig(LogLevel, true),
                 new StandAloneConfig(Network),
-                new EmptyConfig());
+                new InMemoryJournalConfig(
+                     // new EmptyConfig()
+                    new DomainEventAdaptersConfig()
+                    ));
+
             return cfg.Build();
         }
 
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
             var cfg = new RootConfig(
-                new LogConfig(this, false),
+                new LogConfig(LogLevel, false),
                 ClusterConfig.NonSeedNode(Network, seeds),
                 new PersistenceConfig(this));
             return cfg.Build();

@@ -237,19 +237,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventsUpgrade\SampleDomain\BalanceAggregate.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\BalanceAggregatesCommandHandler.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\BalanceRouteMap.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Commands\ChangeAggregateCommand.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Commands\CreateAggregateCommand.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Events\BalanceChangedEvent.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Events\AggregateCreatedEvent.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Events\BalanceChangedEvent_V1.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\AggregateChangedProjectionBuilder.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\Given_aggregate_with_upgraded_event_with_new_field.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\PersistentTest.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\PersistEventsSaveActor.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\BalanceAggregateChangedEventNotification.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\BalanceAggregateChangedProjectionBuilder.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\BalanceAggregateCreatedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BalanceChangedEventAdapter.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\SampleAggregatesCommandHandler.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\SampleProjectionGroup.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\SampleRouteMap.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />

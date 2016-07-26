@@ -5,11 +5,11 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
 namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuilders
 {
 
-    public class AggregateChangedProjectionBuilder 
+    public class BalanceAggregateChangedProjectionBuilder 
     {
         public static int ProjectionGroupHashCode;
         private static Stopwatch watch = new Stopwatch();
-        static AggregateChangedProjectionBuilder()
+        static BalanceAggregateChangedProjectionBuilder()
         {
             watch.Start();
         }

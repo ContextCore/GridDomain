@@ -5,14 +5,14 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuilders
 {
-    public class AggregateCreatedProjectionBuilder : IHandler<AggregateCreatedEvent>
+    public class BalanceAggregateCreatedProjectionBuilder : IHandler<AggregateCreatedEvent>
     {
         private static Stopwatch watch = new Stopwatch();
-        static AggregateCreatedProjectionBuilder()
+        static BalanceAggregateCreatedProjectionBuilder()
         {
             watch.Start();
         }
-        public AggregateCreatedProjectionBuilder(IList<object> projectedEvents)
+        public BalanceAggregateCreatedProjectionBuilder(IList<object> projectedEvents)
         {
             _projectedEvents = projectedEvents;
         }

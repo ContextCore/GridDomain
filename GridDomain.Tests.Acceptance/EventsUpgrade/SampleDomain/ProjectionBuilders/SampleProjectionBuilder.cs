@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuild
 
         public void Handle(BalanceChangedEvent msg)
         {
-            _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId} );
+            _publisher.Publish(new BalanceAggregateChangedEventNotification() { AggregateId = msg.SourceId} );
         }
     }
 }

@@ -12,9 +12,9 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         public string Build()
         {
             var akkaPersistenceConfig =
-                @"      persistence {
+        @"persistence {
                     publish-plugin-commands = on
-" + new PersistenceJournalConfig(_akka).Build() + @"
+" + new PersistenceJournalConfig(_akka,new DomainEventAdaptersConfig()).Build() + @"
 " + new PersistenceSnapshotConfig(_akka).Build() + @"
         }";
             return akkaPersistenceConfig;
