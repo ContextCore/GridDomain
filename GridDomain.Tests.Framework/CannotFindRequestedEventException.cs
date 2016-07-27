@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.Framework
 {
     public class CannotFindRequestedEventException : Exception
     {

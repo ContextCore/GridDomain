@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using NUnit.Framework;
 

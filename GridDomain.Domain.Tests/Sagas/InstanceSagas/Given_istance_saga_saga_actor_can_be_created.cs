@@ -5,7 +5,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var actorType  = typeof(SagaActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
                                     SagaDataAggregate<SoftwareProgrammingSagaData>,
-                                    GotTiredDomainEvent>);
+                                    GotTiredEvent>);
 
             var actor = GridNode.System.CreatePersistedIdentityActor(actorType, Guid.Empty);
             actor.Ask(new DomainEvent(Guid.NewGuid()));

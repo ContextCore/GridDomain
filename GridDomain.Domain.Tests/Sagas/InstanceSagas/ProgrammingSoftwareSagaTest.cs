@@ -4,12 +4,12 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.FutureEvents;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.SynchroniousCommandExecute;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
+    public class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
     {
         protected override IMessageRouteMap CreateMap()
         {
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             return new CustomContainerConfiguration(
                 c => c.RegisterSaga<SoftwareProgrammingSaga,
                                     SoftwareProgrammingSagaData,
-                                    GotTiredDomainEvent,
+                                    GotTiredEvent,
                                     SoftwareProgrammingSagaFactory
                     >(),
                 c => c.Register(baseConf),

@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {

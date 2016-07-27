@@ -38,8 +38,6 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
             GridNode.Stop();
 
-        //    Thread.Sleep(2000); //to wait for everything stopped
-
             GridNode.Start(new LocalDbConfiguration());
 
             WaitFor<TestDomainEvent>();

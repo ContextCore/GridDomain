@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Sagas.InstanceSagas.Commands
+namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
 {
     internal class GoSleepCommand: Command
     {
@@ -11,6 +11,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Commands
         {
             PersonId = personId;
             SofaId = sofaId;
+        }
+    }
+
+    internal class GoToWorkCommand : Command
+    {
+        public Guid PersonId { get; }
+        public GoToWorkCommand(Guid personId)
+        {
+            PersonId = personId;
         }
     }
 }

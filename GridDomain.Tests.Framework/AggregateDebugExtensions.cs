@@ -2,7 +2,7 @@ using System.Linq;
 using CommonDomain;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.Framework
 {
     public static class AggregateDebugExtensions
     {

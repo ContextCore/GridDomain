@@ -1,7 +1,7 @@
 ﻿using System;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.StateSagas
@@ -42,8 +42,8 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Test]
         public void When_valid_transition_Then_state_is_changed()
         {
-            Given_new_saga_with_state(SoftwareProgrammingSaga.States.DrinkingCoffe);
-            SagaInstance.Handle(new FeltGoodEvent(Guid.NewGuid()));
+            Given_new_saga_with_state(SoftwareProgrammingSaga.States.MakingCoffe);
+            SagaInstance.Handle(new CoffeMadeEvent(Guid.NewGuid(),Guid.NewGuid()));
 
             Assert.AreEqual(SoftwareProgrammingSaga.States.Working, SagaInstance.DomainState);
         }

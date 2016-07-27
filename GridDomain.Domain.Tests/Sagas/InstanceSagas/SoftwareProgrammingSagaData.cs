@@ -1,20 +1,34 @@
 using System;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using NMoneys;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSagaData: ISagaState<State>
+    class SoftwareProgrammingSagaData : ISagaState
     {
         public Guid PersonId { get; set; }
-        public State CurrentState { get; set; }
+        public string CurrentStateName { get; set; }
         public Guid CoffeeMachineId { get; }
         public Guid SofaId { get; }
-        public SoftwareProgrammingSagaData(State currentState, Guid sofaId = default(Guid), Guid coffeeMachineId = default(Guid))
+       // public Money Price { get; set; }
+
+        public SoftwareProgrammingSagaData(string stateName,
+                                           Guid sofaId = default(Guid),
+                                           Guid coffeeMachineId = default(Guid))
         {
-            CurrentState = currentState;
             SofaId = sofaId;
             CoffeeMachineId = coffeeMachineId;
+            CurrentStateName = stateName;
+        }
+
+        public SoftwareProgrammingSagaData(State state,
+                                         Guid sofaId = default(Guid),
+                                         Guid coffeeMachineId = default(Guid))
+        {
+            SofaId = sofaId;
+            CoffeeMachineId = coffeeMachineId;
+            CurrentStateName = state.Name;
         }
     }
 }

@@ -1,7 +1,7 @@
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public interface ISagaState<TState>
+    public interface ISagaState
     {
-        TState CurrentState { get; set; }
+       string CurrentStateName { get; set; }
     }
 }

@@ -7,9 +7,10 @@ using CommonDomain;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents;
-using GridDomain.Tests.Sagas.InstanceSagas.Commands;
-using GridDomain.Tests.Sagas.InstanceSagas.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas.Recover
@@ -20,29 +21,30 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Recover
         private SagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> _sagaInstance;
         private IReadOnlyCollection<object> _dispatchedCommands;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _data;
-        private CoffeMakeFailedDomainEvent _coffeMakeFailedDomainEvent;
+        private CoffeMakeFailedEvent _coffeMakeFailedEvent;
 
         [TestFixtureSetUp]
         public void Given_instance_saga_When_recovering_from_creation()
         {
             var aggregateFactory = new AggregateFactory();
             var sagaId = Guid.NewGuid();
+
             _data = aggregateFactory.Build<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId);
             var saga = new SoftwareProgrammingSaga();
-            var dataOnCreated = new SoftwareProgrammingSagaData(saga.MakingCoffee);
+            var initialState = new SoftwareProgrammingSagaData(saga.MakingCoffee.Name);
 
-            _sagaInstance = SagaInstance.New(saga, _data);
-
-            var eventsToReplay = new DomainEvent []
+            var eventsToReplay = new DomainEvent[]
             {
-                new SagaCreatedEvent<SoftwareProgrammingSagaData>(dataOnCreated, sagaId)
+                new SagaCreatedEvent<SoftwareProgrammingSagaData>(initialState, sagaId)
             };
 
             _data.ApplyEvents(eventsToReplay);
 
+            _sagaInstance = SagaInstance.New(saga, _data);
+
             //Try to transit saga by message, available only in desired state
-            _coffeMakeFailedDomainEvent = new CoffeMakeFailedDomainEvent(Guid.NewGuid(),Guid.NewGuid());
-            _sagaInstance.Transit(_coffeMakeFailedDomainEvent);
+            _coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),Guid.NewGuid());
+            _sagaInstance.Transit(_coffeMakeFailedEvent);
             _dispatchedCommands = _sagaInstance.CommandsToDispatch;
         }
 
@@ -56,7 +58,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Recover
         public void Produced_command_has_right_person_id()
         {
            var sleepCommand = _dispatchedCommands.OfType<GoSleepCommand>().First();
-            Assert.AreEqual(_coffeMakeFailedDomainEvent.ForPersonId, sleepCommand.PersonId);
+            Assert.AreEqual(_coffeMakeFailedEvent.ForPersonId, sleepCommand.PersonId);
         }
 
         [Then]

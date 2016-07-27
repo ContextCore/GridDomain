@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga.Events;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
@@ -15,16 +15,27 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         {
         }
 
-        public void RememberEvent(GotMoreTiredEvent e)
+        public void RememberBadCoffeMachine(Guid machineId)
         {
-            RaiseEvent(new GotMoreTiredSagaEvent(e));
+            RaiseEvent(new BadCoffeMachineRememberedEvent(Id,machineId));
         }
 
-        private void Apply(GotMoreTiredSagaEvent e)
+        private void Apply(BadCoffeMachineRememberedEvent e)
         {
-            SourceId = e.SourceId;
+            CoffeMachineId = e.CoffeMachineId;
+        }
+        private void Apply(PersonRememberedEvent e)
+        {
+            PersonId = e.PersonId;
         }
 
-        public Guid SourceId { get; private set; }
+        public Guid CoffeMachineId { get; private set; }
+        public Guid PersonId { get; private set; }
+
+        //  public Guid FavoritSofaId { get; private set; }
+        public void RememberPerson(Guid personId)
+        {
+            RaiseEvent(new PersonRememberedEvent(Id,personId));
+        }
     }
 }
