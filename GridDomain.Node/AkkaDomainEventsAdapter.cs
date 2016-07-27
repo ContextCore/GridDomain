@@ -2,6 +2,7 @@ using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 
 namespace GridDomain.Node
 {
@@ -27,7 +28,7 @@ namespace GridDomain.Node
 
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
-        public static DomainEventsUpgradeChain UpgradeChain = new DomainEventsUpgradeChain();
+        public static EventAdaptersCatalog UpgradeChain = new EventAdaptersCatalog();
 
         public string Manifest(object evt)
         {

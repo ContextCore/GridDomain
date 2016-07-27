@@ -15,9 +15,9 @@ namespace GridDomain.Tests.EventsUpgrade
         [TestFixtureSetUp]
         public void When_updating_single_event_Tests()
         {
-            var chain = new DomainEventsUpgradeChain();
-            chain.Register(new EventUpdater1());
-            chain.Register(new EventUpdater2());
+            var chain = new EventAdaptersCatalog();
+            chain.Register(new DomainEventUpdater1());
+            chain.Register(new DomainEventUpdater2());
 
             var balanceAggregate = new BalanceAggregate(Guid.NewGuid(), 10);
             _initialEvent = new TestEvent(balanceAggregate.Id);

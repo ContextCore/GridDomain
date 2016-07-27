@@ -4,7 +4,7 @@ using GridDomain.Tests.EventsUpgrade.Domain;
 
 namespace GridDomain.Tests.EventsUpgrade
 {
-    class EventUpdater3 : DomainEventAdapter<TestEvent_V2, TestEvent_V3>
+    class DomainEventUpdater3 : DomainEventAdapter<TestEvent_V2, TestEvent_V3>
     {
         public override IEnumerable<TestEvent_V3> ConvertEvent(TestEvent_V2 evt)
         {

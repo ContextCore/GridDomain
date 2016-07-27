@@ -19,15 +19,15 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
     /// 3) Create an event adapter from versioned type to new one 
     /// 4) Register event adapter 
     /// </summary>
-
-
-    public interface IDomainEventAdapter
+    public interface IEventAdapter
     {
-        AdapterDescriptor Descriptor { get; }
+        EventAdapterDescriptor Descriptor { get; }
         IEnumerable<object> Convert(object evt);
     }
 
-    public interface IDomainEventAdapter<TFrom,TTo>: IDomainEventAdapter
+    public interface IDomainEventAdapter<TFrom,TTo>: IEventAdapter 
+                                                    where TFrom:DomainEvent 
+                                                    where TTo: DomainEvent
     {
         IEnumerable<TTo> ConvertEvent(TFrom evt);
     }

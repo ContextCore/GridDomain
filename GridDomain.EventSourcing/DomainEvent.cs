@@ -19,10 +19,8 @@ namespace GridDomain.EventSourcing
 
         //Source of the event - aggregate that created it
         public Guid SourceId { get;}
-        //ensure sagaId will not be changed in actors
-        public Guid SagaId { get; private set; }
+        public Guid SagaId { get; protected set; }
         public DateTime CreatedTime { get; }
-       // public virtual int Version { get; } = 1;
 
         public DomainEvent CloneWithSaga(Guid sagaId)
         {

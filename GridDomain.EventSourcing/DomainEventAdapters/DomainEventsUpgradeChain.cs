@@ -4,13 +4,13 @@ using CommonDomain;
 
 namespace GridDomain.EventSourcing.VersionedTypeSerialization
 {
-    public class DomainEventsUpgradeChain
+    public class EventAdaptersCatalog
     {
-        private readonly IDictionary<Type, IDomainEventAdapter> _adapterCatalog = new Dictionary<Type, IDomainEventAdapter>();
+        private readonly IDictionary<Type, IEventAdapter> _adapterCatalog = new Dictionary<Type, IEventAdapter>();
 
         public object[] Update(object evt)
         {
-            IDomainEventAdapter adapter = null;
+            IEventAdapter adapter = null;
             var processingType = evt.GetType();
             List<object> updatedEvent =  new List<object>{evt};
 
@@ -33,7 +33,7 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
         /// <typeparam name="TFrom"></typeparam>
         /// <typeparam name="TTo"></typeparam>
         /// <param name="adapter"></param>
-        public void Register<TFrom, TTo>(IDomainEventAdapter<TFrom, TTo> adapter)
+        public void Register<TFrom, TTo>(IDomainEventAdapter<TFrom, TTo> adapter) where TFrom : DomainEvent where TTo : DomainEvent
         {
             _adapterCatalog[typeof(TFrom)] = adapter;
         }

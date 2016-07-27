@@ -54,7 +54,6 @@
     <Compile Include="DomainEventAdapters\VersionedTypeSerializationBinder.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DomainEventAdapters\BalanceChangedSerializationBinder.cs" />
     <Compile Include="VersionedTypeSerialization\CantFindTypeException.cs" />
     <Compile Include="VersionedTypeSerialization\CantFindTypeLatestVersionException.cs" />
     <Compile Include="VersionedTypeSerialization\CantParseVersionNumberExpection.cs" />

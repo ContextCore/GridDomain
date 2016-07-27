@@ -220,6 +220,7 @@
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
+    <Compile Include="EventsUpgrade\BalanceChangedEventAdapter1.cs" />
     <Compile Include="EventsUpgrade\Chain\EventUpdater2.cs" />
     <Compile Include="EventsUpgrade\Chain\EventUpdater3.cs" />
     <Compile Include="EventsUpgrade\Chain\Given_DomainEventUpgradeChain_When_updating_events_split_Tests.cs" />
@@ -236,6 +237,8 @@
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateChangedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateCreatedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\SampleProjectionBuilder.cs" />
+    <Compile Include="EventsUpgrade\Events\TestEvent_V2.cs" />
+    <Compile Include="EventsUpgrade\Events\TestEvent_V3.cs" />
     <Compile Include="EventsUpgrade\Given_aggregate_with_upgraded_event_with_new_field.cs" />
     <Compile Include="EventsUpgrade\Events\BadNamedType_V1_V1.cs" />
     <Compile Include="EventsUpgrade\DomainEventSerializationTest.cs" />
@@ -260,6 +263,7 @@
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoToWorkCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Events\CoffeMakeFailedEvent.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\MakeCoffeCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Events\SleptWellEvent.cs" />
@@ -269,7 +273,7 @@
     <Compile Include="Sagas\InstanceSagas\Recovery\Given_instance_saga_When_recovering.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId.cs" />
-    <Compile Include="Sagas\SagaRecycling\SagaRecyclingTest.cs" />
+    <Compile Include="Sagas\SagaRecycling\Given_State_Saga.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\FinishedEvent.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecycling.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\SagaForRecyclingFactory.cs" />
@@ -291,7 +295,7 @@
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_and_transitioned_event_when_hydrating.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id_messaging.cs" />
-    <Compile Include="Sagas\StateSagas\SagaStart_with_predifined_id_and_state_aggregate_change_in_process.cs" />
+    <Compile Include="Sagas\StateSagas\Given_SagaStart_with_predifined_id.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />

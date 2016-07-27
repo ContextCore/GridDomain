@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -15,15 +14,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 {
-
-    class BalanceChangedEventAdapter1 : DomainEventAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
-    {
-        public override IEnumerable<BalanceChangedEvent_V1> ConvertEvent(BalanceChangedEvent_V0 evt)
-        {
-            yield return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
-        }
-    }
-
     [TestFixture]
     public class Given_aggregate_with_upgraded_event_with_new_field: PersistentTest
     {
@@ -33,6 +23,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
         [TestFixtureSetUp]
         public void When_aggregate_is_recovered_from_persistence()
         {
+            GridNode.EventAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
             _balanceId = Guid.NewGuid();
             var events = new DomainEvent[]
             {
@@ -43,10 +34,6 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 
             SaveInJournal<BalanceAggregate>(_balanceId, events);
             Thread.Sleep(500);
-
-            var domainEventsUpgradeChain = new DomainEventsUpgradeChain();
-            domainEventsUpgradeChain.Register(new BalanceChangedEventAdapter1());
-            AkkaDomainEventsAdapter.UpgradeChain = domainEventsUpgradeChain;
 
             _aggregate = LoadAggregate<BalanceAggregate>(_balanceId);
         }

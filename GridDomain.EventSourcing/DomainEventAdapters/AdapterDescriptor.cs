@@ -2,9 +2,9 @@ using System;
 
 namespace GridDomain.EventSourcing.VersionedTypeSerialization
 {
-    public class AdapterDescriptor
+    public class EventAdapterDescriptor
     {
-        public AdapterDescriptor(Type @from, Type to)
+        public EventAdapterDescriptor(Type @from, Type to)
         {
             From = @from;
             To = to;
@@ -13,9 +13,9 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
         public Type From { get; }
         public Type To { get; }
 
-        public static AdapterDescriptor New<TFrom, TTo>()
+        public static EventAdapterDescriptor New<TFrom, TTo>()
         {
-            return new AdapterDescriptor(typeof(TFrom), typeof(TTo));
+            return new EventAdapterDescriptor(typeof(TFrom), typeof(TTo));
         }
     }
 }
