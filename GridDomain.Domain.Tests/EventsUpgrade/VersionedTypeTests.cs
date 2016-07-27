@@ -9,6 +9,51 @@ using NUnit.Framework;
 namespace GridDomain.Tests.EventsUpgrade
 {
     [TestFixture]
+    public class VersionedTypeSerializationBinderTests
+    {
+        
+        public class TestType
+        {
+
+        }
+
+        public class TestType_V1
+        {
+
+        }
+
+        private Dictionary<Type, int> _knownTypeMaxVersions;
+        private VersionedTypeSerializationBinder _binder;
+
+        [TestFixtureSetUp]
+        public void Given_VersionedTypeSerializationBinder()
+        {
+            _knownTypeMaxVersions = new Dictionary<Type, int>
+             {
+                 {typeof(TestType),2}
+             };
+            _binder = new VersionedTypeSerializationBinder(_knownTypeMaxVersions);
+        }
+
+        [Test]
+        public void Historical_version_is_resolved_as_type_with_version()
+        {
+            var fullTypeName = typeof(TestType).FullName;
+
+            var typeTry = Type.GetType(fullTypeName);
+            var type = _binder.BindToType("GridDomain.Tests", "GridDomain.Tests.EventsUpgrade.VersionedTypeSerializationBinderTests+TestType_V1");
+            Assert.AreEqual(typeof(TestType_V1),type);
+        }
+
+        [Test]
+        public void Latest_version_is_resolved_as_original_type()
+        {
+            var type = _binder.BindToType("GridDomain.Tests", "GridDomain.Tests.EventsUpgrade.VersionedTypeSerializationBinderTests+TestType_V2");
+            Assert.AreEqual(typeof(TestType), type);
+        }
+    }
+
+    [TestFixture]
     public class VersionedTypeNameTests
     {
 
@@ -27,16 +72,6 @@ namespace GridDomain.Tests.EventsUpgrade
             
         }
 
-        //[TestFixtureSetUp]
-        //private Dictionary<Type, int> _knownTypeMaxVersions;
-        //public void Given_VersionedTypeSerializationBinder()
-        //{
-        //   // _knownTypeMaxVersions = new Dictionary<Type,int>
-        //   // {
-        //   //     {typeof(TestType),1}
-        //   // };
-        //   // var binder = new Versioned
-        //}
 
         [Test]
         public void Given_bad_exeption_is_raised()
@@ -59,10 +94,6 @@ namespace GridDomain.Tests.EventsUpgrade
             Assert.AreEqual(typeof(TestType).Name, versionedType.OriginalName);
         }
 
-        //[Test]
-        //public void Historical_version_is_resolved_as_type_with_version()
-        //{
-
-        //}
+     
     }
 }

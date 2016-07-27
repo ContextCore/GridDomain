@@ -35,7 +35,7 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
         public override Type BindToType(string assemblyName, string typeName)
         {
             var versionedTypeName = VersionedTypeName.Parse(typeName);
-            var originalTypeFullName = $"{versionedTypeName.OriginalName}{Type.Delimiter}{assemblyName}";
+            var originalTypeFullName = $"{versionedTypeName.OriginalName}, {assemblyName}";
             var originalType = Type.GetType(originalTypeFullName,false);
             if (originalType == null)
                 throw new CantFindTypeException(originalTypeFullName);
@@ -50,7 +50,7 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
                 return originalType;
 
             //otherwise return original type, as it acts like "history"
-            originalTypeFullName = $"{typeName}{Type.Delimiter}{assemblyName}";
+            originalTypeFullName = $"{typeName}, {assemblyName}";
             return Type.GetType(originalTypeFullName);
         }
     }
