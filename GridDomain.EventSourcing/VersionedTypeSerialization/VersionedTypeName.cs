@@ -4,11 +4,15 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
 {
     public class VersionedTypeName
     {
-        public VersionedTypeName(string originalName, int version)
+        private VersionedTypeName(string originalName, int version)
         {
             OriginalName = originalName;
             Version = version;
         }
+
+        //public VersionedTypeName(Type type, int version):this(type.Name,version)
+        //{
+        //}
 
         public int Version { get; }
         public string OriginalName { get; }
@@ -19,22 +23,17 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
             return $"{OriginalName}{VersionSeparator}{Version}";
         }
 
-        public static VersionedTypeName New<T>(int version)
+        public static VersionedTypeName Parse(Type type, int defaultVersion = 0)
         {
-            return new VersionedTypeName(typeof(T).Name, version);
+            return Parse(type.Name, defaultVersion);
         }
-
-        public static VersionedTypeName Parse(Type type)
-        {
-            return Parse(type.Name);
-        }
-        public static VersionedTypeName Parse(string shortTypeName)
+        public static VersionedTypeName Parse(string shortTypeName, int defaultVersion = 0)
         {
             var versionedTypeParts = shortTypeName
                 .Split(new[] {VersionSeparator},StringSplitOptions.RemoveEmptyEntries);
 
             if (versionedTypeParts.Length == 1) //does not contain version
-                return new VersionedTypeName(shortTypeName, 0);
+                return new VersionedTypeName(shortTypeName, defaultVersion);
 
             if (versionedTypeParts.Length != 2)
                 throw new VersionedTypeParseExeption(shortTypeName);
@@ -47,7 +46,7 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
             int version = 0;
             if (!Int32.TryParse(versionString, out version))
                 throw new CantParseVersionNumberExpection(versionString);
-
+          
             return new VersionedTypeName(typeName, version);
         }
     }

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using GridDomain.Common;
+using GridDomain.EventSourcing.VersionedTypeSerialization;
 
 namespace GridDomain.EventSourcing
 {
-    public class DomainEvent : ISourcedEvent
+    [Serializable]
+    public class DomainEvent : ISourcedEvent, ISerializable
     {
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))
         {
@@ -25,6 +29,24 @@ namespace GridDomain.EventSourcing
             var evt = (DomainEvent) MemberwiseClone();
             evt.SagaId = sagaId;
             return evt;
+        }
+
+
+        //protected DomainEvent(SerializationInfo info, StreamingContext context)
+        //{
+        //    //n1 = info.GetInt32("i");
+        //    //n2 = info.GetInt32("j");
+        //    //str = info.GetString("k");
+        //}
+
+        [SecurityPermission(SecurityAction.LinkDemand,Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new System.ArgumentNullException(nameof(info));
+            var versionedTypeName = VersionedTypeName.Parse(info.FullTypeName,this.Version);
+            info.FullTypeName = versionedTypeName.ToString();
+            
         }
     }
 }
