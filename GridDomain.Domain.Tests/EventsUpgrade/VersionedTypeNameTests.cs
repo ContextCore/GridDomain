@@ -9,20 +9,7 @@ namespace GridDomain.Tests.EventsUpgrade
     public class VersionedTypeNameTests
     {
 
-        public class TestType
-        {
-            
-        }
-
-        public class TestType_V1
-        {
-            
-        }
-
-        public class BadNamedType_V1_V1
-        {
-            
-        }
+        
    
 
         [Test]
@@ -45,17 +32,5 @@ namespace GridDomain.Tests.EventsUpgrade
             Assert.AreEqual(typeof(TestType).Name, versionedType.OriginalName);
             Assert.AreEqual(10, versionedType.Version);
         }
-
-
-       //[Test]
-       //public void Latest_version_is_resolved_as_original()
-       //{
-       //    var versionedType = VersionedTypeName.Parse("GridDomain.Tests.EventsUpgrade.VersionedTypeNameTests+TestType_V2");
-       //    Assert.AreEqual(2, versionedType.Version);
-       //    Assert.AreEqual(typeof(TestType).Name, versionedType.OriginalName);
-       //}
-
-
-
     }
 }

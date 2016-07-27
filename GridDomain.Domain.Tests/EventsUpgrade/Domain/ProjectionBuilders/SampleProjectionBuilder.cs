@@ -1,8 +1,8 @@
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
+using GridDomain.Tests.EventsUpgrade.Domain.Events;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuilders
+namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
 {
     public class SampleProjectionBuilder : IHandler<BalanceChangedEvent>
     {

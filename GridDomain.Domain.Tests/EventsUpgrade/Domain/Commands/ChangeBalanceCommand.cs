@@ -1,11 +1,11 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Commands
+namespace GridDomain.Tests.EventsUpgrade.Domain.Commands
 {
-    public class CreateBalanceCommand : Command
+    public class ChangeBalanceCommand : Command
     {
-        public CreateBalanceCommand(int parameter, Guid aggregateId)
+        public ChangeBalanceCommand(int parameter, Guid aggregateId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

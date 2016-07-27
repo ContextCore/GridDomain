@@ -1,8 +1,8 @@
 using System;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Commands;
+using GridDomain.Tests.EventsUpgrade.Domain.Commands;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.EventsUpgrade.Domain
 {
     public class BalanceAggregatesCommandHandler: AggregateCommandsHandler<BalanceAggregate>,
                                                         IAggregateCommandsHandlerDesriptor

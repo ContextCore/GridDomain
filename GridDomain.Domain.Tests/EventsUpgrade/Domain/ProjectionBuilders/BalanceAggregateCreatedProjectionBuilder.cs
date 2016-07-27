@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using GridDomain.CQRS;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
+using GridDomain.Tests.EventsUpgrade.Domain.Events;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuilders
+namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
 {
     public class BalanceAggregateCreatedProjectionBuilder : IHandler<AggregateCreatedEvent>
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuilders
+namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
 {
     public class BalanceAggregateChangedEventNotification
     {

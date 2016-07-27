@@ -1,12 +1,11 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.ProjectionBuilders;
-using Microsoft.Practices.Unity;
+using GridDomain.Tests.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.EventsUpgrade.Domain
 {
-    class BalanceRouteMap : IMessageRouteMap
+    public class BalanceRouteMap : IMessageRouteMap
     {
         public BalanceRouteMap()
         {

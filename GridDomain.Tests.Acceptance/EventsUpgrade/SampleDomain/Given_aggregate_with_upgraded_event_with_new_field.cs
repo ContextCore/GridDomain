@@ -4,8 +4,8 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Commands;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
+using GridDomain.Tests.EventsUpgrade.Domain;
+using GridDomain.Tests.EventsUpgrade.Domain.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 
         protected override IMessageRouteMap CreateMap()
         {
-         return new BalanceRouteMap();
+            return new BalanceRouteMap();
         }
     }
 }

@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         }
         public string Manifest(object evt)
         {
-            return evt.GetType().ToString() + "_V" + ((DomainEvent)evt).Version;
+            return "";//evt.GetType().ToString() + "_V" + ((DomainEvent)evt).Version;
         }
 
         public object ToJournal(object evt)

@@ -7,8 +7,8 @@ using GridDomain.EventSourcing.VersionedTypeSerialization;
 
 namespace GridDomain.EventSourcing
 {
-    [Serializable]
-    public class DomainEvent : ISourcedEvent, ISerializable
+    //[Serializable]
+    public class DomainEvent : ISourcedEvent//, ISerializable
     {
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))
         {
@@ -22,7 +22,7 @@ namespace GridDomain.EventSourcing
         //ensure sagaId will not be changed in actors
         public Guid SagaId { get; private set; }
         public DateTime CreatedTime { get; }
-        public virtual int Version { get; } = 1;
+       // public virtual int Version { get; } = 1;
 
         public DomainEvent CloneWithSaga(Guid sagaId)
         {
@@ -31,22 +31,15 @@ namespace GridDomain.EventSourcing
             return evt;
         }
 
-
-        //protected DomainEvent(SerializationInfo info, StreamingContext context)
+        //relying on external serializer to pass all SerializationInfo already filled as a parameter
+        //[SecurityPermission(SecurityAction.LinkDemand,Flags = SecurityPermissionFlag.SerializationFormatter)]
+        //void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         //{
-        //    //n1 = info.GetInt32("i");
-        //    //n2 = info.GetInt32("j");
-        //    //str = info.GetString("k");
-        //}
+        //if (info == null)
+        //throw new System.ArgumentNullException(nameof(info));
+        //var versionedTypeName = VersionedTypeName.Parse(info.FullTypeName,this.Version);
+        //info.FullTypeName = versionedTypeName.ToString();
 
-        [SecurityPermission(SecurityAction.LinkDemand,Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            if (info == null)
-                throw new System.ArgumentNullException(nameof(info));
-            var versionedTypeName = VersionedTypeName.Parse(info.FullTypeName,this.Version);
-            info.FullTypeName = versionedTypeName.ToString();
-            
-        }
+        //}
     }
 }

@@ -1,8 +1,8 @@
 using System;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
-using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.Events;
+using GridDomain.Tests.EventsUpgrade.Domain.Events;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.EventsUpgrade.Domain
 {
     public class BalanceAggregate : Aggregate
     {
