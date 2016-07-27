@@ -6,27 +6,20 @@ using System.Linq;
 using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
-using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Logging;
-using GridDomain.Node;
-using GridDomain.Node.Actors;
-using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using Moq;
+using NMoneys;
 using NUnit.Framework;
 using Wire;
 using IScheduler = Quartz.IScheduler;
@@ -44,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         public Spec() : base(false)
         {
-          
+
         }
 
         protected override IContainerConfiguration CreateConfiguration()
@@ -73,10 +66,12 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                 container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaStartMessage, TestSagaFactory>();
             }
         }
-     
+
         [SetUp]
         public void SetUp()
         {
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
+            TypesForScalarDescruptionHolder.Add(typeof(Money));
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             _container = GridNode.Container;
             CreateScheduler();
@@ -99,7 +94,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [Test]
         public void LogTest()
         {
-            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", 18723);
+            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
         }
 
         [Test]

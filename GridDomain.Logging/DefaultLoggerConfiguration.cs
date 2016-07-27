@@ -1,3 +1,4 @@
+using System.Configuration;
 using Serilog;
 
 namespace GridDomain.Logging
@@ -6,11 +7,18 @@ namespace GridDomain.Logging
     {
         public DefaultLoggerConfiguration()
         {
-            WriteTo.RollingFile(".\\GridDomainLogs\\logs-{Date}.txt").
+            var filePath = ConfigurationManager.AppSettings["logFilePath"] ?? @"C:\Logs";
+            var elasticEndpoint = ConfigurationManager.AppSettings["logElasticEndpoint"] ?? "http://soloinfra.cloudapp.net:9222";
+            WriteTo.RollingFile(filePath + "\\logs-{Date}.txt").
             //.WriteTo.Slack("https://hooks.slack.com/services/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")
-            WriteTo.Elasticsearch("http://soloinfra.cloudapp.net:9222")
+            WriteTo.Elasticsearch(elasticEndpoint)
             .Enrich
             .WithMachineName();
+
+            foreach (var type in TypesForScalarDescruptionHolder.Types)
+            {
+                Destructure.AsScalar(type);
+            }
         }
     }
 }
