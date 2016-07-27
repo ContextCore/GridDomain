@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Framework
         [TestFixtureSetUp]
         protected void Init()
         {
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory(new AutoTestLogConfig(LogEventLevel.Debug)));
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory(new AutoTestLogConfig(LogEventLevel.Verbose)));
             
             var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             if (_clearDataOnStart)

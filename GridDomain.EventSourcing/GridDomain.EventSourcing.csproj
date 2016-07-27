@@ -47,8 +47,19 @@
     <Compile Include="AggregateFactory.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
+    <Compile Include="DomainEventAdapters\AdapterDescriptor.cs" />
+    <Compile Include="DomainEventAdapters\DomainEventAdapter.cs" />
+    <Compile Include="DomainEventAdapters\DomainEventsUpgradeChain.cs" />
+    <Compile Include="DomainEventAdapters\IDomainEventAdapter.cs" />
+    <Compile Include="DomainEventAdapters\VersionedTypeSerializationBinder.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VersionedTypeSerialization\CantFindTypeException.cs" />
+    <Compile Include="VersionedTypeSerialization\CantFindTypeLatestVersionException.cs" />
+    <Compile Include="VersionedTypeSerialization\CantParseVersionNumberExpection.cs" />
+    <Compile Include="VersionedTypeSerialization\EmptyTypeNameException.cs" />
+    <Compile Include="VersionedTypeSerialization\VersionedTypeName.cs" />
+    <Compile Include="VersionedTypeSerialization\VersionedTypeParseExeption.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

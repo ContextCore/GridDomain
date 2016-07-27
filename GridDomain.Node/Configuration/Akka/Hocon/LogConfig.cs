@@ -2,30 +2,31 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class LogConfig : IAkkaConfig
     {
-        private readonly AkkaConfiguration _akkaConf;
         private readonly bool _includeConfig;
+        private readonly string _logLevel;
 
-        public LogConfig(AkkaConfiguration akkaConf, bool includeConfig = true)
+        public LogConfig(string logLevel, bool includeConfig = true)
         {
-            _akkaConf = akkaConf;
             _includeConfig = includeConfig;
+            _logLevel = logLevel;
         }
 
         public string Build()
         {
+           
             var logConfig =
                 @"
-                stdout-loglevel = " + _akkaConf.LogLevel + @"
-                loglevel=" + _akkaConf.LogLevel;
+                stdout-loglevel = " + _logLevel + @"
+                loglevel=" + _logLevel;
 
             logConfig += @"
                 loggers=[""GridDomain.Node.SerilogExtendedLogger, GridDomain.Node""]
 
                 actor.debug {
-                      receive = on
-                      autoreceive = on
-                      lifecycle = on
-                      event-stream = on
+                      #receive = on
+                      #autoreceive = on
+                      #lifecycle = on
+                      #event-stream = on
                       unhandled = on
                 }";
 

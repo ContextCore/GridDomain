@@ -244,7 +244,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\Given_aggregate_with_upgraded_event_with_new_field.cs" />
+    <Compile Include="FutureDomainEvents\Raising_future_events_too_late_Persisted.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
     <Compile Include="FutureDomainEvents\Given_future_event_in_aggregate_When_cancelling_it_Persistent.cs" />
@@ -293,11 +294,11 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_Async_execute_dont_wait.cs" />
+    <Compile Include="SynchroniousCommandExecute\PersistedAsyncExecuteDontWaitExecution.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
   </ItemGroup>

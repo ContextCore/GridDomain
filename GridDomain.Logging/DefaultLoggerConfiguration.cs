@@ -12,8 +12,9 @@ namespace GridDomain.Logging
             WriteTo.RollingFile(filePath + "\\logs-{Date}.txt").
             //.WriteTo.Slack("https://hooks.slack.com/services/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")
             WriteTo.Elasticsearch(elasticEndpoint)
-            .Enrich
-            .WithMachineName();
+            WriteTo.Console()
+           .Enrich
+           .WithMachineName();
 
             foreach (var type in TypesForScalarDescruptionHolder.Types)
             {

@@ -16,7 +16,8 @@ namespace GridDomain.Tests.Sagas.StateSagas
         private Guid _sagaId;
         private SoftwareProgrammingSagaState _sagaState;
         private Guid _personId;
-        //_and_state_aggregate_change_in_process
+        
+
         [TestFixtureSetUp]
         public void When_start_message_has_saga_id()
         {

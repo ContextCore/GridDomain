@@ -16,7 +16,7 @@ namespace GridDomain.EventSourcing
         /// </summary>
         Guid SagaId { get; }
         DateTime CreatedTime { get; }
-        int Version { get; }
+        //int Version { get; }
     }
 
 

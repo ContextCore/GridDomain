@@ -3,32 +3,31 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
     internal class PersistenceJournalConfig : IAkkaConfig
     {
         private readonly AkkaConfiguration _akka;
+        private readonly IAkkaConfig _eventAdatpersConfig;
 
-        public PersistenceJournalConfig(AkkaConfiguration akka)
+        public PersistenceJournalConfig(AkkaConfiguration akka, IAkkaConfig @eventAdatpersConfig)
         {
+            _eventAdatpersConfig = eventAdatpersConfig;
             _akka = akka;
         }
 
         public string Build()
         {
-            return BuildPersistenceJournalConfig(_akka);
-        }
-
-        public static string BuildPersistenceJournalConfig(AkkaConfiguration akkaConf)
-        {
             var persistenceJournalConfig = @"
             journal {
                     plugin = ""akka.persistence.journal.sql-server""
+                     " + _eventAdatpersConfig.Build() + @"
+
                     sql-server {
                                class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
                                plugin-dispatcher = ""akka.actor.default-dispatcher""
-                               connection-string =  """ + akkaConf.Persistence.JournalConnectionString + @"""
+                               connection-string =  """ + _akka.Persistence.JournalConnectionString + @"""
                                connection-timeout = 30s
                                schema-name = dbo
-                               table-name = """ + akkaConf.Persistence.JournalTableName + @"""
+                               table-name = """ + _akka.Persistence.JournalTableName + @"""
                                auto-initialize = on
                                timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
-                               metadata-table-name = """ + akkaConf.Persistence.MetadataTableName + @"""
+                               metadata-table-name = """ + _akka.Persistence.MetadataTableName + @"""
                     }
             }
 ";

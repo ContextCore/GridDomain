@@ -29,5 +29,6 @@ namespace GridDomain.Tests.Framework
 
             return new GridDomainNode(CreateConfiguration(),CreateMap(), actorSystem);
         }
+
     }
 }

@@ -11,6 +11,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
@@ -46,7 +47,6 @@ namespace GridDomain.Node
         private readonly Func<ActorSystem[]> _actorSystemFactory;
         private UnityContainer container;
         private Func<ActorSystem[]> actorSystem;
-
         public IPublisher Transport { get; private set; }
 
         [Obsolete("Use constructor with ActorSystem factory instead")]
@@ -120,6 +120,7 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
+
             Systems = _actorSystemFactory.Invoke();
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
@@ -157,6 +158,7 @@ namespace GridDomain.Node
         }
 
         bool _stopping = false;
+        public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
         {

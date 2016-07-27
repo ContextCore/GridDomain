@@ -13,13 +13,4 @@ namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
             SofaId = sofaId;
         }
     }
-
-    internal class GoToWorkCommand : Command
-    {
-        public Guid PersonId { get; }
-        public GoToWorkCommand(Guid personId)
-        {
-            PersonId = personId;
-        }
-    }
 }
