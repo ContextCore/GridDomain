@@ -4,11 +4,11 @@ using CommonDomain;
 
 namespace GridDomain.EventSourcing.VersionedTypeSerialization
 {
-    public class DomainEventsUpgradeChain<TAggregate> where TAggregate : IAggregate
+    public class DomainEventsUpgradeChain
     {
         private readonly IDictionary<Type, IDomainEventAdapter> _adapterCatalog = new Dictionary<Type, IDomainEventAdapter>();
 
-        public object[] Update(TAggregate aggregate, object evt)
+        public object[] Update(object evt)
         {
             IDomainEventAdapter adapter = null;
             var processingType = evt.GetType();
@@ -21,8 +21,9 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
 
                 updatedEvent.Clear();
                 foreach(var ev in eventsToProcess)
-                    updatedEvent.AddRange(adapter.Convert(aggregate, ev));
+                    updatedEvent.AddRange(adapter.Convert(ev));
             }
+
             return updatedEvent.ToArray();
         }
 
@@ -32,7 +33,7 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
         /// <typeparam name="TFrom"></typeparam>
         /// <typeparam name="TTo"></typeparam>
         /// <param name="adapter"></param>
-        public void Register<TFrom, TTo>(IDomainEventAdapter<TAggregate, TFrom, TTo> adapter)
+        public void Register<TFrom, TTo>(IDomainEventAdapter<TFrom, TTo> adapter)
         {
             _adapterCatalog[typeof(TFrom)] = adapter;
         }

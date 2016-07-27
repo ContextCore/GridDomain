@@ -3,7 +3,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
     internal class LogConfig : IAkkaConfig
     {
         private readonly bool _includeConfig;
-        private string _logLevel;
+        private readonly string _logLevel;
 
         public LogConfig(string logLevel, bool includeConfig = true)
         {
@@ -23,10 +23,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 loggers=[""GridDomain.Node.SerilogExtendedLogger, GridDomain.Node""]
 
                 actor.debug {
-                      receive = on
-                      autoreceive = on
-                      lifecycle = on
-                      event-stream = on
+                      #receive = on
+                      #autoreceive = on
+                      #lifecycle = on
+                      #event-stream = on
                       unhandled = on
                 }";
 

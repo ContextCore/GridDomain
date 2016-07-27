@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using Akka.Actor;
 using Akka.Persistence.Journal;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade
+namespace GridDomain.Node
 {
 
     /// <summary>
@@ -27,20 +24,14 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     /// 4) Register event adapter 
     /// </summary>
 
-    public class BalanceChangedEventAdapter : IEventAdapter
+
+    public class AkkaDomainEventsAdapter : IEventAdapter
     {
+        public static DomainEventsUpgradeChain UpgradeChain = new DomainEventsUpgradeChain();
 
-        public BalanceChangedEventAdapter(ExtendedActorSystem system)
-        {
-        }
-
-        public BalanceChangedEventAdapter()
-        {
-            
-        }
         public string Manifest(object evt)
         {
-            return "";//evt.GetType().ToString() + "_V" + ((DomainEvent)evt).Version;
+            return "";
         }
 
         public object ToJournal(object evt)
@@ -50,9 +41,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         public IEventSequence FromJournal(object evt, string manifest)
         {
-            var type = Type.GetType(manifest);
-            var factType = evt.GetType();
-            return EventSequence.Single(evt);
+            return EventSequence.Create(UpgradeChain.Update(evt));
         }
     }
 }

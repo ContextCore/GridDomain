@@ -20,8 +20,15 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
     /// 4) Register event adapter 
     /// </summary>
 
-    public interface IDomainEventAdapter<TAggregate,TFrom,TTo>: IDomainEventAdapter
+
+    public interface IDomainEventAdapter
     {
-        IEnumerable<TTo> ConvertEvent(TAggregate aggregate, TFrom evt);
+        AdapterDescriptor Descriptor { get; }
+        IEnumerable<object> Convert(object evt);
+    }
+
+    public interface IDomainEventAdapter<TFrom,TTo>: IDomainEventAdapter
+    {
+        IEnumerable<TTo> ConvertEvent(TFrom evt);
     }
 }

@@ -18,7 +18,7 @@ namespace GridDomain.Tests.EventsUpgrade.Domain
 
         public void ChangeState(int number)
         {
-            RaiseEvent(new BalanceChangedEvent(number, Id));
+            RaiseEvent(new BalanceChangedEvent_V1(number, Id));
         }
 
         private void Apply(AggregateCreatedEvent e)
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.EventsUpgrade.Domain
             Amount = e.Value;
         }
         
-        private void Apply(BalanceChangedEvent e)
+        private void Apply(BalanceChangedEvent_V1 e)
         {
             Amount += e.AmountChange;
         }

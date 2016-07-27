@@ -15,7 +15,7 @@ namespace GridDomain.Tests.EventsUpgrade
     public class DomainEventSerializationTest
     {
         //latest version of event, has version 2
-        //will be resialized as TestEvent_V2
+        //will be serialized as TestEvent_V2
 
         [Test]
         public void Given_original_event_it_writes_its_version_in_type_name()

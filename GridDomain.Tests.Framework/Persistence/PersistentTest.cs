@@ -2,15 +2,19 @@ using System;
 using System.Threading;
 using Akka.Actor;
 using CommonDomain.Core;
+using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tests.Framework;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.Framework.Persistence
 {
     public abstract class PersistentTest : ExtendedNodeCommandTest
     {
         public PersistentTest(bool inMemory) : base(inMemory)
         {
+            
         }
 
         protected void SaveInJournal<TAggregate>(Guid id, params object[] messages) where TAggregate : AggregateBase

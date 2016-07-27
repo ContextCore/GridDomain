@@ -14,7 +14,7 @@ namespace GridDomain.Tests.EventsUpgrade.Domain
         public void Register(IMessagesRouter router)
         {
             router.RegisterAggregate(BalanceAggregatesCommandHandler.Descriptor);
-            router.RegisterHandler<BalanceChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
+            router.RegisterHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>(m => m.SourceId);
         }
     }
 }

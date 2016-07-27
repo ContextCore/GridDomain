@@ -4,7 +4,7 @@ using GridDomain.Tests.EventsUpgrade.Domain.Events;
 
 namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
 {
-    public class SampleProjectionBuilder : IHandler<BalanceChangedEvent>
+    public class SampleProjectionBuilder : IHandler<BalanceChangedEvent_V0>
     {
         private readonly IPublisher _publisher;
 
@@ -13,7 +13,7 @@ namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public void Handle(BalanceChangedEvent msg)
+        public void Handle(BalanceChangedEvent_V0 msg)
         {
             _publisher.Publish(new BalanceAggregateChangedEventNotification() { AggregateId = msg.SourceId} );
         }

@@ -230,12 +230,13 @@
     <Compile Include="EventsUpgrade\Domain\Commands\ChangeBalanceCommand.cs" />
     <Compile Include="EventsUpgrade\Domain\Commands\CreateBalanceCommand.cs" />
     <Compile Include="EventsUpgrade\Domain\Events\AggregateCreatedEvent.cs" />
-    <Compile Include="EventsUpgrade\Domain\Events\BalanceChangedEvent.cs" />
+    <Compile Include="EventsUpgrade\Domain\Events\BalanceChangedEvent_V0.cs" />
     <Compile Include="EventsUpgrade\Domain\Events\BalanceChangedEvent_V1.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateChangedEventNotification.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateChangedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateCreatedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\SampleProjectionBuilder.cs" />
+    <Compile Include="EventsUpgrade\Given_aggregate_with_upgraded_event_with_new_field.cs" />
     <Compile Include="EventsUpgrade\Events\BadNamedType_V1_V1.cs" />
     <Compile Include="EventsUpgrade\DomainEventSerializationTest.cs" />
     <Compile Include="EventsUpgrade\Chain\EventUpdater1.cs" />

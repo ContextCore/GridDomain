@@ -236,10 +236,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventsUpgrade\BalanceChangedEventAdapter.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Given_aggregate_with_upgraded_event_with_new_field.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\PersistentTest.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\PersistEventsSaveActor.cs" />
     <Compile Include="FutureDomainEvents\Raising_future_events_too_late_Persisted.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />

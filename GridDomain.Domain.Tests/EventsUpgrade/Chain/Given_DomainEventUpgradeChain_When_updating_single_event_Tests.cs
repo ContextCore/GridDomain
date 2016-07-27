@@ -15,13 +15,13 @@ namespace GridDomain.Tests.EventsUpgrade
         [TestFixtureSetUp]
         public void When_updating_single_event_Tests()
         {
-            var chain = new DomainEventsUpgradeChain<BalanceAggregate>();
+            var chain = new DomainEventsUpgradeChain();
             chain.Register(new EventUpdater1());
             chain.Register(new EventUpdater2());
 
             var balanceAggregate = new BalanceAggregate(Guid.NewGuid(), 10);
             _initialEvent = new TestEvent(balanceAggregate.Id);
-            _resultEvent = chain.Update(balanceAggregate, _initialEvent).FirstOrDefault() as TestEvent_V2;
+            _resultEvent = chain.Update(_initialEvent).FirstOrDefault() as TestEvent_V2;
         }
 
         [Then]

@@ -4,16 +4,17 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
     {
         public string Build()
         {
+            var type = typeof(AkkaDomainEventsAdapter);
             var adaptersConfig =
                 @"
                 event-adapters
                 {
-                    upd = ""GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain.BalanceChangedEventAdapter, GridDomain.Tests.Acceptance""
+                    upd = """+ type.FullName+", " + type.Assembly+@"""
                 }
                 event-adapter-bindings
                 {
-                   # ""GridDomain.EventSourcing.DomainEvent, GridDomain.EventSourcing"" = domainEventsUpgrade
-                    ""System.Object"" = upd
+                    ""GridDomain.EventSourcing.DomainEvent, GridDomain.EventSourcing"" = upd
+                    #""System.Object"" = upd
                 }";
 
             return adaptersConfig;
