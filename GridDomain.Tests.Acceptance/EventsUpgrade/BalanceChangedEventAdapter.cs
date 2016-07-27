@@ -1,11 +1,12 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Akka.Actor;
 using Akka.Persistence.Journal;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.VersionedTypeSerialization;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
 
     /// <summary>
@@ -25,7 +26,6 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
     /// 3) Create an event adapter from versioned type to new one 
     /// 4) Register event adapter 
     /// </summary>
-
 
     public class BalanceChangedEventAdapter : IEventAdapter
     {

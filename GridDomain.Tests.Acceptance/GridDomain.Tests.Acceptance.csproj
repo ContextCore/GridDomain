@@ -236,11 +236,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventsUpgrade\BalanceChangedEventAdapter.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BalanceAggregate.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BalanceAggregatesCommandHandler.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BalanceRouteMap.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\Commands\ChangeAggregateCommand.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\Commands\CreateAggregateCommand.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\Commands\ChangeBalanceCommand.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\Commands\CreateBalanceCommand.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Events\BalanceChangedEvent.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Events\AggregateCreatedEvent.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Events\BalanceChangedEvent_V1.cs" />
@@ -251,8 +252,7 @@
     <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\BalanceAggregateChangedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\BalanceAggregateCreatedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\BalanceChangedEventAdapter.cs" />
-    <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent.cs" />
+    <Compile Include="FutureDomainEvents\Raising_future_events_too_late_Persisted.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
     <Compile Include="FutureDomainEvents\Given_future_event_in_aggregate_When_cancelling_it_Persistent.cs" />
@@ -301,11 +301,11 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_Async_execute_dont_wait.cs" />
+    <Compile Include="SynchroniousCommandExecute\PersistedAsyncExecuteDontWaitExecution.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
   </ItemGroup>
