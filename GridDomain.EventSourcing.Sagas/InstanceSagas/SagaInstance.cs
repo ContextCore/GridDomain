@@ -38,8 +38,10 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> dataAggregate)
         {
-            var sagaData = dataAggregate.Data;
+            if(machine == null) throw new ArgumentNullException(nameof(machine));
+            if(dataAggregate == null) throw new ArgumentNullException(nameof(dataAggregate));
 
+            var sagaData = dataAggregate.Data;
             if (string.IsNullOrEmpty(sagaData.CurrentStateName))
                 throw new MachineStateUnititializedException();
 
