@@ -17,6 +17,8 @@ namespace GridDomain.Tests.FutureEvents
         private RaiseEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
 
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
+
         [TestFixtureSetUp]
 
         public void When_raising_future_event()
