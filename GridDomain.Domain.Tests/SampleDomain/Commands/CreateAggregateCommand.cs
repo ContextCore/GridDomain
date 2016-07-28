@@ -5,7 +5,7 @@ namespace GridDomain.Tests.SampleDomain.Commands
 {
     public class CreateAggregateCommand : Command
     {
-        public CreateAggregateCommand(int parameter, Guid aggregateId)
+        public CreateAggregateCommand(int parameter, Guid aggregateId, Guid commandId = default(Guid)):base(commandId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

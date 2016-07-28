@@ -7,7 +7,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 
 
 
-    public class AggregateChangedProjectionBuilder : IHandler<AggregateChangedEvent>
+    public class AggregateChangedProjectionBuilder : IHandler<SampleAggregateChangedEvent>
     {
         public static int ProjectionGroupHashCode;
         private static Stopwatch watch = new Stopwatch();
@@ -16,7 +16,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             watch.Start();
         }
         private int number = 0;
-        public void Handle(AggregateChangedEvent msg)
+        public void Handle(SampleAggregateChangedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;

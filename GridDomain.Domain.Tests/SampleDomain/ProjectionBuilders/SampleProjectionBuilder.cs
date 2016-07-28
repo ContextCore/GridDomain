@@ -4,7 +4,7 @@ using GridDomain.Tests.SampleDomain.Events;
 
 namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
-    public class SampleProjectionBuilder : IHandler<AggregateChangedEvent>
+    public class SampleProjectionBuilder : IHandler<SampleAggregateChangedEvent>
     {
         private readonly IPublisher _publisher;
 
@@ -13,7 +13,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public void Handle(AggregateChangedEvent msg)
+        public void Handle(SampleAggregateChangedEvent msg)
         {
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId} );
         }

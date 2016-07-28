@@ -39,7 +39,7 @@ namespace GridDomain.Tests.SyncProjection
 
             _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
 
-            _processedEvents = ExecuteAndWaitForMany<AggregateCreatedEvent, AggregateChangedEvent>(createCommands.Length,
+            _processedEvents = ExecuteAndWaitForMany<SampleAggregateCreatedEvent, SampleAggregateChangedEvent>(createCommands.Length,
                                                                                                    updateCommands.Length,
                                                                                                    _allCommands);
         }

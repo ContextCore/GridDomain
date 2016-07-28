@@ -4,7 +4,7 @@ using GridDomain.Tests.SampleDomain.Events;
 
 namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
-    public class AggregateCreatedProjectionBuilder_Alternative : IHandler<AggregateCreatedEvent>
+    public class AggregateCreatedProjectionBuilder_Alternative : IHandler<SampleAggregateCreatedEvent>
     {
         private static Stopwatch watch = new Stopwatch();
         static AggregateCreatedProjectionBuilder_Alternative()
@@ -15,7 +15,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
         private int number = 0;
         public static int ProjectionGroupHashCode { get; set; }
 
-        public void Handle(AggregateCreatedEvent msg)
+        public void Handle(SampleAggregateCreatedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;

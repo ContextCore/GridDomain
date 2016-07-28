@@ -15,11 +15,11 @@ namespace GridDomain.Tests.AsyncAggregates
         public void Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
             var syncCommand = new AlwaysFaultAsyncCommand(Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<AggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
+            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             string stackTraceString = "";
             try
             {
-                GridNode.Execute<AggregateChangedEvent>(syncCommand, Timeout, expectedMessage);
+                GridNode.Execute<SampleAggregateChangedEvent>(syncCommand, Timeout, expectedMessage);
             }
             catch (SampleAggregateException ex)
             {

@@ -21,12 +21,12 @@ namespace GridDomain.Tests.AsyncAggregates
             var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromSeconds(3));
             var syncCommand = new ChangeAggregateCommand(42, aggregateId);
 
-           var asyncCommandTask = GridNode.Execute<AggregateChangedEvent>(asyncCommand,
-                                                    ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+           var asyncCommandTask = GridNode.Execute<SampleAggregateChangedEvent>(asyncCommand,
+                                                    ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),
                                                     asyncCommand.AggregateId));
 
-            GridNode.Execute<AggregateChangedEvent>(syncCommand, Timeout,
-                                                    ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+            GridNode.Execute<SampleAggregateChangedEvent>(syncCommand, Timeout,
+                                                    ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),
                                                     syncCommand.AggregateId)
                                                     );
 
