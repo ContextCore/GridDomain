@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using GridDomain.Logging;
@@ -36,9 +37,9 @@ namespace GridDomain.CQRS.Messaging.Akka
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
             var topic = messageType.FullName;
-            _transport.Ask<SubscribeAck>(new Subscribe(topic, actor))
-                .PipeTo(subscribeNotificationWaiter);
-
+            //TODO: replace wait with actor call
+            var ack = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor)).Result;
+            subscribeNotificationWaiter.Tell(ack);
             _log.Trace($"Subscribing handler actor {actor.Path} to topic {topic}");
         }
 

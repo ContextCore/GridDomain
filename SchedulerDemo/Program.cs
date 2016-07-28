@@ -48,7 +48,6 @@ namespace SchedulerDemo
                 var scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>());
                 var commandManager = Sys.ActorOf(Sys.DI().Props<CommandManager>());
                 IActorSubscriber subsriber = container.Resolve<IActorSubscriber>();
-                //subsriber.Subscribe<WriteToConsoleScheduledCommand>(handler);
                 subsriber.Subscribe<ProcessCommand>(commandManager);
                 subsriber.Subscribe<StartReadFromConsole>(reader);
                 subsriber.Subscribe<WriteToConsole>(writer);

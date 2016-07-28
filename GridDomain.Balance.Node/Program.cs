@@ -36,7 +36,6 @@ namespace BusinessNews.Node
                     s.WhenStarted(node =>
                     {
                         node.Start(conf);
-                        Thread.Sleep(TimeSpan.FromSeconds(1));
                         ApplySeeds(node);
                     });
                     s.WhenStopped(tc => tc.Stop());

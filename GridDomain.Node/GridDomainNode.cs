@@ -201,13 +201,13 @@ namespace GridDomain.Node
                                  {
                                      object result=null;
                                      t.Result.Match()
-                                         .With<ICommandFault>(fault =>
-                                         {
-                                             var domainExcpetion = fault.Exception.UnwrapSingle();
-                                             ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
-                                         })
-                                         .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                                         .Default(m => { throw new InvalidMessageException(m.ToPropsString()); }); 
+                                             .With<ICommandFault>(fault =>
+                                             {
+                                                 var domainExcpetion = fault.Exception.UnwrapSingle();
+                                                 ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
+                                             })
+                                             .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
+                                             .Default(m => { throw new InvalidMessageException(m.ToPropsString()); }); 
 
                                      return result;
                                  });

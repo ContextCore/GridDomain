@@ -11,8 +11,6 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
             router.Route<TMsg>()
                 .ToHandler<THandler>()
                 .Register();
-
-            router.WaitForRouteConfiguration();
         }
     }
 }

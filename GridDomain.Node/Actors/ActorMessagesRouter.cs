@@ -71,11 +71,5 @@ namespace GridDomain.Node.Actors
                                                                @group.AcceptMessages.ToArray());
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }
-
-        //TODO:replace with wait until event notifications
-        public void WaitForRouteConfiguration()
-        {
-            Thread.Sleep(TimeSpan.FromSeconds(3));
-        }
     }
 }

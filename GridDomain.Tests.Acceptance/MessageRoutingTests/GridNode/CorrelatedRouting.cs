@@ -17,11 +17,9 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         public void ConfigureRouting(ActorMessagesRouter router)
         {
             router.Route<TMsg>()
-                .ToHandler<THandler>()
-                .WithCorrelation(_correlationPropertyName)
+                  .ToHandler<THandler>()
+                  .WithCorrelation(_correlationPropertyName)
                 .Register();
-
-            router.WaitForRouteConfiguration();
         }
     }
 }

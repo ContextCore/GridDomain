@@ -64,8 +64,6 @@ namespace GridDomain.Node.Actors
             foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
                     _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
 
-            //TODO: replace with ack from subscriber
-            Thread.Sleep(500); //to finish subscribe
             _messagePublisher.Publish(commandWithConfirmation.Command);
         }
         
