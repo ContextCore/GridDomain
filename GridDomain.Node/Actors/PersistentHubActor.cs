@@ -7,70 +7,75 @@ using GridDomain.Common;
 
 namespace GridDomain.Node.Actors
 {
-
-    class ChildLifetime
-    {
-        public IActorRef Child;
-        public DateTime LastTimeOfAccess;
-    }
-
     //TODO: think about replace with ConsistentHashingPool - need to deal with persistence 
+    /// <summary>
+    /// Any child should be terminated by ShutdownRequest message
+    /// </summary>
     public abstract class PersistentHubActor: UntypedActor
     {
-        private readonly IDictionary<Guid, IActorRef> _children = new Dictionary<Guid, IActorRef>();
+        protected readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
         //TODO: replace with more efficient implementation
-        public readonly IDictionary<IActorRef, DateTime> ChildLastAccessTimes = new Dictionary<IActorRef, DateTime>();
         protected virtual TimeSpan ChildClearPeriod { get; } = TimeSpan.FromMinutes(1);
         protected virtual TimeSpan ChildMaxInactiveTime { get; } = TimeSpan.FromMinutes(30);
+        protected virtual TimeSpan ChildGracefullShutdownTime { get; } = TimeSpan.FromSeconds(5);
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
         protected abstract Type GetChildActorType(object message);
-
 
         protected override void PreStart()
         {
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
         }
 
-        private void Clear()
+        protected virtual void Clear()
         {
            var now = DateTimeFacade.UtcNow;
-            var childsToTerminate = ChildLastAccessTimes.Where(c => now - c.Value > ChildMaxInactiveTime)
-                                                         .Select(ch => ch.Key).ToArray();
-            foreach (var child in childsToTerminate)
-            {
-                ChildLastAccessTimes.Remove(child);
+           var childsToTerminate = Children.Where(c => now - c.Value.LastTimeOfAccess > ChildMaxInactiveTime)
+                                           .Select(ch => ch.Key).ToArray();
 
-            }
+           foreach (var childId in childsToTerminate)
+           {
+                //TODO: wait for child termination
+               Children[childId].Ref.Tell(new ShutdownRequest(childId));
+               Children.Remove(childId);
+           }
         }
 
         protected override void OnReceive(object message)
         {
-           // if (message is ClearChilds)
-           // {
-           //     Clear();
-           //     return;
-           // }
+            if (message is ClearChilds)
+            {
+                Clear();
+                return;
+            }
 
-            IActorRef knownChild;
+            ChildInfo knownChild;
             var childId = GetChildActorId(message);
             var name = GetChildActorName(message);
 
-            if (!_children.TryGetValue(childId, out knownChild))
+            if (!Children.TryGetValue(childId, out knownChild))
             {
-                //TODO: Implement reuse logic
+                //TODO: Implement reuse logic via selection
 
                 var childActorType = GetChildActorType(message);
+
+                //TODO: think how to recover child create failure
                 var props = Context.DI().Props(childActorType);
-                knownChild = _children[childId] = Context.ActorOf(props, name);
+                var childActorRef = Context.ActorOf(props, name);
+
+                knownChild = new ChildInfo(childActorRef);
+                Children[childId] = knownChild;
             }
-            ChildLastAccessTimes[knownChild] = DateTime.UtcNow;
-            knownChild.Tell(message);
+
+            Children[childId].LastTimeOfAccess = DateTimeFacade.UtcNow;
+            knownChild.Ref.Tell(message);
+        }
+
+        public class ClearChilds
+        {
         }
     }
 
-    public class ClearChilds
-    {
-    }
+  
 }

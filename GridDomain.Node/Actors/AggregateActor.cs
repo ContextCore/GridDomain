@@ -34,6 +34,7 @@ namespace GridDomain.Node.Actors
         private readonly IPublisher _publisher;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
+        public readonly Guid Id;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
@@ -46,7 +47,8 @@ namespace GridDomain.Node.Actors
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
-            Aggregate = factory.Build<TAggregate>(AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id);
+            Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
+            Aggregate = factory.Build<TAggregate>(Id);
 
        
             //async aggregate method execution finished, aggregate already raised events
@@ -62,6 +64,8 @@ namespace GridDomain.Node.Actors
                 (Aggregate as Aggregate).FinishAsyncExecution(m.InvocationId);
                 ProcessAggregateEvents(m.Command);
             });
+
+            Command<ShutdownRequest>( req => Shutdown());
 
             Command<ICommand>(cmd =>
             {
@@ -80,6 +84,11 @@ namespace GridDomain.Node.Actors
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+        }
+
+        protected virtual void Shutdown()
+        {
+            Context.Stop(Self);
         }
 
         private void ProcessAggregateEvents(ICommand command)

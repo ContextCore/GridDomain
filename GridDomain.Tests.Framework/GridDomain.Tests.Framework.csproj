@@ -134,11 +134,13 @@
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="AutoTestLogConfig.cs" />
     <Compile Include="CannotFindRequestedEventException.cs" />
+    <Compile Include="ChildEcho.cs" />
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="CountEventWaiter.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
+    <Compile Include="GridNodeDebugExtensions.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\PersistentTest.cs" />
     <Compile Include="Persistence\PersistEventsSaveActor.cs" />

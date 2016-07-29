@@ -6,6 +6,7 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
+    
     public class AggregateHubActor<TAggregate> : PersistentHubActor where TAggregate : AggregateBase
     {
         private readonly ICommandAggregateLocator<TAggregate> _locator;
