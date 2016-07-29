@@ -22,16 +22,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         }
 
         public SoftwareProgrammingSagaData(State state,
-                                           Guid sofaId = default(Guid),
-                                           Guid coffeeMachineId = default(Guid))
+                                         Guid sofaId = default(Guid),
+                                         Guid coffeeMachineId = default(Guid))
         {
             SofaId = sofaId;
             CoffeeMachineId = coffeeMachineId;
             CurrentStateName = state.Name;
-        }
-
-        public SoftwareProgrammingSagaData()
-        {
         }
     }
 }

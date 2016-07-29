@@ -5,7 +5,7 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class SagaDataAggregate<TSagaData> : AggregateBase where TSagaData :new()
+    public class SagaDataAggregate<TSagaData> : AggregateBase
     {
         public TSagaData Data { get; private set; }
         //for debugging purposes
@@ -14,10 +14,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         private SagaDataAggregate(Guid id)
         {
             Id = id;
-            Data = new TSagaData();
         }
 
-        public SagaDataAggregate(Guid id, TSagaData data):this(id)
+        public SagaDataAggregate(Guid id, TSagaData data ):this(id)
         {
             RaiseEvent(new SagaCreatedEvent<TSagaData>(data, id));
         }
