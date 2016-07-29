@@ -20,12 +20,12 @@ namespace GridDomain.Tests.SampleDomain
 
         public  SampleAggregate(Guid id, string value):this(id)
         {
-            RaiseEvent(new AggregateCreatedEvent(value,id));
+            RaiseEvent(new SampleAggregateCreatedEvent(value,id));
         }
 
         public void ChangeState(int number)
         {
-            RaiseEvent(new AggregateChangedEvent(number.ToString(), Id));
+            RaiseEvent(new SampleAggregateChangedEvent(number.ToString(), Id));
         }
 
         public void LongExecute(int number)
@@ -40,18 +40,18 @@ namespace GridDomain.Tests.SampleDomain
             var eventTask = Task.Run(() =>
             {
                 Thread.Sleep(timeSpan);
-                return new DomainEvent[] { new AggregateChangedEvent(param.ToString(), Id)};
+                return new DomainEvent[] { new SampleAggregateChangedEvent(param.ToString(), Id)};
             });
             return eventTask;
         }
 
-        private Task<AggregateChangedEvent> CreateEventTask(int param, TimeSpan sleepTime)
+        private Task<SampleAggregateChangedEvent> CreateEventTask(int param, TimeSpan sleepTime)
         {
             var timeSpan = sleepTime;
             var eventTask = Task.Run(() =>
             {
                 Thread.Sleep(timeSpan);
-                return new AggregateChangedEvent(param.ToString(), Id);
+                return new SampleAggregateChangedEvent(param.ToString(), Id);
             });
             return eventTask;
         }
@@ -74,13 +74,13 @@ namespace GridDomain.Tests.SampleDomain
             RaiseEventAsync(expectionTask);
         }
 
-        private void Apply(AggregateCreatedEvent e)
+        private void Apply(SampleAggregateCreatedEvent e)
         {
             Id = e.SourceId;
             Value = e.Value;
         }
         
-        private void Apply(AggregateChangedEvent e)
+        private void Apply(SampleAggregateChangedEvent e)
         {
             Value = e.Value;
         }

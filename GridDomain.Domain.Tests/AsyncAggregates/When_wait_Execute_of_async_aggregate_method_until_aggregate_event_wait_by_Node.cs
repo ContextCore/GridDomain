@@ -24,7 +24,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand,
                 Timeout,
-                ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),syncCommand.AggregateId));
+                ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

@@ -18,6 +18,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
     }
 
+
+
     public class ExpectedMessage
     {
         public ExpectedMessage(Type messageType, int messageCount, string idPropertyName = null, Guid messageId = default(Guid))

@@ -6,12 +6,13 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
+    
     public class AggregateHubActor<TAggregate> : PersistentHubActor where TAggregate : AggregateBase
     {
         private readonly ICommandAggregateLocator<TAggregate> _locator;
         private readonly Type _actorType;
 
-        public AggregateHubActor(ICommandAggregateLocator<TAggregate> locator)
+        public AggregateHubActor(ICommandAggregateLocator<TAggregate> locator, IPersistentChildsRecycleConfiguration conf):base(conf)
         {
             _actorType = typeof(AggregateActor<TAggregate>);
             _locator = locator;

@@ -214,12 +214,16 @@
     <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\CommandExecutionFinished.cs" />
+    <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
+    <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
     <Compile Include="Actors\SynchronizationProcessingActor.cs" />
+    <Compile Include="Actors\ShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />

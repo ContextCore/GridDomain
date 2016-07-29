@@ -5,6 +5,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tests.SynchroniousCommandExecute;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
@@ -25,8 +26,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 c => c.RegisterSaga<SoftwareProgrammingSaga,
                                     SoftwareProgrammingSagaData,
                                     GotTiredEvent,
-                                    SoftwareProgrammingSagaFactory
-                    >(),
+                                    SoftwareProgrammingSagaFactory>(),
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()

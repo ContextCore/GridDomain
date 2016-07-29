@@ -24,7 +24,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         public void SyncExecute_until_aggregate_event_wait_by_caller()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<AggregateChangedEvent>(nameof(AggregateChangedEvent.SourceId),
+            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),
                                                                               syncCommand.AggregateId);
             var task = GridNode.Execute(syncCommand,expectedMessage);
             if (!task.Wait(Timeout))

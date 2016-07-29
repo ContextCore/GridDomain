@@ -34,6 +34,7 @@ namespace GridDomain.Node.Actors
 
         private TSaga _saga;
         private TSagaState _sagaData;
+        public readonly Guid Id;
         public TSaga Saga => _saga ?? (_saga = _sagaFactory.Create(_sagaData));
 
 
@@ -47,20 +48,25 @@ namespace GridDomain.Node.Actors
             _publisher = publisher;
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
-            var sagaId = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
-            _sagaData = aggregateFactory.Build<TSagaState>(sagaId);
+            Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
+            _sagaData = aggregateFactory.Build<TSagaState>(Id);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == sagaId);
-
+            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Id);
+            Command<ShutdownRequest>(req => Shutdown());
             Command<DomainEvent>(msg =>
             {
                msg.Match().With<TStartMessage>(start => _saga = _sagaStarter.Create(start));
                ProcessSaga(msg);
-            }, e => e.SagaId == sagaId);
+            }, e => e.SagaId == Id);
 
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => _sagaData = (TSagaState)offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate)_sagaData).ApplyEvent(e));
+        }
+
+        protected virtual void Shutdown()
+        {
+            Context.Stop(Self);
         }
 
         private void ProcessSaga(object message)

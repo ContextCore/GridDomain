@@ -17,7 +17,7 @@ namespace GridDomain.Node.Actors
         private readonly Type _actorType = typeof(SagaActor<TSaga, TSagaState, TStartMessage>);
         private readonly IPublisher _publisher;
 
-        public SagaHubActor(IPublisher publisher)
+        public SagaHubActor(IPublisher publisher, IPersistentChildsRecycleConfiguration recycleConf) : base(recycleConf)
         {
             _publisher = publisher;
         }
