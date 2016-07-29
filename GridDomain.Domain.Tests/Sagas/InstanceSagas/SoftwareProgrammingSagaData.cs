@@ -11,7 +11,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public string CurrentStateName { get; set; }
         public Guid CoffeeMachineId { get; }
         public Guid SofaId { get; }
-       // public Money Price { get; set; }
 
         public SoftwareProgrammingSagaData(string stateName,
                                            Guid sofaId = default(Guid),

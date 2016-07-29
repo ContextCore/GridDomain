@@ -2,7 +2,6 @@ using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-
     public class EventReceivedData<TSagaData>
     {
         public EventReceivedData(Event @event, object eventData, TSagaData sagaData)

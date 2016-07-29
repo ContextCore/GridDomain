@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Automatonymous;
 using GridDomain.CQRS;
+using GridDomain.Logging;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
-        private readonly Type _startMessageType;
         public readonly List<ICommand> CommandsToDispatch = new List<ICommand>();
 
         public void Dispatch(ICommand cmd)
@@ -18,11 +18,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public Saga(Type startMessageType)
         {
-            _startMessageType = startMessageType;
+            StartMessage = startMessageType;
             InstanceState(d => d.CurrentStateName);
         }
 
-        public Type StartMessage => _startMessageType;
+        public Type StartMessage { get; }
+
         private readonly List<Type> _dispatchedCommands = new List<Type>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
         public IReadOnlyCollection<Type> DispatchedCommands => _dispatchedCommands;
@@ -37,6 +38,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
 
             base.Event(propertyExpression);
+            
             DuringAny(
                      When(machineEvent).Then(
                          ctx =>
@@ -45,6 +47,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
         public event EventHandler<StateChangedData<TSagaData>> OnStateEnter = delegate { };
         public event EventHandler<EventReceivedData<TSagaData>> OnEventReceived = delegate { };
+        public event EventHandler<MessageReceivedData<TSagaData>> OnMessageReceived = delegate { };
 
         protected override void State(Expression<Func<State>> propertyExpression)
         {
@@ -55,17 +58,18 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             base.State(propertyExpression);
         }
 
-        public void RaiseByExternalEvent<TExternalEvent>(TSagaData progress, TExternalEvent externalEvent) where TExternalEvent : class
+        public void RaiseByMessage<TMessage>(TSagaData progress, TMessage message) where TMessage : class
         {
-            this.RaiseEvent(progress, GetMachineEvent(externalEvent), externalEvent);
+            OnMessageReceived.Invoke(this,new MessageReceivedData<TSagaData>(message, progress));
+            this.RaiseEvent(progress, GetMachineEvent(message), message);
         }
 
-        private Event<TExternalEvent> GetMachineEvent<TExternalEvent>(TExternalEvent @event)
+        private Event<TMessage> GetMachineEvent<TMessage>(TMessage message)
         {
             Event ev = null;
-            if (!_messagesToEventsMap.TryGetValue(typeof(TExternalEvent), out ev))
-                throw new UnbindedMessageReceivedException(@event, typeof(TExternalEvent));
-            return (Event<TExternalEvent>)ev;
+            if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev))
+                throw new UnbindedMessageReceivedException(message, typeof(TMessage));
+            return (Event<TMessage>)ev;
         }
     }
 }

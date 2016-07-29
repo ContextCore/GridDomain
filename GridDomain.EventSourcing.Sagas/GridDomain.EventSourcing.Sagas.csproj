@@ -64,6 +64,7 @@
     <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
     <Compile Include="InstanceSagas\ISagaState.cs" />
+    <Compile Include="InstanceSagas\MessageReceivedData.cs" />
     <Compile Include="InstanceSagas\Saga.cs" />
     <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
     <Compile Include="InstanceSagas\SagaMessageReceivedEvent.cs" />
@@ -102,6 +103,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
