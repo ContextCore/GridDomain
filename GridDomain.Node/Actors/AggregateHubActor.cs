@@ -12,7 +12,7 @@ namespace GridDomain.Node.Actors
         private readonly ICommandAggregateLocator<TAggregate> _locator;
         private readonly Type _actorType;
 
-        public AggregateHubActor(ICommandAggregateLocator<TAggregate> locator)
+        public AggregateHubActor(ICommandAggregateLocator<TAggregate> locator, IPersistentChildsRecycleConfiguration conf):base(conf)
         {
             _actorType = typeof(AggregateActor<TAggregate>);
             _locator = locator;

@@ -14,14 +14,19 @@ namespace GridDomain.Node.Actors
     public abstract class PersistentHubActor: UntypedActor
     {
         protected readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
+        private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
         //TODO: replace with more efficient implementation
-        protected virtual TimeSpan ChildClearPeriod { get; } = TimeSpan.FromMinutes(1);
-        protected virtual TimeSpan ChildMaxInactiveTime { get; } = TimeSpan.FromMinutes(30);
-        protected virtual TimeSpan ChildGracefullShutdownTime { get; } = TimeSpan.FromSeconds(5);
+        protected virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
+        protected virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
         protected abstract Type GetChildActorType(object message);
+
+        public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration)
+        {
+            _recycleConfiguration = recycleConfiguration;
+        }
 
         protected override void PreStart()
         {

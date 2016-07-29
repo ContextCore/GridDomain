@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
     class TestAggregateHub : AggregateHubActor<SampleAggregate>
     {
-        public TestAggregateHub(ICommandAggregateLocator<SampleAggregate> locator) : base(locator)
+        public TestAggregateHub(ICommandAggregateLocator<SampleAggregate> locator, IPersistentChildsRecycleConfiguration conf) : base(locator,conf)
         {
         }
 

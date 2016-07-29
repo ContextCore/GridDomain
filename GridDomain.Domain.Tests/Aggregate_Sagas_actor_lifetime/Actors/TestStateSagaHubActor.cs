@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
     class TestStateSagaHubActor : SagaHubActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState,GotTiredEvent>
     {
-        public TestStateSagaHubActor(IPublisher publisher) : base(publisher)
+        public TestStateSagaHubActor(IPublisher publisher, IPersistentChildsRecycleConfiguration conf) : base(publisher, conf)
         {
         }
         protected override Type GetChildActorType(object message)
