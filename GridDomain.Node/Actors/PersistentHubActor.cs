@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors
 
         protected virtual void Clear()
         {
-           var now = DateTimeFacade.UtcNow;
+           var now = BusinessDateTime.UtcNow;
            var childsToTerminate = Children.Where(c => now - c.Value.LastTimeOfAccess > ChildMaxInactiveTime)
                                            .Select(ch => ch.Key).ToArray();
 
