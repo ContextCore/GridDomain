@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Automatonymous;
 using GridDomain.CQRS;
+using GridDomain.Logging;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
-        private readonly Type _startMessageType;
         public readonly List<ICommand> CommandsToDispatch = new List<ICommand>();
+        private ISoloLogger _log = LogManager.GetLogger();
 
         public void Dispatch(ICommand cmd)
         {
@@ -18,11 +19,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public Saga(Type startMessageType)
         {
-            _startMessageType = startMessageType;
+            StartMessage = startMessageType;
             InstanceState(d => d.CurrentStateName);
         }
 
-        public Type StartMessage => _startMessageType;
+        public Type StartMessage { get; }
+
         private readonly List<Type> _dispatchedCommands = new List<Type>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
         public IReadOnlyCollection<Type> DispatchedCommands => _dispatchedCommands;
@@ -37,6 +39,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
 
             base.Event(propertyExpression);
+            
             DuringAny(
                      When(machineEvent).Then(
                          ctx =>
