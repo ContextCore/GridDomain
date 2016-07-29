@@ -24,11 +24,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             RaiseEvent(new SagaTransitionEvent<TSagaData>(Id, modifiedData));
         }
-        public void RememberEvent(Event @event, TSagaData sagaData, object eventData = null)
-        {
-            RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event, eventData));
-        }
 
+        public void RememberEvent(Event @event, TSagaData sagaData, object message)
+        {
+            RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event, message));
+        }
         public void Apply(SagaCreatedEvent<TSagaData> e)
         {
             Data = e.State;

@@ -21,16 +21,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()).CloneWithSaga(Guid.NewGuid());
             
             GridNode.Transport.Publish(_coffeMadeEvent);
-
+            Thread.Sleep(200);
             _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_coffeMadeEvent.SagaId);
-        }
-
-        [Then]
-        public void Saga_data_aggregate_should_contain_all_ignored_messages()
-        {
-            var messagesSent = new DomainEvent[] {_coffeMadeEvent};
-            CollectionAssert.AreEquivalent(messagesSent.Select(m => m.SourceId), 
-                _sagaDataAggregate.ReceivedMessages.Cast<DomainEvent>().Select(m => m.SourceId));
         }
 
         [Then]

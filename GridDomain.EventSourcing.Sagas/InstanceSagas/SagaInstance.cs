@@ -46,10 +46,16 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Machine = machine;
 
             var sagaData = _dataAggregate.Data;
-            if (!string.IsNullOrEmpty(sagaData.CurrentStateName))
+            if (!string.IsNullOrEmpty(sagaData?.CurrentStateName))
             {
                 var initialState = Machine.GetState(sagaData.CurrentStateName);
                 Machine.TransitionToState(sagaData, initialState);
+                Machine.OnMessageReceived += (sender, context) =>
+                {
+                    var msg = context.Message;
+                    _log.Warn("Not initialized saga" + this.GetType().Name +
+                              "received a message {@msg}", msg);
+                };
             }
             else
             {
@@ -59,6 +65,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.Instance);
             Machine.OnEventReceived += (sender, context) => dataAggregate.RememberEvent(context.Event, context.SagaData, context.EventData);
+         
             _transitGenericMethodInfo = GetType()
                                        .GetMethods()
                                        .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
@@ -75,11 +82,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
-            Machine.RaiseByExternalEvent(_dataAggregate.Data, message);
+            Machine.RaiseByMessage(_dataAggregate.Data, message);
         }
-    }
-
-    public class MachineStateUnititializedException : Exception
-    {
     }
 }
