@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
-    class PersistenceHub_on_child_inactive : PersistentHub_childs_lifetime_test
+    class PersistenceHubOnChildInactive : PersistentHub_children_lifetime_test
     {
         [SetUp]
         public void When_child_became_inactive_too_long()
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             Assert.False(PersistentHubTestsStatus.ChildExistence.Contains(Infrastructure.ChildId));
         }
 
-        public PersistenceHub_on_child_inactive(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
+        public PersistenceHubOnChildInactive(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
         {
         }
     }

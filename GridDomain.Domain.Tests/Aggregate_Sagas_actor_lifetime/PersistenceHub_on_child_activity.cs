@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
-    class PersistenceHub_on_child_activity : PersistentHub_childs_lifetime_test
+    class PersistenceHubOnChildActivity : PersistentHub_children_lifetime_test
     {
         private DateTime _initialTimeToLife;
 
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             Assert.True(PersistentHubTestsStatus.ChildExistence.Contains(Infrastructure.ChildId));
         }
 
-        public PersistenceHub_on_child_activity(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
+        public PersistenceHubOnChildActivity(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
         {
         }
     }

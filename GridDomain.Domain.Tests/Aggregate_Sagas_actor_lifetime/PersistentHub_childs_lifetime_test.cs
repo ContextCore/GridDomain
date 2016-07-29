@@ -9,12 +9,12 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
-    class PersistentHub_childs_lifetime_test: ProgrammingSoftwareSagaTest
+    class PersistentHub_children_lifetime_test: ProgrammingSoftwareSagaTest
     {
         protected IPersistentActorTestsInfrastructure Infrastructure;
         private readonly PersistentHubTestsStatus.PersistenceCase _case;
 
-        public PersistentHub_childs_lifetime_test(PersistentHubTestsStatus.PersistenceCase @case)
+        public PersistentHub_children_lifetime_test(PersistentHubTestsStatus.PersistenceCase @case)
         {
             _case = @case;
         }
