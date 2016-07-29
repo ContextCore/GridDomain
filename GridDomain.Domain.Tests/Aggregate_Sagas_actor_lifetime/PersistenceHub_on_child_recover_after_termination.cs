@@ -1,10 +1,12 @@
+using System;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
 
-    [TestFixture(PersistentHubTestsStatus.PersistenceCase.Saga)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
     class PersistenceHub_on_child_recover_after_termination : PersistentHub_childs_lifetime_test
     {
 
@@ -19,13 +21,13 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         [Then]
         public void It_should_be_restored_after_command_execution()
         {
-            Assert.True(PersistentHubTestsStatus.ChildExistence.Contains(_aggregateId));
+            Assert.True(PersistentHubTestsStatus.ChildExistence.Contains(Infrastructure.ChildId));
         }
 
         [Then]
         public void It_should_be_watched_in_hub()
         {
-            Assert.True(PersistentHubTestsStatus.ChildTerminationTimes.ContainsKey(_aggregateId));
+            Assert.True(PersistentHubTestsStatus.ChildTerminationTimes.ContainsKey(Infrastructure.ChildId));
         }
 
         public PersistenceHub_on_child_recover_after_termination(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)

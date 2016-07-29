@@ -1,18 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Akka.Actor;
-using CommonDomain.Core;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Sagas.InstanceSagas;
-using GridDomain.Tests.SynchroniousCommandExecute;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
     class PersistentHub_childs_lifetime_test: ProgrammingSoftwareSagaTest
     {
-        protected Guid _aggregateId => _infrastructure.ChildId;
-        protected IPersistentActorTestsInfrastructure _infrastructure;
+        protected IPersistentActorTestsInfrastructure Infrastructure;
         private readonly PersistentHubTestsStatus.PersistenceCase _case;
 
         public PersistentHub_childs_lifetime_test(PersistentHubTestsStatus.PersistenceCase @case)
@@ -20,11 +19,20 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             _case = @case;
         }
 
-       
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return  new CustomContainerConfiguration(c => c.Register(base.CreateConfiguration()),
+              c => c.RegisterStateSaga<GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
+                                       SoftwareProgrammingSagaState,
+                                       GotTiredEvent,
+                                       GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>());
+        }
+
         protected void When_hub_creates_a_child()
         {
-            _infrastructure.Hub.Tell(_infrastructure.ChildCreateMessage);
+            Infrastructure.Hub.Tell(Infrastructure.ChildCreateMessage);
 
+            //Thread.Sleep(Debugger.IsAttached ? 100000 : 100);
             Thread.Sleep(100);
         }
 
@@ -35,7 +43,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 
         protected void And_command_for_child_is_sent()
         {
-            _infrastructure.Hub.Tell(_infrastructure.ChildActivateMessage);
+            Infrastructure.Hub.Tell(Infrastructure.ChildActivateMessage);
             Thread.Sleep(100);
         }
 
@@ -48,13 +56,22 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             switch (_case)
             {
                     case PersistentHubTestsStatus.PersistenceCase.Aggregate:
-                                _infrastructure = new AggregatePersistedHub_Infrastructure(GridNode.System);
+                                Infrastructure = new AggregatePersistedHub_Infrastructure(GridNode.System);
                     break;
 
-                case PersistentHubTestsStatus.PersistenceCase.Saga:
-                    _infrastructure = new SagaPersistedHub_Infrastructure(GridNode.System);
+                case PersistentHubTestsStatus.PersistenceCase.IstanceSaga:
+                    Infrastructure = new InstanceSagaPersistedHub_Infrastructure(GridNode.System);
                     break;
+
+                case PersistentHubTestsStatus.PersistenceCase.StateSaga:
+                    Infrastructure = new StateSagaPersistedHub_Infrastructure(GridNode.System);
+                    break;
+                default: 
+                    throw new UnknownCaseException();
             }
         }
+    }
+    internal class UnknownCaseException : Exception
+    {
     }
 }

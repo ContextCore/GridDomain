@@ -215,9 +215,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestSagaHubActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\AggregatePersistedHub_Infrastructure.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\IPersistentActorTestsInfrastructure.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaHubActor.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaActor.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaHubActor.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\IPersistentActorTestsInfrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHub_on_child_activity.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHub_on_child_creation.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHub_on_child_inactive.cs" />
@@ -227,7 +229,8 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestAggregateActor.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestAggregateHub.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\SagaPersistedHub_Infrastructure.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\SagaPersistedHub_Infrastructure.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\StateSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="DateTimeSpec.cs" />

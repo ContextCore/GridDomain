@@ -12,6 +12,7 @@ static internal class PersistentHubTestsStatus
     public enum PersistenceCase
     {
         Aggregate,
-        Saga
+        IstanceSaga,
+        StateSaga,
     }
 }

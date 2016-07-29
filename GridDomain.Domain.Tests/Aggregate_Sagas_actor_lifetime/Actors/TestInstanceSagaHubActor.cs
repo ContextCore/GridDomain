@@ -8,16 +8,16 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
-    class TestSagaHubActor : SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+    class TestInstanceSagaHubActor : SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
         SagaDataAggregate<SoftwareProgrammingSagaData>,
         GotTiredEvent>
     {
-        public TestSagaHubActor(IPublisher publisher) : base(publisher)
+        public TestInstanceSagaHubActor(IPublisher publisher) : base(publisher)
         {
         }
         protected override Type GetChildActorType(object message)
         {
-            return typeof(TestAggregateActor);
+            return typeof(TestInstanceSagaActor);
         }
 
         protected override void Clear()

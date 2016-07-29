@@ -4,37 +4,37 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
 
-    [TestFixture(PersistentHubTestsStatus.PersistenceCase.Saga)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
     class PersistenceHub_on_child_creation : PersistentHub_childs_lifetime_test
     {
-        private static DateTime _childTimeToLife;
-
         [SetUp]
         public void When_Hub_creates_a_child()
         {
             When_hub_creates_a_child();
-            _childTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[_aggregateId];
         }
 
         [Then]
         public void Time_to_life_can_differs_by_check_time()
         {
             var approximateTimeToLife = PersistentHubTestsStatus.ChildMaxLifetime - PersistentHubTestsStatus.ChildClearTime;
+            var childTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
 
-            Assert.GreaterOrEqual(_childTimeToLife - DateTime.UtcNow,approximateTimeToLife);
+            Assert.GreaterOrEqual(childTimeToLife - DateTime.UtcNow,approximateTimeToLife);
         }
 
         [Then]
         public void Time_to_life_is_limited()
         {
-            Assert.LessOrEqual(_childTimeToLife - DateTime.UtcNow, PersistentHubTestsStatus.ChildMaxLifetime);
+           var  childTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
+            Assert.LessOrEqual(childTimeToLife - DateTime.UtcNow, PersistentHubTestsStatus.ChildMaxLifetime);
         }
 
         [Then]
         public void It_should_be_written_in_static_result_holders()
         {
-            Assert.True(PersistentHubTestsStatus.ChildTerminationTimes.ContainsKey(_aggregateId));
+            Assert.True(PersistentHubTestsStatus.ChildTerminationTimes.ContainsKey(Infrastructure.ChildId));
         }
 
         public PersistenceHub_on_child_creation(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
