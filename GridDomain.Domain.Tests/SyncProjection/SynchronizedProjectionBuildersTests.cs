@@ -33,7 +33,7 @@ namespace GridDomain.Tests.SyncProjection
         [TestFixtureSetUp]
         public void When_execute_many_commands_for_create_and_update()
         {
-            var createCommands = Enumerable.Range(0, 10).Select(r => new CreateAggregateCommand(101, Guid.NewGuid())).ToArray();
+            var createCommands = Enumerable.Range(0, 10).Select(r => new CreateAggregateCommand(101, Guid.NewGuid(),Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
             var updateCommands = Enumerable.Range(0, 10).Select(r => new ChangeAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
