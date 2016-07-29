@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.FutureEvents.Infrastructure;
@@ -46,6 +47,9 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         public void Scheduler_does_not_contain_job_for_future_event()
         {
             var scheduler = GridNode.Container.Resolve<IScheduler>();
+            //scheduler needs time to cancel the event
+            //TODO: remove sleep to explicit wait
+            Thread.Sleep(200);
             var scheduleKey = AggregateActor<TestAggregate>.CreateScheduleKey(_futureEventEnvelop.Id,
                 _testCommand.AggregateId, "");
 
