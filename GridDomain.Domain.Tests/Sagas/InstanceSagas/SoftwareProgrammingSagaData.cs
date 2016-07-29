@@ -11,7 +11,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public string CurrentStateName { get; set; }
         public Guid CoffeeMachineId { get; }
         public Guid SofaId { get; }
-       // public Money Price { get; set; }
 
         public SoftwareProgrammingSagaData(string stateName,
                                            Guid sofaId = default(Guid),
@@ -23,12 +22,16 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         }
 
         public SoftwareProgrammingSagaData(State state,
-                                         Guid sofaId = default(Guid),
-                                         Guid coffeeMachineId = default(Guid))
+                                           Guid sofaId = default(Guid),
+                                           Guid coffeeMachineId = default(Guid))
         {
             SofaId = sofaId;
             CoffeeMachineId = coffeeMachineId;
             CurrentStateName = state.Name;
+        }
+
+        public SoftwareProgrammingSagaData()
+        {
         }
     }
 }

@@ -12,7 +12,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga, SagaDataAggregate<TSagaData> data) 
             where TSaga : Saga<TSagaData> 
-            where TSagaData : class, ISagaState
+            where TSagaData : class, ISagaState, new()
         {
             return new SagaInstance<TSaga, TSagaData>(saga, data);
         }
@@ -20,7 +20,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
     public class SagaInstance<TSaga,TSagaData>: ISagaInstance<TSaga, TSagaData> 
         where TSaga : Saga<TSagaData>
-        where TSagaData : class, ISagaState
+        where TSagaData : class, ISagaState, new()
     {
         public readonly Saga<TSagaData> Machine;
         private readonly SagaDataAggregate<TSagaData> _dataAggregate;

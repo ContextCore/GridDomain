@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     public class SagaDataAggregateCommandsHandlerDummy<T> : 
-        AggregateCommandsHandler<SagaDataAggregate<T>> where T : ISagaState
+        AggregateCommandsHandler<SagaDataAggregate<T>> where T : ISagaState, new()
     {
       
     }

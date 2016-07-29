@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public static class SagaExtensions
     {
-        public static ISagaDescriptor GetDescriptor<TSagaData>(this Saga<TSagaData> saga) where TSagaData : class, ISagaState
+        public static ISagaDescriptor GetDescriptor<TSagaData>(this Saga<TSagaData> saga) where TSagaData : class, ISagaState, new()
         {
             var descriptor = new SagaDescriptor();
             FillAcceptMessages(saga, descriptor);

@@ -7,10 +7,10 @@ namespace GridDomain.Node.Configuration.Composition
 {
     public class InstanceSagaConfiguration<TSaga, TData, TStartMessage, TSagaFactory> :
         IContainerConfiguration where TSaga : Saga<TData>
-        where TSagaFactory : ISagaFactory<ISagaInstance<TSaga,TData>, SagaDataAggregate<TData>>,
+        where TSagaFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
-        where TData : class, ISagaState
+        where TData : class, ISagaState, new()
     {
         public void Register(IUnityContainer container)
         {

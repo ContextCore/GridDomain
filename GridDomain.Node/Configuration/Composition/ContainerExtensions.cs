@@ -26,7 +26,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public static void RegisterSaga<TSaga, TData, TStartMessage,TFactory>(this IUnityContainer container) 
             where TSaga: Saga<TData> 
-            where TData : class, ISagaState 
+            where TData : class, ISagaState, new() 
             where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
                              ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
