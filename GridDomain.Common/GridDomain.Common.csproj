@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessDateTime.cs" />
+    <Compile Include="Condition.cs" />
     <Compile Include="DefaultDateTimeStrategy.cs" />
     <Compile Include="DateTimeFacade.cs" />
     <Compile Include="DateTimeStrategy.cs" />

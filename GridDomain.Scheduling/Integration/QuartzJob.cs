@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Akka.Actor;
 using Akka.DI.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -24,15 +25,17 @@ namespace GridDomain.Scheduling.Integration
         private readonly IPublisher _publisher;
 
 
-        public QuartzJob(
-            IQuartzLogger quartzLogger,
-            ActorSystem actorSystem,
-            IPublisher publisher
-            )
+        public QuartzJob(IQuartzLogger quartzLogger,
+                         ActorSystem actorSystem,
+                         IPublisher publisher)
         {
+            Condition.NotNull(()=> quartzLogger);
+            Condition.NotNull(()=> actorSystem);
+            Condition.NotNull(()=> publisher);
+            Condition.NotNull(() => actorSystem.DI());
+
             _quartzLogger = quartzLogger;
             _actorSystem = actorSystem;
-            _publisher = publisher;
         }
 
         public void Execute(IJobExecutionContext context)
