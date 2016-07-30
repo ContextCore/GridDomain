@@ -1,4 +1,6 @@
+using System;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
@@ -20,7 +22,6 @@ namespace GridDomain.Node
         {
             _config = config;
             _transportMode = transportMode;
-            _conf = conf;
             _actorSystem = actorSystem;
         }
 

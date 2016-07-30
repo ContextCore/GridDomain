@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;

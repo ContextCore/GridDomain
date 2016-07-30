@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;

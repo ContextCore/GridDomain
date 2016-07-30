@@ -93,15 +93,10 @@ namespace GridDomain.Node
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting, 
-                                                    //new SchedulingRouteMap(),
+                                                    new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                     );
             Container = new UnityContainer();
-        }
-
-        public GridDomainNode(UnityContainer container, IMessageRouteMap messageRouteMap, Func<ActorSystem[]> actorSystem)
-        {
-            this._messageRouting = messageRouteMap;
         }
 
         private void OnSystemTermination()
@@ -127,9 +122,8 @@ namespace GridDomain.Node
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
 
-            ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System, persistentScheduler);
+            ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
 
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
@@ -146,14 +140,14 @@ namespace GridDomain.Node
         private void ConfigureContainer(IUnityContainer unityContainer,
                                         IDbConfiguration databaseConfiguration, 
                                         IQuartzConfig quartzConfig, 
-                                        ActorSystem actorSystem, 
-                                        IActorRef persistentScheduler)
+                                        ActorSystem actorSystem)
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        databaseConfiguration,
                                                                        _transportMode,
                                                                        quartzConfig));
 
+            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
