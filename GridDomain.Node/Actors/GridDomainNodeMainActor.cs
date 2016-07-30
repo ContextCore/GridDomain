@@ -7,6 +7,7 @@ using Akka.Actor;
 using Akka.Dispatch;
 using Akka.DI.Core;
 using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -34,6 +35,7 @@ namespace GridDomain.Node.Actors
             _messageRouting = messageRouting;
             _messagePublisher = transport;
             _log.Debug($"Actor {GetType().Name} was created on: {Self.Path}.");
+            _actorLogName = GetType().BeautyName();
         }
 
         public void Handle(Start msg)
@@ -81,15 +83,20 @@ namespace GridDomain.Node.Actors
         public class Started
         {
         }
+        private readonly string _actorLogName;
 
         protected override void PreStart()
         {
-            Context.IncrementActorCreated();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
         }
 
         protected override void PostStop()
         {
-            Context.IncrementActorStopped();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
         }
     }
 }

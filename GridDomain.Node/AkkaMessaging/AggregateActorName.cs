@@ -48,4 +48,13 @@ namespace GridDomain.Node.AkkaMessaging
             return Name;
         }
     }
+
+
+    public static class TypeNameExtensions
+    {
+        public static string BeautyName(this Type type)
+        {
+            return AggregateActorName.GetActorNameFromType(type);
+        }   
+    }
 }

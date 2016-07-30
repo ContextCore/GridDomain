@@ -1,8 +1,10 @@
 using System;
 using Akka.Actor;
 using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using GridDomain.CQRS;
 using GridDomain.Logging;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
@@ -15,6 +17,7 @@ namespace GridDomain.Node.Actors
         {
             _handler = handler;
             _log.Trace($"Created message handler actor {GetType()}");
+            _actorLogName = GetType().BeautyName();
         }
 
         protected override void OnReceive(object msg)
@@ -24,18 +27,20 @@ namespace GridDomain.Node.Actors
             _handler.Handle((TMessage)msg);
         }
 
+        private readonly string _actorLogName;
+
         protected override void PreStart()
         {
-            Context.IncrementActorCreated();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
         }
 
         protected override void PostStop()
         {
-            Context.IncrementActorStopped();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementActorRestart();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
         }
     }
 }

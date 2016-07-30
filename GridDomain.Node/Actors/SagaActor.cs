@@ -4,6 +4,7 @@ using System.Linq;
 using Akka;
 using Akka.Actor;
 using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using Akka.Persistence;
 using Automatonymous;
 using CommonDomain;
@@ -47,6 +48,7 @@ namespace GridDomain.Node.Actors
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
+            _actorLogName = GetType().BeautyName();
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
@@ -110,19 +112,20 @@ namespace GridDomain.Node.Actors
             Saga.Data.ClearUncommittedEvents();
         }
 
+        private readonly string _actorLogName;
+
         protected override void PreStart()
         {
-            Context.IncrementActorCreated();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
         }
 
         protected override void PostStop()
         {
-            Context.IncrementActorStopped();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
         }
-
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementActorRestart();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
         }
 
         public override string PersistenceId => Self.Path.Name;

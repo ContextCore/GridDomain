@@ -3,12 +3,14 @@ using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
+using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
@@ -24,6 +26,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
+            _actorLogName = GetType().BeautyName();
         }
 
         public void Handle(CreateActorRouteMessage msg)
@@ -96,19 +99,20 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             return handleActor;
         }
 
+        private readonly string _actorLogName;
+
         protected override void PreStart()
         {
-            Context.IncrementActorCreated();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
         }
 
         protected override void PostStop()
         {
-            Context.IncrementActorStopped();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
         }
-
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementActorRestart();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
         }
     }
 }

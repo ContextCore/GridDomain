@@ -4,7 +4,9 @@ using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using GridDomain.Common;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
@@ -27,12 +29,7 @@ namespace GridDomain.Node.Actors
         public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration)
         {
             _recycleConfiguration = recycleConfiguration;
-        }
-
-        protected override void PreStart()
-        {
-            Context.IncrementActorCreated();
-            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+            _actorLogName = GetType().BeautyName();
         }
 
         protected virtual void Clear()
@@ -84,13 +81,21 @@ namespace GridDomain.Node.Actors
         {
         }
 
+        private readonly string _actorLogName;
+
+        protected override void PreStart()
+        {
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+        }
+
         protected override void PostStop()
         {
-            Context.IncrementActorStopped();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementActorRestart();
+            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
         }
     }
 
