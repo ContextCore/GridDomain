@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
+using Akka.Monitoring;
 using Akka.Persistence;
 using Automatonymous;
 using CommonDomain;
@@ -51,10 +52,21 @@ namespace GridDomain.Node.Actors
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
             _sagaData = aggregateFactory.Build<TSagaState>(Id);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Id);
-            Command<ShutdownRequest>(req => Shutdown());
+            Command<ICommandFault>(fault =>
+            {
+                Context.IncrementMessagesReceived();
+                ProcessSaga(fault);
+            }, fault => fault.SagaId == Id);
+
+            Command<ShutdownRequest>(req =>
+            {
+                Context.IncrementMessagesReceived();
+                Shutdown();
+            });
+
             Command<DomainEvent>(msg =>
             {
+               Context.IncrementMessagesReceived();
                msg.Match().With<TStartMessage>(start => _saga = _sagaStarter.Create(start));
                ProcessSaga(msg);
             }, e => e.SagaId == Id);
@@ -63,6 +75,7 @@ namespace GridDomain.Node.Actors
             Recover<SnapshotOffer>(offer => _sagaData = (TSagaState)offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate)_sagaData).ApplyEvent(e));
         }
+
 
         protected virtual void Shutdown()
         {
@@ -95,6 +108,21 @@ namespace GridDomain.Node.Actors
             PersistAll(stateChangeEvents, e => { _publisher.Publish(e); });
 
             Saga.Data.ClearUncommittedEvents();
+        }
+
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+        }
+
+        protected override void PreRestart(Exception reason, object message)
+        {
+            Context.IncrementActorRestart();
         }
 
         public override string PersistenceId => Self.Path.Name;

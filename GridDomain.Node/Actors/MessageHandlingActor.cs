@@ -1,4 +1,6 @@
+using System;
 using Akka.Actor;
+using Akka.Monitoring;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 
@@ -17,8 +19,23 @@ namespace GridDomain.Node.Actors
 
         protected override void OnReceive(object msg)
         {
+            Context.IncrementMessagesReceived();
             _log.Trace($"Handler actor got message: {msg.ToPropsString()}");
             _handler.Handle((TMessage)msg);
+        }
+
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            Context.IncrementActorRestart();
         }
     }
 }

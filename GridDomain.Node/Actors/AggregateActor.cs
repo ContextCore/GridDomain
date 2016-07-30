@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Monitoring;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
@@ -55,6 +56,7 @@ namespace GridDomain.Node.Actors
             //need process it in usual way
             Command<AsyncEventsRecieved>(m =>
             {
+                Context.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
                    _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
@@ -65,10 +67,15 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
 
-            Command<ShutdownRequest>( req => Shutdown());
+            Command<ShutdownRequest>(req =>
+            {
+                Context.IncrementMessagesReceived();
+                Shutdown();
+            });
 
             Command<ICommand>(cmd =>
             {
+                Context.IncrementMessagesReceived();
                 try
                 {
                     Aggregate = _handler.Execute(Aggregate, cmd);
@@ -171,6 +178,15 @@ namespace GridDomain.Node.Actors
         public override string PersistenceId { get; }
 
 
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+        }
     }
 
  

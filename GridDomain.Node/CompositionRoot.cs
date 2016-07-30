@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System.Configuration;
+using Akka.Actor;
 using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -39,6 +40,9 @@ namespace GridDomain.Node
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
+
+
+            container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default);
             container.RegisterInstance(actorSystem);
 
             //TODO: replace with better implementation

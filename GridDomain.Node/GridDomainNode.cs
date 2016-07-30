@@ -7,6 +7,9 @@ using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using Akka.Monitoring;
+using Akka.Monitoring.ApplicationInsights;
+using Akka.Monitoring.PerformanceCounters;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -45,8 +48,6 @@ namespace GridDomain.Node
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
-        private UnityContainer container;
-        private Func<ActorSystem[]> actorSystem;
         public IPublisher Transport { get; private set; }
 
         [Obsolete("Use constructor with ActorSystem factory instead")]
@@ -100,9 +101,7 @@ namespace GridDomain.Node
 
         public GridDomainNode(UnityContainer container, IMessageRouteMap messageRouteMap, Func<ActorSystem[]> actorSystem)
         {
-            this.container = container;
             this._messageRouting = messageRouteMap;
-            this.actorSystem = actorSystem;
         }
 
         private void OnSystemTermination()
@@ -131,6 +130,12 @@ namespace GridDomain.Node
             var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
 
             ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System, persistentScheduler);
+
+            var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
+            var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
+
+            ActorMonitoringExtension.RegisterMonitor(System, monitor);
+            ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
             StartMainNodeActor(System);
 

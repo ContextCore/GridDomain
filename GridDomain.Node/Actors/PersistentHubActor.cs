@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Monitoring;
 using GridDomain.Common;
 
 namespace GridDomain.Node.Actors
@@ -30,6 +31,7 @@ namespace GridDomain.Node.Actors
 
         protected override void PreStart()
         {
+            Context.IncrementActorCreated();
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
         }
 
@@ -49,6 +51,7 @@ namespace GridDomain.Node.Actors
 
         protected override void OnReceive(object message)
         {
+            Context.IncrementMessagesReceived();
             if (message is ClearChilds)
             {
                 Clear();
@@ -79,6 +82,15 @@ namespace GridDomain.Node.Actors
 
         public class ClearChilds
         {
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            Context.IncrementActorRestart();
         }
     }
 

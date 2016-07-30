@@ -6,6 +6,7 @@ using Akka;
 using Akka.Actor;
 using Akka.Dispatch;
 using Akka.DI.Core;
+using Akka.Monitoring;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -37,6 +38,8 @@ namespace GridDomain.Node.Actors
 
         public void Handle(Start msg)
         {
+            Context.IncrementMessagesReceived();
+
             _log.Debug($"Actor {GetType().Name} is initializing");
 
             var system = Context.System;
@@ -53,12 +56,15 @@ namespace GridDomain.Node.Actors
 
         public void Handle(ICommand cmd)
         {
-            _log.Trace($"Актор {GetType().Name} получил сообщение:\r\n {cmd.ToPropsString()}");
+            Context.IncrementMessagesReceived();
+
             _messagePublisher.Publish(cmd);
         }
 
         public void Handle(CommandAndConfirmation commandWithConfirmation)
         {
+            Context.IncrementMessagesReceived();
+
             var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
             foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
@@ -74,6 +80,16 @@ namespace GridDomain.Node.Actors
 
         public class Started
         {
+        }
+
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
         }
     }
 }

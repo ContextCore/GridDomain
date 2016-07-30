@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Monitoring;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
@@ -27,6 +28,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void Handle(CreateActorRouteMessage msg)
         {
+            Context.IncrementMessagesReceived();
             var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
             foreach (var msgRoute in msg.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
@@ -34,6 +36,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void Handle(CreateHandlerRouteMessage msg)
         {
+            Context.IncrementMessagesReceived();
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
             Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
@@ -91,6 +94,21 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             var handleActor = Context.System.ActorOf(handleActorProps, actorName);
             return handleActor;
+        }
+
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+        }
+
+        protected override void PreRestart(Exception reason, object message)
+        {
+            Context.IncrementActorRestart();
         }
     }
 }
