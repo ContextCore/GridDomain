@@ -40,14 +40,18 @@ namespace GridDomain.Node
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
         private Quartz.IScheduler _quartzScheduler;
-        public ActorSystem System;
+       
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
         private UnityContainer container;
         private Func<ActorSystem[]> actorSystem;
-        public IPublisher Transport { get; private set; }
+
+
+        public IActorTransport Transport { get; private set; }
+
+        public ActorSystem System;
 
         [Obsolete("Use constructor with ActorSystem factory instead")]
         public GridDomainNode(IUnityContainer container,
@@ -134,7 +138,7 @@ namespace GridDomain.Node
 
             StartMainNodeActor(System);
 
-            Transport = Container.Resolve<IPublisher>();
+            Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
         }
 

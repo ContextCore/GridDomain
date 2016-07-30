@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -12,6 +13,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
+    [Obsolete("Use GridNodeConainerConfiguration instead")]
     //TODO: refactor to good config via IContainerConfiguration
     public static class CompositionRoot
     {
@@ -22,20 +24,22 @@ namespace GridDomain.Node
                                 IQuartzConfig config = null)
         {
             //TODO: replace with config
+            IActorTransport transport;
+            switch (transportMode)
+            {
+                case TransportMode.Standalone:
+                    transport = new AkkaEventBusTransport(actorSystem);
+                break;
+                case TransportMode.Cluster:
+                    transport = new DistributedPubSubTransport(actorSystem);
+                break;
+                default:
+                    throw new ArgumentException(nameof(transportMode));
+            }
 
-            if (transportMode == TransportMode.Standalone)
-            {
-                var transport = new AkkaEventBusTransport(actorSystem);
-                container.RegisterInstance<IPublisher>(transport);
-                container.RegisterInstance<IActorSubscriber>(transport);
-            }
-            if (transportMode == TransportMode.Cluster)
-            {
-                var transport = new DistributedPubSubTransport(actorSystem);
-                container.RegisterInstance<IPublisher>(transport);
-                container.RegisterInstance<IActorSubscriber>(transport);
-            }
-            
+            container.RegisterInstance<IPublisher>(transport);
+            container.RegisterInstance<IActorSubscriber>(transport);
+            container.RegisterInstance<IActorTransport>(transport);
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
@@ -44,7 +48,6 @@ namespace GridDomain.Node
             //TODO: replace with better implementation
             Scheduling.CompositionRoot.Compose(container, config ?? new PersistedQuartzConfig());
         }
-
     }
 
 }

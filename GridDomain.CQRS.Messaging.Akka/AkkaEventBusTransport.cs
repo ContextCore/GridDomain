@@ -5,7 +5,7 @@ using Akka.Event;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
-    public class AkkaEventBusTransport : IActorSubscriber, IPublisher
+    public class AkkaEventBusTransport : IActorTransport
     {
         private readonly EventStream _bus;
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>(); 
