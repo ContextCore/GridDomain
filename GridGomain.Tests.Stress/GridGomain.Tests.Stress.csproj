@@ -119,9 +119,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InsertOptimazedBulkConfiguration.cs" />
     <Compile Include="RunTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StressTestAkkaConfiguration.cs" />
+    <Compile Include="StressTestAkkaNetworkAddress.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

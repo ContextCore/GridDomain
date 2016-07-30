@@ -12,7 +12,6 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
@@ -22,13 +21,6 @@ using Ploeh.AutoFixture;
 
 namespace Solomoto.Membership.TransferTool
 {
-
-    public class InsertOptimazedBulkConfiguration : IPersistentChildsRecycleConfiguration
-    {
-        public TimeSpan ChildClearPeriod => TimeSpan.FromSeconds(30);
-        public TimeSpan ChildMaxInactiveTime => TimeSpan.FromSeconds(20);
-    }
-
     public class Program
     {
         public static void Main(params string[] args)
@@ -41,7 +33,7 @@ namespace Solomoto.Membership.TransferTool
                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                 c => c.RegisterType<IQuartzConfig,PersistedQuartzConfig>());
 
-            Func<ActorSystem[]> actorSystemFactory = () => new[] {ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())};
+            Func<ActorSystem[]> actorSystemFactory = () => new[] {ActorSystemFactory.CreateActorSystem(new StressTestAkkaConfiguration())};
 
             var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer),actorSystemFactory);
 
@@ -65,13 +57,6 @@ namespace Solomoto.Membership.TransferTool
                 var changeCExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandC.AggregateId);
 
                 // A, B+C in parallel, C
-
-                //var executionPlan = 
-                //node.Execute(createAggregateCommand, createExpect)
-                //    .ContinueWith(tsk => Task.WaitAll(node.Execute(changeAggregateCommandA, changeAExpect),
-                //                                      node.Execute(changeAggregateCommandB, changeBExpect)))
-                //    .ContinueWith(tsk => node.Execute(changeAggregateCommandC, changeCExpect));
-
                 var executionPlan = node.Execute(createAggregateCommand, createExpect)
                     .ContinueWith(t1 => node.Execute(changeAggregateCommandA, changeAExpect))
                         .ContinueWith(t2 => node.Execute(changeAggregateCommandB, changeBExpect))
