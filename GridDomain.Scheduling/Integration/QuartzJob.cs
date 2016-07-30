@@ -50,7 +50,8 @@ namespace GridDomain.Scheduling.Integration
                     var command = GetCommand(jobDataMap);
                     var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap);
-                    var sagaCreator = _actorSystem.ActorOf(CreateGenericProps(options));
+                    var genericProps = CreateGenericProps(options);
+                    var sagaCreator = _actorSystem.ActorOf(genericProps);
                     var result = sagaCreator.Ask(new ManageScheduledCommand(command, key), options.Timeout);
                     result.Wait(options.Timeout);
                 }

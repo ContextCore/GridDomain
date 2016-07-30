@@ -9,7 +9,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             routes.Add(route);
         }
-
         public IReadOnlyCollection<MessageRoute> AcceptMessages => routes;
     }
 }
