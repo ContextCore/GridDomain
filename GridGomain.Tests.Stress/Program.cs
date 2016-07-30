@@ -50,7 +50,7 @@ namespace Solomoto.Membership.TransferTool
             var timer = new Stopwatch();
             timer.Start();
 
-            var count = 500;
+            var count = 10000000;
             var tasks = Enumerable.Range(0,count).Select(t =>
             {
                 var data = new Fixture();
@@ -84,8 +84,12 @@ namespace Solomoto.Membership.TransferTool
             Task.WaitAll(tasks);
 
 
-            Thread.Sleep(60);
+            timer.Stop();
             Console.WriteLine($"Executed {count} batches in {timer.Elapsed}");
+
+            Console.WriteLine("Sleeping");
+            Thread.Sleep(60);
+
             node.Stop();
         }
     }
