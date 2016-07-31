@@ -15,7 +15,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         [Then]
         public void SyncExecute_will_wait_for_any_one_of_expected_message_by_Node_with_message_base_class()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
             var changeExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var createExpect = ExpectedMessage.Once<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);

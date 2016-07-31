@@ -28,10 +28,10 @@ namespace GridDomain.Tests.SampleDomain
             RaiseEvent(new SampleAggregateChangedEvent(number.ToString(), Id));
         }
 
-        public void LongExecute(int number)
+        public void LongExecute(int sleepMiliseconds)
         {
-            Thread.Sleep(1000);
-            ChangeState(number);
+            Thread.Sleep(sleepMiliseconds);
+            ChangeState(sleepMiliseconds);
         }
 
         private Task<DomainEvent[]> CreateEventsTask(int param, TimeSpan sleepTime)

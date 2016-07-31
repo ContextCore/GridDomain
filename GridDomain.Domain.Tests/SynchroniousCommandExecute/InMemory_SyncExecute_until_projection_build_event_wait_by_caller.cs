@@ -23,7 +23,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         [Then]
         public void SyncExecute_until_projection_build_event_wait_by_caller()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,syncCommand.AggregateId);
             var task = GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedMessage);
             if (!task.Wait(Timeout))

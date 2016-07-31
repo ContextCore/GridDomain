@@ -140,7 +140,6 @@
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="CountEventWaiter.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
-    <Compile Include="GridNodeDebugExtensions.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="Persistence\PersistentTest.cs" />
     <Compile Include="Persistence\PersistEventsSaveActor.cs" />

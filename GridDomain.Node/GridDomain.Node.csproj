@@ -255,6 +255,7 @@
     <Compile Include="Configuration\Composition\CustomContainerConfiguration.cs" />
     <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="DefaultMessageLoggerHandler.cs" />
+    <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />

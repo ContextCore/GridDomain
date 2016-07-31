@@ -22,7 +22,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),
                                                                               syncCommand.AggregateId);
-            var task = GridNode.Execute(syncCommand,expectedMessage);
+            var task = GridNode.Execute(syncCommand, new []{ expectedMessage});
             if (!task.Wait(Timeout))
                 throw new TimeoutException();
 

@@ -14,7 +14,7 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         [Then]
         public void SyncExecute_will_finish()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
             var changeExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var createExpect = ExpectedMessage.Once<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);

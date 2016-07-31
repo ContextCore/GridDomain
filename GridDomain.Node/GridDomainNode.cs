@@ -39,6 +39,9 @@ namespace GridDomain.Node
         private readonly IMessageRouteMap _messageRouting;
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
+        public TimeSpan CommandTimeout { get; set; } = DefaultCommandTimeout;
+        public static readonly TimeSpan DefaultCommandTimeout = TimeSpan.FromSeconds(30);
+
         private Quartz.IScheduler _quartzScheduler;
        
         private IActorRef _mainNodeActor;
@@ -162,6 +165,7 @@ namespace GridDomain.Node
         }
 
         bool _stopping = false;
+      
         public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
@@ -198,12 +202,16 @@ namespace GridDomain.Node
                 _mainNodeActor.Tell(cmd);
         }
 
-        public Task<object> Execute(ICommand command, params ExpectedMessage[] expect)
+        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
         {
-            return _mainNodeActor.Ask<object>(new CommandAndConfirmation(command,expect))
+            var maxWaitTime = timeout ?? CommandTimeout;
+            return _mainNodeActor.Ask<object>(new CommandPlan(command, expectedMessage), maxWaitTime)
                                  .ContinueWith(t =>
                                  {
-                                     object result=null;
+                                     if(t.IsCanceled)
+                                         throw new TimeoutException("Command execution timed out");
+
+                                     object result = null;
                                      t.Result.Match()
                                              .With<ICommandFault>(fault =>
                                              {
@@ -211,10 +219,11 @@ namespace GridDomain.Node
                                                  ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
                                              })
                                              .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                                             .Default(m => { throw new InvalidMessageException(m.ToPropsString()); }); 
-
+                                             .Default(m => { throw new InvalidMessageException(m.ToPropsString()); });
+                                 
                                      return result;
                                  });
         }
+
     }
 }

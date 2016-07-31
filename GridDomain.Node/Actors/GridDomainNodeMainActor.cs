@@ -57,7 +57,7 @@ namespace GridDomain.Node.Actors
             _messagePublisher.Publish(cmd);
         }
 
-        public void Handle(CommandAndConfirmation commandWithConfirmation)
+        public void Handle(CommandPlan commandWithConfirmation)
         {
             var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
