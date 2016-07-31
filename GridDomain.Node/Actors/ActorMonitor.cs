@@ -14,25 +14,11 @@ namespace GridDomain.Node.Actors
         {
             _context = context;
             _actorGroupName = actorName ?? context.Props.Type.BeautyName();
-
-            // var allValues = new string[]
-            // {
-            //         CounterNames.ActorsStopped,
-            //         CounterNames.ActorRestarts,
-            //         CounterNames.ActorsCreated,
-            //         CounterNames.DeadLetters,
-            //         CounterNames.DebugMessages,
-            //         CounterNames.ErrorMessages,
-            //         CounterNames.InfoMessages,
-            //         CounterNames.ReceivedMessages,
-            //         CounterNames.UnhandledMessages,
-            //         CounterNames.WarningMessages,
-            // };
         }
 
-        private string GetCounterName(string counterName)
+        private string GetCounterName(string metricName)
         {
-            return $"{_context.System.Name}.{counterName}.{_actorGroupName}";
+            return $"{_context.System.Name}.{_actorGroupName}.{metricName}";
         }
         private void IncrementCounter(string akkaActorRestarts)
         {
@@ -41,21 +27,25 @@ namespace GridDomain.Node.Actors
 
         public void IncrementMessagesReceived()
         {
+            //_context.IncrementMessagesReceived();
             IncrementCounter(CounterNames.ActorRestarts);
         }
 
         public void IncrementActorRestarted()
         {
+           // _context.IncrementActorRestart();
             IncrementCounter(CounterNames.ActorRestarts);
         }
 
         public void IncrementActorStopped()
         {
+          //  _context.IncrementActorStopped();
             IncrementCounter(CounterNames.ActorsStopped);
         }
 
         public void IncrementActorStarted()
         {
+            //_context.IncrementActorCreated();
             IncrementCounter(CounterNames.ActorsCreated);
         }
     }

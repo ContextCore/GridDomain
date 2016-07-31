@@ -17,7 +17,7 @@ namespace GridDomain.Node.Actors
         {
             _handler = handler;
             _log.Trace($"Created message handler actor {GetType()}");
-            _monitor = new ActorMonitor(Context);
+            _monitor = new ActorMonitor(Context,typeof(THandler).Name);
         }
 
         protected override void OnReceive(object msg)

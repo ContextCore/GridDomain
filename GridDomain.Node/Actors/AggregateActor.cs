@@ -51,7 +51,7 @@ namespace GridDomain.Node.Actors
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
             Aggregate = factory.Build<TAggregate>(Id);
-            _monitor = new ActorMonitor(Context);
+            _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
        
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way

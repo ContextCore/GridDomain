@@ -24,10 +24,10 @@ namespace GridDomain.Node.Actors
         protected abstract Guid GetChildActorId(object message);
         protected abstract Type GetChildActorType(object message);
 
-        public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration)
+        public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {
             _recycleConfiguration = recycleConfiguration;
-            _monitor = new ActorMonitor(Context);
+            _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
         }
 
         protected virtual void Clear()

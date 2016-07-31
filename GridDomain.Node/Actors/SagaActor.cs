@@ -48,7 +48,7 @@ namespace GridDomain.Node.Actors
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
-            _monitor = new ActorMonitor(Context);
+            _monitor = new ActorMonitor(Context,typeof(TSaga).Name);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
