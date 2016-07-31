@@ -40,7 +40,7 @@ namespace GridDomain.Tests.EventsUpgrade
         [Test]
         public void Latest_version_is_resolved_as_original_type()
         {
-            var type = _binder.BindToType("GridDomain.Tests", "GridDomain.Tests.EventsUpgrade.TestType_V2");
+            var type = _binder.BindToType("GridDomain.Tests", "GridDomain.Tests.EventsUpgrade.Events.TestType_V2");
             Assert.AreEqual(typeof(TestType), type);
         }
     }
