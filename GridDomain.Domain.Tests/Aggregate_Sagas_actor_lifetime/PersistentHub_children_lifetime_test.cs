@@ -1,7 +1,7 @@
-using System;
 using System.Threading;
 using Akka.Actor;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
@@ -70,8 +70,5 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
                     throw new UnknownCaseException();
             }
         }
-    }
-    internal class UnknownCaseException : Exception
-    {
     }
 }

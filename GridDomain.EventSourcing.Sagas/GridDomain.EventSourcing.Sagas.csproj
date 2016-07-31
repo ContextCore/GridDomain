@@ -56,9 +56,9 @@
     <Compile Include="FutureEvents\Aggregate.cs" />
     <Compile Include="FutureEvents\AsyncEventsRecieved.cs" />
     <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
-    <Compile Include="FutureEvents\FutureDomainEvent.cs" />
-    <Compile Include="FutureEvents\FutureDomainEventCanceledEvent.cs" />
-    <Compile Include="FutureEvents\FutureDomainEventOccuredEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
     <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
-using GridDomain.Node.FutureEvents;
 using GridDomain.Tests.SampleDomain.Events;
 
 namespace GridDomain.Tests.SampleDomain

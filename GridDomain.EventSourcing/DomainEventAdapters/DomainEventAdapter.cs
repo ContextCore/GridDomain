@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using CommonDomain;
 
-namespace GridDomain.EventSourcing.VersionedTypeSerialization
+namespace GridDomain.EventSourcing.DomainEventAdapters
 {
     public abstract class DomainEventAdapter<TFrom, TTo> : IDomainEventAdapter<TFrom, TTo> where TFrom : DomainEvent where TTo : DomainEvent
     {

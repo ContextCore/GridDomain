@@ -2,7 +2,6 @@ using System;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
-using GridDomain.Node.FutureEvents;
 using GridDomain.Tests.DependencyInjection;
 
 namespace GridDomain.Tests.FutureEvents.Infrastructure

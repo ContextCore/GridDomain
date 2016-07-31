@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Framework
 {
     internal class ChildEcho
     {

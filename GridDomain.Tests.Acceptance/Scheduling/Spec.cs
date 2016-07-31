@@ -10,6 +10,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;

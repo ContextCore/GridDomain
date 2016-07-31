@@ -16,7 +16,6 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.FutureEvents;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors

@@ -6,7 +6,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.SampleDomain;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestAggregateActor : AggregateActor<SampleAggregate>
     {

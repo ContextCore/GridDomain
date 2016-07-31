@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommonDomain;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Sagas.InstanceSagas.Recover
+namespace GridDomain.Tests.Sagas.InstanceSagas.Recovery
 {
     [TestFixture]
     class Given_instance_saga_When_recovering

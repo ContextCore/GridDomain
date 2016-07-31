@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.EventSourcing.DomainEventAdapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.Tests.EventsUpgrade.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.EventsUpgrade

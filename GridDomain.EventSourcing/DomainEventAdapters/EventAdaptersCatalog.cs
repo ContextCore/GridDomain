@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using CommonDomain;
 
-namespace GridDomain.EventSourcing.VersionedTypeSerialization
+namespace GridDomain.EventSourcing.DomainEventAdapters
 {
     public class EventAdaptersCatalog
     {

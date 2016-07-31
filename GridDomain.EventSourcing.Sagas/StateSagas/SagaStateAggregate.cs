@@ -1,7 +1,7 @@
 using System;
 using CommonDomain.Core;
 
-namespace GridDomain.EventSourcing.Sagas
+namespace GridDomain.EventSourcing.Sagas.StateSagas
 {
     [Obsolete("Use Saga classes instead")]
     public class SagaStateAggregate<TState, TTransition> : AggregateBase

@@ -4,7 +4,6 @@ using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Node.FutureEvents;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.FutureEvents;

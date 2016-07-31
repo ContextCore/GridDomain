@@ -52,8 +52,4 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();
         public IReadOnlyCollection<MessageRoute> AcceptMessages => _acceptMessages;
     }
-
-    internal class UnknownMessageException : Exception
-    {
-    }
 }

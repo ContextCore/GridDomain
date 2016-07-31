@@ -2,8 +2,6 @@ using System;
 using System.Threading;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.VersionedTypeSerialization;
-using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.EventsUpgrade.Domain;
@@ -12,7 +10,7 @@ using GridDomain.Tests.Framework.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.EventsUpgrade
 {
     [TestFixture]
     public class Given_aggregate_with_upgraded_event_with_new_field: PersistentTest

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using GridDomain.EventSourcing.VersionedTypeSerialization;
 
-namespace GridDomain.EventSourcing.VersionedTypeSerialization
+namespace GridDomain.EventSourcing.DomainEventAdapters
 {
     public class VersionedTypeSerializationBinder : SerializationBinder
     {

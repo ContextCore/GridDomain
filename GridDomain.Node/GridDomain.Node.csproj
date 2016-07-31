@@ -248,6 +248,7 @@
     <Compile Include="AkkaMessaging\Waiting\AllMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
+    <Compile Include="AkkaMessaging\Waiting\CommandPlan.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="Configuration\Akka\Hocon\DomainEventAdaptersConfig.cs" />

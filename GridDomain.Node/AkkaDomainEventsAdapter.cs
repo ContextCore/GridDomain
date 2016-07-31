@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
+using GridDomain.EventSourcing.DomainEventAdapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 
