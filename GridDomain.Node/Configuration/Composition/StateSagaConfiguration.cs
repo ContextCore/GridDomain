@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using Microsoft.Practices.Unity;
 

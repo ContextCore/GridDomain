@@ -2,12 +2,16 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
+using GridDomain.Node.Actors;
+using ActorMonitor = GridDomain.Node.Actors.ActorMonitor;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
@@ -23,10 +27,12 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
+            _monitor = new ActorMonitor(Context);
         }
 
         public void Handle(CreateActorRouteMessage msg)
         {
+            _monitor.IncrementMessagesReceived();
             var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
             foreach (var msgRoute in msg.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
@@ -34,6 +40,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void Handle(CreateHandlerRouteMessage msg)
         {
+            _monitor.IncrementMessagesReceived();
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
             Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
@@ -91,6 +98,22 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             var handleActor = Context.System.ActorOf(handleActorProps, actorName);
             return handleActor;
+        }
+
+        private readonly ActorMonitor _monitor;
+
+        protected override void PreStart()
+        {
+            _monitor.IncrementActorStarted();
+        }
+
+        protected override void PostStop()
+        {
+            _monitor.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            _monitor.IncrementActorRestarted();
         }
     }
 }

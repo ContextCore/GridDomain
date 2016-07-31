@@ -1,4 +1,5 @@
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Actors;
 using Microsoft.Practices.Unity;

@@ -17,7 +17,7 @@ namespace GridDomain.Scheduling.Integration
         {
             _publisher = publisher;
             actorSubscriber.Subscribe<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>(Self);
-            Receive<ManageScheduledCommand>(x => Manage(x));
+            Receive<StartSchedulerSaga>(x => Manage(x));
             Receive<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>(x =>
             {
                 _quartzJobActorRef?.Tell(new object());
@@ -26,7 +26,7 @@ namespace GridDomain.Scheduling.Integration
 
         public Guid SagaId { get; private set; }
 
-        private void Manage(ManageScheduledCommand envelope)
+        private void Manage(StartSchedulerSaga envelope)
         {
             SagaId = envelope.Key.Id;
             _quartzJobActorRef = Sender;

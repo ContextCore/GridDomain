@@ -1,4 +1,7 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
+using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
@@ -10,13 +13,22 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling
 {
-    public class CompositionRoot
+    public class SchedulerConfiguration : IContainerConfiguration
     {
-        public static IUnityContainer Compose(IUnityContainer container, IQuartzConfig config)
+        private readonly IQuartzConfig _quartzConfig;
+
+        public SchedulerConfiguration(IQuartzConfig quartzConfig)
+        {
+            _quartzConfig = quartzConfig;
+        }
+
+        public void Register(IUnityContainer container)
         {
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
-            container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
-            container.RegisterInstance<IQuartzConfig>(config);
+            container.RegisterType<IScheduler>(
+                new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler())
+            );
+            container.RegisterInstance<IQuartzConfig>(_quartzConfig);
             container.RegisterType<IQuartzLogger, QuartzLogger>();
             container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();
@@ -26,8 +38,10 @@ namespace GridDomain.Scheduling
 
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
-            ScheduledCommandProcessingSagaRegistrator.Register(container);
-            return container;
+
+            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>, ScheduledCommandProcessingSagaFactory>();
+            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>, ScheduledCommandProcessingSagaFactory>();
+            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga,Guid>, ScheduledCommandProcessingSagaFactory>();
         }
     }
 }

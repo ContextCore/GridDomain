@@ -4,6 +4,7 @@ using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 using Topshelf;
 
@@ -30,8 +31,8 @@ namespace BusinessNews.Node
                 {
                     s.ConstructUsing(settings =>
                     {
-                        Func<ActorSystem[]> actorSystem = () => new [] { ActorSystemFactory.CreateCluster(akkaConfig).RandomNode()};
-                        return new GridDomainNode(container, new BusinessNewsRouting(), actorSystem);
+                        var actorSystem = ActorSystemFactory.CreateCluster(akkaConfig).RandomNode();
+                        return new GridDomainNode(container, new BusinessNewsRouting(), new PersistedQuartzConfig(),actorSystem);
                     });
                     s.WhenStarted(node =>
                     {

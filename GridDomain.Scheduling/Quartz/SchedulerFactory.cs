@@ -53,20 +53,6 @@ namespace GridDomain.Scheduling.Quartz
         {
             var properties = _config.Settings;
 
-            //TODO: put all storage-relevant settings in config
-            //var properties = new NameValueCollection
-            //{
-            //    ["quartz.jobStore.type"] = _config.StorageType,
-            //    ["quartz.jobStore.clustered"] = "true",
-            //    ["quartz.jobStore.dataSource"] = "default",
-            //    ["quartz.jobStore.tablePrefix"] = "QRTZ_",
-            //    ["quartz.jobStore.lockHandler.type"] = "Quartz.Impl.AdoJobStore.UpdateLockRowSemaphore, Quartz",
-            //    ["quartz.dataSource.default.connectionString"] = _config.ConnectionString,
-            //    ["quartz.dataSource.default.provider"] = "SqlServer-20",
-
-            //    ["quartz.scheduler.instanceId"] = "AUTO",
-
-            //};
             properties["quartz.scheduler.instanceId"] = "AUTO";
             if (name != null)
             {

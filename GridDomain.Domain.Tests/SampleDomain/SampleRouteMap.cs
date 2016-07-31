@@ -6,7 +6,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.SampleDomain
 {
-    class SampleRouteMap : IMessageRouteMap
+    public class SampleRouteMap : IMessageRouteMap
     {
         private readonly IUnityContainer _locator;
 

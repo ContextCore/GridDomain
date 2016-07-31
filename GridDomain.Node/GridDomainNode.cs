@@ -7,6 +7,9 @@ using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using Akka.Monitoring;
+using Akka.Monitoring.ApplicationInsights;
+using Akka.Monitoring.PerformanceCounters;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -49,8 +52,6 @@ namespace GridDomain.Node
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
-        private UnityContainer container;
-        private Func<ActorSystem[]> actorSystem;
 
 
         public IActorTransport Transport { get; private set; }
@@ -106,13 +107,6 @@ namespace GridDomain.Node
             Container = new UnityContainer();
         }
 
-        public GridDomainNode(UnityContainer container, IMessageRouteMap messageRouteMap, Func<ActorSystem[]> actorSystem)
-        {
-            this.container = container;
-            this._messageRouting = messageRouteMap;
-            this.actorSystem = actorSystem;
-        }
-
         private void OnSystemTermination()
         {
             _log.Debug("grid node Actor system terminated");
@@ -136,9 +130,14 @@ namespace GridDomain.Node
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
 
-            ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System, persistentScheduler);
+            ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
+
+            var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
+            var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
+
+            ActorMonitoringExtension.RegisterMonitor(System, monitor);
+            ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
             StartMainNodeActor(System);
 
@@ -149,14 +148,14 @@ namespace GridDomain.Node
         private void ConfigureContainer(IUnityContainer unityContainer,
                                         IDbConfiguration databaseConfiguration, 
                                         IQuartzConfig quartzConfig, 
-                                        ActorSystem actorSystem, 
-                                        IActorRef persistentScheduler)
+                                        ActorSystem actorSystem)
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        databaseConfiguration,
                                                                        _transportMode,
                                                                        quartzConfig));
 
+            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Akka.Actor;
 using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
@@ -8,6 +9,8 @@ using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Composition;
+using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
@@ -43,10 +46,11 @@ namespace GridDomain.Node
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
-            container.RegisterInstance(actorSystem);
 
-            //TODO: replace with better implementation
-            Scheduling.CompositionRoot.Compose(container, config ?? new PersistedQuartzConfig());
+
+            container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default);
+            container.RegisterInstance(actorSystem);
+            container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
         }
     }
 
