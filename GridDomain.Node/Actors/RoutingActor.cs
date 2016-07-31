@@ -11,6 +11,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
+using ActorMonitor = GridDomain.Node.Actors.ActorMonitor;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
@@ -26,12 +27,12 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
-            _actorLogName = GetType().BeautyName();
+            _monitor = new ActorMonitor(Context);
         }
 
         public void Handle(CreateActorRouteMessage msg)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
             var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
             foreach (var msgRoute in msg.Routes)
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
@@ -39,7 +40,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public void Handle(CreateHandlerRouteMessage msg)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
             Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
@@ -99,20 +100,20 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             return handleActor;
         }
 
-        private readonly string _actorLogName;
+        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            _monitor.IncrementActorStarted();
         }
 
         protected override void PostStop()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+            _monitor.IncrementActorStopped();
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
+            _monitor.IncrementActorRestarted();
         }
     }
 }

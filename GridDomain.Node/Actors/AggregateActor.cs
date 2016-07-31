@@ -51,14 +51,13 @@ namespace GridDomain.Node.Actors
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
             Aggregate = factory.Build<TAggregate>(Id);
-            _actorLogName = GetType().BeautyName();
-
+            _monitor = new ActorMonitor(Context);
        
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
             Command<AsyncEventsRecieved>(m =>
             {
-                Context.IncrementMessagesReceived();
+                _monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
                    _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
@@ -71,13 +70,13 @@ namespace GridDomain.Node.Actors
 
             Command<ShutdownRequest>(req =>
             {
-                Context.IncrementMessagesReceived();
+                _monitor.IncrementMessagesReceived();
                 Shutdown();
             });
 
             Command<ICommand>(cmd =>
             {
-                Context.IncrementMessagesReceived();
+                _monitor.IncrementMessagesReceived();
                 try
                 {
                     Aggregate = _handler.Execute(Aggregate, cmd);
@@ -179,23 +178,20 @@ namespace GridDomain.Node.Actors
         public TAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
 
-
-        private readonly string _actorLogName;
+        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            _monitor.IncrementActorStarted();
         }
 
         protected override void PostStop()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+            _monitor.IncrementActorStopped();
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
+            _monitor.IncrementActorRestarted();
         }
     }
-
- 
 }

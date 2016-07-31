@@ -48,7 +48,7 @@ namespace GridDomain.Node.Actors
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
-            _actorLogName = GetType().BeautyName();
+            _monitor = new ActorMonitor(Context);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
@@ -56,19 +56,19 @@ namespace GridDomain.Node.Actors
 
             Command<ICommandFault>(fault =>
             {
-                Context.IncrementMessagesReceived();
+                _monitor.IncrementMessagesReceived();
                 ProcessSaga(fault);
             }, fault => fault.SagaId == Id);
 
             Command<ShutdownRequest>(req =>
             {
-                Context.IncrementMessagesReceived();
+                _monitor.IncrementMessagesReceived();
                 Shutdown();
             });
 
             Command<DomainEvent>(msg =>
             {
-               Context.IncrementMessagesReceived();
+                _monitor.IncrementMessagesReceived();
                msg.Match().With<TStartMessage>(start => _saga = _sagaStarter.Create(start));
                ProcessSaga(msg);
             }, e => e.SagaId == Id);
@@ -112,20 +112,20 @@ namespace GridDomain.Node.Actors
             Saga.Data.ClearUncommittedEvents();
         }
 
-        private readonly string _actorLogName;
+        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            _monitor.IncrementActorStarted();
         }
 
         protected override void PostStop()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+            _monitor.IncrementActorStopped();
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
+            _monitor.IncrementActorRestarted();
         }
 
         public override string PersistenceId => Self.Path.Name;

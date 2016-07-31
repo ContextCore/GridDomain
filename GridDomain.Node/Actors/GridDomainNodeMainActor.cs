@@ -35,12 +35,12 @@ namespace GridDomain.Node.Actors
             _messageRouting = messageRouting;
             _messagePublisher = transport;
             _log.Debug($"Actor {GetType().Name} was created on: {Self.Path}.");
-            _actorLogName = GetType().BeautyName();
+            _monitor = new ActorMonitor(Context);
         }
 
         public void Handle(Start msg)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
 
             _log.Debug($"Actor {GetType().Name} is initializing");
 
@@ -58,14 +58,14 @@ namespace GridDomain.Node.Actors
 
         public void Handle(ICommand cmd)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
 
             _messagePublisher.Publish(cmd);
         }
 
         public void Handle(CommandAndConfirmation commandWithConfirmation)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
 
             var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
@@ -83,20 +83,21 @@ namespace GridDomain.Node.Actors
         public class Started
         {
         }
-        private readonly string _actorLogName;
+
+        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            _monitor.IncrementActorStarted();
         }
 
         protected override void PostStop()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+            _monitor.IncrementActorStopped();
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
+            _monitor.IncrementActorRestarted();
         }
     }
 }

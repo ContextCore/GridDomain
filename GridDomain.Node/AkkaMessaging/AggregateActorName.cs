@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace GridDomain.Node.AkkaMessaging
 {
@@ -11,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging
         {
             Id = id;
             AggregateType = aggregateType;
-            Name = GetActorNameFromType(aggregateType) + Separator + id;
+            Name = aggregateType.BeautyName() + Separator + id;
         }
 
         public Type AggregateType { get; }
@@ -27,34 +26,13 @@ namespace GridDomain.Node.AkkaMessaging
         public static AggregateActorName Parse<T>(string value)
         {
             var aggregateType = typeof(T);
-            var id = Guid.Parse(value.Replace(GetActorNameFromType(aggregateType) + Separator, ""));
+            var id = Guid.Parse(value.Replace(aggregateType.BeautyName() + Separator, ""));
             return new AggregateActorName(aggregateType, id);
-        }
-
-        public static string GetActorNameFromType(Type aggregateType)
-        {
-            if(!aggregateType.IsGenericType) 
-                        return aggregateType.Name;
-
-            var parameters = string.Join("_",
-                aggregateType.GetGenericArguments().Select(GetActorNameFromType));
-            var typeName = aggregateType.Name.Split('`')[0];
-            
-            return $"{typeName}_{parameters}";
         }
 
         public override string ToString()
         {
             return Name;
         }
-    }
-
-
-    public static class TypeNameExtensions
-    {
-        public static string BeautyName(this Type type)
-        {
-            return AggregateActorName.GetActorNameFromType(type);
-        }   
     }
 }

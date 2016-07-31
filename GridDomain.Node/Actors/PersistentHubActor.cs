@@ -4,9 +4,7 @@ using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Monitoring;
-using Akka.Monitoring.Impl;
 using GridDomain.Common;
-using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
@@ -29,7 +27,7 @@ namespace GridDomain.Node.Actors
         public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration)
         {
             _recycleConfiguration = recycleConfiguration;
-            _actorLogName = GetType().BeautyName();
+            _monitor = new ActorMonitor(Context);
         }
 
         protected virtual void Clear()
@@ -48,7 +46,7 @@ namespace GridDomain.Node.Actors
 
         protected override void OnReceive(object message)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
             if (message is ClearChilds)
             {
                 Clear();
@@ -81,21 +79,21 @@ namespace GridDomain.Node.Actors
         {
         }
 
-        private readonly string _actorLogName;
+        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            _monitor.IncrementActorStarted();
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
         }
 
         protected override void PostStop()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+            _monitor.IncrementActorStopped();
         }
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
+            _monitor.IncrementActorRestarted();
         }
     }
 

@@ -17,30 +17,31 @@ namespace GridDomain.Node.Actors
         {
             _handler = handler;
             _log.Trace($"Created message handler actor {GetType()}");
-            _actorLogName = GetType().BeautyName();
+            _monitor = new ActorMonitor(Context);
         }
 
         protected override void OnReceive(object msg)
         {
-            Context.IncrementMessagesReceived();
+            _monitor.IncrementMessagesReceived();
             _log.Trace($"Handler actor got message: {msg.ToPropsString()}");
             _handler.Handle((TMessage)msg);
         }
 
-        private readonly string _actorLogName;
+        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsCreated}");
+            _monitor.IncrementActorStarted();
         }
 
         protected override void PostStop()
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorsStopped}");
+            _monitor.IncrementActorStopped();
         }
+
         protected override void PreRestart(Exception reason, object message)
         {
-            Context.IncrementCounter($"{_actorLogName}.{CounterNames.ActorRestarts}");
+            _monitor.IncrementActorRestarted();
         }
     }
 }
