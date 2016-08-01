@@ -1,6 +1,5 @@
 using System;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
-using GridDomain.Node.FutureEvents;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using NUnit.Framework;

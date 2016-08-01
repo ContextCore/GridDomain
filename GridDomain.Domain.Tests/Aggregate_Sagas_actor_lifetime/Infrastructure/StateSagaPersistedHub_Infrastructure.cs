@@ -1,9 +1,10 @@
 using System;
 using Akka.Actor;
 using Akka.DI.Core;
+using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
 {
     internal class StateSagaPersistedHub_Infrastructure : IPersistentActorTestsInfrastructure
     {

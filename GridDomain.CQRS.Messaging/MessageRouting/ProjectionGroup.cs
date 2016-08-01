@@ -14,13 +14,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public ProjectionGroup(IUnityContainer locator)
         {
             _locator = locator;
-            if(_locator == null) throw new ArgumentNullException("locator");
         }
 
-        public void Add<TMessage, THandler>(string correlationPropertyName)where THandler : IHandler<TMessage>
+        public void Add<TMessage, THandler>(string correlationPropertyName)
+                                            where THandler : IHandler<TMessage>
+                                            where TMessage :class
         {
-            var handler = _locator.Resolve<THandler>();
-
             List<Action<object>> builderList;
 
             if (!_handlers.TryGetValue(typeof (TMessage), out builderList))
@@ -28,17 +27,27 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
                 builderList = new List<Action<object>>();
                 _handlers[typeof (TMessage)] = builderList;
             }
-            builderList.Add(o => handler.Handle((TMessage) o));
+            builderList.Add(ProjectMessage<TMessage, THandler>);
 
-            if(_acceptMessages.All(m => m.MessageType != typeof (TMessage)))
+            if (_acceptMessages.All(m => m.MessageType != typeof (TMessage)))
                 _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
+        }
+
+        private void ProjectMessage<TMessage, THandler>(object msg) where THandler : IHandler<TMessage> where TMessage : class
+        {
+            var message = msg as TMessage;
+            if(message == null)
+                throw new UnknownMessageException();
+
+            var handler = _locator.Resolve<THandler>();
+            handler.Handle(message);
         }
 
         public void Project(object message)
         {
             var msgType = message.GetType();
             foreach(var handler in _handlers[msgType])
-                handler(message);
+ handler(message);
         }
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();
         public IReadOnlyCollection<MessageRoute> AcceptMessages => _acceptMessages;

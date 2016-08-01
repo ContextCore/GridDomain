@@ -6,7 +6,7 @@ using CommonDomain;
 using GridDomain.CQRS;
 using Stateless;
 
-namespace GridDomain.EventSourcing.Sagas
+namespace GridDomain.EventSourcing.Sagas.StateSagas
 {
 
     [Obsolete("Use Saga class instead")]

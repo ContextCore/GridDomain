@@ -132,7 +132,6 @@
     <Compile Include="Integration\ScheduledSagaCreator.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSaga.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaFactory.cs" />
-    <Compile Include="Integration\ScheduledCommandProcessingSagaRegistrator.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSagaState.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingStarted.cs" />
     <Compile Include="Integration\SchedulingRouteMap.cs" />

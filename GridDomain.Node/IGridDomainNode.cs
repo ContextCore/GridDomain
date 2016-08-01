@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -13,6 +14,6 @@ namespace GridDomain.Node
     {
         void Execute(params ICommand[] commands);
      
-        Task<object> Execute(ICommand command, ExpectedMessage[] expect);
+        Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null);
     }
 }

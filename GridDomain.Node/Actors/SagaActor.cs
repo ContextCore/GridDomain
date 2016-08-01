@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
+using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using Akka.Persistence;
 using Automatonymous;
 using CommonDomain;
@@ -46,15 +48,27 @@ namespace GridDomain.Node.Actors
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
             _publisher = publisher;
+            _monitor = new ActorMonitor(Context,typeof(TSaga).Name);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
             _sagaData = aggregateFactory.Build<TSagaState>(Id);
 
-            Command<ICommandFault>(ProcessSaga, fault => fault.SagaId == Id);
-            Command<ShutdownRequest>(req => Shutdown());
+            Command<ICommandFault>(fault =>
+            {
+                _monitor.IncrementMessagesReceived();
+                ProcessSaga(fault);
+            }, fault => fault.SagaId == Id);
+
+            Command<ShutdownRequest>(req =>
+            {
+                _monitor.IncrementMessagesReceived();
+                Shutdown();
+            });
+
             Command<DomainEvent>(msg =>
             {
+                _monitor.IncrementMessagesReceived();
                msg.Match().With<TStartMessage>(start => _saga = _sagaStarter.Create(start));
                ProcessSaga(msg);
             }, e => e.SagaId == Id);
@@ -63,6 +77,7 @@ namespace GridDomain.Node.Actors
             Recover<SnapshotOffer>(offer => _sagaData = (TSagaState)offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate)_sagaData).ApplyEvent(e));
         }
+
 
         protected virtual void Shutdown()
         {
@@ -95,6 +110,22 @@ namespace GridDomain.Node.Actors
             PersistAll(stateChangeEvents, e => { _publisher.Publish(e); });
 
             Saga.Data.ClearUncommittedEvents();
+        }
+
+        private readonly ActorMonitor _monitor;
+
+        protected override void PreStart()
+        {
+            _monitor.IncrementActorStarted();
+        }
+
+        protected override void PostStop()
+        {
+            _monitor.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            _monitor.IncrementActorRestarted();
         }
 
         public override string PersistenceId => Self.Path.Name;

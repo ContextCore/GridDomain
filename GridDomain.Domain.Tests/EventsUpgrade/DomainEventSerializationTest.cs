@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using Akka.Actor;
 using Akka.Serialization;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.Tests.EventsUpgrade.Events;
 using GridDomain.Tests.Framework.Configuration;
 using Newtonsoft.Json;
 using NUnit.Framework;

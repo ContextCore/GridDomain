@@ -60,6 +60,18 @@
       <HintPath>..\packages\Akka.Logger.Serilog.1.0.8\lib\net45\Akka.Logger.Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.Monitoring, Version=0.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Monitoring.0.5.3\lib\net45\Akka.Monitoring.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Monitoring.ApplicationInsights, Version=0.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Monitoring.ApplicationInsights.0.5.3\lib\net45\Akka.Monitoring.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Monitoring.PerformanceCounters, Version=0.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Monitoring.PerformanceCounters.0.5.3\lib\net45\Akka.Monitoring.PerformanceCounters.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Persistence, Version=1.0.8.25, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Akka.Persistence.1.0.8.25-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
@@ -124,6 +136,10 @@
       <HintPath>..\packages\MemBus.3.2.0\lib\net46\MemBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
@@ -178,6 +194,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -213,6 +230,7 @@
   <ItemGroup>
     <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="ActorSystemFactory.cs" />
+    <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
@@ -243,18 +261,22 @@
     <Compile Include="AkkaMessaging\IncorrectTypeOfCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\InvalidHandlerType.cs" />
     <Compile Include="Actors\MessageHandlingActor.cs" />
-    <Compile Include="AkkaMessaging\Routing\RoutingActor.cs" />
+    <Compile Include="Actors\RoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
+    <Compile Include="AkkaMessaging\TypeNameExtensions.cs" />
     <Compile Include="AkkaMessaging\Waiting\AllMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
+    <Compile Include="AkkaMessaging\Waiting\CommandPlan.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
+    <Compile Include="AppInsightsConfigSection.cs" />
     <Compile Include="Configuration\Akka\Hocon\DomainEventAdaptersConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\InMemoryJournalConfig.cs" />
     <Compile Include="Configuration\Composition\CustomContainerConfiguration.cs" />
-    <Compile Include="Configuration\Composition\IContainerConfiguration.cs" />
     <Compile Include="DefaultMessageLoggerHandler.cs" />
+    <Compile Include="GridNodeCommandingExtensions.cs" />
+    <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
@@ -283,7 +305,7 @@
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />
-    <Compile Include="Actors\ActorMessagesRouter.cs" />
+    <Compile Include="ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiter.cs" />

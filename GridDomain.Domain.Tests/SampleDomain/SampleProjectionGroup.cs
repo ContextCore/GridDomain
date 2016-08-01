@@ -13,9 +13,9 @@ namespace GridDomain.Tests.SampleDomain
             //TODO: only for test purposes!!!
             AggregateChangedProjectionBuilder.ProjectionGroupHashCode = this.GetHashCode();
             AggregateCreatedProjectionBuilder.ProjectionGroupHashCode = this.GetHashCode();
-            Add<SampleAggregateChangedEvent,AggregateChangedProjectionBuilder>(nameof(SampleAggregateChangedEvent.SourceId));
-            Add<SampleAggregateCreatedEvent,AggregateCreatedProjectionBuilder>(nameof(SampleAggregateCreatedEvent.SourceId));
-            Add<SampleAggregateCreatedEvent,AggregateCreatedProjectionBuilder_Alternative>(nameof(SampleAggregateCreatedEvent.SourceId));
+            //Add<SampleAggregateChangedEvent,AggregateChangedProjectionBuilder>(nameof(SampleAggregateChangedEvent.SourceId));
+            //Add<SampleAggregateCreatedEvent,AggregateCreatedProjectionBuilder>(nameof(SampleAggregateCreatedEvent.SourceId));
+            //Add<SampleAggregateCreatedEvent,AggregateCreatedProjectionBuilder_Alternative>(nameof(SampleAggregateCreatedEvent.SourceId));
         }
     }
 }

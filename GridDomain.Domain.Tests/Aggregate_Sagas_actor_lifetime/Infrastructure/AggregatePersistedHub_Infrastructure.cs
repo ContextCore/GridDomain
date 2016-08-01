@@ -1,10 +1,10 @@
 using System;
 using Akka.Actor;
 using Akka.DI.Core;
-using GridDomain.CQRS;
+using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using GridDomain.Tests.SampleDomain.Commands;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
 {
     class AggregatePersistedHub_Infrastructure : IPersistentActorTestsInfrastructure
     {

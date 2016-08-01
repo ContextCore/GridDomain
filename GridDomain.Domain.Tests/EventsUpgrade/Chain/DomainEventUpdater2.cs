@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using GridDomain.EventSourcing.VersionedTypeSerialization;
-using GridDomain.Tests.EventsUpgrade.Domain;
+using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.Tests.EventsUpgrade.Events;
 
-namespace GridDomain.Tests.EventsUpgrade
+namespace GridDomain.Tests.EventsUpgrade.Chain
 {
     class DomainEventUpdater2 : DomainEventAdapter<TestEvent_V1, TestEvent_V2>
     {

@@ -1,6 +1,6 @@
 using System;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Node.FutureEvents;
 
 namespace GridDomain.Tests.FutureEvents.Infrastructure
 {

@@ -18,10 +18,5 @@ namespace GridDomain.Tests.FutureEvents
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(Debugger.IsAttached ? 1000 : 1);
-
-        protected override IQuartzConfig CreateQuartzConfig()
-        {
-            return new InMemoryQuartzConfig();
-        }
     }
 }

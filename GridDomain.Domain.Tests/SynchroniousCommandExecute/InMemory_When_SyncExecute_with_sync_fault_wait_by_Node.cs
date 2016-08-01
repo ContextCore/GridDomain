@@ -33,7 +33,5 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
                         GridNode.Execute<SampleAggregateChangedEvent>(syncCommand,Timeout,expectedMessage));
         }
 
-
-
     }
 }

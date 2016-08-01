@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;

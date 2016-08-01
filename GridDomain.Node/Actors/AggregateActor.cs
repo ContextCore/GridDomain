@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
@@ -16,7 +18,6 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.FutureEvents;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
@@ -49,12 +50,13 @@ namespace GridDomain.Node.Actors
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
             Aggregate = factory.Build<TAggregate>(Id);
-
+            _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
        
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
             Command<AsyncEventsRecieved>(m =>
             {
+                _monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
                    _publisher.Publish(CommandFaultFactory.CreateGenericFor(m.Command, m.Exception));
@@ -65,10 +67,15 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
 
-            Command<ShutdownRequest>( req => Shutdown());
+            Command<ShutdownRequest>(req =>
+            {
+                _monitor.IncrementMessagesReceived();
+                Shutdown();
+            });
 
             Command<ICommand>(cmd =>
             {
+                _monitor.IncrementMessagesReceived();
                 try
                 {
                     Aggregate = _handler.Execute(Aggregate, cmd);
@@ -170,8 +177,20 @@ namespace GridDomain.Node.Actors
         public TAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
 
+        private readonly ActorMonitor _monitor;
 
+        protected override void PreStart()
+        {
+            _monitor.IncrementActorStarted();
+        }
+
+        protected override void PostStop()
+        {
+            _monitor.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            _monitor.IncrementActorRestarted();
+        }
     }
-
- 
 }

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.EventSourcing.DomainEventAdapters;
 using GridDomain.Tests.EventsUpgrade.Domain;
+using GridDomain.Tests.EventsUpgrade.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.EventsUpgrade
+namespace GridDomain.Tests.EventsUpgrade.Chain
 {
     [TestFixture]
     public class Given_DomainEventUpgradeChain_When_updating_events_split_Tests

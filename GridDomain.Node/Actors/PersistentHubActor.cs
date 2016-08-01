@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Monitoring;
 using GridDomain.Common;
 
 namespace GridDomain.Node.Actors
@@ -23,19 +24,15 @@ namespace GridDomain.Node.Actors
         protected abstract Guid GetChildActorId(object message);
         protected abstract Type GetChildActorType(object message);
 
-        public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration)
+        public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {
             _recycleConfiguration = recycleConfiguration;
-        }
-
-        protected override void PreStart()
-        {
-            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+            _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
         }
 
         protected virtual void Clear()
         {
-           var now = DateTimeFacade.UtcNow;
+           var now = BusinessDateTime.UtcNow;
            var childsToTerminate = Children.Where(c => now - c.Value.LastTimeOfAccess > ChildMaxInactiveTime)
                                            .Select(ch => ch.Key).ToArray();
 
@@ -49,6 +46,7 @@ namespace GridDomain.Node.Actors
 
         protected override void OnReceive(object message)
         {
+            _monitor.IncrementMessagesReceived();
             if (message is ClearChilds)
             {
                 Clear();
@@ -79,6 +77,23 @@ namespace GridDomain.Node.Actors
 
         public class ClearChilds
         {
+        }
+
+        private readonly ActorMonitor _monitor;
+
+        protected override void PreStart()
+        {
+            _monitor.IncrementActorStarted();
+            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+        }
+
+        protected override void PostStop()
+        {
+            _monitor.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            _monitor.IncrementActorRestarted();
         }
     }
 

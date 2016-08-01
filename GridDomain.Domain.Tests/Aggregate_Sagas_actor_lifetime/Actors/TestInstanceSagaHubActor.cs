@@ -6,7 +6,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestInstanceSagaHubActor : SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
         SagaDataAggregate<SoftwareProgrammingSagaData>,

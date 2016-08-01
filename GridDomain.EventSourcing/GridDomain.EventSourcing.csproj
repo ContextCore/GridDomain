@@ -47,10 +47,11 @@
     <Compile Include="AggregateFactory.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
-    <Compile Include="DomainEventAdapters\AdapterDescriptor.cs" />
+    <Compile Include="DomainEventAdapters\EventAdapterDescriptor.cs" />
     <Compile Include="DomainEventAdapters\DomainEventAdapter.cs" />
-    <Compile Include="DomainEventAdapters\DomainEventsUpgradeChain.cs" />
+    <Compile Include="DomainEventAdapters\EventAdaptersCatalog.cs" />
     <Compile Include="DomainEventAdapters\IDomainEventAdapter.cs" />
+    <Compile Include="DomainEventAdapters\IEventAdapter.cs" />
     <Compile Include="DomainEventAdapters\VersionedTypeSerializationBinder.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

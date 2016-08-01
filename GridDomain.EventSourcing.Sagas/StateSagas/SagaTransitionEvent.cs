@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.EventSourcing.Sagas
+namespace GridDomain.EventSourcing.Sagas.StateSagas
 {
     [Obsolete("Use Saga classes instead")]
     public class SagaTransitionEvent<TState, TTransition> : SagaStateEvent

@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.EventsUpgrade
+namespace GridDomain.Tests.EventsUpgrade.Events
 {
     public class TestType
     {

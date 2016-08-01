@@ -4,7 +4,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestStateSagaHubActor : SagaHubActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState,GotTiredEvent>
     {

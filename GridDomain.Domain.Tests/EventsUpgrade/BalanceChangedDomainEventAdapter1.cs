@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.EventSourcing.DomainEventAdapters;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.EventsUpgrade
 {
     class BalanceChangedDomainEventAdapter1 : DomainEventAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
     {

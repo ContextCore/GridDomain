@@ -7,7 +7,7 @@ using LogManager = GridDomain.Logging.LogManager;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
-    public class DistributedPubSubTransport : IActorSubscriber, IPublisher
+    public class DistributedPubSubTransport : IActorTransport
     {
         private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IActorRef _transport;

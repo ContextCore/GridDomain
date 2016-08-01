@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.EventsUpgrade
+namespace GridDomain.Tests.EventsUpgrade.Events
 {
     public class TestEvent_V1 : DomainEvent
     {

@@ -3,7 +3,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.SampleDomain;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestAggregateHub : AggregateHubActor<SampleAggregate>
     {

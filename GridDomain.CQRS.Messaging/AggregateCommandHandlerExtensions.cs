@@ -1,7 +1,7 @@
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 
-namespace GridDomain.Node.FutureEvents
+namespace GridDomain.CQRS.Messaging
 {
     public static class AggregateCommandHandlerExtensions
     {

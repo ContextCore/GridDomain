@@ -7,10 +7,14 @@ using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using Akka.Monitoring;
+using Akka.Monitoring.ApplicationInsights;
+using Akka.Monitoring.PerformanceCounters;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.EventSourcing.DomainEventAdapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
@@ -39,15 +43,20 @@ namespace GridDomain.Node
         private readonly IMessageRouteMap _messageRouting;
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
+        public TimeSpan CommandTimeout { get; set; } = DefaultCommandTimeout;
+        public static readonly TimeSpan DefaultCommandTimeout = TimeSpan.FromSeconds(30);
+
         private Quartz.IScheduler _quartzScheduler;
-        public ActorSystem System;
+       
         private IActorRef _mainNodeActor;
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
-        private UnityContainer container;
-        private Func<ActorSystem[]> actorSystem;
-        public IPublisher Transport { get; private set; }
+
+
+        public IActorTransport Transport { get; private set; }
+
+        public ActorSystem System;
 
         [Obsolete("Use constructor with ActorSystem factory instead")]
         public GridDomainNode(IUnityContainer container,
@@ -98,13 +107,6 @@ namespace GridDomain.Node
             Container = new UnityContainer();
         }
 
-        public GridDomainNode(UnityContainer container, IMessageRouteMap messageRouteMap, Func<ActorSystem[]> actorSystem)
-        {
-            this.container = container;
-            this._messageRouting = messageRouteMap;
-            this.actorSystem = actorSystem;
-        }
-
         private void OnSystemTermination()
         {
             _log.Debug("grid node Actor system terminated");
@@ -128,27 +130,32 @@ namespace GridDomain.Node
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
 
-            ConfigureContainer(Container,databaseConfiguration, _quartzConfig, System, persistentScheduler);
+            ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
+
+            var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
+            var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
+
+            ActorMonitoringExtension.RegisterMonitor(System, monitor);
+            ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
             StartMainNodeActor(System);
 
-            Transport = Container.Resolve<IPublisher>();
+            Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
                                         IDbConfiguration databaseConfiguration, 
                                         IQuartzConfig quartzConfig, 
-                                        ActorSystem actorSystem, 
-                                        IActorRef persistentScheduler)
+                                        ActorSystem actorSystem)
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        databaseConfiguration,
                                                                        _transportMode,
                                                                        quartzConfig));
 
+            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
@@ -158,6 +165,7 @@ namespace GridDomain.Node
         }
 
         bool _stopping = false;
+      
         public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
@@ -194,12 +202,16 @@ namespace GridDomain.Node
                 _mainNodeActor.Tell(cmd);
         }
 
-        public Task<object> Execute(ICommand command, params ExpectedMessage[] expect)
+        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
         {
-            return _mainNodeActor.Ask<object>(new CommandAndConfirmation(command,expect))
+            var maxWaitTime = timeout ?? CommandTimeout;
+            return _mainNodeActor.Ask<object>(new CommandPlan(command, expectedMessage), maxWaitTime)
                                  .ContinueWith(t =>
                                  {
-                                     object result=null;
+                                     if(t.IsCanceled)
+                                         throw new TimeoutException("Command execution timed out");
+
+                                     object result = null;
                                      t.Result.Match()
                                              .With<ICommandFault>(fault =>
                                              {
@@ -207,10 +219,11 @@ namespace GridDomain.Node
                                                  ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
                                              })
                                              .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                                             .Default(m => { throw new InvalidMessageException(m.ToPropsString()); }); 
-
+                                             .Default(m => { throw new InvalidMessageException(m.ToPropsString()); });
+                                 
                                      return result;
                                  });
         }
+
     }
 }

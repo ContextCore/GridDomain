@@ -6,6 +6,8 @@ using Akka;
 using Akka.Actor;
 using Akka.Dispatch;
 using Akka.DI.Core;
+using Akka.Monitoring;
+using Akka.Monitoring.Impl;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -33,10 +35,13 @@ namespace GridDomain.Node.Actors
             _messageRouting = messageRouting;
             _messagePublisher = transport;
             _log.Debug($"Actor {GetType().Name} was created on: {Self.Path}.");
+            _monitor = new ActorMonitor(Context);
         }
 
         public void Handle(Start msg)
         {
+            _monitor.IncrementMessagesReceived();
+
             _log.Debug($"Actor {GetType().Name} is initializing");
 
             var system = Context.System;
@@ -53,12 +58,15 @@ namespace GridDomain.Node.Actors
 
         public void Handle(ICommand cmd)
         {
-            _log.Trace($"Актор {GetType().Name} получил сообщение:\r\n {cmd.ToPropsString()}");
+            _monitor.IncrementMessagesReceived();
+
             _messagePublisher.Publish(cmd);
         }
 
-        public void Handle(CommandAndConfirmation commandWithConfirmation)
+        public void Handle(CommandPlan commandWithConfirmation)
         {
+            _monitor.IncrementMessagesReceived();
+
             var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
             foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
@@ -74,6 +82,22 @@ namespace GridDomain.Node.Actors
 
         public class Started
         {
+        }
+
+        private readonly ActorMonitor _monitor;
+
+        protected override void PreStart()
+        {
+            _monitor.IncrementActorStarted();
+        }
+
+        protected override void PostStop()
+        {
+            _monitor.IncrementActorStopped();
+        }
+        protected override void PreRestart(Exception reason, object message)
+        {
+            _monitor.IncrementActorRestarted();
         }
     }
 }

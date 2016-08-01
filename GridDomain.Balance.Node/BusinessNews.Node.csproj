@@ -162,6 +162,10 @@
       <Project>{601f47b4-849c-49bc-ad2c-58b84de229d6}</Project>
       <Name>BusinessNews.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
