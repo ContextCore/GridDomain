@@ -70,8 +70,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [SetUp]
         public void SetUp()
         {
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
             TypesForScalarDescruptionHolder.Add(typeof(Money));
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
+            
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             _container = GridNode.Container;
             CreateScheduler();
