@@ -42,7 +42,7 @@ namespace Solomoto.Membership.TransferTool
             var timer = new Stopwatch();
             timer.Start();
 
-            var count = 10000000;
+            var count = 1000;
             var tasks = Enumerable.Range(0,count).Select(t =>
             {
                 var data = new Fixture();

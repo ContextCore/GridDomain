@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
@@ -28,11 +29,10 @@ namespace GridDomain.Node
             return new AkkaCluster {SeedNodes = seedSystems.ToArray(), NonSeedNodes = nonSeedConfiguration.ToArray()};
         }
 
+        [Obsolete("Use extensions methods fot AkkaConfiguration from AkkaConfigurationExtensions instead")]
         public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
         {
-            var standAloneSystemConfig = akkaConf.ToStandAloneSystemConfig();
-            var actorSystem = ActorSystem.Create(akkaConf.Network.SystemName, standAloneSystemConfig);
-            return actorSystem;
+            return akkaConf.CreateSystem();
         }
     }
 }

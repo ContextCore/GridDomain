@@ -234,6 +234,7 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
+    <Compile Include="Chronicles\ChiniclesTests.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
@@ -352,6 +353,7 @@
     <Compile Include="SynchroniousCommandExecute\InMemory_when_sync_execute_with_command_fault.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistentSampleDomainTests.cs" />
     <Compile Include="SynchroniousCommandExecute\SampleDomainCommandExecutionTests.cs" />
+    <Compile Include="SynchroniousCommandExecute\SampleDomainContainerConfiguration.cs" />
     <Compile Include="SynchroniousCommandExecute\When_dont_wait_execution.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />

@@ -13,7 +13,6 @@ namespace GridDomain.Node.Configuration.Akka
             Trace
         }
 
-
         private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
         {
             {LogVerbosity.Info, "INFO"},
