@@ -6,48 +6,83 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.Node.EventChronicles;
+using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Framework.Persistence;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
+using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.Chronicles
 {
     [TestFixture]
-    public class Given_persisted_events : SampleDomainCommandExecutionTests
+    public class Given_persisted_events_replay : SampleDomainCommandExecutionTests
     {
 
+        class AggregateCreatedProjectionBuilder_Test : AggregateCreatedProjectionBuilder
+        {
+            public override void Handle(SampleAggregateCreatedEvent msg)
+            {
+                base.Handle(msg);
+                msg.History.HandlerName = this.GetType().Name;
+            }
+        }
+
+        class AggregateChangedProjectionBuilder_Test : AggregateChangedProjectionBuilder
+        {
+            public override void Handle(SampleAggregateChangedEvent msg)
+            {
+                base.Handle(msg);
+                msg.History.HandlerName = this.GetType().Name;
+            }
+        }
+
+        private SampleAggregateCreatedEvent _sampleAggregateCreatedEvent;
+        private SampleAggregateChangedEvent _sampleAggregateChangedEvent;
 
         [TestFixtureSetUp]
         public void Given_persisted_domain_events_when_replaying_it_for_existing_aggregate_id()
         {
             var aggregateId = Guid.NewGuid();
-            var events = new DomainEvent[]
-            {
-                new SampleAggregateCreatedEvent("123", aggregateId),
-                new SampleAggregateChangedEvent("234", aggregateId)
-            };
+            _sampleAggregateCreatedEvent = new SampleAggregateCreatedEvent("123", aggregateId);
+            _sampleAggregateChangedEvent = new SampleAggregateChangedEvent("234", aggregateId);
 
-            SaveInJournal<SampleAggregate>(aggregateId, events);
+            SaveInJournal<SampleAggregate>(aggregateId, _sampleAggregateCreatedEvent, _sampleAggregateChangedEvent);
+
+
+            var chronicle = new AkkaEventsChronicle(new AutoTestAkkaConfiguration());
+            chronicle.Router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder_Test>(e => e.SourceId);
+            chronicle.Router.RegisterHandler<SampleAggregateChangedEvent, AggregateChangedProjectionBuilder_Test>(e => e.SourceId);
+            chronicle.Replay<SampleAggregate>(aggregateId);
         }
 
-        public Given_persisted_events(bool inMemory) : base(inMemory)
+        [Then]
+        public void Chronicle_aggregate_created_subscribers_received_it()
         {
+            Assert.AreEqual(typeof(AggregateCreatedProjectionBuilder_Test).Name,
+                _sampleAggregateCreatedEvent.History.HandlerName);
         }
 
-
-
-
-        protected override TimeSpan Timeout { get; }
-        protected override IContainerConfiguration CreateConfiguration()
+        [Then]
+        public void Chronicle_aggregate_changed_subscribers_received_it()
         {
-            throw new NotImplementedException();
+            Assert.AreEqual(typeof(AggregateChangedProjectionBuilder_Test).Name,
+                _sampleAggregateChangedEvent.History.HandlerName);
         }
 
-        protected override IMessageRouteMap CreateMap()
+        [Then]
+        public void Created_event_was_processed_only_by_chronicle_subscribers()
         {
-            throw new NotImplementedException();
+            Assert.AreEqual(1, _sampleAggregateChangedEvent.History.SequenceNumber);
+        }
+
+        [Then]
+        public void Changed_event_was_processed_only_by_chronicle_subscribers()
+        {
+            Assert.AreEqual(1, _sampleAggregateCreatedEvent.History.SequenceNumber);
         }
     }
 }

@@ -15,11 +15,12 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
         private int number = 0;
         public static int ProjectionGroupHashCode { get; set; }
 
-        public void Handle(SampleAggregateCreatedEvent msg)
+        public virtual void Handle(SampleAggregateCreatedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
+            msg.History.HandlerName = this.GetType().Name;
         }
     }
 }

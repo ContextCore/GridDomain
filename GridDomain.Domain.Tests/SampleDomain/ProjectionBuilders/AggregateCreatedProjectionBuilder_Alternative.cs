@@ -20,6 +20,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
+            msg.History.HandlerName = this.GetType().Name;
         }
     }
 }

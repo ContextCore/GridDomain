@@ -29,7 +29,11 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             return new SampleRouteMap(container);
 
         }
-        
+
+        public SampleDomainCommandExecutionTests() : base(true)
+        {
+        }
+
         public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
         {
         }

@@ -16,7 +16,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             watch.Start();
         }
         private int number = 0;
-        public void Handle(SampleAggregateChangedEvent msg)
+        public virtual void Handle(SampleAggregateChangedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;

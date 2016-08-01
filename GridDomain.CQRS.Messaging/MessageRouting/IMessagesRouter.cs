@@ -27,4 +27,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         void RegisterProjectionGroup<T>(T group) where T : IProjectionGroup;
     }
+
+   
 }
