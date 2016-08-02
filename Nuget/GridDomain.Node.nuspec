@@ -44,13 +44,18 @@
   </metadata>
 
 <files>
-  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.dll" target="lib\net461" /> 
-  <file src="GridDomain.Node\bin\Debug\GridDomain.Node.dll" target="lib\net461" /> 
-  <file src="GridDomain.Node\bin\Debug\GridDomain.Scheduling.dll" target="lib\net461" />  
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Node.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Scheduling.dll" target="lib\net461" />  
   
-  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.pdb" target="lib\net461" /> 
-  <file src="GridDomain.Node\bin\Debug\GridDomain.Node.pdb" target="lib\net461" /> 
-  <file src="GridDomain.Node\bin\Debug\GridDomain.Scheduling.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.Akka.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Node.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Scheduling.pdb" target="lib\net461" /> 
+
+  <file src="app.config.install.xdt" target="content" /> 
+  <file src="web.config.install.xdt" target="content" /> 
+  <file src="app.config.uninstall.xdt" target="content" /> 
+  <file src="web.config.uninstall.xdt" target="content" /> 
 </files>
 </package>
 

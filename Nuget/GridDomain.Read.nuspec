@@ -20,8 +20,8 @@
 
 <files>
   
-  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.ReadModel.dll" target="lib\net461" />
-  <file src="GridDomain.Node\bin\Debug\GridDomain.CQRS.ReadModel.pdb" target="lib\net461" />
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.ReadModel.dll" target="lib\net461" />
+  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.ReadModel.pdb" target="lib\net461" />
   
 </files>
 </package>
