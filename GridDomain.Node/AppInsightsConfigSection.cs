@@ -7,8 +7,8 @@ namespace GridDomain.Node
         public const string SectionName = "appinsights";
         private const string AccessPropertyName = "accessKey";
 
-        public static AppInsightsConfigSection Default
-            => (AppInsightsConfigSection) ConfigurationManager.GetSection(SectionName);
+        public static IAppInsightsConfiguration Default
+            =>  ConfigurationManager.GetSection(SectionName) as AppInsightsConfigSection;
 
         [ConfigurationProperty(AccessPropertyName)]
         public string Key

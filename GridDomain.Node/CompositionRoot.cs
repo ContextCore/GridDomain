@@ -46,9 +46,8 @@ namespace GridDomain.Node
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
-
-
-            container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default);
+            container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default ??
+                                                                  new DefaultAppInsightsConfiguration());
             container.RegisterInstance(actorSystem);
             container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
         }

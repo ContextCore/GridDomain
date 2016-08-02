@@ -236,6 +236,7 @@
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\CommandExecutionFinished.cs" />
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
+    <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="Actors\GridDomainNodeMainActor.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
