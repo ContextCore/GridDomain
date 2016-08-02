@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
@@ -18,16 +19,26 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.Chronicles
 {
+    //TODO: replace with messaging
+
     [TestFixture]
     public class Given_persisted_events_replay : SampleDomainCommandExecutionTests
     {
+        public Given_persisted_events_replay():base(false)
+        {
+            
+        }
 
         class AggregateCreatedProjectionBuilder_Test : AggregateCreatedProjectionBuilder
         {
             public override void Handle(SampleAggregateCreatedEvent msg)
             {
                 base.Handle(msg);
-                msg.History.HandlerName = this.GetType().Name;
+               EventsReplayInfoHolder.ProcessedMessages[msg.SourceId].Add(new ProcessedHistory
+               {
+                   SequenceNumber = msg.History.SequenceNumber,
+                   HandlerName = this.GetType().Name
+               });
             }
         }
 
@@ -36,7 +47,11 @@ namespace GridDomain.Tests.Chronicles
             public override void Handle(SampleAggregateChangedEvent msg)
             {
                 base.Handle(msg);
-                msg.History.HandlerName = this.GetType().Name;
+                EventsReplayInfoHolder.ProcessedMessages[msg.SourceId].Add(new ProcessedHistory
+                {
+                    SequenceNumber = msg.History.SequenceNumber,
+                    HandlerName = this.GetType().Name
+                });
             }
         }
 
@@ -52,10 +67,20 @@ namespace GridDomain.Tests.Chronicles
 
             SaveInJournal<SampleAggregate>(aggregateId, _sampleAggregateCreatedEvent, _sampleAggregateChangedEvent);
 
+            EventsReplayInfoHolder.ProcessedMessages[aggregateId] = new List<ProcessedHistory>();
 
             var chronicle = new AkkaEventsChronicle(new AutoTestAkkaConfiguration());
             chronicle.Router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder_Test>(e => e.SourceId);
             chronicle.Router.RegisterHandler<SampleAggregateChangedEvent, AggregateChangedProjectionBuilder_Test>(e => e.SourceId);
+            chronicle.Replay<SampleAggregate>(aggregateId);
+            Thread.Sleep(2000);
+        }
+
+        [Test]
+        public void When_replaying_not_existing_id_no_exception_is_thrown()
+        {
+            var aggregateId = Guid.NewGuid();
+            var chronicle = new AkkaEventsChronicle(new AutoTestAkkaConfiguration());
             chronicle.Replay<SampleAggregate>(aggregateId);
         }
 
@@ -63,26 +88,26 @@ namespace GridDomain.Tests.Chronicles
         public void Chronicle_aggregate_created_subscribers_received_it()
         {
             Assert.AreEqual(typeof(AggregateCreatedProjectionBuilder_Test).Name,
-                _sampleAggregateCreatedEvent.History.HandlerName);
+                  EventsReplayInfoHolder.ProcessedMessages[_sampleAggregateCreatedEvent.SourceId].First().HandlerName);
         }
 
         [Then]
         public void Chronicle_aggregate_changed_subscribers_received_it()
         {
             Assert.AreEqual(typeof(AggregateChangedProjectionBuilder_Test).Name,
-                _sampleAggregateChangedEvent.History.HandlerName);
+                EventsReplayInfoHolder.ProcessedMessages[_sampleAggregateChangedEvent.SourceId].Skip(1).First().HandlerName);
         }
 
         [Then]
         public void Created_event_was_processed_only_by_chronicle_subscribers()
         {
-            Assert.AreEqual(1, _sampleAggregateChangedEvent.History.SequenceNumber);
+            Assert.AreEqual(1, EventsReplayInfoHolder.ProcessedMessages[_sampleAggregateCreatedEvent.SourceId].First().SequenceNumber);
         }
 
         [Then]
         public void Changed_event_was_processed_only_by_chronicle_subscribers()
         {
-            Assert.AreEqual(1, _sampleAggregateCreatedEvent.History.SequenceNumber);
+            Assert.AreEqual(1, EventsReplayInfoHolder.ProcessedMessages[_sampleAggregateChangedEvent.SourceId].Skip(1).First().SequenceNumber);
         }
     }
 }
