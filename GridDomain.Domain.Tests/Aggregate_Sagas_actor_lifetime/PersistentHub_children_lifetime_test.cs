@@ -33,7 +33,6 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         {
             Infrastructure.Hub.Tell(Infrastructure.ChildCreateMessage);
 
-            //Thread.Sleep(Debugger.IsAttached ? 100000 : 100);
             Thread.Sleep(100);
         }
 

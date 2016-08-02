@@ -23,7 +23,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         private readonly IActorSubscriber _subscriber;
 
         protected RoutingActor(IHandlerActorTypeFactory actorTypeFactory,
-            IActorSubscriber subscriber)
+                               IActorSubscriber subscriber)
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;

@@ -7,6 +7,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -14,7 +15,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.EventsUpgrade
 {
     [TestFixture]
-    public class Given_aggregate_with_upgraded_event_with_new_field: PersistentTest
+    public class Given_aggregate_with_upgraded_event_with_new_field: ExtendedNodeCommandTest
     {
         private Guid _balanceId;
         private BalanceAggregate _aggregate;

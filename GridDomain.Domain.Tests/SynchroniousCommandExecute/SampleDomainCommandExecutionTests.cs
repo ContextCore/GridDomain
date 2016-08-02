@@ -3,26 +3,14 @@ using System.Diagnostics;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Persistence;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
-using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.SynchroniousCommandExecute
 {
-
-    public class SampleDomainContainerConfiguration : IContainerConfiguration
-    {
-        public void Register(IUnityContainer container)
-        {
-            container.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>();
-            container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
-            container.RegisterType<AggregateCreatedProjectionBuilder>();
-            container.RegisterType<SampleProjectionBuilder>();
-        }
-    }
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
         protected override TimeSpan Timeout => Debugger.IsAttached
@@ -41,7 +29,11 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             return new SampleRouteMap(container);
 
         }
-        
+
+        public SampleDomainCommandExecutionTests() : base(true)
+        {
+        }
+
         public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
         {
         }
