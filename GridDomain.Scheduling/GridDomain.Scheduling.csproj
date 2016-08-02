@@ -125,9 +125,9 @@
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
     <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
-    <Compile Include="CompositionRoot.cs" />
+    <Compile Include="SchedulerConfiguration.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
-    <Compile Include="Integration\ManageScheduledCommand.cs" />
+    <Compile Include="Integration\StartSchedulerSaga.cs" />
     <Compile Include="Integration\SagaReceivedCommandEvent.cs" />
     <Compile Include="Integration\ScheduledSagaCreator.cs" />
     <Compile Include="Integration\ScheduledCommandProcessingSaga.cs" />
