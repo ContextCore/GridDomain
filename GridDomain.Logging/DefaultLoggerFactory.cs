@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Serilog;
 
 namespace GridDomain.Logging
@@ -13,9 +14,21 @@ namespace GridDomain.Logging
             _serilogLogger = new SerilogLogger(_configuration.CreateLogger());
         }
 
-        public ISoloLogger GetLogger()
+        public ISoloLogger GetLogger(string className = null)
         {
-            return _serilogLogger;
+            if (className == null)
+            {
+                StackFrame frame = new StackFrame(2, false);
+                var declaringType = frame.GetMethod().DeclaringType;
+                if (declaringType != null) className = declaringType.Name;
+            }
+
+            if (className == null)
+            {
+                return _serilogLogger;
+            }
+            return _serilogLogger.ForContext("className", className);
+
         }
     }
 }

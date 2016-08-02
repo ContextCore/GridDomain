@@ -96,7 +96,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [Test]
         public void LogTest()
         {
-            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
+            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {@placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
         }
 
         [Test]
