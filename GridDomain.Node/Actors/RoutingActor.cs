@@ -2,18 +2,16 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
-using Akka.Monitoring;
-using Akka.Monitoring.Impl;
 using Akka.Routing;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
-using GridDomain.Node.Actors;
-using ActorMonitor = GridDomain.Node.Actors.ActorMonitor;
+using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Routing;
 
-namespace GridDomain.Node.AkkaMessaging.Routing
+namespace GridDomain.Node.Actors
 {
     public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRouteMessage>,
                                                      IHandler<CreateActorRouteMessage>

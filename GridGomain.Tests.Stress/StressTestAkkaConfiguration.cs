@@ -1,7 +1,7 @@
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Framework.Configuration;
 
-namespace Solomoto.Membership.TransferTool
+namespace GridGomain.Tests.Stress
 {
     public class StressTestAkkaConfiguration : AkkaConfiguration
     {

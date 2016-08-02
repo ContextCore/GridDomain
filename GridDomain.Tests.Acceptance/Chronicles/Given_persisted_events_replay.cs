@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.EventChronicles;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.Framework.Persistence;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
-using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.Chronicles
+namespace GridDomain.Tests.Acceptance.Chronicles
 {
     //TODO: replace with messaging
 

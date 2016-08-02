@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;

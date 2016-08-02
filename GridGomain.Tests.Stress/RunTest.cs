@@ -1,14 +1,14 @@
 using NUnit.Framework;
-using Solomoto.Membership.TransferTool;
 
-
-
-[TestFixture]
-public class RunTest
+namespace GridGomain.Tests.Stress
 {
-    [Test]
-    public void Run()
+    [TestFixture]
+    public class RunTest
     {
-        Program.Main();
+        [Test]
+        public void Run()
+        {
+            Program.Main();
+        }
     }
 }

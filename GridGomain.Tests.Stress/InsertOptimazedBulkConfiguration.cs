@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Node.Actors;
 
-namespace Solomoto.Membership.TransferTool
+namespace GridGomain.Tests.Stress
 {
     public class InsertOptimazedBulkConfiguration : IPersistentChildsRecycleConfiguration
     {

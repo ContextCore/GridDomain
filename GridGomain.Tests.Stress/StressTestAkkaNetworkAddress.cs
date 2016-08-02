@@ -1,6 +1,6 @@
 using GridDomain.Node.Configuration.Akka;
 
-namespace Solomoto.Membership.TransferTool
+namespace GridGomain.Tests.Stress
 {
     internal class StressTestAkkaNetworkAddress : IAkkaNetworkAddress
     {

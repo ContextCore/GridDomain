@@ -3,6 +3,7 @@ using System.Linq;
 using Akka.Routing;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {

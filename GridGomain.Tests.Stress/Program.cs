@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Dispatch.SysMsg;
-using GridDomain.CQRS.Quering;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -19,7 +17,7 @@ using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 using Ploeh.AutoFixture;
 
-namespace Solomoto.Membership.TransferTool
+namespace GridGomain.Tests.Stress
 {
     public class Program
     {

@@ -1,16 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node
 {
     public class ActorMessagesRouter : IMessagesRouter
     {

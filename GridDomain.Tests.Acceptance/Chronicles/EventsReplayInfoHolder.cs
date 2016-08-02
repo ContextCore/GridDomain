@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using GridDomain.Tests.SampleDomain.Events;
 
-namespace GridDomain.Tests.Chronicles
+namespace GridDomain.Tests.Acceptance.Chronicles
 {
     public static class EventsReplayInfoHolder
     {
