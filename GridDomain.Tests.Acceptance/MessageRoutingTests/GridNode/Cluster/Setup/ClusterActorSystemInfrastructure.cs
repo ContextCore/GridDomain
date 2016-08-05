@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 
         public override void Dispose()
         {
-            Akka.Cluster.Cluster.Get(Nodes.First()).Shutdown();
+        //    Akka.Cluster.Cluster.Get(Nodes.First()).Shutdown();
             foreach (var actorSystem in Nodes)
             {
                 actorSystem.Terminate();

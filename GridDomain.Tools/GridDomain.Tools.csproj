@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}</ProjectGuid>
+    <ProjectGuid>{52D64E51-E1D5-45F6-8C2A-E436C0A03ED3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.CQRS.Messaging.Akka</RootNamespace>
-    <AssemblyName>GridDomain.CQRS.Messaging.Akka</AssemblyName>
+    <RootNamespace>GridDomain.Tools</RootNamespace>
+    <AssemblyName>GridDomain.Tools</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,14 +34,6 @@
       <HintPath>..\packages\Akka.1.1.1\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster, Version=1.1.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Cluster.1.1.1\lib\net45\Akka.Cluster.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Akka.Cluster.Tools, Version=1.1.1.28, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Cluster.Tools.1.1.1.28-beta\lib\net45\Akka.Cluster.Tools.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Akka.Persistence, Version=1.1.1.28, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.1.1.28-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
@@ -55,8 +46,12 @@
       <HintPath>..\packages\Akka.Persistence.SqlServer.1.1.1.5-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Remote, Version=1.1.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Remote.1.1.1\lib\net45\Akka.Remote.dll</HintPath>
+    <Reference Include="Akka.TestKit, Version=1.1.1.27, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.1.1.1\lib\net45\Akka.TestKit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.TestKit.NUnit, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.NUnit.1.1.1\lib\net45\Akka.TestKit.NUnit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
@@ -67,12 +62,16 @@
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Helios, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Helios.2.1.2\lib\net45\Helios.dll</HintPath>
+    <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -87,32 +86,35 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Wire.0.7.1\lib\net45\Wire.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AkkaEventBusTransport.cs" />
-    <Compile Include="CannotGetDistributedPubSubException.cs" />
-    <Compile Include="DistributedPubSubTransport.cs" />
-    <Compile Include="IActorSubscriber.cs" />
-    <Compile Include="IActorTransport.cs" />
+    <Compile Include="JournalEntry.cs" />
+    <Compile Include="LoadActor.cs" />
+    <Compile Include="LoadComplete.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypedMessageActor.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="SqlJournalWireDeserializer.cs" />
+    <Compile Include="TestWireDeserializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
-      <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
-      <Name>GridDomain.CQRS.Messaging</Name>
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
+      <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
+      <Name>GridDomain.EventSourcing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
-      <Project>{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}</Project>
-      <Name>GridDomain.CQRS</Name>
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
+      <Project>{760BE08A-D943-4A71-944E-938590527153}</Project>
+      <Name>GridDomain.Node</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
-      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
-      <Name>GridDomain.Logging</Name>
+    <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
+      <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
+      <Name>GridDomain.Tests.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

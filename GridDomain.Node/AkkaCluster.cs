@@ -13,9 +13,9 @@ namespace GridDomain.Node
 
         public void Dispose()
         {
-            Cluster.Get(RandomNode()).Shutdown();
             foreach (var actorSystem in All)
             {
+              //  Cluster.Get(actorSystem).Down(actorSystem);
                 actorSystem.Terminate();
                 actorSystem.Dispose();
             }
