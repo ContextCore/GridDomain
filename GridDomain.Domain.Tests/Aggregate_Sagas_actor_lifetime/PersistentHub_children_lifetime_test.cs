@@ -32,8 +32,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         protected void When_hub_creates_a_child()
         {
             Infrastructure.Hub.Tell(Infrastructure.ChildCreateMessage);
-
-            Thread.Sleep(200);
+            Thread.Sleep(50);
         }
 
         protected void And_it_is_not_active_until_lifetime_period_is_expired()
