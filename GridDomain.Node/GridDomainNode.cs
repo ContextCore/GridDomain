@@ -130,7 +130,6 @@ namespace GridDomain.Node
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-
             ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
 
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
