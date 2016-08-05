@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             When_hub_creates_a_child();
             _initialTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
             //TODO: replace sleep with dateTime manipulations via DateTimeFacade
-            Thread.Sleep(500);
+            Thread.Sleep(2000);
             And_command_for_child_is_sent();
         }
 
