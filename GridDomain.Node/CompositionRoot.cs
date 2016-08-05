@@ -12,6 +12,7 @@ using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Schedulingты;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

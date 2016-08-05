@@ -11,7 +11,7 @@ using Quartz;
 using Quartz.Spi;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Scheduling
+namespace GridDomain.Schedulingòû 
 {
     public class SchedulerConfiguration : IContainerConfiguration
     {
