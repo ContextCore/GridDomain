@@ -282,6 +282,7 @@
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
+    <Compile Include="Tools\LoadAggregateTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -340,6 +341,10 @@
     <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
       <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
       <Name>GridDomain.Tests.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
+      <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
+      <Name>GridDomain.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\SchedulerDemo\SchedulerDemo.csproj">
       <Project>{2f2cdec2-28ca-4520-b44a-ba7b5a399145}</Project>

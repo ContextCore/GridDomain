@@ -1,9 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Wire;
 
-namespace Solomoto.Membership.Tools
+namespace GridDomain.Tools
 {
     class SqlJournalWireDeserializer
     {

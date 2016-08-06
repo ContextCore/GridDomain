@@ -15,13 +15,18 @@ namespace GridDomain.Tests.Framework.Persistence
 
         protected override bool ReceiveCommand(object message)
         {
-            PersistEvent(message);
+            Persist(message, e => Sender.Tell(new MessagePersisted(message),Self));
             return true;
         }
 
-        private void PersistEvent(object o)
+        public class MessagePersisted
         {
-            Persist(o, e => { });
+            public object Message { get;}
+
+            public MessagePersisted(object message)
+            {
+                Message = message;
+            }
         }
 
         public override string PersistenceId { get; }
