@@ -43,7 +43,7 @@ namespace GridDomain.Tools
         {
             var persistActor = CreateEventsPersistActor(id);
             //load actor will notify caller automatically when it will load all events
-            var msg = ExpectMsg<EventsRepositoryActor.Loaded>(Timeout);
+            var msg = persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(),Timeout).Result;
             persistActor.Tell(PoisonPill.Instance);
             return msg.Events.Cast<object>().ToArray();
        } 

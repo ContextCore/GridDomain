@@ -422,7 +422,7 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
-    <Compile Include="Tools\Tests_EventPersistenceActor.cs" />
+    <Compile Include="Tools\EventPersistenceActor_Tests.cs" />
     <Compile Include="Tools\Test_event_repositoty_tools.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.SampleDomain;
-using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tools;
 using NUnit.Framework;
 

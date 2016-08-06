@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Akka.Actor;
 using Akka.TestKit.NUnit;
+using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
 using NUnit.Framework;
 
@@ -10,13 +11,16 @@ namespace GridDomain.Tests.Tools
     public class EventPersistenceActor_Tests : TestKit
     {
 
+        public EventPersistenceActor_Tests():base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig())
+        {
+            
+        }
         [Test]
         public void When_actor_is_created_it_does_not_send_anything()
         {
             var actor = CreateActor("1");
             ExpectNoMsg(500);
         }
-
 
         [Test]
         public void When_actor_is_created_and_asked_for_load_response_is_empty()
@@ -61,15 +65,13 @@ namespace GridDomain.Tests.Tools
 
         private EventsRepositoryActor.Loaded LoadEvents(IActorRef actor)
         {
-            actor.Tell(new EventsRepositoryActor.Load());
-            var res = ExpectMsg<EventsRepositoryActor.Loaded>();
+            var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load()).Result;
             return res;
         }
 
         private EventsRepositoryActor.Persisted Save(IActorRef actor, object payload)
         {
-            actor.Tell(new EventsRepositoryActor.Persist(payload));
-            var persisted = ExpectMsg<EventsRepositoryActor.Persisted>();
+            var persisted = actor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(payload)).Result;
             return persisted;
         }
     }
