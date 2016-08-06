@@ -422,6 +422,8 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
+    <Compile Include="Tools\Tests_EventPersistenceActor.cs" />
+    <Compile Include="Tools\Test_event_repositoty_tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -479,6 +481,10 @@
     <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
       <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
       <Name>GridDomain.Tests.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
+      <Project>{52D64E51-E1D5-45F6-8C2A-E436C0A03ED3}</Project>
+      <Name>GridDomain.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

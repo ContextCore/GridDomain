@@ -6,7 +6,7 @@ namespace GridDomain.Tools
 {
     public interface IEventRepository : IDisposable
     {
-        void Save<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : IAggregate;
-        DomainEvent[] Load<TAggregate>(Guid id) where TAggregate : IAggregate;
+        void Save(string id, params object[] messages);
+        object[] Load(string id);
     }
 }

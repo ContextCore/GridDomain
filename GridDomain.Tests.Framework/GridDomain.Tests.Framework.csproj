@@ -158,7 +158,6 @@
     <Compile Include="CountEventWaiter.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="NodeCommandsTest.cs" />
-    <Compile Include="Persistence\PersistEventsSaveActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDateTimeStrategy.cs" />
     <Compile Include="TestDbTools.cs" />
@@ -200,6 +199,13 @@
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
       <Name>GridDomain.Node</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
+      <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
+      <Name>GridDomain.Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Persistence\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

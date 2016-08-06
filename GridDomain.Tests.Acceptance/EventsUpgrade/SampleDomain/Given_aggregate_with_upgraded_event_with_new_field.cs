@@ -8,7 +8,6 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Framework.Persistence;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

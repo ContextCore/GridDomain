@@ -11,7 +11,7 @@ using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.Framework.Persistence;
+using GridDomain.Tools;
 
 namespace GridDomain.Tests.Framework
 {
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Framework
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            Func<ActorSystem[]> actorSystem = () => new [] { InMemory ? Sys : ActorSystemFactory.CreateActorSystem(akkaConf)};
+            Func<ActorSystem[]> actorSystem = () => new [] { InMemory ? Sys : akkaConf.CreateSystem()};
 
             return new GridDomainNode(CreateConfiguration(),CreateMap(), actorSystem);
         }
@@ -40,12 +40,10 @@ namespace GridDomain.Tests.Framework
         {
             string persistId = AggregateActorName.New<TAggregate>(id).ToString();
             var persistActor = GridNode.System.ActorOf(
-                Props.Create(() => new PersistEventsSaveActor(persistId)), Guid.NewGuid().ToString());
+                Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
 
             foreach (var o in messages)
-                persistActor.Tell(o);
-
-            Thread.Sleep(1000);
+                persistActor.Ask<EventsRepositoryActor.Persisted>(o);
         }
     }
 }

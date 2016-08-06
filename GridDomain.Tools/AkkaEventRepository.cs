@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using System.Threading;
 using Akka.Actor;
+using Akka.Configuration;
 using Akka.TestKit.NUnit;
 using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka;
-using GridDomain.Tests.Framework.Persistence;
 
 namespace GridDomain.Tools
 {
@@ -17,36 +17,35 @@ namespace GridDomain.Tools
     {
         private static TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
-        public AkkaEventRepository(AkkaConfiguration config) : base(config.ToStandAloneSystemConfig())
+        public AkkaEventRepository(Config config) : base(config)
         {
             
         }
 
-        public void Save<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : IAggregate
+        public void Save(string id, params object[] messages)
         {
-            var persistActor = CreateEventsPersistActor<TAggregate>(id);
+            var persistActor = CreateEventsPersistActor(id);
 
             foreach (var o in messages)
-                persistActor.Ask<PersistEventsSaveActor.MessagePersisted>(o, Timeout);
+                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout).Wait();
 
             persistActor.Tell(PoisonPill.Instance);
         }
 
-        private IActorRef CreateEventsPersistActor<TAggregate>(Guid id) where TAggregate : IAggregate
+        private IActorRef CreateEventsPersistActor(string id)
         {
-            string persistId = AggregateActorName.New<TAggregate>(id).ToString();
-            var props = Props.Create(() => new EventsPeristenceActor<TAggregate>(TestActor, persistId));
+            var props = Props.Create(() => new EventsRepositoryActor(id));
             var persistActor = Sys.ActorOf(props, Guid.NewGuid().ToString());
             return persistActor;
         }
 
-        public DomainEvent[] Load<TAggregate>(Guid id) where TAggregate : IAggregate
+        public object[] Load(string id)
         {
-            var persistActor = CreateEventsPersistActor<TAggregate>(id);
+            var persistActor = CreateEventsPersistActor(id);
             //load actor will notify caller automatically when it will load all events
-            var msg = ExpectMsg<EventsPeristenceActor<TAggregate>.LoadComplete>(Timeout);
+            var msg = ExpectMsg<EventsRepositoryActor.Loaded>(Timeout);
             persistActor.Tell(PoisonPill.Instance);
-            return msg.Events.Cast<DomainEvent>().ToArray();
+            return msg.Events.Cast<object>().ToArray();
        } 
     }
 }

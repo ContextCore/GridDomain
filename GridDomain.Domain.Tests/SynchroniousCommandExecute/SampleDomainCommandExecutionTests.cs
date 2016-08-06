@@ -4,7 +4,6 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Framework.Persistence;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
