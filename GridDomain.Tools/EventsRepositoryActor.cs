@@ -23,7 +23,7 @@ namespace GridDomain.Tools
                  .Default(e => _events.Add(e));
             });
 
-            Command<Persist>(m => Persist(m.Msg, e => Sender.Tell(new Persisted(m), Self)));
+            Command<Persist>(m => Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)));
             Command<Load>(m => Sender.Tell(new Loaded(id, _events.ToArray())));
         }
 

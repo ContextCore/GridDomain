@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Tools
     public class EventPersistenceActor_Tests : TestKit
     {
 
-        public EventPersistenceActor_Tests():base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig())
+        public EventPersistenceActor_Tests():base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
         {
             
         }
@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Tools
         public void When_actor_is_created_and_asked_for_load_response_is_empty()
         {
             var actor = CreateActor("1");
-            var res = LoadEvents(actor);
+            var res = LoadEvents("1");
             CollectionAssert.IsEmpty(res.Events);
         }
 
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Tools
         public void When_actor_is_created_and_asked_for_load_response_contains_persisteneId()
         {
             var actor = CreateActor("1");
-            var res = LoadEvents(actor);
+            var res = LoadEvents("1");
             Assert.AreEqual("1",res.PersistenceId);
         }
 
@@ -54,8 +54,8 @@ namespace GridDomain.Tests.Tools
             var payload = "123";
             Save(actor, payload);
 
-            var loaded = LoadEvents(actor);
-            Assert.AreEqual(payload, loaded.Events.First());
+            var loaded = LoadEvents("2");
+            Assert.AreEqual(payload, loaded.Events.FirstOrDefault());
         }
 
         private IActorRef CreateActor(string persistenceId)
@@ -63,8 +63,9 @@ namespace GridDomain.Tests.Tools
             return Sys.ActorOf(Props.Create(() => new EventsRepositoryActor(persistenceId)));
         }
 
-        private EventsRepositoryActor.Loaded LoadEvents(IActorRef actor)
+        private EventsRepositoryActor.Loaded LoadEvents(string persistenceId)
         {
+            var actor = CreateActor(persistenceId);
             var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load()).Result;
             return res;
         }
