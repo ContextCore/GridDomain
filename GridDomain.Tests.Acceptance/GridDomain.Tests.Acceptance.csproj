@@ -282,7 +282,7 @@
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
-    <Compile Include="Tools\LoadAggregateTest.cs" />
+    <Compile Include="Tools\Given_persisted_aggreate_It_can_loaded_and_saved.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

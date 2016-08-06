@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Tools
     public class EventPersistenceActor_Tests : TestKit
     {
 
-        public EventPersistenceActor_Tests():base(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig())
+        public EventPersistenceActor_Tests():base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig())
         {
             
         }

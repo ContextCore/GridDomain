@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
 using NUnit.Framework;
@@ -39,9 +40,9 @@ namespace GridDomain.Tests.Tools
             }
         }
 
-        protected virtual AkkaEventRepository CreateRepository()
+        protected virtual IEventRepository CreateRepository()
         {
-            return new AkkaEventRepository(new AutoTestAkkaConfiguration().ToStandAloneSystemConfig());
+            return TestEventRepository.NewInMemory();
         }
     }
 }
