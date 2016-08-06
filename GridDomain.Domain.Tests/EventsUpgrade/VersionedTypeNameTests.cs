@@ -9,10 +9,6 @@ namespace GridDomain.Tests.EventsUpgrade
     [TestFixture]
     public class VersionedTypeNameTests
     {
-
-        
-   
-
         [Test]
         public void Given_bad_exeption_is_raised()
         {

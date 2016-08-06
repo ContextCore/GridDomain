@@ -92,9 +92,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AkkaEventRepository.cs" />
+    <Compile Include="IEventRepository.cs" />
+    <Compile Include="IRepository.cs" />
     <Compile Include="JournalEntry.cs" />
-    <Compile Include="LoadActor.cs" />
-    <Compile Include="LoadComplete.cs" />
+    <Compile Include="EventsRepositoryActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="SqlJournalWireDeserializer.cs" />
@@ -104,6 +106,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+      <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
+      <Name>GridDomain.EventSourcing.Sagas</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
       <Name>GridDomain.EventSourcing</Name>
@@ -111,10 +117,6 @@
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760BE08A-D943-4A71-944E-938590527153}</Project>
       <Name>GridDomain.Node</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
-      <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
-      <Name>GridDomain.Tests.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

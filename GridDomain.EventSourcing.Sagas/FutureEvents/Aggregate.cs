@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.Common;
 
@@ -9,7 +10,11 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class Aggregate : AggregateBase
     {
-
+        public static AggregateFactory _factory = new AggregateFactory();
+        public static T Empty<T>(Guid id) where T : IAggregate
+        {
+            return _factory.Build<T>(id);
+        }
         #region AsyncMethods
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
         private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();

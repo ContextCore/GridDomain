@@ -166,8 +166,8 @@
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.49.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
@@ -282,6 +282,7 @@
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
+    <Compile Include="Tools\Given_persisted_aggreate_It_can_loaded_and_saved.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -340,6 +341,10 @@
     <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
       <Project>{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}</Project>
       <Name>GridDomain.Tests.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
+      <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
+      <Name>GridDomain.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\SchedulerDemo\SchedulerDemo.csproj">
       <Project>{2f2cdec2-28ca-4520-b44a-ba7b5a399145}</Project>
