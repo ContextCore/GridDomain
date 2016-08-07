@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.SampleDomain.Commands
 {
-    public class ChangeAggregateCommand : Command
+    public class CreateSampleAggregateCommand : Command
     {
-        public ChangeAggregateCommand(int parameter, Guid aggregateId)
+        public CreateSampleAggregateCommand(int parameter, Guid aggregateId, Guid commandId):base(commandId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

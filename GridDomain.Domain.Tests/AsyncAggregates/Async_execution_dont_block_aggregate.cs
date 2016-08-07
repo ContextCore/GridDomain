@@ -19,7 +19,7 @@ namespace GridDomain.Tests.AsyncAggregates
         {
             var aggregateId = Guid.NewGuid();
             var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromSeconds(3));
-            var syncCommand = new ChangeAggregateCommand(42, aggregateId);
+            var syncCommand = new ChangeSampleAggregateCommand(42, aggregateId);
 
            var asyncCommandTask = GridNode.Execute<SampleAggregateChangedEvent>(asyncCommand,
                                                     ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),

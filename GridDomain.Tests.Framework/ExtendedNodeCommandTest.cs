@@ -18,13 +18,14 @@ namespace GridDomain.Tests.Framework
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
         protected readonly bool InMemory;
+        private static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
 
         protected ExtendedNodeCommandTest(bool inMemory) : 
-            base( inMemory ? new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Trace).ToStandAloneInMemorySystemConfig():
-                new AutoTestAkkaConfiguration().ToStandAloneSystemConfig()
-                , "TestSystem", !inMemory)
+            base( inMemory ? AkkaCfg.ToStandAloneInMemorySystemConfig() : AkkaCfg.ToStandAloneSystemConfig()
+                , AkkaCfg.Network.SystemName
+                , !inMemory)
         {
             InMemory = inMemory;
         }

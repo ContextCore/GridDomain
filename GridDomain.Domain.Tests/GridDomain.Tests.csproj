@@ -379,13 +379,13 @@
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateChangedEvent.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder_Alternative.cs" />
-    <Compile Include="SampleDomain\Commands\CreateAggregateCommand.cs" />
+    <Compile Include="SampleDomain\Commands\CreateSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\Events\IHaveProcessingHistory.cs" />
     <Compile Include="SampleDomain\Commands\LongOperationCommand.cs" />
     <Compile Include="SampleDomain\Events\ProcessedHistory.cs" />
     <Compile Include="SampleDomain\SampleAggregate.cs" />
     <Compile Include="SampleDomain\SampleAggregatesCommandHandler.cs" />
-    <Compile Include="SampleDomain\Commands\ChangeAggregateCommand.cs" />
+    <Compile Include="SampleDomain\Commands\ChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateCreatedEvent.cs" />
     <Compile Include="SampleDomain\SampleProjectionGroup.cs" />
     <Compile Include="SampleDomain\SampleRouteMap.cs" />
@@ -422,10 +422,11 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
-    <Compile Include="Tools\EventPersistenceActor_Tests.cs" />
-    <Compile Include="Tools\TestEventRepository.cs" />
-    <Compile Include="Tools\TestRepository.cs" />
-    <Compile Include="Tools\Test_event_repositoty_tools.cs" />
+    <Compile Include="Tools\Console\GridConsoleTests.cs" />
+    <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
+    <Compile Include="Tools\Repositories\TestEventRepository.cs" />
+    <Compile Include="Tools\Repositories\TestRepository.cs" />
+    <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

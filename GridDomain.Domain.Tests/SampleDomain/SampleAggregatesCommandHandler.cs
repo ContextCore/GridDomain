@@ -12,10 +12,10 @@ namespace GridDomain.Tests.SampleDomain
         public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new SampleAggregatesCommandHandler();
         public SampleAggregatesCommandHandler() : base(null)
         {
-            Map<ChangeAggregateCommand>(c => c.AggregateId,
+            Map<ChangeSampleAggregateCommand>(c => c.AggregateId,
                                        (c, a) => a.ChangeState(c.Parameter));
 
-            Map<CreateAggregateCommand>(c => c.AggregateId,
+            Map<CreateSampleAggregateCommand>(c => c.AggregateId,
                                         c => new SampleAggregate(c.AggregateId, c.Parameter.ToString()));
 
             Map<LongOperationCommand>(c => c.AggregateId,

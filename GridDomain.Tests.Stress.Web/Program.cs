@@ -45,10 +45,10 @@ namespace GridDomain.Tests.Stress.Web
             var tasks = Enumerable.Range(0,count).Select(t =>
             {
                 var data = new Fixture();
-                var createAggregateCommand = data.Create<CreateAggregateCommand>();
-                var changeAggregateCommandA = new ChangeAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
-                var changeAggregateCommandB = new ChangeAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
-                var changeAggregateCommandC = new ChangeAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
+                var createAggregateCommand = data.Create<CreateSampleAggregateCommand>();
+                var changeAggregateCommandA = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
+                var changeAggregateCommandB = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
+                var changeAggregateCommandC = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
 
                 var createExpect  = ExpectedMessage.Once<SampleAggregateCreatedEvent>(e => e.SourceId, createAggregateCommand.AggregateId);
                 var changeAExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandA.AggregateId);
