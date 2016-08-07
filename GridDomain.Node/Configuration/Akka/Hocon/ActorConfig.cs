@@ -30,12 +30,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              "+messageSerialization+@"
              serializers {
                          wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
-                         #json = ""Akka.Serialization.NewtonSoftJsonSerializer, Akka.Serialization.Json""
                 }
              
              serialization-bindings {
                                     ""System.Object"" = wire
-                                    #""Automatonymous.State"" = json
              }
        }";
 

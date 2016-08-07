@@ -20,16 +20,16 @@ using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
 {
-    public class GridDomainNodeMainActor : TypedActor
+    public class GridNodeController : TypedActor
     {
         private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
         private readonly IActorSubscriber _subscriber;
 
-        public GridDomainNodeMainActor(IPublisher transport,
-                                       IActorSubscriber subscriber,
-                                       IMessageRouteMap messageRouting)
+        public GridNodeController(IPublisher transport,
+                                  IActorSubscriber subscriber,
+                                  IMessageRouteMap messageRouting)
         {
             _subscriber = subscriber;
             _messageRouting = messageRouting;

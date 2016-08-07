@@ -48,7 +48,7 @@ namespace GridDomain.Node
 
         private Quartz.IScheduler _quartzScheduler;
        
-        private IActorRef _mainNodeActor;
+        private IActorRef _nodeController;
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
@@ -122,7 +122,6 @@ namespace GridDomain.Node
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
-
             Systems = _actorSystemFactory.Invoke();
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
@@ -138,10 +137,11 @@ namespace GridDomain.Node
             ActorMonitoringExtension.RegisterMonitor(System, monitor);
             ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
-            StartMainNodeActor(System);
+            StartController(System);
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -164,7 +164,8 @@ namespace GridDomain.Node
         }
 
         bool _stopping = false;
-      
+        private NodeCommandExecutor _commandExecutor;
+
         public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
@@ -178,51 +179,33 @@ namespace GridDomain.Node
             _log.Info($"GridDomain node {Id} stopped");
         }
 
-        private void StartMainNodeActor(ActorSystem actorSystem)
+        private void StartController(ActorSystem actorSystem)
         {
             _stopping = false;
             _log.Info($"Launching GridDomain node {Id}");
 
-            var props = actorSystem.DI().Props<GridDomainNodeMainActor>();
-            _mainNodeActor = actorSystem.ActorOf(props,nameof(GridDomainNodeMainActor));
+            var props = actorSystem.DI().Props<GridNodeController>();
+            _nodeController = actorSystem.ActorOf(props,nameof(GridNodeController));
 
-            _mainNodeActor.Ask(new GridDomainNodeMainActor.Start
+            _nodeController.Ask(new GridNodeController.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
             .Wait(TimeSpan.FromSeconds(2));
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
+
+            _commandExecutor = new NodeCommandExecutor(_nodeController,CommandTimeout);
         }
 
         public void Execute(params ICommand[] commands)
         {
-            foreach(var cmd in commands)
-                _mainNodeActor.Tell(cmd);
+            _commandExecutor.Execute(commands);
         }
 
         public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
         {
-            var maxWaitTime = timeout ?? CommandTimeout;
-            return _mainNodeActor.Ask<object>(new CommandPlan(command, expectedMessage), maxWaitTime)
-                                 .ContinueWith(t =>
-                                 {
-                                     if(t.IsCanceled)
-                                         throw new TimeoutException("Command execution timed out");
-
-                                     object result = null;
-                                     t.Result.Match()
-                                             .With<ICommandFault>(fault =>
-                                             {
-                                                 var domainExcpetion = fault.Exception.UnwrapSingle();
-                                                 ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
-                                             })
-                                             .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                                             .Default(m => { throw new InvalidMessageException(m.ToPropsString()); });
-                                 
-                                     return result;
-                                 });
+            return _commandExecutor.Execute(command, expectedMessage, timeout);
         }
-
     }
 }

@@ -2,9 +2,10 @@ using System;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.Tools;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Tools
+namespace GridDomain.Tests.Acceptance.Tools
 {
     [TestFixture]
     class Aggregate_repository_tests_given_persisted_events
@@ -21,13 +22,13 @@ namespace GridDomain.Tests.Tools
             _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
             _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
 
-            using (var eventsRepo = TestEventRepository.NewInMemory())
+            using (var eventsRepo = TestEventRepository.NewPersistent())
             {
                 string persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
                 eventsRepo.Save(persistenceId, _createdEvent, _changedEvent);
             }
 
-            using (var repo = TestRepository.NewInMemory())
+            using (var repo = TestRepository.NewPersistent())
             {
                 _aggregate = repo.Load<SampleAggregate>(_sourceId);
             }
