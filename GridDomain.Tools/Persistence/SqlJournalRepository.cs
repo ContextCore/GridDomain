@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Tools.SqlPersistence;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Persistence
 {
     /// <summary>
     /// Class for reading \ writing data perrsisted in sql db with wire
@@ -12,14 +11,14 @@ namespace GridDomain.Tools
     /// </summary>
     public class SqlJournalRepository
     {
-        public IReadOnlyCollection<JournalEntry> GetEntries(Predicate<JournalEntry> filter)
-        {
-            return null;
-        }
+        //public IReadOnlyCollection<JournalEntry> GetEntries(Predicate<JournalEntry> filter)
+        //{
+        //    return null;
+        //}
 
-        public void Save(JournalEntry e)
-        {
+        //public void Save(JournalEntry e)
+        //{
             
-        }
+        //}
     }
 }

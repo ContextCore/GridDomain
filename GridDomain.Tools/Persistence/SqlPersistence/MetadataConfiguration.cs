@@ -1,4 +1,4 @@
-namespace GridDomain.Tools.SqlPersistence
+namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
     public class MetadataConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Metadata>

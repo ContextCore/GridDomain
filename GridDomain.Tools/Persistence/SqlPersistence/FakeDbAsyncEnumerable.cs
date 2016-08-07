@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace GridDomain.Tools.SqlPersistence
+namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
     public class FakeDbAsyncEnumerable<T> : EnumerableQuery<T>, System.Data.Entity.Infrastructure.IDbAsyncEnumerable<T>, IQueryable<T>

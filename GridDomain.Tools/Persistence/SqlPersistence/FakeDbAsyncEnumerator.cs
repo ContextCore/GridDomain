@@ -1,4 +1,4 @@
-namespace GridDomain.Tools.SqlPersistence
+namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
     public class FakeDbAsyncEnumerator<T> : System.Data.Entity.Infrastructure.IDbAsyncEnumerator<T>

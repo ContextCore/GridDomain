@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace GridDomain.Tools.SqlPersistence
+namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
     public class FakeDbAsyncQueryProvider<TEntity> : System.Data.Entity.Infrastructure.IDbAsyncQueryProvider

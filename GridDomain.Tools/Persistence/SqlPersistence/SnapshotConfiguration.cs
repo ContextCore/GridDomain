@@ -1,4 +1,4 @@
-namespace GridDomain.Tools.SqlPersistence
+namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
     public class SnapshotConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Snapshot>

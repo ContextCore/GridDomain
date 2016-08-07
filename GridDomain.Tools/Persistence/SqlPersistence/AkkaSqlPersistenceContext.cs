@@ -1,11 +1,11 @@
 ﻿
-namespace GridDomain.Tools.SqlPersistence
+namespace GridDomain.Tools.Persistence.SqlPersistence
 {
 
   
     public class AkkaSqlPersistenceContext : System.Data.Entity.DbContext, IAkkaSqlPersistenceContext
     {
-        public System.Data.Entity.DbSet<JournalEntry> Journals { get; set; } // JournalEntry
+        public System.Data.Entity.DbSet<JournalEntry> Journal { get; set; } // JournalEntry
         public System.Data.Entity.DbSet<Metadata> Metadatas { get; set; } // Metadata
         public System.Data.Entity.DbSet<Snapshot> Snapshots { get; set; } // Snapshots
 
