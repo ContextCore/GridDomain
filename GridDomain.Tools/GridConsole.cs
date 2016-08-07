@@ -70,37 +70,9 @@ namespace GridDomain.Tools
         {
             var controllerActorPath = $"{_remoteSystemSelectionPath}{typeof(GridNodeController).Name}";
 
-            var pathA = new []
-            {
-                controllerActorPath,
-                @"akka.tcp://LocalSystem@localhost:8080/user/GridNodeController",
-                @"akka.tcp://LocalSystem@localhost:8080/user",
-                @"akka.tcp://LocalSystem@localhost:8080",
-                @"akka.tcp://LocalSystem@localhost:8080/user/gridnodecontroller",
-                @"akka.tcp://LocalSystem@127.0.0.1:8080/user/GridNodeController",
-                @"akka.tcp://LocalSystem@127.0.0.1:8080/user/gridnodecontroller",
-                @"akka.tcp://LocalSystem@127.0.0.1:8080/user",
-                @"akka.tcp://LocalSystem@127.0.0.1:8080"
-            };
-
-            foreach (var path in pathA)
-            {
-                try
-                {
-                     _system.ActorSelection(path).Tell(new TestCommand());
-                    Thread.Sleep(1);
-                    var ctr = _system.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(5)).Result;
-                    Console.WriteLine("Got actor by path " + path);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cant fidn path: " + path);
-                }
-            }
-
-            var nodeControllerSelection = _system.ActorSelection(controllerActorPath);
-
-             _nodeController = nodeControllerSelection.Anchor;
+            _nodeController = _system.ActorSelection(controllerActorPath)
+                                     .ResolveOne(NodeControllerResolveTimeout)
+                                     .Result;
 
             _commandExecutor = new NodeCommandExecutor(_nodeController, DefaultCommandExecutionTimeout);
         }

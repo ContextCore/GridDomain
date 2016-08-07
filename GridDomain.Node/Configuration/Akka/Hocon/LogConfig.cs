@@ -23,10 +23,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 loggers=[""GridDomain.Node.SerilogExtendedLogger, GridDomain.Node""]
 
                 actor.debug {
-                      #receive = on
-                      #autoreceive = on
-                      #lifecycle = on
-                      #event-stream = on
+                      receive = on
+                      autoreceive = on
+                      lifecycle = on
+                      event-stream = on
                       unhandled = on
                 }";
 
