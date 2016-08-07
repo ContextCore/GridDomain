@@ -48,11 +48,13 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             var transportString =
                 @"remote {
+                    log-remote-lifecycle-events = DEBUG
                     helios.tcp {
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                transport-protocol = tcp
                                port = " + port + @"
                                hostname = " + name + @"
+                               public-hostname = "+ name + @"
                     }
             }";
             return transportString;

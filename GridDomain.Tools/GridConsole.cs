@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
@@ -24,9 +25,17 @@ namespace GridDomain.Tools
     class ConsoleAkkaConfiguretion : AkkaConfiguration
     {
         public ConsoleAkkaConfiguretion() : 
-            base(new AkkaNetworkAddress("GridConsole","localhost",8090),
+            base(new AkkaNetworkAddress("GridConsole","127.0.0.1",8090),
                  new ConsoleDbConfig())
         {
+        }
+    }
+
+    public class TestCommand : Command
+    {
+        public TestCommand()
+        {
+            
         }
     }
     /// <summary>
@@ -41,10 +50,16 @@ namespace GridDomain.Tools
         private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan DefaultCommandExecutionTimeout = TimeSpan.FromSeconds(10);
         private NodeCommandExecutor _commandExecutor;
+        private readonly string _remoteSystemSelectionPath;
 
         public GridConsole(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
+            :this(serverAddress.ToSelectionPath(), clientConfiguration)
         {
-            _server = serverAddress;
+        }
+
+        public GridConsole(string remoteSystemSelectionPath, AkkaConfiguration clientConfiguration = null)
+        {
+            _remoteSystemSelectionPath = remoteSystemSelectionPath;
 
             var conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
 
@@ -53,28 +68,28 @@ namespace GridDomain.Tools
 
         public void Connect()
         {
-            // +this.Self.Path  {
-         //   +this.Self.Path  {
-           //     akka://LocalSystem/user/GridNodeController}	Akka.Actor.ActorPath {Akka.Actor.ChildActorPath}
+            var controllerActorPath = $"{_remoteSystemSelectionPath}{typeof(GridNodeController).Name}";
 
-                //     akka://LocalSystem/user/GridNodeController}	Akka.Actor.ActorPath {Akka.Actor.ChildActorPath}
-                //  var controllerActorPath = $"akka.tcp://{_server.SystemName}@{_server.Host}:{_server.PortNumber}/user/{typeof(GridNodeController).Name}";
-                var controllerActorPath = $"akka.tcp://{_server.SystemName}@{_server.Host}:{_server.PortNumber}/user/{typeof(GridNodeController).Name}";
-
-            var pathA = new string[]
+            var pathA = new []
             {
+                controllerActorPath,
                 @"akka.tcp://LocalSystem@localhost:8080/user/GridNodeController",
-                @"akka.tcp://LocalSystem:8080/user/GridNodeController",
-                @"akka.tcp://LocalSystem@127.0.0.1:8080/user/GridNodeController",
-                @"akka://LocalSystem/user/GridNodeController",
                 @"akka.tcp://LocalSystem@localhost:8080/user",
+                @"akka.tcp://LocalSystem@localhost:8080",
+                @"akka.tcp://LocalSystem@localhost:8080/user/gridnodecontroller",
+                @"akka.tcp://LocalSystem@127.0.0.1:8080/user/GridNodeController",
+                @"akka.tcp://LocalSystem@127.0.0.1:8080/user/gridnodecontroller",
+                @"akka.tcp://LocalSystem@127.0.0.1:8080/user",
+                @"akka.tcp://LocalSystem@127.0.0.1:8080"
             };
 
             foreach (var path in pathA)
             {
                 try
                 {
-                    var ctr = _system.ActorSelection(path).Anchor;
+                     _system.ActorSelection(path).Tell(new TestCommand());
+                    Thread.Sleep(1);
+                    var ctr = _system.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(5)).Result;
                     Console.WriteLine("Got actor by path " + path);
                 }
                 catch (Exception ex)
@@ -84,8 +99,6 @@ namespace GridDomain.Tools
             }
 
             var nodeControllerSelection = _system.ActorSelection(controllerActorPath);
-
-
 
              _nodeController = nodeControllerSelection.Anchor;
 
