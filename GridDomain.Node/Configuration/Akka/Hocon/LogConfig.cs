@@ -20,7 +20,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 loglevel=" + _logLevel;
 
             logConfig += @"
-                loggers=[""GridDomain.Node.SerilogExtendedLogger, GridDomain.Node""]
+                loggers=["""+typeof(SerilogExtendedLogger).ToAssemblyQualifiedShortName() + @"""]
 
                 actor.debug {
                       receive = on

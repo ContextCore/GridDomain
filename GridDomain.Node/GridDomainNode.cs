@@ -43,7 +43,8 @@ namespace GridDomain.Node
         private readonly IMessageRouteMap _messageRouting;
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
-        public TimeSpan CommandTimeout { get; set; } = DefaultCommandTimeout;
+
+        private readonly TimeSpan _commandTimeout;
         public static readonly TimeSpan DefaultCommandTimeout = TimeSpan.FromSeconds(30);
 
         private Quartz.IScheduler _quartzScheduler;
@@ -95,7 +96,8 @@ namespace GridDomain.Node
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               Func<ActorSystem[]> actorSystemFactory,
-                              IQuartzConfig quartzConfig)
+                              IQuartzConfig quartzConfig,
+                              TimeSpan? commandTimeout = null)
         {
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
@@ -104,6 +106,7 @@ namespace GridDomain.Node
                                                     new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                     );
+            _commandTimeout = commandTimeout ?? DefaultCommandTimeout;
             Container = new UnityContainer();
         }
 
@@ -195,7 +198,7 @@ namespace GridDomain.Node
 
             _log.Info($"GridDomain node {Id} started at home '{actorSystem.Settings.Home}'");
 
-            _commandExecutor = new NodeCommandExecutor(_nodeController,CommandTimeout);
+            _commandExecutor = new NodeCommandExecutor(_nodeController,_commandTimeout);
         }
 
         public void Execute(params ICommand[] commands)
