@@ -1,16 +1,10 @@
 using System;
 using System.Linq;
-using System.Threading;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.TestKit.NUnit;
-using CommonDomain;
-using CommonDomain.Core;
-using GridDomain.EventSourcing;
-using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Configuration.Akka;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Repositories
 {
     //Using testKit to easily locate all actor system exeptions 
     public class AkkaEventRepository : TestKit, IEventRepository

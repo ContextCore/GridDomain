@@ -14,6 +14,7 @@ using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SynchroniousCommandExecute;
 using GridDomain.Tools;
+using GridDomain.Tools.Console;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -63,7 +64,7 @@ namespace GridDomain.Tests.Tools.Console
         [Then]
         public void NodeController_is_located()
         {
-            Assert.NotNull(_console._nodeController);
+            Assert.NotNull(_console.NodeController);
         }
 
         [Then]

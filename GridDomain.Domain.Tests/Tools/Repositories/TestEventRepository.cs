@@ -1,5 +1,6 @@
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
+using GridDomain.Tools.Repositories;
 
 namespace GridDomain.Tests.Tools
 {

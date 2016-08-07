@@ -3,6 +3,7 @@ using System.Linq;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
+using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Tools

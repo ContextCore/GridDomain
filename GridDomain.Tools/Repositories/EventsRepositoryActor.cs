@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using Akka;
 using Akka.Actor;
 using Akka.Persistence;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Repositories
 {
     public class EventsRepositoryActor : ReceivePersistentActor
     {

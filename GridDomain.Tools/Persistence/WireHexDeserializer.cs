@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Persistence
 {
-    class SqlJournalWireDeserializer
+    class WireHexDeserializer
     {
-        public T Deserialize<T>(string Wire_sqlHexString)
+        public T Deserialize<T>(string wireSerializedHexString)
         {
-            var bytes = HexStringToByteArray(Wire_sqlHexString);
+            var bytes = HexStringToByteArray(wireSerializedHexString);
 
             return Deserialize<T>(bytes);
         }
@@ -29,7 +29,7 @@ namespace GridDomain.Tools
                 .ToArray();
         }
 
-        public static string ByteArrayToString(byte[] ba)
+        public static string ByteArrayToHexString(byte[] ba)
         {
             string hex = BitConverter.ToString(ba);
             return hex.Replace("-", "");

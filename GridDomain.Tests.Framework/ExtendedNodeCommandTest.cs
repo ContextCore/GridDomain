@@ -12,6 +12,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
+using GridDomain.Tools.Repositories;
 
 namespace GridDomain.Tests.Framework
 {
