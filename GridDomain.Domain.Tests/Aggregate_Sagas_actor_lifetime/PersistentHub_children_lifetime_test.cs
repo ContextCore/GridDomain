@@ -23,10 +23,10 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         protected override IContainerConfiguration CreateConfiguration()
         {
             return  new CustomContainerConfiguration(c => c.Register(base.CreateConfiguration()),
-              c => c.RegisterStateSaga<GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
+              c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
                                        SoftwareProgrammingSagaState,
                                        GotTiredEvent,
-                                       GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>());
+                                       Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>());
         }
 
         protected void When_hub_creates_a_child()
@@ -55,7 +55,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             switch (_case)
             {
                     case PersistentHubTestsStatus.PersistenceCase.Aggregate:
-                                Infrastructure = new AggregatePersistedHub_Infrastructure(GridNode.System);
+                    Infrastructure = new AggregatePersistedHub_Infrastructure(GridNode.System);
                     break;
 
                 case PersistentHubTestsStatus.PersistenceCase.IstanceSaga:

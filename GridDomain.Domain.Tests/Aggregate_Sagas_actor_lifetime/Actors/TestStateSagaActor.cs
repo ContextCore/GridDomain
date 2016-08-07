@@ -1,3 +1,4 @@
+using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -7,22 +8,38 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
+
+    abstract class TestHubActor : PersistentHubActor
+    {
+        public TestHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, 
+                            string counterName,
+                            IActorRef observer) : base(recycleConfiguration, counterName)
+        {
+        }
+    }
+
     class TestStateSagaActor : SagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, GotTiredEvent>
     {
+        private readonly IActorRef _observer;
+
         protected override void PreStart()
         {
             base.PreStart();
-            PersistentHubTestsStatus.ChildExistence.Add(Id);
+            _observer.Tell(new ChildCreated(Id));
         }
 
         protected override void Shutdown()
         {
-            PersistentHubTestsStatus.ChildExistence.Remove(Id);
+            _observer.Tell(new ChildTerminated(Id));
             base.Shutdown();
         }
 
-        public TestStateSagaActor(ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent> sagaStarter, ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, AggregateFactory aggregateFactory, IPublisher publisher) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
+        public TestStateSagaActor(ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent> sagaStarter, 
+            ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, 
+            AggregateFactory aggregateFactory, IPublisher publisher,
+            IActorRef observer) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
         {
+            _observer = observer;
         }
     }
 }

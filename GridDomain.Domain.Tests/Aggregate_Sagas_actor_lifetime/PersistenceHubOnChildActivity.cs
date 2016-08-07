@@ -4,9 +4,7 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
-    [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
-    [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
     class PersistenceHubOnChildActivity : PersistentHub_children_lifetime_test
     {
         private DateTime _initialTimeToLife;
@@ -18,7 +16,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             _initialTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
 
             //TODO: replace sleep with dateTime manipulations via DateTimeFacade
-            Thread.Sleep(2000);
+            Thread.Sleep(500);
 
             And_command_for_child_is_sent();
         }

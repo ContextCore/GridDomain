@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Framework
                 Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(o);
+                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
         }
     }
 }
