@@ -16,7 +16,7 @@ namespace GridDomain.Node.Actors
         public MessageHandlingActor(THandler handler)
         {
             _handler = handler;
-            _log.Trace("Created message handler actor {Type}", GetType());
+            _log.Trace("Created message handler actor {Type}", GetType().Name);
             _monitor = new ActorMonitor(Context,typeof(THandler).Name);
         }
 
