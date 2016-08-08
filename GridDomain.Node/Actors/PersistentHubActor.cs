@@ -64,7 +64,8 @@ namespace GridDomain.Node.Actors
                 var childActorType = GetChildActorType(message);
 
                 //TODO: think how to recover child create failure
-                var props = Context.DI().Props(childActorType);
+                var diActorContextAdapter = Context.DI();
+                var props = diActorContextAdapter.Props(childActorType);
                 var childActorRef = Context.ActorOf(props, name);
 
                 knownChild = new ChildInfo(childActorRef);
