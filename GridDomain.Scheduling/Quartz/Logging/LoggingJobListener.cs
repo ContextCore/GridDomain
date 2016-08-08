@@ -11,17 +11,17 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void JobToBeExecuted(IJobExecutionContext context)
         {
-            _log.Debug($"Job {context.JobDetail.Key} is about to be executed");
+            _log.Debug("Job {JobKey} is about to be executed", context.JobDetail.Key);
         }
 
         public void JobExecutionVetoed(IJobExecutionContext context)
         {
-            _log.Debug($"Job {context.JobDetail.Key} execution vetoed");
+            _log.Debug("Job {JobKey} execution vetoed", context.JobDetail.Key);
         }
 
         public void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {
-            _log.Debug($"Job {context.JobDetail.Key} was executed");
+            _log.Debug("Job {JobKey} was executed", context.JobDetail.Key);
         }
     }
 }

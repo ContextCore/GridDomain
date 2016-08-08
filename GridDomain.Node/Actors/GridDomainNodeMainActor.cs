@@ -34,7 +34,7 @@ namespace GridDomain.Node.Actors
             _subscriber = subscriber;
             _messageRouting = messageRouting;
             _messagePublisher = transport;
-            _log.Debug($"Actor {GetType().Name} was created on: {Self.Path}.");
+            _log.Debug("Actor {Type} was created on: {Path}.", GetType().Name, Self.Path);
             _monitor = new ActorMonitor(Context);
         }
 
@@ -42,18 +42,18 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementMessagesReceived();
 
-            _log.Debug($"Actor {GetType().Name} is initializing");
+            _log.Debug("Actor {Type} is initializing", GetType().Name);
 
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
-            _log.Debug($"Actor {GetType().Name} is initializing routes");
+            _log.Debug("Actor {Type} is initializing routes", GetType().Name);
             var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
             _messageRouting.Register(actorMessagesRouter);
 
             //TODO: replace with message from router
             Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);
-            _log.Debug($"Actor {GetType().Name} finished routes initialization");
+            _log.Debug("Actor {Type} finished routes initialization", GetType().Name);
         }
 
         public void Handle(ICommand cmd)

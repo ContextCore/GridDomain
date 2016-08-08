@@ -23,13 +23,13 @@ namespace BusinessNews.Domain.AccountAggregate
 
         public void Handle(CreateAccountCommand msg)
         {
-            _log.Debug("Handling command:" + msg.ToPropsString());
+            _log.Debug("Handling command: {Command}", msg.ToPropsString());
             _repository.Save(new Account(msg.AccountId, msg.BusinessId), msg.Id);
         }
 
         public void Handle(PayForBillCommand msg)
         {
-            _log.Debug("Handling command:" + msg.ToPropsString());
+            _log.Debug("Handling command:  {Command}", msg.ToPropsString());
             var account = LoadAccount(msg.AccountId, msg.Id);
             account.PayBill(msg.Amount, msg.BillId);
             _repository.Save(account, msg.Id);
@@ -37,7 +37,7 @@ namespace BusinessNews.Domain.AccountAggregate
 
         public void Handle(ReplenishAccountByCardCommand msg)
         {
-            _log.Debug("Handling command:" + msg.ToPropsString());
+            _log.Debug("Handling command: {Command}", msg.ToPropsString());
             var account = LoadAccount(msg.AccountId, msg.Id);
             account.Replenish(msg.Amount);
             _repository.Save(account, Guid.NewGuid());
