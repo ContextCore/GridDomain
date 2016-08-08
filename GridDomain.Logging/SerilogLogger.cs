@@ -19,9 +19,9 @@ namespace GridDomain.Logging
             return this;
         }
 
-        public void Trace(string message)
+        public void Trace(string message, params object[] parameters)
         {
-            ContextLogger.Verbose(message);
+            ContextLogger.Verbose(message, parameters);
         }
 
         public void Debug(string message, params object[] parameters)

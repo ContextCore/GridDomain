@@ -16,14 +16,14 @@ namespace GridDomain.Node.Actors
         public MessageHandlingActor(THandler handler)
         {
             _handler = handler;
-            _log.Trace($"Created message handler actor {GetType()}");
+            _log.Trace("Created message handler actor {Type}", GetType());
             _monitor = new ActorMonitor(Context,typeof(THandler).Name);
         }
 
         protected override void OnReceive(object msg)
         {
             _monitor.IncrementMessagesReceived();
-            _log.Trace($"Handler actor got message: {msg.ToPropsString()}");
+            _log.Trace("Handler actor got message: {Message}", msg.ToPropsString());
             _handler.Handle((TMessage)msg);
         }
 

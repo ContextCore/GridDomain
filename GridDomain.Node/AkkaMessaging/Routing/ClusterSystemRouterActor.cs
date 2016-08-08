@@ -28,7 +28,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         public void Handle(SubscribeToRouteEstanblish msg)
         {
             _subscriptionWaiter = msg.Subscriber;
-            Sender.Tell(new SubscribeToRouteEstanblishAck {Subscriber = msg.Subscriber});
+            Sender.Tell(new SubscribeToRouteEstanblishAck { Subscriber = msg.Subscriber });
         }
 
 
@@ -36,7 +36,8 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             _subscriptionWaiter?.Tell(msg);
             _log.Trace(
-                $"Subscription was successfull for topic {msg.Subscribe.Topic} group {msg.Subscribe.Group} path {msg.Subscribe.Ref.Path}");
+                "Subscription was successfull for topic {Topic} group {Group} path {Path}",
+                msg.Subscribe.Topic, msg.Subscribe.Group, msg.Subscribe.Ref.Path);
         }
 
         public class SubscribeToRouteEstanblishAck

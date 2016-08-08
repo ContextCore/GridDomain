@@ -33,20 +33,20 @@ namespace BusinessNews.Domain.AccountAggregate
 
         private void Apply(AccountBalanceReplenishEvent e)
         {
-            _log.Trace($"Balance {Id} with amount {Amount} increased from event by {e.Amount}");
+            _log.Trace("Balance {Id} with amount {AccountAmount} increased from event by {EventAmount}", Id, Amount, e.Amount);
             Amount += e.Amount;
         }
 
         private void Apply(PayedForBillEvent e)
         {
-            _log.Trace($"Balance {Id} with amount {Amount} decreased from event by {e.Amount}");
+            _log.Trace("Balance {Id} with amount {Amount} decreased from event by {EventAmount}", Id, Amount, e.Amount);
             Amount -= e.Amount;
         }
 
         public void Replenish(Money m)
         {
             GuardNegativeMoney(m, "Cant replenish negative amount of money.");
-            _log.Trace($"Balance {Id} with amount {Amount} going to increase from command by {m.Amount}");
+            _log.Trace("Balance {Id} with amount {Amount} going to increase from command by {CommandAmount}", Id, Amount, m.Amount);
             var balanceReplenishEvent = new AccountBalanceReplenishEvent(Id, m);
             RaiseEvent(balanceReplenishEvent);
         }
