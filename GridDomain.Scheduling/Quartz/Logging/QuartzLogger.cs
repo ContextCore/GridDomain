@@ -15,12 +15,12 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void LogSuccess(string jobName)
         {
-            _coreLogger.Info($"Job {jobName} sucessfully finished");
+            _coreLogger.Info("Job {JobName} sucessfully finished", jobName);
         }
 
         public void LogFailure(string jobName, Exception e)
         {
-            _coreLogger.Error(e, $"Job {jobName} got an error");
+            _coreLogger.Error(e, "Job {JobName} got an error", jobName);
         }
     }
 }

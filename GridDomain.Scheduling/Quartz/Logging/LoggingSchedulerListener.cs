@@ -9,72 +9,72 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void JobScheduled(ITrigger trigger)
         {
-            _log.Info($"Job {trigger.JobKey} scheduled for next execution {trigger.GetNextFireTimeUtc()}");
+            _log.Info("Job {JobKey} scheduled for next execution {NextFireTime}", trigger.JobKey, trigger.GetNextFireTimeUtc());
         }
 
         public void JobUnscheduled(TriggerKey triggerKey)
         {
-            _log.Info($"Trigger {triggerKey} unscheduled ");
+            _log.Info("Trigger {TriggerKey} unscheduled ", triggerKey);
         }
 
         public void TriggerFinalized(ITrigger trigger)
         {
-            _log.Info($"Trigger {trigger.Key} for job {trigger.JobKey} finalized and won`t fire again");
+            _log.Info("Trigger {TriggerKey}  for job {JobKey} finalized and won`t fire again", trigger.Key,trigger.JobKey );
         }
 
         public void TriggerPaused(TriggerKey triggerKey)
         {
-            _log.Info($"Trigger {triggerKey} paused");
+            _log.Info("Trigger {TriggerKey} paused", triggerKey);
         }
 
         public void TriggersPaused(string triggerGroup)
         {
-            _log.Info($"Triggers in group {triggerGroup} paused");
+            _log.Info("Triggers in group {TriggerGroup} paused", triggerGroup);
         }
 
         public void TriggerResumed(TriggerKey triggerKey)
         {
-            _log.Info($"Trigger {triggerKey} resumed");
+            _log.Info("Trigger {TriggerKey} resumed", triggerKey);
         }
 
         public void TriggersResumed(string triggerGroup)
         {
-            _log.Info($"Triggers in group {triggerGroup} resumed");
+            _log.Info("Triggers in group {TriggerGroup} resumed", triggerGroup);
         }
 
         public void JobAdded(IJobDetail jobDetail)
         {
-            _log.Info($"Job {jobDetail.Key} added");
+            _log.Info("Job {JobKey} added", jobDetail.Key);
         }
 
         public void JobDeleted(JobKey jobKey)
         {
-            _log.Info($"Job {jobKey} deleted");
+            _log.Info("Job {JobKey} deleted", jobKey);
         }
 
         public void JobPaused(JobKey jobKey)
         {
-            _log.Info($"Job {jobKey} paused");
+            _log.Info("Job {JobKey} paused", jobKey);
         }
 
         public void JobsPaused(string jobGroup)
         {
-            _log.Info($"Jobs in group {jobGroup} paused");
+            _log.Info("Jobs in group {JobGroup} paused", jobGroup);
         }
 
         public void JobResumed(JobKey jobKey)
         {
-            _log.Info($"Job {jobKey} resumed");
+            _log.Info("Job {JobKey} resumed", jobKey);
         }
 
         public void JobsResumed(string jobGroup)
         {
-            _log.Info($"Jobs in group {jobGroup} resumed");
+            _log.Info("Jobs in group {JobGroup} resumed", jobGroup);
         }
 
         public void SchedulerError(string msg, SchedulerException cause)
         {
-            _log.Error(cause, $"Scheduler error {msg}");
+            _log.Error(cause, "Scheduler error {message}",msg);
         }
 
         public void SchedulerInStandbyMode()

@@ -51,7 +51,7 @@ namespace GridDomain.Scheduling.Integration
                    .Permit(Transitions.SendMessage, States.MessageSent)
                    .OnExit(() => Dispatch(new CompleteJob(State.Key.Name, State.Key.Group)));
 
-            var messageSent   = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
+            var messageSent = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
             var faultsTrigger = RegisterEvent<ICommandFault>(Transitions.Failure);
             var eventrTrigger = RegisterEvent<DomainEvent>(Transitions.Success);
 
@@ -64,7 +64,7 @@ namespace GridDomain.Scheduling.Integration
 
             Machine
                 .Configure(States.SuccessfullyProcessed)
-                .OnEntryFrom(eventrTrigger, domainEvent => { _log.Info($"Scheduled command successfully processed {domainEvent.SagaId}"); });
+                .OnEntryFrom(eventrTrigger, domainEvent => { _log.Info("Scheduled command successfully processed {SagaId}", domainEvent.SagaId); });
 
             Machine
                 .Configure(States.MessageSent)
