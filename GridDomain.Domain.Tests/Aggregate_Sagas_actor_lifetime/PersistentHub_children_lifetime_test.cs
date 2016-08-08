@@ -1,6 +1,8 @@
+using System;
 using System.Threading;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure;
 using GridDomain.Tests.Sagas.InstanceSagas;
@@ -14,7 +16,6 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
     {
         protected IPersistentActorTestsInfrastructure Infrastructure;
         private readonly PersistentHubTestsStatus.PersistenceCase _case;
-
         public PersistentHub_children_lifetime_test(PersistentHubTestsStatus.PersistenceCase @case)
         {
             _case = @case;
@@ -31,7 +32,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 
         protected void When_hub_creates_a_child()
         {
-            Infrastructure.Hub.Tell(Infrastructure.ChildCreateMessage);
+            HubRef.Tell(Infrastructure.ChildCreateMessage);
             Thread.Sleep(50);
         }
 
@@ -42,16 +43,15 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 
         protected void And_command_for_child_is_sent()
         {
-            Infrastructure.Hub.Tell(Infrastructure.ChildActivateMessage);
+            HubRef.Tell(Infrastructure.ChildActivateMessage);
             Thread.Sleep(100);
         }
 
+        public PersistentHubActor Hub;
+        public IActorRef HubRef => (IActorRef) Hub;
         [SetUp]
         public void Clear_child_lifetimes()
         {
-            PersistentHubTestsStatus.ChildTerminationTimes.Clear();
-            PersistentHubTestsStatus.ChildExistence.Clear();
-
             switch (_case)
             {
                     case PersistentHubTestsStatus.PersistenceCase.Aggregate:
@@ -68,6 +68,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
                 default: 
                     throw new UnknownCaseException();
             }
+            Hub = ActorOfAsTestActorRef<PersistentHubActor>(Infrastructure.HubProps, "TestHub_" + Guid.NewGuid()).UnderlyingActor;
         }
     }
 }

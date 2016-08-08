@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors
     /// </summary>
     public abstract class PersistentHubActor: UntypedActor
     {
-        protected readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
+        internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
         //TODO: replace with more efficient implementation
         protected virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;

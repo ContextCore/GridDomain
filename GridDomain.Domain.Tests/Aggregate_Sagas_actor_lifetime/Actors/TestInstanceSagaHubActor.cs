@@ -24,28 +24,6 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
         {
             return typeof(TestInstanceSagaActor);
         }
-
-        protected override void Clear()
-        {
-            base.Clear();
-            foreach (var child in Children)
-                SetChildLifetimeInformation(child.Key);
-            _observer.Tell(new ClearComplete());
-        }
-
-        protected override void OnReceive(object message)
-        {
-            base.OnReceive(message);
-            SetChildLifetimeInformation(GetChildActorId(message));
-        }
-
-        private void SetChildLifetimeInformation(Guid id)
-        {
-            ChildInfo childInfo;
-            if (!Children.TryGetValue(id, out childInfo)) return;
-            _observer.Tell(new ChildLifeTimeChanged(id, childInfo.LastTimeOfAccess + ChildMaxInactiveTime));
-        }
-
         protected override TimeSpan ChildClearPeriod { get; } = PersistentHubTestsStatus.ChildClearTime;
         protected override TimeSpan ChildMaxInactiveTime { get; } = PersistentHubTestsStatus.ChildMaxLifetime;
     }

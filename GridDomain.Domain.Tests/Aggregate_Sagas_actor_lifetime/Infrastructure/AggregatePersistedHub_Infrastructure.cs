@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
 {
     class AggregatePersistedHub_Infrastructure : IPersistentActorTestsInfrastructure
     {
-        public IActorRef Hub { get; }
+        public Props HubProps { get; }
         public object ChildCreateMessage { get; }
         public object ChildActivateMessage { get; }
         public Guid ChildId { get; }
@@ -18,8 +18,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
             ChildId = Guid.NewGuid();
             ChildCreateMessage = new CreateSampleAggregateCommand(42, ChildId, ChildId);
             ChildActivateMessage = new ChangeSampleAggregateCommand(100, ChildId);
-            var hubProps = system.DI().Props<TestAggregateHub>();
-            Hub = system.ActorOf(hubProps, $"TestHub_{ChildId}");
+            HubProps = system.DI().Props<TestAggregateHub>();
         }
     }
 }

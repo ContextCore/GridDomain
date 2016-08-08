@@ -15,16 +15,10 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
     {
         private readonly IActorRef _observer;
 
-        protected override void PreStart()
+        protected override bool Receive(object message)
         {
-            base.PreStart();
-            _observer.Tell(new ChildCreated(Id));
-        }
-
-        protected override void Shutdown()
-        {
-            _observer.Tell(new ChildTerminated(Id));
-            base.Shutdown();
+            _observer.Tell(message); //echo for testing purpose
+            return base.Receive(message);
         }
 
         public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent> sagaStarter, ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory, AggregateFactory aggregateFactory,

@@ -11,28 +11,6 @@ using GridDomain.Tests.SampleDomain;
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
 
-    internal class ChildCreated
-    {
-        public object Id { get; set; }
-
-        public ChildCreated(object id)
-        {
-            Id = id;
-        }
-    }
-
-
-
-    internal class ChildTerminated
-    {
-        public Guid Id { get; set; }
-
-        public ChildTerminated(Guid id)
-        {
-            Id = id;
-        }
-    }
-
     class TestAggregateActor : AggregateActor<SampleAggregate>
     {
         private readonly IActorRef _observer;
@@ -47,19 +25,10 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
             _observer = observer;
         }
 
-        protected override void PreStart()
+        protected override bool Receive(object message)
         {
-            base.PreStart();
-            _observer.Tell(new ChildCreated(Id));
+            _observer.Tell(message); //echo for testing purpose
+            return base.Receive(message);
         }
-
-
-
-        protected override void Shutdown()
-        {
-            _observer.Tell(new ChildTerminated(Id));
-            base.Shutdown();
-        }
-
     }
 }
