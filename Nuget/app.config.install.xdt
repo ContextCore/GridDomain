@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ??>
+<?xml version="1.0"?>
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
 	<configSections>
 		<section name="appinsights" type="GridDomain.Node.AppInsightsConfigSection, GridDomain.Node"  xdt:Transform="InsertIfMissing"/>
