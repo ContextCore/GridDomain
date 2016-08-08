@@ -27,7 +27,6 @@ namespace GridDomain.Node
     /// 4) Register event adapter 
     /// </summary>
 
-
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
         public static readonly EventAdaptersCatalog UpgradeChain = new EventAdaptersCatalog();

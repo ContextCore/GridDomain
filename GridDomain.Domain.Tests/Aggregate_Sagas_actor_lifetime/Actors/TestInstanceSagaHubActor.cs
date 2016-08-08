@@ -13,18 +13,13 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
         SagaDataAggregate<SoftwareProgrammingSagaData>,
         GotTiredEvent>
     {
-        private readonly IActorRef _observer;
-
-        public TestInstanceSagaHubActor(IPublisher publisher, IPersistentChildsRecycleConfiguration conf, IActorRef observer) : base(publisher, conf)
+        public TestInstanceSagaHubActor(IPublisher publisher) : base(publisher, new TestPersistentChildsRecycleConfiguration())
         {
-            _observer = observer;
         }
 
         protected override Type GetChildActorType(object message)
         {
             return typeof(TestInstanceSagaActor);
         }
-        protected override TimeSpan ChildClearPeriod { get; } = PersistentHubTestsStatus.ChildClearTime;
-        protected override TimeSpan ChildMaxInactiveTime { get; } = PersistentHubTestsStatus.ChildMaxLifetime;
     }
 }

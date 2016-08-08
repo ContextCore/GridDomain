@@ -17,8 +17,8 @@ namespace GridDomain.Node.Actors
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
         //TODO: replace with more efficient implementation
-        protected virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
-        protected virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
+        internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
+        internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
@@ -30,10 +30,10 @@ namespace GridDomain.Node.Actors
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
         }
 
-        protected virtual void Clear()
+        private void Clear()
         {
            var now = BusinessDateTime.UtcNow;
-           var childsToTerminate = Children.Where(c => now - c.Value.LastTimeOfAccess > ChildMaxInactiveTime)
+           var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt)
                                            .Select(ch => ch.Key).ToArray();
 
            foreach (var childId in childsToTerminate)
@@ -71,7 +71,8 @@ namespace GridDomain.Node.Actors
                 Children[childId] = knownChild;
             }
 
-            Children[childId].LastTimeOfAccess = DateTimeFacade.UtcNow;
+            knownChild.LastTimeOfAccess = DateTimeFacade.UtcNow;
+            knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
             knownChild.Ref.Tell(message);
         }
 

@@ -1,4 +1,6 @@
 using System;
+using GridDomain.Common;
+using GridDomain.Node.Actors;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
@@ -15,24 +17,17 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         }
 
         [Then]
-        public void Time_to_life_can_differs_by_check_time()
+        public void Time_to_life_is_set_and_can_differs_by_check_time()
         {
-           // var childTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
-
-           // Assert.GreaterOrEqual(childTimeToLife - DateTime.UtcNow,approximateTimeToLife);
+            Assert.GreaterOrEqual(Child.ExpiresAt - BusinessDateTime.UtcNow, Hub.ChildMaxInactiveTime - Hub.ChildClearPeriod);
         }
+
+        private ChildInfo Child => Hub.Children[Infrastructure.ChildId];
 
         [Then]
         public void Time_to_life_is_limited()
         {
-          // var  childTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
-         //   Assert.LessOrEqual(childTimeToLife - DateTime.UtcNow, PersistentHubTestsStatus.ChildMaxLifetime);
-        }
-
-        [Then]
-        public void It_should_be_written_in_static_result_holders()
-        {
-          //  Assert.True(PersistentHubTestsStatus.ChildTerminationTimes.ContainsKey(Infrastructure.ChildId));
+            Assert.LessOrEqual(Child.ExpiresAt - BusinessDateTime.UtcNow, Hub.ChildMaxInactiveTime);
         }
 
         public PersistenceHubOnChildCreation(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)

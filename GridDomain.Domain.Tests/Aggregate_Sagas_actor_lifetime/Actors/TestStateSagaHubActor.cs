@@ -8,14 +8,12 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestStateSagaHubActor : SagaHubActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState,GotTiredEvent>
     {
-        public TestStateSagaHubActor(IPublisher publisher, IPersistentChildsRecycleConfiguration conf) : base(publisher, conf)
+        public TestStateSagaHubActor(IPublisher publisher) : base(publisher, new TestPersistentChildsRecycleConfiguration())
         {
         }
         protected override Type GetChildActorType(object message)
         {
             return typeof(TestStateSagaActor);
         }
-        protected override TimeSpan ChildClearPeriod { get; } = PersistentHubTestsStatus.ChildClearTime;
-        protected override TimeSpan ChildMaxInactiveTime { get; } = PersistentHubTestsStatus.ChildMaxLifetime;
     }
 }

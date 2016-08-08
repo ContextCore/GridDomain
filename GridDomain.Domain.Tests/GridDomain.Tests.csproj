@@ -231,6 +231,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaHubActor.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaActor.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaHubActor.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />

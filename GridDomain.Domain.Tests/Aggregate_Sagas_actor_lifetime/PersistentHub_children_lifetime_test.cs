@@ -9,6 +9,7 @@ using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using NUnit.Framework;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
@@ -24,10 +25,15 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         protected override IContainerConfiguration CreateConfiguration()
         {
             return  new CustomContainerConfiguration(c => c.Register(base.CreateConfiguration()),
-              c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
-                                       SoftwareProgrammingSagaState,
-                                       GotTiredEvent,
-                                       Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>());
+                                                     c => c.RegisterInstance(TestActor),
+                                                     c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
+                                                                              SoftwareProgrammingSagaState,
+                                                                              GotTiredEvent,
+                                                                              Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>());
+        }
+
+        protected override void AfterAll()
+        {
         }
 
         protected void When_hub_creates_a_child()
@@ -47,8 +53,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             Thread.Sleep(100);
         }
 
-        public PersistentHubActor Hub;
-        public IActorRef HubRef => (IActorRef) Hub;
+        protected PersistentHubActor Hub;
+        protected IActorRef HubRef;
+
         [SetUp]
         public void Clear_child_lifetimes()
         {
@@ -58,17 +65,19 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
                     Infrastructure = new AggregatePersistedHub_Infrastructure(GridNode.System);
                     break;
 
-                case PersistentHubTestsStatus.PersistenceCase.IstanceSaga:
-                    Infrastructure = new InstanceSagaPersistedHub_Infrastructure(GridNode.System);
-                    break;
+                     case PersistentHubTestsStatus.PersistenceCase.IstanceSaga:
+                         Infrastructure = new InstanceSagaPersistedHub_Infrastructure(GridNode.System);
+                         break;
 
-                case PersistentHubTestsStatus.PersistenceCase.StateSaga:
-                    Infrastructure = new StateSagaPersistedHub_Infrastructure(GridNode.System);
-                    break;
-                default: 
+                     case PersistentHubTestsStatus.PersistenceCase.StateSaga:
+                         Infrastructure = new StateSagaPersistedHub_Infrastructure(GridNode.System);
+                         break;
+                     default: 
                     throw new UnknownCaseException();
             }
-            Hub = ActorOfAsTestActorRef<PersistentHubActor>(Infrastructure.HubProps, "TestHub_" + Guid.NewGuid()).UnderlyingActor;
+            var actorOfAsTestActorRef = ActorOfAsTestActorRef<PersistentHubActor>(Infrastructure.HubProps, "TestHub_" + Guid.NewGuid());
+            Hub = actorOfAsTestActorRef.UnderlyingActor;
+            HubRef = actorOfAsTestActorRef.Ref;
         }
     }
 }

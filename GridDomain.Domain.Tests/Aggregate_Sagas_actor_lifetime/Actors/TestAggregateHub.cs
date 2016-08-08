@@ -8,8 +8,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestAggregateHub : AggregateHubActor<SampleAggregate>
     {
-        public TestAggregateHub(ICommandAggregateLocator<SampleAggregate> locator,
-                                IPersistentChildsRecycleConfiguration conf) : base(locator,conf)
+        public TestAggregateHub(ICommandAggregateLocator<SampleAggregate> locator) : base(locator,new TestPersistentChildsRecycleConfiguration())
         {
         }
 
@@ -17,8 +16,5 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
         {
             return typeof(TestAggregateActor);
         }
-    
-        protected override TimeSpan ChildClearPeriod { get; } = PersistentHubTestsStatus.ChildClearTime;
-        protected override TimeSpan ChildMaxInactiveTime { get; } = PersistentHubTestsStatus.ChildMaxLifetime;
     }
 }
