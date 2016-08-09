@@ -22,8 +22,8 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         [Then]
         public void It_should_be_restored_after_command_execution()
         {
-            var ping = "child ping";
-            Assert.AreEqual(ping, Child.Ref.Ask(ping, TimeSpan.FromSeconds(1)).Result);
+            var payload = "child ping";
+            Assert.AreEqual(payload, PingChild(payload).Payload);
         }
 
         [Then]

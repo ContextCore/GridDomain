@@ -1,3 +1,4 @@
+using Akka;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -13,21 +14,16 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
         SagaDataAggregate<SoftwareProgrammingSagaData>,
         GotTiredEvent>
     {
-        private readonly IActorRef _observer;
-
         protected override bool Receive(object message)
         {
             //echo for testing purpose
-            _observer.Tell(message);
-            Sender.Tell(message);
+            message.Match().With<Ping>(m => Sender.Tell(new Pong(m.Payload)));
             return base.Receive(message);
         }
 
         public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent> sagaStarter, ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory, AggregateFactory aggregateFactory,
-            IPublisher publisher,
-            IActorRef observer) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
+            IPublisher publisher) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
         {
-            _observer = observer;
         }
     }
 }

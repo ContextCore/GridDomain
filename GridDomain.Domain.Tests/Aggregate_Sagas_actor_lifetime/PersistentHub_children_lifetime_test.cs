@@ -10,6 +10,7 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Sagas.InstanceSagas;
@@ -34,7 +35,6 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         protected IContainerConfiguration CreateConfiguration()
         {
             return  new CustomContainerConfiguration(
-                                                     c => c.RegisterInstance(TestActor),
                                                      c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
                                                                               SoftwareProgrammingSagaState,
                                                                               GotTiredEvent,
@@ -66,7 +66,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         protected void And_command_for_child_is_sent()
         {
             HubRef.Tell(Infrastructure.ChildActivateMessage);
-            Thread.Sleep(100);
+            Thread.Sleep(200);
         }
 
         protected PersistentHubActor Hub;
@@ -74,6 +74,11 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         private GridDomainNode _gridDomainNode;
         protected ChildInfo Child => Hub.Children[Infrastructure.ChildId];
 
+        protected Pong PingChild(string payload)
+        {
+            var pong = Child.Ref.Ask(new Ping(payload), TimeSpan.FromSeconds(1)).Result as Pong;
+            return pong;
+        }
 
         [SetUp]
         public void Clear_child_lifetimes()

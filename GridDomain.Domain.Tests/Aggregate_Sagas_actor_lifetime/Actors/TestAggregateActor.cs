@@ -1,4 +1,5 @@
 using System;
+using Akka;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -10,27 +11,43 @@ using GridDomain.Tests.SampleDomain;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
+    class Ping
+    {
+        public object Payload { get; }
+
+        public Ping(object payload)
+        {
+            Payload = payload;
+        }
+    }
+
+    class Pong
+    {
+        public Pong(object payload)
+        {
+            Payload = payload;
+        }
+
+        public object Payload { get; }
+    }
 
     class TestAggregateActor : AggregateActor<SampleAggregate>
     {
-        private readonly IActorRef _observer;
-
         public TestAggregateActor(IAggregateCommandsHandler<SampleAggregate> handler, 
                                   AggregateFactory factory, 
                                   TypedMessageActor<ScheduleCommand> schedulerActorRef, 
                                   TypedMessageActor<Unschedule> unscheduleActorRef, 
-                                  IPublisher publisher,
-                                  IActorRef observer) : base(handler, factory, schedulerActorRef, unscheduleActorRef, publisher)
+                                  IPublisher publisher) : base(handler, factory, schedulerActorRef, unscheduleActorRef, publisher)
         {
-            _observer = observer;
         }
 
         protected override bool Receive(object message)
         {
             //echo for testing purpose
-            _observer.Tell(message); 
-            Sender.Tell(message);
-            return base.Receive(message);
+           message.Match().With<Ping>(m => Sender.Tell(new Pong(m.Payload)));
+           return base.Receive(message);
         }
+
+        
     }
 }

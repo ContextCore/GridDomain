@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Akka.Actor;
+using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
@@ -22,8 +23,6 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
             Thread.Sleep(200);
 
             And_command_for_child_is_sent();
-
-            Thread.Sleep(200);
         }
 
         [Then]
@@ -41,9 +40,11 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         [Then]
         public void Child_should_exist()
         {
-            var ping = "child ping";
-            Assert.AreEqual(ping, Child.Ref.Ask(ping,TimeSpan.FromSeconds(1)).Result);
+            var payload = "child ping";
+            Assert.AreEqual(payload, PingChild(payload).Payload);
         }
+
+      
 
         public PersistenceHubOnChildActivity(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
         {
