@@ -40,6 +40,6 @@ namespace GridDomain.Tools.Repositories
             var msg = persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(),Timeout).Result;
             persistActor.Tell(PoisonPill.Instance);
             return msg.Events.Cast<object>().ToArray();
-       } 
+       }
     }
 }

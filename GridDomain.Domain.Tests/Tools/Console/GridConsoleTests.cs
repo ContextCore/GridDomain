@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Tools.Console
             var sampleDomainContainerConfiguration = new SampleDomainContainerConfiguration();
             container.Register(sampleDomainContainerConfiguration);
 
-            var serverConfig = new AutoTestAkkaConfiguration();
+            var serverConfig = new AutoTestAkkaConfiguration().Copy(8085);
 
             _node = new GridDomainNode(sampleDomainContainerConfiguration,
                                        new SampleRouteMap(container),

@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.Tools
             _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
             _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
 
-            using (var eventsRepo = TestEventRepository.NewPersistent())
+            using (var eventsRepo = EventRepositoryPresets.NewPersistent())
             {
                 string persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
                 eventsRepo.Save(persistenceId, _createdEvent, _changedEvent);
