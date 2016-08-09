@@ -87,6 +87,12 @@ namespace GridDomain.Node
         {
         }
 
+
+        public GridDomainNode(IContainerConfiguration configuration,
+                            IMessageRouteMap messageRouting,
+                            Func<ActorSystem> actorSystemFactory) : this(configuration, messageRouting, () => new [] { actorSystemFactory()}, null)
+        {
+        }
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               Func<ActorSystem[]> actorSystemFactory) : this(configuration, messageRouting,actorSystemFactory,null)

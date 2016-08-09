@@ -23,10 +23,8 @@ namespace GridDomain.Tests.Tools.Console
     [TestFixture]
     class GridConsoleTests
     {
-        private IAkkaNetworkAddress _serverConfig;
         private GridConsole _console;
-
-
+        private GridDomainNode _node;
 
         [TestFixtureSetUp]
         public void Given_existing_GridNode()
@@ -37,16 +35,20 @@ namespace GridDomain.Tests.Tools.Console
 
             var serverConfig = new AutoTestAkkaConfiguration();
 
-            var node = new GridDomainNode(sampleDomainContainerConfiguration,
-                                          new SampleRouteMap(container),
-                                          () => new [] { serverConfig.CreateInMemorySystem()});
+            _node = new GridDomainNode(sampleDomainContainerConfiguration,
+                                       new SampleRouteMap(container),
+                                       () => serverConfig.CreateInMemorySystem());
 
-            node.Start(new LocalDbConfiguration());
+            _node.Start(new LocalDbConfiguration());
 
-            _serverConfig = serverConfig.Network;
-            _console = When_connect_by_console_with_default_client_configuration(_serverConfig);
+            _console = When_connect_by_console_with_default_client_configuration(serverConfig.Network);
         }
 
+        [TestFixtureTearDown]
+        public void TurnOffNode()
+        {
+            _node.Stop();
+        }
 
         public GridConsole When_connect_by_console_with_default_client_configuration(IAkkaNetworkAddress akkaNetworkAddress)
         {
