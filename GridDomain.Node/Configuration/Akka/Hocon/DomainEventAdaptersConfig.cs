@@ -1,23 +1,34 @@
+using System;
+using GridDomain.EventSourcing;
+
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
+
+    public static class TypeExtensions
+    {
+        public static string ToAssemblyQualifiedShortName(this Type type)
+        {
+            return type.FullName + ", " + type.Assembly.GetName().Name;
+        }
+    }
     internal class DomainEventAdaptersConfig : IAkkaConfig
     {
         public string Build()
         {
-            var type = typeof(AkkaDomainEventsAdapter);
             var adaptersConfig =
                 @"
                 event-adapters
                 {
-                    upd = """+ type.FullName+", " + type.Assembly+@"""
+                    upd = """+ typeof(AkkaDomainEventsAdapter).ToAssemblyQualifiedShortName() +@"""
                 }
                 event-adapter-bindings
                 {
-                    ""GridDomain.EventSourcing.DomainEvent, GridDomain.EventSourcing"" = upd
-                    #""System.Object"" = upd
+                    """ + typeof(DomainEvent).ToAssemblyQualifiedShortName() + @""" = upd
                 }";
 
             return adaptersConfig;
         }
     }
+
+
 }

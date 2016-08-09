@@ -12,19 +12,21 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
+using GridDomain.Tools.Repositories;
 
 namespace GridDomain.Tests.Framework
 {
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
         protected readonly bool InMemory;
+        private static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
 
         protected ExtendedNodeCommandTest(bool inMemory) : 
-            base( inMemory ? new AutoTestAkkaConfiguration(AkkaConfiguration.LogVerbosity.Trace).ToStandAloneInMemorySystemConfig():
-                new AutoTestAkkaConfiguration().ToStandAloneSystemConfig()
-                , "TestSystem", !inMemory)
+            base( inMemory ? AkkaCfg.ToStandAloneInMemorySystemConfig() : AkkaCfg.ToStandAloneSystemConfig()
+                , AkkaCfg.Network.SystemName
+                , !inMemory)
         {
             InMemory = inMemory;
         }
@@ -43,7 +45,7 @@ namespace GridDomain.Tests.Framework
                 Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(o);
+                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
         }
     }
 }

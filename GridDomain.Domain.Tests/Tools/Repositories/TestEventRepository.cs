@@ -1,9 +1,10 @@
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
+using GridDomain.Tools.Repositories;
 
 namespace GridDomain.Tests.Tools
 {
-    public static class TestEventRepository
+    public static class EventRepositoryPresets
     {
         public static IEventRepository NewInMemory()
         {

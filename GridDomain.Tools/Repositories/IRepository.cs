@@ -2,7 +2,7 @@ using System;
 using CommonDomain;
 using CommonDomain.Core;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Repositories
 {
     public interface IRepository : IDisposable
     {

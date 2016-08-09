@@ -77,7 +77,6 @@ namespace GridDomain.Node.Configuration.Akka
                 new LogConfig(LogLevel, false),
                 new StandAloneConfig(Network),
                 new InMemoryJournalConfig(
-                     // new EmptyConfig()
                     new DomainEventAdaptersConfig()
                     ));
 

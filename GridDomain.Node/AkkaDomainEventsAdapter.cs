@@ -3,13 +3,14 @@ using Akka.Actor;
 using Akka.Persistence.Journal;
 using GridDomain.EventSourcing.DomainEventAdapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.Node.Configuration.Akka.Hocon;
 using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 
 namespace GridDomain.Node
 {
 
     /// <summary>
-    /// How to updata and event
+    /// How to update an event
     /// 1) Create a copy of event and add existing number in type by convention _V(N) where N is version
     /// for example BalanceAggregateCreatedEvent should be copied as BalanceAggregateCreatedEvent_V1.
     /// All existing persisted events must be convertible to versioned one by duck typing. 
@@ -26,14 +27,13 @@ namespace GridDomain.Node
     /// 4) Register event adapter 
     /// </summary>
 
-
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
-        public static EventAdaptersCatalog UpgradeChain = new EventAdaptersCatalog();
+        public static readonly EventAdaptersCatalog UpgradeChain = new EventAdaptersCatalog();
 
         public string Manifest(object evt)
         {
-            return "";
+            return evt.GetType().ToAssemblyQualifiedShortName();
         }
 
         public object ToJournal(object evt)

@@ -1,11 +1,13 @@
 using System;
 using System.Threading;
+using Akka.Actor;
+using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
-    [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
     class PersistenceHubOnChildActivity : PersistentHub_children_lifetime_test
     {
@@ -15,26 +17,34 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         public void When_child_has_activity_while_living()
         {
             When_hub_creates_a_child();
-            _initialTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
+            _initialTimeToLife = Child.ExpiresAt;
 
             //TODO: replace sleep with dateTime manipulations via DateTimeFacade
-            Thread.Sleep(2000);
+            Thread.Sleep(200);
 
             And_command_for_child_is_sent();
         }
 
         [Then]
-        public void LifeTime_should_be_prolongated()
+        public void Hub_should_contains_child()
         {
-            var prolongatedTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
-            Assert.GreaterOrEqual(prolongatedTimeToLife, _initialTimeToLife);
+            Assert.True(Hub.Children.ContainsKey(Infrastructure.ChildId));
         }
 
         [Then]
-        public void It_should_exist()
+        public void Child_lifeTime_should_be_prolongated()
         {
-            Assert.True(PersistentHubTestsStatus.ChildExistence.Contains(Infrastructure.ChildId));
+            Assert.GreaterOrEqual(Child.ExpiresAt, _initialTimeToLife);
         }
+
+        [Then]
+        public void Child_should_exist()
+        {
+            var payload = "child ping";
+            Assert.AreEqual(payload, PingChild(payload).Payload);
+        }
+
+      
 
         public PersistenceHubOnChildActivity(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
         {

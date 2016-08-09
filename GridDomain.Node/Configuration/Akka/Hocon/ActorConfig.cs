@@ -30,12 +30,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              "+messageSerialization+@"
              serializers {
                          wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
-                         #json = ""Akka.Serialization.NewtonSoftJsonSerializer, Akka.Serialization.Json""
                 }
              
              serialization-bindings {
                                     ""System.Object"" = wire
-                                    #""Automatonymous.State"" = json
              }
        }";
 
@@ -50,11 +48,13 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             var transportString =
                 @"remote {
+                    log-remote-lifecycle-events = DEBUG
                     helios.tcp {
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                transport-protocol = tcp
                                port = " + port + @"
                                hostname = " + name + @"
+                               public-hostname = "+ name + @"
                     }
             }";
             return transportString;

@@ -251,7 +251,7 @@
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
-    <Compile Include="Actors\GridDomainNodeMainActor.cs" />
+    <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
@@ -298,6 +298,7 @@
     <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
+    <Compile Include="NodeCommandExecutor.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />

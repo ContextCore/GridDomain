@@ -18,10 +18,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
             ChildCreateMessage = gotTired.CloneWithSaga(sagaId);
             ChildActivateMessage = coffeMadeEvent.CloneWithSaga(sagaId);
 
-            var hubProps = system.DI().Props<TestStateSagaHubActor>();
-            Hub = system.ActorOf(hubProps, $"TestIstanceSagaHub_{Guid.NewGuid()}");
+            HubProps = system.DI().Props<TestStateSagaHubActor>();
         }
-        public IActorRef Hub { get; }
+        public Props HubProps { get; }
         public object ChildCreateMessage { get; }
         public object ChildActivateMessage { get; }
         public Guid ChildId { get; }

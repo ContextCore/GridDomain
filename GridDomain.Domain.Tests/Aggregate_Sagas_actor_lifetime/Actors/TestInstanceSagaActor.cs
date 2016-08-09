@@ -1,3 +1,5 @@
+using Akka;
+using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -12,19 +14,15 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
         SagaDataAggregate<SoftwareProgrammingSagaData>,
         GotTiredEvent>
     {
-        protected override void PreStart()
+        protected override bool Receive(object message)
         {
-            base.PreStart();
-            PersistentHubTestsStatus.ChildExistence.Add(Id);
+            //echo for testing purpose
+            message.Match().With<Ping>(m => Sender.Tell(new Pong(m.Payload)));
+            return base.Receive(message);
         }
 
-        protected override void Shutdown()
-        {
-            PersistentHubTestsStatus.ChildExistence.Remove(Id);
-            base.Shutdown();
-        }
-
-        public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent> sagaStarter, ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory, AggregateFactory aggregateFactory, IPublisher publisher) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
+        public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent> sagaStarter, ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory, AggregateFactory aggregateFactory,
+            IPublisher publisher) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
         {
         }
     }

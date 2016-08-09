@@ -1,0 +1,12 @@
+namespace GridDomain.Tools.Persistence.SqlPersistence
+{
+  
+    public class Snapshot
+    {
+        public string PersistenceId { get; set; } // PersistenceId (Primary key) (length: 255)
+        public long SequenceNr { get; set; } // SequenceNr (Primary key)
+        public System.DateTime Timestamp { get; set; } // Timestamp
+        public string Manifest { get; set; } // Manifest (length: 500)
+        public byte[] Snapshot_ { get; set; } // Snapshot
+    }
+}

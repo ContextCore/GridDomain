@@ -4,6 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using NUnit.Framework;
@@ -17,6 +20,13 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         public InMemory_When_SyncExecute_without_timeout() : base(true)
         {
 
+        }
+
+
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        {
+            return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },
+                new InMemoryQuartzConfig(), TimeSpan.FromMilliseconds(500));
         }
 
         [Then]
@@ -34,7 +44,6 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            GridNode.CommandTimeout = TimeSpan.FromMilliseconds(500);
 
             Assert_TimeoutException_In_inner_exceptions(() => GridNode.Execute(syncCommand, expectedMessage).Wait());
         }
@@ -69,7 +78,6 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            GridNode.CommandTimeout = TimeSpan.FromMilliseconds(500);
 
             Assert_TimeoutException_In_inner_exceptions(() => { object A = GridNode.Execute(syncCommand, expectedMessage).Result; });
         }
@@ -81,7 +89,6 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var plan = CommandPlan.New(syncCommand, expectedMessage);
-            GridNode.CommandTimeout = TimeSpan.FromMilliseconds(500);
 
             Assert.False(GridNode.Execute(plan).Wait(100));
         }
@@ -91,7 +98,6 @@ namespace GridDomain.Tests.SynchroniousCommandExecute
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            GridNode.CommandTimeout = TimeSpan.FromMilliseconds(500);
 
             Assert.False(GridNode.Execute(syncCommand, expectedMessage).Wait(100));
         }

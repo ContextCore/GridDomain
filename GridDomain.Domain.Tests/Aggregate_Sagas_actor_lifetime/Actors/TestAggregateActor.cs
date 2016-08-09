@@ -1,3 +1,6 @@
+using System;
+using Akka;
+using Akka.Actor;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -8,22 +11,43 @@ using GridDomain.Tests.SampleDomain;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
+    class Ping
+    {
+        public object Payload { get; }
+
+        public Ping(object payload)
+        {
+            Payload = payload;
+        }
+    }
+
+    class Pong
+    {
+        public Pong(object payload)
+        {
+            Payload = payload;
+        }
+
+        public object Payload { get; }
+    }
+
     class TestAggregateActor : AggregateActor<SampleAggregate>
     {
-        public TestAggregateActor(IAggregateCommandsHandler<SampleAggregate> handler, AggregateFactory factory, TypedMessageActor<ScheduleCommand> schedulerActorRef, TypedMessageActor<Unschedule> unscheduleActorRef, IPublisher publisher) : base(handler, factory, schedulerActorRef, unscheduleActorRef, publisher)
+        public TestAggregateActor(IAggregateCommandsHandler<SampleAggregate> handler, 
+                                  AggregateFactory factory, 
+                                  TypedMessageActor<ScheduleCommand> schedulerActorRef, 
+                                  TypedMessageActor<Unschedule> unscheduleActorRef, 
+                                  IPublisher publisher) : base(handler, factory, schedulerActorRef, unscheduleActorRef, publisher)
         {
         }
 
-        protected override void PreStart()
+        protected override bool Receive(object message)
         {
-            base.PreStart();
-            PersistentHubTestsStatus.ChildExistence.Add(Id);
+            //echo for testing purpose
+           message.Match().With<Ping>(m => Sender.Tell(new Pong(m.Payload)));
+           return base.Receive(message);
         }
 
-        protected override void Shutdown()
-        {
-            PersistentHubTestsStatus.ChildExistence.Remove(Id);
-            base.Shutdown();
-        }
+        
     }
 }

@@ -2,11 +2,10 @@ using System;
 using System.Linq;
 using CommonDomain;
 using CommonDomain.Core;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Repositories
 {
     public class Repository : IRepository
     {

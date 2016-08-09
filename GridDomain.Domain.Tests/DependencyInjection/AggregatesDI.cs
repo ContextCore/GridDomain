@@ -19,8 +19,11 @@ namespace GridDomain.Tests.DependencyInjection
 {
     public class AggregatesDI : NodeCommandsTest
     {
+        private static readonly AutoTestAkkaConfiguration Config = new AutoTestAkkaConfiguration();
 
-        public AggregatesDI() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig(), "TestSystem", false)
+        public AggregatesDI() : base(Config.ToStandAloneInMemorySystemConfig(),
+                                     Config.Network.SystemName,
+                                     false)
         {
 
         }

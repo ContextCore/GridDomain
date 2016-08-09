@@ -7,6 +7,7 @@ namespace GridDomain.Node.Actors
     {
         public IActorRef Ref { get; }
         public DateTime  LastTimeOfAccess;
+        public DateTime  ExpiresAt;
 
         public ChildInfo(IActorRef actor)
         {

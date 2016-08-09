@@ -9,7 +9,6 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    //TODO: add execution track status
     public interface IGridDomainNode 
     {
         void Execute(params ICommand[] commands);

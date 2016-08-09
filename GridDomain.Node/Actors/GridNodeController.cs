@@ -20,59 +20,52 @@ using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
 {
-    public class GridDomainNodeMainActor : TypedActor
+    public class GridNodeController : TypedActor
     {
         private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
         private readonly IActorSubscriber _subscriber;
 
-        public GridDomainNodeMainActor(IPublisher transport,
-                                       IActorSubscriber subscriber,
-                                       IMessageRouteMap messageRouting)
+        public GridNodeController(IPublisher transport,
+                                  IActorSubscriber subscriber,
+                                  IMessageRouteMap messageRouting)
         {
             _subscriber = subscriber;
             _messageRouting = messageRouting;
             _messagePublisher = transport;
-            _log.Debug("Actor {Type} was created on: {Path}.", GetType().Name, Self.Path);
             _monitor = new ActorMonitor(Context);
         }
 
         public void Handle(Start msg)
         {
             _monitor.IncrementMessagesReceived();
-
-            _log.Debug("Actor {Type} is initializing", GetType().Name);
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory(new DefaultLoggerConfiguration()));
 
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
-            _log.Debug("Actor {Type} is initializing routes", GetType().Name);
             var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
             _messageRouting.Register(actorMessagesRouter);
 
             //TODO: replace with message from router
             Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);
-            _log.Debug("Actor {Type} finished routes initialization", GetType().Name);
         }
 
         public void Handle(ICommand cmd)
         {
             _monitor.IncrementMessagesReceived();
-
             _messagePublisher.Publish(cmd);
         }
 
         public void Handle(CommandPlan commandWithConfirmation)
         {
-            _monitor.IncrementMessagesReceived();
-
             var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command,commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
             foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
                     _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
 
-            _messagePublisher.Publish(commandWithConfirmation.Command);
+            Handle(commandWithConfirmation.Command);
         }
         
         public class Start

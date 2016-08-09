@@ -1,8 +1,6 @@
 using System;
-using CommonDomain;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Tools
+namespace GridDomain.Tools.Repositories
 {
     public interface IEventRepository : IDisposable
     {
