@@ -150,7 +150,6 @@ namespace GridDomain.Node
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
-
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -163,7 +162,7 @@ namespace GridDomain.Node
                                                                        _transportMode,
                                                                        quartzConfig));
 
-            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>());
+            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
@@ -216,5 +215,9 @@ namespace GridDomain.Node
         {
             return _commandExecutor.Execute(command, expectedMessage, timeout);
         }
+    }
+
+    public class ActorSystemNullException : Exception
+    {
     }
 }

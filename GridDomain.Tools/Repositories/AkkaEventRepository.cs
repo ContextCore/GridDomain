@@ -3,18 +3,27 @@ using System.Linq;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.TestKit.NUnit;
+using GridDomain.Node;
+using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tools.Repositories
 {
     //Using testKit to easily locate all actor system exeptions 
-    public class AkkaEventRepository : TestKit, IEventRepository
+    public class AkkaEventRepository : IEventRepository
     {
-        private static TimeSpan Timeout = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+        private readonly ActorSystem _system;
 
-        public AkkaEventRepository(Config config) : base(config)
+        public AkkaEventRepository(ActorSystem config)
         {
-            
+            _system = config;
         }
+
+        public static AkkaEventRepository New(AkkaConfiguration conf)
+        {
+            return new AkkaEventRepository(conf.CreateSystem());
+        }
+
 
         public void Save(string id, params object[] messages)
         {
@@ -29,7 +38,7 @@ namespace GridDomain.Tools.Repositories
         private IActorRef CreateEventsPersistActor(string id)
         {
             var props = Props.Create(() => new EventsRepositoryActor(id));
-            var persistActor = Sys.ActorOf(props, Guid.NewGuid().ToString());
+            var persistActor = _system.ActorOf(props, Guid.NewGuid().ToString());
             return persistActor;
         }
 
@@ -41,5 +50,10 @@ namespace GridDomain.Tools.Repositories
             persistActor.Tell(PoisonPill.Instance);
             return msg.Events.Cast<object>().ToArray();
        }
+
+        public void Dispose()
+        {
+
+        }
     }
 }

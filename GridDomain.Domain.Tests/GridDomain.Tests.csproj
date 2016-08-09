@@ -424,8 +424,8 @@
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Console\GridConsoleTests.cs" />
+    <Compile Include="Tools\Console\TestGridNodeConfiguration.cs" />
     <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
-    <Compile Include="Tools\Repositories\TestEventRepository.cs" />
     <Compile Include="Tools\Repositories\TestRepository.cs" />
     <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
   </ItemGroup>

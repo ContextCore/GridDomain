@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Tools
 
         protected virtual IEventRepository CreateRepository()
         {
-            return new AkkaEventRepository(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig());
+            return AkkaEventRepository.New(new AutoTestAkkaConfiguration());
         }
     }
 }

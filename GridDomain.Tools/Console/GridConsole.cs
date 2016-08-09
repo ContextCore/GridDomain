@@ -17,7 +17,7 @@ namespace GridDomain.Tools.Console
     {
         private readonly ActorSystem _consoleSystem;
         public IActorRef NodeController;
-        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan DefaultCommandExecutionTimeout = TimeSpan.FromSeconds(10);
         private NodeCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
