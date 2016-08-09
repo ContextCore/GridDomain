@@ -27,7 +27,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 
         protected override bool Receive(object message)
         {
-            _observer.Tell(message); //echo for testing purpose
+            //echo for testing purpose
+            _observer.Tell(message); 
+            Sender.Tell(message);
             return base.Receive(message);
         }
     }

@@ -15,6 +15,7 @@ using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
+using GridDomain.Tests.SampleDomain;
 using NUnit.Framework;
 using Microsoft.Practices.Unity;
 
@@ -38,12 +39,16 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
                                                                               SoftwareProgrammingSagaState,
                                                                               GotTiredEvent,
                                                                               Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>(),
+
                                                      c => c.RegisterSaga<Sagas.InstanceSagas.SoftwareProgrammingSaga,
                                                                             SoftwareProgrammingSagaData,
                                                                             GotTiredEvent,
                                                                             Sagas.InstanceSagas.SoftwareProgrammingSagaFactory>(),
+
                                                      c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
-                                                                              SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()
+                                                                              SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
+
+                                                     c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>()
                     );
         }
 

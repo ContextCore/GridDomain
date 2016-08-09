@@ -1,10 +1,13 @@
 using System;
 using System.Threading;
+using Akka.Actor;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
+    [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
     class PersistenceHubOnChildActivity : PersistentHub_children_lifetime_test
     {
         private DateTime _initialTimeToLife;
@@ -13,25 +16,33 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         public void When_child_has_activity_while_living()
         {
             When_hub_creates_a_child();
-         //   _initialTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
+            _initialTimeToLife = Child.ExpiresAt;
 
             //TODO: replace sleep with dateTime manipulations via DateTimeFacade
-            Thread.Sleep(500);
+            Thread.Sleep(200);
 
             And_command_for_child_is_sent();
+
+            Thread.Sleep(200);
         }
 
         [Then]
-        public void LifeTime_should_be_prolongated()
+        public void Hub_should_contains_child()
         {
-           // var prolongatedTimeToLife = PersistentHubTestsStatus.ChildTerminationTimes[Infrastructure.ChildId];
-         //   Assert.GreaterOrEqual(prolongatedTimeToLife, _initialTimeToLife);
+            Assert.True(Hub.Children.ContainsKey(Infrastructure.ChildId));
         }
 
         [Then]
-        public void It_should_exist()
+        public void Child_lifeTime_should_be_prolongated()
         {
-          //  Assert.True(PersistentHubTestsStatus.ChildExistence.Contains(Infrastructure.ChildId));
+            Assert.GreaterOrEqual(Child.ExpiresAt, _initialTimeToLife);
+        }
+
+        [Then]
+        public void Child_should_exist()
+        {
+            var ping = "child ping";
+            Assert.AreEqual(ping, Child.Ref.Ask(ping,TimeSpan.FromSeconds(1)).Result);
         }
 
         public PersistenceHubOnChildActivity(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)

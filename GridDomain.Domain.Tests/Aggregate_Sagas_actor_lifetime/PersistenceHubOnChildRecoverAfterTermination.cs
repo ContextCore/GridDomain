@@ -1,4 +1,5 @@
 using System;
+using Akka.Actor;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
@@ -11,7 +12,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
     {
 
         [SetUp]
-        public void When_child_became_inactive_too_long()
+        public void When_child_revives()
         {
             When_hub_creates_a_child();
             And_it_is_not_active_until_lifetime_period_is_expired();
@@ -21,13 +22,14 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         [Then]
         public void It_should_be_restored_after_command_execution()
         {
-          //  Assert.True(PersistentHubTestsStatus.ChildExistence.Contains(Infrastructure.ChildId));
+            var ping = "child ping";
+            Assert.AreEqual(ping, Child.Ref.Ask(ping, TimeSpan.FromSeconds(1)).Result);
         }
 
         [Then]
-        public void It_should_be_watched_in_hub()
+        public void Hub_should_contains_child()
         {
-          //  Assert.True(PersistentHubTestsStatus.ChildTerminationTimes.ContainsKey(Infrastructure.ChildId));
+            Assert.True(Hub.Children.ContainsKey(Infrastructure.ChildId));
         }
 
         public PersistenceHubOnChildRecoverAfterTermination(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)
