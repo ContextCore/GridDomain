@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using GridDomain.EventSourcing;
+using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
@@ -8,8 +9,11 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Tools
 {
+
+  
+
     [TestFixture]
-    class Test_event_repositoty_tools
+    public class Test_event_repositoty_tools
     {
         private Guid _sourceId;
 
@@ -36,6 +40,7 @@ namespace GridDomain.Tests.Tools
                 var persistId = "testId";
 
                 repo.Save(persistId,events);
+
                 var eventsLoaded = repo.Load(persistId).Cast<Message>();
                 CollectionAssert.AreEquivalent(events.Select(e => e.Id),eventsLoaded.Select(e=> e.Id));
             }
@@ -43,7 +48,7 @@ namespace GridDomain.Tests.Tools
 
         protected virtual IEventRepository CreateRepository()
         {
-            return AkkaEventRepository.New(new AutoTestAkkaConfiguration());
+            return new AkkaEventRepository(new AutoTestAkkaConfiguration().CreateInMemorySystem());
         }
     }
 }
