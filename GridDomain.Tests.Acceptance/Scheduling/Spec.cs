@@ -28,6 +28,18 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
     [TestFixture]
+    public class LogTests
+    {
+        [Test]
+        public void LogTest()
+        {
+            TypesForScalarDestructionHolder.Add(typeof(Money));
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
+            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "MONEY TEST {@placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
+        }
+    }
+
+    [TestFixture]
     public class Spec : ExtendedNodeCommandTest
     {
         private const string Name = "test";
@@ -71,9 +83,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [SetUp]
         public void SetUp()
         {
-            TypesForScalarDescruptionHolder.Add(typeof(Money));
+            TypesForScalarDestructionHolder.Add(typeof(Money));
             LogManager.SetLoggerFactory(new DefaultLoggerFactory());
-            
+
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             _container = GridNode.Container;
             CreateScheduler();
@@ -93,11 +105,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _quartzScheduler = _container.Resolve<IScheduler>();
         }
 
-        [Test]
-        public void LogTest()
-        {
-            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "message {@placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
-        }
+
 
         [Test]
         public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()

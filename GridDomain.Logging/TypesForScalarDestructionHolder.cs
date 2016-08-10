@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GridDomain.Logging
 {
-    public static class TypesForScalarDescruptionHolder
+    public static class TypesForScalarDestructionHolder
     {
         private static readonly HashSet<Type> TypesToDesctructAsScalars = new HashSet<Type>();
 

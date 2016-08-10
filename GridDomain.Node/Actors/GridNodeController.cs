@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Akka;
 using Akka.Actor;
-using Akka.Dispatch;
 using Akka.DI.Core;
-using Akka.Monitoring;
-using Akka.Monitoring.Impl;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.EventSourcing;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using Quartz.Collection;
 
 namespace GridDomain.Node.Actors
 {

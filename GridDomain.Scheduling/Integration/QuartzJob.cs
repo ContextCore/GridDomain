@@ -36,6 +36,7 @@ namespace GridDomain.Scheduling.Integration
 
             _quartzLogger = quartzLogger;
             _actorSystem = actorSystem;
+            _publisher = publisher;
         }
 
         public void Execute(IJobExecutionContext context)

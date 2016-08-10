@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Framework.Configuration
             => "Data Source=(local);Database=AutoTestAkka;Integrated Security = true";
 
         public string MetadataTableName => "Metadata";
-        public string JournalTableName => "JournalEntry";
+        public string JournalTableName => "Journal";
         public string SnapshotTableName => "Snapshots";
     }
 }

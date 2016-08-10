@@ -28,7 +28,6 @@ namespace GridDomain.Logging
                 return _serilogLogger;
             }
             return _serilogLogger.ForContext("className", className);
-
         }
     }
 }
