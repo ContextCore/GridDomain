@@ -4,6 +4,7 @@ namespace GridDomain.Node.Configuration.Akka
     {
         string SystemName { get; }
         string Host { get; }
+        string PublicHost { get; }
         int PortNumber { get; }
     }
 

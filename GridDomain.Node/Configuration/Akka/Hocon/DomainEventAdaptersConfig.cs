@@ -6,7 +6,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
     public static class TypeExtensions
     {
-        public static string ToAssemblyQualifiedShortName(this Type type)
+        public static string AssemblyQualifiedShortName(this Type type)
         {
             return type.FullName + ", " + type.Assembly.GetName().Name;
         }
@@ -19,11 +19,11 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 @"
                 event-adapters
                 {
-                    upd = """+ typeof(AkkaDomainEventsAdapter).ToAssemblyQualifiedShortName() +@"""
+                    upd = """+ typeof(AkkaDomainEventsAdapter).AssemblyQualifiedShortName() +@"""
                 }
                 event-adapter-bindings
                 {
-                    """ + typeof(DomainEvent).ToAssemblyQualifiedShortName() + @""" = upd
+                    """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = upd
                 }";
 
             return adaptersConfig;
