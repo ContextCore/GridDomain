@@ -16,7 +16,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             var persistenceJournalConfig = @"
             journal {
                     plugin = ""akka.persistence.journal.sql-server""
-                     " + _eventAdatpersConfig.Build() + @"
+                    
 
                     sql-server {
                                class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
@@ -28,6 +28,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                auto-initialize = on
                                timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
                                metadata-table-name = """ + _akka.Persistence.MetadataTableName + @"""
+                               " + _eventAdatpersConfig.Build() + @"
                     }
             }
 ";

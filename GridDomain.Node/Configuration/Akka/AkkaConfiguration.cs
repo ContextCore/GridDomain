@@ -65,7 +65,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(LogLevel, false),
+                new LogConfig(LogLevel, true),
                 new StandAloneConfig(Network),
                 new PersistenceConfig(this));
             return cfg.Build();
@@ -74,7 +74,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToStandAloneInMemorySystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(LogLevel, false),
+                new LogConfig(LogLevel, true),
                 new StandAloneConfig(Network),
                 new InMemoryJournalConfig(
                     new DomainEventAdaptersConfig()
