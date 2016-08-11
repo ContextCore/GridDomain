@@ -4,6 +4,7 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
@@ -12,6 +13,8 @@ using GridDomain.Tests.EventsUpgrade;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tools.Repositories;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -33,6 +36,24 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
         protected override IMessageRouteMap CreateMap()
         {
             return new BalanceRouteMap();
+        }
+
+        protected override void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages)
+        {
+            using (var eventsRepo = new AkkaEventRepository(new AutoTestAkkaConfiguration().Copy(8081).CreateSystem()))
+            {
+                var persistId = AggregateActorName.New<BalanceAggregate>(id).Name;
+                eventsRepo.Save(persistId, messages);
+            }
+        }
+  
+
+        public override T LoadAggregate<T>(Guid id)
+        {
+            using (var repo = new Repository(new AkkaEventRepository(new AutoTestAkkaConfiguration().Copy(8082).CreateSystem())))
+            {
+               return repo.Load<T>(id);
+            }
         }
     }
 }

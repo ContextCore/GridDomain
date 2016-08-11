@@ -11,7 +11,7 @@ namespace GridDomain.Tools.Repositories
     //Using testKit to easily locate all actor system exeptions 
     public class AkkaEventRepository : IEventRepository
     {
-        private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
         private readonly ActorSystem _system;
 
         public AkkaEventRepository(ActorSystem config)

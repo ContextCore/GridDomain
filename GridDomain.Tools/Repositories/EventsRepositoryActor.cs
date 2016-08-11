@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Akka;
 using Akka.Actor;
@@ -22,8 +23,18 @@ namespace GridDomain.Tools.Repositories
                  .Default(e => _events.Add(e));
             });
 
-            Command<Persist>(m => Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)));
+            Command<Persist>(m =>Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)));
             Command<Load>(m => Sender.Tell(new Loaded(id, _events.ToArray())));
+        }
+
+        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
+        {
+            base.OnPersistFailure(cause, @event, sequenceNr);
+        }
+
+        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
+        {
+            base.OnPersistRejected(cause, @event, sequenceNr);
         }
 
         public class Load { }

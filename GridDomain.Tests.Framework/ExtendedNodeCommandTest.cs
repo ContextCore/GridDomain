@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Framework
             return new GridDomainNode(CreateConfiguration(),CreateMap(), actorSystem);
         }
 
-        protected void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
+        protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
         {
             string persistId = AggregateActorName.New<TAggregate>(id).ToString();
             var persistActor = GridNode.System.ActorOf(
@@ -46,6 +46,8 @@ namespace GridDomain.Tests.Framework
 
             foreach (var o in messages)
                 persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
+
+            Thread.Sleep(500);
         }
     }
 }

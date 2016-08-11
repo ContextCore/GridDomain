@@ -1,13 +1,20 @@
 using System;
 using System.Threading;
+using CommonDomain;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.SampleDomain;
+using GridDomain.Tools.Repositories;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -19,6 +26,7 @@ namespace GridDomain.Tests.EventsUpgrade
         private Guid _balanceId;
         private BalanceAggregate _aggregate;
 
+   
         [TestFixtureSetUp]
         public void When_aggregate_is_recovered_from_persistence()
         {
@@ -31,10 +39,8 @@ namespace GridDomain.Tests.EventsUpgrade
                 new BalanceChangedEvent_V1(5, _balanceId),
             };
 
-            SaveInJournal<BalanceAggregate>(_balanceId, events);
-            Thread.Sleep(500);
-
-            _aggregate = LoadAggregate<BalanceAggregate>(_balanceId);
+             SaveInJournal<BalanceAggregate>(_balanceId, events);
+             _aggregate = LoadAggregate<BalanceAggregate>(_balanceId);
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(1);

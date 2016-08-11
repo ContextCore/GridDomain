@@ -79,7 +79,7 @@ namespace GridDomain.Tests.Framework
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public T LoadAggregate<T>(Guid id) where T : AggregateBase
+        public virtual T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var name = AggregateActorName.New<T>(id).ToString();
             return LoadAggregate<T>(name);
