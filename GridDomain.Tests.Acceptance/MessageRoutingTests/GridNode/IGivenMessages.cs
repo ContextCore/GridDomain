@@ -1,6 +1,6 @@
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
-    public interface IGivenCommands<T>
+    public interface IGivenMessages<T>
     {
         T[] GetCommands();
     }

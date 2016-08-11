@@ -2,7 +2,7 @@ using System;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
-    internal class GivenTestMessages : IGivenCommands<TestMessage>
+    internal class GivenTestMessages : IGivenMessages<TestMessage>
     {
         public TestMessage[] GetCommands()
         {

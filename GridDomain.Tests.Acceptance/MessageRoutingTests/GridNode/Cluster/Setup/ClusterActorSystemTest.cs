@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
             return new ClusterActorSystemInfrastructure(new AutoTestAkkaConfiguration());
         }
 
-        protected override IGivenCommands<ClusterMessage> GivenCommands()
+        protected override IGivenMessages<ClusterMessage> GivenCommands()
         {
             return new GivenClusterTestMessages(100);
         }

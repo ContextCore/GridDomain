@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
             return new SingleActorSystemInfrastructure(new AutoTestAkkaConfiguration());
         }
 
-        protected override IGivenCommands<TestMessage> GivenCommands()
+        protected override IGivenMessages<TestMessage> GivenCommands()
         {
             return new GivenTestMessages();
         }

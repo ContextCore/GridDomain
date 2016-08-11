@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
 
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
-            _actorSystem = ActorSystemFactory.CreateActorSystem(AkkaConfig);
+            _actorSystem = AkkaConfig.CreateSystem();
             _transport = new AkkaEventBusTransport(_actorSystem);
             return _actorSystem;
         }

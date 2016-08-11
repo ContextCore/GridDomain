@@ -27,13 +27,13 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 //#endif
             var actorConfig = @"   
        actor {
-             "+messageSerialization+@"
+             "+messageSerialization+ @"
              serializers {
-                         wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
-                }
+                        wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
+             }
              
              serialization-bindings {
-                                    ""System.Object"" = wire
+                                   ""System.Object"" = wire
              }
        }";
 
@@ -53,7 +53,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
                                transport-protocol = tcp
                                port = " + port + @"
-                               hostname = " + name + @"
+                               hostname = 0.0.0.0
                                public-hostname = "+ name + @"
                     }
             }";

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    internal class GivenClusterTestMessages : IGivenCommands<ClusterMessage>
+    internal class GivenClusterTestMessages : IGivenMessages<ClusterMessage>
     {
         private readonly int _number;
 

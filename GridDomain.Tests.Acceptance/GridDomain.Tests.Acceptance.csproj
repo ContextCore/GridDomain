@@ -80,6 +80,7 @@
     </Reference>
     <Reference Include="Akka.Serialization.Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Serialization.Wire.1.1.1.28-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.TestKit, Version=1.1.1.27, Culture=neutral, processorArchitecture=MSIL">
@@ -224,6 +225,7 @@
     </Reference>
     <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -243,7 +245,7 @@
     <Compile Include="MessageRoutingTests\GridNode\ActorSystemInfrastruture.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemInfrastructure.cs" />
     <Compile Include="MessageRoutingTests\GridNode\CorrelatedRouting.cs" />
-    <Compile Include="MessageRoutingTests\GridNode\IGivenCommands.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\IGivenMessages.cs" />
     <Compile Include="MessageRoutingTests\GridNode\IRouterConfiguration.cs" />
     <Compile Include="MessageRoutingTests\GridNode\NotCorrelatedRouting.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\GivenClusterTestMessages.cs" />

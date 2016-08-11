@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading;
 using Akka.TestKit.NUnit;
+using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
@@ -11,6 +13,11 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         public TInfrastructure Infrastructure;
         protected T[] InitialCommands;
 
+
+        public ActorSystemTest():base(new AutoTestAkkaConfiguration().Copy("test_env_system",9000).ToStandAloneSystemConfig())
+        {
+            
+        }
         [TestFixtureTearDown]
         public void Clear()
         {
@@ -22,10 +29,9 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         {
             Infrastructure = CreateInfrastructure();
             Infrastructure.Init(TestActor);
-
-            var commands = GivenCommands().GetCommands();
             CreateRoutes().ConfigureRouting(Infrastructure.Router);
-
+            Thread.Sleep(500); //waiting registrations finish
+            var commands = GivenCommands().GetCommands();
             Infrastructure.Publish(commands.Cast<object>().ToArray());
             InitialCommands = commands;
             _resultMessages = Infrastructure.WaitFor<T>(this, InitialCommands.Length);
@@ -35,8 +41,12 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
             Console.WriteLine();
         }
 
-        protected abstract IGivenCommands<T> GivenCommands();
+        protected override void AfterAll()
+        {
+            
+        }
 
+        protected abstract IGivenMessages<T> GivenCommands();
         protected abstract IRouterConfiguration CreateRoutes();
         protected abstract TInfrastructure CreateInfrastructure();
     }

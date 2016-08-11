@@ -1,7 +1,5 @@
 using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
@@ -17,10 +15,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 
         public void ConfigureRouting(ActorMessagesRouter router)
         {
-            router.Route<TMsg>()
-                  .ToHandler<THandler>()
-                  .WithCorrelation(_correlationPropertyName)
-                .Register();
+            router.RegisterHandler<TMsg, THandler>(_correlationPropertyName);
         }
     }
 }
