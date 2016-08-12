@@ -6,5 +6,6 @@ namespace GridDomain.Node.Configuration.Akka
         string Host { get; }
         string PublicHost { get; }
         int PortNumber { get; }
+        bool EnforceIpVersion { get; }
     }
 }

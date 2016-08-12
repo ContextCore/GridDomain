@@ -8,6 +8,7 @@ namespace SchedulerDemo.Configuration
         public string SystemName => "LocalSystem";
         public string Host => "127.0.0.1";
         public int PortNumber => 8080;
+        public bool EnforceIpVersion => true;
         public string PublicHost => Host;
     }
 }

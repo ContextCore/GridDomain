@@ -9,5 +9,6 @@ namespace GridDomain.Tests.Framework.Configuration
         public string Host => "127.0.0.1";
         public string PublicHost => Host;
         public int PortNumber => 8080;
+        public bool EnforceIpVersion => true;
     }
 }
