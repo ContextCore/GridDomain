@@ -231,13 +231,17 @@
   <ItemGroup>
     <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="ActorSystemFactory.cs" />
+    <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\CommandExecutionFinished.cs" />
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
+    <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
+    <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
+    <Compile Include="DefaultPerfCountersConfiguration.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
@@ -286,7 +290,9 @@
     <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
+    <Compile Include="IPerformanceCountersConfiguration.cs" />
     <Compile Include="NodeCommandExecutor.cs" />
+    <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />

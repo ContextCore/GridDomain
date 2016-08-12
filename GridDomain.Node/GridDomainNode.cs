@@ -141,10 +141,17 @@ namespace GridDomain.Node
             ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
 
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
-            var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
+            var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
-            ActorMonitoringExtension.RegisterMonitor(System, monitor);
-            ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
+            if (appInsightsConfig.IsEnabled)
+            {
+                var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
+                ActorMonitoringExtension.RegisterMonitor(System, monitor);
+            }
+            if (perfCountersConfig.IsEnabled)
+            {
+                ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
+            }
 
             StartController(System);
 
@@ -215,9 +222,5 @@ namespace GridDomain.Node
         {
             return _commandExecutor.Execute(command, expectedMessage, timeout);
         }
-    }
-
-    public class ActorSystemNullException : Exception
-    {
     }
 }

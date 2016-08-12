@@ -48,6 +48,8 @@ namespace GridDomain.Node
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
             container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default ??
                                                                   new DefaultAppInsightsConfiguration());
+            container.RegisterInstance<IPerformanceCountersConfiguration>(PerformanceCountersConfigSection.Default ??
+                                                                  new DefaultPerfCountersConfiguration());
             container.RegisterInstance(actorSystem);
             container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
         }
