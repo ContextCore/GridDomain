@@ -59,7 +59,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                port = " + port + @"
                                hostname =  " + hostName + @"
                                public-hostname = " + publicHostName + @"
-                               enforce-ip-env = " + enforceIpEnv + @"
+                               enforce-ip-env = " + (enforceIpEnv ? "true":"false") + @"
                     }
             }";
             return transportString;
