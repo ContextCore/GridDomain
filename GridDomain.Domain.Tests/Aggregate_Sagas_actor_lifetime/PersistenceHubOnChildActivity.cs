@@ -32,6 +32,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         }
 
         [Then]
+        [Ignore("Until pull request merge for faked akka.remote")]
         public void Child_lifeTime_should_be_prolongated()
         {
             Assert.GreaterOrEqual(Child.ExpiresAt, _initialTimeToLife);
