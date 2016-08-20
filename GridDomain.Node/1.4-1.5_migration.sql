@@ -38,8 +38,45 @@ RETURN CONVERT(bigint,
 
 END;
 
-
+-- helper function to convert between BIGINT as .NET ticks to DateTime2 for diagnostics
+-- taken from: http://stackoverflow.com/questions/2313236/convert-net-ticks-to-sql-server-datetime
 GO
+CREATE FUNCTION NetFxUtcTicksToDateTime
+(
+   @Ticks bigint
+)
+RETURNS datetime
+AS
+BEGIN
+
+-- First, we will convert the ticks into a datetime value with UTC time
+DECLARE @BaseDate datetime;
+SET @BaseDate = '01/01/1900';
+
+DECLARE @NetFxTicksFromBaseDate bigint;
+SET @NetFxTicksFromBaseDate = @Ticks - 599266080000000000;
+-- The numeric constant is the number of .Net Ticks between the System.DateTime.MinValue (01/01/0001) and the SQL Server datetime base date (01/01/1900)
+
+DECLARE @DaysFromBaseDate int;
+SET @DaysFromBaseDate = @NetFxTicksFromBaseDate / 864000000000;
+-- The numeric constant is the number of .Net Ticks in a single day.
+
+DECLARE @TimeOfDayInTicks bigint;
+SET @TimeOfDayInTicks = @NetFxTicksFromBaseDate - @DaysFromBaseDate * 864000000000;
+
+DECLARE @TimeOfDayInMilliseconds int;
+SET @TimeOfDayInMilliseconds = @TimeOfDayInTicks / 10000;
+-- A Tick equals to 100 nanoseconds which is 0.0001 milliseconds
+
+DECLARE @UtcDate datetime;
+SET @UtcDate = DATEADD(ms, @TimeOfDayInMilliseconds, DATEADD(d, @DaysFromBaseDate, @BaseDate));
+-- The @UtcDate is already useful. If you need the time in UTC, just return this value.
+
+-- Now, some magic to get the local time
+RETURN @UtcDate + GETDATE() - GETUTCDATE();
+END
+GO
+
 
 
 ALTER TABLE Journal ADD Timestamp_tmp BIGINT NULL;
