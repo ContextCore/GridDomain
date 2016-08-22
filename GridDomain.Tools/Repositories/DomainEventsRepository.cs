@@ -34,7 +34,7 @@ namespace GridDomain.Tools.Persistence
                 return new JournalEntry()
                 {
                     IsDeleted = false,
-                    Manifest = Utils.GetShortAssemblyQualifiedName(m.GetType()),
+                    Manifest = m.GetType().GetShortAssemblyQualifiedName(),
                     Payload =stream.ToArray(),
                     PersistenceId = id,
                     SequenceNr = ++counter,
@@ -53,6 +53,11 @@ namespace GridDomain.Tools.Persistence
                     .Select(d => serializer.Deserialize(new MemoryStream(d.Payload)))
                     .Cast<DomainEvent>()
                     .ToArray();
+        }
+
+        public static DomainEventsRepository New(string connectionString)
+        {
+            return new DomainEventsRepository(new RawSqlAkkaPersistenceRepository(connectionString));
         }
     }
 }
