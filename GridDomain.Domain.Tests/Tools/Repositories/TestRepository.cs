@@ -7,14 +7,14 @@ namespace GridDomain.Tests.Tools
 {
     public static class TestRepository
     {
-        public static IRepository NewInMemory()
+        public static AggregateRepository NewInMemory()
         {
-            return new Repository(new AkkaEventRepository(new AutoTestAkkaConfiguration().CreateInMemorySystem()));
+            return new AggregateRepository(new ActorSystemEventRepository(new AutoTestAkkaConfiguration().CreateInMemorySystem()));
         }
 
-        public static IRepository NewPersistent()
+        public static AggregateRepository NewPersistent()
         {
-            return new Repository(AkkaEventRepository.New(new AutoTestAkkaConfiguration()));
+            return new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()));
         }
     }
 }

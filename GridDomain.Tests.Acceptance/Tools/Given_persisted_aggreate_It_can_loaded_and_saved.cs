@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.Tools
 
             using (var repo = TestRepository.NewPersistent())
             {
-                _aggregate = repo.Load<SampleAggregate>(aggregate.Id);
+                _aggregate = repo.LoadAggregate<SampleAggregate>(aggregate.Id);
             }
         }
 

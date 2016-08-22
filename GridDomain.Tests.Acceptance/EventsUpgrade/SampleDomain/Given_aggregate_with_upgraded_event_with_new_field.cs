@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 
         protected override void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages)
         {
-            using (var eventsRepo = new AkkaEventRepository(new AutoTestAkkaConfiguration().Copy(8081).CreateSystem()))
+            using (var eventsRepo = new ActorSystemEventRepository(new AutoTestAkkaConfiguration().Copy(8081).CreateSystem()))
             {
                 var persistId = AggregateActorName.New<BalanceAggregate>(id).Name;
                 eventsRepo.Save(persistId, messages);
@@ -50,9 +50,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 
         public override T LoadAggregate<T>(Guid id)
         {
-            using (var repo = new Repository(new AkkaEventRepository(new AutoTestAkkaConfiguration().Copy(8082).CreateSystem())))
+            using (var repo = new AggregateRepository(new ActorSystemEventRepository(new AutoTestAkkaConfiguration().Copy(8082).CreateSystem())))
             {
-               return repo.Load<T>(id);
+               return repo.LoadAggregate<T>(id);
             }
         }
     }

@@ -102,17 +102,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Repositories\DomainEventsRepository.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\RawSqlAkkaPersistenceRepository.cs" />
     <Compile Include="Persistence\WireHexDeserializer.cs" />
-    <Compile Include="Repositories\AkkaEventRepository.cs" />
+    <Compile Include="Repositories\ActorSystemEventRepository.cs" />
     <Compile Include="Console\ConsoleAkkaConfiguretion.cs" />
     <Compile Include="Console\ConsoleDbConfig.cs" />
     <Compile Include="Console\GridConsole.cs" />
-    <Compile Include="Repositories\IEventRepository.cs" />
-    <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\EventsRepositoryActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\Repository.cs" />
-    <Compile Include="Persistence\SqlJournalRepository.cs" />
+    <Compile Include="Repositories\AggregateRepository.cs" />
     <Compile Include="Persistence\SqlPersistence\AkkaSqlPersistenceContext.cs" />
     <Compile Include="Persistence\SqlPersistence\FakeAkkaSqlPersistenceContext.cs" />
     <Compile Include="Persistence\SqlPersistence\FakeDbAsyncEnumerable.cs" />
@@ -126,7 +126,6 @@
     <Compile Include="Persistence\SqlPersistence\MetadataConfiguration.cs" />
     <Compile Include="Persistence\SqlPersistence\Snapshot.cs" />
     <Compile Include="Persistence\SqlPersistence\SnapshotConfiguration.cs" />
-    <Compile Include="Persistence\TestWireDeserializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
