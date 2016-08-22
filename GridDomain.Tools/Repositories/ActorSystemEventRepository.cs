@@ -3,29 +3,30 @@ using System.Linq;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.TestKit.NUnit;
+using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tools.Repositories
 {
     //Using testKit to easily locate all actor system exeptions 
-    public class AkkaEventRepository : IEventRepository
+    public class ActorSystemEventRepository : IRepository<DomainEvent>
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
         private readonly ActorSystem _system;
 
-        public AkkaEventRepository(ActorSystem config)
+        public ActorSystemEventRepository(ActorSystem config)
         {
             _system = config;
         }
 
-        public static AkkaEventRepository New(AkkaConfiguration conf)
+        public static ActorSystemEventRepository New(AkkaConfiguration conf)
         {
-            return new AkkaEventRepository(conf.CreateSystem());
+            return new ActorSystemEventRepository(conf.CreateSystem());
         }
 
 
-        public void Save(string id, params object[] messages)
+        public void Save(string id, params DomainEvent[] messages)
         {
             var persistActor = CreateEventsPersistActor(id);
 
@@ -42,13 +43,13 @@ namespace GridDomain.Tools.Repositories
             return persistActor;
         }
 
-        public object[] Load(string id)
+        public DomainEvent[] Load(string id)
         {
             var persistActor = CreateEventsPersistActor(id);
             //load actor will notify caller automatically when it will load all events
             var msg = persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(),Timeout).Result;
             persistActor.Tell(PoisonPill.Instance);
-            return msg.Events.Cast<object>().ToArray();
+            return msg.Events.Cast<DomainEvent>().ToArray();
        }
 
         public void Dispose()

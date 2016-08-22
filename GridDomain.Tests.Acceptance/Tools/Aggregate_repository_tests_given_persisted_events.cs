@@ -1,4 +1,5 @@
 using System;
+using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
@@ -24,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Tools
             _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
             _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
 
-            using (var eventsRepo = (IEventRepository) AkkaEventRepository.New(new AutoTestAkkaConfiguration()))
+            using (var eventsRepo = (IRepository<DomainEvent>) ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))
             {
                 string persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
                 eventsRepo.Save(persistenceId, _createdEvent, _changedEvent);
@@ -32,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Tools
 
             using (var repo = TestRepository.NewPersistent())
             {
-                _aggregate = repo.Load<SampleAggregate>(_sourceId);
+                _aggregate = repo.LoadAggregate<SampleAggregate>(_sourceId);
             }
         }
 

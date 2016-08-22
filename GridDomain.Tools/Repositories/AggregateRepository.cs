@@ -2,16 +2,18 @@ using System;
 using System.Linq;
 using CommonDomain;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Tools.Persistence;
 
 namespace GridDomain.Tools.Repositories
 {
-    public class Repository : IRepository
+    public class AggregateRepository : IDisposable
     {
-        private readonly IEventRepository _eventRepository;
+        private readonly IRepository<DomainEvent> _eventRepository;
 
-        public Repository(IEventRepository eventRepository)
+        public AggregateRepository(IRepository<DomainEvent> eventRepository)
         {
             _eventRepository = eventRepository;
         }
@@ -19,11 +21,11 @@ namespace GridDomain.Tools.Repositories
         public void Save<T>(T aggr) where T : IAggregate
         {
             var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
-            _eventRepository.Save(persistId, aggr.GetUncommittedEvents().Cast<object>().ToArray());
+            _eventRepository.Save(persistId, aggr.GetUncommittedEvents().Cast<DomainEvent>().ToArray());
             aggr.ClearUncommittedEvents();
         }
 
-        public T Load<T>(Guid id) where T : AggregateBase
+        public T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var agr = Aggregate.Empty<T>(id);
             var persistId = AggregateActorName.New<T>(id).ToString();
@@ -36,6 +38,14 @@ namespace GridDomain.Tools.Repositories
         public void Dispose()
         {
             _eventRepository.Dispose();
+        }
+
+
+        public static AggregateRepository New(string akkaWriteDbConnectionString)
+        {
+            var rawSqlAkkaPersistenceRepository = new RawSqlAkkaPersistenceRepository(akkaWriteDbConnectionString);
+            var domainEventsRepository = new DomainEventsRepository(rawSqlAkkaPersistenceRepository);
+            return new AggregateRepository(domainEventsRepository);
         }
     }
 }

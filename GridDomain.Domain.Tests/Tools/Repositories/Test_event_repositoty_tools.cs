@@ -10,45 +10,51 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Tools
 {
 
-  
-
     [TestFixture]
+
     public class Test_event_repositoty_tools
     {
         private Guid _sourceId;
 
-        private class Message
+        private class Message :DomainEvent
         {
             public int Id;
+
+            public Message(Guid sourceId, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+            {
+            }
         }
 
         private class Message2 : Message
         {
+            public Message2(Guid sourceId, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+            {
+            }
         }
 
         [Test]
         public void Given_events_When_save_by_events_repository_Then_events_can_be_fetched()
         {
-            var events = new []
+            var events = new DomainEvent[]
             {
-                new Message()  {Id = 1}, 
-                new Message2() {Id = 2}
+                new Message(Guid.NewGuid())  {Id = 1}, 
+                new Message2(Guid.NewGuid()) {Id = 2}
             };
 
             using (var repo = CreateRepository())
             {
                 var persistId = "testId";
 
-                repo.Save(persistId,events);
+                repo.Save(persistId, events);
 
                 var eventsLoaded = repo.Load(persistId).Cast<Message>();
-                CollectionAssert.AreEquivalent(events.Select(e => e.Id),eventsLoaded.Select(e=> e.Id));
+                CollectionAssert.AreEquivalent(events.Cast<Message>().Select(e => e.Id),eventsLoaded.Select(e=> e.Id));
             }
         }
 
-        protected virtual IEventRepository CreateRepository()
+        protected virtual IRepository<DomainEvent> CreateRepository()
         {
-            return new AkkaEventRepository(new AutoTestAkkaConfiguration().CreateInMemorySystem());
+            return new ActorSystemEventRepository(new AutoTestAkkaConfiguration().CreateInMemorySystem());
         }
     }
 }

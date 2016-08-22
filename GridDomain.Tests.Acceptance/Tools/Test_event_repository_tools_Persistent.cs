@@ -1,3 +1,4 @@
+using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Tools;
@@ -9,9 +10,9 @@ namespace GridDomain.Tests.Acceptance.Tools
     [TestFixture]
     class Test_event_repository_tools_Persistent : Test_event_repositoty_tools
     {
-        protected override IEventRepository CreateRepository()
+        protected override IRepository<DomainEvent> CreateRepository()
         {
-            return new AkkaEventRepository(new AutoTestAkkaConfiguration().CreateSystem());
+            return new ActorSystemEventRepository(new AutoTestAkkaConfiguration().CreateSystem());
         }
     }
 }
