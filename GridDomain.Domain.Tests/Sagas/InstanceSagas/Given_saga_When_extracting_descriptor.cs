@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Descriptor_contains_message_start_saga()
         {
-            Assert.AreEqual(typeof(GotTiredEvent),_descriptor.StartMessage);
+            Assert.AreEqual(typeof(GotTiredEvent),_descriptor.StartMessages);
         }
 
         [Then]

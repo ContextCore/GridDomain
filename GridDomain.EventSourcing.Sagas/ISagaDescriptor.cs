@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas
         //TODO: enforce check all messages are DomainEvents
         IReadOnlyCollection<Type> AcceptMessages { get; }
         IReadOnlyCollection<Type> ProduceCommands { get; }
-        Type StartMessage { get; } 
+        IReadOnlyCollection<Type> StartMessages { get; } 
         Type StateType { get; }
         Type SagaType { get; }
     }

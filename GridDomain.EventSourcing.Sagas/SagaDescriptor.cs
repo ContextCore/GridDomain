@@ -14,13 +14,17 @@ namespace GridDomain.EventSourcing.Sagas
         {
             _producedMessages.Add(messageType);
         }
-
-        private List<Type> _acceptedMessages = new List<Type>(); 
-        private  List<Type> _producedMessages = new List<Type>();
+        public void AddStartMessage(Type messageType)
+        {
+            _startMessages.Add(messageType);
+        }
+        private readonly List<Type> _acceptedMessages = new List<Type>(); 
+        private readonly List<Type> _producedMessages = new List<Type>();
+        private readonly List<Type> _startMessages = new List<Type>();
 
         public IReadOnlyCollection<Type> AcceptMessages => _acceptedMessages;
         public IReadOnlyCollection<Type> ProduceCommands => _producedMessages;
-        public Type StartMessage { get; set; }
+        public IReadOnlyCollection<Type> StartMessages => _startMessages;
         public Type StateType { get; set; }
         public Type SagaType { get; set; }
     }

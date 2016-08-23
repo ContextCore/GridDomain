@@ -25,7 +25,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
         public IReadOnlyCollection<Type> ProduceCommands => _registeredCommands;
 
-        public Type StartMessage { get; } = typeof(TStartMessage);
+        public IReadOnlyCollection<Type> StartMessages => _startMessages;
         public Type StateType { get; } = typeof(TStateData);
         public Type SagaType => this.GetType();
 
@@ -41,11 +41,12 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         }
 
         private readonly List<Type> _registeredCommands = new List<Type>();
+        private readonly List<Type> _startMessages = new List<Type>();
 
         protected StateSaga(TStateData state)
         {
             State = state;
-
+            _startMessages.Add(typeof(TStartMessage));
             //to include start message into list of accept messages
             _eventsToTriggersMapping[typeof(TStartMessage)] = null;
             Machine = new StateMachine<TSagaStates, TSagaTriggers>(State.MachineState);
@@ -90,6 +91,11 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         protected void Dispatch(ISagaFault sagaFault)
         {
             _messagesToDispatch.Add(sagaFault);
+        }
+
+        protected void RegisterStartMessage<T>()
+        {
+            _startMessages.Add(typeof(T));
         }
 
         protected StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters<TEvent> RegisterEvent<TEvent>(

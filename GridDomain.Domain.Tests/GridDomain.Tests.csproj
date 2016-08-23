@@ -256,7 +256,11 @@
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
+    <Compile Include="DependencyInjection\AggregateNamedDependenciesTest.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
+    <Compile Include="DependencyInjection\NamedActorA.cs" />
+    <Compile Include="DependencyInjection\NamedActorB.cs" />
+    <Compile Include="DependencyInjection\SomeService.cs" />
     <Compile Include="EventsUpgrade\BalanceChangedDomainEventAdapter1.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater2.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater3.cs" />
@@ -499,6 +503,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DependencyInjection\NamedDependencies\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

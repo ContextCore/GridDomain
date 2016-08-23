@@ -55,9 +55,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             var actorOpenType = typeof(SagaHubActor<,,>);
 
+            //TODO: rework parameter pass to actor
             var actorType = actorOpenType.MakeGenericType(descriptor.SagaType, 
                                                           descriptor.StateType,
-                                                          descriptor.StartMessage);
+                                                          descriptor.StartMessages.First());
 
             return new CreateActorRouteMessage(actorType, name, messageRoutes);
         }

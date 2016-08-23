@@ -13,7 +13,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             descriptor.SagaType = typeof(ISagaInstance<,>).MakeGenericType(saga.GetType(), typeof(TSagaData));
             descriptor.StateType =  typeof (SagaDataAggregate<TSagaData>);
-            descriptor.StartMessage = saga.StartMessage;
+
+            foreach(var startMessage in saga.StartMessages)
+                descriptor.AddStartMessage(startMessage);
 
             return descriptor;
         }
