@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public Guid PersonId { get; set; }
         public string CurrentStateName { get; set; }
         public Guid CoffeeMachineId { get; }
-        public Guid SofaId { get; }
+        public Guid SofaId { get; set; }
 
         public SoftwareProgrammingSagaData(string stateName,
                                            Guid sofaId = default(Guid),

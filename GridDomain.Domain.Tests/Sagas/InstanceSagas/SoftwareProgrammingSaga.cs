@@ -46,7 +46,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     .TransitionTo(Coding));
 
              During(Sleeping,
-                When(SleptWell).TransitionTo(Coding));
+                When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
+                               .TransitionTo(Coding));
         }
 
         public Event<GotTiredEvent>      GotTired      { get; private set; } 
