@@ -4,7 +4,7 @@ using Akka.TestKit.NUnit;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.DependencyInjection
+namespace GridDomain.Tests.DependencyInjection.NamedDependencies
 {
     [TestFixture]
     public class AggregateNamedDependenciesTest : TestKit

@@ -1,9 +1,8 @@
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
 
-namespace GridDomain.Tests.Tools
+namespace GridDomain.Tests.Tools.Repositories
 {
     public static class TestRepository
     {

@@ -2,6 +2,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Tools;
+using GridDomain.Tests.Tools.Repositories;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 

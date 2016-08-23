@@ -1,6 +1,7 @@
 using System;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.Tools;
+using GridDomain.Tests.Tools.Repositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Tools

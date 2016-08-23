@@ -18,19 +18,48 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    /// <summary>
-    ///     Name should be parse by AggregateActorName
-    /// </summary>
-    /// <typeparam name="TSaga"></typeparam>
-    /// <typeparam name="TSagaState"></typeparam>
-    /// <typeparam name="TStartMessage"></typeparam>
-    public class SagaActor<TSaga, TSagaState, TStartMessage> :
-        ReceivePersistentActor where TSaga : class,ISagaInstance 
+
+    class SagaFactoryAdapter<TSaga, TMessage> :  ISagaFactory<TSaga, object> where TSaga : ISagaInstance
+    {
+        private readonly ISagaFactory<TSaga, TMessage> _factory;
+
+        public TSaga Create(object message)
+        {
+            return _factory.Create((TMessage) message);
+        }
+
+        public SagaFactoryAdapter(ISagaFactory<TSaga, TMessage> factory)
+        {
+            _factory = factory;
+        }
+    }
+
+    public class SagaActor<TSaga, TSagaState, TStartMessage> : SagaActor<TSaga, TSagaState>
+        where TSaga : class, ISagaInstance
         where TSagaState : AggregateBase
         where TStartMessage : DomainEvent
     {
+        public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
+                         ISagaFactory<TSaga, TSagaState> sagaFactory, 
+                         AggregateFactory aggregateFactory,
+                         IPublisher publisher):
+                         base(new SagaFactoryAdapter<TSaga,TStartMessage>(sagaStarter), sagaFactory, aggregateFactory, publisher,new [] {typeof(TStartMessage)})
+        {
+        }
+    }
+
+        /// <summary>
+        ///     Name should be parse by AggregateActorName
+        /// </summary>
+        /// <typeparam name="TSaga"></typeparam>
+        /// <typeparam name="TSagaState"></typeparam>
+        /// <typeparam name="TStartMessage"></typeparam>
+        public class SagaActor<TSaga, TSagaState> :
+        ReceivePersistentActor where TSaga : class,ISagaInstance 
+        where TSagaState : AggregateBase
+    {
         private readonly IPublisher _publisher;
-        private readonly ISagaFactory<TSaga, TStartMessage> _sagaStarter;
+        private readonly ISagaFactory<TSaga, object> _sagaStarter;
         private readonly ISagaFactory<TSaga, TSagaState> _sagaFactory;
 
 
@@ -40,10 +69,11 @@ namespace GridDomain.Node.Actors
         public TSaga Saga => _saga ?? (_saga = _sagaFactory.Create(_sagaData));
 
 
-        public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
+        public SagaActor(ISagaFactory<TSaga, object> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
                          AggregateFactory aggregateFactory,
-                         IPublisher publisher)
+                         IPublisher publisher,
+                         Type[] startMessages)
         {
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
@@ -69,7 +99,10 @@ namespace GridDomain.Node.Actors
             Command<DomainEvent>(msg =>
             {
                 _monitor.IncrementMessagesReceived();
-               msg.Match().With<TStartMessage>(start => _saga = _sagaStarter.Create(start));
+                var type = msg.GetType();
+                if(startMessages.Any(t => t.IsAssignableFrom(type)))
+                        _saga = _sagaStarter.Create(msg);
+
                ProcessSaga(msg);
             }, e => e.SagaId == Id);
 
