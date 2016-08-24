@@ -2,6 +2,7 @@ using System;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Actors;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -16,7 +17,10 @@ namespace GridDomain.Node.Configuration.Composition
         public void Register(IUnityContainer container)
         {
             container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>, TSagaFactory>();
-            container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>, TSagaFactory>();
+            container.RegisterType<TSagaFactory>();
+            container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, object>>(
+                new InjectionFactory(c => new SagaFactoryAdapter<ISagaInstance<TSaga, TData>, TStartMessage>(c.Resolve<TSagaFactory>())));
+            
             container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, Guid>, TSagaFactory>();
         }
     }

@@ -17,6 +17,7 @@ namespace GridDomain.EventSourcing.Sagas
         public void AddStartMessage(Type messageType)
         {
             _startMessages.Add(messageType);
+            _acceptedMessages.Add(messageType);
         }
         private readonly List<Type> _acceptedMessages = new List<Type>(); 
         private readonly List<Type> _producedMessages = new List<Type>();
