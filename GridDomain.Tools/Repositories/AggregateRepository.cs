@@ -40,9 +40,7 @@ namespace GridDomain.Tools.Repositories
 
         public void Dispose()
         {
-            _eventRepository.Dispose();
         }
-
 
         public static AggregateRepository New(string akkaWriteDbConnectionString, EventAdaptersCatalog eventUpgradeCatalog = null)
         {

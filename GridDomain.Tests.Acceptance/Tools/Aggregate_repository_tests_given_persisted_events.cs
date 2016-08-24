@@ -24,16 +24,24 @@ namespace GridDomain.Tests.Acceptance.Tools
         [Then,TestCaseSource(nameof(EventRepositories))]
         public void Given_only_aggregate_events_persisted_it_can_be_loaded(IRepository<DomainEvent> eventRepo, AggregateRepository aggrRepo)
         {
-            _sourceId = Guid.NewGuid();
-            _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
-            _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
-           
-            string persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
-            eventRepo.Save(persistenceId, _createdEvent, _changedEvent);
-            _aggregate = aggrRepo.LoadAggregate<SampleAggregate>(_sourceId);
+            try
+            {
+                _sourceId = Guid.NewGuid();
+                _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
+                _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
 
-            Assert.AreEqual(_sourceId, _aggregate.Id);
-            Assert.AreEqual(_changedEvent.Value, _aggregate.Value);
+                string persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
+                eventRepo.Save(persistenceId, _createdEvent, _changedEvent);
+                _aggregate = aggrRepo.LoadAggregate<SampleAggregate>(_sourceId);
+
+                Assert.AreEqual(_sourceId, _aggregate.Id);
+                Assert.AreEqual(_changedEvent.Value, _aggregate.Value);
+            }
+            finally
+            {
+                eventRepo.Dispose();
+                aggrRepo.Dispose();
+            }
         }
         private static readonly AutoTestAkkaConfiguration AutoTestAkkaConfiguration = new AutoTestAkkaConfiguration();
         private static readonly string AkkaWriteDbConnectionString = AutoTestAkkaConfiguration.Persistence.JournalConnectionString;

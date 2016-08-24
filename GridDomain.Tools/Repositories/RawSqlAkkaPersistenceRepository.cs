@@ -33,6 +33,7 @@ namespace GridDomain.Tools.Persistence
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
                 context.Journal.AddOrUpdate(messages);
+                context.SaveChanges();
             }
         }
 

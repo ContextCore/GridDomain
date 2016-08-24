@@ -45,6 +45,7 @@
       <dependency id="GridDomain.Common" version = "1.0.0-alfa"/>
       <dependency id="GridDomain.Aggregates" version = "1.0.0-alfa"/>
       <dependency id="GridDomain.Read" version = "1.0.0-alfa"/>
+	  <dependency id="Wire" version = "0.0.6"/>
     </dependencies>
   </metadata>
 
