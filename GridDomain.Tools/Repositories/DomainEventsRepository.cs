@@ -25,7 +25,7 @@ namespace GridDomain.Tools.Persistence
         //Event order matter!!
         public void Save(string id, params DomainEvent[] messages)
         {
-            var serializer = new Serializer(new SerializerOptions(true));
+            var serializer = new Serializer(new SerializerOptions(true,null,true));
             int counter=0;
 
             var journalEntries = messages.Select(m =>
@@ -49,7 +49,7 @@ namespace GridDomain.Tools.Persistence
 
         public DomainEvent[] Load(string id)
         {
-            var serializer = new Serializer(new SerializerOptions(true));
+            var serializer = new Serializer(new SerializerOptions(true,null,true));
             return
                 _rawDataRepo.Load(id)
                     .Select(d => serializer.Deserialize(new MemoryStream(d.Payload)))
