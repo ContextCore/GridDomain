@@ -13,4 +13,10 @@ namespace GridDomain.EventSourcing.Sagas
         Type StateType { get; }
         Type SagaType { get; }
     }
+
+    //Marker interface to simplify dependency injection into saga actors
+    public interface ISagaDescriptor<T> : ISagaDescriptor
+    {
+        
+    }
 }

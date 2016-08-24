@@ -5,19 +5,24 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public static class SagaExtensions
     {
-        public static ISagaDescriptor GetDescriptor<TSagaData>(this Saga<TSagaData> saga) where TSagaData : class, ISagaState
+        public static ISagaDescriptor GetDescriptor<TSaga,TSagaData>(this TSaga saga) 
+            where TSagaData : class, ISagaState
+            where TSaga: Saga<TSagaData>
         {
-            var descriptor = new SagaDescriptor();
+            var descriptor = new SagaDescriptor<ISagaInstance<TSaga, TSagaData>, SagaDataAggregate<TSagaData>>();
+
             FillAcceptMessages(saga, descriptor);
             FillCommands(saga, descriptor);
-
-            descriptor.SagaType = typeof(ISagaInstance<,>).MakeGenericType(saga.GetType(), typeof(TSagaData));
-            descriptor.StateType =  typeof (SagaDataAggregate<TSagaData>);
-
-            foreach(var startMessage in saga.StartMessages)
-                descriptor.AddStartMessage(startMessage);
+            FillStartMessages(saga, descriptor);
 
             return descriptor;
+        }
+
+        private static void FillStartMessages<TSaga, TSagaData>(TSaga saga, SagaDescriptor<ISagaInstance<TSaga, TSagaData>, SagaDataAggregate<TSagaData>> descriptor)
+            where TSagaData : class, ISagaState where TSaga : Saga<TSagaData>
+        {
+            foreach (var startMessage in saga.StartMessages)
+                descriptor.AddStartMessage(startMessage);
         }
 
         private static void FillCommands<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState

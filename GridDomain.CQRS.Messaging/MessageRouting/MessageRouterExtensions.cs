@@ -17,7 +17,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             where TSaga : Saga<TData>, new()
             where TData : class, ISagaState
         {
-            router.RegisterSaga(new TSaga().GetDescriptor(), typeof(TSaga).Name);
+            router.RegisterSaga(new TSaga().GetDescriptor<TSaga,TData>(), typeof(TSaga).Name);
         }
     }
 }

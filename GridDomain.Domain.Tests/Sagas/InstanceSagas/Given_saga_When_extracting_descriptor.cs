@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void ExtractDescriptor()
         {
             var saga = new SoftwareProgrammingSaga();
-            _descriptor = saga.GetDescriptor();
+            _descriptor = saga.GetDescriptor<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>();
         }
 
         [Then]

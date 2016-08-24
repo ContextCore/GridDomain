@@ -34,19 +34,19 @@ namespace GridDomain.Node.Actors
         }
     }
 
-    public class SagaActor<TSaga, TSagaState, TStartMessage> : SagaActor<TSaga, TSagaState>
-        where TSaga : class, ISagaInstance
-        where TSagaState : AggregateBase
-        where TStartMessage : DomainEvent
-    {
-        public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
-                         ISagaFactory<TSaga, TSagaState> sagaFactory, 
-                         AggregateFactory aggregateFactory,
-                         IPublisher publisher):
-                         base(new SagaFactoryAdapter<TSaga,TStartMessage>(sagaStarter), sagaFactory, aggregateFactory, publisher,new [] {typeof(TStartMessage)})
-        {
-        }
-    }
+    //public class SagaActor<TSaga, TSagaState, TStartMessage> : SagaActor<TSaga, TSagaState>
+    //    where TSaga : class, ISagaInstance
+    //    where TSagaState : AggregateBase
+    //    where TStartMessage : DomainEvent
+    //{
+    //    public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
+    //                     ISagaFactory<TSaga, TSagaState> sagaFactory, 
+    //                     IPublisher publisher,
+    //                     ):
+    //                     base(new SagaFactoryAdapter<TSaga,TStartMessage>(sagaStarter), sagaFactory, publisher,new [] {typeof(TStartMessage)})
+    //    {
+    //    }
+    //}
 
         /// <summary>
         ///     Name should be parse by AggregateActorName
@@ -54,7 +54,7 @@ namespace GridDomain.Node.Actors
         /// <typeparam name="TSaga"></typeparam>
         /// <typeparam name="TSagaState"></typeparam>
         /// <typeparam name="TStartMessage"></typeparam>
-        public class SagaActor<TSaga, TSagaState> :
+    public class SagaActor<TSaga, TSagaState> :
         ReceivePersistentActor where TSaga : class,ISagaInstance 
         where TSagaState : AggregateBase
     {
@@ -67,13 +67,12 @@ namespace GridDomain.Node.Actors
         private TSagaState _sagaData;
         public readonly Guid Id;
         public TSaga Saga => _saga ?? (_saga = _sagaFactory.Create(_sagaData));
-
+        private static AggregateFactory _aggregateFactory = new AggregateFactory();
 
         public SagaActor(ISagaFactory<TSaga, object> sagaStarter,
                          ISagaFactory<TSaga, TSagaState> sagaFactory,
-                         AggregateFactory aggregateFactory,
                          IPublisher publisher,
-                         Type[] startMessages)
+                         ISagaDescriptor<TSaga> startMessages)
         {
             _sagaStarter = sagaStarter;
             _sagaFactory = sagaFactory;
@@ -82,7 +81,7 @@ namespace GridDomain.Node.Actors
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
-            _sagaData = aggregateFactory.Build<TSagaState>(Id);
+            _sagaData = _aggregateFactory.Build<TSagaState>(Id);
 
             Command<ICommandFault>(fault =>
             {

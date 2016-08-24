@@ -1,7 +1,6 @@
 using Akka;
 using Akka.Actor;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
@@ -20,8 +19,8 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
         }
 
         public TestStateSagaActor(ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent> sagaStarter, 
-            ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, 
-            AggregateFactory aggregateFactory, IPublisher publisher) : base(sagaStarter, sagaFactory, aggregateFactory, publisher)
+            ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, IPublisher publisher)
+            : base(sagaStarter, sagaFactory, publisher)
         {
         }
     }
