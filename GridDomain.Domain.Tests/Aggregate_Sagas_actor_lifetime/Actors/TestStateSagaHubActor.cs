@@ -9,8 +9,8 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestStateSagaHubActor : SagaHubActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>
     {
-        public TestStateSagaHubActor(IPublisher publisher, ISagaDescriptor<SoftwareProgrammingSaga> descriptor):
-            base(publisher, new TestPersistentChildsRecycleConfiguration(), descriptor)
+        public TestStateSagaHubActor(IPublisher publisher, ISagaProducer<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> producer):
+            base(publisher, new TestPersistentChildsRecycleConfiguration(), producer)
         {
         }
         protected override Type GetChildActorType(object message)

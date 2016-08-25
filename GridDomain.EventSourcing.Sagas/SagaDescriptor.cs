@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaDescriptor
+    public class SagaDescriptor : ISagaDescriptor
     {
         private readonly List<Type> _acceptedMessages = new List<Type>();
         private readonly List<Type> _producedMessages = new List<Type>();
@@ -38,7 +38,7 @@ namespace GridDomain.EventSourcing.Sagas
         }
     }
 
-    public class SagaDescriptor<TSaga,TState> : SagaDescriptor, ISagaDescriptor<TSaga>
+    public class SagaDescriptor<TSaga,TState> : SagaDescriptor
     {
         public SagaDescriptor():base(typeof(TSaga), typeof(TState))
         {

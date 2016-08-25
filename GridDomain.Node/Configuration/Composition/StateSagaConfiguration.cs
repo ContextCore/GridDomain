@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
@@ -7,50 +8,38 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public class StateSagaConfiguration<TSaga,TSagaState, TStartMessage, TSagaFactory>:
-                                             IContainerConfiguration where TSaga : ISagaInstance 
-                                             where TSagaFactory : ISagaFactory<TSaga, TSagaState>, 
-                                                                  ISagaFactory<TSaga, TStartMessage>,
-                                                                  ISagaFactory<TSaga, Guid>
+    public class SagaConfiguration<TSaga>: IContainerConfiguration where TSaga : ISagaInstance
     {
-        private readonly ISagaDescriptor<TSaga> _sagaDescriptor;
+        protected readonly SagaProducer<TSaga> Producer;
 
-        public StateSagaConfiguration(ISagaDescriptor<TSaga> sagaDescriptor )
+        public SagaConfiguration(IEnumerable<Type> startDataTypes, Func<object, TSaga> factory):this(null)
         {
-            _sagaDescriptor = sagaDescriptor;
+            foreach (var dataType in startDataTypes)
+                Producer.Register(dataType, factory);
         }
 
+        public SagaConfiguration(SagaProducer<TSaga> producer = null )
+        {
+            Producer = producer ?? new SagaProducer<TSaga>();
+        }
+
+        public void Register<T>(ISagaFactory<TSaga, T> factory)
+        {
+            Producer.Register(factory);
+        }
         public void Register(IUnityContainer container)
         {
-            container.RegisterType<ISagaFactory<TSaga, TSagaState>, TSagaFactory>();
-            container.RegisterType<ISagaFactory<TSaga,Guid>, TSagaFactory>();
-            container.RegisterType<TSagaFactory>();
-            container.RegisterType<ISagaFactory<TSaga, object>>(
-                new InjectionFactory(c => new SagaFactoryAdapter<TSaga, TStartMessage>(c.Resolve<TSagaFactory>())));
-
-            container.RegisterInstance(_sagaDescriptor);
-        }
-    }
-
-    public class StateSagaConfiguration<TSaga, TSagaState, TSagaFactory> :
-                                         IContainerConfiguration where TSaga : ISagaInstance
-                                         where TSagaFactory : ISagaFactory<TSaga, TSagaState>,
-                                                              ISagaFactory<TSaga, object>,
-                                                              ISagaFactory<TSaga, Guid>
-    {
-        private readonly ISagaDescriptor _descriptor;
-
-        public StateSagaConfiguration(ISagaDescriptor descriptor)
-        {
-            _descriptor = descriptor;
+            container.RegisterInstance<ISagaProducer<TSaga>>(Producer);
         }
 
-        public void Register(IUnityContainer container)
+        public static SagaConfiguration<TSaga> New<TFactory, TState>(TFactory factory)
+                                                                     where TFactory : ISagaFactory<TSaga, Guid>,
+                                                                                      ISagaFactory<TSaga, TState>
         {
-            container.RegisterType<ISagaFactory<TSaga, TSagaState>, TSagaFactory>();
-            container.RegisterType<ISagaFactory<TSaga, Guid>, TSagaFactory>();
-            container.RegisterType<ISagaFactory<TSaga, object>, TSagaFactory>();
-            container.RegisterInstance<Type[]>(nameof(TSaga), _descriptor.StartMessages.ToArray());
+            var conf = new SagaConfiguration<TSaga>();
+            conf.Register<Guid>(factory);
+            conf.Register<TState>(factory);
+            return conf;
         }
     }
 }

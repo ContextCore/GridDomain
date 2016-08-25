@@ -19,12 +19,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
             return base.Receive(message);
         }
 
-        public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, object> sagaStarter, 
-                                     ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, 
-                                     SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory,
-                                     IPublisher publisher,
-                                     ISagaDescriptor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>> descriptor) :
-            base(sagaStarter, sagaFactory, publisher, descriptor)
+        public TestInstanceSagaActor(
+            ISagaProducer<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>> producer,
+            IPublisher publisher) : base(producer, publisher)
         {
         }
     }

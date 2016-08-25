@@ -28,6 +28,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                     SoftwareProgrammingSagaData,
                                     GotTiredEvent,
                                     SoftwareProgrammingSagaFactory>(),
+
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()

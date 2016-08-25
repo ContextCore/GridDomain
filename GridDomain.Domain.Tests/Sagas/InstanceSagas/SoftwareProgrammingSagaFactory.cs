@@ -14,12 +14,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, Guid> 
     {
-        private readonly AggregateFactory _emptyAggregateFactory;
-
-        public SoftwareProgrammingSagaFactory(AggregateFactory emptyAggregateFactory)
-        {
-            _emptyAggregateFactory = emptyAggregateFactory;
-        }
+        private readonly AggregateFactory _emptyAggregateFactory = new AggregateFactory();
 
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SagaDataAggregate<SoftwareProgrammingSagaData> message)
         {

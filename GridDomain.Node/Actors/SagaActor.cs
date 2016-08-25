@@ -28,53 +28,30 @@ namespace GridDomain.Node.Actors
     {
 
     }
-    class SagaFactoryAdapter<TSaga, TMessage> :  ISagaFactory<TSaga, object> where TSaga : ISagaInstance
-    {
-        private readonly ISagaFactory<TSaga, TMessage> _factory;
-
-        public TSaga Create(object message)
-        {
-            return _factory.Create((TMessage) message);
-        }
-
-        public SagaFactoryAdapter(ISagaFactory<TSaga, TMessage> factory)
-        {
-            _factory = factory;
-        }
-    }
-
-   
-
-        /// <summary>
-        ///     Name should be parse by AggregateActorName
-        /// </summary>
-        /// <typeparam name="TSaga"></typeparam>
-        /// <typeparam name="TSagaState"></typeparam>
-        /// <typeparam name="TStartMessage"></typeparam>
+    /// <summary>
+    ///     Name should be parse by AggregateActorName
+    /// </summary>
+    /// <typeparam name="TSaga"></typeparam>
+    /// <typeparam name="TSagaState"></typeparam>
     public class SagaActor<TSaga, TSagaState> :
         ReceivePersistentActor where TSaga : class,ISagaInstance 
         where TSagaState : AggregateBase
     {
+        private readonly ISagaProducer<TSaga, TSagaState> _producer;
         private readonly IPublisher _publisher;
-        private readonly ISagaFactory<TSaga, object> _sagaStarter;
-        private readonly ISagaFactory<TSaga, TSagaState> _sagaFactory;
-
-
         private TSaga _saga;
         private TSagaState _sagaData;
         public readonly Guid Id;
-        public TSaga Saga => _saga ?? (_saga = _sagaFactory.Create(_sagaData));
-        private static AggregateFactory _aggregateFactory = new AggregateFactory();
+        public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
+        private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
+        private readonly HashSet<Type> _sagaStartMessageTypes;
 
-        public SagaActor(ISagaFactory<TSaga, object> sagaStarter,
-                         ISagaFactory<TSaga, TSagaState> sagaFactory,
-                         IPublisher publisher,
-                         ISagaDescriptor<TSaga> startMessages)
+        public SagaActor(ISagaProducer<TSaga,TSagaState> producer,
+                         IPublisher publisher)
         {
-            _sagaStarter = sagaStarter;
-            _sagaFactory = sagaFactory;
+            _producer = producer;
             _publisher = publisher;
-            _monitor = new ActorMonitor(Context,typeof(TSaga).Name);
+            _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
@@ -82,24 +59,23 @@ namespace GridDomain.Node.Actors
 
             Command<ICommandFault>(fault =>
             {
-                _monitor.IncrementMessagesReceived();
-                ProcessSaga(fault);
+               _monitor.IncrementMessagesReceived();
+               ProcessSaga(fault);
             }, fault => fault.SagaId == Id);
 
             Command<ShutdownRequest>(req =>
             {
-                _monitor.IncrementMessagesReceived();
-                Shutdown();
+               _monitor.IncrementMessagesReceived();
+               Shutdown();
             });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus()));
 
             Command<DomainEvent>(msg =>
             {
-                _monitor.IncrementMessagesReceived();
-                var type = msg.GetType();
-                if(startMessages.StartMessages.Any(t => t.IsAssignableFrom(type)))
-                        _saga = _sagaStarter.Create(msg);
+               _monitor.IncrementMessagesReceived();
+               if(_sagaStartMessageTypes.Contains(msg.GetType()))
+                        _saga = _producer.Create(msg);
 
                ProcessSaga(msg);
             }, e => e.SagaId == Id);
@@ -143,9 +119,10 @@ namespace GridDomain.Node.Actors
             Saga.Data.ClearUncommittedEvents();
         }
 
-        private readonly ActorMonitor _monitor;
+        private readonly ActorMonitor _monitor = new ActorMonitor(Context,typeof(TSaga).Name);
+        
 
-        protected override void PreStart()
+            protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
         }

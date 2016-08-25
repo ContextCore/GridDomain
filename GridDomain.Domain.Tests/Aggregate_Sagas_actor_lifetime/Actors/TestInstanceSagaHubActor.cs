@@ -12,7 +12,10 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
     class TestInstanceSagaHubActor : SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
                                                    SagaDataAggregate<SoftwareProgrammingSagaData>>
     {
-        public TestInstanceSagaHubActor(IPublisher publisher, ISagaDescriptor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>> descriptor) : base(publisher, new TestPersistentChildsRecycleConfiguration(), descriptor)
+        public TestInstanceSagaHubActor(IPublisher publisher, 
+            ISagaProducer<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+                          SagaDataAggregate<SoftwareProgrammingSagaData>> producer)
+                    : base(publisher, new TestPersistentChildsRecycleConfiguration(), producer)
         {
         }
 

@@ -11,6 +11,7 @@ using GridDomain.Tests.SampleDomain;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
+    //TODO : replace with HealthCheck \ HealthStatus
     class Ping
     {
         public object Payload { get; }

@@ -25,34 +25,29 @@ namespace GridDomain.Node.Configuration.Composition
             Register<AggregateConfiguration<TAggregate, TCommandsHandler>>(container);
         }
 
-        public static void RegisterSaga<TSaga, TData, TStartMessage,TFactory>(this IUnityContainer container) 
-            where TSaga: Saga<TData>, new()
-            where TData : class, ISagaState 
-            where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
-                             ISagaFactory<ISagaInstance<TSaga, TData>, object>,
-                             ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
-        {
-            var conf = new InstanceSagaConfiguration<TSaga, TData, TFactory>(new TSaga().GetDescriptor<TSaga, TData>());
-            conf.Register(container);
-        }
-
-        public static void RegisterSaga<TSaga, TData, TStartMessage, TFactory>(this IUnityContainer container)
+        public static void RegisterSaga<TSaga, TData, TStartMessage,TFactory>(this IUnityContainer container)
            where TSaga : Saga<TData>
            where TData : class, ISagaState
            where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
                             ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>,
-                            ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
+                            ISagaFactory<ISagaInstance<TSaga, TData>, Guid>, new()
         {
-            Register<InstanceSagaConfiguration<TSaga, TData, TStartMessage, TFactory>>(container, );
+            RegisterStateSaga<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TStartMessage, TFactory>(container);
         }
-
 
         public static void RegisterStateSaga<TSaga, TState, TStartMessage, TFactory>(this IUnityContainer container)
-            where TFactory : ISagaFactory<TSaga, TState>, ISagaFactory<TSaga, TStartMessage>, ISagaFactory<TSaga, Guid> 
-            where TSaga : ISagaInstance
+                where TFactory : ISagaFactory<TSaga, TState>, 
+                                 ISagaFactory<TSaga, TStartMessage>, 
+                                 ISagaFactory<TSaga, Guid>, new()
+
+                where TSaga : ISagaInstance
         {
-            Register<StateSagaConfiguration<TSaga, TState, TStartMessage, TFactory>>(container);
+            var factory = new TFactory();
+            var conf = SagaConfiguration<TSaga>.New<TFactory,TState>(factory);
+            conf.Register<TStartMessage>(factory);
+            conf.Register(container);
         }
+
 
     }
 }

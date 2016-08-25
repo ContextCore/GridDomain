@@ -18,9 +18,8 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
             return base.Receive(message);
         }
 
-        public TestStateSagaActor(ISagaFactory<SoftwareProgrammingSaga, object> sagaStarter, 
-            ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, IPublisher publisher, 
-            ISagaDescriptor<SoftwareProgrammingSaga> descriptor): base(sagaStarter, sagaFactory, publisher, descriptor)
+        public TestStateSagaActor(ISagaProducer<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> producer, 
+            IPublisher publisher): base(producer, publisher)
         {
         }
     }

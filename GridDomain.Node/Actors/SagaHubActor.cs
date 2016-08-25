@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using CommonDomain.Core;
@@ -16,11 +17,13 @@ namespace GridDomain.Node.Actors
     {
         private readonly Type _actorType = typeof(SagaActor<TSaga, TSagaState>);
         private readonly IPublisher _publisher;
-        private readonly ISagaDescriptor<TSaga> _sagaDescriptor;
+        private readonly HashSet<Type> _sagaStartMessages;
 
-        public SagaHubActor(IPublisher publisher, IPersistentChildsRecycleConfiguration recycleConf, ISagaDescriptor<TSaga> sagaDescriptor ) : base(recycleConf, typeof(TSaga).Name)
+        public SagaHubActor(IPublisher publisher, 
+                            IPersistentChildsRecycleConfiguration recycleConf, 
+                            ISagaProducer<TSaga> sagaDescriptor ) : base(recycleConf, typeof(TSaga).Name)
         {
-            _sagaDescriptor = sagaDescriptor;
+            _sagaStartMessages = new HashSet<Type>(sagaDescriptor.KnownDataTypes);
             _publisher = publisher;
         }
 
@@ -46,8 +49,7 @@ namespace GridDomain.Node.Actors
         {
             var msgType = message.GetType();
             DomainEvent domainEvent = message as DomainEvent;
-
-            if (domainEvent != null && _sagaDescriptor.StartMessages.Contains(msgType))
+            if (domainEvent != null && _sagaStartMessages.Contains(msgType))
             {
                 //send message back to publisher to reroute to some hub according to SagaId
                 _publisher.Publish(domainEvent.CloneWithSaga(Guid.NewGuid()));
