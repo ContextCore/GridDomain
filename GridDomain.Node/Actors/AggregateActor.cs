@@ -73,6 +73,8 @@ namespace GridDomain.Node.Actors
                 Shutdown();
             });
 
+            Command<CheckHealth>(s => Sender.Tell(new HealthStatus()));
+
             Command<ICommand>(cmd =>
             {
                 _monitor.IncrementMessagesReceived();

@@ -14,14 +14,20 @@ namespace GridDomain.Node.Configuration.Composition
                              ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
         where TData : class, ISagaState
     {
-        //public void Register(IUnityContainer container)
-        //{
-        //    container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>, TSagaFactory>();
-        //    container.RegisterType<TSagaFactory>();
-        //    container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, object>>(
-        //        new InjectionFactory(c => new SagaFactoryAdapter<ISagaInstance<TSaga, TData>, TStartMessage>(c.Resolve<TSagaFactory>())));
-            
-        //    container.RegisterType<ISagaFactory<ISagaInstance<TSaga, TData>, Guid>, TSagaFactory>();
-        //}
+        public InstanceSagaConfiguration(ISagaDescriptor<ISagaInstance<TSaga, TData>> sagaDescriptor) : base(sagaDescriptor)
+        {
+        }
+    }
+
+    public class InstanceSagaConfiguration<TSaga, TData, TStartMessage, TSagaFactory> :
+       StateSagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TStartMessage, TSagaFactory>
+       where TSagaFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
+                            ISagaFactory<ISagaInstance<TSaga, TData>, object>,
+                            ISagaFactory<ISagaInstance<TSaga, TData>, Guid>
+       where TData : class, ISagaState
+    {
+        public InstanceSagaConfiguration(ISagaDescriptor<ISagaInstance<TSaga, TData>> sagaDescriptor) : base(sagaDescriptor)
+        {
+        }
     }
 }

@@ -18,7 +18,16 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
+    class CheckHealth
+    {
 
+    }
+
+    //TODO: add status info, e.g. was any errors during execution or recover
+    class HealthStatus
+    {
+
+    }
     class SagaFactoryAdapter<TSaga, TMessage> :  ISagaFactory<TSaga, object> where TSaga : ISagaInstance
     {
         private readonly ISagaFactory<TSaga, TMessage> _factory;
@@ -34,19 +43,7 @@ namespace GridDomain.Node.Actors
         }
     }
 
-    //public class SagaActor<TSaga, TSagaState, TStartMessage> : SagaActor<TSaga, TSagaState>
-    //    where TSaga : class, ISagaInstance
-    //    where TSagaState : AggregateBase
-    //    where TStartMessage : DomainEvent
-    //{
-    //    public SagaActor(ISagaFactory<TSaga, TStartMessage> sagaStarter,
-    //                     ISagaFactory<TSaga, TSagaState> sagaFactory, 
-    //                     IPublisher publisher,
-    //                     ):
-    //                     base(new SagaFactoryAdapter<TSaga,TStartMessage>(sagaStarter), sagaFactory, publisher,new [] {typeof(TStartMessage)})
-    //    {
-    //    }
-    //}
+   
 
         /// <summary>
         ///     Name should be parse by AggregateActorName
@@ -95,11 +92,13 @@ namespace GridDomain.Node.Actors
                 Shutdown();
             });
 
+            Command<CheckHealth>(s => Sender.Tell(new HealthStatus()));
+
             Command<DomainEvent>(msg =>
             {
                 _monitor.IncrementMessagesReceived();
                 var type = msg.GetType();
-                if(startMessages.Any(t => t.IsAssignableFrom(type)))
+                if(startMessages.StartMessages.Any(t => t.IsAssignableFrom(type)))
                         _saga = _sagaStarter.Create(msg);
 
                ProcessSaga(msg);

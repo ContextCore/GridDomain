@@ -10,8 +10,7 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestInstanceSagaActor : SagaActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, 
-        SagaDataAggregate<SoftwareProgrammingSagaData>,
-        GotTiredEvent>
+                                          SagaDataAggregate<SoftwareProgrammingSagaData>>
     {
         protected override bool Receive(object message)
         {
@@ -20,8 +19,12 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
             return base.Receive(message);
         }
 
-        public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent> sagaStarter, ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory,
-            IPublisher publisher) : base(sagaStarter, sagaFactory, publisher)
+        public TestInstanceSagaActor(ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, object> sagaStarter, 
+                                     ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, 
+                                     SagaDataAggregate<SoftwareProgrammingSagaData>> sagaFactory,
+                                     IPublisher publisher,
+                                     ISagaDescriptor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>> descriptor) :
+            base(sagaStarter, sagaFactory, publisher, descriptor)
         {
         }
     }

@@ -35,9 +35,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000) : TimeSpan.FromSeconds(1));
 
-            _sagaState = LoadSagaState<SoftwareProgrammingSaga,
-                SoftwareProgrammingSagaState,
-                GotTiredEvent>(_sagaId);
+            _sagaState = LoadSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
 
         }
 

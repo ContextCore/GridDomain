@@ -8,7 +8,7 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
-    class TestStateSagaActor : SagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, GotTiredEvent>
+    class TestStateSagaActor : SagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>
     {
 
         protected override bool Receive(object message)
@@ -18,9 +18,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
             return base.Receive(message);
         }
 
-        public TestStateSagaActor(ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent> sagaStarter, 
-            ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, IPublisher publisher)
-            : base(sagaStarter, sagaFactory, publisher)
+        public TestStateSagaActor(ISagaFactory<SoftwareProgrammingSaga, object> sagaStarter, 
+            ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState> sagaFactory, IPublisher publisher, 
+            ISagaDescriptor<SoftwareProgrammingSaga> descriptor): base(sagaStarter, sagaFactory, publisher, descriptor)
         {
         }
     }

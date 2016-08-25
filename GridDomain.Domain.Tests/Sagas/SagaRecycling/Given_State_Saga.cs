@@ -35,9 +35,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
 
             Thread.Sleep(TimeSpan.FromMilliseconds(500));
 
-            _sagaState = LoadSagaState<SagaForRecycling,
-                                       State,
-                                       StartEvent>(_sagaId);
+            _sagaState = LoadSagaState<SagaForRecycling, State>(_sagaId);
         }
 
         [Then]

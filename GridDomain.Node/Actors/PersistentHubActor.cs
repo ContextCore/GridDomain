@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Monitoring;
@@ -47,11 +48,13 @@ namespace GridDomain.Node.Actors
         protected override void OnReceive(object message)
         {
             _monitor.IncrementMessagesReceived();
+
             if (message is ClearChilds)
             {
                 Clear();
                 return;
             }
+            message.Match().With<CheckHealth>(s => Sender.Tell(new HealthStatus()));
 
             ChildInfo knownChild;
             var childId = GetChildActorId(message);

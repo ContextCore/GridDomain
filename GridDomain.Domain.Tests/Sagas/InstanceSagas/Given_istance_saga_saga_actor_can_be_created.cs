@@ -17,12 +17,11 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void Saga_actor_can_be_created()
         {
             var actorType  = typeof(SagaActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                                    SagaDataAggregate<SoftwareProgrammingSagaData>,
-                                    GotTiredEvent>);
+                                    SagaDataAggregate<SoftwareProgrammingSagaData>>);
 
             var actor = GridNode.System.CreatePersistedIdentityActor(actorType, Guid.Empty);
-            actor.Ask(new DomainEvent(Guid.NewGuid()));
-            ExpectNoMsg();
+            actor.Tell(new CheckHealth());
+            ExpectMsg<HealthStatus>();
         }
     }
 }

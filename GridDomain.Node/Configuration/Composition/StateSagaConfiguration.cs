@@ -13,6 +13,13 @@ namespace GridDomain.Node.Configuration.Composition
                                                                   ISagaFactory<TSaga, TStartMessage>,
                                                                   ISagaFactory<TSaga, Guid>
     {
+        private readonly ISagaDescriptor<TSaga> _sagaDescriptor;
+
+        public StateSagaConfiguration(ISagaDescriptor<TSaga> sagaDescriptor )
+        {
+            _sagaDescriptor = sagaDescriptor;
+        }
+
         public void Register(IUnityContainer container)
         {
             container.RegisterType<ISagaFactory<TSaga, TSagaState>, TSagaFactory>();
@@ -21,7 +28,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<ISagaFactory<TSaga, object>>(
                 new InjectionFactory(c => new SagaFactoryAdapter<TSaga, TStartMessage>(c.Resolve<TSagaFactory>())));
 
-            container.RegisterInstance<Type[]>(nameof(TSaga),new[] {typeof(TStartMessage)});
+            container.RegisterInstance(_sagaDescriptor);
         }
     }
 

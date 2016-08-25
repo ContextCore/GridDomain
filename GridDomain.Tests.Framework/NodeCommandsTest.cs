@@ -10,7 +10,6 @@ using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
@@ -94,11 +93,11 @@ namespace GridDomain.Tests.Framework
             return actor.UnderlyingActor.Aggregate;
         }
 
-        public TSagaState LoadSagaState<TSaga, TSagaState, TStartMessage>(Guid id) where TStartMessage : DomainEvent where TSagaState : AggregateBase where TSaga : class, ISagaInstance
+        public TSagaState LoadSagaState<TSaga, TSagaState>(Guid id) where TSagaState : AggregateBase where TSaga : class, ISagaInstance
         {
-            var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState, TStartMessage>>();
+            var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState>>();
             var name = AggregateActorName.New<TSagaState>(id).ToString();
-            var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState, TStartMessage>>(props, name);
+            var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState>>(props, name);
             Thread.Sleep(1000); //wait for actor recover
             return (TSagaState)actor.UnderlyingActor.Saga.Data;
         }

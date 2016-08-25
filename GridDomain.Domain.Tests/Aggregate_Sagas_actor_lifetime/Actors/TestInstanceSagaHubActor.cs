@@ -10,10 +10,9 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     class TestInstanceSagaHubActor : SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-        SagaDataAggregate<SoftwareProgrammingSagaData>,
-        GotTiredEvent>
+                                                   SagaDataAggregate<SoftwareProgrammingSagaData>>
     {
-        public TestInstanceSagaHubActor(IPublisher publisher) : base(publisher, new TestPersistentChildsRecycleConfiguration())
+        public TestInstanceSagaHubActor(IPublisher publisher, ISagaDescriptor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>> descriptor) : base(publisher, new TestPersistentChildsRecycleConfiguration(), descriptor)
         {
         }
 

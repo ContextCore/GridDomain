@@ -27,9 +27,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
             var publisher = GridNode.Container.Resolve<IPublisher>();
             publisher.Publish(new GotTiredEvent(_personId).CloneWithSaga(_sagaId));
             Thread.Sleep(500);
-            _sagaState = LoadSagaState<SoftwareProgrammingSaga,
-                                       SoftwareProgrammingSagaState,
-                                       GotTiredEvent>(_sagaId);
+            _sagaState = LoadSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
         }
 
         [Then]
