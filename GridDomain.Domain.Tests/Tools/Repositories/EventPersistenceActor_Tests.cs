@@ -2,11 +2,10 @@
 using Akka.Actor;
 using Akka.TestKit.NUnit;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Tools
+namespace GridDomain.Tests.Tools.Repositories
 {
     [TestFixture]
     public class EventPersistenceActor_Tests : TestKit

@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                 //container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
                 //container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
                 //container.RegisterType<ISagaFactory<TestSaga, Guid>, TestSagaFactory>();
-                container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaStartMessage, TestSagaFactory>();
+                container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaFactory, TestSagaStartMessage>();
             }
         }
 
@@ -114,7 +114,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var testEvent = new TestSagaStartMessage(sagaId, DateTimeFacade.UtcNow, sagaId);
             _scheduler.Ask<Scheduled>(new ScheduleMessage(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
-            var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
+            var sagaState = LoadSagaState<TestSaga, TestSagaState>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotStartEvent);
         }
 
@@ -129,7 +129,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var secondEvent = new TestEvent(sagaId);
             _scheduler.Ask<Scheduled>(new ScheduleMessage(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaTransitionEvent<TestSaga.TestStates, TestSaga.Transitions>>();
-            var sagaState = LoadSagaState<TestSaga, TestSagaState, TestSagaStartMessage>(sagaId);
+            var sagaState = LoadSagaState<TestSaga, TestSagaState>(sagaId);
             Assert.True(sagaState.MachineState == TestSaga.TestStates.GotSecondEvent);
         }
 
@@ -144,8 +144,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
             WaitFor<SagaTransitionEvent<ScheduledCommandProcessingSaga.States, ScheduledCommandProcessingSaga.Transitions>>();
             Thread.Sleep(1000);
-            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
-            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
+            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(firstKey);
+            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(secondKey);
             Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.SuccessfullyProcessed && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
         }
 
@@ -160,8 +160,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
             _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
             Thread.Sleep(2000);
-            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(firstKey);
-            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(secondKey);
+            var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(firstKey);
+            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(secondKey);
             Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
         }
 
@@ -240,7 +240,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
             //TODO::VZ:: get saga from persistence
             WaitFor<CommandFault<FailCommand>>(false);
-            var sagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState, ScheduledCommandProcessingStarted>(id);
+            var sagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(id);
             Assert.True(sagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure);
         }
 

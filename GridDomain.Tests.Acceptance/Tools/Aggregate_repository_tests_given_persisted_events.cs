@@ -6,6 +6,7 @@ using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.Tools;
+using GridDomain.Tests.Tools.Repositories;
 using GridDomain.Tools.Persistence;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;

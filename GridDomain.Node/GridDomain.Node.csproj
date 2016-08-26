@@ -229,7 +229,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
@@ -309,7 +308,6 @@
     <Compile Include="Configuration\Akka\Hocon\RootConfig.cs" />
     <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
     <Compile Include="Configuration\Composition\ContainerExtensions.cs" />
-    <Compile Include="Configuration\Composition\InstanceSagaConfiguration.cs" />
     <Compile Include="Configuration\Composition\StateSagaConfiguration.cs" />
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />
     <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />

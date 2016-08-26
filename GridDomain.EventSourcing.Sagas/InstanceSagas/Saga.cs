@@ -15,14 +15,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             CommandsToDispatch.Add(cmd);
         }
-
-        public Saga(Type startMessageType)
+        public Saga()
         {
-            StartMessage = startMessageType;
             InstanceState(d => d.CurrentStateName);
         }
-
-        public Type StartMessage { get; }
+        //public Type[] StartMessages { get; }
 
         private readonly List<Type> _dispatchedCommands = new List<Type>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();

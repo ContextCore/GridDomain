@@ -37,6 +37,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
                 .Permit(Transitions.SecondEventArrived, TestStates.GotSecondEvent);
         }
 
-        public static ISagaDescriptor SagaDescriptor = new TestSaga(new TestSagaState(Guid.Empty, TestStates.Created));
+        public static readonly ISagaDescriptor SagaDescriptor = new TestSaga(new TestSagaState(Guid.Empty, TestStates.Created));
     }
 }

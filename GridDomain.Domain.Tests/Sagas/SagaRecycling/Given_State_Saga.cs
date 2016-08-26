@@ -32,12 +32,12 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
             _sagaId = Guid.NewGuid();
 
             publisher.Publish(new StartEvent(Guid.NewGuid()).CloneWithSaga(_sagaId));
+            publisher.Publish(new FinishedEvent(Guid.NewGuid()).CloneWithSaga(_sagaId));
+            publisher.Publish(new StartEvent(Guid.NewGuid()).CloneWithSaga(_sagaId));
 
-            Thread.Sleep(TimeSpan.FromMilliseconds(500));
+            Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 
-            _sagaState = LoadSagaState<SagaForRecycling,
-                                       State,
-                                       StartEvent>(_sagaId);
+            _sagaState = LoadSagaState<SagaForRecycling, State>(_sagaId);
         }
 
         [Then]
@@ -56,9 +56,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
         {
             return new CustomContainerConfiguration(container =>
             {
-                container.RegisterType<ISagaFactory<SagaForRecycling, StartEvent>, SagaForRecyclingFactory>();
-                container.RegisterType<ISagaFactory<SagaForRecycling, State>, SagaForRecyclingFactory>();
-                container.RegisterType<ISagaFactory<SagaForRecycling, Guid>, SagaForRecyclingFactory>();
+                container.RegisterStateSaga<SagaForRecycling, State, SagaForRecyclingFactory, StartEvent>();
                 container.Register(base.CreateConfiguration());
             });
         }

@@ -4,27 +4,33 @@ using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace GridDomain.Tests.Sagas.SagaRecycling.Saga
 {
-    public class SagaForRecycling : StateSaga<States, States, State, StartEvent>
+
+    public enum Triggers
+    {
+        Start,
+        Finish
+    }
+    public class SagaForRecycling : StateSaga<States,Triggers, State, StartEvent>
     {
         public SagaForRecycling(State state) : base(state)
         {
-            var finished = RegisterEvent<FinishedEvent>(States.Created);
+            var finished = RegisterEvent<FinishedEvent>(Triggers.Finish);
             Machine
                 .Configure(States.Created)
                 .OnEntryFrom(finished, e =>
                 {
                     int a = 1;
                 })
-                .Permit(States.Finished, States.Finished);
+                .Permit(Triggers.Finish, States.Finished);
 
-            var started = RegisterEvent<StartEvent>(States.Finished);
+            var started = RegisterEvent<StartEvent>(Triggers.Start);
 
             Machine
                 .Configure(States.Finished)
                 .OnEntryFrom(started, e =>
                 {
                     State.Finish();
-                }).Permit(States.Created, States.Created);
+                }).Permit(Triggers.Start, States.Created);
 
         }
 

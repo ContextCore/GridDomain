@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -39,7 +40,8 @@ namespace GridDomain.Scheduling.Integration
                 TransitState(domainEvent);
                 return;
             }
-            if (msg.GetType() == StartMessage)
+           
+            if (StartMessages.Contains(msg.GetType()))
             {
                 base.Transit(msg);
             }

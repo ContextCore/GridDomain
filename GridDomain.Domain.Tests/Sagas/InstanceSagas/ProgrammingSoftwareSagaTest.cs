@@ -23,11 +23,14 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         protected override IContainerConfiguration CreateConfiguration()
         {
             var baseConf = base.CreateConfiguration();
+
             return new CustomContainerConfiguration(
                 c => c.RegisterSaga<SoftwareProgrammingSaga,
                                     SoftwareProgrammingSagaData,
-                                    GotTiredEvent,
-                                    SoftwareProgrammingSagaFactory>(),
+                                    SoftwareProgrammingSagaFactory,
+                                    SleptWellEvent,
+                                    GotTiredEvent>(),
+
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()

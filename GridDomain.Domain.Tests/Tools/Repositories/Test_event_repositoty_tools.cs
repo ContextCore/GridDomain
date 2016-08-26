@@ -3,11 +3,10 @@ using System.Linq;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Tools
+namespace GridDomain.Tests.Tools.Repositories
 {
 
     [TestFixture]

@@ -7,20 +7,11 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-
-
     class SoftwareProgrammingSagaFactory:
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>>,
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
-             ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, Guid> 
+             ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
     {
-        private readonly AggregateFactory _emptyAggregateFactory;
-
-        public SoftwareProgrammingSagaFactory(AggregateFactory emptyAggregateFactory)
-        {
-            _emptyAggregateFactory = emptyAggregateFactory;
-        }
-
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SagaDataAggregate<SoftwareProgrammingSagaData> message)
         {
            return SagaInstance.New(new SoftwareProgrammingSaga(), message);
@@ -30,17 +21,16 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var saga = new SoftwareProgrammingSaga();
             var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SagaId,
-                                                                          new SoftwareProgrammingSagaData(saga.Coding.Name)
-                                                                          );
+                                                                          new SoftwareProgrammingSagaData(saga.Coding.Name));
             return SagaInstance.New(saga, data);
         }
 
-        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(Guid id)
+        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
             var saga = new SoftwareProgrammingSaga();
-            var data = _emptyAggregateFactory.Build<SagaDataAggregate<SoftwareProgrammingSagaData>>(id);
-            return SagaInstance.New(saga,data);
+            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SagaId,
+                                                                          new SoftwareProgrammingSagaData(saga.Sleeping.Name));
+            return SagaInstance.New(saga, data);
         }
-
     }
 }

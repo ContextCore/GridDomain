@@ -37,27 +37,23 @@ namespace GridDomain.Node.AkkaMessaging.Routing
            return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), name, routes);
         }
 
-        public static CreateActorRouteMessage ForSaga<TSaga, TSagaState, TStartMessage>(string name, params MessageRoute[] routes) 
+        public static CreateActorRouteMessage ForSaga<TSaga, TSagaState>(string name, params MessageRoute[] routes) 
             where TSaga : class, ISagaInstance 
             where TSagaState : AggregateBase 
-            where TStartMessage : DomainEvent
         {
-            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState, TStartMessage>), name, routes);
+            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState>), name, routes);
         }
 
         public static CreateActorRouteMessage ForSaga(ISagaDescriptor descriptor, string name = null)
         {
-            name = name ??  $"SagaHub_{descriptor.SagaType.Name}";
+            name = name ??  $"SagaHub_{descriptor.SagaType.BeautyName()}";
 
             var messageRoutes = descriptor.AcceptMessages
                 .Select(eventType => new MessageRoute(eventType, nameof(DomainEvent.SagaId)))
                 .ToArray();
 
-            var actorOpenType = typeof(SagaHubActor<,,>);
-
-            var actorType = actorOpenType.MakeGenericType(descriptor.SagaType, 
-                                                          descriptor.StateType,
-                                                          descriptor.StartMessage);
+            var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
+                                                                    descriptor.StateType);
 
             return new CreateActorRouteMessage(actorType, name, messageRoutes);
         }

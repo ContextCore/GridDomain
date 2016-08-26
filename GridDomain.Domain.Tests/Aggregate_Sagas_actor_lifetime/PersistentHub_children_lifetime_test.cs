@@ -34,21 +34,23 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 
         protected IContainerConfiguration CreateConfiguration()
         {
-            return  new CustomContainerConfiguration(
-                                                     c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
-                                                                              SoftwareProgrammingSagaState,
-                                                                              GotTiredEvent,
-                                                                              Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory>(),
-
-                                                     c => c.RegisterSaga<Sagas.InstanceSagas.SoftwareProgrammingSaga,
-                                                                            SoftwareProgrammingSagaData,
-                                                                            GotTiredEvent,
-                                                                            Sagas.InstanceSagas.SoftwareProgrammingSagaFactory>(),
-
-                                                     c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
-                                                                              SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
-
-                                                     c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>()
+            return new CustomContainerConfiguration(
+                        c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
+                                                 SoftwareProgrammingSagaState,
+                                                 Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory,
+                                                 GotTiredEvent>(),
+                        
+                        c => c.RegisterSaga<Sagas.InstanceSagas.SoftwareProgrammingSaga,
+                                            SoftwareProgrammingSagaData,
+                                            Sagas.InstanceSagas.SoftwareProgrammingSagaFactory,
+                                            GotTiredEvent>(),
+                        
+                        c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
+                                                 SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
+                        
+                        c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
+                        
+                        c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>()
                     );
         }
 
@@ -74,9 +76,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         private GridDomainNode _gridDomainNode;
         protected ChildInfo Child => Hub.Children[Infrastructure.ChildId];
 
-        protected Pong PingChild(string payload)
+        protected HealthStatus PingChild(string payload)
         {
-            var pong = Child.Ref.Ask(new Ping(payload), TimeSpan.FromSeconds(1)).Result as Pong;
+            var pong = Child.Ref.Ask(new CheckHealth(payload), TimeSpan.FromSeconds(1)).Result as HealthStatus;
             return pong;
         }
 

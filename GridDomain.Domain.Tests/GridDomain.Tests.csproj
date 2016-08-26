@@ -234,10 +234,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaHubActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestPersistentChildsRecycleConfiguration.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaHubActor.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\IPersistentActorTestsInfrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHubOnChildActivity.cs" />
@@ -246,9 +243,6 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHubOnChildRecoverAfterTermination.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubTestsStatus.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHub_children_lifetime_test.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestAggregateActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestAggregateHub.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaActor.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\InstanceSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\StateSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
@@ -256,7 +250,11 @@
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\NamedActorA.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\NamedActorB.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\SomeService.cs" />
     <Compile Include="EventsUpgrade\BalanceChangedDomainEventAdapter1.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater2.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater3.cs" />
@@ -298,6 +296,9 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_raising_with_null_data.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
@@ -338,6 +339,7 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
+    <Compile Include="Sagas\StateSagas\Given_state_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
@@ -421,7 +423,7 @@
     <Compile Include="Sagas\StateSagas\SagaStateAggregate\TestState.cs" />
     <Compile Include="Sagas\StateSagas\SagaStateAggregate\TestTransition.cs" />
     <Compile Include="Sagas\StateSagas\CreateSagaGraph.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_A.cs" />
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
@@ -500,6 +502,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
