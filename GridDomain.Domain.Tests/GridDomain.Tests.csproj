@@ -299,7 +299,6 @@
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_raising_with_null_data.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />

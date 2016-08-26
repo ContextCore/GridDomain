@@ -19,7 +19,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             InstanceState(d => d.CurrentStateName);
         }
-        //public Type[] StartMessages { get; }
 
         private readonly List<Type> _dispatchedCommands = new List<Type>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();

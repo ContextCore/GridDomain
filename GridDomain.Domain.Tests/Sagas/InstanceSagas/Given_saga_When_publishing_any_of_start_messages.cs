@@ -5,14 +5,13 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
+    [Ignore("Only descendant should be ran")]
     class Given_saga_When_publishing_any_of_start_messages : ProgrammingSoftwareSagaTest   
     {
         private readonly Guid _sagaId;
         private readonly object[] _sagaMessages;
         protected SagaDataAggregate<SoftwareProgrammingSagaData> SagaData;
        
-
-     
         public Given_saga_When_publishing_any_of_start_messages(Guid sagaId, params object[] messages)
         {
             _sagaMessages = messages;
