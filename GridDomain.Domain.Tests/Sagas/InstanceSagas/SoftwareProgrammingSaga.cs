@@ -1,5 +1,6 @@
 using System.Runtime.Remoting.Channels;
 using Automatonymous;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
@@ -11,7 +12,13 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
     {
-        public SoftwareProgrammingSaga():base(typeof(GotTiredEvent))
+        public static readonly ISagaDescriptor Descriptor
+            = SagaExtensions.CreateDescriptor<SoftwareProgrammingSaga,
+                                              SoftwareProgrammingSagaData,
+                                              GotTiredEvent,
+                                              SleptWellEvent>();
+        
+        public SoftwareProgrammingSaga()
         { 
             Event(() => GotTired);
             Event(() => CoffeReady);

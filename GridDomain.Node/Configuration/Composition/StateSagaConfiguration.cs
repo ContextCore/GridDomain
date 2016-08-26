@@ -12,13 +12,14 @@ namespace GridDomain.Node.Configuration.Composition
     {
         protected readonly SagaProducer<TSaga> Producer;
 
-        public SagaConfiguration(IEnumerable<Type> startDataTypes, Func<object, TSaga> factory):this(null)
+        public SagaConfiguration(Func<object, TSaga> factory, params Type[] startDataTypes)
         {
+            Producer = new SagaProducer<TSaga>();
             foreach (var dataType in startDataTypes)
                 Producer.Register(dataType, factory);
         }
 
-        public SagaConfiguration(SagaProducer<TSaga> producer = null )
+        public SagaConfiguration(SagaProducer<TSaga> producer = null)
         {
             Producer = producer ?? new SagaProducer<TSaga>();
         }

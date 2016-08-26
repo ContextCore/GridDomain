@@ -30,7 +30,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Saga_reinitialized_from_last_start_message()
         {
-            Assert.AreEqual(secondMessage.PersonId, SagaData.Data.PersonId);
+            Assert.AreEqual(secondMessage.SofaId, SagaData.Data.SofaId);
+        }
+
+
+        [Then]
+        public void Saga_has_correct_state()
+        {
+            var saga = new SoftwareProgrammingSaga();
+            Assert.AreEqual(saga.Coding.Name, SagaData.Data.CurrentStateName);
         }
     }
 }

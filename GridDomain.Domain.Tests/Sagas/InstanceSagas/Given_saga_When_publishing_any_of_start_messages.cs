@@ -37,12 +37,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             Assert.NotNull(SagaData.Data);
         }
 
-        [Then]
-        public void Saga_has_correct_state()
-        {
-            var saga = new SoftwareProgrammingSaga();
-            Assert.AreEqual(saga.MakingCoffee.Name,SagaData.Data.CurrentStateName);
-        }
 
         [Then]
         public void Saga_has_correct_id()

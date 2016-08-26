@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void ExtractDescriptor()
         {
             var saga = new SoftwareProgrammingSaga();
-            _descriptor = saga.GetDescriptor<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>();
+            _descriptor = saga.CreateDescriptor<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>(typeof(GotTiredEvent),typeof(SleptWellEvent));
         }
 
         [Then]
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Descriptor_contains_message_start_saga()
         {
-            CollectionAssert.AreEquivalent(new[] {typeof(GotTiredEvent)}, _descriptor.StartMessages);
+            CollectionAssert.AreEquivalent(new[] {typeof(GotTiredEvent), typeof(SleptWellEvent)}, _descriptor.StartMessages);
         }
 
         [Then]

@@ -20,5 +20,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             Assert.AreEqual(StartMessage.SofaId, SagaData.Data.SofaId);
         }
+
+        [Then]
+        public void Saga_has_correct_state()
+        {
+            var saga = new SoftwareProgrammingSaga();
+            Assert.AreEqual(saga.Coding.Name, SagaData.Data.CurrentStateName);
+        }
     }
 }

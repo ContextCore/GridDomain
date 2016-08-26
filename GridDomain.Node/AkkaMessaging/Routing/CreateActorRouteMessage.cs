@@ -46,7 +46,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
         public static CreateActorRouteMessage ForSaga(ISagaDescriptor descriptor, string name = null)
         {
-            name = name ??  $"SagaHub_{descriptor.SagaType.Name}";
+            name = name ??  $"SagaHub_{descriptor.SagaType.BeautyName()}";
 
             var messageRoutes = descriptor.AcceptMessages
                 .Select(eventType => new MessageRoute(eventType, nameof(DomainEvent.SagaId)))

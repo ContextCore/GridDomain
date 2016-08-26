@@ -34,15 +34,6 @@ namespace GridDomain.EventSourcing.Sagas
         public void AddStartMessage(Type messageType)
         {
             _startMessages.Add(messageType);
-            //AddAcceptedMessage(messageType);
-        }
-    }
-
-    public class SagaDescriptor<TSaga,TState> : SagaDescriptor
-    {
-        public SagaDescriptor():base(typeof(TSaga), typeof(TState))
-        {
-            
         }
     }
 }
