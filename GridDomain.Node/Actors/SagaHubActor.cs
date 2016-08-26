@@ -21,9 +21,9 @@ namespace GridDomain.Node.Actors
 
         public SagaHubActor(IPublisher publisher, 
                             IPersistentChildsRecycleConfiguration recycleConf, 
-                            ISagaProducer<TSaga> sagaDescriptor ) : base(recycleConf, typeof(TSaga).Name)
+                            ISagaProducer<TSaga> sagaProducer ) : base(recycleConf, typeof(TSaga).Name)
         {
-            _sagaStartMessages = new HashSet<Type>(sagaDescriptor.KnownDataTypes);
+            _sagaStartMessages = new HashSet<Type>(sagaProducer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _publisher = publisher;
         }
 
@@ -49,7 +49,7 @@ namespace GridDomain.Node.Actors
         {
             var msgType = message.GetType();
             DomainEvent domainEvent = message as DomainEvent;
-            if (domainEvent != null && _sagaStartMessages.Contains(msgType))
+            if (domainEvent != null && _sagaStartMessages.Contains(msgType) && domainEvent.SagaId == Guid.Empty)
             {
                 //send message back to publisher to reroute to some hub according to SagaId
                 _publisher.Publish(domainEvent.CloneWithSaga(Guid.NewGuid()));

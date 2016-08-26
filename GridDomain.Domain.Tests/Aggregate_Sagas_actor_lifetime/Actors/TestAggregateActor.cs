@@ -12,25 +12,6 @@ using GridDomain.Tests.SampleDomain;
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
 {
     //TODO : replace with HealthCheck \ HealthStatus
-    class Ping
-    {
-        public object Payload { get; }
-
-        public Ping(object payload)
-        {
-            Payload = payload;
-        }
-    }
-
-    class Pong
-    {
-        public Pong(object payload)
-        {
-            Payload = payload;
-        }
-
-        public object Payload { get; }
-    }
 
     class TestAggregateActor : AggregateActor<SampleAggregate>
     {

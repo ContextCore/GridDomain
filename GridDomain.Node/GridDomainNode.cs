@@ -109,7 +109,7 @@ namespace GridDomain.Node
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting, 
-                                                    new SchedulingRouteMap(),
+                                                 //   new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                     );
             _commandTimeout = commandTimeout ?? DefaultCommandTimeout;
