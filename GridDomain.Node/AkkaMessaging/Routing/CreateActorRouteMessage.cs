@@ -53,7 +53,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                 .ToArray();
 
             var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
-                                                                   descriptor.StateType);
+                                                                    descriptor.StateType);
 
             return new CreateActorRouteMessage(actorType, name, messageRoutes);
         }

@@ -229,7 +229,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />

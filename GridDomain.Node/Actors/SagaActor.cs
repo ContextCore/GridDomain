@@ -37,21 +37,21 @@ namespace GridDomain.Node.Actors
         ReceivePersistentActor where TSaga : class,ISagaInstance 
         where TSagaState : AggregateBase
     {
-        private readonly ISagaProducer<TSaga, TSagaState> _producer;
+        private readonly ISagaProducer<TSaga> _producer;
         private readonly IPublisher _publisher;
         private TSaga _saga;
-        private TSagaState _sagaData;
+        private IAggregate _sagaData;
         public readonly Guid Id;
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
         private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
 
-        public SagaActor(ISagaProducer<TSaga,TSagaState> producer,
+        public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher)
         {
             _producer = producer;
             _publisher = publisher;
-            _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes);
+            _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
@@ -81,8 +81,8 @@ namespace GridDomain.Node.Actors
             }, e => e.SagaId == Id);
 
             //recover messages will be provided only to right saga by using peristenceId
-            Recover<SnapshotOffer>(offer => _sagaData = (TSagaState)offer.Snapshot);
-            Recover<DomainEvent>(e => ((IAggregate)_sagaData).ApplyEvent(e));
+            Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
+            Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
         }
 
 

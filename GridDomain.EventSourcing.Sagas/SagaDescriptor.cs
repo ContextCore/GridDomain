@@ -15,7 +15,7 @@ namespace GridDomain.EventSourcing.Sagas
         public Type StateType { get; } 
         public Type SagaType { get; }
 
-        public SagaDescriptor(Type state, Type saga)
+        public SagaDescriptor(Type saga, Type state)
         {
             StateType = state;
             SagaType = saga;
@@ -34,7 +34,7 @@ namespace GridDomain.EventSourcing.Sagas
         public void AddStartMessage(Type messageType)
         {
             _startMessages.Add(messageType);
-            _acceptedMessages.Add(messageType);
+            //AddAcceptedMessage(messageType);
         }
     }
 

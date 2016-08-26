@@ -30,9 +30,37 @@ namespace GridDomain.Node.AkkaMessaging
             return new AggregateActorName(aggregateType, id);
         }
 
+        public static AggregateActorName ParseDynamic(string value)
+        {
+            var parts = value.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2)
+                throw new BadNameFormatException();
+
+            var type = Type.GetType(parts[0]);
+            if (type == null)
+                throw new CannotFindIdTypeException();
+
+            Guid id;
+            if (!Guid.TryParse(parts[1], out id))
+                throw new IdParseException();
+
+            return new AggregateActorName(type, id);
+        }
         public override string ToString()
         {
             return Name;
         }
+    }
+
+    public class CannotFindIdTypeException : Exception
+    {
+    }
+
+    public class IdParseException : Exception
+    {
+    }
+
+    public class BadNameFormatException : Exception
+    {
     }
 }
