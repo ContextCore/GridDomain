@@ -54,7 +54,7 @@ namespace GridDomain.Node.Actors
                 Clear();
                 return;
             }
-            message.Match().With<CheckHealth>(s => Sender.Tell(new HealthStatus()));
+            message.Match().With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
             ChildInfo knownChild;
             var childId = GetChildActorId(message);
