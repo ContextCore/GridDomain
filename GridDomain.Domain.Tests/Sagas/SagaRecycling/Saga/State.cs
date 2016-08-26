@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace GridDomain.Tests.Sagas.SagaRecycling.Saga
 {
-    public class State : SagaStateAggregate<States, States>
+    public class State : SagaStateAggregate<States, Triggers>
     {
         private State(Guid id) : base(id)
         {
