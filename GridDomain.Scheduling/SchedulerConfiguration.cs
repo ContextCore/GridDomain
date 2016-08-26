@@ -39,9 +39,14 @@ namespace GridDomain.Scheduling
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
 
-            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>, ScheduledCommandProcessingSagaFactory>();
-            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>, ScheduledCommandProcessingSagaFactory>();
-            container.RegisterType<ISagaFactory<ScheduledCommandProcessingSaga,Guid>, ScheduledCommandProcessingSagaFactory>();
+            //TODO: unify with GridDomain.Node.Configuration.Composition.SagaConfiguration
+
+            var factory = new ScheduledCommandProcessingSagaFactory();
+            var producer = new SagaProducer<ScheduledCommandProcessingSaga>();
+            producer.Register<ScheduledCommandProcessingStarted>(factory);
+            producer.Register<ScheduledCommandProcessingSagaState>(factory);
+
+            container.RegisterInstance<ISagaProducer<ScheduledCommandProcessingSaga>>(producer);
         }
     }
 }

@@ -51,6 +51,7 @@ namespace GridDomain.EventSourcing.Sagas
         public IReadOnlyCollection<Type> KnownDataTypes => _factories.Keys;
     }
 
+
     public class CannotFindFactoryForSagaCreation : Exception
     {
         public Type Saga { get; set; }

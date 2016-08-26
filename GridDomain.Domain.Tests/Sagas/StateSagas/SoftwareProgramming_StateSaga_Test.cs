@@ -20,11 +20,11 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
         protected override IContainerConfiguration CreateConfiguration()
         {
-            return  new CustomContainerConfiguration(container => {
-                                                                      container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>, SoftwareProgrammingSagaFactory>();
-                                                                      container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>, SoftwareProgrammingSagaFactory>();
-                                                                      container.RegisterType<ISagaFactory<SoftwareProgrammingSaga, Guid>, SoftwareProgrammingSagaFactory>();
-                                                                      container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
+            return 
+                
+                new CustomContainerConfiguration(container => {
+                   container.RegisterStateSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, GotTiredEvent, SoftwareProgrammingSagaFactory>();//<ISagaFactory<SoftwareProgrammingSaga, Guid>, SoftwareProgrammingSagaFactory>();
+                   container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
             });
         }
 

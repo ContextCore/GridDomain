@@ -342,6 +342,7 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
+    <Compile Include="Sagas\StateSagas\State_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />

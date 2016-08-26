@@ -33,11 +33,10 @@ namespace GridDomain.Node.Configuration.Composition
         }
 
         public static SagaConfiguration<TSaga> New<TFactory, TState>(TFactory factory)
-                                                                     where TFactory : ISagaFactory<TSaga, Guid>,
-                                                                                      ISagaFactory<TSaga, TState>
+                                                                     where TFactory : ISagaFactory<TSaga, TState>
         {
             var conf = new SagaConfiguration<TSaga>();
-            conf.Register<Guid>(factory);
+            //conf.Register<Guid>(factory); - replaced by aggregate factory inside saga actor
             conf.Register<TState>(factory);
             return conf;
         }
