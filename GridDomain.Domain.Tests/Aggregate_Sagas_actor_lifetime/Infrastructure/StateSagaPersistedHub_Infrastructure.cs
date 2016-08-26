@@ -1,8 +1,10 @@
 using System;
 using Akka.Actor;
 using Akka.DI.Core;
+using GridDomain.Node.Actors;
 using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
 {
@@ -18,7 +20,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
             ChildCreateMessage = gotTired.CloneWithSaga(sagaId);
             ChildActivateMessage = coffeMadeEvent.CloneWithSaga(sagaId);
 
-            HubProps = system.DI().Props<TestStateSagaHubActor>();
+            HubProps = system.DI().Props<SagaHubActor<SoftwareProgrammingSaga,SoftwareProgrammingSagaState>>();
         }
         public Props HubProps { get; }
         public object ChildCreateMessage { get; }

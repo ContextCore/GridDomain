@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                 //container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
                 //container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
                 //container.RegisterType<ISagaFactory<TestSaga, Guid>, TestSagaFactory>();
-                container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaStartMessage, TestSagaFactory>();
+                container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaFactory, TestSagaStartMessage>();
             }
         }
 

@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
             return 
                 
                 new CustomContainerConfiguration(container => {
-                   container.RegisterStateSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, GotTiredEvent, SoftwareProgrammingSagaFactory>();//<ISagaFactory<SoftwareProgrammingSaga, Guid>, SoftwareProgrammingSagaFactory>();
+                   container.RegisterStateSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory, GotTiredEvent>();
                    container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
             });
         }

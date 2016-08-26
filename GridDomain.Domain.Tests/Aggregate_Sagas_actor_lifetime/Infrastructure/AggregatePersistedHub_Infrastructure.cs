@@ -1,7 +1,9 @@
 using System;
 using Akka.Actor;
 using Akka.DI.Core;
+using GridDomain.Node.Actors;
 using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
+using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
@@ -18,7 +20,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
             ChildId = Guid.NewGuid();
             ChildCreateMessage = new CreateSampleAggregateCommand(42, ChildId, ChildId);
             ChildActivateMessage = new ChangeSampleAggregateCommand(100, ChildId);
-            HubProps = system.DI().Props<TestAggregateHub>();
+            HubProps = system.DI().Props<AggregateHubActor<SampleAggregate>>();
         }
     }
 }

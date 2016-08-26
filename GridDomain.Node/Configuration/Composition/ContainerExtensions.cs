@@ -26,13 +26,13 @@ namespace GridDomain.Node.Configuration.Composition
             Register<AggregateConfiguration<TAggregate, TCommandsHandler>>(container);
         }
 
-        public static void RegisterSaga<TSaga, TData, TStartMessage,TFactory>(this IUnityContainer container)
+        public static void RegisterSaga<TSaga, TData,TFactory, TStartMessage>(this IUnityContainer container)
            where TSaga : Saga<TData>
            where TData : class, ISagaState
            where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
                             ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage> ,new()
         {
-            RegisterStateSaga<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TStartMessage, TFactory>(container);
+            RegisterStateSaga<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TFactory, TStartMessage>(container);
         }
 
         public static void RegisterSaga<TSaga, TData, TFactory, TStartMessageA, TStartMessageB, TStartMessageC>(this IUnityContainer container)
@@ -77,7 +77,7 @@ namespace GridDomain.Node.Configuration.Composition
             conf.Register(container);
         }
 
-        public static void RegisterStateSaga<TSaga, TState, TStartMessage, TFactory>(this IUnityContainer container)
+        public static void RegisterStateSaga<TSaga, TState, TFactory, TStartMessage>(this IUnityContainer container)
                 where TFactory : ISagaFactory<TSaga, TState>, 
                                  ISagaFactory<TSaga, TStartMessage>, 
                                  new()
@@ -87,7 +87,7 @@ namespace GridDomain.Node.Configuration.Composition
             var factory = new TFactory();
             var conf = SagaConfiguration<TSaga>.New<TFactory,TState>(factory);
             conf.Register<TStartMessage>(factory);
-            conf.Register(container);
+            container.Register(conf);
         }
 
 

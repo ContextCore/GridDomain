@@ -56,7 +56,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
         {
             return new CustomContainerConfiguration(container =>
             {
-                container.RegisterStateSaga<SagaForRecycling, State, StartEvent, SagaForRecyclingFactory>();
+                container.RegisterStateSaga<SagaForRecycling, State, SagaForRecyclingFactory, StartEvent>();
                 container.Register(base.CreateConfiguration());
             });
         }

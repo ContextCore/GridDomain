@@ -234,12 +234,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\Ping.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\Pong.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaHubActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestPersistentChildsRecycleConfiguration.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestStateSagaHubActor.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\IPersistentActorTestsInfrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHubOnChildActivity.cs" />
@@ -248,9 +243,6 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistenceHubOnChildRecoverAfterTermination.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubTestsStatus.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHub_children_lifetime_test.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestAggregateActor.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestAggregateHub.cs" />
-    <Compile Include="Aggregate_Sagas_actor_lifetime\Actors\TestInstanceSagaActor.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\InstanceSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\StateSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
