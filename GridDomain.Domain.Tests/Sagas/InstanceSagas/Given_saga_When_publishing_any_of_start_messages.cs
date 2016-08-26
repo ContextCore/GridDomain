@@ -1,34 +1,28 @@
 using System;
-using System.Threading;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    [Ignore("Only descendant should be ran")]
-    class Given_saga_When_publishing_any_of_start_messages : ProgrammingSoftwareSagaTest   
+
+
+    [TestFixture]
+    class Given_saga_When_publishing_any_of_start_messages : Given_saga_When_publishing_start_messages
     {
-        private readonly Guid _sagaId;
-        private readonly object[] _sagaMessages;
-        protected SagaDataAggregate<SoftwareProgrammingSagaData> SagaData;
-       
-        public Given_saga_When_publishing_any_of_start_messages(Guid sagaId, params object[] messages)
-        {
-            _sagaMessages = messages;
-            _sagaId = sagaId;
+        private static Guid SagaId = Guid.NewGuid();
 
+        public Given_saga_When_publishing_any_of_start_messages():
+            base(SagaId, new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId))
+        {
+            
         }
-      
+
         [TestFixtureSetUp]
-        public void When_publishing_start_message()
+        public void Setup()
         {
-            foreach(var msg in _sagaMessages)
-                GridNode.Transport.Publish(msg);
-
-            Thread.Sleep(Timeout);
-
-            SagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
+            When_publishing_start_message();
         }
+
 
         [Then]
         public void Saga_data_is_not_null()
@@ -40,8 +34,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Saga_has_correct_id()
         {
-            Assert.AreEqual(_sagaId,SagaData.Id);
+            Assert.AreEqual(_sagaId, SagaData.Id);
         }
-
     }
 }

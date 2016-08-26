@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_several_start_messages : Given_saga_When_publishing_any_of_start_messages
+    class Given_saga_When_publishing_several_start_messages : Given_saga_When_publishing_start_messages
     {
         private static readonly Guid SagaId = Guid.NewGuid();
         private static  GotTiredEvent firstMessage;
@@ -25,6 +25,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public Given_saga_When_publishing_several_start_messages(): base(SagaId,GetMessages(SagaId))
         {
 
+        }
+
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            base.When_publishing_start_message();
         }
 
         [Then]

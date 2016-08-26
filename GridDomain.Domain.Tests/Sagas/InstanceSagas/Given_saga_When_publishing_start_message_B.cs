@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_start_message_B : Given_saga_When_publishing_any_of_start_messages
+    class Given_saga_When_publishing_start_message_B : Given_saga_When_publishing_start_messages
     {
         private static readonly SleptWellEvent StartMessage = new SleptWellEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid(), null);
 
@@ -13,6 +13,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
 
 
+        }
+
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            base.When_publishing_start_message();
         }
 
         [Then]

@@ -298,6 +298,7 @@
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
