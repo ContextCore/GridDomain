@@ -8,7 +8,6 @@ using GridDomain.Logging;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-
     public static class SagaInstance
     {
         public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga, SagaDataAggregate<TSagaData> data)
@@ -25,9 +24,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public readonly Saga<TSagaData> Machine;
         private readonly SagaDataAggregate<TSagaData> _dataAggregate;
-        private readonly MethodInfo _transitGenericMethodInfo;
-        private static readonly ISoloLogger Log = LogManager.GetLogger();
+        private readonly MethodInfo _transitGenericMethodInfo = typeof(SagaInstance<TSaga, TSagaData>)
+                                                                .GetMethods()
+                                                                .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
 
+        private static readonly ISoloLogger Log = LogManager.GetLogger();
+        
         public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
         public void ClearCommandsToDispatch()
         {
@@ -38,36 +40,45 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public IAggregate Data => _dataAggregate;
 
-        public SagaInstance(Saga<TSagaData> machine, SagaDataAggregate<TSagaData> dataAggregate)
+        public SagaInstance(Saga<TSagaData> machine, 
+                            SagaDataAggregate<TSagaData> dataAggregate, 
+                            bool doUninitializedWarnings = true)
         {
             if (machine == null) throw new ArgumentNullException(nameof(machine));
             if (dataAggregate == null) throw new ArgumentNullException(nameof(dataAggregate));
             _dataAggregate = dataAggregate;
             Machine = machine;
 
-            var sagaData = _dataAggregate.Data;
-            if (!string.IsNullOrEmpty(sagaData?.CurrentStateName))
-            {
-                var initialState = Machine.GetState(sagaData.CurrentStateName);
-                Machine.TransitionToState(sagaData, initialState);
-                Machine.OnMessageReceived += (sender, context) =>
-                {
-                    var msg = context.Message;
-                    Log.Warn("Not initialized saga {Type} received a message {@msg}", GetType().Name, msg);
-                };
-            }
-            else
-            {
-                Log.Warn("Started saga {Type} {Id}  without initial state.\r\n" +
-                          "Saga will not process, only record incoming messages", GetType().Name, dataAggregate.Id);
-            }
+            if (!CheckInitialState(dataAggregate, doUninitializedWarnings)) return;
 
+            RegisterPersistence(dataAggregate);
+        }
+
+        private void RegisterPersistence(SagaDataAggregate<TSagaData> dataAggregate)
+        {
+            Machine.TransitionToState(_dataAggregate.Data, Machine.GetState(CurrentStateName));
             Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.Instance);
             Machine.OnEventReceived += (sender, context) => dataAggregate.RememberEvent(context.Event, context.SagaData, context.EventData);
+        }
 
-            _transitGenericMethodInfo = GetType()
-                                       .GetMethods()
-                                       .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
+        private string CurrentStateName => _dataAggregate.Data?.CurrentStateName;
+
+        private bool CheckInitialState(SagaDataAggregate<TSagaData> dataAggregate, bool logUninitializedState = true)
+        {
+            if (!string.IsNullOrEmpty(CurrentStateName)) return true;
+
+            Log.Warn("Started saga {Type} {Id} without initialization.", GetType().Name, dataAggregate.Id);
+            Log.Warn(_dataAggregate.Data == null ? "Saga data is empty" : "Current state name is not specified");
+
+            if (!logUninitializedState) return false;
+
+            Log.Warn("Saga will not process and only record incoming messages");
+            Machine.OnMessageReceived += (sender, context) =>
+            {
+                var msg = context.Message;
+                Log.Warn("Not initialized saga {Type} received a message {Msg}", GetType().Name, msg);
+            };
+            return false;
         }
 
         public void Transit(object message)
