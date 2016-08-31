@@ -39,6 +39,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
         }
 
         [Then]
+        public void Null_message_Exception_occurs()
+        {
+            Assert.Throws<NullMessageTransitException>(() => _given.SagaInstance.Transit(null));
+        }
+
+        [Then]
         public void No_events_are_raised_in_data_aggregate()
         {
             var aggregate = (IAggregate)_given.SagaDataAggregate;

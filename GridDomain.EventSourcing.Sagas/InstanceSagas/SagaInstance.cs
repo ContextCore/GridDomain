@@ -83,6 +83,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public void Transit(object message)
         {
+            if(message == null)
+                throw new NullMessageTransitException(_dataAggregate.Data);
+
             var messageType = message.GetType();
 
             var method = _transitGenericMethodInfo.MakeGenericMethod(messageType);
