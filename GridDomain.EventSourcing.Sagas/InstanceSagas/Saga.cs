@@ -61,9 +61,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             OnMessageReceived.Invoke(this,new MessageReceivedData<TSagaData>(message, progress));
 
+          
+            var machineEvent = GetMachineEvent(message);
+
             try
             {
-                var machineEvent = GetMachineEvent(message);
                 this.RaiseEvent(progress, machineEvent, message);
             }
             catch(Exception ex)
