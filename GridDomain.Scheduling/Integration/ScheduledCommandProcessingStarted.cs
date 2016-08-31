@@ -12,7 +12,7 @@ namespace GridDomain.Scheduling.Integration
         public ScheduleKey Key { get; }
         public Type SuccessEventType { get; }
 
-        private ScheduledCommandProcessingStarted(Command command, ScheduleKey key, Type successEventType) : base(key.Id, DateTimeFacade.UtcNow, key.Id)
+        public ScheduledCommandProcessingStarted(Command command, ScheduleKey key, Type successEventType) : base(key.Id, DateTimeFacade.UtcNow, key.Id)
         {
             Command = command;
             Key = key;
