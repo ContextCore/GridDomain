@@ -11,7 +11,7 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public class NodeCommandExecutor : IGridDomainNode
+    public class NodeCommandExecutor : ICommandExecutor
     {
         private readonly IActorRef _nodeController;
         private readonly TimeSpan _defaultCommandTimeout;

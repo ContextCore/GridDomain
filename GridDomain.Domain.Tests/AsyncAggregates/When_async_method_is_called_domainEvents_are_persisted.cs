@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;

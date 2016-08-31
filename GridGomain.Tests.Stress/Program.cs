@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;

@@ -2,20 +2,19 @@ using System;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.Node.AkkaMessaging.Waiting;
 
-namespace GridDomain.Node
+namespace GridDomain.CQRS
 {
     public static class GridNodeCommandingExtensions
     {
-        public static Task<T> Execute<T>(this IGridDomainNode node, CommandPlan<T> data)
+        public static Task<T> Execute<T>(this ICommandExecutor node, CommandPlan<T> data)
         {
             return node.Execute(data.Command, data.ExpectedMessages, data.Timeout)
                        .ContinueWithSafeResultCast(result => (T)result);
 
         }
 
-        public static T ExecuteSync<T>(this IGridDomainNode node, CommandPlan<T> data)
+        public static T ExecuteSync<T>(this ICommandExecutor node, CommandPlan<T> data)
         {
             var task = Execute<T>(node, data);
 

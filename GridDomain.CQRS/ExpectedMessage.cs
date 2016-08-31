@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Akka.IO;
 using GridDomain.Common;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.AkkaMessaging.Waiting
+namespace GridDomain.CQRS
 {
     public class ExpectedMessage<T> : ExpectedMessage
     {

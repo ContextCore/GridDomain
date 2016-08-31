@@ -53,7 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="CommandAndConfirmation.cs" />
     <Compile Include="CommandFaultFactory.cs" />
+    <Compile Include="CommandPlan.cs" />
+    <Compile Include="ExpectedMessage.cs" />
+    <Compile Include="ExpectedMessagesRecieved.cs" />
+    <Compile Include="GridNodeCommandingExtensions.cs" />
+    <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICriteria.cs" />
