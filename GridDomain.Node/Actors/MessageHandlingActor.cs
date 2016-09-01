@@ -24,7 +24,16 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementMessagesReceived();
             _log.Trace("Handler actor got message: {Message}", msg.ToPropsString());
-            _handler.Handle((TMessage)msg);
+            try
+            {
+                _handler.Handle((TMessage)msg);
+            }
+            catch (Exception e)
+            {
+                _log.Error(e);
+                throw;
+            }
+            
         }
 
         private readonly ActorMonitor _monitor;
