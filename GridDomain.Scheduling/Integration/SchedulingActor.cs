@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Logging;
 using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
@@ -10,8 +11,10 @@ namespace GridDomain.Scheduling.Integration
     public class SchedulingActor : ReceiveActor
     {
         private readonly IScheduler _scheduler;
+        private readonly ISoloLogger _logger = LogManager.GetLogger();
         public SchedulingActor(IScheduler scheduler)
         {
+            _logger.Debug("Scheduling actor started at path {Path}",Self.Path);
             _scheduler = scheduler;
             Receive<ScheduleCommand>(message => Schedule(message));
             Receive<ScheduleMessage>(message => Schedule(message));
@@ -22,12 +25,15 @@ namespace GridDomain.Scheduling.Integration
         {
             try
             {
+                _logger.Debug("Unscheduling job {Task}", msg.Key);
                 var jobKey = new JobKey(msg.Key.Name, msg.Key.Group);
                 _scheduler.DeleteJob(jobKey);
+                _logger.Debug("Unscheduled job {Task}", msg.Key);
                 Sender.Tell(new Unscheduled(msg.Key));
             }
             catch (Exception e)
             {
+                _logger.Error(e,"Error while Unscheduled job {Task}, error: {Error}", msg.Key);
                 Sender.Tell(new Failure { Exception = e, Timestamp = DateTimeFacade.UtcNow });
             }
         }
@@ -46,6 +52,7 @@ namespace GridDomain.Scheduling.Integration
         {
             try
             {
+                _logger.Debug("Scheduling job {Task}", key);
                 var job = jobFactory();
                 var trigger = TriggerBuilder.Create()
                                             .WithIdentity(job.Key.Name, job.Key.Group)
@@ -55,11 +62,13 @@ namespace GridDomain.Scheduling.Integration
                                             .Build();
 
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
+                _logger.Debug("Scheduled job {Task} at {Time}", key, fireTime);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
 
             }
             catch (JobPersistenceException e)
             {
+                _logger.Error(e,"Error while scheduled job {Task}, error {Error}", key);
                 if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException))
                 {
                     Sender.Tell(new AlreadyScheduled(key));
@@ -67,6 +76,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
+                _logger.Error(e,"Error while scheduled job {Task}, error {Error}", key);
                 Sender.Tell(new Failure { Exception = e, Timestamp = DateTimeFacade.UtcNow });
             }
         }
