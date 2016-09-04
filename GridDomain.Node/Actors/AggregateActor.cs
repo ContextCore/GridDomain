@@ -75,6 +75,9 @@ namespace GridDomain.Node.Actors
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
+            Command<FutureEventScheduledEvent>(r => Handle(r));
+            Command<FutureEventCanceledEvent>(r => Handle(r));
+
             Command<ICommand>(cmd =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -115,12 +118,13 @@ namespace GridDomain.Node.Actors
 
             PersistAll(events, e =>
             {
+                _publisher.Publish(e);
+
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
                 // how to pass aggregate type in this case? 
-                e.Match().With<FutureEventScheduledEvent>(Handle)
-                         .With<FutureEventCanceledEvent>(Handle);
+                e.Match().With<FutureEventScheduledEvent>(r => Self.Tell(r))
+                         .With<FutureEventCanceledEvent>(r => Self.Tell(r));
 
-                _publisher.Publish(e);
             });
             aggregate.ClearUncommittedEvents();
 
