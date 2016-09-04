@@ -53,7 +53,7 @@ namespace GridDomain.Scheduling.Integration
                    .Permit(Transitions.SendMessage, States.MessageSent)
                    .OnExit(() => Dispatch(new CompleteJob(State.Key.Name, State.Key.Group)));
 
-            var messageSent = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
+            var messageSent   = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
             var faultsTrigger = RegisterEvent<ICommandFault>(Transitions.Failure);
             var eventrTrigger = RegisterEvent<DomainEvent>(Transitions.Success);
 

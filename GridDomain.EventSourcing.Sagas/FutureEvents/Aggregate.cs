@@ -57,6 +57,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
         }
 
         private readonly IDictionary<Guid, FutureEventScheduledEvent> _futureEvents = new Dictionary<Guid, FutureEventScheduledEvent>();
+        public IReadOnlyCollection<FutureEventScheduledEvent> FutureEvents => _futureEvents.Values.ToArray();
 
         public void RaiseScheduledEvent(Guid futureEventId)
         {
