@@ -49,7 +49,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             name = name ??  $"SagaHub_{descriptor.SagaType.BeautyName()}";
 
             var messageRoutes = descriptor.AcceptMessages
-                .Select(eventType => new MessageRoute(eventType, nameof(DomainEvent.SagaId)))
+                .Select(messageBinder => new MessageRoute(messageBinder.MessageType, messageBinder.CorrelationField))
                 .ToArray();
 
             var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 

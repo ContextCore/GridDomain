@@ -11,6 +11,7 @@ using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node
 {
+
     public class ActorMessagesRouter : IMessagesRouter
     {
         private readonly IAggregateActorLocator _actorLocator;

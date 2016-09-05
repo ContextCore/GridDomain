@@ -1,11 +1,12 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public static class SagaExtensions
     {
-        public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData, TStartMessagaA>()
+        public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData, TStartMessagaA>(Expression<Func<TStartMessagaA,string>> correlationField = null )
         where TSagaData : class, ISagaState
         where TSaga : Saga<TSagaData>, new()
         {
@@ -68,8 +69,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private static void FillAcceptMessages<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState
         {
-            foreach (var eventType in saga.Events.Select(e => e.GetType())
-                .Where(t => t.IsGenericType))
+            foreach (var eventType in saga.Events
+                                          .Select(e => e.GetType())
+                                          .Where(t => t.IsGenericType))
             {
                 var genericArguments = eventType.GetGenericArguments();
                 var domainEventType = genericArguments.First();

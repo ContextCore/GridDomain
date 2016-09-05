@@ -42,7 +42,7 @@ namespace GridDomain.Scheduling
             //TODO: unify with GridDomain.Node.Configuration.Composition.SagaConfiguration
 
             var factory = new ScheduledCommandProcessingSagaFactory();
-            var producer = new SagaProducer<ScheduledCommandProcessingSaga>();
+            var producer = new SagaProducer<ScheduledCommandProcessingSaga>(ScheduledCommandProcessingSaga.SagaDescriptor);
             producer.Register<ScheduledCommandProcessingStarted>(factory);
             producer.Register<ScheduledCommandProcessingSagaState>(factory);
 

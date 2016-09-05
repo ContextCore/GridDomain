@@ -22,7 +22,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
             _eventsToTriggersMapping
                 = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
-        public IReadOnlyCollection<Type> AcceptMessages => _eventsToTriggersMapping.Keys.ToArray();
+        public IReadOnlyCollection<MessageBinder> AcceptMessages => _eventsToTriggersMapping.Keys.Select(k => new MessageBinder(k)).ToArray();
         public IReadOnlyCollection<Type> ProduceCommands => _registeredCommands;
 
         public IReadOnlyCollection<Type> StartMessages => _startMessages;
@@ -49,6 +49,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
             _startMessages.Add(typeof(TStartMessage));
             //to include start message into list of accept messages
             _eventsToTriggersMapping[typeof(TStartMessage)] = null;
+
             Machine = new StateMachine<TSagaStates, TSagaTriggers>(State.MachineState);
             Machine.OnTransitioned(t => State.StateChanged(t.Trigger, t.Destination));
             _transitMethod = GetType().GetMethod(nameof(TransitState), BindingFlags.Instance | BindingFlags.NonPublic);

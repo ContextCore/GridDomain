@@ -18,11 +18,14 @@ namespace GridDomain.Node.Actors
         private readonly Type _actorType = typeof(SagaActor<TSaga, TSagaState>);
         private readonly IPublisher _publisher;
         private readonly HashSet<Type> _sagaStartMessages;
+        private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
 
         public SagaHubActor(IPublisher publisher, 
                             IPersistentChildsRecycleConfiguration recycleConf, 
-                            ISagaProducer<TSaga> sagaProducer ) : base(recycleConf, typeof(TSaga).Name)
+                            ISagaProducer<TSaga> sagaProducer) : base(recycleConf, typeof(TSaga).Name)
         {
+            _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m=> m.CorrelationField);
+
             _sagaStartMessages = new HashSet<Type>(sagaProducer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _publisher = publisher;
         }
@@ -39,9 +42,17 @@ namespace GridDomain.Node.Actors
         protected override Guid GetChildActorId(object message)
         {
             Guid childActorId = Guid.Empty;
+
             message.Match()
-                   .With<DomainEvent>(m => childActorId = m.SagaId)
                    .With<ICommandFault>(m => childActorId = m.SagaId);
+
+            if(childActorId != Guid.Empty) return childActorId;
+
+            string fieldName;
+            var type = message.GetType();
+            if (_acceptMessagesSagaIds.TryGetValue(type, out fieldName))
+                childActorId = (Guid) type.GetProperty(fieldName).GetValue(message);
+
             return childActorId;
         }
 

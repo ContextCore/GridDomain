@@ -11,19 +11,20 @@ namespace GridDomain.EventSourcing.Sagas
     public interface ISagaProducer<out TSaga> where TSaga : ISagaInstance
     {
         TSaga Create(object data);
-        
+
+        ISagaDescriptor Descriptor { get; }
         //TODO: extract to separate type? 
         IReadOnlyCollection<Type> KnownDataTypes { get; }
-    }
-
-    public interface ISagaProducer<out TSaga, in TData> : ISagaProducer<TSaga> where TSaga : ISagaInstance
-    {
-        TSaga Create(TData data);
     }
 
     public class SagaProducer<TSaga> : ISagaProducer<TSaga> where TSaga : ISagaInstance
     {
         private readonly Dictionary<Type, Func<object, TSaga>> _factories = new Dictionary<Type,Func<object,TSaga>>();
+
+        public SagaProducer(ISagaDescriptor descriptor)
+        {
+            Descriptor = descriptor;
+        }
 
         public void Register<TMessage>(ISagaFactory<TSaga, TMessage> factory)
         {
@@ -47,6 +48,8 @@ namespace GridDomain.EventSourcing.Sagas
 
             return factory.Invoke(data);
         }
+
+        public ISagaDescriptor Descriptor { get; }
 
         public IReadOnlyCollection<Type> KnownDataTypes => _factories.Keys;
     }

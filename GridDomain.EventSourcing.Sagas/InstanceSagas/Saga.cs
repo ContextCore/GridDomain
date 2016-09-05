@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Automatonymous;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 
@@ -21,7 +22,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
 
         private readonly List<Type> _dispatchedCommands = new List<Type>(); 
+        private readonly List<MessageBinder> _acceptedMessageMap = new List<MessageBinder>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
+        public IReadOnlyCollection<MessageBinder> AcceptedMessageMap => _acceptedMessageMap;
+
+
         public IReadOnlyCollection<Type> DispatchedCommands => _dispatchedCommands;
         protected void Command<TCommand>()
         {
@@ -30,17 +35,29 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         protected override void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression)
         {
+            Event(propertyExpression, nameof(DomainEvent.SagaId));
+        }
+
+        protected void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression, Expression<Func<TEventData,object>> fieldExpr)
+        {
+            Event(propertyExpression, MemberNameExtractor.GetName(fieldExpr));
+        }
+
+        protected void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression, string fieldName)
+        {
             var machineEvent = propertyExpression.Compile().Invoke();
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
+            _acceptedMessageMap.Add(new MessageBinder(typeof(TEventData),fieldName));
 
             base.Event(propertyExpression);
-            
+
             DuringAny(
                      When(machineEvent).Then(
                          ctx =>
                              OnEventReceived.Invoke(this,
                                  new EventReceivedData<TEventData, TSagaData>(ctx.Event, ctx.Data, ctx.Instance))));
         }
+
         public event EventHandler<StateChangedData<TSagaData>> OnStateEnter = delegate { };
         public event EventHandler<EventReceivedData<TSagaData>> OnEventReceived = delegate { };
         public event EventHandler<MessageReceivedData<TSagaData>> OnMessageReceived = delegate { };
