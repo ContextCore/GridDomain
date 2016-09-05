@@ -30,9 +30,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
 
         private readonly List<Type> _dispatchedCommands = new List<Type>(); 
-        private readonly List<MessageBinder> _acceptedMessageMap = new List<MessageBinder>(); 
+        private readonly List<MessageBind> _acceptedMessageMap = new List<MessageBind>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
-        public IReadOnlyCollection<MessageBinder> AcceptedMessageMap => _acceptedMessageMap;
+        public IReadOnlyCollection<MessageBind> AcceptedMessageMap => _acceptedMessageMap;
 
 
         public IReadOnlyCollection<Type> DispatchedCommands => _dispatchedCommands;
@@ -55,7 +55,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             var machineEvent = propertyExpression.Compile().Invoke();
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
-            _acceptedMessageMap.Add(new MessageBinder(typeof(TEventData),fieldName));
+            _acceptedMessageMap.Add(new MessageBind(typeof(TEventData),fieldName));
 
             base.Event(propertyExpression);
 

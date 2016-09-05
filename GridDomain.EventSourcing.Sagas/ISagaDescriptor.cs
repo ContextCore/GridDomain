@@ -5,9 +5,9 @@ using CommonDomain;
 namespace GridDomain.EventSourcing.Sagas
 {
 
-    public class MessageBinder
+    public class MessageBind
     {
-        public MessageBinder(Type messageType, string correlationField = nameof(DomainEvent.SagaId))
+        public MessageBind(Type messageType, string correlationField = nameof(DomainEvent.SagaId))
         {
             MessageType = messageType;
             CorrelationField = correlationField;
@@ -20,7 +20,7 @@ namespace GridDomain.EventSourcing.Sagas
     public interface ISagaDescriptor
     {
         //TODO: enforce check all messages are DomainEvents
-        IReadOnlyCollection<MessageBinder> AcceptMessages { get; }
+        IReadOnlyCollection<MessageBind> AcceptMessages { get; }
         IReadOnlyCollection<Type> ProduceCommands { get; }
         IReadOnlyCollection<Type> StartMessages { get; } 
         Type StateType { get; }

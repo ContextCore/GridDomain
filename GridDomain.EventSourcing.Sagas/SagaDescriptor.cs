@@ -5,10 +5,10 @@ namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaDescriptor : ISagaDescriptor
     {
-        private readonly List<MessageBinder> _acceptedMessages = new List<MessageBinder>();
+        private readonly List<MessageBind> _acceptedMessages = new List<MessageBind>();
         private readonly List<Type> _producedMessages = new List<Type>();
         private readonly List<Type> _startMessages = new List<Type>();
-        public IReadOnlyCollection<MessageBinder> AcceptMessages => _acceptedMessages;
+        public IReadOnlyCollection<MessageBind> AcceptMessages => _acceptedMessages;
         public IReadOnlyCollection<Type> ProduceCommands => _producedMessages;
         public IReadOnlyCollection<Type> StartMessages => _startMessages;
 
@@ -23,7 +23,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         public void AddAcceptedMessage(Type messageType, string correlationFieldName = nameof(DomainEvent.SagaId))
         {
-            _acceptedMessages.Add(new MessageBinder(messageType,correlationFieldName));
+            _acceptedMessages.Add(new MessageBind(messageType,correlationFieldName));
         }
 
         public void AddProduceCommandMessage(Type messageType)

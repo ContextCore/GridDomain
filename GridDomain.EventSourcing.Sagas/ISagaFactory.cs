@@ -13,6 +13,7 @@ namespace GridDomain.EventSourcing.Sagas
         TSaga Create(object data);
 
         ISagaDescriptor Descriptor { get; }
+
         //TODO: extract to separate type? 
         IReadOnlyCollection<Type> KnownDataTypes { get; }
     }

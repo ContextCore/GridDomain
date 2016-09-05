@@ -22,7 +22,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
             _eventsToTriggersMapping
                 = new Dictionary<Type, StateMachine<TSagaStates, TSagaTriggers>.TriggerWithParameters>();
 
-        public IReadOnlyCollection<MessageBinder> AcceptMessages => _eventsToTriggersMapping.Keys.Select(k => new MessageBinder(k)).ToArray();
+        public IReadOnlyCollection<MessageBind> AcceptMessages => _eventsToTriggersMapping.Keys.Select(k => new MessageBind(k)).ToArray();
         public IReadOnlyCollection<Type> ProduceCommands => _registeredCommands;
 
         public IReadOnlyCollection<Type> StartMessages => _startMessages;
