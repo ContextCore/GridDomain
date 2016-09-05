@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             return new SoftwareProgrammingSagaCustomRoutes();
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(Debugger.IsAttached ? 100 : 2);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
 
         protected override IContainerConfiguration CreateConfiguration()
         {
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             return new CustomContainerConfiguration(
                 c => c.RegisterSaga<CustomRoutesSoftwareProgrammingSaga,
                     SoftwareProgrammingSagaData,
-                    SoftwareProgrammingSagaFactory_with_custom_routes,
+                    CustomRoutesSoftwareProgrammingSagaFactory,
                     SleptWellEvent,
                     GotTiredEvent>(CustomRoutesSoftwareProgrammingSaga.Descriptor),
 

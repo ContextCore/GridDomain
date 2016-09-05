@@ -43,8 +43,7 @@ namespace GridDomain.Node.Actors
         {
             Guid childActorId = Guid.Empty;
 
-            message.Match()
-                   .With<ICommandFault>(m => childActorId = m.SagaId);
+            message.Match().With<ICommandFault>(m => childActorId = m.SagaId);
 
             if(childActorId != Guid.Empty) return childActorId;
 
@@ -59,10 +58,18 @@ namespace GridDomain.Node.Actors
         protected override void OnReceive(object message)
         {
             var msgType = message.GetType();
+
             DomainEvent domainEvent = message as DomainEvent;
-            if (domainEvent != null && _sagaStartMessages.Contains(msgType) && domainEvent.SagaId == Guid.Empty)
+            string routeField;
+            _acceptMessagesSagaIds.TryGetValue(msgType, out routeField);
+
+            if (domainEvent != null &&
+                routeField == nameof(DomainEvent.SagaId) &&
+                domainEvent.SagaId == Guid.Empty &&
+                _sagaStartMessages.Contains(msgType))
             {
                 //send message back to publisher to reroute to some hub according to SagaId
+                //if message has custom mapping, no action is required
                 _publisher.Publish(domainEvent.CloneWithSaga(Guid.NewGuid()));
                 return;
             }

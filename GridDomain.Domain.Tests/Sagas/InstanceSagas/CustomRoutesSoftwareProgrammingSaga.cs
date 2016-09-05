@@ -10,17 +10,17 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
-            = SagaExtensions.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga,
-                SoftwareProgrammingSagaData,
-                GotTiredEvent,
-                SleptWellEvent>();
+                                            = SagaExtensions.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga,
+                                                SoftwareProgrammingSagaData,
+                                                GotTiredEvent,
+                                                SleptWellEvent>();
 
         public CustomRoutesSoftwareProgrammingSaga()
         {
             Event(() => GotTired, e => e.PersonId);
             Event(() => CoffeReady, e => e.ForPersonId);
-            Event(() => SleptWell, e => e.PersonId);
-            Event(() => CoffeNotAvailable, e => e.ForPersonId);
+            Event(() => SleptWell, e => e.SofaId);
+            Event(() => CoffeNotAvailable, e => e.CoffeMachineId);
 
             State(() => Coding);
             State(() => MakingCoffee);
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     soloLogger.Trace("Hello trace string");
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
                 })
-                    .TransitionTo(MakingCoffee));
+                 .TransitionTo(MakingCoffee));
 
             During(MakingCoffee,
                 When(CoffeNotAvailable)

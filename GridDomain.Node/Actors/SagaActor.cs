@@ -96,6 +96,15 @@ namespace GridDomain.Node.Actors
             Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
         }
 
+        protected override void OnRecoveryFailure(Exception reason, object message = null)
+        {
+            base.OnRecoveryFailure(reason, message);
+        }
+
+        protected override bool AroundReceive(Receive receive, object message)
+        {
+            return base.AroundReceive(receive, message);
+        }
 
         protected virtual void Shutdown()
         {
@@ -113,10 +122,8 @@ namespace GridDomain.Node.Actors
 
         private void ProcessSagaCommands()
         {
-            foreach (var msg in Saga.CommandsToDispatch
-                .OfType<Command>()
-                .Select(c => c.CloneWithSaga(Saga.Data.Id)))
-                _publisher.Publish(msg);
+            foreach (var msg in Saga.CommandsToDispatch)
+                      _publisher.Publish(msg);
 
             Saga.ClearCommandsToDispatch();
         }
@@ -125,15 +132,14 @@ namespace GridDomain.Node.Actors
         {
             var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>();
 
-            PersistAll(stateChangeEvents, e => { _publisher.Publish(e); });
+            PersistAll(stateChangeEvents, e => _publisher.Publish(e));
 
             Saga.Data.ClearUncommittedEvents();
         }
 
-        private readonly ActorMonitor _monitor = new ActorMonitor(Context,typeof(TSaga).Name);
+        private readonly ActorMonitor _monitor = new ActorMonitor(Context, typeof(TSaga).Name);
         
-
-            protected override void PreStart()
+        protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
         }

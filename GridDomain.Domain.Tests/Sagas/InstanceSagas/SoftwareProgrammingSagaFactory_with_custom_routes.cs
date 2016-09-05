@@ -4,7 +4,7 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSagaFactory_with_custom_routes :
+    class CustomRoutesSoftwareProgrammingSagaFactory :
         ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>>,
         ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
         ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
@@ -17,15 +17,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
         {
             var saga = new CustomRoutesSoftwareProgrammingSaga();
-            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SagaId,
-                new SoftwareProgrammingSagaData(saga.Coding.Name));
+            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.PersonId,
+                                          new SoftwareProgrammingSagaData(saga.Coding.Name));
             return SagaInstance.New(saga, data);
         }
 
         public ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
             var saga = new CustomRoutesSoftwareProgrammingSaga();
-            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SagaId,
+            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SofaId,
                 new SoftwareProgrammingSagaData(saga.Sleeping.Name));
             return SagaInstance.New(saga, data);
         }

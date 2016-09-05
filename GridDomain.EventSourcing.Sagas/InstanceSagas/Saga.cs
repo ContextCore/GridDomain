@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Automatonymous;
 using GridDomain.Common;
@@ -10,12 +11,19 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
-        public readonly List<ICommand> CommandsToDispatch = new List<ICommand>();
+        private readonly List<Command> _commandsToDispatch = new List<Command>();
+        public IReadOnlyCollection<Command> CommandsToDispatch => _commandsToDispatch;
 
-        public void Dispatch(ICommand cmd)
+        public void ClearCommands()
         {
-            CommandsToDispatch.Add(cmd);
+            _commandsToDispatch.Clear();
         }
+
+        public void Dispatch(Command cmd)
+        {
+            _commandsToDispatch.Add(cmd);
+        }
+
         public Saga()
         {
             InstanceState(d => d.CurrentStateName);
@@ -78,12 +86,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             OnMessageReceived.Invoke(this,new MessageReceivedData<TSagaData>(message, progress));
 
-          
             var machineEvent = GetMachineEvent(message);
 
             try
             {
-                this.RaiseEvent(progress, machineEvent, message);
+                this.RaiseEvent(progress, machineEvent, message).Wait(1000);
             }
             catch(Exception ex)
             {

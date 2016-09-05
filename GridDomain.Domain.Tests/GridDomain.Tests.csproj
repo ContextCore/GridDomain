@@ -301,6 +301,7 @@
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_with_custom_message_mappings_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest_with_custom_routes.cs" />
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />

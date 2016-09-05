@@ -69,22 +69,14 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private static void FillAcceptMessages<T>(Saga<T> saga, SagaDescriptor descriptor) where T : class, ISagaState
         {
-            foreach (var eventType in saga.Events
-                                          .Select(e => e.GetType())
-                                          .Where(t => t.IsGenericType))
+            foreach (var messageBinder in saga.AcceptedMessageMap)
             {
-                var genericArguments = eventType.GetGenericArguments();
-                var domainEventType = genericArguments.First();
-                if (genericArguments.Length > 1)
-                    throw new InvalidOperationException(
-                        "Expected Event<> type to extract information, but found more then one generic argument");
-
-                descriptor.AddAcceptedMessage(domainEventType);
+                descriptor.AddAcceptedMessage(messageBinder.MessageType, messageBinder.CorrelationField);
             }
         }
     }
 
-    public class StartMessagesMissedException : Exception
+    public class StartMessagesMissedException: Exception
     {
         public StartMessagesMissedException():base("Saga descriptor should contains at least one start message")
         {
