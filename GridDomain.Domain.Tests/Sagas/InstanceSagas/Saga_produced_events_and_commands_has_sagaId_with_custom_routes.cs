@@ -19,11 +19,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
         }
 
-        public Saga_produced_events_and_commands_has_sagaId_with_custom_routes(bool inMemory) : base(inMemory)
-        {
-
-        }
-
         [Test]
         public void When_dispatch_command_than_command_should_have_right_sagaId()
         {
@@ -67,6 +62,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             Assert.AreEqual(gotTiredEvent.PersonId, expectedTransitionedEvent.SagaId);
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2000);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(200);
     }
 }

@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     {
         protected override IMessageRouteMap CreateMap()
         {
-            return new SoftwareProgrammingSagaCustomRoutes();
+            return new CustomRoutesSoftwareProgrammingSagaMap();
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
@@ -24,10 +24,10 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
             return new CustomContainerConfiguration(
                 c => c.RegisterSaga<CustomRoutesSoftwareProgrammingSaga,
-                    SoftwareProgrammingSagaData,
-                    CustomRoutesSoftwareProgrammingSagaFactory,
-                    SleptWellEvent,
-                    GotTiredEvent>(CustomRoutesSoftwareProgrammingSaga.Descriptor),
+                                    SoftwareProgrammingSagaData,
+                                    CustomRoutesSoftwareProgrammingSagaFactory,
+                                    SleptWellEvent,
+                                    GotTiredEvent>(CustomRoutesSoftwareProgrammingSaga.Descriptor),
 
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
