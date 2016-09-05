@@ -14,12 +14,4 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             router.RegisterSaga(SoftwareProgrammingSaga.Descriptor);
         }
     }
-
-    public class SoftwareProgrammingSagaCustomRoutes : IMessageRouteMap
-    {
-        public void Register(IMessagesRouter router)
-        {
-            router.RegisterSaga(CustomRoutesSoftwareProgrammingSaga.Descriptor);
-        }
-    }
 }

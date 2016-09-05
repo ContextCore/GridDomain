@@ -1,29 +1,26 @@
-using System.Runtime.Remoting.Channels;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
-using NMoneys;
-
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
+    class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
-            = SagaExtensions.CreateDescriptor<SoftwareProgrammingSaga,
-                                              SoftwareProgrammingSagaData,
-                                              GotTiredEvent,
-                                              SleptWellEvent>();
-        
-        public SoftwareProgrammingSaga()
-        { 
-            Event(() => GotTired);
-            Event(() => CoffeReady);
-            Event(() => SleptWell);
-            Event(() => CoffeNotAvailable);
+            = SagaExtensions.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga,
+                SoftwareProgrammingSagaData,
+                GotTiredEvent,
+                SleptWellEvent>();
+
+        public CustomRoutesSoftwareProgrammingSaga()
+        {
+            Event(() => GotTired, e => e.PersonId);
+            Event(() => CoffeReady, e => e.ForPersonId);
+            Event(() => SleptWell, e => e.PersonId);
+            Event(() => CoffeNotAvailable, e => e.ForPersonId);
 
             State(() => Coding);
             State(() => MakingCoffee);
@@ -40,30 +37,30 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     sagaData.PersonId = domainEvent.SourceId;
                     var soloLogger = LogManager.GetLogger();
                     soloLogger.Trace("Hello trace string");
-                    Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
+                    Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
                 })
-                .TransitionTo(MakingCoffee));
+                    .TransitionTo(MakingCoffee));
 
-            During(MakingCoffee, 
+            During(MakingCoffee,
                 When(CoffeNotAvailable)
-                    .Then(context => 
+                    .Then(context =>
                         Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId)))
                     .TransitionTo(Sleeping),
                 When(CoffeReady)
                     .TransitionTo(Coding));
 
-             During(Sleeping,
+            During(Sleeping,
                 When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
-                               .TransitionTo(Coding));
+                    .TransitionTo(Coding));
         }
 
-        public Event<GotTiredEvent>      GotTired      { get; private set; } 
-        public Event<CoffeMadeEvent>      CoffeReady      { get; private set; }
-        public Event<SleptWellEvent>     SleptWell     { get; private set; } 
+        public Event<GotTiredEvent> GotTired { get; private set; }
+        public Event<CoffeMadeEvent> CoffeReady { get; private set; }
+        public Event<SleptWellEvent> SleptWell { get; private set; }
         public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
 
-        public State Coding       { get; private set; }
+        public State Coding { get; private set; }
         public State MakingCoffee { get; private set; }
-        public State Sleeping  { get; private set; }
+        public State Sleeping { get; private set; }
     }
 }
