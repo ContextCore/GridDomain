@@ -147,7 +147,7 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
-            var msg = (ExpectedMessagesRecieved)FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
+            var msg = (ExpectedMessagesRecieved) FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
             _watch.Stop();
 
             Console.WriteLine();

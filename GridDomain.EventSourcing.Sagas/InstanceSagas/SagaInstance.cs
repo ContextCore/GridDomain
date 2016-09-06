@@ -30,10 +30,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private static readonly ISoloLogger Log = LogManager.GetLogger();
         
-        public IReadOnlyCollection<object> CommandsToDispatch => Machine.CommandsToDispatch;
+        private List<object> _commandsToDispatch = new List<object>();
+        public IReadOnlyCollection<object> CommandsToDispatch => _commandsToDispatch;
         public void ClearCommandsToDispatch()
         {
-            Machine.CommandsToDispatch.Clear();
+            Machine.ClearCommands();
+            _commandsToDispatch.Clear();
         }
 
         SagaDataAggregate<TSagaData> ISagaInstance<TSaga, TSagaData>.Data => _dataAggregate;
@@ -96,6 +98,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
             Machine.RaiseByMessage(_dataAggregate.Data, message);
+            _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id))
+                                                            .Cast<object>()
+                                                            .ToList();
         }
     }
 }

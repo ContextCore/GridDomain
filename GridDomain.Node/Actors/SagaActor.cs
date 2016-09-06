@@ -57,46 +57,58 @@ namespace GridDomain.Node.Actors
         private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
 
+        private Guid GetSagaId(DomainEvent msg)
+        {
+            var type = msg.GetType();
+            string fieldName;
+         
+            if (_sagaIdFIelds.TryGetValue(type, out fieldName))
+                return (Guid) type.GetProperty(fieldName).GetValue(msg);
+
+            return msg.SagaId;
+        }
+
         public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher)
         {
             _producer = producer;
             _publisher = publisher;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
+            _sagaIdFIelds = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
             _sagaData = _aggregateFactory.Build<TSagaState>(Id);
 
+
             Command<ICommandFault>(fault =>
             {
-               _monitor.IncrementMessagesReceived();
-               ProcessSaga(fault);
+                _monitor.IncrementMessagesReceived();
+                ProcessSaga(fault);
             }, fault => fault.SagaId == Id);
 
             Command<ShutdownRequest>(req =>
             {
-               _monitor.IncrementMessagesReceived();
-               Shutdown();
+                _monitor.IncrementMessagesReceived();
+                Shutdown();
             });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
             Command<DomainEvent>(msg =>
             {
-               _monitor.IncrementMessagesReceived();
-               if(_sagaStartMessageTypes.Contains(msg.GetType()))
-                        _saga = _producer.Create(msg);
+                _monitor.IncrementMessagesReceived();
+                if (_sagaStartMessageTypes.Contains(msg.GetType()))
+                    _saga = _producer.Create(msg);
 
-               ProcessSaga(msg);
-            }, e => e.SagaId == Id);
+                ProcessSaga(msg);
+            }, e => GetSagaId(e) == Id);
 
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
             Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
         }
-
-
+        
         protected virtual void Shutdown()
         {
             Context.Stop(Self);
@@ -113,10 +125,8 @@ namespace GridDomain.Node.Actors
 
         private void ProcessSagaCommands()
         {
-            foreach (var msg in Saga.CommandsToDispatch
-                .OfType<Command>()
-                .Select(c => c.CloneWithSaga(Saga.Data.Id)))
-                _publisher.Publish(msg);
+            foreach (var msg in Saga.CommandsToDispatch)
+                      _publisher.Publish(msg);
 
             Saga.ClearCommandsToDispatch();
         }
@@ -125,15 +135,15 @@ namespace GridDomain.Node.Actors
         {
             var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>();
 
-            PersistAll(stateChangeEvents, e => { _publisher.Publish(e); });
+            PersistAll(stateChangeEvents, e => _publisher.Publish(e));
 
             Saga.Data.ClearUncommittedEvents();
         }
 
-        private readonly ActorMonitor _monitor = new ActorMonitor(Context,typeof(TSaga).Name);
-        
+        private readonly ActorMonitor _monitor = new ActorMonitor(Context, typeof(TSaga).Name);
+        private Dictionary<Type, string> _sagaIdFIelds;
 
-            protected override void PreStart()
+        protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
         }

@@ -4,32 +4,30 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tests.SynchroniousCommandExecute;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    public class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
+    public class ProgrammingSoftwareSagaTest_with_custom_routes : SampleDomainCommandExecutionTests
     {
         protected override IMessageRouteMap CreateMap()
         {
-            return new SoftwareProgrammingSagaRoutes();
+            return new CustomRoutesSoftwareProgrammingSagaMap();
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(Debugger.IsAttached ? 100 : 2);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
 
         protected override IContainerConfiguration CreateConfiguration()
         {
             var baseConf = base.CreateConfiguration();
 
             return new CustomContainerConfiguration(
-                c => c.RegisterSaga<SoftwareProgrammingSaga,
+                c => c.RegisterSaga<CustomRoutesSoftwareProgrammingSaga,
                                     SoftwareProgrammingSagaData,
-                                    SoftwareProgrammingSagaFactory,
+                                    CustomRoutesSoftwareProgrammingSagaFactory,
                                     SleptWellEvent,
-                                    GotTiredEvent>(SoftwareProgrammingSaga.Descriptor),
+                                    GotTiredEvent>(CustomRoutesSoftwareProgrammingSaga.Descriptor),
 
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
@@ -37,7 +35,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 );
         }
 
-        public ProgrammingSoftwareSagaTest(bool inMemory = true) : base(inMemory)
+        public ProgrammingSoftwareSagaTest_with_custom_routes(bool inMemory = true): base(inMemory)
         {
         }
     }

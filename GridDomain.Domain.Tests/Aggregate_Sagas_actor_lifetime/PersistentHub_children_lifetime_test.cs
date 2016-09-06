@@ -38,12 +38,12 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
                         c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
                                                  SoftwareProgrammingSagaState,
                                                  Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory,
-                                                 GotTiredEvent>(),
+                                                 GotTiredEvent>(Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga.Descriptor),
                         
                         c => c.RegisterSaga<Sagas.InstanceSagas.SoftwareProgrammingSaga,
                                             SoftwareProgrammingSagaData,
                                             Sagas.InstanceSagas.SoftwareProgrammingSagaFactory,
-                                            GotTiredEvent>(),
+                                            GotTiredEvent>(Sagas.InstanceSagas.SoftwareProgrammingSaga.Descriptor),
                         
                         c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
                                                  SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),

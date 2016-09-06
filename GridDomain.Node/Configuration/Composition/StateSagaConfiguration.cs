@@ -12,16 +12,16 @@ namespace GridDomain.Node.Configuration.Composition
     {
         protected readonly SagaProducer<TSaga> Producer;
 
-        public SagaConfiguration(Func<object, TSaga> factory, params Type[] startDataTypes)
+        public SagaConfiguration(Func<object, TSaga> factory, ISagaDescriptor descriptor)
         {
-            Producer = new SagaProducer<TSaga>();
-            foreach (var dataType in startDataTypes)
+            Producer = new SagaProducer<TSaga>(descriptor);
+            foreach (var dataType in descriptor.StartMessages)
                 Producer.Register(dataType, factory);
         }
 
-        public SagaConfiguration(SagaProducer<TSaga> producer = null)
+        public SagaConfiguration(SagaProducer<TSaga> producer)
         {
-            Producer = producer ?? new SagaProducer<TSaga>();
+            Producer = producer;
         }
 
         public void Register<T>(ISagaFactory<TSaga, T> factory)
@@ -33,10 +33,10 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterInstance<ISagaProducer<TSaga>>(Producer);
         }
 
-        public static SagaConfiguration<TSaga> New<TFactory, TState>(TFactory factory)
+        public static SagaConfiguration<TSaga> New<TFactory, TState>(TFactory factory, ISagaDescriptor descriptor)
                                                                      where TFactory : ISagaFactory<TSaga, TState>
         {
-            var conf = new SagaConfiguration<TSaga>();
+            var conf = new SagaConfiguration<TSaga>(new SagaProducer<TSaga>(descriptor));
             //conf.Register<Guid>(factory); - replaced by aggregate factory inside saga actor
             conf.Register<TState>(factory);
             return conf;

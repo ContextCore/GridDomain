@@ -10,14 +10,11 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    public class Saga_produced_events_and_commands_has_sagaId : ProgrammingSoftwareSagaTest
+    public class Saga_produced_events_and_commands_has_sagaId_with_custom_routes :
+        ProgrammingSoftwareSagaTest_with_custom_routes
     {
-        public Saga_produced_events_and_commands_has_sagaId() : base(true)
-        {
 
-        }
-
-        public Saga_produced_events_and_commands_has_sagaId(bool inMemory) : base(inMemory)
+        public Saga_produced_events_and_commands_has_sagaId_with_custom_routes() : base(true)
         {
 
         }
@@ -26,50 +23,45 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void When_dispatch_command_than_command_should_have_right_sagaId()
         {
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
 
-            var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            var expectedCommand = (MakeCoffeCommand) WaitFor<MakeCoffeCommand>().Message;
+            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
+            publisher.Publish(gotTiredEvent);
+            var expectedCommand = (MakeCoffeCommand)WaitFor<MakeCoffeCommand>().Message;
 
-
-            Assert.AreEqual(sagaId, expectedCommand.SagaId);
+            Assert.AreEqual(gotTiredEvent.PersonId, expectedCommand.SagaId);
         }
 
         [Test]
         public void When_raise_saga_than_saga_created_event_should_have_right_sagaId()
         {
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
 
-            var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
+            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
+            publisher.Publish(gotTiredEvent);
 
             var expectedCreatedEvent =
                 (SagaCreatedEvent<SoftwareProgrammingSagaData>)
                     WaitFor<SagaCreatedEvent<SoftwareProgrammingSagaData>>().Message;
 
 
-            Assert.AreEqual(sagaId, expectedCreatedEvent.SagaId);
+            Assert.AreEqual(gotTiredEvent.PersonId, expectedCreatedEvent.SagaId);
         }
 
         [Test]
         public void When_raise_saga_than_saga_transitioned_event_should_have_right_sagaId()
         {
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
 
-            var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
+            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
+            publisher.Publish(gotTiredEvent);
 
             var expectedTransitionedEvent =
                 (SagaTransitionEvent<SoftwareProgrammingSagaData>)
                     WaitFor<SagaTransitionEvent<SoftwareProgrammingSagaData>>().Message;
 
-
-            Assert.AreEqual(sagaId, expectedTransitionedEvent.SagaId);
+            Assert.AreEqual(gotTiredEvent.PersonId, expectedTransitionedEvent.SagaId);
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(200);
     }
 }
