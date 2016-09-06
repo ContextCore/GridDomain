@@ -98,9 +98,15 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
             //Saga is not initialized
-            if (_dataAggregate.Id == Guid.Empty && _dataAggregate.Data == null)
+            if (_dataAggregate.Id == Guid.Empty)
             {
-                Log.Trace("Saga {Saga} is empty and received message {Message}", typeof(TSaga).Name,message);
+                Log.Trace("Saga {Saga} id is empty and it received message {Message}", typeof(TSaga).Name,message);
+                return;
+            }
+
+            if (_dataAggregate.Data== null)
+            {
+                Log.Trace("Saga {Saga} data is empty and it received message {Message}", typeof(TSaga).Name,message);
                 return;
             }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using Automatonymous;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -15,16 +16,21 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         private CoffeMadeEvent _coffeMadeEvent;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
 
-        [Test]
-        public void When_publishing_known_message_without_saga_data()
+        [TestCase(false, true , Description="Saga id is empty and it has data")]
+        [TestCase(false, false, Description = "Saga id is empty and no data")]
+        [TestCase(true,  false, Description = "Saga has id and no data")]
+        public void Given_saga_when_publishing_known_message_without_saga_data(bool sagaHasId, bool sagaHasData)
         {
-           var  coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
+            var softwareProgrammingSaga = new SoftwareProgrammingSaga();
 
-            var saga = SagaInstance.New(new SoftwareProgrammingSaga(),
-                Aggregate.Empty<SagaDataAggregate<SoftwareProgrammingSagaData>>(Guid.Empty));
+            var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
 
-           saga.Transit(coffeMadeEvent);
-           Assert.AreEqual(Guid.Empty, saga.Data.Id);
+            var sagaDataAggregate = Aggregate.Empty<SagaDataAggregate<SoftwareProgrammingSagaData>>(!sagaHasId ? Guid.Empty : Guid.NewGuid());
+            sagaDataAggregate.RememberEvent(softwareProgrammingSaga.CoffeReady, !sagaHasData ? null : new SoftwareProgrammingSagaData(""), null);
+
+            var saga = SagaInstance.New(softwareProgrammingSaga,sagaDataAggregate);
+            saga.Transit(coffeMadeEvent);
+            //No exception is raised
         }
 
         [Then]
