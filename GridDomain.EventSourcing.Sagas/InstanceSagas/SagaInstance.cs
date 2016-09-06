@@ -97,6 +97,13 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public void Transit<TMessage>(TMessage message) where TMessage : class
         {
+            //Saga is not initialized
+            if (_dataAggregate.Id == Guid.Empty && _dataAggregate.Data == null)
+            {
+                Log.Trace("Saga {Saga} is empty and received message {Message}", typeof(TSaga).Name,message);
+                return;
+            }
+
             Machine.RaiseByMessage(_dataAggregate.Data, message);
             _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id))
                                                             .Cast<object>()
