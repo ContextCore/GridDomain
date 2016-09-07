@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.CQRS;
@@ -19,32 +18,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-
-    [TestFixture]
-    class Given_instance_saga_actor_can_be_created_for_non_domain_event : ProgrammingSoftwareSagaTest_with_custom_routes
-    {
-
-        [Then]
-        public void Instance_saga_actor_has_correct_path_when_saga_is_raised_by_command_fault()
-        {
-            var msg = new CustomRoutesSoftwareProgrammingSaga.CustomEvent { Payload = "1232", SagaId = Guid.NewGuid() };
-
-            var publisher = GridNode.Container.Resolve<IPublisher>();
-            publisher.Publish(msg);
-
-            Thread.Sleep(500);
-
-            var sagaActorName =
-                AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
-            var sagaHubName = typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>).BeautyName();
-
-            string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/*/{sagaActorName}";
-
-            var sagaActor = GridNode.System.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(1)).Result;
-            Assert.NotNull(sagaActor);
-        }
-    }
-
     [TestFixture]
     class Given_istance_saga_saga_actor_can_be_created : ProgrammingSoftwareSagaTest
     {

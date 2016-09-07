@@ -297,6 +297,7 @@
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_instance_saga_actor_can_be_created_for_non_domain_event.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_messages.cs" />
@@ -305,8 +306,9 @@
     <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest_with_custom_routes.cs" />
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaCustomRoutes.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory_with_custom_routes.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaMap.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\SagaRecycling\Saga\Triggers.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoToWorkCommand.cs" />

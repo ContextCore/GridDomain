@@ -4,12 +4,6 @@ using GridDomain.EventSourcing.Sagas.StateSagas;
 
 namespace GridDomain.Tests.Sagas.SagaRecycling.Saga
 {
-
-    public enum Triggers
-    {
-        Start,
-        Finish
-    }
     public class SagaForRecycling : StateSaga<States,Triggers, State, StartEvent>
     {
         public SagaForRecycling(State state) : base(state)
