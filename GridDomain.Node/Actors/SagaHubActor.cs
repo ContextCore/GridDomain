@@ -32,11 +32,7 @@ namespace GridDomain.Node.Actors
 
         protected override string GetChildActorName(object message)
         {
-            if (message is DomainEvent)
-            {
-                return AggregateActorName.New<TSagaState>(GetChildActorId(message)).ToString();
-            }
-            return null;
+            return AggregateActorName.New<TSagaState>(GetChildActorId(message)).ToString();
         }
 
         protected override Guid GetChildActorId(object message)

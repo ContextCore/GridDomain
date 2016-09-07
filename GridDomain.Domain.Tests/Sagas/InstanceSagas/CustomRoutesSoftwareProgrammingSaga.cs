@@ -1,3 +1,4 @@
+using System;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -15,12 +16,19 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                                 GotTiredEvent,
                                                 SleptWellEvent>();
 
+        public class CustomEvent
+        {
+            public Guid SagaId { get; set; }
+            public string Payload { get; set; }
+        }
+
         public CustomRoutesSoftwareProgrammingSaga()
         {
             Event(() => GotTired, e => e.PersonId);
             Event(() => CoffeReady, e => e.ForPersonId);
             Event(() => SleptWell, e => e.SofaId);
             Event(() => CoffeNotAvailable, e => e.CoffeMachineId);
+            Event(() => Custom, e => e.SagaId);
 
             State(() => Coding);
             State(() => MakingCoffee);
@@ -54,7 +62,10 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     .TransitionTo(Coding));
         }
 
+       
+
         public Event<GotTiredEvent> GotTired { get; private set; }
+        public Event<CustomEvent> Custom { get; private set; }
         public Event<CoffeMadeEvent> CoffeReady { get; private set; }
         public Event<SleptWellEvent> SleptWell { get; private set; }
         public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
