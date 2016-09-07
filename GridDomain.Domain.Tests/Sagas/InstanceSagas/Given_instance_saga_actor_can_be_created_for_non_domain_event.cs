@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Instance_saga_actor_has_correct_path_when_saga_is_raised_by_command_fault()
         {
-            var msg = new CustomRoutesSoftwareProgrammingSaga.CustomEvent { Payload = "1232", SagaId = Guid.NewGuid() };
+            var msg = new CustomEvent { Payload = "1232", SagaId = Guid.NewGuid() };
 
             var publisher = GridNode.Container.Resolve<IPublisher>();
             publisher.Publish(msg);

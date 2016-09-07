@@ -8,6 +8,12 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
+    public class CustomEvent
+    {
+        public Guid SagaId { get; set; }
+        public string Payload { get; set; }
+    }
+
     class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
@@ -16,11 +22,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                                 GotTiredEvent,
                                                 SleptWellEvent>();
 
-        public class CustomEvent
-        {
-            public Guid SagaId { get; set; }
-            public string Payload { get; set; }
-        }
+      
 
         public CustomRoutesSoftwareProgrammingSaga()
         {

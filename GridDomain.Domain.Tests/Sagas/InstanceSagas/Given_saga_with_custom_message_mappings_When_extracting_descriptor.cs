@@ -1,4 +1,5 @@
 using System.Linq;
+using Akka.TestKit.Internal;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
@@ -64,7 +65,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 typeof(GotTiredEvent),
                 typeof(CoffeMadeEvent),
                 typeof(SleptWellEvent),
-                typeof(CoffeMakeFailedEvent)
+                typeof(CoffeMakeFailedEvent),
+                typeof(CustomEvent),
             };
 
             CollectionAssert.AreEquivalent(_descriptor.AcceptMessages.Select(m => m.MessageType), expectedEvents);
@@ -78,7 +80,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 nameof(GotTiredEvent.PersonId),
                 nameof(CoffeMadeEvent.ForPersonId),
                 nameof(SleptWellEvent.SofaId),
-                nameof(CoffeMakeFailedEvent.CoffeMachineId)
+                nameof(CoffeMakeFailedEvent.CoffeMachineId),
+                nameof(CustomEvent.SagaId)
             };
 
             CollectionAssert.AreEquivalent(_descriptor.AcceptMessages.Select(m => m.CorrelationField), expectedEvents);
