@@ -10,10 +10,11 @@ namespace GridDomain.Logging
         public GridDomainInternalLoggerConfiguration()
         {
             var elasticEndpoint = ConfigurationManager.AppSettings["logElasticEndpoint"] ?? "http://soloinfra.cloudapp.net:9222";
+            var machineName = ConfigurationManager.AppSettings["envName"] ?? Environment.MachineName;
             var configuration = WriteTo.RollingFile(".\\GridDomainLogs\\logs-{Date}.txt").
                 WriteTo.Elasticsearch(elasticEndpoint).
                 WriteTo.Console(LogEventLevel.Error)
-                .Enrich.WithProperty("MachineName", Environment.MachineName);
+                .Enrich.WithProperty("MachineName", machineName);
             foreach (var type in TypesForScalarDestructionHolder.Types)
             {
                 configuration = configuration.Destructure.AsScalar(type);
