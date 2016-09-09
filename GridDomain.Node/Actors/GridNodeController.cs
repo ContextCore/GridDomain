@@ -4,7 +4,6 @@ using Akka.DI.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
@@ -12,7 +11,6 @@ namespace GridDomain.Node.Actors
 {
     public class GridNodeController : TypedActor
     {
-        private readonly ISoloLogger _log = LogManager.GetLogger();
         private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
         private readonly IActorSubscriber _subscriber;
@@ -30,8 +28,6 @@ namespace GridDomain.Node.Actors
         public void Handle(Start msg)
         {
             _monitor.IncrementMessagesReceived();
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
-
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
