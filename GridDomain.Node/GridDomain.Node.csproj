@@ -290,6 +290,10 @@
     <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
+    <Compile Include="MessageDump\DebugJournalContext.cs" />
+    <Compile Include="MessageDump\DebugJournalEntry.cs" />
+    <Compile Include="MessageDump\JournalEntryFault.cs" />
+    <Compile Include="MessageDump\MessageDumper.cs" />
     <Compile Include="NodeCommandExecutor.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />

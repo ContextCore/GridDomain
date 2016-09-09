@@ -5,8 +5,8 @@ using GridDomain.Logging;
 namespace GridDomain.Node
 {
     public class DefaultMessageLoggerHandler : IHandler<DomainEvent>,
-                                               IHandler<ICommand>,
-                                               IHandler<ICommandFault>
+                                            IHandler<ICommand>,
+                                            IHandler<ICommandFault>
     {
         private static readonly ISoloLogger Log = LogManager.GetLogger(new DefaultLoggerFactory(new GridDomainInternalLoggerConfiguration())).ForContext("GridInternal", true);
         private void Handle(object msg)

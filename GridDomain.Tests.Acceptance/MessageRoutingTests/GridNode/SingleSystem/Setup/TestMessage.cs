@@ -13,5 +13,6 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
         public int ExecuteOrder { get; set; }
         public Guid Id { get; } = Guid.NewGuid();
         public Guid SagaId { get; }
+        public DateTime Time { get; }
     }
 }

@@ -236,6 +236,7 @@
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
     <Compile Include="FutureDomainEvents\Given_future_event_in_aggregate_When_cancelling_it_Persistent.cs" />
+    <Compile Include="MessageDump\MessageLogTests.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorSystemTest.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Cluster_not_correlated_routing.cs" />
     <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterActorTypeFactory.cs" />

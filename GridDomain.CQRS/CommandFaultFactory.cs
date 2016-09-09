@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
@@ -8,8 +9,8 @@ namespace GridDomain.CQRS
         {
             var type = command.GetType();
             var faultType = typeof(CommandFault<>).MakeGenericType(type);
-            var fault = faultType.GetConstructor(new[] { type, typeof(Exception)})
-                .Invoke(new object[] { command, ex });
+            var fault = faultType.GetConstructor(new [] { type, typeof(Exception), typeof(DateTime)})
+                                 .Invoke(new object[] { command, ex, BusinessDateTime.UtcNow });
             return fault;
         }
     }

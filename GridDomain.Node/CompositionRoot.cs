@@ -10,6 +10,8 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Node.MessageDump;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
@@ -24,7 +26,8 @@ namespace GridDomain.Node
         public static void Init(IUnityContainer container,
                                 ActorSystem actorSystem,
                                 TransportMode transportMode,
-                                IQuartzConfig config = null)
+                                IQuartzConfig config = null, 
+                                IDbConfiguration _dbConfiguration = null)
         {
             //TODO: replace with config
             IActorTransport transport;
@@ -40,6 +43,10 @@ namespace GridDomain.Node
                     throw new ArgumentException(nameof(transportMode));
             }
 
+
+            Func<DebugJournalContext> debugJournalProducer = () => new DebugJournalContext(_dbConfiguration.ReadModelConnectionString);
+            container.RegisterInstance(debugJournalProducer);
+
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
             container.RegisterInstance<IActorTransport>(transport);
@@ -47,21 +54,12 @@ namespace GridDomain.Node
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
             container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default ??
-                                                                  new DefaultAppInsightsConfiguration());
+                                                                   new DefaultAppInsightsConfiguration());
             container.RegisterInstance<IPerformanceCountersConfiguration>(PerformanceCountersConfigSection.Default ??
-                                                                  new DefaultPerfCountersConfiguration());
+                                                                   new DefaultPerfCountersConfiguration());
             container.RegisterInstance(actorSystem);
             container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
-
-              //public SagaActor(ISagaFactory<TSaga, object> sagaStarter,
-              //                 ISagaFactory<TSaga, TSagaState> sagaFactory,
-              //                 IPublisher publisher,
-              //                 Type[] startMessages)
-
-            //container.RegisterType(typeof(SagaActor<,>),
-                                    //new InjectionConstructor(
-                                    //new InjectionParameter<Type[]>(nameof(TSaga))))
+            
         }
     }
-
 }

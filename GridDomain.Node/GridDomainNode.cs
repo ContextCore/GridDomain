@@ -110,8 +110,10 @@ namespace GridDomain.Node
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting, 
                                                     new SchedulingRouteMap(),
-                                                    new TransportMessageDumpMap()
+                                                    new TransportMessageDumpMap(),
+                                                    new TransportMessageLogMap()
                                                     );
+
             _commandTimeout = commandTimeout ?? DefaultCommandTimeout;
             Container = new UnityContainer();
         }
