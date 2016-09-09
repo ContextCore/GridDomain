@@ -1,33 +1,35 @@
-using System.Diagnostics;
+using System;
+using System.Configuration;
 using Serilog;
 
 namespace GridDomain.Logging
 {
-    public class DefaultLoggerFactory : ILoggerFactory
+    public class DefaultLoggerFactory : LoggerFactory
     {
-        private readonly LoggerConfiguration _configuration;
-        private static SerilogLogger _serilogLogger;
+        private static readonly Lazy<SerilogLogger> LoggerFactory = new Lazy<SerilogLogger>(() => new SerilogLogger(GetConfiguration().CreateLogger()));
 
-        public DefaultLoggerFactory(LoggerConfiguration configuration = null)
+        private static LoggerConfiguration GetConfiguration()
         {
-            _configuration = configuration ?? new DefaultLoggerConfiguration();
-            _serilogLogger = new SerilogLogger(_configuration.CreateLogger());
+            var filePath = ConfigurationManager.AppSettings["logFilePath"] ?? @"C:\Logs";
+            var machineName = ConfigurationManager.AppSettings["envName"] ?? Environment.MachineName;
+            var elasticEndpoint = ConfigurationManager.AppSettings["logElasticEndpoint"] ?? "http://soloinfra.cloudapp.net:9222";
+            var configuration = new LoggerConfiguration();
+            configuration = configuration.WriteTo.RollingFile(filePath + "\\logs-{Date}.txt")
+                .WriteTo.Elasticsearch(elasticEndpoint)
+                .WriteTo.Console()
+                .Enrich.WithProperty("MachineName", machineName);
+
+            foreach (var type in TypesForScalarDestructionHolder.Types)
+            {
+                configuration = configuration.Destructure.AsScalar(type);
+            }
+            return configuration;
         }
 
-        public ISoloLogger GetLogger(string className = null)
+        public override ISoloLogger GetLogger(string className = null)
         {
-            if (className == null)
-            {
-                StackFrame frame = new StackFrame(2, false);
-                var declaringType = frame.GetMethod().DeclaringType;
-                if (declaringType != null) className = declaringType.Name;
-            }
-
-            if (className == null)
-            {
-                return _serilogLogger;
-            }
-            return _serilogLogger.ForContext("className", className);
+            className = className ?? GetClassName();
+            return LoggerFactory.Value.ForContext("className", className);
         }
     }
 }

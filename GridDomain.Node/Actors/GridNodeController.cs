@@ -30,7 +30,7 @@ namespace GridDomain.Node.Actors
         public void Handle(Start msg)
         {
             _monitor.IncrementMessagesReceived();
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory(new DefaultLoggerConfiguration()));
+            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
 
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);

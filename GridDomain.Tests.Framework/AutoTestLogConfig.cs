@@ -1,14 +1,20 @@
+using GridDomain.Logging;
 using Serilog;
-using Serilog.Events;
 
 namespace GridDomain.Tests.Framework
 {
-    class AutoTestLogConfig: LoggerConfiguration
+    public class AutoTestLogFactory : LoggerFactory
     {
-        public AutoTestLogConfig(LogEventLevel minLogLevel = LogEventLevel.Warning)
+        public override ISoloLogger GetLogger(string className = null)
         {
-            WriteTo.RollingFile(".\\GridDomainLogs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt")
-            .WriteTo.Console(minLogLevel);
+            className = className ?? GetClassName();
+            return new SerilogLogger(GetConfiguration().CreateLogger()).ForContext("className", className);
+        }
+
+        private LoggerConfiguration GetConfiguration()
+        {
+            return new LoggerConfiguration().WriteTo.RollingFile(".\\GridDomainLogs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt")
+            .WriteTo.Console();
         }
     }
 }

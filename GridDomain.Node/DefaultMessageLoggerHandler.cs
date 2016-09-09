@@ -8,7 +8,7 @@ namespace GridDomain.Node
                                                IHandler<ICommand>,
                                                IHandler<ICommandFault>
     {
-        private static readonly ISoloLogger Log = LogManager.GetLogger(new DefaultLoggerFactory(new GridDomainInternalLoggerConfiguration())).ForContext("GridInternal", true);
+        private static readonly ISoloLogger Log = LogManager.GetLogger().ForContext("GridInternal", true);
         private void Handle(object msg)
         {
             Log.Info("got message from transpot: {@msg}", msg);

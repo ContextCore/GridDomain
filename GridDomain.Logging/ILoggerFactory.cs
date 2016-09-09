@@ -1,7 +1,15 @@
+using System.Diagnostics;
+
 namespace GridDomain.Logging
 {
-    public interface ILoggerFactory
+    public abstract class LoggerFactory
     {
-         ISoloLogger GetLogger(string className = null);
+        public abstract ISoloLogger GetLogger(string className = null);
+        protected string GetClassName()
+        {
+            StackFrame frame = new StackFrame(3, false);
+            var declaringType = frame.GetMethod().DeclaringType;
+            return declaringType.Name;
+        }
     }
 }
