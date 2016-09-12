@@ -42,7 +42,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //TODO: replace it all with inheritance lookup in waiter
 
             //only available base class for fault message
-            var commandFaultGenericType = typeof(CommandFault<>).MakeGenericType(command.GetType());
+            var commandFaultGenericType = typeof(MessageFault<>).MakeGenericType(command.GetType());
 
             var genericfaultExpect = new ExpectedMessage(commandFaultGenericType, 1, nameof(IMessageFault.Id), command.Id);
 

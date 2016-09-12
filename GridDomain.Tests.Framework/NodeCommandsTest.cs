@@ -101,7 +101,7 @@ namespace GridDomain.Tests.Framework
 
         private ExpectedMessage[] GetFaults(ICommand[] commands)
         {
-            var faultGeneric = typeof(CommandFault<>);
+            var faultGeneric = typeof(MessageFault<>);
             return commands.Select(c => c.GetType())
                            .Distinct()
                            .Select(commandType => faultGeneric.MakeGenericType(commandType))

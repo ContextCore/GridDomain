@@ -227,7 +227,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(id, Name, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
             //TODO::VZ:: get saga from persistence
-            WaitFor<CommandFault<FailCommand>>(false);
+            WaitFor<MessageFault<FailCommand>>(false);
             var sagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(id);
             Assert.True(sagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure);
         }

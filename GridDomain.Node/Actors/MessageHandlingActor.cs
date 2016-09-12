@@ -33,7 +33,7 @@ namespace GridDomain.Node.Actors
             catch (Exception e)
             {
                 _log.Error(e);
-              //  _publisher.Publish();
+                _publisher.Publish(MessageFaultFactory.);
                 throw;
             }
             
