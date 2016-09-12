@@ -10,10 +10,9 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-
     public class ExpectedMessage<T> : ExpectedMessage
     {
-        public ExpectedMessage(int messageCount, string idPropertyName = null, Guid messageId = new Guid()) : base(typeof(T), messageCount, idPropertyName, messageId)
+        public ExpectedMessage(int messageCount, string idPropertyName = null, Guid messageId = new Guid(), Type processor = null) : base(typeof(T), messageCount, idPropertyName, messageId)
         {
         }
     }
@@ -22,12 +21,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     public class ExpectedMessage
     {
-        public ExpectedMessage(Type messageType, int messageCount, string idPropertyName = null, Guid messageId = default(Guid))
+        public ExpectedMessage(Type messageType, int messageCount, string idPropertyName = null, Guid messageId = default(Guid), Type processor = null)
         {
             MessageType = messageType;
             MessageCount = messageCount;
             IdPropertyName = idPropertyName;
             MessageId = messageId;
+            ProcessorType = processor;
 
             VerifyIdPropertyName(messageType); 
         }
@@ -61,23 +61,24 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public string IdPropertyName { get; }
         public int MessageCount { get; }
         public Guid MessageId { get; }
+        public Type ProcessorType { get; }
 
         public static ExpectedMessage Once(Type messageType, string idPropertyName , Guid messageId)
         {
             return new ExpectedMessage(messageType, 1,idPropertyName, messageId);
         }
 
-        public static ExpectedMessage<T> Once<T>(string idPropertyName, Guid messageId)
+        public static ExpectedMessage<T> Once<T>(string idPropertyName, Guid messageId, Type processor=null)
         {
-            return new ExpectedMessage<T>(1, idPropertyName, messageId);
+            return new ExpectedMessage<T>(1, idPropertyName, messageId, processor);
         }
         public static ExpectedMessage<T> Once<T>()
         {
             return new ExpectedMessage<T>(1);
         }
-        public static ExpectedMessage<T> Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId)
+        public static ExpectedMessage<T> Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId, Type processor = null)
         {
-            return Once<T>(MemberNameExtractor.GetName(idPropertyNameExpression), messageId);
+            return Once<T>(MemberNameExtractor.GetName(idPropertyNameExpression), messageId, processor);
         }
     }
 }

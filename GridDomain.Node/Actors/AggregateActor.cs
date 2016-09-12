@@ -59,7 +59,7 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
-                   _publisher.Publish(MessageFault.CreateGenericFor(Guid.NewGuid(), m.Command, m.Exception));
+                   _publisher.Publish(MessageFault.CreateGenericFor(Guid.NewGuid(), m.Command, m.Exception, typeof(TAggregate)));
                     return;
                 }
 
@@ -87,7 +87,7 @@ namespace GridDomain.Node.Actors
                 }
                 catch (Exception ex)
                 {
-                    _publisher.Publish(MessageFault.CreateGenericFor(Guid.NewGuid(),cmd,ex));
+                    _publisher.Publish(MessageFault.CreateGenericFor(Guid.NewGuid(), cmd, ex, typeof(TAggregate)));
                     Log.Error(ex,"{Aggregate} raised an expection {Exception} while executing {Command}",Aggregate,ex,cmd);
                     return;
                 }
