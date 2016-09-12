@@ -31,7 +31,7 @@ namespace GridDomain.Tests.CommandsExecution
                 new CustomRouteMap(
                     r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId));
 
-            return new CompositeRouteMap(base.CreateMap(), faultyHandlerMap);
+            return new CompositeRouteMap(faultyHandlerMap);
         }
 
         [Then]
@@ -74,7 +74,7 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                var result = GridNode.Execute(syncCommand, expectedMessage).Result;
+                GridNode.Execute(syncCommand, expectedMessage).Wait();
             }
             catch (Exception ex)
             {
