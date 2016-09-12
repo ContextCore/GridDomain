@@ -48,10 +48,27 @@ namespace GridDomain.Tests.CommandsExecution
         }
 
         [Then]
-        public void SyncExecute_until_projection_fault_then_exception_from_handler_is_delivered_to_caller()
+        public void SyncExecute_waiting_for_projection_notification_with_fault_in_projection()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+
+            try
+            {
+                var result = GridNode.Execute(syncCommand, expectedMessage).Result;
+            }
+            catch (Exception ex)
+            {
+                var exception = ex.InnerException;
+                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(exception);
+            }
+        }
+
+        [Then]
+        public void SyncExecute_until_projection_fault_then_exception_from_handler_is_delivered_to_caller()
+        {
+            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
+            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
 
             try
             {

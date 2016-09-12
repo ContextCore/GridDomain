@@ -19,6 +19,7 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             var i = int.Parse(msg.Value);
             if(i % 2 == 0)
                 throw new MessageHandleException(msg);
+
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId });
         }
 

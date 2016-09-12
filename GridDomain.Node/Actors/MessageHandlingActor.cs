@@ -13,12 +13,13 @@ namespace GridDomain.Node.Actors
     {
         private readonly THandler _handler;
         private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ActorMonitor _monitor;
+        private readonly IPublisher _publisher;
 
         public MessageHandlingActor(THandler handler,IPublisher publisher)
         {
             _publisher = publisher;
             _handler = handler;
-            _log.Trace("Created message handler actor {Type}", GetType().Name);
             _monitor = new ActorMonitor(Context,typeof(THandler).Name);
         }
 
@@ -26,6 +27,7 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementMessagesReceived();
             _log.Trace("Handler actor got message: {Message}", msg.ToPropsString());
+
             try
             {
                 _handler.Handle(msg);
@@ -33,14 +35,11 @@ namespace GridDomain.Node.Actors
             catch (Exception e)
             {
                 _log.Error(e);
-                _publisher.Publish(MessageFaultFactory.);
+                _publisher.Publish(MessageFault.New(Guid.NewGuid(),msg,e));
                 throw;
             }
             
         }
-
-        private readonly ActorMonitor _monitor;
-        private readonly IPublisher _publisher;
 
         protected override void PreStart()
         {
