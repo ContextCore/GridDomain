@@ -129,8 +129,6 @@ namespace GridDomain.Node.Actors
             aggregate.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command);
-
-            SaveSnapshot(aggregate);
         }
 
         private void ProcessAsyncMethods(ICommand command)

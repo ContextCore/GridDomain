@@ -121,8 +121,6 @@ namespace GridDomain.Node.Actors
             ProcessSagaStateChange();
 
             ProcessSagaCommands();
-
-            SaveSnapshot(_sagaData);
         }
 
         private void ProcessSagaCommands()
