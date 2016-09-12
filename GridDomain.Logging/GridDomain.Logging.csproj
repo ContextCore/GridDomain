@@ -77,7 +77,7 @@
   <ItemGroup>
     <Compile Include="DefaultLoggerFactory.cs" />
     <Compile Include="ISoloLogger.cs" />
-    <Compile Include="ILoggerFactory.cs" />
+    <Compile Include="LoggerFactory.cs" />
     <Compile Include="LogManager.cs" />
     <Compile Include="ObjectLogExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

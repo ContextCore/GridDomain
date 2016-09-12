@@ -9,7 +9,7 @@ namespace GridDomain.Logging
         {
             StackFrame frame = new StackFrame(3, false);
             var declaringType = frame.GetMethod().DeclaringType;
-            return declaringType.Name;
+            return declaringType?.Name ?? "unknown";
         }
     }
 }
