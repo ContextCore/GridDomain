@@ -29,7 +29,8 @@ namespace GridDomain.Tests.CommandsExecution
         {
             var faultyHandlerMap =
                 new CustomRouteMap(
-                    r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId));
+                    r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
+                    r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);
         }
@@ -39,9 +40,9 @@ namespace GridDomain.Tests.CommandsExecution
         {
             var syncCommand = new LongOperationCommand(101, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
-            var changedEvent = GridNode.Execute(syncCommand, expectedMessage).Result;
 
-            Assert.AreEqual(syncCommand.AggregateId, changedEvent.AggregateId);
+            GridNode.Execute(syncCommand, expectedMessage).Wait();
+
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
