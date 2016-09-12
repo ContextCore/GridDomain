@@ -17,7 +17,7 @@ namespace GridDomain.Tests.SampleDomain
             
         }
 
-        public  SampleAggregate(Guid id, string value):this(id)
+        public SampleAggregate(Guid id, string value):this(id)
         {
             RaiseEvent(new SampleAggregateCreatedEvent(value,id));
         }

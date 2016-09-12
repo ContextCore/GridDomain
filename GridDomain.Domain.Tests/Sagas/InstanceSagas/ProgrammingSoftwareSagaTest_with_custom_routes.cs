@@ -4,8 +4,8 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
-using GridDomain.Tests.SynchroniousCommandExecute;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {

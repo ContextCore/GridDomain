@@ -122,8 +122,10 @@ namespace GridDomain.Node.Actors
 
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
                 // how to pass aggregate type in this case? 
-                e.Match().With<FutureEventScheduledEvent>(r => Self.Tell(r))
-                         .With<FutureEventCanceledEvent>(r => Self.Tell(r));
+                //direct call to method to not postpone process of event scheduling, 
+                //case it can be interrupted by other messages in stash processing errors
+                e.Match().With<FutureEventScheduledEvent>(Handle)
+                         .With<FutureEventCanceledEvent>(Handle);
 
             });
             aggregate.ClearUncommittedEvents();

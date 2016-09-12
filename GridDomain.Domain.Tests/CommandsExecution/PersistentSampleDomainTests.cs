@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.CommandsExecution
 {
     public class PersistentSampleDomainTests : SampleDomainCommandExecutionTests
     {

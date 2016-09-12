@@ -6,7 +6,7 @@ using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
     public class InMemory_when_sync_execute_with_command_fault : InMemorySampleDomainTests

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.EventChronicles;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Chronicles

@@ -8,7 +8,6 @@ using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents.Infrastructure;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.FutureEvents

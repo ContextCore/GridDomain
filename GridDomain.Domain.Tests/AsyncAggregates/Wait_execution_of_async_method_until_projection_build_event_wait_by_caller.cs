@@ -1,9 +1,9 @@
 using System;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 using AggregateChangedEventNotification = GridDomain.Tests.SampleDomain.ProjectionBuilders.AggregateChangedEventNotification;
 

@@ -9,11 +9,11 @@ using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.SagaRecycling.Saga;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

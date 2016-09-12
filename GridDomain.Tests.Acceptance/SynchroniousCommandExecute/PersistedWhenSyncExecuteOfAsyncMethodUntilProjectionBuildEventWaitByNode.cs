@@ -1,5 +1,4 @@
 using GridDomain.Tests.AsyncAggregates;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.SynchroniousCommandExecute

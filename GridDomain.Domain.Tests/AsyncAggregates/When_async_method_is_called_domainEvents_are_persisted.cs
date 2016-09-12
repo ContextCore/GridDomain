@@ -7,11 +7,11 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
