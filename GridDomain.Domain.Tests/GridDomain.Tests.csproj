@@ -297,6 +297,7 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_instance_saga_actor_can_be_created_for_non_domain_event.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
@@ -373,7 +374,7 @@
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />
     <Compile Include="SampleDomain\Commands\AsyncFaultWithOneEventCommand.cs" />
     <Compile Include="SampleDomain\Commands\AsyncMethodCommand.cs" />
-    <Compile Include="SampleDomain\ProjectionBuilders\FaultyMessageHandler.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\OddFaultyMessageHandler.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />

@@ -28,18 +28,6 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
     [TestFixture]
-    public class LogTests
-    {
-        [Test]
-        public void LogTest()
-        {
-            TypesForScalarDestructionHolder.Add(typeof(Money));
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
-            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "MONEY TEST {@placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
-        }
-    }
-
-    [TestFixture]
     public class Spec : ExtendedNodeCommandTest
     {
         private const string Name = "test";

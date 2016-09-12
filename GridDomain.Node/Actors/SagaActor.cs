@@ -18,26 +18,7 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    class CheckHealth
-    {
-        public string Payload {get;}
-
-        public CheckHealth(string payload = null)
-        {
-            this.Payload = payload;
-        }
-    }
-
     //TODO: add status info, e.g. was any errors during execution or recover
-    class HealthStatus
-    {
-        public string Payload { get; }
-
-        public HealthStatus(string payload = null)
-        {
-            this.Payload = payload;
-        }
-    }
 
     /// <summary>
     ///     Name should be parse by AggregateActorName

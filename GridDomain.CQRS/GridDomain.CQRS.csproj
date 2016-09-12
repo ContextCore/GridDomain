@@ -59,7 +59,9 @@
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IHandler.cs" />
+    <Compile Include="IMessageFault.cs" />
     <Compile Include="IMessageProcessFault.cs" />
+    <Compile Include="MessageFault.cs" />
     <Compile Include="Quering\IGenericQuery.cs" />
     <Compile Include="Quering\IQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

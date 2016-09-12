@@ -1,4 +1,3 @@
-using System;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -8,12 +7,6 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    public class CustomEvent
-    {
-        public Guid SagaId { get; set; }
-        public string Payload { get; set; }
-    }
-
     class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor

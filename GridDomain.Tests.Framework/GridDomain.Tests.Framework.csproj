@@ -137,7 +137,7 @@
     <Compile Include="AggregateDebugExtensions.cs" />
     <Compile Include="AutoFix.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
-    <Compile Include="AutoTestLogConfig.cs" />
+    <Compile Include="AutoTestLogFactory.cs" />
     <Compile Include="CannotFindRequestedEventException.cs" />
     <Compile Include="ChildEcho.cs" />
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
