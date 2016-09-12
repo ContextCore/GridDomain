@@ -56,7 +56,6 @@
     <Compile Include="CommandFault.cs" />
     <Compile Include="CommandFaultFactory.cs" />
     <Compile Include="ICommand.cs" />
-    <Compile Include="ICommandFault.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IHandler.cs" />

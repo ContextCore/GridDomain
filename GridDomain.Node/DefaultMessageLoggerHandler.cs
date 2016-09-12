@@ -6,7 +6,7 @@ namespace GridDomain.Node
 {
     public class DefaultMessageLoggerHandler : IHandler<DomainEvent>,
                                                IHandler<ICommand>,
-                                               IHandler<ICommandFault>
+                                               IHandler<IMessageFault>
     {
         private static readonly ISoloLogger Log = LogManager.GetLogger().ForContext("GridInternal", true);
         private void Handle(object msg)
@@ -24,7 +24,7 @@ namespace GridDomain.Node
             Handle((object)msg);
         }
 
-        public void Handle(ICommandFault msg)
+        public void Handle(IMessageFault msg)
         {
             Handle((object)msg);
         }

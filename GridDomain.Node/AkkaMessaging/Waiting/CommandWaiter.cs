@@ -18,7 +18,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             object answerMessage = null;
             message.Match()
-                .With<ICommandFault>(f => answerMessage = f)
+                .With<IMessageFault>(f => answerMessage = f)
                 .Default(m =>
                 {
                     answerMessage = new CommandExecutionFinished(_command, m);

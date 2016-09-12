@@ -28,7 +28,7 @@ namespace GridDomain.Scheduling.Integration
 
         public override void Transit(object msg)
         {
-            var fault = msg as ICommandFault;
+            var fault = msg as IMessageFault;
             if (fault != null)
             {
                 TransitState(fault);
@@ -54,7 +54,7 @@ namespace GridDomain.Scheduling.Integration
                    .OnExit(() => Dispatch(new CompleteJob(State.Key.Name, State.Key.Group)));
 
             var messageSent   = RegisterEvent<ScheduledCommandProcessingStarted>(Transitions.SendMessage);
-            var faultsTrigger = RegisterEvent<ICommandFault>(Transitions.Failure);
+            var faultsTrigger = RegisterEvent<IMessageFault>(Transitions.Failure);
             var eventrTrigger = RegisterEvent<DomainEvent>(Transitions.Success);
 
             Machine

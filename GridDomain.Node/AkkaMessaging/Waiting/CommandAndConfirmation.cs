@@ -36,7 +36,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private static ExpectedMessage[] AddCommandFaultIfMissing(ICommand command, ExpectedMessage[] expectedMessage)
         {
-            Predicate<ExpectedMessage> isCommandFault = e => typeof(ICommandFault).IsAssignableFrom(e.MessageType);
+            Predicate<ExpectedMessage> isCommandFault = e => typeof(IMessageFault).IsAssignableFrom(e.MessageType);
             if (expectedMessage.Any(e => isCommandFault(e))) return expectedMessage;
 
             //TODO: replace it all with inheritance lookup in waiter
@@ -44,7 +44,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //only available base class for fault message
             var commandFaultGenericType = typeof(CommandFault<>).MakeGenericType(command.GetType());
 
-            var genericfaultExpect = new ExpectedMessage(commandFaultGenericType, 1, nameof(ICommandFault.Id), command.Id);
+            var genericfaultExpect = new ExpectedMessage(commandFaultGenericType, 1, nameof(IMessageFault.Id), command.Id);
 
             expectedMessage = expectedMessage.Concat(new[] {genericfaultExpect }).ToArray();
             return expectedMessage;

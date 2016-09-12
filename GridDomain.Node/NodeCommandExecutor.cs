@@ -39,7 +39,7 @@ namespace GridDomain.Node
 
                     object result = null;
                     t.Result.Match()
-                        .With<ICommandFault>(fault =>
+                        .With<IMessageFault>(fault =>
                         {
                             var domainExcpetion = fault.Exception.UnwrapSingle();
                             ExceptionDispatchInfo.Capture(domainExcpetion).Throw();

@@ -2,7 +2,7 @@
 
 namespace GridDomain.CQRS
 {
-    public interface IMessageProcessFault
+    public interface IMessageFault
     {
         object Message { get; }
         Guid Id { get; }
@@ -10,7 +10,8 @@ namespace GridDomain.CQRS
         Guid SagaId { get; }
         DateTime OccuredTime { get; }
     }
-    public interface IMessageProcessFault<T> : IMessageProcessFault
+
+    public interface IMessageFault<T> : IMessageFault
     {
         new T Message { get; }
     }

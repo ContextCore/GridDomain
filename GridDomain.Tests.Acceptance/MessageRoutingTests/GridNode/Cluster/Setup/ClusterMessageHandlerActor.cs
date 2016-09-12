@@ -1,3 +1,4 @@
+using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup;
 
@@ -5,14 +6,15 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
     internal class ClusterMessageHandlerActor : MessageHandlingActor<ClusterMessage, TestHandler>
     {
-        public ClusterMessageHandlerActor(TestHandler handler) : base(handler)
+        public ClusterMessageHandlerActor(TestHandler handler, IPublisher publisher) : base(handler, publisher)
         {
         }
 
-        protected override void OnReceive(object msg)
+
+        public override void Handle(ClusterMessage msg)
         {
-            ((ClusterMessage) msg).ProcessorActorSystemAdress = Akka.Cluster.Cluster.Get(Context.System).SelfAddress;
-            base.OnReceive(msg);
+            msg.ProcessorActorSystemAdress = Akka.Cluster.Cluster.Get(Context.System).SelfAddress;
+            base.Handle(msg);
         }
     }
 }

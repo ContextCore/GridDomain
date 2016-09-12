@@ -152,7 +152,7 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine(msg.ToPropsString());
             Console.WriteLine("------end of message-----");
 
-            if (failOnCommandFault && msg.Message is ICommandFault)
+            if (failOnCommandFault && msg.Message is IMessageFault)
             {
                 Assert.Fail($"Command fault received: {msg.ToPropsString()}");
             }

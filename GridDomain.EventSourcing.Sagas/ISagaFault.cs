@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing.Sagas
 {
     public interface ISagaFault
     {
-        ICommandFault CommandFault { get; }
+        IMessageFault CommandFault { get; }
         object State { get; }
     }
     public interface ISagaFault<out TState> : ISagaFault
