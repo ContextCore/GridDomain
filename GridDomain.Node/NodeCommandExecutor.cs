@@ -46,7 +46,6 @@ namespace GridDomain.Node
                         })
                         .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
                         .Default(m => { throw new InvalidMessageException(m.ToPropsString()); });
-
                     return result;
                 });
         }

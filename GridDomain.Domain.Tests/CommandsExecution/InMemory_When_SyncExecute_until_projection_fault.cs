@@ -36,7 +36,7 @@ namespace GridDomain.Tests.CommandsExecution
         }
 
         [Then]
-        public void SyncExecute_until_projection()
+        public void SyncExecute_without_projection_fault_deliver_projection_notification_to_caller()
         {
             var syncCommand = new LongOperationCommand(101, Guid.NewGuid());
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
@@ -48,11 +48,10 @@ namespace GridDomain.Tests.CommandsExecution
         }
 
         [Then]
-        public void SyncExecute_waiting_for_projection_notification_with_fault_in_projection()
+        public void SyncExecute_with_projection_fault_expecting_fault_wihout_source_type_delivers_error_to_caller_from_any_source()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-
-            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
 
             try
@@ -61,40 +60,73 @@ namespace GridDomain.Tests.CommandsExecution
             }
             catch (Exception ex)
             {
-                var exception = ex.InnerException;
-                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(exception);
+                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(ex.InnerException);
             }
         }
 
         [Then]
-        public void SyncExecute_until_projection_fault_then_exception_from_handler_is_delivered_to_caller()
+        public void SyncExecute_with_projection_fault_without_expectation_times_out()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+            var plan = new CommandPlan(syncCommand,expectedMessage);
             try
             {
-                var result = GridNode.Execute(syncCommand, expectedMessage).Result;
+                GridNode.Execute(plan, TimeSpan.FromMilliseconds(500));
             }
             catch (Exception ex)
             {
-                var exception = ex.InnerException;
-                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(exception);
+                Assert.IsInstanceOf<TimeoutException>(ex);
             }
         }
 
-
         [Then]
-        public void Waiting_for_several_events_stops_on_first_event_fault()
+        public void SyncExecute_with_projection_fault_with_correct_typed_fault_expectation_deliver_error_to_caller()
         {
-            //will throw exeption in aggregate and in message handler
-            //waiting for event from message handlers
-            var syncCommand = new AsyncFaultWithOneEventCommand(100,Guid.NewGuid());
+            //will throw exception in aggregate and in message handler
+            var syncCommand = new LongOperationCommand(500, Guid.NewGuid());
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
 
             try
             {
-                GridNode.Execute(syncCommand, expectedMessage).Wait();
+                GridNode.Execute<object>(syncCommand, expectedFault, expectedMessage).Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(ex.InnerException);
+            }
+        }
+
+
+        [Then]
+        public void SyncExecute_with_projection_fault_with_incorrect_typed_fault_times_out()
+        {
+            var syncCommand = new LongOperationCommand(500, Guid.NewGuid());
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(string));
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+
+            try
+            {
+                GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<TimeoutException>(ex.InnerException);
+            }
+        }
+
+        [Then]
+        public void When_aggregate_throws_fault_it_is_handled_without_implicit_registration()
+        {
+            //will throw exception in aggregate and in message handler
+            var syncCommand = new AsyncFaultWithOneEventCommand(500,Guid.NewGuid());
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+
+            try
+            {
+                GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
             }
             catch (Exception ex)
             {

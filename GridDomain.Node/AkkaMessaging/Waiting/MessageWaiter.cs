@@ -28,15 +28,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         /// <param name="message"></param>
         protected override void OnReceive(object message)
         {
-            var type = message.GetType();
+            var msgType = message.GetType();
             _allReceivedEvents.Add(message);
 
-            if (!MessageReceivedCounters.ContainsKey(type)) return;
+            var registeredType = MessageReceivedCounters.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
+            if (registeredType == null) return;
 
-            var wait = ExpectedMessages[type];
-            if (!wait.Like(message)) return;
+            var expectedMessage = ExpectedMessages[registeredType];
+            if (!expectedMessage.Match(message)) return;
 
-            --MessageReceivedCounters[type];
+            --MessageReceivedCounters[msgType];
             if (!WaitIsOver(message)) return;
 
             _notifyActor.Tell(BuildAnswerMessage(message));

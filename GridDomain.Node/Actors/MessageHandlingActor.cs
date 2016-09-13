@@ -36,8 +36,7 @@ namespace GridDomain.Node.Actors
             catch (Exception e)
             {
                 _log.Error(e);
-                _publisher.Publish(MessageFault.New(Guid.NewGuid(), msg, e, typeof(THandler)));
-                throw;
+                _publisher.Publish(MessageFault.New(msg, e, typeof(THandler)));
             }
             
         }

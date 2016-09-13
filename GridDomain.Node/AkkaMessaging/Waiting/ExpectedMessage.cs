@@ -17,18 +17,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
     }
 
-    public class ExpectedFault<T> : ExpectedMessage
-    {
-        public ExpectedFault(int messageCount, string idPropertyName = null, Guid messageId = new Guid(), Type source = null) : base(typeof(T), messageCount, idPropertyName, messageId, source)
-        {
-        }
-
-        public override bool Like(object msg)
-        {
-            IMessageFault fault = msg as IMessageFault;
-            return base.Like(fault != null ? fault.Message : msg);
-        }
-    }
 
     public class ExpectedMessage
     {
@@ -39,32 +27,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             IdPropertyName = idPropertyName;
             MessageId = messageId;
             Source = source;
-
-            VerifyIdPropertyName(messageType);
         }
 
-        private void VerifyIdPropertyName(Type messageType)
-        {
-            if (string.IsNullOrEmpty(IdPropertyName)) return;
-            var propertyInfos = GetPublicProperties(messageType).Where(pi => pi.Name == IdPropertyName).ToArray();
-            if (propertyInfos.Length > 1)
-                throw new ArgumentException($"Found more than one property with name {IdPropertyName} in Type {messageType.Name} hierarchy");
-
-            var propertyInfo = propertyInfos.FirstOrDefault();
-            if (propertyInfo == null)
-                throw new ArgumentException($"Cannot find property with name {IdPropertyName} in Type {messageType.Name}");
-            if (propertyInfo.PropertyType != typeof(Guid))
-                throw new ArgumentException($"Property {IdPropertyName} of type {messageType} should be Guid");
-        }
-
-        public Guid GetMessageId(object msg)
+        protected virtual Guid GetMessageId(object msg)
         {
             var propertyInfo = msg.GetType().GetProperty(IdPropertyName);
             if (propertyInfo == null) return Guid.Empty;
             return (Guid)propertyInfo.GetValue(msg);
         }
 
-        public virtual bool Like(object msg)
+        public virtual bool Match(object msg)
         {
             var msgType = msg.GetType();
             if (!MessageType.IsAssignableFrom(msgType))
@@ -92,28 +64,54 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public static ExpectedMessage Once(Type messageType, string idPropertyName, Guid messageId, Type faultSources)
         {
-            return new ExpectedMessage(messageType, 1,idPropertyName, messageId, faultSources);
+            var expectedMessage = new ExpectedMessage(messageType, 1,idPropertyName, messageId, faultSources);
+            VerifyIdPropertyName(expectedMessage.MessageType, expectedMessage.IdPropertyName);
+            return expectedMessage;
         }
 
         public static ExpectedMessage<T> Once<T>(string idPropertyName, Guid messageId, Type source = null)
         {
-            return new ExpectedMessage<T>(1, idPropertyName, messageId, source);
+            var expectedMessage = new ExpectedMessage<T>(1, idPropertyName, messageId, source);
+            VerifyIdPropertyName(expectedMessage.MessageType, expectedMessage.IdPropertyName);
+            return expectedMessage;
         }
 
-        public static ExpectedFault<IMessageFault<T>> Fault<T>(Expression<Func<T, Guid>> idPropertyNameExpression, Guid messageId, Type source)
+        public static ExpectedFault<T> Fault<T>(Expression<Func<T, Guid>> idPropertyNameExpression, Guid messageId, Type source = null)
         {
-            return new ExpectedFault<IMessageFault<T>>(1, MemberNameExtractor.GetName(idPropertyNameExpression), messageId, source);
+            var expectedFault = new ExpectedFault<T>(1, MemberNameExtractor.GetName(idPropertyNameExpression), messageId, source);
+            VerifyIdPropertyName(expectedFault.ProcessMessageType, expectedFault.IdPropertyName);
+            return expectedFault;
         }
-
 
         public static ExpectedMessage<T> Once<T>()
         {
-            return new ExpectedMessage<T>(1);
+            var expectedMessage = new ExpectedMessage<T>(1);
+            VerifyIdPropertyName(expectedMessage.MessageType, expectedMessage.IdPropertyName);
+            return expectedMessage;
         }
 
         public static ExpectedMessage<T> Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId, Type source = null)
         {
             return Once<T>(MemberNameExtractor.GetName(idPropertyNameExpression), messageId, source);
+        }
+
+        /// <summary>
+        /// Checks message type has public Guid property with passed name
+        /// </summary>
+        /// <param name="messageType"></param>
+        /// <param name="idPropertyName"></param>
+        public static void VerifyIdPropertyName(Type messageType, string idPropertyName)
+        {
+            if (string.IsNullOrEmpty(idPropertyName)) return;
+            var propertyInfos = GetPublicProperties(messageType).Where(pi => pi.Name == idPropertyName).ToArray();
+            if (propertyInfos.Length > 1)
+                throw new ArgumentException($"Found more than one property with name {idPropertyName} in Type {messageType.Name} hierarchy");
+
+            var propertyInfo = propertyInfos.FirstOrDefault();
+            if (propertyInfo == null)
+                throw new ArgumentException($"Cannot find property with name {idPropertyName} in Type {messageType.Name}");
+            if (propertyInfo.PropertyType != typeof(Guid))
+                throw new ArgumentException($"Property {idPropertyName} of type {messageType} should be Guid");
         }
     }
 }
