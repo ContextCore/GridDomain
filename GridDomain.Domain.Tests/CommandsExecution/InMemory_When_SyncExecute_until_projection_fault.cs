@@ -51,11 +51,13 @@ namespace GridDomain.Tests.CommandsExecution
         public void SyncExecute_waiting_for_projection_notification_with_fault_in_projection()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
+
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
 
             try
             {
-                var result = GridNode.Execute(syncCommand, expectedMessage).Result;
+                var result = GridNode.Execute(syncCommand,new ExpectedMessage[] { expectedFault, expectedMessage}).Result;
             }
             catch (Exception ex)
             {

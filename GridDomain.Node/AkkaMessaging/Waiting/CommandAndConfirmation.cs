@@ -44,7 +44,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //only available base class for fault message
             var commandFaultGenericType = typeof(MessageFault<>).MakeGenericType(command.GetType());
 
-            var genericfaultExpect = new ExpectedMessage(commandFaultGenericType, 1, nameof(IMessageFault.Id), command.Id);
+            var genericfaultExpect = new ExpectedMessage(commandFaultGenericType, 1, nameof(ICommand.Id), command.Id);
 
             expectedMessage = expectedMessage.Concat(new[] {genericfaultExpect }).ToArray();
             return expectedMessage;

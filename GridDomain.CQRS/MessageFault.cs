@@ -7,14 +7,14 @@ namespace GridDomain.CQRS
     {
         public MessageFault(Guid id, object message, Exception ex, Type processor, Guid sagaId, DateTime occuredTime)
         {
-            Id = id;
+         //   Id = id;
             Message = message;
             Exception = ex;
             OccuredTime = occuredTime;
             SagaId = sagaId;
             Processor = processor;
         }
-        public Guid Id { get; }
+       // public Guid Id { get; }
         public Exception Exception { get; }
         public Guid SagaId { get; }
         public DateTime OccuredTime { get; }

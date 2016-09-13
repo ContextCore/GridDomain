@@ -10,6 +10,7 @@ using GridDomain.Node.AkkaMessaging;
 namespace GridDomain.Node.Actors
 {
     public class MessageHandlingActor<TMessage, THandler> : TypedActor where THandler : IHandler<TMessage>
+                                                                    //   where TMessage : ISourcedEvent
     {
         private readonly THandler _handler;
         private readonly ISoloLogger _log = LogManager.GetLogger();
@@ -35,7 +36,7 @@ namespace GridDomain.Node.Actors
             catch (Exception e)
             {
                 _log.Error(e);
-                _publisher.Publish(MessageFault.New(Guid.NewGuid(),msg,e,typeof(THandler)));
+                _publisher.Publish(MessageFault.New(Guid.NewGuid(), msg, e, typeof(THandler)));
                 throw;
             }
             

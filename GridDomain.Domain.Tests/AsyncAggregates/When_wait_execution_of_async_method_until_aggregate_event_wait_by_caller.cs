@@ -20,8 +20,8 @@ namespace GridDomain.Tests.AsyncAggregates
         public void Then_events_are_applied_to_aggregate_after_wait_finish()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),
-                                                                              syncCommand.AggregateId);
+            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId,
+                                                                                    syncCommand.AggregateId);
             var task = GridNode.Execute(syncCommand, new []{ expectedMessage});
             if (!task.Wait(Timeout))
                 throw new TimeoutException();
