@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using Microsoft.Practices.Unity;
@@ -26,7 +27,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             var publisher = GridNode.Container.Resolve<IPublisher>();
             publisher.Publish(new GotTiredEvent(_personId).CloneWithSaga(_sagaId));
-            Thread.Sleep(500);
+            WaitFor<MakeCoffeCommand>();
             _sagaState = LoadSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
         }
 
