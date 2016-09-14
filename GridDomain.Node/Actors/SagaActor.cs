@@ -37,13 +37,14 @@ namespace GridDomain.Node.Actors
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
         private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
+        private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
 
         private Guid GetSagaId(DomainEvent msg)
         {
             var type = msg.GetType();
             string fieldName;
          
-            if (_sagaIdFIelds.TryGetValue(type, out fieldName))
+            if (_sagaIdFields.TryGetValue(type, out fieldName))
                 return (Guid) type.GetProperty(fieldName).GetValue(msg);
 
             return msg.SagaId;
@@ -55,7 +56,7 @@ namespace GridDomain.Node.Actors
             _producer = producer;
             _publisher = publisher;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
-            _sagaIdFIelds = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
+            _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
@@ -76,6 +77,16 @@ namespace GridDomain.Node.Actors
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
+            Command<NotifyOnRecoverComplete>(c =>
+            {
+                var waiter = c.Waiter ?? Sender;
+                if (IsRecoveryFinished)
+                {
+                    waiter.Tell(RecoveryCompleted.Instance);
+                }
+                else _recoverWaiters.Add(waiter);
+            });
+
             Command<DomainEvent>(msg =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -88,6 +99,14 @@ namespace GridDomain.Node.Actors
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
             Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
+            Recover<RecoveryCompleted>(message =>
+            {
+                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                //notify all 
+                foreach (var waiter in _recoverWaiters)
+                    waiter.Tell(RecoveryCompleted.Instance);
+                _recoverWaiters.Clear();
+            });
         }
         
         protected virtual void Shutdown()
@@ -122,7 +141,7 @@ namespace GridDomain.Node.Actors
         }
 
         private readonly ActorMonitor _monitor = new ActorMonitor(Context, typeof(TSaga).Name);
-        private Dictionary<Type, string> _sagaIdFIelds;
+        private readonly Dictionary<Type, string> _sagaIdFields;
 
         protected override void PreStart()
         {
