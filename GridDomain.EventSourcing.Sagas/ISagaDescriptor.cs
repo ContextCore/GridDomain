@@ -4,19 +4,6 @@ using CommonDomain;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-
-    public class MessageBind
-    {
-        public MessageBind(Type messageType, string correlationField = nameof(DomainEvent.SagaId))
-        {
-            MessageType = messageType;
-            CorrelationField = correlationField;
-        }
-
-        public Type MessageType { get; }
-        public string CorrelationField { get; }
-    }
-
     public interface ISagaDescriptor
     {
         //TODO: enforce check all messages are DomainEvents

@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
-    public class AsyncEventsRecieved
+    public class AsyncEventsReceived
     {
 
         public ICommand Command { get; }
@@ -11,7 +11,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
         public Guid InvocationId { get; }
 
         public Exception Exception { get; }
-        public AsyncEventsRecieved(DomainEvent[] producedEvents, ICommand command, Guid invocationId, Exception ex = null)
+        public AsyncEventsReceived(DomainEvent[] producedEvents, ICommand command, Guid invocationId, Exception ex = null)
         {
             Command = command;
             ProducedEvents = producedEvents;

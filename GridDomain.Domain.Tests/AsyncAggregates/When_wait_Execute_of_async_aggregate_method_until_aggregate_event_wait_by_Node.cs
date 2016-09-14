@@ -1,10 +1,10 @@
 using System;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.AsyncAggregates
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand,
                 Timeout,
-                ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId));
+                ExpectedMessage.Once<SampleAggregateChangedEvent>(e=>e.SourceId,syncCommand.AggregateId));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

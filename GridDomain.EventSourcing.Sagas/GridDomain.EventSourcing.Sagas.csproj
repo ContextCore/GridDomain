@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CannotFindFactoryForSagaCreation.cs" />
+    <Compile Include="FactoryAlreadyRegisteredException.cs" />
     <Compile Include="FutureEvents\Aggregate.cs" />
     <Compile Include="FutureEvents\AsyncEventsRecieved.cs" />
     <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
@@ -65,15 +67,21 @@
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
     <Compile Include="InstanceSagas\ISagaState.cs" />
     <Compile Include="InstanceSagas\MessageReceivedData.cs" />
+    <Compile Include="InstanceSagas\NullMessageTransitException.cs" />
     <Compile Include="InstanceSagas\Saga.cs" />
     <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
     <Compile Include="InstanceSagas\SagaMessageReceivedEvent.cs" />
     <Compile Include="InstanceSagas\SagaExtensions.cs" />
     <Compile Include="InstanceSagas\SagaInstance.cs" />
     <Compile Include="InstanceSagas\SagaTransitionEvent.cs" />
+    <Compile Include="InstanceSagas\SagaTransitionException.cs" />
+    <Compile Include="InstanceSagas\StartMessagesMissedException.cs" />
     <Compile Include="InstanceSagas\StateChangedData.cs" />
     <Compile Include="ISagaInstance.cs" />
+    <Compile Include="ISagaProducer.cs" />
+    <Compile Include="MessageBind.cs" />
     <Compile Include="SagaDescriptor.cs" />
+    <Compile Include="SagaProducer.cs" />
     <Compile Include="StateSagas\IDomainStateSaga.cs" />
     <Compile Include="IEmptySagaFactory.cs" />
     <Compile Include="ISagaDescriptor.cs" />

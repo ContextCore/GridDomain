@@ -5,7 +5,7 @@ using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainContainerConfiguration : IContainerConfiguration
     {

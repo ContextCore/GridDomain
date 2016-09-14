@@ -4,11 +4,10 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.SynchroniousCommandExecute
+namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {

@@ -19,8 +19,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public CommandPlan(ICommand command, TimeSpan timeout, params ExpectedMessage[] expectedMessage)
         {
-            expectedMessage = AddCommandFaultIfMissing(command, expectedMessage);
-            ExpectedMessages = expectedMessage;
+            ExpectedMessages = AddCommandFaultIfMissing(command, expectedMessage);
             Command = command;
             Timeout = timeout;
         }
@@ -36,18 +35,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private static ExpectedMessage[] AddCommandFaultIfMissing(ICommand command, ExpectedMessage[] expectedMessage)
         {
-            Predicate<ExpectedMessage> isCommandFault = e => typeof(ICommandFault).IsAssignableFrom(e.MessageType);
-            if (expectedMessage.Any(e => isCommandFault(e))) return expectedMessage;
-
-            //TODO: replace it all with inheritance lookup in waiter
-
-            //only available base class for fault message
-            var commandFaultGenericType = typeof(CommandFault<>).MakeGenericType(command.GetType());
-
-            var genericfaultExpect = new ExpectedMessage(commandFaultGenericType, 1, nameof(ICommandFault.Id), command.Id);
-
-            expectedMessage = expectedMessage.Concat(new[] {genericfaultExpect }).ToArray();
-            return expectedMessage;
+            var existingFault = expectedMessage.OfType<ExpectedFault>().FirstOrDefault();
+            var commandType = command.GetType();
+            if (existingFault != null && existingFault.ProcessMessageType == commandType)
+                return expectedMessage;
+            
+            var expectedFault = ExpectedFault.New(commandType, nameof(ICommand.Id), command.Id);
+            return expectedMessage.Concat(new[] { expectedFault }).ToArray(); ;
         }
     }
 }

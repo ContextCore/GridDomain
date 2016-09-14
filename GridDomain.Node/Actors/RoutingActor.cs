@@ -62,10 +62,10 @@ namespace GridDomain.Node.Actors
                             return type.GetProperty(prop).GetValue(m);
 
                         //TODO: refactor. Need to pass events to schedulingSaga
-                        if (typeof(ICommandFault).IsAssignableFrom(type))
+                        if (typeof(IMessageFault).IsAssignableFrom(type))
                         {
-                            prop = routesMap[typeof(ICommandFault).FullName];
-                            return typeof(ICommandFault).GetProperty(prop).GetValue(m);
+                            prop = routesMap[typeof(IMessageFault).FullName];
+                            return typeof(IMessageFault).GetProperty(prop).GetValue(m);
                         }
 
                         if (typeof(DomainEvent).IsAssignableFrom(type))
@@ -73,7 +73,6 @@ namespace GridDomain.Node.Actors
                             prop = routesMap[typeof(DomainEvent).FullName];
                             return typeof(DomainEvent).GetProperty(prop).GetValue(m);
                         }
-
 
                         if (typeof(ICommand).IsAssignableFrom(type))
                         {

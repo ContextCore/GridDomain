@@ -1,6 +1,6 @@
 using System.Threading;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.Tests.SynchroniousCommandExecute;
+using GridDomain.Tests.CommandsExecution;
 using NUnit.Framework;
 
 namespace GridDomain.Tests

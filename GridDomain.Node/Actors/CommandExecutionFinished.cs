@@ -5,12 +5,12 @@ namespace GridDomain.Node.Actors
     public class CommandExecutionFinished
     {
         public object ResultMessage { get; }
-        public ICommand CommandId { get; }
+        public ICommand Command { get; }
 
-        public CommandExecutionFinished(ICommand commandId, object resultMessage)
+        public CommandExecutionFinished(ICommand command, object resultMessage)
         {
             ResultMessage = resultMessage;
-            CommandId = commandId;
+            Command = command;
         }
     }
 }

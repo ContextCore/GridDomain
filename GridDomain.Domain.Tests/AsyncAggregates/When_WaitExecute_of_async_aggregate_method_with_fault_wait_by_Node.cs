@@ -1,10 +1,10 @@
 using System;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
-using GridDomain.Tests.SynchroniousCommandExecute;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.AsyncAggregates
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
             Assert.Throws<SampleAggregateException>(() => 
-                        GridNode.Execute<SampleAggregateChangedEvent>(syncCommand,Timeout,expectedMessage));
+                        GridNode.Execute(syncCommand,Timeout,expectedMessage));
         }
 
         

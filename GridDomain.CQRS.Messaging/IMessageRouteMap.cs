@@ -6,4 +6,5 @@ namespace GridDomain.CQRS.Messaging
     {
         void Register(IMessagesRouter router);
     }
+    
 }

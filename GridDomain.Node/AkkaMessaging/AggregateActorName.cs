@@ -51,16 +51,4 @@ namespace GridDomain.Node.AkkaMessaging
             return Name;
         }
     }
-
-    public class CannotFindIdTypeException : Exception
-    {
-    }
-
-    public class IdParseException : Exception
-    {
-    }
-
-    public class BadNameFormatException : Exception
-    {
-    }
 }

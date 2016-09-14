@@ -28,18 +28,6 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
     [TestFixture]
-    public class LogTests
-    {
-        [Test]
-        public void LogTest()
-        {
-            TypesForScalarDestructionHolder.Add(typeof(Money));
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
-            LogManager.GetLogger().Error(new InvalidOperationException("ohshitwaddap"), "MONEY TEST {@placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
-        }
-    }
-
-    [TestFixture]
     public class Spec : ExtendedNodeCommandTest
     {
         private const string Name = "test";
@@ -239,7 +227,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(id, Name, Group), CreateOptions(0.5)));
             //TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
             //TODO::VZ:: get saga from persistence
-            WaitFor<CommandFault<FailCommand>>(false);
+            WaitFor<MessageFault<FailCommand>>(false);
             var sagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(id);
             Assert.True(sagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure);
         }

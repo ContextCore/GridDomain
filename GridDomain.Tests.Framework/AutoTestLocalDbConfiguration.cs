@@ -5,9 +5,6 @@ namespace GridDomain.Tests.Framework
 {
     public class AutoTestLocalDbConfiguration : IDbConfiguration
     {
-        public string EventStoreConnectionString
-            => @"Data Source=(local);Initial Catalog=AutoTestGridDomainEvent;Integrated Security = true";
-
         public string ReadModelConnectionString
             => @"Data Source=(local);Initial Catalog=AutoTestGridDomainRead;Integrated Security = true";
 

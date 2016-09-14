@@ -5,7 +5,7 @@ using GridDomain.Tests.SampleDomain.Commands;
 namespace GridDomain.Tests.SampleDomain
 {
     public class SampleAggregatesCommandHandler: AggregateCommandsHandler<SampleAggregate>,
-                                                IAggregateCommandsHandlerDesriptor
+                                                 IAggregateCommandsHandlerDesriptor
 
     {
         //TODO: refactor to separate class

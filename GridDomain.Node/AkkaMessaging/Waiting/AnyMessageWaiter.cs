@@ -7,9 +7,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class AnyMessageWaiter : MessageWaiter<ExpectedMessage>
     {
-        protected override bool CanContinue(Dictionary<Type, int> messageCounters)
+        protected override bool WaitIsOver(object message, ExpectedMessage expect)
         {
-            return messageCounters.All(c => c.Value > 0);
+            return !MessageReceivedCounters.Any(c => c.Value > 0);
         }
 
         public AnyMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)

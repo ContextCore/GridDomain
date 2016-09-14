@@ -1,9 +1,4 @@
-﻿using System.Threading;
-using Akka.Actor;
-using GridDomain.Node;
-using Quartz;
-
-namespace GridDomain.Tests.SynchroniousCommandExecute
+﻿namespace GridDomain.Tests.CommandsExecution
 {
 
     public class InMemorySampleDomainTests : SampleDomainCommandExecutionTests
