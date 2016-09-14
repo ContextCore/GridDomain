@@ -1,36 +1,55 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.FutureEvents
 {
     [TestFixture]
-    [Ignore("example to be fixed")]
-    public class Given_aggregate_When_raising_several_future_events_with_bad_waiting : FutureEventsTest_InMemory
+    public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest_InMemory
     {
         private FutureEventOccuredEvent _eventA;
         private FutureEventOccuredEvent _eventB;
-        private Guid _aggregateId;
+        private RaiseEventInFutureCommand _commandA;
+        private RaiseEventInFutureCommand _commandB;
 
         [TestFixtureSetUp]
-        public void FutureDomainEvent_envelops_has_unique_id()
+        public void Raising_several_future_events_for_different_aggregates()
         {
-            _aggregateId = Guid.NewGuid();
-            var testCommandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
-            var testCommandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
-            _eventA = (FutureEventOccuredEvent)ExecuteAndWaitFor<FutureEventOccuredEvent>(testCommandA).Recieved.First();
-            _eventB = (FutureEventOccuredEvent)ExecuteAndWaitFor<FutureEventOccuredEvent>(testCommandB).Recieved.First();
+            _commandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
+            var expectedMessageA = ExpectedMessage.Once<FutureEventOccuredEvent>(e => e.SourceId, _commandA.AggregateId);
+            var planA = new CommandPlan(_commandA, expectedMessageA);
 
-            //_eventA and _eventB are same instance!
+            _commandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
+            var expectedMessageB = ExpectedMessage.Once<FutureEventOccuredEvent>(e => e.SourceId, _commandB.AggregateId);
+            var planB = new CommandPlan(_commandB, expectedMessageB);
+
+            var taskA = GridNode.Execute<FutureEventOccuredEvent>(planA).ContinueWith( r => _eventA = r.Result);
+            var taskB = GridNode.Execute<FutureEventOccuredEvent>(planB).ContinueWith( r=>  _eventB = r.Result);
+
+            Task.WaitAll(taskA, taskB);
         }
 
-        //Failing!!!
         [Then]
-        public void Envelop_ids_are_not_equal()
+        public void Future_event_ids_are_different()
         {
             Assert.AreNotEqual(_eventA.FutureEventId, _eventB.FutureEventId);
+        }
+
+        [Then]
+        public void EventA_is_result_of_commandA()
+        {
+            Assert.AreEqual(_eventA.SourceId, _commandA.AggregateId);
+        }
+
+        [Then]
+        public void EventB_is_result_of_commandB()
+        {
+            Assert.AreEqual(_eventB.SourceId, _commandB.AggregateId);
         }
     }
 }

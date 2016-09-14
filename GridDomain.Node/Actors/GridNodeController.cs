@@ -46,7 +46,8 @@ namespace GridDomain.Node.Actors
 
         public void Handle(CommandPlan commandWithConfirmation)
         {
-            var waitActor = Context.System.ActorOf(Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command, commandWithConfirmation.ExpectedMessages)),"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
+            var props = Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command, commandWithConfirmation.ExpectedMessages));
+            var waitActor = Context.System.ActorOf(props,"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
 
             foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
                     _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
