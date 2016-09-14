@@ -55,12 +55,12 @@ namespace GridDomain.Node.Actors
        
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
-            Command<AsyncEventsRecieved>(m =>
+            Command<AsyncEventsReceived>(m =>
             {
                 _monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
-                   _publisher.Publish(MessageFault.CreateGenericFor(m.Command, m.Exception, typeof(TAggregate)));
+                   _publisher.Publish(MessageFault.NewGeneric(m.Command, m.Exception, typeof(TAggregate)));
                     return;
                 }
 
@@ -76,8 +76,6 @@ namespace GridDomain.Node.Actors
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
-            Command<FutureEventScheduledEvent>(r => Handle(r));
-            Command<FutureEventCanceledEvent>(r => Handle(r));
             Command<NotifyOnRecoverComplete>(c =>
             {
                 var waiter = c.Waiter ?? Sender;
@@ -96,7 +94,7 @@ namespace GridDomain.Node.Actors
                 }
                 catch (Exception ex)
                 {
-                    _publisher.Publish(MessageFault.CreateGenericFor(cmd, ex, typeof(TAggregate)));
+                    _publisher.Publish(MessageFault.NewGeneric(cmd, ex, typeof(TAggregate)));
                     Log.Error(ex,"{Aggregate} raised an expection {Exception} while executing {Command}",Aggregate,ex,cmd);
                     return;
                 }
@@ -163,7 +161,7 @@ namespace GridDomain.Node.Actors
             //command is included to safe access later, after async execution complete
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.AsyncUncomittedEvents)
-                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsRecieved(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
+                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsReceived(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
                                           .PipeTo(Self);
 
             extendedAggregate.AsyncUncomittedEvents.Clear();
@@ -220,16 +218,5 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementActorRestarted();
         }
-    }
-
-    public class NotifyOnRecoverComplete
-    {
-        public NotifyOnRecoverComplete(IActorRef waiter)
-        {
-            Waiter = waiter;
-        }
-        public static readonly NotifyOnRecoverComplete Instance = new NotifyOnRecoverComplete(null);
-
-        public IActorRef Waiter { get; }
     }
 }

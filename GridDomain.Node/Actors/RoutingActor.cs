@@ -74,7 +74,6 @@ namespace GridDomain.Node.Actors
                             return typeof(DomainEvent).GetProperty(prop).GetValue(m);
                         }
 
-
                         if (typeof(ICommand).IsAssignableFrom(type))
                         {
                             prop = routesMap[typeof(DomainEvent).FullName];

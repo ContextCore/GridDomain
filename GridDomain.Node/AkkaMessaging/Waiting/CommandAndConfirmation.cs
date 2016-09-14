@@ -19,8 +19,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public CommandPlan(ICommand command, TimeSpan timeout, params ExpectedMessage[] expectedMessage)
         {
-            expectedMessage = AddCommandFaultIfMissing(command, expectedMessage);
-            ExpectedMessages = expectedMessage;
+            ExpectedMessages = AddCommandFaultIfMissing(command, expectedMessage);
             Command = command;
             Timeout = timeout;
         }
@@ -38,8 +37,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             var existingFault = expectedMessage.OfType<ExpectedFault>().FirstOrDefault();
             var commandType = command.GetType();
-            if (existingFault != null && existingFault.MessageType == commandType)
-                                            return expectedMessage;
+            if (existingFault != null && existingFault.ProcessMessageType == commandType)
+                return expectedMessage;
             
             var expectedFault = ExpectedFault.New(commandType, nameof(ICommand.Id), command.Id);
             return expectedMessage.Concat(new[] { expectedFault }).ToArray(); ;

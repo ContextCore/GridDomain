@@ -35,16 +35,7 @@ namespace GridDomain.Tests.CommandsExecution
             return new CompositeRouteMap(faultyHandlerMap);
         }
 
-        [Then]
-        public void SyncExecute_without_projection_fault_deliver_projection_notification_to_caller()
-        {
-            var syncCommand = new LongOperationCommand(101, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
 
-            GridNode.Execute(syncCommand, expectedMessage).Wait();
-            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
-        }
 
         [Then]
         public void SyncExecute_with_projection_fault_expecting_fault_wihout_source_type_delivers_error_to_caller_from_any_source()

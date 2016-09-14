@@ -19,7 +19,7 @@ namespace GridDomain.CQRS
         public object Message { get; }
         public Type Processor { get; }
 
-        public static object CreateGenericFor(object msg, Exception ex, Type processorType)
+        public static object NewGeneric(object msg, Exception ex, Type processorType)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(MessageFault).GetMethod(nameof(New));

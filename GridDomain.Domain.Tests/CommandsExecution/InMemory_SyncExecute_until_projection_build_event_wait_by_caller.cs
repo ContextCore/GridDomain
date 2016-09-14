@@ -11,6 +11,9 @@ namespace GridDomain.Tests.CommandsExecution
     [TestFixture]
     public class InMemory_SyncExecute_until_projection_build_event_wait_by_caller: SampleDomainCommandExecutionTests
     {
+        private AggregateChangedEventNotification _changedEvent;
+        private SampleAggregate _aggregate;
+        private LongOperationCommand _syncCommand;
 
         public InMemory_SyncExecute_until_projection_build_event_wait_by_caller():base(true)
         {
@@ -20,19 +23,28 @@ namespace GridDomain.Tests.CommandsExecution
         {
             
         }
-        [Then]
+
+        [TestFixtureSetUp]
         public void SyncExecute_until_projection_build_event_wait_by_caller()
         {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,syncCommand.AggregateId);
-            var task = GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedMessage);
-            if (!task.Wait(Timeout))
-                throw new TimeoutException();
+            _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,_syncCommand.AggregateId);
+            _changedEvent = GridNode.Execute<AggregateChangedEventNotification>(new CommandPlan( _syncCommand,expectedMessage), Timeout);
+            _aggregate = LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
+        }
 
-            var changedEvent = task.Result;
-            Assert.AreEqual(syncCommand.AggregateId, changedEvent.AggregateId);
-            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+        [Test]
+        public void Emmited_event_has_correct_id()
+        {
+            Assert.AreEqual(_syncCommand.AggregateId, _changedEvent.AggregateId);
+
+        }
+
+        [Test]
+        public void Aggregate_has_correct_state_from_command()
+        {
+            Assert.AreEqual(_syncCommand.Parameter.ToString(), _aggregate.Value);
+
         }
     }
 }
