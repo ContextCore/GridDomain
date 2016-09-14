@@ -37,11 +37,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private static ExpectedMessage[] AddCommandFaultIfMissing(ICommand command, ExpectedMessage[] expectedMessage)
         {
             var existingFault = expectedMessage.OfType<ExpectedFault>().FirstOrDefault();
-            if (existingFault == null) return expectedMessage;
-
             var commandType = command.GetType();
-            if(existingFault.MessageType == commandType) return expectedMessage;
-
+            if (existingFault != null && existingFault.MessageType == commandType)
+                                            return expectedMessage;
+            
             var expectedFault = ExpectedFault.New(commandType, nameof(ICommand.Id), command.Id);
             return expectedMessage.Concat(new[] { expectedFault }).ToArray(); ;
         }

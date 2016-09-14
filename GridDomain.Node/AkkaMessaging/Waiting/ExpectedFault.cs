@@ -18,10 +18,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         /// </summary>
         public Type ProcessMessageType { get; }
 
-        protected override Guid GetMessageId(object msg)
+        protected override bool TryGetMessageId(object msg, out Guid id)
         {
             IMessageFault fault = msg as IMessageFault;
-            return fault == null ? base.GetMessageId(msg) : base.GetMessageId(fault.Message);
+            return fault == null ? base.TryGetMessageId(msg, out id) : base.TryGetMessageId(fault.Message, out id);
         }
 
         protected ExpectedFault(Type faultType,Type messageType, int messageCount, string idPropertyName = null, Guid messageId = new Guid(), Type source = null):

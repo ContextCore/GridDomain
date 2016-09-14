@@ -20,29 +20,49 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     public class ExpectedMessage
     {
+        /// <summary>
+        /// Represents message that is expected to be received
+        /// </summary>
+        /// <param name="messageType">Type of expected message</param>
+        /// <param name="messageCount">Count of expected messages</param>
+        /// <param name="idPropertyName">Nullable, if presented message will be checked for if by this field</param>
+        /// <param name="messageId">Id of message to wait for, should be presented if idPropertyName is presented</param>
+        /// <param name="source">Type of the source of message, typically used for faults</param>
         public ExpectedMessage(Type messageType, int messageCount, string idPropertyName = null, Guid messageId = default(Guid),  Type source = null)
         {
+            if(messageType == null) throw new ArgumentNullException(nameof(messageType));
             MessageType = messageType;
             MessageCount = messageCount;
+
             IdPropertyName = idPropertyName;
+            if(IdPropertyName != null && messageId == null)
+                throw new ArgumentNullException(nameof(messageId));
             MessageId = messageId;
+
             Source = source;
         }
 
-        protected virtual Guid GetMessageId(object msg)
+        protected virtual bool TryGetMessageId(object msg, out Guid id)
         {
+            id = Guid.Empty;
+            if (IdPropertyName == null || msg == null) return false;
+
             var propertyInfo = msg.GetType().GetProperty(IdPropertyName);
-            if (propertyInfo == null) return Guid.Empty;
-            return (Guid)propertyInfo.GetValue(msg);
+            var value = propertyInfo?.GetValue(msg);
+            if (!(value is Guid)) return false;
+            id = (Guid) value;
+            return true;
         }
 
-        public virtual bool Match(object msg)
+        public bool Match(object msg)
         {
             var msgType = msg.GetType();
-            if (!MessageType.IsAssignableFrom(msgType))
-                return false;
+            if (!MessageType.IsAssignableFrom(msgType)) return false;
 
-            return MessageId == GetMessageId(msg);
+            Guid messageId;
+            //if cannot determine id but having same type, it is OK
+            if (!TryGetMessageId(msg, out messageId)) return true;
+             return MessageId == messageId;
         }
 
         //To get properties from inherited interfaces also
@@ -64,7 +84,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public static ExpectedMessage Once(Type messageType, string idPropertyName, Guid messageId, Type faultSources)
         {
-            var expectedMessage = new ExpectedMessage(messageType, 1,idPropertyName, messageId, faultSources);
+            var expectedMessage = new ExpectedMessage(messageType, 1, idPropertyName, messageId, faultSources);
             VerifyIdPropertyName(expectedMessage.MessageType, expectedMessage.IdPropertyName);
             return expectedMessage;
         }
