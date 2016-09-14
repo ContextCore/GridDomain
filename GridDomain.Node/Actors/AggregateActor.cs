@@ -35,6 +35,7 @@ namespace GridDomain.Node.Actors
         private readonly IPublisher _publisher;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
+        private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
         public readonly Guid Id;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
@@ -77,7 +78,15 @@ namespace GridDomain.Node.Actors
 
             Command<FutureEventScheduledEvent>(r => Handle(r));
             Command<FutureEventCanceledEvent>(r => Handle(r));
-
+            Command<NotifyOnRecoverComplete>(c =>
+            {
+                var waiter = c.Waiter ?? Sender;
+                if (IsRecoveryFinished)
+                {
+                    waiter.Tell(RecoveryCompleted.Instance);
+                }
+                else _recoverWaiters.Add(waiter);
+            });
             Command<ICommand>(cmd =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -97,6 +106,16 @@ namespace GridDomain.Node.Actors
 
             Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+            Recover<RecoveryCompleted>(message =>
+            {
+                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                //notify all 
+                foreach(var waiter in _recoverWaiters)
+                     waiter.Tell(RecoveryCompleted.Instance);
+                _recoverWaiters.Clear();
+            });
+            
+
         }
 
         protected virtual void Shutdown()
@@ -201,5 +220,16 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementActorRestarted();
         }
+    }
+
+    public class NotifyOnRecoverComplete
+    {
+        public NotifyOnRecoverComplete(IActorRef waiter)
+        {
+            Waiter = waiter;
+        }
+        public static readonly NotifyOnRecoverComplete Instance = new NotifyOnRecoverComplete(null);
+
+        public IActorRef Waiter { get; }
     }
 }

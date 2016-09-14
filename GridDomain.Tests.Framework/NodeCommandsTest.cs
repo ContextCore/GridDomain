@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Persistence;
 using Akka.TestKit.NUnit;
 using CommonDomain.Core;
 using GridDomain.CQRS;
@@ -83,8 +84,8 @@ namespace GridDomain.Tests.Framework
         {
             var props = GridNode.System.DI().Props<AggregateActor<T>>();
             var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
-            //TODO: replace with event wait
-            Thread.Sleep(1000); //wait for actor recover
+            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance).Wait();
+
             return actor.UnderlyingActor.Aggregate;
         }
 
@@ -93,7 +94,7 @@ namespace GridDomain.Tests.Framework
             var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState>>();
             var name = AggregateActorName.New<TSagaState>(id).ToString();
             var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState>>(props, name);
-            Thread.Sleep(1000); //wait for actor recover
+            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance).Wait();
             return (TSagaState)actor.UnderlyingActor.Saga.Data;
         }
 

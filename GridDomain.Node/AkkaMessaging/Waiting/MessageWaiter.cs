@@ -34,16 +34,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var registeredType = MessageReceivedCounters.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
             if (registeredType == null) return;
 
-            var expectedMessage = ExpectedMessages[registeredType];
-            if (!expectedMessage.Match(message)) return;
+            var expect = ExpectedMessages[registeredType];
+            if (!expect.Match(message)) return;
 
-            --MessageReceivedCounters[msgType];
-            if (!WaitIsOver(message)) return;
+            --MessageReceivedCounters[registeredType];
+            if (!WaitIsOver(message, expect)) return;
 
             _notifyActor.Tell(BuildAnswerMessage(message));
         }
 
-        protected abstract bool WaitIsOver(object message);
+        protected abstract bool WaitIsOver(object message, ExpectedMessage expect);
         protected virtual object BuildAnswerMessage(object message)
         {
             return new ExpectedMessagesRecieved(message, _allReceivedEvents);

@@ -7,7 +7,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class AllMessageWaiter : MessageWaiter<ExpectedMessage>
     {
-        protected override bool WaitIsOver(object message)
+        protected override bool WaitIsOver(object message, ExpectedMessage expect)
         {
             return !MessageReceivedCounters.Any(c => c.Value > 0);
         }

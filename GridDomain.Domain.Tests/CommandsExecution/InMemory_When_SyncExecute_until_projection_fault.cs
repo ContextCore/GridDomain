@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node;
@@ -11,7 +12,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.CommandsExecution
 {
-
     [TestFixture]
     public class InMemory_When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
     {
@@ -42,7 +42,6 @@ namespace GridDomain.Tests.CommandsExecution
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
 
             GridNode.Execute(syncCommand, expectedMessage).Wait();
-
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
@@ -56,7 +55,7 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                var result = GridNode.Execute(syncCommand,new ExpectedMessage[] { expectedFault, expectedMessage}).Result;
+                var result = GridNode.Execute(syncCommand,new ExpectedMessage[] { expectedFault, expectedMessage},TimeSpan.FromSeconds(100)).Result;
             }
             catch (Exception ex)
             {
@@ -102,7 +101,7 @@ namespace GridDomain.Tests.CommandsExecution
         [Then]
         public void SyncExecute_with_projection_fault_with_incorrect_typed_fault_times_out()
         {
-            var syncCommand = new LongOperationCommand(500, Guid.NewGuid());
+            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(string));
             var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
 
@@ -131,7 +130,7 @@ namespace GridDomain.Tests.CommandsExecution
             catch (Exception ex)
             {
                 var exception = ex.InnerException;
-                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(exception);
+                Assert.IsInstanceOf<SampleAggregateException>(exception);
             }
         }
     }

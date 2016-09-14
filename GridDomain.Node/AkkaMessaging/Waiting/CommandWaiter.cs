@@ -18,28 +18,19 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
 
         //execution stops on first expected fault
-        protected override bool WaitIsOver(object message)
+        protected override bool WaitIsOver(object message,ExpectedMessage expect)
         {
-            return IsExpectedFault(message)
+            return IsExpectedFault(message, expect)
                  //message faults are not counted while waiting for messages
                  || MessageReceivedCounters.All(c => !(typeof(IMessageFault).IsAssignableFrom(c.Key) && c.Value == 0));
         }
 
-        //message is fault caller wish to know about
-        private bool IsExpectedFault(object message)
+        //message is fault that caller wish to know about
+        //if no special processor type of fault is specified, we will stop on any fault
+        private bool IsExpectedFault(object message, ExpectedMessage expect)
         {
             var fault = message as IMessageFault;
-            if (fault != null)
-            {
-                ExpectedMessage expectedFault;
-                var type = message.GetType();
-                if (ExpectedMessages.TryGetValue(type, out expectedFault))
-                {
-                    if (expectedFault.Source == fault.Processor)
-                        return true;
-                }
-            }
-            return false;
+            return fault != null && (expect.Source == null || expect.Source == fault.Processor);
         }
 
         protected override object BuildAnswerMessage(object message)
