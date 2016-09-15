@@ -1,4 +1,5 @@
 using System.Linq;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -65,7 +66,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 typeof(GotTiredEvent),
                 typeof(CoffeMadeEvent),
                 typeof(SleptWellEvent),
-                typeof(CoffeMakeFailedEvent)
+                typeof(CoffeMakeFailedEvent),
+                typeof(Fault<GoSleepCommand>)
             };
 
             CollectionAssert.AreEquivalent(_descriptor.AcceptMessages.Select(m => m.MessageType), expectedEvents);
@@ -79,7 +81,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 nameof(DomainEvent.SagaId),
                 nameof(DomainEvent.SagaId),
                 nameof(DomainEvent.SagaId),
-                nameof(DomainEvent.SagaId)
+                nameof(DomainEvent.SagaId),
+                nameof(Fault.SagaId),
             };
 
             CollectionAssert.AreEquivalent(_descriptor.AcceptMessages.Select(m => m.CorrelationField), expectedEvents);

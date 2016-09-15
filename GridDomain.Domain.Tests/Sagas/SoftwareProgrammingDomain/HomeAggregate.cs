@@ -1,4 +1,5 @@
 using System;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 
 namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
@@ -25,7 +26,7 @@ namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
         }
 
 
-        public void Sleep(Guid sofaId)
+        public void Sleep(Guid sofaId) 
         {
             if (sofaId == Guid.Empty)
                 throw new CantFindSofaException();
