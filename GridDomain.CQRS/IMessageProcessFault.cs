@@ -1,6 +1,6 @@
 ﻿namespace GridDomain.CQRS
 {
-    public interface IMessageFault<T> : IMessageFault
+    public interface IFault<T> : IFault
     {
         new T Message { get; }
     }

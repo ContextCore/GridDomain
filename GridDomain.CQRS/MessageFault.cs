@@ -3,9 +3,9 @@ using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
-    public class MessageFault: IMessageFault
+    public class Fault: IFault
     {
-        public MessageFault(object message, Exception ex, Type processor, Guid sagaId, DateTime occuredTime)
+        public Fault(object message, Exception ex, Type processor, Guid sagaId, DateTime occuredTime)
         {
             Message = message;
             Exception = ex;
@@ -22,22 +22,22 @@ namespace GridDomain.CQRS
         public static object NewGeneric(object msg, Exception ex, Type processorType)
         {
             var msgType = msg.GetType();
-            var methodOpenType = typeof(MessageFault).GetMethod(nameof(New));
+            var methodOpenType = typeof(Fault).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
             return method.Invoke(null, new [] { msg, ex, processorType});
         }
 
-        public static MessageFault<T> New<T>(T msg, Exception ex, Type processorType = null)
+        public static Fault<T> New<T>(T msg, Exception ex, Type processorType = null)
         {
-            return new MessageFault<T>(msg, ex, processorType,Guid.Empty, BusinessDateTime.UtcNow);
+            return new Fault<T>(msg, ex, processorType,Guid.Empty, BusinessDateTime.UtcNow);
         }
     }
 
-    public class MessageFault<T> : MessageFault, IMessageFault<T>
+    public class Fault<T> : Fault, IFault<T>
     {
         public new T Message { get; }
 
-        public MessageFault(T msg, Exception ex, Type processorType, Guid sagaId, DateTime occuredTime)
+        public Fault(T msg, Exception ex, Type processorType, Guid sagaId, DateTime occuredTime)
             : base(msg, ex, processorType, sagaId, occuredTime)
         {
             Message = msg;

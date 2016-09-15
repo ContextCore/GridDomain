@@ -13,7 +13,7 @@ namespace GridDomain.Node
             //router.RegisterHandler<ICommand,DefaultMessageLoggerHandler>(e => e.Id);
             //router.RegisterHandler<ICommandFault,DefaultMessageLoggerHandler>(e => e.Id);
 
-            router.Route<IMessageFault>().ToHandler<DefaultMessageLoggerHandler>().Register();
+            router.Route<IFault>().ToHandler<DefaultMessageLoggerHandler>().Register();
             router.Route<ICommand>().ToHandler<DefaultMessageLoggerHandler>().Register();
             router.Route<DomainEvent>().ToHandler<DefaultMessageLoggerHandler>().Register();
 

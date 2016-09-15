@@ -22,14 +22,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return IsExpectedFault(message, expect)
                  //message faults are not counted while waiting for messages
-                 || MessageReceivedCounters.All(c => !(typeof(IMessageFault).IsAssignableFrom(c.Key) && c.Value == 0));
+                 || MessageReceivedCounters.All(c => !(typeof(IFault).IsAssignableFrom(c.Key) && c.Value == 0));
         }
 
         //message is fault that caller wish to know about
         //if no special processor type of fault is specified, we will stop on any fault
         private bool IsExpectedFault(object message, ExpectedMessage expect)
         {
-            var fault = message as IMessageFault;
+            var fault = message as IFault;
             return fault != null && (expect.Source == null || expect.Source == fault.Processor);
         }
 
@@ -37,7 +37,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             object answerMessage = null;
             message.Match()
-                   .With<IMessageFault>(f => answerMessage = f)
+                   .With<IFault>(f => answerMessage = f)
                    .Default(m =>
                    {
                        answerMessage = new CommandExecutionFinished(_command, m);

@@ -63,7 +63,7 @@ namespace GridDomain.Node.Actors
             _sagaData = _aggregateFactory.Build<TSagaState>(Id);
 
 
-            Command<IMessageFault>(fault =>
+            Command<IFault>(fault =>
             {
                 _monitor.IncrementMessagesReceived();
                 ProcessSaga(fault);

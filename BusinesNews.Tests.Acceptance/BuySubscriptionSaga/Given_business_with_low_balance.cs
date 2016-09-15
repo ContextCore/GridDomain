@@ -66,14 +66,14 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
         public void Saga_fault_contains_command_fault_for_pay_for_bill_command()
         {
             var fault = (SagaFault<BuySubscriptionSagaStateAggregate>)(_sagaResultMessage);
-            Assert.IsInstanceOf<MessageFault<PayForBillCommand>>(fault.CommandFault);
+            Assert.IsInstanceOf<Fault<PayForBillCommand>>(fault.CommandFault);
         }
 
         [Test]
         public void Command_fault_contains_exception()
         {
             var fault = (SagaFault<BuySubscriptionSagaStateAggregate>) (_sagaResultMessage);
-            var commandFault = (MessageFault<PayForBillCommand>) fault.CommandFault;
+            var commandFault = (Fault<PayForBillCommand>) fault.CommandFault;
             Assert.IsNotNull(commandFault.Exception);
         }
 

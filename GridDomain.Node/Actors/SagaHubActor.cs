@@ -39,7 +39,7 @@ namespace GridDomain.Node.Actors
         {
             Guid childActorId = Guid.Empty;
 
-            message.Match().With<IMessageFault>(m => childActorId = m.SagaId);
+            message.Match().With<IFault>(m => childActorId = m.SagaId);
 
             if(childActorId != Guid.Empty) return childActorId;
 

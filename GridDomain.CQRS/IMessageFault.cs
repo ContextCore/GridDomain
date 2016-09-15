@@ -2,10 +2,13 @@ using System;
 
 namespace GridDomain.CQRS
 {
-    public interface IMessageFault
+    /// <summary>
+    /// Represent information of error Exception occurred in Processor while handling Message
+    /// Typically Processors is type of domain-specific classes: sagas, aggregates, message handlers
+    /// </summary>
+    public interface IFault
     {
         object Message { get; }
-     //   Guid Id { get; }
         Exception Exception { get; }
         Guid SagaId { get; }
         DateTime OccuredTime { get; }

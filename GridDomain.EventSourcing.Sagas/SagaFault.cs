@@ -7,21 +7,21 @@ namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaFault<TState> : ISagaFault<TState> where TState : IAggregate
     {
-        private SagaFault(Guid sagaId, IMessageFault commandFault, TState state)
+        private SagaFault(Guid sagaId, IFault commandFault, TState state)
         {
             SagaId = sagaId;
             CommandFault = commandFault;
             State = state;
         }
 
-        public SagaFault(IDomainStateSaga<TState> saga, IMessageFault fault):this(saga.State.Id, fault, saga.State)
+        public SagaFault(IDomainStateSaga<TState> saga, IFault fault):this(saga.State.Id, fault, saga.State)
         {
             
         }
 
         public Guid SagaId { get; }
 
-        public IMessageFault CommandFault { get; }
+        public IFault CommandFault { get; }
         object ISagaFault.State => State;
 
         public TState State { get; }

@@ -102,7 +102,7 @@ namespace GridDomain.Tests.Framework
 
         private ExpectedMessage[] GetFaults(ICommand[] commands)
         {
-            var faultGeneric = typeof(MessageFault<>);
+            var faultGeneric = typeof(Fault<>);
             return commands.Select(c => c.GetType())
                            .Distinct()
                            .Select(commandType => faultGeneric.MakeGenericType(commandType))
@@ -153,7 +153,7 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine(msg.ToPropsString());
             Console.WriteLine("------end of message-----");
 
-            if (failOnCommandFault && msg.Message is IMessageFault)
+            if (failOnCommandFault && msg.Message is IFault)
             {
                 Assert.Fail($"Command fault received: {msg.ToPropsString()}");
             }
