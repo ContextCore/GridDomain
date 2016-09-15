@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
 {

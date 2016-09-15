@@ -87,7 +87,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
 
         protected void DispatchSagaFault<T>(Fault<T> commandFault) where T : ICommand
         {
-            _messagesToDispatch.Add(new SagaFault<TStateData>(this, commandFault));
+            _messagesToDispatch.Add(commandFault);
         }
         protected void Dispatch(ISagaFault sagaFault)
         {

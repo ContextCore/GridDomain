@@ -1,5 +1,6 @@
 using System.Runtime.Remoting.Channels;
 using Automatonymous;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
@@ -24,6 +25,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             Event(() => CoffeReady);
             Event(() => SleptWell);
             Event(() => CoffeNotAvailable);
+            Event(() => SleptBad);
 
             State(() => Coding);
             State(() => MakingCoffee);
@@ -53,6 +55,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     .TransitionTo(Coding));
 
              During(Sleeping,
+                When(SleptBad).Then(ctx => ctx.Instance.SofaId = ctx.Data.Message.SofaId)
+                              .TransitionTo(MakingCoffee),
                 When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
                                .TransitionTo(Coding));
         }
@@ -60,6 +64,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public Event<GotTiredEvent>      GotTired      { get; private set; } 
         public Event<CoffeMadeEvent>      CoffeReady      { get; private set; }
         public Event<SleptWellEvent>     SleptWell     { get; private set; } 
+        public Event<Fault<GoSleepCommand>>     SleptBad     { get; private set; } 
         public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
 
         public State Coding       { get; private set; }

@@ -11,7 +11,7 @@ namespace GridDomain.Node
         private static readonly ISoloLogger Log = LogManager.GetLogger().ForContext("GridInternal", true);
         private void Handle(object msg)
         {
-            Log.Info("got message from transpot: {@msg}", msg);
+            Log.Trace("got message from transpot: {@msg}", msg);
         }
 
         public void Handle(DomainEvent msg)

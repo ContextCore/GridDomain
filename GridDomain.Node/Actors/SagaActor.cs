@@ -111,6 +111,7 @@ namespace GridDomain.Node.Actors
         
         protected virtual void Shutdown()
         {
+            //TODO: raise faults for all messages in stash
             Context.Stop(Self);
         }
 
