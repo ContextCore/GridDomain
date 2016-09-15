@@ -13,7 +13,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         private readonly Func<ICommand, Guid> _idLocator;
         private readonly IUnityContainer _locator;
 
-        private AggregateCommandHandler(string name, 
+        protected AggregateCommandHandler(string name, 
                                         Func<ICommand, Guid> idLocator,
                                         Func<ICommand, TAggregate, TAggregate> executor,
                                         IUnityContainer locator)

@@ -13,23 +13,24 @@ namespace GridDomain.CQRS
             SagaId = sagaId;
             Processor = processor;
         }
+
         public Exception Exception { get; }
         public Guid SagaId { get; }
         public DateTime OccuredTime { get; }
         public object Message { get; }
         public Type Processor { get; }
 
-        public static object NewGeneric(object msg, Exception ex, Type processorType)
+        public static object NewGeneric(object msg, Exception ex, Type processorType, Guid sagaId)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(Fault).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
-            return method.Invoke(null, new [] { msg, ex, processorType});
+            return method.Invoke(null, new [] { msg, ex, sagaId, processorType});
         }
 
-        public static Fault<T> New<T>(T msg, Exception ex, Type processorType = null)
+        public static Fault<T> New<T>(T msg, Exception ex, Guid sagaId, Type processorType = null)
         {
-            return new Fault<T>(msg, ex, processorType,Guid.Empty, BusinessDateTime.UtcNow);
+            return new Fault<T>(msg, ex, processorType, sagaId, BusinessDateTime.UtcNow);
         }
     }
 

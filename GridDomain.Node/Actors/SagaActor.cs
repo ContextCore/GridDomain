@@ -63,12 +63,7 @@ namespace GridDomain.Node.Actors
             _sagaData = _aggregateFactory.Build<TSagaState>(Id);
 
 
-            Command<IFault>(fault =>
-            {
-                _monitor.IncrementMessagesReceived();
-                ProcessSaga(fault);
-            }, fault => fault.SagaId == Id);
-
+         
             Command<ShutdownRequest>(req =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -96,6 +91,13 @@ namespace GridDomain.Node.Actors
                 ProcessSaga(msg);
             }, e => GetSagaId(e) == Id);
 
+            Command<IFault>(fault =>
+            {
+                _monitor.IncrementMessagesReceived();
+                ProcessSaga(fault);
+            }, fault => fault.SagaId == Id);
+
+
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
             Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
@@ -108,9 +110,15 @@ namespace GridDomain.Node.Actors
                 _recoverWaiters.Clear();
             });
         }
-        
+
+        protected override bool Receive(object message)
+        {
+            return base.Receive(message);
+        }
+
         protected virtual void Shutdown()
         {
+            //TODO: raise faults for all messages in stash
             Context.Stop(Self);
         }
 

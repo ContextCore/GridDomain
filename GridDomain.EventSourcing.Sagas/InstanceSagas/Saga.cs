@@ -19,12 +19,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _commandsToDispatch.Clear();
         }
 
-        public void Dispatch(Command cmd)
+        protected void Dispatch(Command cmd)
         {
             _commandsToDispatch.Add(cmd);
         }
 
-        public Saga()
+        protected Saga()
         {
             InstanceState(d => d.CurrentStateName);
         }
