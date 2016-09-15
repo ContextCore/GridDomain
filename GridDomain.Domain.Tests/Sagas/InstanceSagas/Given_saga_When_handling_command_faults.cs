@@ -16,12 +16,14 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_aggregate_actor_received_command_execution_error_fault_should_be_produced: TestKit
+    class Actors_should_fill_saga_id_for_produced_faults: TestKit
     {
         [Test]
         public void Aggregate_actor_produce_fault_with_sagaId_from_command()
@@ -43,6 +45,27 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var fault = ExpectMsg<Fault<GoSleepCommand>>();
             Assert.AreEqual(command.SagaId, fault.SagaId);
         }
+
+        [TestCase("test", "", "unplanned exception from message processor")]
+        [TestCase("10", "", "planned exception from message processor")]
+        public void Message_process_actor_produce_fault_with_sagaId_from_incoming_message(string payload)
+        {
+            var message = new SampleAggregateChangedEvent(payload,Guid.NewGuid(),DateTime.Now,Guid.NewGuid());
+
+            var transport = new AkkaEventBusTransport(Sys);
+            transport.Subscribe<Fault<GoSleepCommand>>(TestActor);
+
+            var actor = Sys.ActorOf(Props.Create(() =>
+            new MessageHandlingActor<SampleAggregateChangedEvent,OddFaultyMessageHandler>(
+                                              new OddFaultyMessageHandler(transport), 
+                                              transport)));
+
+            actor.Tell(message);
+            var fault = ExpectMsg<Fault<SampleAggregateChangedEvent>>();
+            Assert.AreEqual(message.SagaId, fault.SagaId);
+        }
+
+
     }
 
 
