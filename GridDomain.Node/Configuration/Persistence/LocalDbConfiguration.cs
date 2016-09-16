@@ -3,9 +3,9 @@ namespace GridDomain.Node.Configuration.Persistence
     public class LocalDbConfiguration : IDbConfiguration
     {
         public string ReadModelConnectionString
-            => @"Data Source=(local);Initial Catalog=AutoTestGridDomainRead;Integrated Security = true";
+            => @"Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipReadAutoTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True";
 
         public string LogsConnectionString
-            => @"Data Source=(local);Initial Catalog=AutoTestGridDomainLogs;Integrated Security = true";
+            => @"Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipLogsAutoTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True";
     }
 }
