@@ -1,4 +1,5 @@
-﻿using GridDomain.Node.Configuration;
+﻿using System.Configuration;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tests.Framework.Configuration
@@ -6,10 +7,10 @@ namespace GridDomain.Tests.Framework.Configuration
     public class AutoTestAkkaDbConfiguration : IAkkaDbConfiguration
     {
         public string SnapshotConnectionString
-            => "Data Source=(local);Database=AutoTestAkka;Integrated Security = true";
+            => ConfigurationManager.ConnectionStrings["GridDomainWriteTestString"]?.ConnectionString ?? "Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipWriteAutoTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True";
 
         public string JournalConnectionString
-            => "Data Source=(local);Database=AutoTestAkka;Integrated Security = true";
+            => ConfigurationManager.ConnectionStrings["GridDomainWriteTestString"]?.ConnectionString ?? "Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipWriteAutoTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True";
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";
