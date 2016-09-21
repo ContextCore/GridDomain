@@ -26,7 +26,7 @@ namespace GridDomain.Tests.CommandsExecution
         public void SyncExecute_throws_exception_from_aggregate_on_fault_wait_by_Node()
         {
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
+            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
             Assert.Throws<SampleAggregateException>(() => 
                         GridNode.Execute<SampleAggregateChangedEvent>(syncCommand,Timeout,expectedMessage));

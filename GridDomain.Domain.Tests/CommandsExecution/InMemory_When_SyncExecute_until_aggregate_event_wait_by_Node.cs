@@ -28,7 +28,7 @@ namespace GridDomain.Tests.CommandsExecution
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             GridNode.Execute(syncCommand,
                 Timeout,
-                ExpectedMessage.Once<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId));
+                Expect.Message<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

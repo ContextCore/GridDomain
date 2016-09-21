@@ -21,11 +21,11 @@ namespace GridDomain.Tests.FutureEvents
         public void Raising_several_future_events_for_different_aggregates()
         {
             _commandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
-            var expectedMessageA = ExpectedMessage.Once<FutureEventOccuredEvent>(e => e.SourceId, _commandA.AggregateId);
+            var expectedMessageA = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandA.AggregateId);
             var planA = new CommandPlan(_commandA, expectedMessageA);
 
             _commandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
-            var expectedMessageB = ExpectedMessage.Once<FutureEventOccuredEvent>(e => e.SourceId, _commandB.AggregateId);
+            var expectedMessageB = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandB.AggregateId);
             var planB = new CommandPlan(_commandB, expectedMessageB);
 
             var taskA = GridNode.Execute<FutureEventOccuredEvent>(planA).ContinueWith( r => _eventA = r.Result);

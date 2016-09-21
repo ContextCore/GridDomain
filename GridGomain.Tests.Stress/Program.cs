@@ -49,10 +49,10 @@ namespace GridGomain.Tests.Stress
                 var changeAggregateCommandB = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
                 var changeAggregateCommandC = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
 
-                var createExpect  = ExpectedMessage.Once<SampleAggregateCreatedEvent>(e => e.SourceId, createAggregateCommand.AggregateId);
-                var changeAExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandA.AggregateId);
-                var changeBExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandB.AggregateId);
-                var changeCExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandC.AggregateId);
+                var createExpect  = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, createAggregateCommand.AggregateId);
+                var changeAExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandA.AggregateId);
+                var changeBExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandB.AggregateId);
+                var changeCExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandC.AggregateId);
 
                 // A, B+C in parallel, C
                 var executionPlan = node.Execute(createAggregateCommand, createExpect)

@@ -21,8 +21,8 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
             var testCommandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value A");
             var testCommandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(5), _aggregateId, "test value B");
 
-            var planA = CommandPlan.New(testCommandA, Timeout, ExpectedMessage.Once<FutureEventOccuredEvent>());
-            var planB = CommandPlan.New(testCommandB, Timeout, ExpectedMessage.Once<FutureEventOccuredEvent>());
+            var planA = CommandPlan.New(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
+            var planB = CommandPlan.New(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId));
 
             _eventA = GridNode.Execute(planA).Result;
             _eventB = GridNode.Execute(planB).Result;

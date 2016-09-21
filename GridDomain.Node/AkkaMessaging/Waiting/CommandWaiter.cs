@@ -30,7 +30,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private bool IsExpectedFault(object message, ExpectedMessage expect)
         {
             var fault = message as IFault;
-            return fault != null && (expect.Source == null || expect.Source == fault.Processor);
+            return fault != null && (expect.Sources == null || expect.Sources.Contains(fault.Processor));
         }
 
         protected override object BuildAnswerMessage(object message)

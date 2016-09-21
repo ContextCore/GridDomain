@@ -28,7 +28,7 @@ namespace GridDomain.Tests.CommandsExecution
         public void SyncExecute_until_projection_build_event_wait_by_caller()
         {
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,_syncCommand.AggregateId);
+            var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,_syncCommand.AggregateId);
             _changedEvent = GridNode.Execute<AggregateChangedEventNotification>(new CommandPlan( _syncCommand,expectedMessage), Timeout);
             _aggregate = LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
         }

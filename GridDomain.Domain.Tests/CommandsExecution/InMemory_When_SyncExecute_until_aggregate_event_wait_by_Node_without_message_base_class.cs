@@ -16,8 +16,8 @@ namespace GridDomain.Tests.CommandsExecution
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
-            var changeExpect = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var createExpect = ExpectedMessage.Once<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);
+            var changeExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
+            var createExpect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);
 
             var result = GridNode.Execute(syncCommand, Timeout, changeExpect, createExpect);
 

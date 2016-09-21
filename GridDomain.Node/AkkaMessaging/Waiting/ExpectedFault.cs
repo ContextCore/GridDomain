@@ -5,8 +5,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class ExpectedFault<T> : ExpectedFault
     {
-        public ExpectedFault(int messageCount, string idPropertyName = null, Guid messageId = new Guid(), Type source = null) :
-            base(typeof(IFault<T>), typeof(T), messageCount, idPropertyName, messageId, source)
+        public ExpectedFault(int messageCount, string idPropertyName = null, Guid messageId = new Guid(), params Type[] sources) :
+            base(typeof(IFault<T>), typeof(T), messageCount, idPropertyName, messageId, sources)
         {
         }
     }
@@ -24,8 +24,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return fault == null ? base.TryGetMessageId(msg, out id) : base.TryGetMessageId(fault.Message, out id);
         }
 
-        protected ExpectedFault(Type faultType,Type messageType, int messageCount, string idPropertyName = null, Guid messageId = new Guid(), Type source = null):
-            base(faultType, messageCount, idPropertyName, messageId, source)
+        protected ExpectedFault(Type faultType,
+            Type messageType, 
+            int messageCount, 
+            string idPropertyName = null, 
+            Guid messageId = new Guid(), 
+            params Type[] sources):
+            base(faultType, messageCount, idPropertyName, messageId, sources)
         {
             ProcessMessageType = messageType;
         }

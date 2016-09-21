@@ -23,14 +23,34 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId });
         }
 
-        public class MessageHandleException : Exception
-        {
-            public readonly SampleAggregateChangedEvent Msg;
+    }
 
-            public MessageHandleException(SampleAggregateChangedEvent msg)
-            {
-                Msg = msg;
-            }
+    public class MessageHandleException : Exception
+    {
+        public readonly SampleAggregateChangedEvent Msg;
+
+        public MessageHandleException(SampleAggregateChangedEvent msg)
+        {
+            Msg = msg;
+        }
+    }
+
+    public class EventFaultyMessageHandler : IHandler<SampleAggregateChangedEvent>
+    {
+        private readonly IPublisher _publisher;
+
+        public EventFaultyMessageHandler(IPublisher publisher)
+        {
+            _publisher = publisher;
+        }
+
+        public void Handle(SampleAggregateChangedEvent msg)
+        {
+            var i = int.Parse(msg.Value);
+            if (i % 2 == 1)
+                throw new MessageHandleException(msg);
+
+            _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId });
         }
     }
 }

@@ -111,12 +111,12 @@ namespace GridDomain.Tests.Framework
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] { ExpectedMessage.Once<TEvent>() }).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { Expect.Message<TEvent>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
         {
-            var messageTypes = GetFaults(commands).Concat(new[] { ExpectedMessage.Once<TMessage1>(), ExpectedMessage.Once<TMessage1>() }).ToArray();
+            var messageTypes = GetFaults(commands).Concat(new[] { Expect.Message<TMessage1>(), Expect.Message<TMessage1>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
         protected ExpectedMessagesRecieved ExecuteAndWaitForMany<TMessage1, TMessage2>(int eventAnum, int eventBnum, params ICommand[] commands)

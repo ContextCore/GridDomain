@@ -22,11 +22,11 @@ namespace GridDomain.Tests.AsyncAggregates
             var syncCommand = new ChangeSampleAggregateCommand(42, aggregateId);
 
            var asyncCommandTask = GridNode.Execute(asyncCommand,
-                                                    ExpectedMessage.Once<SampleAggregateChangedEvent>(e =>e.SourceId,
+                                                    Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
                                                                                                      asyncCommand.AggregateId));
 
             GridNode.Execute(syncCommand, Timeout,
-                             ExpectedMessage.Once<SampleAggregateChangedEvent>(e =>e.SourceId,
+                             Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
                                                                                syncCommand.AggregateId)
                              );
 

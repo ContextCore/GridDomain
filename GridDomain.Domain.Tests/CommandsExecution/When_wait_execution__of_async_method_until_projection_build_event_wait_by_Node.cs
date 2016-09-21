@@ -19,7 +19,7 @@ namespace GridDomain.Tests.CommandsExecution
         public void After_wait_aggregate_should_be_changed()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId,
+            var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 
             GridNode.Execute(syncCommand, Timeout, expectedMessage);

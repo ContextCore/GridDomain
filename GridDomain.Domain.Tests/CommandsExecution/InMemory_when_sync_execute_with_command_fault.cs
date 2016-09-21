@@ -16,7 +16,7 @@ namespace GridDomain.Tests.CommandsExecution
         public void Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());
-            var expectedMessage = ExpectedMessage.Once<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
+            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             string stackTraceString = "";
             try
             {

@@ -73,7 +73,7 @@ namespace GridDomain.Tests.Tools.Console
         {
             var command = new CreateSampleAggregateCommand(42, Guid.NewGuid(), Guid.NewGuid());
 
-            var expect = ExpectedMessage.Once<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
+            var expect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
 
             var evt = _console.Execute(command, TimeSpan.FromSeconds(30), expect);
             Assert.AreEqual(command.Parameter.ToString(), evt.Value);

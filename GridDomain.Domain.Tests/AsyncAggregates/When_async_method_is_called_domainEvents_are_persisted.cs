@@ -26,7 +26,7 @@ namespace GridDomain.Tests.AsyncAggregates
         {
             var externalCallCommand = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.NewGuid());
             var domainEvent = GridNode.Execute(externalCallCommand, Timeout,
-                                                    ExpectedMessage.Once<SampleAggregateChangedEvent>(e=>e.SourceId,
+                                                    Expect.Message<SampleAggregateChangedEvent>(e=>e.SourceId,
                                                                                                       externalCallCommand.AggregateId)
                                                     );
 
