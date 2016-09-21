@@ -57,6 +57,8 @@ namespace GridDomain.Node
             return (T)node.Execute(command, timeout, expectedMessage);
         }
 
+
+
         public static object Execute(this IGridDomainNode node, CommandPlan command, TimeSpan timeout)
         {
             return Execute<object>(node, command, timeout);
@@ -65,7 +67,7 @@ namespace GridDomain.Node
 
         public static object Execute(this IGridDomainNode node, ICommand command, TimeSpan timeout, params ExpectedMessage[] expectedMessage)
         {
-            return Execute(node, new CommandPlan(command, expectedMessage), timeout);
+            return Execute(node, new CommandPlan(command, timeout, expectedMessage),timeout);
         }
     }
 }

@@ -71,6 +71,37 @@ namespace GridDomain.Tests.CommandsExecution
         }
 
         [Then]
+        public void SyncExecute_with_projection_fault_with_expectation_in_plan_deliver_exception_to_caller()
+        {
+            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+            var plan = new CommandPlan(syncCommand, expectedMessage, expectedFault);
+
+            try
+            {
+                var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<OddFaultyMessageHandler.MessageHandleException>(ex.InnerException);
+            }
+        }
+
+        [Then]
+        public void SyncExecute_with_projection_success_with_expectation_in_plan_deliver_message_to_caller()
+        {
+            var syncCommand = new LongOperationCommand(101, Guid.NewGuid());
+            var expectedFault = ExpectedMessage.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
+            var expectedMessage = ExpectedMessage.Once<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+            var plan = new CommandPlan(syncCommand, expectedMessage, expectedFault);
+
+           
+            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
+            Assert.AreEqual(syncCommand.AggregateId,evt.AggregateId);
+        }
+
+        [Then]
         public void SyncExecute_with_projection_fault_with_correct_typed_fault_expectation_deliver_error_to_caller()
         {
             //will throw exception in aggregate and in message handler
