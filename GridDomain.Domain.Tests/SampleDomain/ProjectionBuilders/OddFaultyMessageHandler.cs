@@ -35,11 +35,11 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
         }
     }
 
-    public class EventFaultyMessageHandler : IHandler<SampleAggregateChangedEvent>
+    public class EvenFaultyMessageHandler : IHandler<SampleAggregateChangedEvent>
     {
         private readonly IPublisher _publisher;
 
-        public EventFaultyMessageHandler(IPublisher publisher)
+        public EvenFaultyMessageHandler(IPublisher publisher)
         {
             _publisher = publisher;
         }

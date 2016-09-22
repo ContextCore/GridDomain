@@ -8,10 +8,38 @@ using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
+using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.CommandsExecution
 {
+
+
+    [TestFixture]
+    public class InMemory_When_SyncExecute_until_projection_group_fault : InMemory_When_SyncExecute_until_projection_fault
+    {
+
+        public InMemory_When_SyncExecute_until_projection_group_fault() : base(true)
+        {
+
+        }
+
+        public InMemory_When_SyncExecute_until_projection_group_fault(bool inMemory = true) : base(inMemory)
+        {
+
+        }
+
+        protected override IMessageRouteMap CreateMap()
+        {
+            var group = new ProjectionGroup(new UnityContainer());
+            group.Add<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId);
+            group.Add<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId);
+            var faultyHandlerMap = new CustomRouteMap(r => r.RegisterProjectionGroup(group));
+            return new CompositeRouteMap(faultyHandlerMap);
+        }
+    }
+
+
     [TestFixture]
     public class InMemory_When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
     {
@@ -30,11 +58,11 @@ namespace GridDomain.Tests.CommandsExecution
             var faultyHandlerMap =
                 new CustomRouteMap(
                     r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
+                    r => r.RegisterHandler<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId),
                     r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);
         }
-
 
 
         [Then]
@@ -43,7 +71,7 @@ namespace GridDomain.Tests.CommandsExecution
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId,
                                                                           syncCommand.AggregateId,
-                                                                          typeof(EventFaultyMessageHandler),
+                                                                          typeof(EvenFaultyMessageHandler),
                                                                           typeof(OddFaultyMessageHandler));
 
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
@@ -57,6 +85,8 @@ namespace GridDomain.Tests.CommandsExecution
                 Assert.IsInstanceOf<MessageHandleException>(ex.InnerException);
             }
         }
+
+
 
 
         [Then]
