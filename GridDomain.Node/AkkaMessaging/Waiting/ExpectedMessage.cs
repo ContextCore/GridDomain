@@ -19,16 +19,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     public class Expect
     {
-         public static ExpectedFault<T> Fault<T>(Expression<Func<T, Guid>> idPropertyNameExpression, Guid messageId, params Type[] source)
+         public static ExpectedFault<T> Fault<T>(Expression<Func<T, Guid>> idPropertyNameExpression, Guid messageId, params Type [] source)
         {
             var expectedFault = new ExpectedFault<T>(1, MemberNameExtractor.GetName(idPropertyNameExpression), messageId, source);
             ExpectedMessage.VerifyIdPropertyName(expectedFault.ProcessMessageType, expectedFault.IdPropertyName);
             return expectedFault;
         }
 
-        public static ExpectedMessage<T> Message<T>(string idPropertyName, Guid messageId, params Type[] source)
+        public static ExpectedMessage<T> Message<T>(string idPropertyName, Guid messageId)
         {
-            var expectedMessage = new ExpectedMessage<T>(1, idPropertyName, messageId, source);
+            var expectedMessage = new ExpectedMessage<T>(1, idPropertyName, messageId);
             ExpectedMessage.VerifyIdPropertyName(expectedMessage.MessageType, expectedMessage.IdPropertyName);
             return expectedMessage;
         }
@@ -38,16 +38,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return new ExpectedMessage<T>(1, null, Guid.Empty, source);
         }
 
-        public static ExpectedMessage Message(Type messageType, string idPropertyName, Guid messageId, params Type[] source)
+        public static ExpectedMessage Message(Type messageType, string idPropertyName, Guid messageId)
         {
-            var expectedMessage = new ExpectedMessage(messageType, 1, idPropertyName, messageId, source);
+            var expectedMessage = new ExpectedMessage(messageType, 1, idPropertyName, messageId);
             ExpectedMessage.VerifyIdPropertyName(expectedMessage.MessageType, expectedMessage.IdPropertyName);
             return expectedMessage;
         }
 
-        public static ExpectedMessage<T> Message<T>(Expression<Func<T, Guid>> idPropertyNameExpression, Guid messageId, params Type[] source)
+        public static ExpectedMessage<T> Message<T>(Expression<Func<T, Guid>> idPropertyNameExpression, Guid messageId)
         {
-            return Message<T>(MemberNameExtractor.GetName(idPropertyNameExpression), messageId, source);
+            return Message<T>(MemberNameExtractor.GetName(idPropertyNameExpression), messageId);
         }
     }
 
@@ -118,13 +118,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         [Obsolete("Use Expect.Message method instead")]
         public static ExpectedMessage Once(Type messageType, string idPropertyName, Guid messageId, Type faultSources)
         {
-            return Expect.Message(messageType,idPropertyName, messageId, faultSources);
+            return Expect.Message(messageType,idPropertyName, messageId);
         }
 
         [Obsolete("Use Expect.Message method instead")]
         public static ExpectedMessage<T> Once<T>(string idPropertyName, Guid messageId, Type source = null)
         {
-            return Expect.Message<T>(idPropertyName, messageId, source);
+            return Expect.Message<T>(idPropertyName, messageId);
         }
 
         [Obsolete("Use Expect.Message method instead")]
@@ -138,7 +138,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         [Obsolete("Use Expect.Message method instead")]
         public static ExpectedMessage<T> Once<T>(Expression<Func<T,Guid>>  idPropertyNameExpression, Guid messageId, Type source = null)
         {
-            return Expect.Message<T>(idPropertyNameExpression, messageId, source);
+            return Expect.Message<T>(idPropertyNameExpression, messageId);
         }
 
         /// <summary>

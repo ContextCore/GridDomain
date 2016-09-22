@@ -38,7 +38,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public static ExpectedFault New(Type messageType, 
                                         string idPropertyName = null, 
                                         Guid messageId = new Guid(),
-                                        Type source = null)
+                                        params Type[] source)
         {
             var faultType = typeof(IFault<>).MakeGenericType(messageType);
             var expect = new ExpectedFault(faultType, messageType,1,idPropertyName,messageId,source);
