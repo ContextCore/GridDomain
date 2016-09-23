@@ -13,42 +13,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.CommandsExecution
 {
-
-
-    [TestFixture]
-    public class InMemory_When_SyncExecute_until_projection_group_fault : InMemory_When_SyncExecute_until_projection_fault
-    {
-
-        public InMemory_When_SyncExecute_until_projection_group_fault() : base(true)
-        {
-
-        }
-
-        public InMemory_When_SyncExecute_until_projection_group_fault(bool inMemory = true) : base(inMemory)
-        {
-
-        }
-
-        protected override IMessageRouteMap CreateMap()
-        {
-            var faultyHandlerMap = new CustomRouteMap(r => r.RegisterProjectionGroup(new TestGroup(new UnityContainer())),
-                                                      r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
-
-            return new CompositeRouteMap(faultyHandlerMap);
-        }
-
-        public class TestGroup : ProjectionGroup
-        {
-            public TestGroup(IUnityContainer locator) : base(locator)
-            {
-                this.Add<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId);
-                this.Add<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId);
-            }
-        }
-    }
-
-
-
     [TestFixture]
     public class InMemory_When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
     {
