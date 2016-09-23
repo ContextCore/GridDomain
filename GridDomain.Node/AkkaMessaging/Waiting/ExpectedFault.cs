@@ -45,13 +45,5 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             ExpectedMessage.VerifyIdPropertyName(expect.ProcessMessageType, expect.IdPropertyName);
             return expect;
         }
-
-        //public static object NewGeneric(object msg, Exception ex, Type processorType)
-        //{
-        //    var msgType = msg.GetType();
-        //    var methodOpenType = typeof(MessageFault).GetMethod(nameof(New));
-        //    var method = methodOpenType.MakeGenericMethod(msgType);
-        //    return method.Invoke(null, new[] { msg, ex, processorType });
-        //}
     }
 }
