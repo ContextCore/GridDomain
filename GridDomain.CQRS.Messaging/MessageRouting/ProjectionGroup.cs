@@ -7,6 +7,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class ProjectionGroup: IProjectionGroup
     {
+ 
+
         private readonly IUnityContainer _locator;
         readonly Dictionary<Type, List<Action<object>>> _handlers = new Dictionary<Type, List<Action<object>>>();
         public IProjectionGroupDescriptor Descriptor = new ProjectionGroupDescriptor();
@@ -25,8 +27,9 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             if (!_handlers.TryGetValue(typeof (TMessage), out builderList))
             {
                 builderList = new List<Action<object>>();
-                _handlers[typeof (TMessage)] = builderList;
+                _handlers[typeof(TMessage)] = builderList;
             }
+
             builderList.Add(ProjectMessage<TMessage, THandler>);
 
             if (_acceptMessages.All(m => m.MessageType != typeof (TMessage)))
@@ -39,17 +42,35 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             if(message == null)
                 throw new UnknownMessageException();
 
-            var handler = _locator.Resolve<THandler>();
-            handler.Handle(message);
+            try
+            {
+                var handler = _locator.Resolve<THandler>();
+                handler.Handle(message);
+            }
+            catch (Exception ex)
+            {
+                throw new MessageProcessException(typeof(THandler), ex);
+            }
         }
 
         public void Project(object message)
         {
             var msgType = message.GetType();
             foreach(var handler in _handlers[msgType])
- handler(message);
+                    handler(message);
         }
+
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();
         public IReadOnlyCollection<MessageRoute> AcceptMessages => _acceptMessages;
+    }
+
+    public class MessageProcessException : Exception
+    {
+        public Type Type { get; set; }
+
+        public MessageProcessException(Type type, Exception error):base($"Error occured while processing message in {type}",error)
+        {
+            Type = type;
+        }
     }
 }
