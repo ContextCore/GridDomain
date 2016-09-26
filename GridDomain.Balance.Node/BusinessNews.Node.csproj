@@ -63,7 +63,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Serialization.Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Serialization.Wire.1.1.1.28-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
+      <HintPath>..\packages\Akka.Serialization.Wire.1.1.2.30-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
@@ -127,7 +127,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
+      <HintPath>..\packages\Wire.0.8.1\lib\net45\Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
