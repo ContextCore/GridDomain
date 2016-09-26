@@ -31,8 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.1.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.1.1.1\lib\net45\Akka.dll</HintPath>
+    <Reference Include="Akka, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.1.2\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Persistence, Version=1.1.1.28, Culture=neutral, processorArchitecture=MSIL">
@@ -79,8 +79,8 @@
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stateless, Version=2.5.80.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Stateless.2.5.80\lib\portable-net45+wp8+win8+wpa81+monotouch+monoandroid\Stateless.dll</HintPath>
+    <Reference Include="Stateless, Version=2.5.84.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stateless.2.5.84\lib\portable-net45+wp8+win8+wpa81+monotouch+monoandroid\Stateless.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
