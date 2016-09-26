@@ -102,7 +102,7 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(cmd);
             });
 
-            Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
+           // Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
             Recover<RecoveryCompleted>(message =>
             {
