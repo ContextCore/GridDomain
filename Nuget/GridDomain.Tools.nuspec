@@ -18,11 +18,11 @@
   </metadata>
 
 <files>
-  <file src="..\GridDomain.Tests.Framework\bin\Debug\GridDomain.Tests.Framework.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Tools\bin\Debug\GridDomain.Tools.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Tests.Framework\bin\Release\GridDomain.Tests.Framework.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Tools\bin\Release\GridDomain.Tools.dll" target="lib\net461" /> 
   
-  <file src="..\GridDomain.Tests.Framework\bin\Debug\GridDomain.Tests.Framework.pdb" target="lib\net461" /> 
-   <file src="..\GridDomain.Tools\bin\Debug\GridDomain.Tools.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Tests.Framework\bin\Release\GridDomain.Tests.Framework.pdb" target="lib\net461" /> 
+   <file src="..\GridDomain.Tools\bin\Release\GridDomain.Tools.pdb" target="lib\net461" /> 
 </files>
 </package>
 

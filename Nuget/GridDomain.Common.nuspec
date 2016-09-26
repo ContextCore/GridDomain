@@ -20,17 +20,17 @@
   </metadata>
 
 <files>
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Logging.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.EventSourcing.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Common.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.Logging.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.CQRS.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.CQRS.Messaging.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.EventSourcing.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.Common.dll" target="lib\net461" /> 
             
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Logging.pdb" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.pdb" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.CQRS.Messaging.pdb" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.EventSourcing.pdb" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.Common.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.Logging.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.CQRS.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.CQRS.Messaging.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.EventSourcing.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.Common.pdb" target="lib\net461" /> 
 </files>
 </package>
 

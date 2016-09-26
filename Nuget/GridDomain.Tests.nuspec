@@ -18,8 +18,8 @@
   </metadata>
 
 <files>
-  <file src="..\GridDomain.Tests.Framework\bin\Debug\GridDomain.Tests.Framework.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Tests.Framework\bin\Debug\GridDomain.Tests.Framework.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Tests.Framework\bin\Release\GridDomain.Tests.Framework.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Tests.Framework\bin\Release\GridDomain.Tests.Framework.pdb" target="lib\net461" /> 
 </files>
 </package>
 

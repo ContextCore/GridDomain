@@ -21,8 +21,8 @@
   </metadata>
 
 <files>  
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.EventSourcing.Sagas.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Node\bin\Debug\GridDomain.EventSourcing.Sagas.pdb" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.EventSourcing.Sagas.dll" target="lib\net461" /> 
+  <file src="..\GridDomain.Node\bin\Release\GridDomain.EventSourcing.Sagas.pdb" target="lib\net461" /> 
 </files>
 </package>
 
