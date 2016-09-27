@@ -1,6 +1,7 @@
 using Akka.Actor;
 using Akka.TestKit.NUnit3;
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
@@ -34,7 +35,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         [Test]
         public void Sql_journal_is_available_for_factory_created_actor_system()
         {
-            var actorSystem = ActorSystemFactory.CreateActorSystem(_conf);
+            var actorSystem = _conf.CreateSystem();
             PingSqlJournal(actorSystem);
         }
 

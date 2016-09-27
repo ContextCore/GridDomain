@@ -32,14 +32,15 @@ namespace GridDomain.Tests.DependencyInjection
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            var container = new UnityContainer();
 
-            container.RegisterType<ITestDependency, TestDependencyImplementation>();
-            container.RegisterInstance<IUnityContainer>(container);
-            container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
-            container.RegisterAggregate<TestAggregate,TestAggregatesCommandHandler>();
-
-            return new GridDomainNode(container, new TestRouteMap(), TransportMode.Standalone, Sys);
+            var conf = new CustomContainerConfiguration(c =>
+            {
+                c.RegisterType<ITestDependency, TestDependencyImplementation>();
+                c.RegisterInstance<IUnityContainer>(c);
+                c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
+                c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
+            });
+            return new GridDomainNode(conf, new TestRouteMap(), () => Sys);
         }
 
     }

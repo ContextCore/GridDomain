@@ -6,12 +6,10 @@ namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
     public class BalanceAggregateChangedProjectionBuilder 
     {
         public static int ProjectionGroupHashCode;
-        private static Stopwatch watch = new Stopwatch();
+        private static readonly Stopwatch Watch = new Stopwatch();
         static BalanceAggregateChangedProjectionBuilder()
         {
-            watch.Start();
+            Watch.Start();
         }
-        private int number = 0;
-        
     }
 }

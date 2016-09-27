@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         private Guid _personId;
         
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_start_message_has_saga_id()
         {
             _sagaId = Guid.NewGuid();

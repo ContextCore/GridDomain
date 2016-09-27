@@ -76,7 +76,7 @@ namespace GridDomain.Node.Actors
                 Children[childId] = knownChild;
             }
 
-            knownChild.LastTimeOfAccess = DateTimeFacade.UtcNow;
+            knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
             knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
             knownChild.Ref.Tell(message);
         }

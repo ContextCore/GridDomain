@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         private GotTiredEvent _reStartEvent;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_publishing_start_message()
         {
             _startMessage = (GotTiredEvent)

@@ -14,12 +14,12 @@ namespace SchedulerDemo.Actors
                 Console.Write(msg.Text);
                 if (msg.PartToHighlight != null)
                 {
-                    WriteHightlighted(DateTimeFacade.Now.ToString("ss.fff"));
+                    WriteHightlighted(BusinessDateTime.Now.ToString("ss.fff"));
                 }
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.SetCursorPosition(50, Console.CursorTop);
-                Console.Write($"       Received at: {DateTimeFacade.Now.ToString("HH:mm:")}");
-                WriteHightlighted(DateTimeFacade.Now.ToString("ss.fff"));
+                Console.Write($"       Received at: {BusinessDateTime.Now.ToString("HH:mm:")}");
+                WriteHightlighted(BusinessDateTime.Now.ToString("ss.fff"));
                 Console.SetCursorPosition(0, Console.CursorTop);
                 Console.WriteLine();
             });

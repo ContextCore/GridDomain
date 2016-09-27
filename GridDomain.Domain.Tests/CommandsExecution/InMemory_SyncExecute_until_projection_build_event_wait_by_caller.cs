@@ -24,7 +24,7 @@ namespace GridDomain.Tests.CommandsExecution
             
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SyncExecute_until_projection_build_event_wait_by_caller()
         {
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());

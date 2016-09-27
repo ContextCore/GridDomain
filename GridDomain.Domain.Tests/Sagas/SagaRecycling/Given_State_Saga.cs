@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Sagas.SagaRecycling
         private Guid _sagaId;
         private State _sagaState;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_saga_starts_itself_again()
         {
             var publisher = GridNode.Container.Resolve<IPublisher>();

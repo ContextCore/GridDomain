@@ -99,7 +99,7 @@ namespace GridDomain.Node.Actors
 
 
             //recover messages will be provided only to right saga by using peristenceId
-            //Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
+            Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
             Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
             Recover<RecoveryCompleted>(message =>
             {

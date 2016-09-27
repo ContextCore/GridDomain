@@ -17,7 +17,7 @@ namespace GridDomain.Tests.EventsUpgrade
         private Dictionary<Type, int> _knownTypeMaxVersions;
         private VersionedTypeSerializationBinder _binder;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_VersionedTypeSerializationBinder()
         {
             _knownTypeMaxVersions = new Dictionary<Type, int>

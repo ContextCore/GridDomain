@@ -43,8 +43,8 @@
       <HintPath>..\packages\Akka.Cluster.Tools.1.1.1.28-beta\lib\net45\Akka.Cluster.Tools.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Persistence, Version=1.1.1.28, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.1.1.1.28-beta\lib\net45\Akka.Persistence.dll</HintPath>
+    <Reference Include="Akka.Persistence, Version=1.1.2.30, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.1.1.2.30-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

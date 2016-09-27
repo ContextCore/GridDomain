@@ -29,7 +29,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         protected virtual int ChangesPerBusiness => BusinessNum*BusinessNum;
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(BusinessNum*ChangesPerBusiness);
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void InitSystems()
         {
             _balanceManipulationPlans = GivenBalancePlan(BusinessNum, ChangesPerBusiness);

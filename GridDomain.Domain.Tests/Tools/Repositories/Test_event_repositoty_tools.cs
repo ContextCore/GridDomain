@@ -13,8 +13,6 @@ namespace GridDomain.Tests.Tools.Repositories
 
     public class Test_event_repositoty_tools
     {
-        private Guid _sourceId;
-
         private class Message :DomainEvent
         {
             public int Id;

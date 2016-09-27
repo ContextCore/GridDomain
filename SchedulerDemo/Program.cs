@@ -31,7 +31,7 @@ namespace SchedulerDemo
 
         static void Main()
         {
-            Sys = ActorSystemFactory.CreateActorSystem(new LocalAkkaConfiguration(AkkaConfiguration.LogVerbosity.Error));
+            Sys = new LocalAkkaConfiguration(AkkaConfiguration.LogVerbosity.Error).CreateSystem();
             var container = Container.Current.CreateChildContainer();
             CompositionRoot.Init(container, Sys, TransportMode.Standalone);
             RegisterAppSpecificTypes(container);

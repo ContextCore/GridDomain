@@ -12,7 +12,7 @@ namespace GridDomain.CQRS
             SagaId = sagaId;
         }
 
-        protected Command(Guid id, Guid sagaId) : this(id, sagaId, DateTimeFacade.UtcNow)
+        protected Command(Guid id, Guid sagaId) : this(id, sagaId, BusinessDateTime.UtcNow)
         {
         }
 
@@ -20,7 +20,7 @@ namespace GridDomain.CQRS
         {
         }
 
-        protected Command(Guid id) : this(id, DateTimeFacade.UtcNow)
+        protected Command(Guid id) : this(id, BusinessDateTime.UtcNow)
         {
         }
 

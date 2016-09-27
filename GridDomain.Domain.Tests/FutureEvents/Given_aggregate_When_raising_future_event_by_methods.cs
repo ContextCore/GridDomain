@@ -11,17 +11,16 @@ namespace GridDomain.Tests.FutureEvents
     public class Given_aggregate_When_raising_future_event_by_methods : FutureEventsTest_InMemory
     {
         private TestAggregate _aggregate;
-        private DateTime _scheduledTime;
         private TestDomainEvent _producedEvent;
         private RaiseEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
         private FutureEventOccuredEvent _futureEventOccuredEvent;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
 
         public void When_raising_future_event()
         {
-            _testCommand = new RaiseEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
+            _testCommand = new RaiseEventInFutureCommand(DateTime.Now, Guid.NewGuid(), "test value");
 
             _aggregate = new TestAggregate(_testCommand.AggregateId);
             _aggregate.ScheduleInFuture(_testCommand.RaiseTime, _testCommand.Value);

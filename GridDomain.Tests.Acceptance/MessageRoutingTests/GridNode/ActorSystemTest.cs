@@ -18,13 +18,13 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
         {
             
         }
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void Clear()
         {
             Infrastructure.Dispose();
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             Infrastructure = CreateInfrastructure();

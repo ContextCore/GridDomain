@@ -11,7 +11,6 @@ namespace GridDomain.Node
     public class GridNodeContainerConfiguration : IContainerConfiguration
     {
         private readonly ActorSystem _actorSystem;
-        private readonly IDbConfiguration _conf;
         private readonly TransportMode _transportMode;
         private readonly IQuartzConfig _config;
 

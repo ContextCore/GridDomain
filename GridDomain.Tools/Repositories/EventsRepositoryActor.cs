@@ -27,16 +27,6 @@ namespace GridDomain.Tools.Repositories
             Command<Load>(m => Sender.Tell(new Loaded(id, _events.ToArray())));
         }
 
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistFailure(cause, @event, sequenceNr);
-        }
-
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistRejected(cause, @event, sequenceNr);
-        }
-
         public class Load { }
         public class Persist
         {

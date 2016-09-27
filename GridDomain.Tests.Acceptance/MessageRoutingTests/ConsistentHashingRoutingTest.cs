@@ -6,6 +6,7 @@ using Akka.Actor;
 using Akka.Routing;
 using Akka.TestKit.NUnit3;
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 
@@ -17,10 +18,10 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
         private DiagMsg[] _results;
         private ActorSystem _system;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TestsRouting()
         {
-            _system = ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration());
+            _system = new AutoTestAkkaConfiguration().CreateSystem();
 
             var actor = _system.ActorOf(Props.Create<TimeLoggerActor>(TestActor)
                                              .WithRouter(new ConsistentHashingPool(2)
@@ -35,7 +36,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests
             _results = _diagMsgs.Select(m => ExpectMsg<DiagMsg>()).ToArray();
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void Terminate()
         {
             _system.Terminate();

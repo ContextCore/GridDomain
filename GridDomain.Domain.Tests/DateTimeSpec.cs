@@ -17,7 +17,7 @@ namespace GridDomain.Tests
             {
                 EditableNow = testTime,
             };
-            var now = DateTimeFacade.Now;
+            var now = BusinessDateTime.Now;
             Assert.True(now == testTime);
         }
 
@@ -25,9 +25,9 @@ namespace GridDomain.Tests
         public void When_DefaultDateTimeStrategy_is_used_Then_DateTimeNow_should_differ_in_different_calls()
         {
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
-            var firstTime = DateTimeFacade.Now;
+            var firstTime = BusinessDateTime.Now;
             Thread.Sleep(5);
-            var secondTime = DateTimeFacade.Now;
+            var secondTime = BusinessDateTime.Now;
             Assert.True(firstTime != secondTime);
         }
     }

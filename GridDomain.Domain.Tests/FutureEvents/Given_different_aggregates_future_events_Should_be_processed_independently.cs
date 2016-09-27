@@ -17,7 +17,7 @@ namespace GridDomain.Tests.FutureEvents
         private RaiseEventInFutureCommand _commandA;
         private RaiseEventInFutureCommand _commandB;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Raising_several_future_events_for_different_aggregates()
         {
             _commandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");

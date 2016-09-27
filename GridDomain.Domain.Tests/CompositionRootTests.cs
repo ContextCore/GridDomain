@@ -78,7 +78,7 @@ namespace GridDomain.Tests
         protected readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
             <TransportMode, Func<ActorSystem>>
         {
-            {TransportMode.Standalone, () => ActorSystemFactory.CreateActorSystem(new AutoTestAkkaConfiguration())},
+            {TransportMode.Standalone, () => new AutoTestAkkaConfiguration().CreateSystem()},
             {
                 TransportMode.Cluster,
                 () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()

@@ -14,7 +14,7 @@ namespace GridDomain.Tests.EventsUpgrade.Chain
         private IEnumerable<TestEvent_V3> _resultEvent;
         private TestEvent_V2 _initialEvent;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_updating_single_event_Tests()
         {
             var chain = new EventAdaptersCatalog();

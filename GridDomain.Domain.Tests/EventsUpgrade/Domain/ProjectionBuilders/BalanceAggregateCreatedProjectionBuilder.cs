@@ -17,7 +17,6 @@ namespace GridDomain.Tests.EventsUpgrade.Domain.ProjectionBuilders
             _projectedEvents = projectedEvents;
         }
 
-        private int number = 0;
         private readonly IList<object> _projectedEvents;
         public static int ProjectionGroupHashCode { get; set; }
         public void Handle(AggregateCreatedEvent msg)

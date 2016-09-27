@@ -63,8 +63,8 @@
       <HintPath>..\packages\Akka.Serialization.Wire.1.1.2.30-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.TestKit, Version=1.1.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.TestKit.1.1.1\lib\net45\Akka.TestKit.dll</HintPath>
+    <Reference Include="Akka.TestKit, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.TestKit.NUnit3, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
