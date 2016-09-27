@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             When_publishing_start_message();

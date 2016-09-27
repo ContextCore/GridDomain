@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Acceptance.Chronicles
         private SampleAggregateCreatedEvent _sampleAggregateCreatedEvent;
         private SampleAggregateChangedEvent _sampleAggregateChangedEvent;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_persisted_domain_events_when_replaying_it_for_existing_aggregate_id()
         {
             var aggregateId = Guid.NewGuid();

@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                       r => r.RegisterAggregate(HomeAggregateHandler.Descriptor));
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_publishing_start_message()
         {
             var sagaId = Guid.NewGuid();

@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Tools.Console
         private GridDomainNode _node;
 
         [MTAThread]
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_existing_GridNode()
         {
             var container = new UnityContainer();
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Tools.Console
         }
 
         [MTAThread]
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TurnOffNode()
         {
             _node.Stop();

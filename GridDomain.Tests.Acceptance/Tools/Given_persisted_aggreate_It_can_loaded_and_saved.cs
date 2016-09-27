@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Acceptance.Tools
         private Guid _aggregateId;
         private string _agregateValue;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_persisted_aggreate()
         {
             _aggregateId = Guid.NewGuid();

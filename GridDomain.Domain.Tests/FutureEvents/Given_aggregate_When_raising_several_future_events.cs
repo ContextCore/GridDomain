@@ -14,7 +14,7 @@ namespace GridDomain.Tests.FutureEvents
         private FutureEventOccuredEvent _eventB;
         private Guid _aggregateId;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void FutureDomainEvent_envelops_has_unique_id()
         {
             _aggregateId = Guid.NewGuid();

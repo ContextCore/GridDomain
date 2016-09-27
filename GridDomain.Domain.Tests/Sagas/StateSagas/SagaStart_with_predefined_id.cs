@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         private Guid _personId;
         private Guid _coffeeMachineId;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_remember_message()
         {
             var publisher = GridNode.Container.Resolve<IPublisher>();

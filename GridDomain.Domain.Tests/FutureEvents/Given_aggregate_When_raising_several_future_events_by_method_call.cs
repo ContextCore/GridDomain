@@ -11,7 +11,7 @@ namespace GridDomain.Tests.FutureEvents
     {
         private TestAggregate _aggregate;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_scheduling_future_event()
         {
             _aggregate = new TestAggregate(Guid.NewGuid());

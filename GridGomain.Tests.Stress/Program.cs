@@ -7,6 +7,7 @@ using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
@@ -31,7 +32,7 @@ namespace GridGomain.Tests.Stress
                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                 c => c.RegisterType<IQuartzConfig,PersistedQuartzConfig>());
 
-            Func<ActorSystem[]> actorSystemFactory = () => new[] {ActorSystemFactory.CreateActorSystem(new StressTestAkkaConfiguration())};
+            Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
             var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer),actorSystemFactory);
 

@@ -30,7 +30,7 @@ namespace GridDomain.Tests.SyncProjection
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
         
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_execute_many_commands_for_create_and_update()
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateSampleAggregateCommand(101, Guid.NewGuid(),Guid.NewGuid())).ToArray();

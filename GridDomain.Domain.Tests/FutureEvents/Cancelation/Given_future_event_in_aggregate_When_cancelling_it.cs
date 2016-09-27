@@ -21,7 +21,7 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         private FutureEventScheduledEvent _futureEventEnvelop;
         private CancelFutureEventCommand _cancelFutureEventCommand;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
 
         public void When_raising_future_event()
         {

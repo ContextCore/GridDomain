@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_aggregate_When_raising_future_event()
         {
             var scheduledTime = DateTime.Now.AddSeconds(5);

@@ -34,7 +34,7 @@ namespace GridDomain.Scheduling.Integration
             catch (Exception e)
             {
                 _logger.Error(e,"Error while Unscheduled job {Task}, error: {Error}", msg.Key);
-                Sender.Tell(new Failure { Exception = e, Timestamp = DateTimeFacade.UtcNow });
+                Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
             }
         }
 
@@ -77,7 +77,7 @@ namespace GridDomain.Scheduling.Integration
             catch (Exception e)
             {
                 _logger.Error(e,"Error while scheduled job {Task}, error {Error}", key);
-                Sender.Tell(new Failure { Exception = e, Timestamp = DateTimeFacade.UtcNow });
+                Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
             }
         }
 

@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Framework
 
         protected abstract TimeSpan Timeout { get; }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void DeleteSystems()
         {
             Console.WriteLine();
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Framework
         {
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         protected void Init()
         {
             LogManager.SetLoggerFactory(new AutoTestLogFactory());

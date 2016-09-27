@@ -27,7 +27,7 @@ namespace GridDomain.Tests.EventsUpgrade
         private BalanceAggregate _aggregate;
 
    
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void When_aggregate_is_recovered_from_persistence()
         {
             GridNode.EventAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());

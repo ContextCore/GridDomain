@@ -18,7 +18,7 @@ namespace GridDomain.Tests.FutureEvents
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
 
         public void When_raising_future_event()
         {

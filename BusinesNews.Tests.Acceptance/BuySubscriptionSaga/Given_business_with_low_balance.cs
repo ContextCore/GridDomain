@@ -34,7 +34,7 @@ namespace BusinesNews.Tests.Acceptance.BuySubscriptionSaga
         {
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_business_with_money()
         {
             var registerNewBusinessCommand = new RegisterNewBusinessCommand(_businessId, "test business", _accountId);

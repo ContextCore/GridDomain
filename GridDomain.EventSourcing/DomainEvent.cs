@@ -13,7 +13,7 @@ namespace GridDomain.EventSourcing
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))
         {
             SourceId = sourceId;
-            CreatedTime = createdTime ?? DateTimeFacade.UtcNow;
+            CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
             SagaId = sagaId;
         }
 

@@ -99,7 +99,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()
         {
             var sagaId = Guid.NewGuid();
-            var testEvent = new TestSagaStartMessage(sagaId, DateTimeFacade.UtcNow, sagaId);
+            var testEvent = new TestSagaStartMessage(sagaId, BusinessDateTime.UtcNow, sagaId);
             _scheduler.Ask<Scheduled>(new ScheduleMessage(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
             var sagaState = LoadSagaState<TestSaga, TestSagaState>(sagaId);
@@ -110,7 +110,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_domain_event_for_a_started_saga_is_scheduled_Then_saga_receives_it()
         {
             var sagaId = Guid.NewGuid();
-            var startEvent = new TestSagaStartMessage(sagaId, DateTimeFacade.UtcNow, sagaId);
+            var startEvent = new TestSagaStartMessage(sagaId, BusinessDateTime.UtcNow, sagaId);
             _scheduler.Ask<Scheduled>(new ScheduleMessage(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
             WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
 
@@ -176,7 +176,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         private ExecutionOptions CreateOptions(double seconds)
         {
-            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTimeFacade.UtcNow.AddSeconds(seconds), Timeout);
+            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(BusinessDateTime.UtcNow.AddSeconds(seconds), Timeout);
         }
 
         [Test]

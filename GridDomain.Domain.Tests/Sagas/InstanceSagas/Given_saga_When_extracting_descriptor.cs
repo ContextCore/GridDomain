@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     {
         private ISagaDescriptor _descriptor;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void ExtractDescriptor()
         {
             var saga = new SoftwareProgrammingSaga();

@@ -17,7 +17,7 @@ namespace GridDomain.Tests.FutureEvents
         private FutureEventScheduledEvent _futureEventEnvelop;
         private FutureEventOccuredEvent _futureEventOccuredEvent;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
 
         public void When_raising_future_event()
         {

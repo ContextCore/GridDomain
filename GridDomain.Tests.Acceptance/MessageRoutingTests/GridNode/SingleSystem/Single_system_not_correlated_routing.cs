@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
     [TestFixture]
     public class Single_system_not_correlated_routing : SingleActorSystemTest
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_correlated_routing_for_message()
         {
             _handlerId = _resultMessages.First().HandlerHashCode;

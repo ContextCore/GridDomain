@@ -32,7 +32,7 @@ namespace BusinesNews.Tests.Acceptance.ReadModelConcurrentBuild
         {
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void Terminate()
         {
             _akkaCluster.Dispose();

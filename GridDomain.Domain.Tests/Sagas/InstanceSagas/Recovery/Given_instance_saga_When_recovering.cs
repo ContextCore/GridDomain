@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Recovery
         private SagaDataAggregate<SoftwareProgrammingSagaData> _data;
         private CoffeMakeFailedEvent _coffeMakeFailedEvent;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Given_instance_saga_When_recovering_from_creation()
         {
             var aggregateFactory = new AggregateFactory();
