@@ -9,7 +9,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         //TODO: add version without correlation property
         public static void RegisterHandler<TMessage, THandler>(this IMessagesRouter router,
-            Expression<Func<TMessage, Guid>>  correlationPropertyExpression) where THandler : IHandler<TMessage>
+            Expression<Func<TMessage, Guid>>  correlationPropertyExpression = null) where THandler : IHandler<TMessage>
         {
             router.RegisterHandler<TMessage,THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
         }

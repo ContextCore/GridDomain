@@ -9,9 +9,9 @@ namespace GridDomain.Node
     {
         public void Register(IMessagesRouter router)
         {
-            router.RegisterHandler<DomainEvent,DefaultMessageLoggerHandler>(e => e.SourceId);
-            router.RegisterHandler<ICommand,DefaultMessageLoggerHandler>(e => e.Id);
-            router.RegisterHandler<IFault, DefaultMessageLoggerHandler>(e => e.SagaId);
+            router.RegisterHandler<DomainEvent,DefaultMessageLoggerHandler>();
+            router.RegisterHandler<ICommand,DefaultMessageLoggerHandler>();
+            router.RegisterHandler<IFault, DefaultMessageLoggerHandler>();
         }
     }
 }

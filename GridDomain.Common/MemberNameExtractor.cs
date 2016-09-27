@@ -46,6 +46,8 @@ namespace GridDomain.Common
 
         public static string GetName<T, U>(Expression<Func<T, U>> property)
         {
+            if (property == null) return null;
+
             MemberExpression memberExpression;
 
             if (property.Body is UnaryExpression)
