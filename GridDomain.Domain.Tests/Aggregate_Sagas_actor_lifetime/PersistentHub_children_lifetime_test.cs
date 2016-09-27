@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Akka.Actor;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;

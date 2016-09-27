@@ -5,7 +5,7 @@ using System.Threading;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Persistence;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;

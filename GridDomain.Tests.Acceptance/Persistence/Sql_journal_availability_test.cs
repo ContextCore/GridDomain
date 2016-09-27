@@ -1,5 +1,5 @@
 using Akka.Actor;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;

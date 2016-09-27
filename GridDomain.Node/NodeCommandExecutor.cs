@@ -31,7 +31,7 @@ namespace GridDomain.Node
         public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
         {
             var maxWaitTime = timeout ?? _defaultCommandTimeout;
-            return _nodeController.Ask<object>(new CommandPlan(command, expectedMessage), maxWaitTime)
+            return _nodeController.Ask(new CommandPlan(command, expectedMessage), maxWaitTime)
                 .ContinueWith(t =>
                 {
                     if (t.IsCanceled)

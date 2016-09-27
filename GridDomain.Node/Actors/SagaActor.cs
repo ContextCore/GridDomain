@@ -70,14 +70,14 @@ namespace GridDomain.Node.Actors
                 Shutdown();
             });
 
-            Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
+            Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload), Self));
 
             Command<NotifyOnRecoverComplete>(c =>
             {
                 var waiter = c.Waiter ?? Sender;
                 if (IsRecoveryFinished)
                 {
-                    waiter.Tell(RecoveryCompleted.Instance);
+                    waiter.Tell(RecoveryCompleted.Instance,Self);
                 }
                 else _recoverWaiters.Add(waiter);
             });
@@ -106,7 +106,7 @@ namespace GridDomain.Node.Actors
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                 //notify all 
                 foreach (var waiter in _recoverWaiters)
-                    waiter.Tell(RecoveryCompleted.Instance);
+                    waiter.Tell(RecoveryCompleted.Instance,Self);
                 _recoverWaiters.Clear();
             });
         }

@@ -1,6 +1,6 @@
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

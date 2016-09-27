@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using GridDomain.Tests.Framework.Configuration;
 using NUnit.Framework;
 

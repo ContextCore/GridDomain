@@ -1,6 +1,6 @@
 using System;
 using Akka.Actor;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;

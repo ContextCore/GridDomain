@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Akka.Actor;
-using Akka.TestKit.NUnit;
+using Akka.TestKit.NUnit3;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;

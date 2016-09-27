@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using Akka.Configuration;
-using Akka.TestKit.NUnit;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
