@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Framework
         }
 
         [OneTimeSetUp]
-        protected void Init()
+        public void Init()
         {
             LogManager.SetLoggerFactory(new AutoTestLogFactory());
             
