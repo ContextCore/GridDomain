@@ -14,7 +14,7 @@
     <tags>CQRS ES DDD Akka</tags>
     <dependencies>
       <dependency id="EntityFramework" version="6.1.3"/>
-      <dependency id="GridDomain.Common" version= "1.0.0-alfa"/>
+      <dependency id="GridDomain.Common" version= "1.6.229-alfa"/>
     </dependencies>
   </metadata>
 

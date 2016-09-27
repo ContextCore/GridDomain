@@ -13,7 +13,7 @@
     <copyright>Copyright © aleskov</copyright>
     <tags>CQRS ES DDD Akka</tags>
 	<dependencies>
-      <dependency id="GridDomain.Node" version= "1.0.0-alfa"/>
+      <dependency id="GridDomain.Node" version= "1.6.229-alfa"/>
     </dependencies>
   </metadata>
 
