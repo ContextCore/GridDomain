@@ -21,13 +21,12 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Tools.Console
 {
     [TestFixture]
-    [Ignore("Ignored until fix failure in bulk tests run")]
+    //[Ignore("Ignored until fix failure in bulk tests run")]
     public class GridConsoleTests
     {
         private GridConsole _console;
         private GridDomainNode _node;
 
-        [MTAThread]
         [TestFixtureSetUp]
         public void Given_existing_GridNode()
         {
@@ -49,7 +48,6 @@ namespace GridDomain.Tests.Tools.Console
             _console.Connect();
         }
 
-        [MTAThread]
         [TestFixtureTearDown]
         public void TurnOffNode()
         {
