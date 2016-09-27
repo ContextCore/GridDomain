@@ -14,7 +14,6 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
 
     public class Given_future_event_in_aggregate_When_cancelling_it : FutureEventsTest
     {
-        private TestAggregate _aggregate;
         private DateTime _scheduledTime;
         private FutureEventCanceledEvent _futureEventCancelation;
         private RaiseEventInFutureCommand _testCommand;

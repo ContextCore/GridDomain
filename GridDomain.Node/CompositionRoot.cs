@@ -16,7 +16,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-    [Obsolete("Use GridNodeConainerConfiguration instead")]
+   // [Obsolete("Use GridNodeConainerConfiguration instead")]
     //TODO: refactor to good config via IContainerConfiguration
     public static class CompositionRoot
     {
