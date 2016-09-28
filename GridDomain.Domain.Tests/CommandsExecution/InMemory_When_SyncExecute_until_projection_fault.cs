@@ -32,6 +32,8 @@ namespace GridDomain.Tests.CommandsExecution
                 new CustomRouteMap(
                     r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
                     r => r.RegisterHandler<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId),
+                    r => r.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(e => e.SourceId),
+                    r => r.RegisterHandler<SampleAggregateCreatedEvent, CreateProjectionBuilder>(e => e.SourceId),
                     r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);
@@ -179,6 +181,31 @@ namespace GridDomain.Tests.CommandsExecution
                 GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
             }
             catch (Exception ex)
+            {
+                var exception = ex.InnerException;
+                Assert.IsInstanceOf<SampleAggregateException>(exception);
+            }
+        }
+
+        [Then]
+        public void When_one_of_two_aggregate_throws_fault_wait_both_notifications_or_fault()
+        {
+            //will throw exception in aggregate and in message handler
+            var syncCommand = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid(), Guid.NewGuid());
+
+            var messages = new ExpectedMessage[]
+            {
+                Expect.Fault<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId),
+                Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId),
+                Expect.Message<AggregateCreatedEventNotification>(e => e.AggregateId, syncCommand.AggregateId)
+            };
+
+            try
+            {
+                GridNode.Execute(syncCommand, messages).Wait();
+                Assert.Fail();
+            }
+            catch (AggregateException ex)
             {
                 var exception = ex.InnerException;
                 Assert.IsInstanceOf<SampleAggregateException>(exception);
