@@ -128,7 +128,7 @@ namespace GridDomain.Tests.CommandsExecution
             var plan = new CommandPlan(syncCommand, expectedMessage, expectedFault);
 
            
-            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
+            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan,TimeSpan.FromSeconds(10000));
             Assert.AreEqual(syncCommand.AggregateId,evt.AggregateId);
         }
 
@@ -210,20 +210,6 @@ namespace GridDomain.Tests.CommandsExecution
                 var exception = ex.InnerException;
                 Assert.IsInstanceOf<SampleAggregateException>(exception);
             }
-        }
-
-        [Then]
-        public void SyncExecute_with_projection_success_with_two_expected_messages_returns_them_all()
-        {
-            var syncCommand = new CreateAndChangeSampleAggregateCommand(101, Guid.NewGuid());
-            var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
-            var expectedChangeMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
-            var expectedCreateMessage = Expect.Message<AggregateCreatedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
-
-            var plan = new CommandPlan(syncCommand, expectedChangeMessage, expectedCreateMessage, expectedFault);
-
-            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
-            Assert.AreEqual(syncCommand.AggregateId, evt.AggregateId);
         }
     }
 }

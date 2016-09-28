@@ -26,7 +26,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private bool AllExpectedMessagesReceived()
         {
             //message faults are not counted while waiting for messages
-            return MessageReceivedCounters.All(c => !typeof(IFault).IsAssignableFrom(c.Key) && c.Value == 0);
+            return MessageReceivedCounters.Where(c => !typeof(IFault).IsAssignableFrom(c.Key)).All(c => c.Value == 0);
         }
 
         //message is fault that caller wish to know about

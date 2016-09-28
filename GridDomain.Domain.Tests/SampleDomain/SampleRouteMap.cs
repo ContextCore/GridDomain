@@ -20,7 +20,6 @@ namespace GridDomain.Tests.SampleDomain
             router.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor);
             router.RegisterProjectionGroup(new SampleProjectionGroup(_locator));
             router.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
-            router.RegisterHandler<SampleAggregateCreatedEvent, CreateProjectionBuilder>(m => m.SourceId);
 
         }
     }
