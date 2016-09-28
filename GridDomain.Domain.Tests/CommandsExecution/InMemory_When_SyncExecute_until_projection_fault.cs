@@ -53,7 +53,7 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                var result = GridNode.Execute(syncCommand,new ExpectedMessage[] { expectedFault, expectedMessage },TimeSpan.FromSeconds(100)).Result;
+                var result = GridNode.Execute(syncCommand,new ExpectedMessage[] { expectedFault, expectedMessage }).Result;
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                var result = GridNode.Execute(syncCommand, new ExpectedMessage[] { expectedFault, expectedMessage }, TimeSpan.FromSeconds(100)).Result;
+                var result = GridNode.Execute(syncCommand, new ExpectedMessage[] { expectedFault, expectedMessage }).Result;
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace GridDomain.Tests.CommandsExecution
             var plan = new CommandPlan(syncCommand, expectedMessage, expectedFault);
 
            
-            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan,TimeSpan.FromSeconds(10000));
+            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
             Assert.AreEqual(syncCommand.AggregateId,evt.AggregateId);
         }
 
