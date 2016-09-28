@@ -20,9 +20,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         //execution stops on first expected fault
         protected override bool WaitIsOver(object message,ExpectedMessage expect)
         {
-            return IsExpectedFault(message, expect)
-                 //message faults are not counted while waiting for messages
-                 || MessageReceivedCounters.All(c => !(typeof(IFault).IsAssignableFrom(c.Key) && c.Value == 0));
+            return IsExpectedFault(message, expect) || AllExpectedMessagesReceived();
+        }
+
+        private bool AllExpectedMessagesReceived()
+        {
+            //message faults are not counted while waiting for messages
+            return MessageReceivedCounters.All(c => !typeof(IFault).IsAssignableFrom(c.Key) && c.Value == 0);
         }
 
         //message is fault that caller wish to know about

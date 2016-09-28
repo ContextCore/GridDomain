@@ -132,6 +132,8 @@ namespace GridDomain.Tests.CommandsExecution
             Assert.AreEqual(syncCommand.AggregateId,evt.AggregateId);
         }
 
+  
+
         [Then]
         public void SyncExecute_with_projection_fault_with_correct_typed_fault_expectation_deliver_error_to_caller()
         {
@@ -188,11 +190,9 @@ namespace GridDomain.Tests.CommandsExecution
         }
 
         [Then]
-        public void When_one_of_two_aggregate_throws_fault_wait_both_notifications_or_fault()
+        public void When_one_of_two_aggregate_throws_fault_not_received_expected_messages_are_ignored()
         {
-            //will throw exception in aggregate and in message handler
-            var syncCommand = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid(), Guid.NewGuid());
-
+            var syncCommand = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
             var messages = new ExpectedMessage[]
             {
                 Expect.Fault<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId),
@@ -202,14 +202,28 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                GridNode.Execute(syncCommand, messages).Wait();
-                Assert.Fail();
+                GridNode.Execute(syncCommand, messages,TimeSpan.FromSeconds(1000)).Wait();
+                Assert.Fail("Wait ended after one of two notifications");
             }
             catch (AggregateException ex)
             {
                 var exception = ex.InnerException;
                 Assert.IsInstanceOf<SampleAggregateException>(exception);
             }
+        }
+
+        [Then]
+        public void SyncExecute_with_projection_success_with_two_expected_messages_returns_them_all()
+        {
+            var syncCommand = new CreateAndChangeSampleAggregateCommand(101, Guid.NewGuid());
+            var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId, typeof(OddFaultyMessageHandler));
+            var expectedChangeMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+            var expectedCreateMessage = Expect.Message<AggregateCreatedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+
+            var plan = new CommandPlan(syncCommand, expectedChangeMessage, expectedCreateMessage, expectedFault);
+
+            var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
+            Assert.AreEqual(syncCommand.AggregateId, evt.AggregateId);
         }
     }
 }
