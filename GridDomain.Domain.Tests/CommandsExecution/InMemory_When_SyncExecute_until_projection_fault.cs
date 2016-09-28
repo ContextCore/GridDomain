@@ -196,19 +196,23 @@ namespace GridDomain.Tests.CommandsExecution
             var messages = new ExpectedMessage[]
             {
                 Expect.Fault<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId),
+                Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId),
                 Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId),
                 Expect.Message<AggregateCreatedEventNotification>(e => e.AggregateId, syncCommand.AggregateId)
             };
 
             try
             {
-                GridNode.Execute(syncCommand, messages,TimeSpan.FromSeconds(1000)).Wait();
+                GridNode.Execute(syncCommand, messages).Wait();
                 Assert.Fail("Wait ended after one of two notifications");
             }
             catch (AggregateException ex)
             {
                 var exception = ex.InnerException;
-                Assert.IsInstanceOf<SampleAggregateException>(exception);
+
+                if(exception is SampleAggregateException) Assert.Pass("Got expection from create message handler");
+                if(exception is MessageHandleException) Assert.Pass("Got expection from change message handler");
+                Assert.Fail("Unknown excpetion type");
             }
         }
     }
