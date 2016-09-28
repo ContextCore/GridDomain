@@ -18,6 +18,9 @@ namespace GridDomain.Tests.SampleDomain
             Map<CreateSampleAggregateCommand>(c => c.AggregateId,
                                         c => new SampleAggregate(c.AggregateId, c.Parameter.ToString()));
 
+            Map<CreateAndChangeSampleAggregateCommand>(c => c.AggregateId,
+                                       (c, a) => a.CreateAndChangeState(c.Parameter.ToString()));
+
             Map<LongOperationCommand>(c => c.AggregateId,
                                      (c, a) => a.LongExecute(c.Parameter));
 

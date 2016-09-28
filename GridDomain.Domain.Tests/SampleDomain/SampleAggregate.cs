@@ -27,6 +27,12 @@ namespace GridDomain.Tests.SampleDomain
             RaiseEvent(new SampleAggregateChangedEvent(number.ToString(), Id));
         }
 
+        public void CreateAndChangeState(string value)
+        {
+            RaiseEvent(new SampleAggregateCreatedEvent(value, Id));
+            RaiseEvent(new SampleAggregateChangedEvent(value, Id));
+        }
+
         public void LongExecute(int sleepMiliseconds)
         {
             Thread.Sleep(sleepMiliseconds);

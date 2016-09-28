@@ -366,6 +366,8 @@
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_State_SoftareProgramming_Saga.cs" />
+    <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
     <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
     <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
@@ -389,6 +391,7 @@
     <Compile Include="SampleDomain\ProjectionBuilders\EvenFaultyMessageHandler.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\MessageHandleException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\OddFaultyMessageHandler.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\CreateProjectionBuilder.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />
