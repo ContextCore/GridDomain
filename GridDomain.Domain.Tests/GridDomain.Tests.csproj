@@ -288,6 +288,7 @@
     <Compile Include="EventsUpgrade\Events\TestEvent_V1.cs" />
     <Compile Include="EventsUpgrade\Events\TestType.cs" />
     <Compile Include="EventsUpgrade\Events\TestType_V1.cs" />
+    <Compile Include="EventsUpgrade\SubObject_version_upgrade.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeSerializationBinderTests.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
