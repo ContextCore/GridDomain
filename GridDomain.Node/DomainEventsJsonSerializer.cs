@@ -1,13 +1,36 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Akka.Actor;
 using Akka.Serialization;
+using GridDomain.EventSourcing.Adapters;
+using Newtonsoft.Json;
 
 namespace GridDomain.Node
 {
-    public class DomainEventsSerializer : Serializer
+
+    public class DomainEventsJsonSerializer : Serializer
     {
-        public DomainEventsSerializer(ExtendedActorSystem system) : base(system)
+        private JsonSerializer _serializer;
+        private readonly List<JsonConverter> _converters = new List<JsonConverter>();
+
+    
+        public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
+            Init();
+        }
+
+        public void Register(JsonConverter converter)
+        {
+            _converters.Add(converter);
+        }
+
+        public void Init()
+        {
+            var jsonSerializerSettings = DomainEventSerialization.GetDefault();
+            foreach (var converter in _converters)
+                jsonSerializerSettings.Converters.Add(converter);
+            _serializer = JsonSerializer.Create(jsonSerializerSettings);
         }
 
         /// <summary>
@@ -21,7 +44,7 @@ namespace GridDomain.Node
         /// <see cref="Serializer"/> used to optimize network traffic
         /// </summary>
         public override int Identifier => 21;
-       
+
 
         // <summary>
         // Serializes the given object into a byte array
@@ -30,9 +53,12 @@ namespace GridDomain.Node
         /// <returns>A byte array containing the serialized object</returns>
         public override byte[] ToBinary(object obj)
         {
-            // Put the code that serializes the object here
-            // ... ...
-            return null;
+            using (var stream = new MemoryStream())
+            using (var writer = new StreamWriter(stream))
+            {
+                _serializer.Serialize(writer,obj);
+                return stream.ToArray();
+            }
         }
 
         /// <summary>
@@ -44,9 +70,9 @@ namespace GridDomain.Node
         /// <returns>The object contained in the array</returns>
         public override object FromBinary(byte[] bytes, Type type)
         {
-            // Put your code that deserializes here
-            // ... ...
-            return null;
+             using (var stream = new MemoryStream(bytes))
+             using (var reader = new StreamReader(stream))
+                  return _serializer.Deserialize(reader, type);;
         }
     }
 }

@@ -10,10 +10,12 @@ using Akka.DI.Unity;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
+using Akka.Serialization;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Logging;
@@ -132,8 +134,15 @@ namespace GridDomain.Node
         public void Start(IDbConfiguration databaseConfiguration)
         {
             Systems = _actorSystemFactory.Invoke();
+
+           
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
+
+            DomainEventsSerializer = 
+                System.Serialization.FindSerializerForType(typeof(DomainEvent)) as DomainEventsJsonSerializer;
+
+
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
@@ -182,6 +191,8 @@ namespace GridDomain.Node
         private NodeCommandExecutor _commandExecutor;
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
+
+        public DomainEventsJsonSerializer DomainEventsSerializer { get; private set; }
 
         public void Stop()
         {

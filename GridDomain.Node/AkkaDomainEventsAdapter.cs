@@ -28,7 +28,6 @@ namespace GridDomain.Node
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
         public static readonly EventsAdaptersCatalog UpgradeChain = new EventsAdaptersCatalog();
-        private readonly ExtendedActorSystem _system;
 
         //always called first from Akka internals 
         //if no constructor with system found, we would have en log polluted with confusing exception 
@@ -36,7 +35,6 @@ namespace GridDomain.Node
         //https://github.com/akkadotnet/akka.net/blob/df5f6ebc9e7f6b92aef3ca6d63bb1ab365f1c8fa/src/core/Akka.Persistence/Journal/EventAdapters.cs#L336
         public AkkaDomainEventsAdapter(ExtendedActorSystem system)
         {
-           _system = system;
         }
 
         public string Manifest(object evt)
