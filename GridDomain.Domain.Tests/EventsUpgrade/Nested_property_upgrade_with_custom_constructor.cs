@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.EventsUpgrade
 {
     [TestFixture]
-    class Nested_property_upgrade_by_constructor
+    class Nested_property_upgrade_with_custom_constructor
     {
 
         [Test]

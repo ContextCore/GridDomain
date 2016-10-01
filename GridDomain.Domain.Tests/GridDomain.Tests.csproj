@@ -290,7 +290,7 @@
     <Compile Include="EventsUpgrade\Events\TestType.cs" />
     <Compile Include="EventsUpgrade\Events\TestType_V1.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade.cs" />
-    <Compile Include="EventsUpgrade\Nested_property_upgrade_by_constructor.cs" />
+    <Compile Include="EventsUpgrade\Nested_property_upgrade_with_custom_constructor.cs" />
     <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeSerializationBinderTests.cs" />
