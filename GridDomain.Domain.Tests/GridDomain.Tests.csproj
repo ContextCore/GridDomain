@@ -266,6 +266,7 @@
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater3.cs" />
     <Compile Include="EventsUpgrade\Chain\Given_DomainEventUpgradeChain_When_updating_events_split_Tests.cs" />
     <Compile Include="EventsUpgrade\Chain\Given_DomainEventUpgradeChain_When_updating_single_event_Tests.cs" />
+    <Compile Include="EventsUpgrade\Collection_nested_property_upgrade_by_constructor.cs" />
     <Compile Include="EventsUpgrade\Domain\BalanceAggregate.cs" />
     <Compile Include="EventsUpgrade\Domain\BalanceAggregatesCommandHandler.cs" />
     <Compile Include="EventsUpgrade\Domain\BalanceRouteMap.cs" />
@@ -290,7 +291,7 @@
     <Compile Include="EventsUpgrade\Events\TestType_V1.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade_by_constructor.cs" />
-    <Compile Include="EventsUpgrade\SubObject_version_upgrade.cs" />
+    <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeSerializationBinderTests.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />

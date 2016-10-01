@@ -8,4 +8,10 @@ namespace GridDomain.EventSourcing.Adapters
     {
         IEnumerable<TTo> ConvertEvent(TFrom evt);
     }
+
+    public interface IObjectAdapter<TFrom, TTo>
+    {
+        TTo Convert(TFrom evt);
+    }
+
 }
