@@ -139,9 +139,8 @@ namespace GridDomain.Node
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
 
-            DomainEventsSerializer = 
-                System.Serialization.FindSerializerForType(typeof(DomainEvent)) as DomainEventsJsonSerializer;
-
+            DomainEventsSerializer = (DomainEventsJsonSerializer)
+                System.Serialization.FindSerializerForType(typeof(DomainEvent));
 
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);

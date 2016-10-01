@@ -1,5 +1,19 @@
 ﻿-- helper function to convert between DATETIME2 and BIGINT as .NET ticks
 -- taken from: http://stackoverflow.com/questions/7386634/convert-sql-server-datetime-object-to-bigint-net-ticks
+
+
+Create View HumanJournal AS 
+SELECT [PersistenceId]
+      ,[SequenceNr]
+      ,NetFxUtcTicksToDateTime ([Timestamp]) Time
+      ,[IsDeleted]
+      ,[Manifest]
+	  ,CONVERT(NVARCHAR(max), [Payload], 0) Payload
+      ,[Tags]
+  FROM [AutoTestAkka].[dbo].[Journal]
+
+
+--
 GO
 CREATE FUNCTION [dbo].[Ticks] (@dt DATETIME)
 RETURNS BIGINT

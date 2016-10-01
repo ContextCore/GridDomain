@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Akka.Actor;
 using Akka.Serialization;
+using Akka.Util;
 using GridDomain.EventSourcing.Adapters;
 using Newtonsoft.Json;
 
@@ -13,8 +15,9 @@ namespace GridDomain.Node
     {
         private JsonSerializer _serializer;
         private readonly List<JsonConverter> _converters = new List<JsonConverter>();
+        private JsonSerializerSettings _jsonSerializerSettings;
 
-    
+
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
             Init();
@@ -24,13 +27,16 @@ namespace GridDomain.Node
         {
             _converters.Add(converter);
         }
+        public void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
+        {
+            Register((JsonConverter)converter);
+        }
 
         public void Init()
         {
-            var jsonSerializerSettings = DomainEventSerialization.GetDefault();
-            foreach (var converter in _converters)
-                jsonSerializerSettings.Converters.Add(converter);
-            _serializer = JsonSerializer.Create(jsonSerializerSettings);
+            _jsonSerializerSettings = DomainEventSerialization.GetDefault();
+            _jsonSerializerSettings.Converters = _converters;
+            _serializer = JsonSerializer.Create(_jsonSerializerSettings);
         }
 
         /// <summary>
@@ -53,12 +59,16 @@ namespace GridDomain.Node
         /// <returns>A byte array containing the serialized object</returns>
         public override byte[] ToBinary(object obj)
         {
-            using (var stream = new MemoryStream())
-            using (var writer = new StreamWriter(stream))
-            {
-                _serializer.Serialize(writer,obj);
-                return stream.ToArray();
-            }
+            //using (var stream = new MemoryStream())
+            //using (var streamw = new StreamWriter(stream))
+            //using (var writer = new JsonTextWriter(streamw))
+            //{
+            //    _serializer.Serialize(writer,obj);
+            //    return stream.ToArray();
+            //}
+            //TODO: use faster realization with reusable serializer
+            var stringJson = JsonConvert.SerializeObject(obj, _jsonSerializerSettings);
+            return Encoding.Unicode.GetBytes(stringJson);
         }
 
         /// <summary>

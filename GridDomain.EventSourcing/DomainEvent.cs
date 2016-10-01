@@ -7,7 +7,7 @@ using GridDomain.EventSourcing.VersionedTypeSerialization;
 
 namespace GridDomain.EventSourcing
 {
-    public class DomainEvent : ISourcedEvent//, ISerializable
+    public class DomainEvent : ISourcedEvent
     {
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))
         {

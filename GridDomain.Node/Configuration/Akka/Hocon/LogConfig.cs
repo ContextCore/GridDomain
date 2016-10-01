@@ -22,11 +22,14 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             logConfig += @"
                 loggers=["""+typeof(SerilogExtendedLogger).AssemblyQualifiedShortName() + @"""]
 
-                actor.debug {
-                      #receive = on
-                      #autoreceive = on
-                      #lifecycle = on
-                      #event-stream = on
+                actor.debug {"+
+#if DEBUG
+                    @"receive = on
+                      autoreceive = on
+                      lifecycle = on
+                      event-stream = on "
+#endif
+                            +@"
                       unhandled = on
                 }";
 
