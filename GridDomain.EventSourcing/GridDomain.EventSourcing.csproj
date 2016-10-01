@@ -52,9 +52,8 @@
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
     <Compile Include="Adapters\DomainEventSerialization.cs" />
-    <Compile Include="Adapters\EventAdapterDescriptor.cs" />
     <Compile Include="Adapters\DomainEventAdapter.cs" />
-    <Compile Include="Adapters\EventAdaptersCatalog.cs" />
+    <Compile Include="Adapters\EventsAdaptersCatalog.cs" />
     <Compile Include="Adapters\IDomainEventAdapter.cs" />
     <Compile Include="Adapters\IEventAdapter.cs" />
     <Compile Include="Adapters\VersionedTypeSerializationBinder.cs" />

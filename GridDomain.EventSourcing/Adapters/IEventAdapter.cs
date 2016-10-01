@@ -21,7 +21,7 @@ namespace GridDomain.EventSourcing.Adapters
     /// </summary>
     public interface IEventAdapter
     {
-        EventAdapterDescriptor Descriptor { get; }
+        //EventAdapterDescriptor Descriptor { get; }
         IEnumerable<object> Convert(object evt);
     }
 }

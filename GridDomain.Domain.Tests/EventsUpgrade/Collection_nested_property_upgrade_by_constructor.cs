@@ -61,7 +61,7 @@ namespace GridDomain.Tests.EventsUpgrade
 
         class SubObjectConverter : ObjectAdapter<SubObject_V1, SubObject_V2>
         {
-            protected override SubObject_V2 Convert(SubObject_V1 value)
+            public override SubObject_V2 Convert(SubObject_V1 value)
             {
                 return new SubObject_V2(int.Parse(value.Name), value.Value);
             }

@@ -7,8 +7,6 @@ namespace GridDomain.EventSourcing.Adapters
     {
         public abstract IEnumerable<TTo> ConvertEvent(TFrom evt);
 
-        public EventAdapterDescriptor Descriptor { get; } = new EventAdapterDescriptor(typeof(TFrom), typeof(TTo));
-
         IEnumerable<object> IEventAdapter.Convert(object evt)
         {
             IEnumerable<TTo> updatedEvents = ConvertEvent((TFrom)evt);

@@ -30,7 +30,7 @@ namespace GridDomain.Tests.EventsUpgrade
         [OneTimeSetUp]
         public void When_aggregate_is_recovered_from_persistence()
         {
-            GridNode.EventAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
+            GridNode.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
             _balanceId = Guid.NewGuid();
             var events = new DomainEvent[]
             {

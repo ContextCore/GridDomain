@@ -181,7 +181,7 @@ namespace GridDomain.Node
         bool _stopping = false;
         private NodeCommandExecutor _commandExecutor;
 
-        public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
         {

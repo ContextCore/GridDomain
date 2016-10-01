@@ -11,7 +11,8 @@ namespace GridDomain.EventSourcing.Adapters
     /// </summary>
     /// <typeparam name="TFrom"></typeparam>
     /// <typeparam name="TTo"></typeparam>
-    public abstract class ObjectAdapter<TFrom, TTo> : JsonConverter
+    public abstract class ObjectAdapter<TFrom, TTo> : JsonConverter,
+                                                      IObjectAdapter<TFrom,TTo>
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -41,7 +42,7 @@ namespace GridDomain.EventSourcing.Adapters
             throw new JsonSerializationException();
         }
 
-        protected abstract TTo Convert(TFrom value);
+        public abstract TTo Convert(TFrom value);
 
         public override bool CanWrite => false;
         public override bool CanRead => true;
@@ -49,6 +50,11 @@ namespace GridDomain.EventSourcing.Adapters
         public override bool CanConvert(Type objectType)
         {
             return objectType.IsAssignableFrom(typeof(TFrom));
+        }
+
+        public object Convert(object evt)
+        {
+            throw new NotImplementedException();
         }
     }
 }

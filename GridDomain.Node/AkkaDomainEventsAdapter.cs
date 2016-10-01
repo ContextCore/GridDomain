@@ -27,7 +27,7 @@ namespace GridDomain.Node
 
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
-        public static readonly EventAdaptersCatalog UpgradeChain = new EventAdaptersCatalog();
+        public static readonly EventsAdaptersCatalog UpgradeChain = new EventsAdaptersCatalog();
         private readonly ExtendedActorSystem _system;
 
         //always called first from Akka internals 
