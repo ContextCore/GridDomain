@@ -4,12 +4,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.EventsUpgrade
 {
-    //[TestFixture]
-    //class Collection_items_property_upgrade
-    //{
-    //}
-
-
     [TestFixture]
     class Nested_property_upgrade
     {
