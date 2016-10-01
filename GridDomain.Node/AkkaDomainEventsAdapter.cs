@@ -1,14 +1,12 @@
-using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 
 namespace GridDomain.Node
 {
-
     /// <summary>
     /// How to update an event
     /// 1) Create a copy of event and add existing number in type by convention _V(N) where N is version

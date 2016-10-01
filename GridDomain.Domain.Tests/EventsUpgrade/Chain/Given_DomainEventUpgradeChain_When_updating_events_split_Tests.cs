@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Events;
 using NUnit.Framework;

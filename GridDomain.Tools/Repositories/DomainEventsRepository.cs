@@ -3,11 +3,11 @@ using System.Linq;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
-using GridDomain.Tools.Repositories;
 using Wire;
+
 //using Wire.Extensions;
 
-namespace GridDomain.Tools.Persistence
+namespace GridDomain.Tools.Repositories
 {
     public class DomainEventsRepository : IRepository<DomainEvent>
     {

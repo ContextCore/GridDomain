@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GridDomain.EventSourcing.DomainEventAdapters
+namespace GridDomain.EventSourcing.Adapters
 {
     /// <summary>
     /// How to updata and event

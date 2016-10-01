@@ -1,76 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.EventsUpgrade
 {
-    abstract class ObjectConverter<TDeclared, TFrom, TTo> : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-
-            if (reader.Value != null && reader.ValueType == typeof(TFrom))
-            {
-                TFrom convertFromValue = (TFrom)reader.Value;
-                return Convert(convertFromValue);
-            }
-            if (reader.TokenType == JsonToken.StartObject && existingValue == null)
-            {
-                var jObject = JObject.Load(reader);
-
-                var type = PeekType(jObject);
-                if (type != typeof(TFrom))
-                    return serializer.ContractResolver.ResolveContract(objectType).DefaultCreator();
-
-                existingValue = serializer.ContractResolver.ResolveContract(type).DefaultCreator();
-                serializer.Populate(jObject.CreateReader(), existingValue);
-
-                return Convert((TFrom)existingValue);
-            }
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
-            throw new JsonSerializationException();
-        }
-
-        private static Type PeekType(JObject jobject)
-        {
-            string typeName;
-            if (string.IsNullOrEmpty(typeName = jobject["$type"]?.ToObject<string>()))
-                throw new TypeNameNotFoundException();
-
-            var type = Type.GetType(typeName);
-            return type;
-        }
-
-        protected abstract TTo Convert(TFrom value);
-
-        public override bool CanWrite => false;
-        public override bool CanRead => true;
-
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(TDeclared) == objectType;
-        }
-    }
-
     [TestFixture]
-    class SubObject_version_upgrade
+    class Upgrade_object_in_property
     {
         private interface ISubObject
         {
@@ -89,12 +31,12 @@ namespace GridDomain.Tests.EventsUpgrade
             public string Value { get; set; }
         }
 
-        class OldEvent
+        class Event
         {
             public ISubObject Payload { get; set; }
         }
 
-        class SubObjectCoverter : ObjectConverter<SubObject_V2, SubObject_V1, SubObject_V2>
+        class SubObjectConverter : ObjectAdapter<ISubObject, SubObject_V1, SubObject_V2>
         {
             protected override SubObject_V2 Convert(SubObject_V1 value)
             {
@@ -105,42 +47,53 @@ namespace GridDomain.Tests.EventsUpgrade
 
 
         [Test]
-        public void Given_persisted_event_with_old_subobject_It_can_be_updated_to_new_subobject()
+        public void Property_upgraded_from_serialized_value()
         {
             var settings = DomainEventSerialization.GetDefault();
-            settings.Converters.Add(new SubObjectCoverter());
+            settings.Converters.Add(new SubObjectConverter());
 
             var serializedValue = @"{
                               ""$id"": ""1"",
                               ""Payload"": {
                                 ""$id"": ""2"",
-                                ""$type"": ""GridDomain.Tests.EventsUpgrade.SubObject_version_upgrade+SubObject_V1, GridDomain.Tests"",
+                                ""$type"": """+ typeof(SubObject_V1).AssemblyQualifiedName + @""",
                                 ""Name"": ""10"",
                                 ""Value"": ""123""
                               }
                             }";
 
-            var restoredEvent = JsonConvert.DeserializeObject<OldEvent>(serializedValue, settings);
+            var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
             Assert.IsInstanceOf<SubObject_V2>(restoredEvent.Payload);
         }
 
 
         [Test]
-        public void Given_event_with_old_subobject_it_Should_be_updated_to_new_subobject_by_subobject_adapter()
+        public void Propert_is_upgraded()
         {
-            var initialEvent = new OldEvent() {Payload = new SubObject_V1() {Name = "10",Value = "123"} };
+            var initialEvent = new Event() {Payload = new SubObject_V1() {Name = "10",Value = "123"} };
 
             var settings = DomainEventSerialization.GetDefault();
-            settings.Converters.Add(new SubObjectCoverter());
+            settings.Converters.Add(new SubObjectConverter());
      
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
-            var restoredEvent = JsonConvert.DeserializeObject<OldEvent>(serializedValue,settings);
+            var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
 
             Assert.IsInstanceOf<SubObject_V2>(restoredEvent.Payload);
         }
-    }
 
-    internal class TypeNameNotFoundException : Exception
-    {
+       //[Test]
+       //public void Root_object_also_Should_be_converted()
+       //{
+       //    var initialEvent = new SubObject_V1() {Name = "10", Value = "123"};
+       //
+       //    var settings = DomainEventSerialization.GetDefault();
+       //    settings.Converters.Add(new SubObjectConverter());
+       //
+       //    var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
+       //
+       //    var restoredEvent = JsonConvert.DeserializeObject<SubObject_V1>(serializedValue, settings);
+       //
+       //    Assert.IsInstanceOf<SubObject_V2>(restoredEvent);
+       //}
     }
 }

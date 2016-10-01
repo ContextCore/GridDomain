@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GridDomain.EventSourcing.DomainEventAdapters
+namespace GridDomain.EventSourcing.Adapters
 {
     public class EventAdaptersCatalog
     {

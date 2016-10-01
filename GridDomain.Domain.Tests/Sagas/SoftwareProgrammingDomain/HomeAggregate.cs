@@ -1,8 +1,7 @@
 using System;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 
-namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
+namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain
 {
     public class HomeAggregate : Aggregate
     {

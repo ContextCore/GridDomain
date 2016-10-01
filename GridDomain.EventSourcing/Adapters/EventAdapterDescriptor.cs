@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.EventSourcing.DomainEventAdapters
+namespace GridDomain.EventSourcing.Adapters
 {
     public class EventAdapterDescriptor
     {

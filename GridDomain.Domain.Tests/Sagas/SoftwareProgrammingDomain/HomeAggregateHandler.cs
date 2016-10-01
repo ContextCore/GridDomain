@@ -1,7 +1,8 @@
 using System;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 
-namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
+namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain
 {
     public class HomeAggregateHandler : AggregateCommandsHandler<HomeAggregate>, IAggregateCommandsHandlerDesriptor
     {

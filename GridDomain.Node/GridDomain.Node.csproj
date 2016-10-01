@@ -297,6 +297,7 @@
     <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
+    <Compile Include="DomainEventsSerializer.cs" />
     <Compile Include="NodeCommandExecutor.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />

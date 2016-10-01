@@ -3,7 +3,7 @@ using System.Linq;
 using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tools.Persistence;

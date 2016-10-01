@@ -1,10 +1,8 @@
-using System;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using GridDomain.Tools.Persistence.SqlPersistence;
-using GridDomain.Tools.Repositories;
 
-namespace GridDomain.Tools.Persistence
+namespace GridDomain.Tools.Repositories
 {
     /// <summary>
     /// Class for reading \ writing data persisted in sql db with wire
