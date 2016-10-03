@@ -73,7 +73,7 @@ namespace GridDomain.Tests.EventsUpgrade
         public void GridNode_updates_objects_in_events_by_adapter()
         {
             GridNode.DomainEventsSerializer.Register(new BookOrderAdapter());
-            var journal = Akka.Persistence.Persistence.Instance.Apply(GridNode.System).JournalFor(null);
+            var journal = Persistence.Instance.Apply(GridNode.System).JournalFor(null);
 
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
@@ -94,17 +94,17 @@ namespace GridDomain.Tests.EventsUpgrade
 
             var writeMsg = new WriteMessages(envelop, TestActor,1);
 
-            journal.Tell(writeMsg);
+            journal.Ask<object>(writeMsg).Wait();
 
            //var msg = ExpectMsg<object>();
 
-         //   Assert.IsInstanceOf<WriteMessagesSuccessful>(msg);
+           // Assert.IsInstanceOf<WriteMessagesSuccessful>(msg);
             var loadMsg = new ReplayMessages(0,5,5,"testId",TestActor);
 
             journal.Tell(loadMsg);
 
-          //  var confirmWriteA = ExpectMsg<WriteMessageSuccess>();
-           // var confirmWriteB = ExpectMsg<WriteMessageSuccess>();
+           // var confirmWriteA = ExpectMsg<WriteMessageSuccess>();
+          //  var confirmWriteB = ExpectMsg<WriteMessageSuccess>();
 
             var expectA = ExpectMsg<ReplayedMessage>();
             var expectB = ExpectMsg<ReplayedMessage>();

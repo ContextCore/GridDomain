@@ -58,14 +58,6 @@
       <HintPath>..\packages\Akka.Persistence.1.1.2.30-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.Sql.Common.1.1.1.28-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Akka.Persistence.SqlServer, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.SqlServer.1.1.1.5-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Akka.Persistence.TestKit, Version=1.1.2.30, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.TestKit.1.1.2.30-beta\lib\net45\Akka.Persistence.TestKit.dll</HintPath>
       <Private>True</Private>
@@ -82,9 +74,8 @@
       <HintPath>..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.1\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Akka.TestKit.NUnit3">
+      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
     </Reference>
     <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
@@ -291,7 +282,6 @@
     <Compile Include="EventsUpgrade\Events\TestType_V1.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade_with_custom_constructor.cs" />
-    <Compile Include="EventsUpgrade\Object_upgrade_by_domain_events.cs" />
     <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeSerializationBinderTests.cs" />

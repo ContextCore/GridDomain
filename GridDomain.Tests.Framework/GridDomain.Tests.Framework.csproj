@@ -63,8 +63,8 @@
       <HintPath>..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.1\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
+    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.2.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
