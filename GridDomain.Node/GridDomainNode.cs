@@ -191,13 +191,13 @@ namespace GridDomain.Node
             _quartzScheduler.Shutdown(false);
             System.Terminate();
             System.Dispose();
-            _log.Info("GridDomain node {Id} stopped",Id);
+            _log.Debug("GridDomain node {Id} stopped",Id);
         }
 
         private void StartController(ActorSystem actorSystem)
         {
             _stopping = false;
-            _log.Info("Launching GridDomain node {Id}",Id);
+            _log.Debug("Launching GridDomain node {Id}",Id);
 
             var props = actorSystem.DI().Props<GridNodeController>();
             _nodeController = actorSystem.ActorOf(props,nameof(GridNodeController));
@@ -208,7 +208,7 @@ namespace GridDomain.Node
             })
             .Wait(TimeSpan.FromSeconds(2));
 
-            _log.Info("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
+            _log.Debug("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
 
             _commandExecutor = new NodeCommandExecutor(_nodeController,_commandTimeout);
         }

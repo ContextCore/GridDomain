@@ -21,7 +21,7 @@ namespace GridDomain.Node
             Receive<Debug>(m => WithSerilog(logger => SetContextFromLogEvent(logger, m).Debug(GetFormat(m.Message), GetArgs(m.Message))));
             Receive<InitializeLogger>(m =>
             {
-                _log.Info("SerilogLogger started");
+                _log.Debug("SerilogLogger started");
                 Sender.Tell(new LoggerInitialized());
             });
         }

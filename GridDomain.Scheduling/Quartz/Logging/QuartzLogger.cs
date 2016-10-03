@@ -15,7 +15,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void LogSuccess(string jobName)
         {
-            _coreLogger.Info("Job {JobName} sucessfully finished", jobName);
+            _coreLogger.Trace("Job {JobName} sucessfully finished", jobName);
         }
 
         public void LogFailure(string jobName, Exception e)
