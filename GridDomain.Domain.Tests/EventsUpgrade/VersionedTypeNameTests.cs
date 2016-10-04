@@ -2,7 +2,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Tests.EventsUpgrade.Events;
 using NUnit.Framework;
-using QuickGraph.Serialization;
 
 namespace GridDomain.Tests.EventsUpgrade
 {
