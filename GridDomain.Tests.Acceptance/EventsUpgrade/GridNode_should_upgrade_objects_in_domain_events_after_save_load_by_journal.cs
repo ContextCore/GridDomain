@@ -96,15 +96,15 @@ namespace GridDomain.Tests.EventsUpgrade
 
             journal.Ask<object>(writeMsg).Wait();
 
-           //var msg = ExpectMsg<object>();
+            var msg = ExpectMsg<object>();
 
-           // Assert.IsInstanceOf<WriteMessagesSuccessful>(msg);
+            Assert.IsInstanceOf<WriteMessagesSuccessful>(msg);
             var loadMsg = new ReplayMessages(0,5,5,"testId",TestActor);
 
             journal.Tell(loadMsg);
 
-           // var confirmWriteA = ExpectMsg<WriteMessageSuccess>();
-          //  var confirmWriteB = ExpectMsg<WriteMessageSuccess>();
+            var confirmWriteA = ExpectMsg<WriteMessageSuccess>();
+            var confirmWriteB = ExpectMsg<WriteMessageSuccess>();
 
             var expectA = ExpectMsg<ReplayedMessage>();
             var expectB = ExpectMsg<ReplayedMessage>();
