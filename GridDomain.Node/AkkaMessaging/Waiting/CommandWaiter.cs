@@ -26,7 +26,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private bool AllExpectedMessagesReceived()
         {
             //message faults are not counted while waiting for messages
-            return MessageReceivedCounters.Where(c => !typeof(IFault).IsAssignableFrom(c.Key)).All(c => c.Value == 0);
+            return ReceivedMessages.Where(c => !typeof(IFault).IsAssignableFrom(c.Key))
+                                   .All(h => h.Value.Received.Count >= h.Value.Expected.MessageCount);
+           // return MessageReceivedCounters.Where(c => !typeof(IFault).IsAssignableFrom(c.Key)).All(c => c.Value == 0);
         }
 
         //message is fault that caller wish to know about
@@ -44,7 +46,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                    .With<IFault>(f => answerMessage = f)
                    .Default(m =>
                    {
-                       answerMessage = new CommandExecutionFinished(_command, m);
+                       var allReceivedMessages = ReceivedMessages.Values.SelectMany(v => v.Received).ToArray();
+                       answerMessage = new CommandExecutionFinished(_command,
+                           allReceivedMessages.Length > 1 ? allReceivedMessages.ToArray() : m);
                    });
 
             return answerMessage;

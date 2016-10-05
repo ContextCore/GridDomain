@@ -279,7 +279,6 @@
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaMessaging\TypeNameExtensions.cs" />
     <Compile Include="AkkaMessaging\Waiting\AllMessageWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandPlan.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />

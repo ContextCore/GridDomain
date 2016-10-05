@@ -4,7 +4,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class ExpectedMessagesRecieved<T> : ExpectedMessagesRecieved
     {
-        public ExpectedMessagesRecieved(T msg) : base(msg, new List<object>())
+        public ExpectedMessagesRecieved(T msg) : base(msg, new object[] {})
         {
             Message = msg;
         }
@@ -14,7 +14,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     public class ExpectedMessagesRecieved
     {
-        public ExpectedMessagesRecieved(object msg, List<object> objects)
+        public ExpectedMessagesRecieved(object msg, object[] objects)
         {
             Message = msg;
             Recieved = objects;
@@ -22,6 +22,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public object Message { get; private set; }
 
-        public List<object> Recieved { get; } 
+        public IReadOnlyCollection<object> Recieved { get; } 
     }
 }
