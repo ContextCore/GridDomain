@@ -8,18 +8,25 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public abstract class MessageWaiter<T> : UntypedActor where T : ExpectedMessage
     {
-        protected readonly Dictionary<Type, int> MessageReceivedCounters;
-        protected readonly Dictionary<Type, T> ExpectedMessages;
         private readonly IActorRef _notifyActor;
-        protected readonly List<object> _allReceivedEvents;
+        protected readonly Dictionary<Type, ExpectedMessageHistory> ReceivedMessagesHistory;
+
+        protected class ExpectedMessageHistory
+        {
+            public List<object> Received { get; } = new List<object>();
+            public T Expected { get; }
+
+            public ExpectedMessageHistory(T expected)
+            {
+                Expected = expected;
+            }
+        }
 
         protected MessageWaiter(IActorRef notifyActor, params T[] expectedMessages)
         {
             _notifyActor = notifyActor;
-            MessageReceivedCounters = expectedMessages.ToDictionary(m => m.MessageType, m => m.MessageCount);
-            ExpectedMessages = expectedMessages.ToDictionary(m => m.MessageType, m => m);
-
-            _allReceivedEvents = new List<object>();
+            ReceivedMessagesHistory = expectedMessages.ToDictionary(m => m.MessageType, 
+                                                             m => new ExpectedMessageHistory(m));
         }
 
         /// <summary>
@@ -29,15 +36,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected override void OnReceive(object message)
         {
             var msgType = message.GetType();
-            _allReceivedEvents.Add(message);
-
-            var registeredType = MessageReceivedCounters.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
+          
+            var registeredType = ReceivedMessagesHistory.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
             if (registeredType == null) return;
 
-            var expect = ExpectedMessages[registeredType];
+            var history = ReceivedMessagesHistory[registeredType];
+
+            var expect = history.Expected;
             if (!expect.Match(message)) return;
 
-            --MessageReceivedCounters[registeredType];
+            history.Received.Add(message);
+
             if (!WaitIsOver(message, expect)) return;
 
             _notifyActor.Tell(BuildAnswerMessage(message));
@@ -46,7 +55,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected abstract bool WaitIsOver(object message, ExpectedMessage expect);
         protected virtual object BuildAnswerMessage(object message)
         {
-            return new ExpectedMessagesRecieved(message, _allReceivedEvents);
+            return new ExpectedMessagesRecieved(message, ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray());
         }
     }
 }

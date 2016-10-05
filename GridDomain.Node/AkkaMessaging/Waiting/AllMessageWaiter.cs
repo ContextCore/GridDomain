@@ -9,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         protected override bool WaitIsOver(object message, ExpectedMessage expect)
         {
-            return !MessageReceivedCounters.Any(c => c.Value > 0);
+            return ReceivedMessages.Values.All(h => h.Received.Count >= h.Expected.MessageCount);
         }
 
         public AllMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
