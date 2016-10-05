@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
@@ -45,7 +43,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                    .Default(m =>
                    {
                        answerMessage = new CommandExecutionFinished(_command,
-                           _allReceivedEvents.Count > 1 ? _allReceivedEvents.ToArray() : m);
+                           ExpectedMessages.Count(mes=>!(mes.Value is ExpectedFault)) > 1 ? _allReceivedEvents.ToArray() : m);
                    });
 
             return answerMessage;
