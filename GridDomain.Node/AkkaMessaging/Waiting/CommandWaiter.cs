@@ -44,7 +44,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                    .With<IFault>(f => answerMessage = f)
                    .Default(m =>
                    {
-                       answerMessage = new CommandExecutionFinished(_command, m);
+                       answerMessage = new CommandExecutionFinished(_command,
+                           _allReceivedEvents.Count > 1 ? _allReceivedEvents.ToArray() : m);
                    });
 
             return answerMessage;

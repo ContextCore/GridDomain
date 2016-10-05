@@ -254,6 +254,7 @@
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
     <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_projection_fault.cs" />
     <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_projection_group_fault.cs" />
+    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_waiting_several_messages.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />

@@ -11,7 +11,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected readonly Dictionary<Type, int> MessageReceivedCounters;
         protected readonly Dictionary<Type, T> ExpectedMessages;
         private readonly IActorRef _notifyActor;
-        private readonly List<object> _allReceivedEvents;
+        protected readonly List<object> _allReceivedEvents;
 
         protected MessageWaiter(IActorRef notifyActor, params T[] expectedMessages)
         {
