@@ -42,10 +42,17 @@ namespace GridDomain.Node
                                               var domainExcpetion = fault.Exception.UnwrapSingle();
                                               ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
                                           })
+                                          .With<Failure>(f =>
+                                          {
+                                              if(f.Exception is TimeoutException)
+                                                  throw new TimeoutException("Command execution timed out");
+                                          })
                                           .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
                                           .Default(m =>
                                           {
-                                              _logger.Warn("Received unexpected message while waiting for command execution: {Message}",m);
+                                              var invalidMessageException = new InvalidMessageException();
+                                              _logger.Error(invalidMessageException,"Received unexpected message while waiting for command execution: {Message}",m);
+                                              throw invalidMessageException;
                                           });
                                       return result;
                                   });
