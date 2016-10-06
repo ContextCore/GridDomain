@@ -15,7 +15,7 @@ namespace GridDomain.Node
     public class NodeCommandExecutor : ICommandExecutor
     {
         private readonly IActorRef _nodeController;
-
+        private ISoloLogger _logger = LogManager.GetLogger();
         public NodeCommandExecutor(IActorRef nodeController)
         {
             _nodeController = nodeController;
@@ -45,7 +45,7 @@ namespace GridDomain.Node
                                           .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
                                           .Default(m =>
                                           {
-                                              throw new InvalidMessageException(m.ToPropsString());
+                                              _logger.Warn("Received unexpected message while waiting for command execution: {Message}",m);
                                           });
                                       return result;
                                   });
