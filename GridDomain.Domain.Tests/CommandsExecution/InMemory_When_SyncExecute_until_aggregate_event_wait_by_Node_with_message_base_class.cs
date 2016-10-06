@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;

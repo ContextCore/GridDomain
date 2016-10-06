@@ -193,15 +193,11 @@ namespace GridDomain.Scheduling.Integration
                     var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap);
 
-
                     //var sagaCreator = _actorSystem.ActorOf(genericProps);
                     //var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
 
-
-                    var expect = ExpectedMessage.Once(options.SuccessEventType,options.MessageIdFieldName,options.SuccessMessageId);
+                    var expect = Expect.Message(options.SuccessEventType,options.MessageIdFieldName,options.SuccessMessageId);
                     var result = _executor.Execute(command, new [] { expect }, options.Timeout).Result;
-                    
-                    
                 }
                 else
                 {

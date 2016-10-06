@@ -279,8 +279,6 @@
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaMessaging\TypeNameExtensions.cs" />
     <Compile Include="AkkaMessaging\Waiting\AllMessageWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\CommandAndConfirmation.cs" />
-    <Compile Include="AkkaMessaging\Waiting\CommandPlan.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />
@@ -293,7 +291,6 @@
     <Compile Include="EventChronicles\Play.cs" />
     <Compile Include="EventChronicles\PlayFinished.cs" />
     <Compile Include="EventChronicles\RecoveryInProgress.cs" />
-    <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
     <Compile Include="NodeCommandExecutor.cs" />
@@ -319,15 +316,12 @@
     <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
     <Compile Include="Configuration\Composition\Container.cs" />
-    <Compile Include="AkkaMessaging\Waiting\ExpectedMessagesRecieved.cs" />
     <Compile Include="Configuration\Composition\EmptyContainerConfig.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
-    <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
-    <Compile Include="AkkaMessaging\Waiting\ExpectedMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransportMessageDumpMap.cs" />
