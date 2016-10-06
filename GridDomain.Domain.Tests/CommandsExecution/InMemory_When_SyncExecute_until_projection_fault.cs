@@ -3,6 +3,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
@@ -94,7 +95,7 @@ namespace GridDomain.Tests.CommandsExecution
             }
             catch (AggregateException ex)
             {
-                Assert.IsInstanceOf<TimeoutException>(ex.UnwrapSingle());
+                Assert.IsInstanceOf<TimeoutException>(ex.UnwrapSingle(), ex.InnerException.ToPropsString());
             }
         }
 
@@ -114,7 +115,8 @@ namespace GridDomain.Tests.CommandsExecution
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException);
+
+                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException, ex.InnerException.ToPropsString());
             }
         }
 
@@ -150,7 +152,7 @@ namespace GridDomain.Tests.CommandsExecution
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException);
+                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException, ex.InnerException.ToPropsString());
             }
         }
 
@@ -170,7 +172,7 @@ namespace GridDomain.Tests.CommandsExecution
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOf<TimeoutException>(ex.InnerException);
+                Assert.IsInstanceOf<TimeoutException>(ex.InnerException, ex.InnerException.ToPropsString());
             }
         }
 
@@ -191,7 +193,7 @@ namespace GridDomain.Tests.CommandsExecution
             catch (Exception ex)
             {
                 var exception = ex.InnerException;
-                Assert.IsInstanceOf<SampleAggregateException>(exception);
+                Assert.IsInstanceOf<SampleAggregateException>(exception, exception.ToPropsString());
             }
         }
 
