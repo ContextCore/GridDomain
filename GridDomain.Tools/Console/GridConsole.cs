@@ -47,7 +47,7 @@ namespace GridDomain.Tools.Console
         {
             NodeController = GetActor(GetSelection(nameof(GridNodeController)));
 
-            _commandExecutor = new NodeCommandExecutor(NodeController, DefaultCommandExecutionTimeout);
+            _commandExecutor = new NodeCommandExecutor(NodeController);
         }
       
         public void Dispose()

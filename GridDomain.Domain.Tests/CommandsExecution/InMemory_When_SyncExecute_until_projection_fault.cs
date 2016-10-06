@@ -92,7 +92,7 @@ namespace GridDomain.Tests.CommandsExecution
             var plan = new CommandPlan(syncCommand, expectedMessage);
             try
             {
-                GridNode.Execute(plan, TimeSpan.FromMilliseconds(500));
+                GridNodeExtensions.Execute(GridNode, plan);
             }
             catch (Exception ex)
             {

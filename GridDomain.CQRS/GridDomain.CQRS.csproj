@@ -62,6 +62,7 @@
     <Compile Include="GridNodeCommandingExtensions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandExecutor.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IHandler.cs" />

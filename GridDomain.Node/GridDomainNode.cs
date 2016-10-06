@@ -210,7 +210,7 @@ namespace GridDomain.Node
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
 
-            _commandExecutor = new NodeCommandExecutor(_nodeController,_commandTimeout);
+            _commandExecutor = new NodeCommandExecutor(_nodeController);
         }
 
         public void Execute(params ICommand[] commands)
@@ -218,9 +218,9 @@ namespace GridDomain.Node
             _commandExecutor.Execute(commands);
         }
 
-        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
+        public Task<object> Execute(CommandPlan plan)
         {
-            return _commandExecutor.Execute(command, expectedMessage, timeout);
+            return _commandExecutor.Execute(plan);
         }
     }
 }
