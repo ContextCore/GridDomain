@@ -7,6 +7,7 @@ using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
+
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
@@ -30,7 +31,9 @@ namespace GridDomain.Tests.CommandsExecution
         {
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,_syncCommand.AggregateId);
-            _changedEvent = GridNode.Execute<AggregateChangedEventNotification>(new CommandPlan( _syncCommand,expectedMessage), Timeout);
+
+            _changedEvent = GridNode.Execute(CommandPlan.New(_syncCommand, Timeout, expectedMessage)).Result;
+
             _aggregate = LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
         }
 

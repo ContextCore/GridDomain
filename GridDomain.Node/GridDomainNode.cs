@@ -222,5 +222,10 @@ namespace GridDomain.Node
         {
             return _commandExecutor.Execute(plan);
         }
+
+        public Task<T> Execute<T>(CommandPlan<T> plan)
+        {
+            return _commandExecutor.Execute(plan);
+        }
     }
 }

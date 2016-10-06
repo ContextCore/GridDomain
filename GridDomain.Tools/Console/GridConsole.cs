@@ -60,9 +60,14 @@ namespace GridDomain.Tools.Console
             _commandExecutor.Execute(commands);
         }
 
-        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
+        public Task<object> Execute(CommandPlan plan)
         {
-            return _commandExecutor.Execute(command, expectedMessage, timeout);
+           return _commandExecutor.Execute(plan);
+        }
+
+        public Task<T> Execute<T>(CommandPlan<T> plan)
+        {
+            return _commandExecutor.Execute(plan);
         }
     }
 }

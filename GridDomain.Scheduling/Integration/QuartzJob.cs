@@ -197,7 +197,7 @@ namespace GridDomain.Scheduling.Integration
                     //var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
 
                     var expect = Expect.Message(options.SuccessEventType,options.MessageIdFieldName,options.SuccessMessageId);
-                    var result = _executor.Execute(new CommandPlan(command,options.Timeout,expect)).Result;
+                    var result = _executor.Execute(new CommandPlan(command,options.Timeout,expect));
                 }
                 else
                 {

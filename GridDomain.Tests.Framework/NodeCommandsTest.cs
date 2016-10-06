@@ -181,8 +181,8 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine("Starting execute");
 
             var commandTypes = commands.Select(c => c.GetType())
-                .GroupBy(c => c.Name)
-                .Select(g => new { Name = g.Key, Count = g.Count() });
+                                       .GroupBy(c => c.Name)
+                                       .Select(g => new { Name = g.Key, Count = g.Count() });
 
             foreach (var commandStat in commandTypes)
             {
@@ -191,10 +191,7 @@ namespace GridDomain.Tests.Framework
 
             _watch.Restart();
 
-            foreach (var c in commands)
-            {
-                GridNode.Execute(c);
-            }
+            ((ICommandExecutor)GridNode).Execute(commands);
         }
     }
 }

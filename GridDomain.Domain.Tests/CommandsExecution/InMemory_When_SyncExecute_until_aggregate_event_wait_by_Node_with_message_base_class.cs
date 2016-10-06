@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
@@ -21,7 +22,7 @@ namespace GridDomain.Tests.CommandsExecution
             var changeExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var createExpect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);
 
-            Assert.Throws<TimeoutException>(() => GridNode.Execute<DomainEvent>(syncCommand, TimeSpan.FromSeconds(1), changeExpect));
+            Assert.Throws<TimeoutException>(() => GridNode.Execute(new CommandPlan(syncCommand, TimeSpan.FromSeconds(1), changeExpect,createExpect)).Wait());
         }
     }
 }

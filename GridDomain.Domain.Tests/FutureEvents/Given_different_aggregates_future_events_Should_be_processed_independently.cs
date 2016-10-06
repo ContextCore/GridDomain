@@ -23,11 +23,11 @@ namespace GridDomain.Tests.FutureEvents
         {
             _commandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
             var expectedMessageA = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandA.AggregateId);
-            var planA = new CommandPlan(_commandA, expectedMessageA);
+            var planA = CommandPlan.New(_commandA, expectedMessageA);
 
             _commandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
             var expectedMessageB = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandB.AggregateId);
-            var planB = new CommandPlan(_commandB, expectedMessageB);
+            var planB = CommandPlan.New(_commandB, expectedMessageB);
 
             var taskA = GridNode.Execute<FutureEventOccuredEvent>(planA).ContinueWith( r => _eventA = r.Result);
             var taskB = GridNode.Execute<FutureEventOccuredEvent>(planB).ContinueWith( r=>  _eventB = r.Result);

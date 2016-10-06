@@ -39,7 +39,7 @@ namespace GridDomain.Tests.CommandsExecution
                 Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId)
             };
 
-            _anObject = GridNode.Execute(syncCommand, messages).Result as object[]; //to array            
+            _anObject = GridNode.Execute(new CommandPlan(syncCommand, messages)).Result as object[]; //to array            
         }
 
         [Then]

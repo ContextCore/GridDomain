@@ -54,19 +54,20 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="CommandAndConfirmation.cs" />
-    <Compile Include="CommandFaultFactory.cs" />
+    <Compile Include="MessageFaultFactory.cs" />
     <Compile Include="CommandPlan.cs" />
+    <Compile Include="Expect.cs" />
     <Compile Include="ExpectedFault.cs" />
     <Compile Include="ExpectedMessage.cs" />
     <Compile Include="ExpectedMessagesRecieved.cs" />
-    <Compile Include="GridNodeCommandingExtensions.cs" />
+    <Compile Include="Fault.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandExecutor.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IHandler.cs" />
-    <Compile Include="IMessageFault.cs" />
+    <Compile Include="IFault.cs" />
     <Compile Include="IMessageProcessFault.cs" />
     <Compile Include="MessageFault.cs" />
     <Compile Include="Quering\IGenericQuery.cs" />

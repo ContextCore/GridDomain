@@ -11,8 +11,7 @@ namespace GridDomain.CQRS
     {
         public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, params ExpectedMessage[] expectedMessage)
         {
-            return node.Execute(new CommandPlan(command, expectedMessage))
-                       .ContinueWithSafeResultCast(result => (T)result);
+            return node.Execute(new CommandPlan<T>(command, expectedMessage));
         }
 
         public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
@@ -23,12 +22,6 @@ namespace GridDomain.CQRS
         public static T Execute<T>(this ICommandExecutor node, ICommand command, TimeSpan timeout, ExpectedMessage<T> expectedMessage)
         {
             return node.Execute<T>(CommandPlan.New(command, timeout,expectedMessage)).Result;
-        }
-
-        public static T Execute<T>(this ICommandExecutor node, ICommand command, TimeSpan timeout, params ExpectedMessage[] expectedMessage)
-        {
-            return node.Execute(new CommandPlan(command, timeout, expectedMessage))
-                      .ContinueWithSafeResultCast(result => (T)result).Result;
         }
     }
 }

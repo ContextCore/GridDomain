@@ -47,5 +47,10 @@ namespace GridDomain.Node
                                       return result;
                                   });
         }
+
+        public Task<T> Execute<T>(CommandPlan<T> plan)
+        {
+            return Execute((CommandPlan)plan).ContinueWithSafeResultCast(result => (T)result);
+        }
     }
 }

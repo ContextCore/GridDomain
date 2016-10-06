@@ -38,9 +38,7 @@ namespace GridDomain.Tests.CommandsExecution
 
 
         [Then]
-        public void
-            SyncExecute_with_projection_fault_expecting_fault_from_different_sources_delivers_error_to_caller_from_registered_source
-            ()
+        public void SyncExecute_with_projection_fault_expecting_fault_from_different_sources_delivers_error_to_caller_from_registered_source()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId,
@@ -53,8 +51,7 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                var result =
-                    GridNode.Execute(syncCommand, new ExpectedMessage[] {expectedFault, expectedMessage}).Result;
+                var result = GridNode.Execute(new CommandPlan(syncCommand,expectedFault, expectedMessage)).Result;
             }
             catch (Exception ex)
             {
@@ -75,7 +72,7 @@ namespace GridDomain.Tests.CommandsExecution
             try
             {
                 var result =
-                    GridNode.Execute(syncCommand, new ExpectedMessage[] {expectedFault, expectedMessage}).Result;
+                    GridNode.Execute(new CommandPlan(syncCommand, expectedFault, expectedMessage)).Result;
             }
             catch (Exception ex)
             {
@@ -92,7 +89,7 @@ namespace GridDomain.Tests.CommandsExecution
             var plan = new CommandPlan(syncCommand, expectedMessage);
             try
             {
-                GridNodeExtensions.Execute(GridNode, plan);
+                GridNode.Execute(plan).Wait();
             }
             catch (Exception ex)
             {
@@ -108,7 +105,7 @@ namespace GridDomain.Tests.CommandsExecution
                 typeof(OddFaultyMessageHandler));
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
-            var plan = new CommandPlan(syncCommand, expectedMessage, expectedFault);
+            var plan = new CommandPlan<AggregateChangedEventNotification>(syncCommand, expectedMessage, expectedFault);
 
             try
             {
@@ -128,7 +125,7 @@ namespace GridDomain.Tests.CommandsExecution
                 typeof(OddFaultyMessageHandler));
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
-            var plan = new CommandPlan(syncCommand, expectedMessage, expectedFault);
+            var plan = new CommandPlan<AggregateChangedEventNotification>(syncCommand, expectedMessage, expectedFault);
 
 
             var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
@@ -212,7 +209,7 @@ namespace GridDomain.Tests.CommandsExecution
 
             try
             {
-                GridNode.Execute(syncCommand, messages).Wait();
+                GridNode.Execute(new CommandPlan(syncCommand, messages)).Wait();
                 Assert.Fail("Wait ended after one of two notifications");
             }
             catch (AggregateException ex)
