@@ -23,7 +23,7 @@ namespace GridDomain.Tests.AsyncAggregates
         public void After_wait_end_aggregate_event_is_applied()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
-            GridNode.Execute(syncCommand,
+            GridNode.ExecuteSync(syncCommand,
                 Timeout,
                 Expect.Message<SampleAggregateChangedEvent>(e=>e.SourceId,syncCommand.AggregateId));
 

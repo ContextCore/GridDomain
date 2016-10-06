@@ -30,7 +30,7 @@ namespace GridDomain.Tests.CommandsExecution
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
             Assert.Throws<SampleAggregateException>(() => 
-                        GridNode.Execute<SampleAggregateChangedEvent>(syncCommand,Timeout,expectedMessage));
+                        GridNode.ExecuteSync<SampleAggregateChangedEvent>(syncCommand,Timeout,expectedMessage));
         }
 
     }

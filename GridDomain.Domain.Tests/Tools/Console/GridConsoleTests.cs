@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Tools.Console
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
 
-            var evt = _console.Execute(command, TimeSpan.FromSeconds(30), expect);
+            var evt = _console.ExecuteSync(command, TimeSpan.FromSeconds(30), expect);
             Assert.AreEqual(command.Parameter.ToString(), evt.Value);
         }
 

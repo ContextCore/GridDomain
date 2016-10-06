@@ -30,7 +30,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 
-            GridNode.Execute(syncCommand, Timeout, expectedMessage);
+            GridNode.ExecuteSync(syncCommand, Timeout, expectedMessage);
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

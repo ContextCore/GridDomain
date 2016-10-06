@@ -22,8 +22,8 @@ namespace GridDomain.Tests.FutureEvents
             var testCommandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
             var testCommandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
 
-            _eventA = GridNode.Execute(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
-            _eventB = GridNode.Execute(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId));
+            _eventA = GridNode.ExecuteSync(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
+            _eventB = GridNode.ExecuteSync(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId));
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);

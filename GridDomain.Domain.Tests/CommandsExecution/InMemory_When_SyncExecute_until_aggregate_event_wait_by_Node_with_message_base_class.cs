@@ -22,7 +22,15 @@ namespace GridDomain.Tests.CommandsExecution
             var changeExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var createExpect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);
 
-            Assert.Throws<TimeoutException>(() => GridNode.Execute(new CommandPlan(syncCommand, TimeSpan.FromSeconds(1), changeExpect,createExpect)).Wait());
+            Assert.Throws<TimeoutException>(() =>
+            {
+                var commandPlan = new CommandPlan<object>(syncCommand,
+                                                          TimeSpan.FromSeconds(1),
+                                                          changeExpect,
+                                                          createExpect);
+
+                GridNode.ExecuteSync(commandPlan);
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -86,14 +87,14 @@ namespace GridDomain.Tests.CommandsExecution
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
-            var plan = new CommandPlan(syncCommand, expectedMessage);
+            var plan = new CommandPlan(syncCommand, TimeSpan.FromMilliseconds(1),expectedMessage);
             try
             {
                 GridNode.Execute(plan).Wait();
             }
-            catch (Exception ex)
+            catch (AggregateException ex)
             {
-                Assert.IsInstanceOf<TimeoutException>(ex);
+                Assert.IsInstanceOf<TimeoutException>(ex.UnwrapSingle());
             }
         }
 

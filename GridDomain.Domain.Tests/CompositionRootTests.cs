@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -23,12 +24,13 @@ namespace GridDomain.Tests
             ResolveAll(container);
         }
 
-
+        
         [TestCase(TransportMode.Cluster)]
         [TestCase(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
             var container = CreateContainer(transportMode, new LocalDbConfiguration());
+            
             var registrations = container.Registrations.ToArray();
 
             foreach (var reg in registrations)
@@ -41,7 +43,11 @@ namespace GridDomain.Tests
                 Console.WriteLine();
             }
 
-            container.Dispose();
+
+            if(!Task.Run( () => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
+                throw new TimeoutException("Container dispose tooks too much time");
+
+            Console.WriteLine("Container disposed");
         }
 
 

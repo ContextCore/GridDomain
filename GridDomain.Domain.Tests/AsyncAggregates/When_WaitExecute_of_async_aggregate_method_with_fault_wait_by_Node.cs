@@ -26,7 +26,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
             Assert.Throws<SampleAggregateException>(() => 
-                        GridNode.Execute(syncCommand,Timeout,expectedMessage));
+                        GridNode.ExecuteSync(syncCommand,Timeout,expectedMessage));
         }
 
         

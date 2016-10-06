@@ -20,7 +20,7 @@ namespace GridDomain.Tests.CommandsExecution
             var changeExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
            // var createExpect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, syncCommand.AggregateId);
 
-            var result = GridNode.Execute(syncCommand, Timeout, changeExpect);
+            var result = GridNode.ExecuteSync(syncCommand, Timeout, changeExpect);
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
