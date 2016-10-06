@@ -17,7 +17,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _sys = sys;
         }
 
-        public Task<object> WaitForCommand(CommandPlan plan)
+        internal Task<object> WaitForCommand(CommandPlan plan)
         {
             var inbox = Inbox.Create(_sys);
             var props =

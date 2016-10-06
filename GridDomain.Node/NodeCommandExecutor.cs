@@ -46,21 +46,26 @@ namespace GridDomain.Node
                                           {
                                               if(f.Exception is TimeoutException)
                                                   throw new TimeoutException("Command execution timed out");
+                                              ThrowInvalidMessage(f);
                                           })
-                                         //.With<Status>(s =>
-                                         //{
-                                         //    if (s Exception is TimeoutException)
-                                         //        throw new TimeoutException("Command execution timed out");
-                                         //})
+                                         .With<Status.Failure>(s =>
+                                         {
+                                                if (s.Cause is TimeoutException)
+                                                        throw new TimeoutException("Command execution timed out");
+                                                ThrowInvalidMessage(s);
+                                         })
                                           .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                                          .Default(m =>
-                                          {
-                                              var invalidMessageException = new InvalidMessageException(m.ToPropsString());
-                                              _logger.Error(invalidMessageException,"Received unexpected message while waiting for command execution: {Message}",m);
-                                              throw invalidMessageException;
-                                          });
+                                          .Default(ThrowInvalidMessage);
                                       return result;
                                   });
+        }
+
+        private void ThrowInvalidMessage(object m)
+        {
+            var invalidMessageException = new InvalidMessageException(m.ToPropsString());
+            _logger.Error(invalidMessageException, "Received unexpected message while waiting for command execution: {Message}",
+                m.ToPropsString());
+            throw invalidMessageException;
         }
 
         public Task<T> Execute<T>(CommandPlan<T> plan)
