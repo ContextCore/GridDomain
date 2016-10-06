@@ -29,7 +29,11 @@ namespace GridDomain.Tests
         [TestCase(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
-            var container = CreateContainer(transportMode, new LocalDbConfiguration());
+            var createContainer = Task.Run(()=>CreateContainer(transportMode, new LocalDbConfiguration()));
+            if(!createContainer.Wait(TimeSpan.FromSeconds(5)))
+                throw new TimeoutException("Container creation took to much time");
+
+            var container = createContainer.Result;
             
             var registrations = container.Registrations.ToArray();
 
@@ -45,7 +49,7 @@ namespace GridDomain.Tests
 
 
             if(!Task.Run( () => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
-                throw new TimeoutException("Container dispose tooks too much time");
+                throw new TimeoutException("Container dispose took too much time");
 
             Console.WriteLine("Container disposed");
         }

@@ -14,7 +14,7 @@ namespace GridDomain.CQRS
 
         public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
         {
-            return node.Execute<T>(CommandPlan.New(command, expectedMessage));
+            return node.Execute(CommandPlan.New(command, expectedMessage));
         }
 
         public static T ExecuteSync<T>(this ICommandExecutor node, ICommand command, TimeSpan timeout, ExpectedMessage<T> expectedMessage)

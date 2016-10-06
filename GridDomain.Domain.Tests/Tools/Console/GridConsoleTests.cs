@@ -43,9 +43,6 @@ namespace GridDomain.Tests.Tools.Console
                                        () => serverConfig.CreateInMemorySystem());
 
             _node.Start(new LocalDbConfiguration());
-
-            Thread.Sleep(5000);
-
             _console = new GridConsole(serverConfig.Network);
             _console.Connect();
         }

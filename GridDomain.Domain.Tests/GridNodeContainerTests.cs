@@ -11,9 +11,7 @@ namespace GridDomain.Tests
         {
             var container = new UnityContainer();
 
-            CompositionRoot.Init(container,
-                ActorSystemBuilders[mode](),
-                mode);
+            CompositionRoot.Init(container, ActorSystemBuilders[mode](), mode);
 
             return container;
         }

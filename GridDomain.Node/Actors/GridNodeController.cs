@@ -46,15 +46,23 @@ namespace GridDomain.Node.Actors
 
         public void Handle(CommandPlan commandWithConfirmation)
         {
-            var props = Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command, commandWithConfirmation.ExpectedMessages));
-            var waitActor = Context.System.ActorOf(props,"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
-
-            foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
-                    _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
+            CreateWaiter(commandWithConfirmation);
 
             Handle(commandWithConfirmation.Command);
         }
-        
+
+        public IActorRef CreateWaiter(CommandPlan commandWithConfirmation)
+        {
+            var props =
+                Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command, commandWithConfirmation.ExpectedMessages));
+            var waitActor = Context.System.ActorOf(props, "MessageWaiter_command_" + commandWithConfirmation.Command.Id);
+
+            foreach (var expectedMessage in commandWithConfirmation.ExpectedMessages)
+                _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
+
+            return waitActor;
+        }
+
         public class Start
         {
             public Type RoutingActorType;

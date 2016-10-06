@@ -24,7 +24,7 @@ namespace GridDomain.Tests.SyncProjection
     [TestFixture]
     public class SynchronizedProjectionBuildersTests : InMemorySampleDomainTests
     {
-        private ExpectedMessagesRecieved _processedEvents;
+        private ExpectedMessagesReceived _processedEvents;
         private CQRS.ICommand[] _allCommands;
         
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);

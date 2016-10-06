@@ -243,7 +243,9 @@
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
+    <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedFault.cs" />
+    <Compile Include="AkkaMessaging\Waiting\MessagesListener.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
