@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-namespace GridDomain.Node.AkkaMessaging.Waiting
+namespace GridDomain.CQRS
 {
-    public class ExpectedMessagesRecieved<T> : ExpectedMessagesRecieved
+    public class ExpectedMessagesReceived<T> : ExpectedMessagesReceived
     {
-        public ExpectedMessagesRecieved(T msg) : base(msg, new object[] {})
+        public ExpectedMessagesReceived(T msg) : base(msg, new object[] {})
         {
             Message = msg;
         }
@@ -12,9 +12,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public new T Message { get;}
     }
 
-    public class ExpectedMessagesRecieved
+    public class ExpectedMessagesReceived
     {
-        public ExpectedMessagesRecieved(object msg, object[] objects)
+        public ExpectedMessagesReceived(object msg, object[] objects)
         {
             Message = msg;
             Recieved = objects;

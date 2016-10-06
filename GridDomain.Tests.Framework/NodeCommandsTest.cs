@@ -109,17 +109,17 @@ namespace GridDomain.Tests.Framework
                            .Select(t => new ExpectedMessage(t, 0))
                            .ToArray();
         }
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
+        protected ExpectedMessagesReceived ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
         {
             var messageTypes = GetFaults(commands).Concat(new[] { Expect.Message<TEvent>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
+        protected ExpectedMessagesReceived ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
         {
             var messageTypes = GetFaults(commands).Concat(new[] { Expect.Message<TMessage1>(), Expect.Message<TMessage1>() }).ToArray();
             return ExecuteAndWaitFor(messageTypes, commands);
         }
-        protected ExpectedMessagesRecieved ExecuteAndWaitForMany<TMessage1, TMessage2>(int eventAnum, int eventBnum, params ICommand[] commands)
+        protected ExpectedMessagesReceived ExecuteAndWaitForMany<TMessage1, TMessage2>(int eventAnum, int eventBnum, params ICommand[] commands)
         {
             var msg1ToWait = new ExpectedMessage(typeof(TMessage1), eventAnum);
             var msg2ToWait = new ExpectedMessage(typeof(TMessage2), eventBnum);
@@ -129,7 +129,7 @@ namespace GridDomain.Tests.Framework
         }
 
 
-        private ExpectedMessagesRecieved Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
+        private ExpectedMessagesReceived Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
         {
             var actor = system
                                 .ActorOf(Props.Create(() => new AllMessageWaiter(TestActor, expectedMessages)),
@@ -143,7 +143,7 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine();
             Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
 
-            var msg = (ExpectedMessagesRecieved) FishForMessage(m => m is ExpectedMessagesRecieved, Timeout);
+            var msg = (ExpectedMessagesReceived) FishForMessage(m => m is ExpectedMessagesReceived, Timeout);
             _watch.Stop();
 
             Console.WriteLine();
@@ -161,17 +161,17 @@ namespace GridDomain.Tests.Framework
             return msg;
         }
 
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
+        protected ExpectedMessagesReceived ExecuteAndWaitFor(Type[] messageTypes, params ICommand[] commands)
         {
             return Wait(() => Execute(commands), GridNode.System,true, messageTypes.Select(m => new ExpectedMessage(m,1)).ToArray());
         }
 
-        protected ExpectedMessagesRecieved ExecuteAndWaitFor(ExpectedMessage[] expectedMessage, params ICommand[] commands)
+        protected ExpectedMessagesReceived ExecuteAndWaitFor(ExpectedMessage[] expectedMessage, params ICommand[] commands)
         {
             return Wait(() => Execute(commands), GridNode.System, true, expectedMessage);
         }
 
-        protected ExpectedMessagesRecieved WaitFor<TMessage>(bool failOnFault = true)
+        protected ExpectedMessagesReceived WaitFor<TMessage>(bool failOnFault = true)
         {
             return Wait(() => { }, GridNode.System, failOnFault, new ExpectedMessage(typeof(TMessage), 1));
         }
@@ -181,8 +181,8 @@ namespace GridDomain.Tests.Framework
             Console.WriteLine("Starting execute");
 
             var commandTypes = commands.Select(c => c.GetType())
-                .GroupBy(c => c.Name)
-                .Select(g => new { Name = g.Key, Count = g.Count() });
+                                       .GroupBy(c => c.Name)
+                                       .Select(g => new { Name = g.Key, Count = g.Count() });
 
             foreach (var commandStat in commandTypes)
             {
@@ -191,10 +191,7 @@ namespace GridDomain.Tests.Framework
 
             _watch.Restart();
 
-            foreach (var c in commands)
-            {
-                GridNode.Execute(c);
-            }
+            ((ICommandExecutor)GridNode).Execute(commands);
         }
     }
 }

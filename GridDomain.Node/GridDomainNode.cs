@@ -44,66 +44,28 @@ namespace GridDomain.Node
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
 
-        private readonly TimeSpan _commandTimeout;
-        public static readonly TimeSpan DefaultCommandTimeout = TimeSpan.FromSeconds(30);
-
         private Quartz.IScheduler _quartzScheduler;
-       
-        private IActorRef _nodeController;
+
         private readonly IContainerConfiguration _configuration;
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
 
         public IActorTransport Transport { get; private set; }
+        public MessagesListener Listener { get; private set; }
 
         public ActorSystem System;
 
-        [Obsolete("Use constructor with ActorSystem factory instead")]
-        public GridDomainNode(IUnityContainer container,
-                              IMessageRouteMap messageRouting,
-                              IQuartzConfig quartzConfig = null,
-                              params ActorSystem[] actorAllSystems)
-            : this(new EmptyContainerConfig(),messageRouting, () => actorAllSystems, quartzConfig)
-        {
-            Container = container;
-        }
-   
-        [Obsolete("Use constructor with ActorSystem factory instead")]
-        public GridDomainNode(IUnityContainer container,
-                              IMessageRouteMap messageRouting,
-                              TransportMode transportMode,
-                              params ActorSystem[] actorAllSystems)
-           : this(container, messageRouting, null, actorAllSystems)
-        {
-        }
-
-        [Obsolete("Use constructor with ActorSystem factory instead")]
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
-                              TransportMode transportMode,
-                              params ActorSystem[] actorAllSystems)
-            :this(configuration, messageRouting, () => actorAllSystems, null)
-        {
-        }
-
-
-        public GridDomainNode(IContainerConfiguration configuration,
-                            IMessageRouteMap messageRouting,
-                            Func<ActorSystem> actorSystemFactory) : this(configuration, messageRouting, () => new [] { actorSystemFactory()}, null)
-        {
-        }
-        public GridDomainNode(IContainerConfiguration configuration,
-                              IMessageRouteMap messageRouting,
-                              Func<ActorSystem[]> actorSystemFactory) : this(configuration, messageRouting,actorSystemFactory,null)
+                              Func<ActorSystem> actorSystemFactory) : this(configuration, messageRouting, () => new [] { actorSystemFactory()})
         {
         }
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               Func<ActorSystem[]> actorSystemFactory,
-                              IQuartzConfig quartzConfig,
-                              TimeSpan? commandTimeout = null)
+                              IQuartzConfig quartzConfig = null)
         {
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
@@ -112,7 +74,6 @@ namespace GridDomain.Node
                                                     new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap());
 
-            _commandTimeout = commandTimeout ?? DefaultCommandTimeout;
             Container = new UnityContainer();
         }
 
@@ -157,6 +118,8 @@ namespace GridDomain.Node
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+
+            Listener = new MessagesListener(System,Transport);
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -200,9 +163,9 @@ namespace GridDomain.Node
             _log.Debug("Launching GridDomain node {Id}",Id);
 
             var props = actorSystem.DI().Props<GridNodeController>();
-            _nodeController = actorSystem.ActorOf(props,nameof(GridNodeController));
+            var nodeController = actorSystem.ActorOf(props,nameof(GridNodeController));
 
-            _nodeController.Ask(new GridNodeController.Start
+            nodeController.Ask(new GridNodeController.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
@@ -210,7 +173,7 @@ namespace GridDomain.Node
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
 
-            _commandExecutor = new NodeCommandExecutor(_nodeController,_commandTimeout);
+            _commandExecutor = new NodeCommandExecutor(nodeController);
         }
 
         public void Execute(params ICommand[] commands)
@@ -218,9 +181,15 @@ namespace GridDomain.Node
             _commandExecutor.Execute(commands);
         }
 
-        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
+        public Task<object> Execute(CommandPlan plan)
         {
-            return _commandExecutor.Execute(command, expectedMessage, timeout);
+            return _commandExecutor.Execute(plan);
         }
+
+        public Task<T> Execute<T>(CommandPlan<T> plan)
+        {
+            return _commandExecutor.Execute(plan);
+        }
+
     }
 }

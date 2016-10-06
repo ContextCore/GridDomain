@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.SampleDomain;
@@ -26,7 +27,7 @@ namespace GridDomain.Tests.CommandsExecution
         public void SyncExecute_until_aggregate_event_wait_by_Node()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            GridNode.Execute(syncCommand,
+            GridNode.ExecuteSync(syncCommand,
                 Timeout,
                 Expect.Message<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId));
 

@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
@@ -19,7 +20,7 @@ namespace GridDomain.Tests.AsyncAggregates
             string stackTraceString = "";
             try
             {
-                GridNode.Execute<SampleAggregateChangedEvent>(syncCommand, Timeout, expectedMessage);
+                GridNode.ExecuteSync<SampleAggregateChangedEvent>(syncCommand, Timeout, expectedMessage);
             }
             catch (SampleAggregateException ex)
             {

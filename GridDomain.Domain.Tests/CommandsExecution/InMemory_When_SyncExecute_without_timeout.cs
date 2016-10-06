@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
@@ -24,7 +25,7 @@ namespace GridDomain.Tests.CommandsExecution
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },
-                new InMemoryQuartzConfig(), TimeSpan.FromMilliseconds(500));
+                new InMemoryQuartzConfig());
         }
 
         [Then]
@@ -42,8 +43,8 @@ namespace GridDomain.Tests.CommandsExecution
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-
-            Assert_TimeoutException_In_inner_exceptions(() => GridNode.Execute(syncCommand, expectedMessage).Wait());
+            var plan = CommandPlan.New(syncCommand, TimeSpan.FromSeconds(0.5), expectedMessage);
+            Assert_TimeoutException_In_inner_exceptions(() => GridNode.Execute(plan).Wait());
         }
 
         private static void Assert_TimeoutException_In_inner_exceptions(Action act)
@@ -76,8 +77,8 @@ namespace GridDomain.Tests.CommandsExecution
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-
-            Assert_TimeoutException_In_inner_exceptions(() => { object A = GridNode.Execute(syncCommand, expectedMessage).Result; });
+            var plan = new CommandPlan(syncCommand,TimeSpan.FromMilliseconds(500),expectedMessage);
+            Assert_TimeoutException_In_inner_exceptions(() => { object res = GridNode.Execute(plan).Result; });
         }
 
 

@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace GridDomain.CQRS
+namespace GridDomain.CQRS.Quering
 {
     public interface ICriteria<T>
     {

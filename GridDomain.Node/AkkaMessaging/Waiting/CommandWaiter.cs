@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
@@ -12,9 +14,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         private readonly ICommand _command;
 
-        public CommandWaiter(IActorRef notifyActor, ICommand command, params ExpectedMessage[] expectedMessage) : base(notifyActor, expectedMessage)
+        public CommandWaiter(IActorRef subscribers, ICommand command, params ExpectedMessage[] expectedMessage) : base(subscribers, expectedMessage)
         {
             _command = command;
+        }
+
+        public CommandWaiter(IActorRef subscribers, CommandPlan plan) : base(subscribers, plan.ExpectedMessages)
+        {
+            _command = plan.Command;
         }
 
         //execution stops on first expected fault

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Akka;
 using Akka.Actor;
 using GridDomain.CQRS;
 
@@ -8,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public abstract class MessageWaiter<T> : UntypedActor where T : ExpectedMessage
     {
-        private readonly IActorRef _notifyActor;
+        private readonly List<IActorRef> subscribers;
         protected readonly Dictionary<Type, ExpectedMessageHistory> ReceivedMessagesHistory;
 
         protected class ExpectedMessageHistory
@@ -22,11 +23,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             }
         }
 
-        protected MessageWaiter(IActorRef notifyActor, params T[] expectedMessages)
+        protected MessageWaiter(IActorRef subscriber, params T[] expectedMessages)
         {
-            _notifyActor = notifyActor;
+            subscribers = new List<IActorRef>{subscriber};
+
             ReceivedMessagesHistory = expectedMessages.ToDictionary(m => m.MessageType, 
-                                                             m => new ExpectedMessageHistory(m));
+                                                                    m => new ExpectedMessageHistory(m));
         }
 
         /// <summary>
@@ -49,13 +51,18 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             if (!WaitIsOver(message, expect)) return;
 
-            _notifyActor.Tell(BuildAnswerMessage(message));
+            var answerMessage = BuildAnswerMessage(message);
+
+            foreach (var s in subscribers)
+                s.Tell(answerMessage);
+
+            Context.Stop(Self);
         }
 
         protected abstract bool WaitIsOver(object message, ExpectedMessage expect);
         protected virtual object BuildAnswerMessage(object message)
         {
-            return new ExpectedMessagesRecieved(message, ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray());
+            return new ExpectedMessagesReceived(message, ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray());
         }
     }
 }

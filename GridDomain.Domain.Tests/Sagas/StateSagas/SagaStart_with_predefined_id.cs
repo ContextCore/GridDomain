@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
             publisher.Publish(new GotTiredEvent(_personId).CloneWithSaga(_sagaId));
             publisher.Publish(new CoffeMakeFailedEvent(_coffeeMachineId, _personId).CloneWithSaga(_sagaId));
 
-            Thread.Sleep(Debugger.IsAttached ? TimeSpan.FromSeconds(1000) : TimeSpan.FromSeconds(1));
+            Thread.Sleep(TimeSpan.FromSeconds(1));
 
             _sagaState = LoadSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
 

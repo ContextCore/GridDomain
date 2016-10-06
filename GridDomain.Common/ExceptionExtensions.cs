@@ -11,6 +11,7 @@ namespace GridDomain.Common
 
             if (aggregateException.InnerExceptions.Count > 1)
                 return aggregateException;
+
             return aggregateException.InnerExceptions.First();
         }
 

@@ -5,20 +5,19 @@ using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public class NodeCommandExecutor : IGridDomainNode
+    public class NodeCommandExecutor : ICommandExecutor
     {
         private readonly IActorRef _nodeController;
-        private readonly TimeSpan _defaultCommandTimeout;
 
-        public NodeCommandExecutor(IActorRef nodeController, TimeSpan defaultCommandTimeout)
+        public NodeCommandExecutor(IActorRef nodeController)
         {
-            _defaultCommandTimeout = defaultCommandTimeout;
             _nodeController = nodeController;
         }
 
@@ -28,26 +27,33 @@ namespace GridDomain.Node
                 _nodeController.Tell(cmd);
         }
 
-        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
+        public Task<object> Execute(CommandPlan plan)
         {
-            var maxWaitTime = timeout ?? _defaultCommandTimeout;
-            return _nodeController.Ask(new CommandPlan(command, expectedMessage), maxWaitTime)
-                .ContinueWith(t =>
-                {
-                    if (t.IsCanceled)
-                        throw new TimeoutException("Command execution timed out");
+            return _nodeController.Ask(plan, plan.Timeout)
+                                  .ContinueWith(t =>
+                                  {
+                                      if (t.IsCanceled)
+                                          throw new TimeoutException("Command execution timed out");
 
-                    object result = null;
-                    t.Result.Match()
-                        .With<IFault>(fault =>
-                        {
-                            var domainExcpetion = fault.Exception.UnwrapSingle();
-                            ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
-                        })
-                        .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                        .Default(m => { throw new InvalidMessageException(m.ToPropsString()); });
-                    return result;
-                });
+                                      object result = null;
+                                      t.Result.Match()
+                                          .With<IFault>(fault =>
+                                          {
+                                              var domainExcpetion = fault.Exception.UnwrapSingle();
+                                              ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
+                                          })
+                                          .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
+                                          .Default(m =>
+                                          {
+                                              throw new InvalidMessageException(m.ToPropsString());
+                                          });
+                                      return result;
+                                  });
+        }
+
+        public Task<T> Execute<T>(CommandPlan<T> plan)
+        {
+            return Execute((CommandPlan)plan).ContinueWithSafeResultCast(result => (T)result);
         }
     }
 }

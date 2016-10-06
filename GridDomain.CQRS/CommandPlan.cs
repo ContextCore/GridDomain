@@ -1,7 +1,6 @@
 using System;
-using GridDomain.CQRS;
 
-namespace GridDomain.Node.AkkaMessaging.Waiting
+namespace GridDomain.CQRS
 {
     public class CommandPlan<T> : CommandPlan
     {

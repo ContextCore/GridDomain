@@ -196,6 +196,10 @@
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
       <Name>GridDomain.Node</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
+      <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
+      <Name>GridDomain.Scheduling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
       <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
       <Name>GridDomain.Tools</Name>

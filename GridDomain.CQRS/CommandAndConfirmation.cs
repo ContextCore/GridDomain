@@ -1,10 +1,7 @@
 using System;
 using System.Linq;
-using System.Threading;
-using GridDomain.CQRS;
-using MemBus.Support;
 
-namespace GridDomain.Node.AkkaMessaging.Waiting
+namespace GridDomain.CQRS
 {
     public class CommandPlan
     {
@@ -13,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public TimeSpan Timeout { get;}
         public CommandPlan(ICommand command, params ExpectedMessage[] expectedMessage)
-            :this(command, GridDomainNode.DefaultCommandTimeout, expectedMessage)
+            :this(command, TimeSpan.FromSeconds(10), expectedMessage)
         {
         }
 
