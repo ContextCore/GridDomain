@@ -5,7 +5,7 @@ using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
-    public static class CommandingExtensions
+    public static class CommandExecutorExtensions
     {
         public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, params ExpectedMessage[] expectedMessage)
         {
