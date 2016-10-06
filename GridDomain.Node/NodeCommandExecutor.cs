@@ -47,10 +47,15 @@ namespace GridDomain.Node
                                               if(f.Exception is TimeoutException)
                                                   throw new TimeoutException("Command execution timed out");
                                           })
+                                         //.With<Status>(s =>
+                                         //{
+                                         //    if (s Exception is TimeoutException)
+                                         //        throw new TimeoutException("Command execution timed out");
+                                         //})
                                           .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
                                           .Default(m =>
                                           {
-                                              var invalidMessageException = new InvalidMessageException();
+                                              var invalidMessageException = new InvalidMessageException(m.ToPropsString());
                                               _logger.Error(invalidMessageException,"Received unexpected message while waiting for command execution: {Message}",m);
                                               throw invalidMessageException;
                                           });
