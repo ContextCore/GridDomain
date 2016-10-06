@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using GridDomain.CQRS;
+using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
@@ -57,7 +58,7 @@ namespace GridDomain.Tests.CommandsExecution
             catch (AggregateException ex)
             {
                 var e = ex.InnerExceptions.First();
-                Assert.IsInstanceOf<TimeoutException>(e);
+                Assert.IsInstanceOf<TimeoutException>(e, e.ToPropsString());
             }
         }
 
