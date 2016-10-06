@@ -336,19 +336,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Throttle.Assert(() => ResultHolder.Contains(taskIds));
         }
 
-        protected override TimeSpan Timeout
-        {
-            get
-            {
-                //default timeout
-                var timeout = TimeSpan.FromSeconds(7);
-                //in case you want to debug this unit test
-                if (Debugger.IsAttached)
-                {
-                    timeout = TimeSpan.FromSeconds(300);
-                }
-                return timeout;
-            }
-        }
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(7);
     }
 }

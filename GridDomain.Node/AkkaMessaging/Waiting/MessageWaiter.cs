@@ -55,6 +55,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             foreach (var s in subscribers)
                 s.Tell(answerMessage);
+
+            Context.Stop(Self);
         }
 
         protected abstract bool WaitIsOver(object message, ExpectedMessage expect);

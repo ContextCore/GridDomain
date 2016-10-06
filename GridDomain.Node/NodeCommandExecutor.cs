@@ -43,7 +43,10 @@ namespace GridDomain.Node
                                               ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
                                           })
                                           .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                                          .Default(m => { throw new InvalidMessageException(m.ToPropsString()); });
+                                          .Default(m =>
+                                          {
+                                              throw new InvalidMessageException(m.ToPropsString());
+                                          });
                                       return result;
                                   });
         }
