@@ -132,7 +132,7 @@ namespace GridDomain.Tests.Framework
         private ExpectedMessagesReceived Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
         {
             var actor = system
-                                .ActorOf(Props.Create(() => new AllMessageWaiter(TestActor, expectedMessages)),
+                                .ActorOf(Props.Create(() => new AllMessageWaiterActor(TestActor, expectedMessages)),
                                          "MessageWaiter_" + Guid.NewGuid());
 
             foreach (var m in expectedMessages)

@@ -7,7 +7,8 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public abstract class MessageWaiter<T> : UntypedActor where T : ExpectedMessage
+ 
+    public abstract class MessageWaiterActor<T> : UntypedActor where T : ExpectedMessage
     {
         private readonly List<IActorRef> subscribers;
         protected readonly Dictionary<Type, ExpectedMessageHistory> ReceivedMessagesHistory;
@@ -23,7 +24,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             }
         }
 
-        protected MessageWaiter(IActorRef subscriber, params T[] expectedMessages)
+        protected MessageWaiterActor(IActorRef subscriber, params T[] expectedMessages)
         {
             subscribers = new List<IActorRef>{subscriber};
 

@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
@@ -7,12 +6,12 @@ using GridDomain.CQRS.Messaging.Akka;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class MessagesListener
+    public class MessageObserver
     {
         private readonly ActorSystem _sys;
         private readonly IActorSubscriber _transport;
 
-        public MessagesListener(ActorSystem sys, IActorSubscriber transport)
+        public MessageObserver(ActorSystem sys, IActorSubscriber transport)
         {
             _transport = transport;
             _sys = sys;
@@ -22,7 +21,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             var inbox = Inbox.Create(_sys);
             var props =
-                Props.Create(() => new CommandWaiterActor(inbox.Receiver,plan.Command, plan.ExpectedMessages));
+                Props.Create(() => new CommandWaiterActor(inbox.Receiver, plan.Command, plan.ExpectedMessages));
             var waitActor = _sys.ActorOf(props, "Command_waiter_" + plan.Command.Id);
 
             foreach (var expectedMessage in plan.ExpectedMessages)

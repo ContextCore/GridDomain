@@ -10,16 +10,16 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandWaiter : MessageWaiter<ExpectedMessage>
+    public class CommandWaiterActor : MessageWaiterActor<ExpectedMessage>
     {
         private readonly ICommand _command;
 
-        public CommandWaiter(IActorRef subscribers, ICommand command, params ExpectedMessage[] expectedMessage) : base(subscribers, expectedMessage)
+        public CommandWaiterActor(IActorRef subscribers, ICommand command, params ExpectedMessage[] expectedMessage) : base(subscribers, expectedMessage)
         {
             _command = command;
         }
 
-        public CommandWaiter(IActorRef subscribers, CommandPlan plan) : base(subscribers, plan.ExpectedMessages)
+        public CommandWaiterActor(IActorRef subscribers, CommandPlan plan) : base(subscribers, plan.ExpectedMessages)
         {
             _command = plan.Command;
         }
@@ -34,7 +34,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             //message faults are not counted while waiting for messages
             return ReceivedMessagesHistory.Where(c => !typeof(IFault).IsAssignableFrom(c.Key))
-                                   .All(h => h.Value.Received.Count >= h.Value.Expected.MessageCount);
+                                          .All(h => h.Value.Received.Count >= h.Value.Expected.MessageCount);
         }
 
         //message is fault that caller wish to know about

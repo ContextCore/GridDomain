@@ -11,7 +11,7 @@ namespace GridDomain.Node
 {
     public interface IGridDomainNode : ICommandExecutor
     {
-        MessagesListener Listener { get; }
+        IMessageWaiterProducer WaiterFactory { get; }
     }
 
  
