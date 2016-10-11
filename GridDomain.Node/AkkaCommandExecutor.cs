@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
@@ -13,24 +12,6 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public class NodeWaiterBuilder : IMessageWaiterProducer
-    {
-        public NodeWaiterBuilder(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
-        {
-            
-        }
-        public IMessagesWaiterBuilder<IMessageWaiter> NewWaiter()
-        {
-           //return new AkkaMessageWaiterBuilder();
-            return null;
-        }
-
-        public IMessagesWaiterBuilder<ICommandWaiter> NewCommandWaiter()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     /// <summary>
     /// Executes commands. Should not be used inside actors
     /// </summary>
@@ -54,8 +35,8 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-           var waitTask =  _listener.WaitForCommand(plan)
-                                    .ContinueWith(ProcessWaitResults);
+            var waitTask =  _listener.WaitForCommand(plan)
+                                     .ContinueWith(ProcessWaitResults);
 
             Execute(plan.Command);
 
@@ -69,27 +50,27 @@ namespace GridDomain.Node
 
             object result = null;
             t.Result.Match()
-                    .With<IFault>(fault =>
-                    {
-                        var domainExcpetion = fault.Exception.UnwrapSingle();
-                        ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
-                    })
-                    .With<Failure>(f =>
-                    {
-                        if(f.Exception is TimeoutException)
-                            throw new TimeoutException("Command execution timed out");
-                        ThrowInvalidMessage(f);
-                    })
-                    .With<Status.Failure>(s =>
-                    {
-                        if (s.Cause is TimeoutException)
-                            throw new TimeoutException("Command execution timed out");
-                        ThrowInvalidMessage(s);
-                    })
-                    .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
-                    .Default(ThrowInvalidMessage);
+                .With<IFault>(fault =>
+                {
+                    var domainExcpetion = fault.Exception.UnwrapSingle();
+                    ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
+                })
+                .With<Failure>(f =>
+                {
+                    if(f.Exception is TimeoutException)
+                        throw new TimeoutException("Command execution timed out");
+                    ThrowInvalidMessage(f);
+                })
+                .With<Status.Failure>(s =>
+                {
+                    if (s.Cause is TimeoutException)
+                        throw new TimeoutException("Command execution timed out");
+                    ThrowInvalidMessage(s);
+                })
+                .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
+                .Default(ThrowInvalidMessage);
 
-             return result;
+            return result;
         }
 
         private void ThrowInvalidMessage(object m)

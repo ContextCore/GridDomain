@@ -240,6 +240,7 @@
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\NotifyOnRecoverComplete.cs" />
+    <Compile Include="AkkaCommandExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="AkkaMessaging\Waiting\MessageObserver.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessagesListener.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiterExtensions.cs" />
+    <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
@@ -305,7 +307,7 @@
     <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
-    <Compile Include="NodeCommandExecutor.cs" />
+    <Compile Include="NodeWaiterBuilder.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />

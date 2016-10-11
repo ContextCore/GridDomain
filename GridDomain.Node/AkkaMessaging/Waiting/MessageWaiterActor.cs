@@ -73,9 +73,4 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return new ExpectedMessagesReceived(message, ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray());
         }
     }
-
-    public class NotifyOnWaitEnd
-    {
-        public static NotifyOnWaitEnd Instance = new NotifyOnWaitEnd();
-    }
 }
