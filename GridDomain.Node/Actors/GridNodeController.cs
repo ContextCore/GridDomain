@@ -21,7 +21,6 @@ namespace GridDomain.Node.Actors
             _messageRouting = messageRouting;
             _messagePublisher = transport;
             _monitor = new ActorMonitor(Context);
-          //  _listener = new MessagesListener(Context.System, subscriber);
         }
 
         public void Handle(Start msg)

@@ -114,10 +114,10 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-            StartController(System);
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+            Start();
 
             Listener = new MessagesListener(System,Transport);
         }
@@ -157,13 +157,13 @@ namespace GridDomain.Node
             _log.Debug("GridDomain node {Id} stopped",Id);
         }
 
-        private void StartController(ActorSystem actorSystem)
+        private void Start()
         {
             _stopping = false;
             _log.Debug("Launching GridDomain node {Id}",Id);
 
-            var props = actorSystem.DI().Props<GridNodeController>();
-            var nodeController = actorSystem.ActorOf(props,nameof(GridNodeController));
+            var props = System.DI().Props<GridNodeController>();
+            var nodeController = System.ActorOf(props,nameof(GridNodeController));
 
             nodeController.Ask(new GridNodeController.Start
             {
@@ -171,7 +171,7 @@ namespace GridDomain.Node
             })
             .Wait(TimeSpan.FromSeconds(2));
 
-            _log.Debug("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
+            _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
 
             _commandExecutor = new AkkaCommandExecutor(System,Transport);
         }
