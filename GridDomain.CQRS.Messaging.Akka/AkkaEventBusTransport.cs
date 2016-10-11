@@ -22,6 +22,11 @@ namespace GridDomain.CQRS.Messaging.Akka
             Subscribe(typeof (TMessage), actor);
         }
 
+        public void Unsubscribe(IActorRef actor, Type topic)
+        {
+            _bus.Unsubscribe(actor,topic);
+        }
+
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
             Subscribe(messageType, actor);

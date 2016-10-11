@@ -36,16 +36,12 @@ namespace GridDomain.Node
     /// </summary>
     public class AkkaCommandExecutor : ICommandExecutor
     {
-
-        private readonly IActorRef _nodeController;
-        private ISoloLogger _logger = LogManager.GetLogger();
+        private readonly ISoloLogger _logger = LogManager.GetLogger();
         private readonly IActorTransport _transport;
-        private readonly ActorSystem _system;
-        private MessagesListener _listener;
+        private readonly MessagesListener _listener;
 
         public AkkaCommandExecutor(ActorSystem system, IActorTransport transport)
         {
-            _system = system;
             _transport = transport;
             _listener = new MessagesListener(system, transport);
         }

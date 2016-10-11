@@ -20,15 +20,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         internal Task<object> WaitForCommand(CommandPlan plan)
         {
-            var inbox = Inbox.Create(_sys);
-            var props =
-                Props.Create(() => new CommandWaiterActor(inbox.Receiver,plan.Command, plan.ExpectedMessages));
+            var props = Props.Create(() => new CommandWaiterActor(null,plan.Command, plan.ExpectedMessages));
             var waitActor = _sys.ActorOf(props, "Command_waiter_" + plan.Command.Id);
 
             foreach (var expectedMessage in plan.ExpectedMessages)
                 _transport.Subscribe(expectedMessage.MessageType, waitActor);
 
-            return inbox.ReceiveAsync(plan.Timeout);
+            return waitActor.Ask(NotifyOnWaitEnd.Instance, plan.Timeout);
         }
 
         public Task<object> WaitAll(params ExpectedMessage[] expect)
@@ -41,7 +39,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             foreach (var expectedMessage in expect)
                 _transport.Subscribe(expectedMessage.MessageType, waitActor);
 
-            return inbox.ReceiveAsync();
+            return inbox.ReceiveAsync()
+                        .ContinueWith(t => {
+                                             inbox.Dispose();
+                                             return t.Result;
+            });
         }
 
         public Task<object> WaitAny(params ExpectedMessage[] expect)

@@ -10,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
  
     public abstract class MessageWaiterActor<T> : UntypedActor where T : ExpectedMessage
     {
-        private readonly List<IActorRef> subscribers;
+        private readonly List<IActorRef> _subscribers = new List<IActorRef>();
         protected readonly Dictionary<Type, ExpectedMessageHistory> ReceivedMessagesHistory;
 
         protected class ExpectedMessageHistory
@@ -24,9 +24,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             }
         }
 
-        protected MessageWaiterActor(IActorRef subscriber, params T[] expectedMessages)
+        protected MessageWaiterActor(IActorRef subscriber = null, params T[] expectedMessages)
         {
-            subscribers = new List<IActorRef>{subscriber};
+            if(subscriber != null)
+            _subscribers.Add(subscriber);
 
             ReceivedMessagesHistory = expectedMessages.ToDictionary(m => m.MessageType, 
                                                                     m => new ExpectedMessageHistory(m));
@@ -38,6 +39,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         /// <param name="message"></param>
         protected override void OnReceive(object message)
         {
+            if (message is NotifyOnWaitEnd)
+            {
+                _subscribers.Add(Sender);
+                return;
+            }
+
             var msgType = message.GetType();
           
             var registeredType = ReceivedMessagesHistory.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
@@ -54,7 +61,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             var answerMessage = BuildAnswerMessage(message);
 
-            foreach (var s in subscribers)
+            foreach (var s in _subscribers)
                 s.Tell(answerMessage);
 
             Context.Stop(Self);
@@ -65,5 +72,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return new ExpectedMessagesReceived(message, ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray());
         }
+    }
+
+    public class NotifyOnWaitEnd
+    {
+        public static NotifyOnWaitEnd Instance = new NotifyOnWaitEnd();
     }
 }
