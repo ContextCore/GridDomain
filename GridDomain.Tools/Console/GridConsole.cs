@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -18,7 +19,7 @@ namespace GridDomain.Tools.Console
         private readonly ActorSystem _consoleSystem;
         public IActorRef NodeController;
         private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(5);
-        private NodeCommandExecutor _commandExecutor;
+        private AkkaCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
 
         public GridConsole(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
@@ -46,7 +47,7 @@ namespace GridDomain.Tools.Console
         {
             NodeController = GetActor(GetSelection(nameof(GridNodeController)));
 
-            _commandExecutor = new NodeCommandExecutor(NodeController);
+            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, new AkkaEventBusTransport(_consoleSystem));
         }
       
         public void Dispose()

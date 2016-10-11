@@ -142,7 +142,7 @@ namespace GridDomain.Node
         }
 
         bool _stopping = false;
-        private NodeCommandExecutor _commandExecutor;
+        private AkkaCommandExecutor _commandExecutor;
 
         public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
@@ -173,7 +173,7 @@ namespace GridDomain.Node
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
 
-            _commandExecutor = new NodeCommandExecutor(nodeController);
+            _commandExecutor = new AkkaCommandExecutor(System,Transport);
         }
 
         public void Execute(params ICommand[] commands)

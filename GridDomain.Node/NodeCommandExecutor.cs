@@ -5,6 +5,7 @@ using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
@@ -12,25 +13,66 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public class NodeCommandExecutor : ICommandExecutor
+    public class NodeWaiterBuilder : IMessageWaiterProducer
     {
+        public NodeWaiterBuilder(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
+        {
+            
+        }
+        public IMessagesWaiterBuilder<IMessageWaiter> NewWaiter()
+        {
+           //return new AkkaMessageWaiterBuilder();
+            return null;
+        }
+
+        public IMessagesWaiterBuilder<ICommandWaiter> NewCommandWaiter()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Executes commands. Should not be used inside actors
+    /// </summary>
+    public class AkkaCommandExecutor : ICommandExecutor
+    {
+
+        //public void Handle(ICommand cmd)
+        //{
+        //    _monitor.IncrementMessagesReceived();
+        //    _messagePublisher.Publish(cmd);
+        //}
+
+        //public void Handle(CommandPlan commandWithConfirmation)
+        //{
+        //    _listener.WaitForCommand(commandWithConfirmation).PipeTo(Sender);
+        //    Handle(commandWithConfirmation.Command);
+        //}
+
+
         private readonly IActorRef _nodeController;
         private ISoloLogger _logger = LogManager.GetLogger();
-        public NodeCommandExecutor(IActorRef nodeController)
+        private readonly IActorTransport _transport;
+        private readonly ActorSystem _system;
+        private MessagesListener _listener;
+
+        public AkkaCommandExecutor(ActorSystem system, IActorTransport transport)
         {
-            _nodeController = nodeController;
+            _system = system;
+            _transport = transport;
+            _listener = new MessagesListener(system, transport);
         }
 
         public void Execute(params ICommand[] commands)
         {
             foreach (var cmd in commands)
-                _nodeController.Tell(cmd);
+                _transport.Publish(cmd);
         }
 
         public Task<object> Execute(CommandPlan plan)
         {
-            return _nodeController.Ask(plan, plan.Timeout)
-                                  .ContinueWith(t =>
+           var waitTask =  _listener.WaitForCommand(plan)
+                     .ContinueWith( t => 
                                   {
                                       if (t.IsCanceled)
                                           throw new TimeoutException("Command execution timed out");
@@ -58,6 +100,8 @@ namespace GridDomain.Node
                                           .Default(ThrowInvalidMessage);
                                       return result;
                                   });
+            Execute(plan.Command);
+            return waitTask;
         }
 
         private void ThrowInvalidMessage(object m)

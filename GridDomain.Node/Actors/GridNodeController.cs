@@ -21,7 +21,7 @@ namespace GridDomain.Node.Actors
             _messageRouting = messageRouting;
             _messagePublisher = transport;
             _monitor = new ActorMonitor(Context);
-            _listener = new MessagesListener(Context.System, subscriber);
+          //  _listener = new MessagesListener(Context.System, subscriber);
         }
 
         public void Handle(Start msg)
@@ -36,19 +36,6 @@ namespace GridDomain.Node.Actors
             //TODO: replace with message from router
             Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);
         }
-
-        public void Handle(ICommand cmd)
-        {
-            _monitor.IncrementMessagesReceived();
-            _messagePublisher.Publish(cmd);
-        }
-
-        public void Handle(CommandPlan commandWithConfirmation)
-        {
-            _listener.WaitForCommand(commandWithConfirmation).PipeTo(Sender);
-            Handle(commandWithConfirmation.Command);
-        }
-
       
         public class Start
         {
