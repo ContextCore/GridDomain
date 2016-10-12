@@ -26,10 +26,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             foreach (var expectedMessage in plan.ExpectedMessages)
                 _transport.Subscribe(expectedMessage.MessageType, waitActor);
 
-            return waitActor.Ask(NotifyOnWaitEnd.Instance, plan.Timeout);
+            var localWaiter = new LocalMessageWaiter(waitActor, plan.Timeout);
+            return localWaiter.ReceiveAll<object>();
         }
 
-        public Task<object> WaitAll(params ExpectedMessage[] expect)
+        public Task<object> WaitAll(TimeSpan timeout, params ExpectedMessage[] expect)
         {
             var inbox = Inbox.Create(_sys);
             var props = Props.Create(() => new AllMessageWaiterActor(inbox.Receiver, expect));
@@ -39,24 +40,22 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             foreach (var expectedMessage in expect)
                 _transport.Subscribe(expectedMessage.MessageType, waitActor);
 
-            return inbox.ReceiveAsync()
-                        .ContinueWith(t => {
-                                             inbox.Dispose();
-                                             return t.Result;
-            });
+            var localWaiter = new LocalMessageWaiter(waitActor, timeout);
+            return localWaiter.ReceiveAll<object>();
         }
 
-        public Task<object> WaitAny(params ExpectedMessage[] expect)
-        {
-            var inbox = Inbox.Create(_sys);
-            var props = Props.Create(() => new AnyMessageWaiterActor(inbox.Receiver, expect));
-
-            var waitActor = _sys.ActorOf(props, "All_msg_waiter_" + Guid.NewGuid());
-
-            foreach (var expectedMessage in expect)
-                _transport.Subscribe(expectedMessage.MessageType, waitActor);
-
-            return inbox.ReceiveAsync();
-        }
+       // public Task<object> WaitAny(params ExpectedMessage[] expect)
+       // {
+       //     var inbox = Inbox.Create(_sys);
+       //     var props = Props.Create(() => new AnyMessageWaiterActor(inbox.Receiver, expect));
+       //
+       //     var waitActor = _sys.ActorOf(props, "All_msg_waiter_" + Guid.NewGuid());
+       //
+       //     foreach (var expectedMessage in expect)
+       //         _transport.Subscribe(expectedMessage.MessageType, waitActor);
+       //
+       //     var localWaiter = new LocalMessageWaiter(waitActor,TimeSpan.FromSeconds(10));
+       //     return localWaiter.Receive<object>();
+       // }
     }
 }

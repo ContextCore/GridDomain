@@ -55,11 +55,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 .Default(message =>
                 {
                     var history = FindHistory(message);
-                    if (history == null || history.Expected.Match(message) == false) return;
-
-                    history.Received.Add(message);
-
+                    if(history == null) return;
+                    
                     NotifyMessageSubscribers(history.Expected.MessageType, message);
+
+                    if (!history.Expected.Match(message)) return;
+                    history.Received.Add(message);
 
                     if (!WaitIsOver(message, history.Expected)) return;
 

@@ -135,6 +135,7 @@
     <Compile Include="MessageRouting\IProjectionGroup.cs" />
     <Compile Include="MessageRouting\IProjectionGroupDescriptor.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />
+    <Compile Include="MessageRouting\MessageProcessException.cs" />
     <Compile Include="MessageRouting\MessageRoute.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="MessageRouting\ProjectionGroup.cs" />

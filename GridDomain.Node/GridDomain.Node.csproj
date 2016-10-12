@@ -236,7 +236,6 @@
     <Compile Include="Actors\CheckHealth.cs" />
     <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
-    <Compile Include="Actors\CommandExecutionFinished.cs" />
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\NotifyOnRecoverComplete.cs" />
@@ -244,8 +243,7 @@
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AkkaMessageWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AkkaMessageWaiterBuilder.cs" />
+    <Compile Include="AkkaMessaging\Waiting\AdvancedMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\AnyMessageWaiterActor.cs" />
     <Compile Include="AkkaMessaging\Waiting\Example.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedFault.cs" />
@@ -253,10 +251,13 @@
     <Compile Include="AkkaMessaging\Waiting\ICommandWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\IMessagesWaiterBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\IMessageWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\IWaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageNotifierActor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessageObserver.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessagesListener.cs" />
+    <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />

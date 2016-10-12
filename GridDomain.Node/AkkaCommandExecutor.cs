@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
-using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -18,7 +14,6 @@ namespace GridDomain.Node
     /// </summary>
     public class AkkaCommandExecutor : ICommandExecutor
     {
-        private readonly ISoloLogger _logger = LogManager.GetLogger();
         private readonly IActorTransport _transport;
         private readonly MessagesListener _listener;
 
@@ -36,53 +31,11 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-            var waitTask =  _listener.WaitForCommand(plan)
-                                     .ContinueWith(ProcessWaitResults);
+            var waitTask = _listener.WaitForCommand(plan);
 
             Execute(plan.Command);
 
             return waitTask;
-        }
-
-        private object ProcessWaitResults(Task<object> t)
-        {
-            if (t.IsCanceled)
-                throw new TimeoutException("Command execution timed out");
-
-            object result = null;
-            t.Result.Match()
-                .With<ExpectedMessagesReceived>(e =>
-                {
-                    result = e.Received.Count > 1 ? e.Received.ToArray() : e.Received.First();
-                })
-                .With<IFault>(fault =>
-                {
-                    var domainExcpetion = fault.Exception.UnwrapSingle();
-                    ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
-                })
-                .With<Failure>(f =>
-                {
-                    if(f.Exception is TimeoutException)
-                        throw new TimeoutException("Command execution timed out");
-                    ThrowInvalidMessage(f);
-                })
-                .With<Status.Failure>(s =>
-                {
-                    if (s.Cause is TimeoutException)
-                        throw new TimeoutException("Command execution timed out");
-                    ThrowInvalidMessage(s);
-                })
-                .Default(ThrowInvalidMessage);
-
-            return result;
-        }
-
-        private void ThrowInvalidMessage(object m)
-        {
-            var invalidMessageException = new InvalidMessageException(m.ToPropsString());
-            _logger.Error(invalidMessageException, "Received unexpected message while waiting for command execution: {Message}",
-                m.ToPropsString());
-            throw invalidMessageException;
         }
 
         public Task<T> Execute<T>(CommandPlan<T> plan)

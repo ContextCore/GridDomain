@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorSubscriberExtensions.cs" />
     <Compile Include="AkkaEventBusTransport.cs" />
     <Compile Include="CannotGetDistributedPubSubException.cs" />
     <Compile Include="DistributedPubSubTransport.cs" />

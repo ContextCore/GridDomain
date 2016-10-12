@@ -2,22 +2,26 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using MemBus.Support;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    abstract class AdvancedMessageWaiter : IMessageWaiter
+    class LocalMessageWaiter : IMessageWaiter
     {
+        private readonly ISoloLogger _logger = LogManager.GetLogger();
         private readonly IActorRef _waiter;
         private readonly TimeSpan _timeout;
 
-        public AdvancedMessageWaiter(IActorRef waiter, TimeSpan timeout)
+        public LocalMessageWaiter(IActorRef waiter, TimeSpan timeout)
         {
             _timeout = timeout;
             _waiter = waiter;
@@ -37,6 +41,58 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                             t.Result : Receive(filter).Result, 
                              TaskContinuationOptions.OnlyOnRanToCompletion);
         }
+
+        public Task<T> ReceiveAll<T>()
+        {
+            return _waiter.Ask<object>(NotifyOnWaitEnd.Instance, _timeout)
+                          .ContinueWith(ProcessWaitResults)
+                          .ContinueWithSafeResultCast(result => (T)result);
+        }
+
+        private object ProcessWaitResults(Task<object> t)
+        {
+            if (t.IsCanceled)
+                throw new TimeoutException("Command execution timed out");
+
+            object result = null;
+            t.Result.Match()
+                    .With<ExpectedMessagesReceived>(e =>
+                    {
+                        result = e.Received.Count > 1 ? e.Received.ToArray() : e.Received.First();
+                    })
+                    .With<IFault>(fault =>
+                    {
+                        var domainExcpetion = fault.Exception.UnwrapSingle();
+                        ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
+                    })
+                    .With<Failure>(f =>
+                    {
+                        if (f.Exception is TimeoutException)
+                            throw new TimeoutException("Command execution timed out");
+                        ThrowInvalidMessage(f);
+                    })
+                    .With<Status.Failure>(s =>
+                    {
+                        if (s.Cause is TimeoutException)
+                            throw new TimeoutException("Command execution timed out");
+                        ThrowInvalidMessage(s);
+                    })
+                    .Default(m =>
+                    {
+                        result = m;
+                    });
+
+            return result;
+        }
+
+        private void ThrowInvalidMessage(object m)
+        {
+            var invalidMessageException = new InvalidMessageException(m.ToPropsString());
+            _logger.Error(invalidMessageException, "Received unexpected message while waiting for command execution: {Message}",
+                m.ToPropsString());
+            throw invalidMessageException;
+        }
+
     }
 
 

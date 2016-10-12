@@ -58,7 +58,7 @@
     <Compile Include="Expect.cs" />
     <Compile Include="ExpectedFault.cs" />
     <Compile Include="ExpectedMessage.cs" />
-    <Compile Include="ExpectedMessagesRecieved.cs" />
+    <Compile Include="ExpectedMessagesReceived.cs" />
     <Compile Include="Fault.cs" />
     <Compile Include="CommandExecutorExtensions.cs" />
     <Compile Include="ICommand.cs" />

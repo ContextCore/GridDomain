@@ -6,9 +6,9 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public class NodeWaiterBuilder : IMessageWaiterProducer
+    public class AkkaMessagesWaiterBuilder : IMessageWaiterProducer
     {
-        public NodeWaiterBuilder(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
+        public AkkaMessagesWaiterBuilder(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
         {
             
         }
