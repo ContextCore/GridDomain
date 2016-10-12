@@ -2,15 +2,10 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors
 {
-    public class CommandExecutionFinished
-    {
-        public object ResultMessage { get; }
-        public ICommand Command { get; }
-
-        public CommandExecutionFinished(ICommand command, object resultMessage)
-        {
-            ResultMessage = resultMessage;
-            Command = command;
-        }
-    }
+    //public class CommandExecutionFinished : ExpectedMessagesReceived<ICommand>
+    //{
+    //    public CommandExecutionFinished(object expectedMsg,object[] resultMessage) : base(expectedMsg, resultMessage)
+    //    {
+    //    }
+    //}
 }

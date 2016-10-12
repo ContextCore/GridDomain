@@ -27,11 +27,11 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
             _scheduledTime = DateTime.Now.AddSeconds(200);
             _testCommand = new RaiseEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Recieved.First();
+            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
 
             _cancelFutureEventCommand = new CancelFutureEventCommand(_testCommand.AggregateId, _testCommand.Value);
 
-            _futureEventCancelation = (FutureEventCanceledEvent)ExecuteAndWaitFor<FutureEventCanceledEvent>(_cancelFutureEventCommand).Recieved.First();
+            _futureEventCancelation = (FutureEventCanceledEvent)ExecuteAndWaitFor<FutureEventCanceledEvent>(_cancelFutureEventCommand).Received.First();
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);

@@ -26,7 +26,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public void Main()
         {
-            IMessageWaiterProducer node = null;// = new AkkaMessageWaiterBuilder(null,null,TimeSpan.FromMinutes(1));
+            IMessageWaiterProducer node = null;
 
             var cmd = new SampleCommand();
             
@@ -43,10 +43,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                   .Create()
                                 .Execute(cmd);
 
-            observer.WaitAll();
+            var results = observer.ReceiveAll().Result;
 
-            var result = observer.Received<SampleEventA>();
-            var resultA = observer.AllReceivedMessages.OfType<SampleEventB>();
+            var result = results.Message<SampleEventA>();
+            var resultA = results.All.OfType<SampleEventB>();
             var a = new object();
 
         }

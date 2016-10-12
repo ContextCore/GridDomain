@@ -10,7 +10,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
  
     public abstract class MessageWaiterActor<T> : UntypedActor where T : ExpectedMessage
     {
-        private readonly List<IActorRef> _subscribers = new List<IActorRef>();
+        private readonly List<IActorRef> _resultMessageSubscribers = new List<IActorRef>();
+        private readonly Dictionary<Type,List<IActorRef>> _receivedMessageSubscribers = new Dictionary<Type, List<IActorRef>>();
         protected readonly Dictionary<Type, ExpectedMessageHistory> ReceivedMessagesHistory;
 
         protected class ExpectedMessageHistory
@@ -27,7 +28,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected MessageWaiterActor(IActorRef subscriber = null, params T[] expectedMessages)
         {
             if(subscriber != null)
-            _subscribers.Add(subscriber);
+            _resultMessageSubscribers.Add(subscriber);
 
             ReceivedMessagesHistory = expectedMessages.ToDictionary(m => m.MessageType, 
                                                                     m => new ExpectedMessageHistory(m));
@@ -37,34 +38,57 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         /// Will count only messages of known type and with known Id, if IdPropertyName is specified
         /// </summary>
         /// <param name="message"></param>
-        protected override void OnReceive(object message)
+        protected override void OnReceive(object msg)
         {
-            if (message is NotifyOnWaitEnd)
-            {
-                _subscribers.Add(Sender);
-                return;
-            }
+            msg.Match()
+                .With<NotifyOnWaitEnd>(s => { _resultMessageSubscribers.Add(Sender); })
+                .With<NotifyOnMessage>(notify =>
+                {
+                    List<IActorRef> list;
+                    if (!_receivedMessageSubscribers.TryGetValue(notify.MessageType, out list))
+                    {
+                        list = new List<IActorRef>();
+                        _receivedMessageSubscribers[notify.MessageType] = list;
+                    }
+                    list.Add(Sender);
+                })
+                .Default(message =>
+                {
+                    var history = FindHistory(message);
+                    if (history == null || history.Expected.Match(message) == false) return;
 
+                    history.Received.Add(message);
+
+                    NotifyMessageSubscribers(history.Expected.MessageType, message);
+
+                    if (!WaitIsOver(message, history.Expected)) return;
+
+                    var answerMessage = BuildAnswerMessage(message);
+
+                    NotifyWaitSubscribers(answerMessage);
+
+                    Context.Stop(Self);
+                });
+        }
+
+        private ExpectedMessageHistory FindHistory(object message)
+        {
             var msgType = message.GetType();
-          
             var registeredType = ReceivedMessagesHistory.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
-            if (registeredType == null) return;
+            return registeredType == null ? null : ReceivedMessagesHistory[registeredType];
+        }
 
-            var history = ReceivedMessagesHistory[registeredType];
+        private void NotifyMessageSubscribers(Type msgType, object message)
+        {
+            List<IActorRef> msgSubscribers;
+            if (_receivedMessageSubscribers.TryGetValue(msgType, out msgSubscribers))
+                NotifyWaitSubscribers(message);
+        }
 
-            var expect = history.Expected;
-            if (!expect.Match(message)) return;
-
-            history.Received.Add(message);
-
-            if (!WaitIsOver(message, expect)) return;
-
-            var answerMessage = BuildAnswerMessage(message);
-
-            foreach (var s in _subscribers)
-                s.Tell(answerMessage);
-
-            Context.Stop(Self);
+        private void NotifyWaitSubscribers(object answerMessage)
+        {
+            foreach (var s in _resultMessageSubscribers)
+                 s.Tell(answerMessage);
         }
 
         protected abstract bool WaitIsOver(object message, ExpectedMessage expect);

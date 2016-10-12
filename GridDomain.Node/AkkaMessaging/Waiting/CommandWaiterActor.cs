@@ -47,17 +47,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         protected override object BuildAnswerMessage(object message)
         {
-            object answerMessage = null;
-            message.Match()
-                   .With<IFault>(f => answerMessage = f)
-                   .Default(m =>
-                   {
-                       var allReceivedMessages = ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray();
-                       answerMessage = new CommandExecutionFinished(_command,
-                           allReceivedMessages.Length > 1 ? allReceivedMessages.ToArray() : m);
-                   });
-
-            return answerMessage;
+            if (message is IFault) return message;
+            return base.BuildAnswerMessage(message);
         }
     }
 }

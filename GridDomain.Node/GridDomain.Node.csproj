@@ -256,7 +256,6 @@
     <Compile Include="AkkaMessaging\Waiting\MessageNotifierActor.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageObserver.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessagesListener.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessageWaiterExtensions.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />

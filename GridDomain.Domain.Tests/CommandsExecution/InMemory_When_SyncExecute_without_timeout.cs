@@ -22,7 +22,6 @@ namespace GridDomain.Tests.CommandsExecution
 
         }
 
-
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },

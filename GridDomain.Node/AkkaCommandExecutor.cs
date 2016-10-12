@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Akka;
@@ -50,6 +51,10 @@ namespace GridDomain.Node
 
             object result = null;
             t.Result.Match()
+                .With<ExpectedMessagesReceived>(e =>
+                {
+                    result = e.Received.Count > 1 ? e.Received.ToArray() : e.Received.First();
+                })
                 .With<IFault>(fault =>
                 {
                     var domainExcpetion = fault.Exception.UnwrapSingle();
@@ -67,7 +72,6 @@ namespace GridDomain.Node
                         throw new TimeoutException("Command execution timed out");
                     ThrowInvalidMessage(s);
                 })
-                .With<CommandExecutionFinished>(finish => result = finish.ResultMessage)
                 .Default(ThrowInvalidMessage);
 
             return result;

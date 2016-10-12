@@ -4,7 +4,7 @@ namespace GridDomain.CQRS
 {
     public class ExpectedMessagesReceived<T> : ExpectedMessagesReceived
     {
-        public ExpectedMessagesReceived(T msg) : base(msg, new object[] {})
+        public ExpectedMessagesReceived(T msg, params object[] objects) : base(msg, objects)
         {
             Message = msg;
         }
@@ -14,14 +14,14 @@ namespace GridDomain.CQRS
 
     public class ExpectedMessagesReceived
     {
-        public ExpectedMessagesReceived(object msg, object[] objects)
+        public ExpectedMessagesReceived(object msg, params object[] objects)
         {
             Message = msg;
-            Recieved = objects;
+            Received = objects;
         }
 
         public object Message { get; private set; }
 
-        public IReadOnlyCollection<object> Recieved { get; } 
+        public IReadOnlyCollection<object> Received { get; } 
     }
 }
