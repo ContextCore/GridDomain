@@ -43,19 +43,5 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var localWaiter = new LocalMessageWaiter(waitActor, timeout);
             return localWaiter.ReceiveAll<object>();
         }
-
-       // public Task<object> WaitAny(params ExpectedMessage[] expect)
-       // {
-       //     var inbox = Inbox.Create(_sys);
-       //     var props = Props.Create(() => new AnyMessageWaiterActor(inbox.Receiver, expect));
-       //
-       //     var waitActor = _sys.ActorOf(props, "All_msg_waiter_" + Guid.NewGuid());
-       //
-       //     foreach (var expectedMessage in expect)
-       //         _transport.Subscribe(expectedMessage.MessageType, waitActor);
-       //
-       //     var localWaiter = new LocalMessageWaiter(waitActor,TimeSpan.FromSeconds(10));
-       //     return localWaiter.Receive<object>();
-       // }
     }
 }

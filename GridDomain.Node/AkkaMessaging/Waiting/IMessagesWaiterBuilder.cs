@@ -109,26 +109,32 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     //}
 
 
-    class MessageWaiterBuilder : IMessagesWaiterBuilder<LocalMessageWaiter>
+    class MessageWaiterConfigurator : IMessagesWaiterBuilder<LocalMessageWaiter> where TWaiter : IMessageWaiter
     {
-        public MessageWaiterBuilder(ActorSystem system, IActorTransport transport)
-        {
-            //var props = Props.Create(() => new AllMessageWaiterActor(null, plan.Command, plan.ExpectedMessages));
-            //var waitActor = system.ActorOf(props, "Command_waiter_" + plan.Command.Id);
+        private LocalMessageWaiter _waiter;
+        private List<Task<object>> allTasks = new List<Task<object>>();
 
-            //var waiter = new LocalMessageWaiter();
-        }
-        public IMessagesWaiterBuilder<LocalMessageWaiter> Message<T>(Predicate<T> filter = null)
+        public MessageWaiterConfigurator(ActorSystem system, IActorTransport transport)
         {
+            var props = Props.Create(() => new AllMessageWaiterActor(null, null, null));
+            var waitActor = system.ActorOf(props, "Command_waiter_" + plan.Command.Id);
+
+            _waiter = waiterFactory();
+        }
+
+        public IMessagesWaiterBuilder<TWaiter> Message<T>(Predicate<T> filter = null)
+        {
+            allTasks.Add(_waiter.Receive(filter).ContinueWith(t => (object)t.Result));
             return this;
         }
 
-        public IMessagesWaiterBuilder<LocalMessageWaiter> Fault<T>(Predicate<IFault<T>> filter = null)
+        public IMessagesWaiterBuilder<TWaiter> Fault<T>(Predicate<IFault<T>> filter = null)
         {
+            allTasks.Add(_waiter.Receive(filter));
             return this;
         }
 
-        public LocalMessageWaiter Create()
+        public T Create()
         {
             throw new NotImplementedException();
         }
