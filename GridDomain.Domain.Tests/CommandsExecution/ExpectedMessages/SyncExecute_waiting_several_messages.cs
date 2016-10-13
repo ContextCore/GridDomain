@@ -11,12 +11,12 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_waiting_several_messages : SampleDomainCommandExecutionTests
+    public class SyncExecute_waiting_several_messages : SampleDomainCommandExecutionTests
     {
         private object[] _anObject;
 
 
-        public InMemory_When_SyncExecute_waiting_several_messages() : base(true)
+        public SyncExecute_waiting_several_messages() : base(true)
         {
         }
 

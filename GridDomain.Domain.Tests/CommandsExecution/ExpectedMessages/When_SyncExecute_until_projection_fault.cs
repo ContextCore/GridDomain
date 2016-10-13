@@ -15,13 +15,13 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
+    public class When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
     {
-        public InMemory_When_SyncExecute_until_projection_fault() : base(true)
+        public When_SyncExecute_until_projection_fault() : base(true)
         {
         }
 
-        public InMemory_When_SyncExecute_until_projection_fault(bool inMemory = true) : base(inMemory)
+        public When_SyncExecute_until_projection_fault(bool inMemory = true) : base(inMemory)
         {
         }
 

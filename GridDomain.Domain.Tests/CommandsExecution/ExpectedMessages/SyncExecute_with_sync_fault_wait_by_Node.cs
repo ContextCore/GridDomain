@@ -10,14 +10,14 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_with_sync_fault_wait_by_Node : SampleDomainCommandExecutionTests
+    public class SyncExecute_with_sync_fault_wait_by_Node : SampleDomainCommandExecutionTests
     {
 
-        public InMemory_When_SyncExecute_with_sync_fault_wait_by_Node() : base(true)
+        public SyncExecute_with_sync_fault_wait_by_Node() : base(true)
         {
 
         }
-        public InMemory_When_SyncExecute_with_sync_fault_wait_by_Node(bool inMemory) : base(inMemory)
+        public SyncExecute_with_sync_fault_wait_by_Node(bool inMemory) : base(inMemory)
         {
 
 

@@ -9,15 +9,15 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_projection_group_fault : InMemory_When_SyncExecute_until_projection_fault
+    public class SyncExecute_until_projection_group_fault : When_SyncExecute_until_projection_fault
     {
 
-        public InMemory_When_SyncExecute_until_projection_group_fault() : base(true)
+        public SyncExecute_until_projection_group_fault() : base(true)
         {
 
         }
 
-        public InMemory_When_SyncExecute_until_projection_group_fault(bool inMemory = true) : base(inMemory)
+        public SyncExecute_until_projection_group_fault(bool inMemory = true) : base(inMemory)
         {
 
         }

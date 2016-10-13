@@ -14,10 +14,10 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_without_timeout : SampleDomainCommandExecutionTests
+    public class SyncExecute_without_timeout : SampleDomainCommandExecutionTests
     {
 
-        public InMemory_When_SyncExecute_without_timeout() : base(true)
+        public SyncExecute_without_timeout() : base(true)
         {
 
         }

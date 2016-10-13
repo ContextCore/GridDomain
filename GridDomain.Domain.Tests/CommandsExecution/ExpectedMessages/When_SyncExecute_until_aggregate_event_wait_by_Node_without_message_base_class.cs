@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class : InMemorySampleDomainTests
+    public class When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class : InMemorySampleDomainTests
     {
         [Then]
         public void SyncExecute_will_finish()

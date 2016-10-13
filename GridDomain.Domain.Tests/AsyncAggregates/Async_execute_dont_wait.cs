@@ -7,18 +7,18 @@ using NUnit.Framework;
 namespace GridDomain.Tests.AsyncAggregates
 {
     [TestFixture]
-    public class InMemory_Async_execute_dont_wait : SampleDomainCommandExecutionTests
+    public class Async_execute_dont_wait : SampleDomainCommandExecutionTests
     {
-        public InMemory_Async_execute_dont_wait():base(true)
+        public Async_execute_dont_wait():base(true)
         {
             
         }
-        public InMemory_Async_execute_dont_wait(bool inMemory = true):base(inMemory)
+        public Async_execute_dont_wait(bool inMemory = true):base(inMemory)
         {
             
         }
         [Then]
-        public void Async_execute_dont_wait()
+        public void Async_execute_dont_wait_for_command_finish()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             GridNode.Execute(syncCommand);
