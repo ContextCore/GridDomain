@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_when_sync_execute_with_command_fault : InMemorySampleDomainTests
+    public class Sync_execute_with_command_fault : InMemorySampleDomainTests
     {
 
         [Then]

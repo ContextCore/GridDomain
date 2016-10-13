@@ -11,23 +11,23 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_SyncExecute_until_projection_build_event_wait_by_caller: SampleDomainCommandExecutionTests
+    public class SyncExecute_until_projection_build_event_wait_by_caller: SampleDomainCommandExecutionTests
     {
         private AggregateChangedEventNotification _changedEvent;
         private SampleAggregate _aggregate;
         private LongOperationCommand _syncCommand;
 
-        public InMemory_SyncExecute_until_projection_build_event_wait_by_caller():base(true)
+        public SyncExecute_until_projection_build_event_wait_by_caller():base(true)
         {
             
         }
-        public InMemory_SyncExecute_until_projection_build_event_wait_by_caller(bool inMemory=true):base(inMemory)
+        public SyncExecute_until_projection_build_event_wait_by_caller(bool inMemory=true):base(inMemory)
         {
             
         }
 
         [OneTimeSetUp]
-        public void SyncExecute_until_projection_build_event_wait_by_caller()
+        public void Given_SyncExecute_until_projection_build_event_wait_by_caller()
         {
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,_syncCommand.AggregateId);

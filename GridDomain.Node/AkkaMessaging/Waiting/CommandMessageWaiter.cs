@@ -1,98 +1,37 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using Akka;
 using Akka.Actor;
-using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using MemBus.Support;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    class LocalMessageWaiter : IMessageWaiter
+
+    class CommandMessageWaiter : LocalMessageWaiter, ICommandWaiter
     {
-        private readonly ISoloLogger _logger = LogManager.GetLogger();
-        private readonly IActorRef _waiter;
-        private readonly TimeSpan _timeout;
+        private readonly ICommandExecutor _executor;
 
-        public LocalMessageWaiter(IActorRef waiter, TimeSpan timeout)
+        internal CommandMessageWaiter(ICommandExecutor executor,IActorRef receiver, TimeSpan timeout) : base(receiver, timeout)
         {
-            _timeout = timeout;
-            _waiter = waiter;
+            _executor = executor;
         }
 
-        public Task<IWaitResults> ReceiveAll()
+        public IMessageWaiter Execute(ICommand command)
         {
-            return _waiter.Ask<ExpectedMessagesReceived>(NotifyOnWaitEnd.Instance, _timeout)
-                          .ContinueWith(t => (IWaitResults)new WaitResults(t.Result.Received), 
-                                      TaskContinuationOptions.OnlyOnRanToCompletion);
+            _executor.Execute(command);
+            return this;
         }
 
-        public Task<TMsg> Receive<TMsg>(Predicate<TMsg> filter = null)
+        public static CommandMessageWaiter New(ICommandExecutor executor, ActorSystem system, TimeSpan timeout)
         {
-            return _waiter.Ask<TMsg>(new NotifyOnMessage(typeof(TMsg)), _timeout)
-                          .ContinueWith(t => filter?.Invoke(t.Result) == true ?
-                                            t.Result : Receive(filter).Result, 
-                             TaskContinuationOptions.OnlyOnRanToCompletion);
+            var props = Props.Create(() => new CommandWaiterActor(null));
+            var waitActor = system.ActorOf(props, "MessagesWaiter_" + Guid.NewGuid());
+
+            return new CommandMessageWaiter(executor,waitActor, timeout);
         }
-
-        public Task<T> ReceiveAll<T>()
-        {
-            return _waiter.Ask<object>(NotifyOnWaitEnd.Instance, _timeout)
-                          .ContinueWith(ProcessWaitResults)
-                          .ContinueWithSafeResultCast(result => (T)result);
-        }
-
-        private object ProcessWaitResults(Task<object> t)
-        {
-            if (t.IsCanceled)
-                throw new TimeoutException("Command execution timed out");
-
-            object result = null;
-            t.Result.Match()
-                    .With<ExpectedMessagesReceived>(e =>
-                    {
-                        result = e.Received.Count > 1 ? e.Received.ToArray() : e.Received.First();
-                    })
-                    .With<IFault>(fault =>
-                    {
-                        var domainExcpetion = fault.Exception.UnwrapSingle();
-                        ExceptionDispatchInfo.Capture(domainExcpetion).Throw();
-                    })
-                    .With<Failure>(f =>
-                    {
-                        if (f.Exception is TimeoutException)
-                            throw new TimeoutException("Command execution timed out");
-                        ThrowInvalidMessage(f);
-                    })
-                    .With<Status.Failure>(s =>
-                    {
-                        if (s.Cause is TimeoutException)
-                            throw new TimeoutException("Command execution timed out");
-                        ThrowInvalidMessage(s);
-                    })
-                    .Default(m =>
-                    {
-                        result = m;
-                    });
-
-            return result;
-        }
-
-        private void ThrowInvalidMessage(object m)
-        {
-            var invalidMessageException = new InvalidMessageException(m.ToPropsString());
-            _logger.Error(invalidMessageException, "Received unexpected message while waiting for command execution: {Message}",
-                m.ToPropsString());
-            throw invalidMessageException;
-        }
-
     }
 
 

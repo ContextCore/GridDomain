@@ -20,27 +20,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         internal Task<object> WaitForCommand(CommandPlan plan)
         {
-            var props = Props.Create(() => new CommandWaiterActor(null,plan.Command, plan.ExpectedMessages));
-            var waitActor = _sys.ActorOf(props, "Command_waiter_" + plan.Command.Id);
-
+            var localWaiter = CommandMessageWaiter.New(_sys, plan.Timeout);
             foreach (var expectedMessage in plan.ExpectedMessages)
-                _transport.Subscribe(expectedMessage.MessageType, waitActor);
+                _transport.Subscribe(expectedMessage.MessageType, localWaiter.Receiver);
 
-            var localWaiter = new LocalMessageWaiter(waitActor, plan.Timeout);
-            return localWaiter.ReceiveAll<object>();
-        }
-
-        public Task<object> WaitAll(TimeSpan timeout, params ExpectedMessage[] expect)
-        {
-            var inbox = Inbox.Create(_sys);
-            var props = Props.Create(() => new AllMessageWaiterActor(inbox.Receiver, expect));
-
-            var waitActor = _sys.ActorOf(props, "All_msg_waiter_" + Guid.NewGuid());
-
-            foreach (var expectedMessage in expect)
-                _transport.Subscribe(expectedMessage.MessageType, waitActor);
-
-            var localWaiter = new LocalMessageWaiter(waitActor, timeout);
             return localWaiter.ReceiveAll<object>();
         }
     }

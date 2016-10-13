@@ -12,16 +12,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class CommandWaiterActor : MessageWaiterActor<ExpectedMessage>
     {
-        private readonly ICommand _command;
-
-        public CommandWaiterActor(IActorRef subscribers, ICommand command, params ExpectedMessage[] expectedMessage) : base(subscribers, expectedMessage)
+        public CommandWaiterActor(IActorRef subscribers = null, params ExpectedMessage[] expectedMessage) : base(subscribers, expectedMessage)
         {
-            _command = command;
         }
 
         public CommandWaiterActor(IActorRef subscribers, CommandPlan plan) : base(subscribers, plan.ExpectedMessages)
         {
-            _command = plan.Command;
         }
 
         //execution stops on first expected fault

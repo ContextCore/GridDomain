@@ -6,5 +6,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         IMessageWaiter Execute(ICommand command);
 
+
     }
 }

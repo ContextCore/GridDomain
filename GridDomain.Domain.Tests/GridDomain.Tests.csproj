@@ -252,9 +252,9 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_projection_fault.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_projection_group_fault.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_waiting_several_messages.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_until_projection_fault.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_until_projection_group_fault.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_waiting_several_messages.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
@@ -303,7 +303,6 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
-    <Compile Include="Message_Listener_waiting_for_expected_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
@@ -398,20 +397,19 @@
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_with_message_base_class.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_without_timeout.cs" />
-    <Compile Include="CommandsExecution\InMemory_when_sync_execute_with_command_fault.cs" />
-    <Compile Include="CommandsExecution\PersistentSampleDomainTests.cs" />
-    <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
-    <Compile Include="CommandsExecution\SampleDomainContainerConfiguration.cs" />
-    <Compile Include="CommandsExecution\When_dont_wait_execution.cs" />
-    <Compile Include="CommandsExecution\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\InMemory_When_SyncExecute_with_sync_fault_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\When_wait_execution__of_async_method_until_projection_build_event_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\InMemorySampleDomainTests.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node_with_message_base_class.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_without_timeout.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_when_sync_execute_with_command_fault.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\SampleDomainCommandExecutionTests.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\SampleDomainContainerConfiguration.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\When_dont_wait_execution.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemory_When_SyncExecute_with_sync_fault_wait_by_Node.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\When_wait_execution__of_async_method_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="CommandsExecution\ExpectedMessages\InMemorySampleDomainTests.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateChangedEvent.cs" />
@@ -532,7 +530,9 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CommandsExecution\Waiters\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

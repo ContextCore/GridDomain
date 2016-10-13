@@ -10,21 +10,21 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node : SampleDomainCommandExecutionTests
+    public class SyncExecute_until_aggregate_event_wait_by_Node : SampleDomainCommandExecutionTests
     {
 
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node():base(true)
+        public SyncExecute_until_aggregate_event_wait_by_Node():base(true)
         {
             
         }
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_Node(bool inMemory=true) : base(inMemory)
+        public SyncExecute_until_aggregate_event_wait_by_Node(bool inMemory=true) : base(inMemory)
         {
 
 
         }
 
         [Then]
-        public void SyncExecute_until_aggregate_event_wait_by_Node()
+        public void Then_SyncExecute_until_aggregate_event_wait_by_Node()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             GridNode.ExecuteSync(syncCommand,

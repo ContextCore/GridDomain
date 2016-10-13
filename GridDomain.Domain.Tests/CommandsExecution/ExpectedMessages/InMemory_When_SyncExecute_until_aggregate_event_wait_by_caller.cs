@@ -10,19 +10,19 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution
 {
     [TestFixture]
-    public class InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller : SampleDomainCommandExecutionTests
+    public class SyncExecute_until_aggregate_event_wait_by_caller : SampleDomainCommandExecutionTests
     {
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller():base(true)
+        public SyncExecute_until_aggregate_event_wait_by_caller():base(true)
         {
             
         }
-        public InMemory_When_SyncExecute_until_aggregate_event_wait_by_caller(bool inMemory=true):base(inMemory)
+        public SyncExecute_until_aggregate_event_wait_by_caller(bool inMemory=true):base(inMemory)
         {
             
         }
 
         [Then]
-        public void SyncExecute_until_aggregate_event_wait_by_caller()
+        public void Then_SyncExecute_until_aggregate_event_wait_by_caller()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),

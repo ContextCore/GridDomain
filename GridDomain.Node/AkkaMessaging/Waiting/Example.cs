@@ -4,6 +4,8 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
+
+
     public class Example
     {
         class SampleCommand : ICommand
@@ -26,21 +28,21 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public void Main()
         {
-            IMessageWaiterProducer node = null;
+            IMessageWaiterProducer node = new AkkaMessagesWaiterBuilder(null,null,TimeSpan.FromSeconds(1),null);
 
             var cmd = new SampleCommand();
             
-            var observer = node.NewWaiter()
+            var observer = node.Expect()
                                   .Message<SampleEventA>(e => e.Id == cmd.Id)
                                   .Message<SampleEventA>(e => e.Id == cmd.Id)
                                   .Fault<SampleEventB>(f => f.Message.Id == cmd.Id)
                                .Create();
 
-            var observerB = node.NewCommandWaiter()
+            var observerB = node.ExpectCommand()
                                   .Message<SampleEventA>(e => e.Id == cmd.Id)
                                   .Message<SampleEventA>(e => e.Id == cmd.Id)
                                   .Fault<SampleEventB>(f => f.Message.Id == cmd.Id)
-                                  .Create()
+                                .Create()
                                 .Execute(cmd);
 
             var results = observer.ReceiveAll().Result;
