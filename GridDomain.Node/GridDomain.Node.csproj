@@ -243,6 +243,8 @@
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
+    <Compile Include="AkkaMessaging\Waiting\AkkaMessageLocalWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\AllMessagesWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\Example.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedFault.cs" />
@@ -255,6 +257,7 @@
     <Compile Include="AkkaMessaging\Waiting\MessageWaiterConfigurator.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
+    <Compile Include="AkkaMessaging\Waiting\TransportMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
