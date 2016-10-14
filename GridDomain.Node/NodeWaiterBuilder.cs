@@ -24,14 +24,14 @@ namespace GridDomain.Node
 
         public IMessagesWaiterBuilder<IMessageWaiter> Expect()
         {
-            return new MessageWaiterConfigurator<LocalMessageWaiter>(
-                                    () => LocalMessageWaiter.New(_system, _timeout), _subscriber);
+            return new MessageWaiterConfigurator<AllMessagesWaiter>(
+                                    () => new AllMessagesWaiter(_system, _timeout), _subscriber);
         }
 
         public IMessagesWaiterBuilder<ICommandWaiter> ExpectCommand()
         {
             return new MessageWaiterConfigurator<CommandMessageWaiter>(
-                                            () => CommandMessageWaiter.New(_executor,_system, _timeout), 
+                                            () => new CommandMessageWaiter(_executor, _system, _timeout), 
                                             _subscriber);
 
         }

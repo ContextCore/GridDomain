@@ -252,8 +252,6 @@
     <Compile Include="AkkaMessaging\Waiting\IMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\IWaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\LocalMessageWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessageNotifierActor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessagesListener.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiterConfigurator.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />

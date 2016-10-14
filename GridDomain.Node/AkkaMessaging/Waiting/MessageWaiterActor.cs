@@ -54,10 +54,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 })
                 .Default(message =>
                 {
+                    NotifyMessageSubscribers(message.GetType(), message);
+
                     var history = FindHistory(message);
                     if(history == null) return;
-                    
-                    NotifyMessageSubscribers(history.Expected.MessageType, message);
 
                     if (!history.Expected.Match(message)) return;
                     history.Received.Add(message);
@@ -81,8 +81,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private void NotifyMessageSubscribers(Type msgType, object message)
         {
-            List<IActorRef> msgSubscribers;
-            if (_receivedMessageSubscribers.TryGetValue(msgType, out msgSubscribers))
+            //List<IActorRef> msgSubscribers;
+            //if (_receivedMessageSubscribers.Where(s => s.Key.IsAssignableFrom(msgType)) TryGetValue(msgType, out msgSubscribers))
                 NotifyWaitSubscribers(message);
         }
 

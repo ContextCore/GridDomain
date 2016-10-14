@@ -5,7 +5,7 @@ using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
+namespace GridDomain.Tests.CommandsExecution.Waiters
 {
     [TestFixture]
     public class SyncExecute_with_sync_fault_wait_by_Node : SampleDomainCommandExecutionTests

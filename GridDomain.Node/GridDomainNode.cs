@@ -52,7 +52,7 @@ namespace GridDomain.Node
 
 
         public IActorTransport Transport { get; private set; }
-        public MessagesListener Listener { get; private set; }
+       // public MessagesListener Listener { get; private set; }
 
         public ActorSystem System;
 
@@ -119,7 +119,7 @@ namespace GridDomain.Node
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             Start();
 
-            Listener = new MessagesListener(System,Transport);
+            //Listener = new MessagesListener(System,Transport);
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,

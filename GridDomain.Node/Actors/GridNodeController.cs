@@ -46,7 +46,6 @@ namespace GridDomain.Node.Actors
         }
 
         private readonly ActorMonitor _monitor;
-        private readonly MessagesListener _listener;
 
         protected override void PreStart()
         {

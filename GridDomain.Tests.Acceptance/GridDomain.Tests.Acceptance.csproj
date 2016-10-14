@@ -280,12 +280,12 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
-    <Compile Include="SynchroniousCommandExecute\PersistedAsyncExecuteDontWaitExecution.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
-    <Compile Include="SynchroniousCommandExecute\Persisted_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedAsyncExecuteDontWaitExecution.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
     <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
-    <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
+    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
     <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
     <Compile Include="Tools\Given_persisted_aggreate_It_can_loaded_and_saved.cs" />

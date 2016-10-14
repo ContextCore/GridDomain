@@ -3,7 +3,7 @@ using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
+namespace GridDomain.Tests.CommandsExecution.Waiters
 {
     [TestFixture]
     public class When_dont_wait_execution : SampleDomainCommandExecutionTests

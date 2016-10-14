@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -15,12 +20,12 @@ namespace GridDomain.Node
     public class AkkaCommandExecutor : ICommandExecutor
     {
         private readonly IActorTransport _transport;
-        private readonly MessagesListener _listener;
+        private readonly ActorSystem _system;
 
         public AkkaCommandExecutor(ActorSystem system, IActorTransport transport)
         {
+            _system = system;
             _transport = transport;
-            _listener = new MessagesListener(system, transport);
         }
 
         public void Execute(params ICommand[] commands)
@@ -31,12 +36,18 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-            var waitTask = _listener.WaitForCommand(plan);
-
+            var commandWaiter = new CommandMessageWaiter(this, _system, plan.Timeout);
+            
+            foreach (var expectedMessage in plan.ExpectedMessages)
+            {
+                _transport.Subscribe(expectedMessage.MessageType, commandWaiter.Receiver);
+            }
             Execute(plan.Command);
 
-            return waitTask;
+            return commandWaiter.WaitFor(plan);
         }
+
+       
 
         public Task<T> Execute<T>(CommandPlan<T> plan)
         {

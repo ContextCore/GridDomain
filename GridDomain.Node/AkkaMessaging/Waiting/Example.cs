@@ -28,7 +28,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public void Main()
         {
-            IMessageWaiterProducer node = new AkkaMessagesWaiterBuilder(null,null,TimeSpan.FromSeconds(1),null);
+            IMessageWaiterProducer node = new AkkaMessagesWaiterBuilder(null,null,TimeSpan.FromSeconds(1000),null);
 
             var cmd = new SampleCommand();
             

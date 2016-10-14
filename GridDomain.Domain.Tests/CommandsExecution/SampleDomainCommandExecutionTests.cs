@@ -11,9 +11,7 @@ namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
-        protected override TimeSpan Timeout => Debugger.IsAttached
-            ? TimeSpan.FromMinutes(10)
-            : TimeSpan.FromSeconds(5);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
 
         protected override IContainerConfiguration CreateConfiguration()
         {
@@ -26,10 +24,6 @@ namespace GridDomain.Tests.CommandsExecution
             container.Register(CreateConfiguration());
             return new SampleRouteMap(container);
 
-        }
-
-        public SampleDomainCommandExecutionTests() : base(true)
-        {
         }
 
         public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)

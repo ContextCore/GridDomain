@@ -10,7 +10,7 @@ using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
+namespace GridDomain.Tests.CommandsExecution.Waiters
 {
     [TestFixture]
     public class When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests

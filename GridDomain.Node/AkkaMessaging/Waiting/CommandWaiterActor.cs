@@ -16,10 +16,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
         }
 
-        public CommandWaiterActor(IActorRef subscribers, CommandPlan plan) : base(subscribers, plan.ExpectedMessages)
-        {
-        }
-
         //execution stops on first expected fault
         protected override bool WaitIsOver(object message,ExpectedMessage expect)
         {

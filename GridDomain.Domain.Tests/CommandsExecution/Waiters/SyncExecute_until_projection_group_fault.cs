@@ -6,7 +6,7 @@ using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
+namespace GridDomain.Tests.CommandsExecution.Waiters
 {
     [TestFixture]
     public class SyncExecute_until_projection_group_fault : When_SyncExecute_until_projection_fault

@@ -5,7 +5,7 @@ using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
+namespace GridDomain.Tests.CommandsExecution.Waiters
 {
     [TestFixture]
     public class When_wait_execution__of_async_method_until_projection_build_event_wait_by_Node : SampleDomainCommandExecutionTests
