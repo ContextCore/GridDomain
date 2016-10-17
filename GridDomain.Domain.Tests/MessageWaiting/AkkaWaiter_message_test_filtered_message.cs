@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Akka.TestKit.NUnit3;
 using Akka.Util;
 using GridDomain.CQRS.Messaging.Akka;
@@ -22,40 +24,37 @@ namespace GridDomain.Tests.MessageWaiting
             _waiter.Start(TimeSpan.FromMilliseconds(50));
         }
 
-
         [Test]
         public void Timeout_should_be_fired_on_wait_and_no_message_publish()
         {
-            Assert.Throws<TimeoutException>(() =>
+            var e = Assert.Throws<AggregateException>(() =>
             {
-                var a = _waiter.WhenReceiveAll().Result;
+                var a = _waiter.WhenReceiveAll.Result;
             });
+            Assert.IsInstanceOf<TaskCanceledException>(e.InnerExceptions.FirstOrDefault());
         }
 
         [Test]
         public void Timeout_should_be_fired_on_wait_without_messages()
         {
-            Assert.Throws<TimeoutException>(() =>
-            {
-                _waiter.WhenReceiveAll().Wait();
-            });
+            var e = Assert.Throws<AggregateException>(() =>_waiter.WhenReceiveAll.Wait());
+            Assert.IsInstanceOf<TaskCanceledException>(e.InnerExceptions.FirstOrDefault());
         }
 
         [Test]
         public void Message_satisfying_filter_should_be_received()
         {
-            var testmsg = "TestMsg";
-            _transport.Publish(testmsg);
-            Assert.AreEqual(testmsg,_waiter.WhenReceiveAll().Result.Message<string>());
+            _transport.Publish("TestMsg");
+            Assert.AreEqual("TestMsg",_waiter.WhenReceiveAll.Result.Message<string>());
         }
 
         [Test]
         public void Message_not_satisfying_filter_should_not_be_received()
         {
-            var testmsg = "Test";
-            _transport.Publish(testmsg);
+            _transport.Publish("Test");
 
-            Assert.Throws<TimeoutException>(() => _waiter.WhenReceiveAll().Result.Message<string>());
+            var e = Assert.Throws<AggregateException>(() => _waiter.WhenReceiveAll.Result.Message<string>());
+            Assert.IsInstanceOf<TimeoutException>(e.InnerException);
         }
     }
 }

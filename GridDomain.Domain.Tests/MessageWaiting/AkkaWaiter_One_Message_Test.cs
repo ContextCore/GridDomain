@@ -27,22 +27,22 @@ namespace GridDomain.Tests.MessageWaiting
         [Test]
         public void Message_is_waitable()
         {
-            Assert.True(_waiter.WhenReceiveAll().Wait(TimeSpan.FromMilliseconds(50)));
+            Assert.True(_waiter.WhenReceiveAll.Wait(TimeSpan.FromMilliseconds(50)));
         }
 
         [Test]
         public void Multiply_waites_completes_after_message_was_received()
         {
-            Assert.True(_waiter.WhenReceiveAll().Wait(TimeSpan.FromMilliseconds(50))
-                        && _waiter.WhenReceiveAll().Wait(TimeSpan.FromMilliseconds(50))
-                        && _waiter.WhenReceiveAll().Wait(TimeSpan.FromMilliseconds(50))
-                        && _waiter.WhenReceiveAll().Wait(TimeSpan.FromMilliseconds(50)));
+            Assert.True(_waiter.WhenReceiveAll.Wait(TimeSpan.FromMilliseconds(50))
+                        && _waiter.WhenReceiveAll.Wait(TimeSpan.FromMilliseconds(50))
+                        && _waiter.WhenReceiveAll.Wait(TimeSpan.FromMilliseconds(50))
+                        && _waiter.WhenReceiveAll.Wait(TimeSpan.FromMilliseconds(50)));
         }
 
         [Test]
         public void Message_is_included_in_typed_results()
         {
-            var results = _waiter.WhenReceiveAll().Result;
+            var results = _waiter.WhenReceiveAll.Result;
 
             Assert.AreEqual(_testmsg, results.Message<string>());
         }
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.MessageWaiting
         [Test]
         public void Message_is_included_in_all_results()
         {
-            var results = _waiter.WhenReceiveAll().Result;
+            var results = _waiter.WhenReceiveAll.Result;
 
             CollectionAssert.Contains(results.All, _testmsg);
         }

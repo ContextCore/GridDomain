@@ -28,12 +28,12 @@ namespace GridDomain.Tests.MessageWaiting
         protected Task<IWaitResults> Publish(params object[] messages)
         {
             _transport.Publish(messages);
-            return Waiter.WhenReceiveAll();
+            return Waiter.WhenReceiveAll;
         }
 
         protected void Expect<T>(T msg, Predicate<T> filter = null)
         {
-            Assert.AreEqual(msg, Waiter.WhenReceiveAll().Result.Message<T>(filter));
+            Assert.AreEqual(msg, Waiter.WhenReceiveAll.Result.Message<T>(filter));
         }
     }
 }
