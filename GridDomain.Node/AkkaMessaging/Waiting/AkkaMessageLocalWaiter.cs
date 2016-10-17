@@ -57,16 +57,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             WhenReceiveAll = ReceiveWithin(timeout, stopwatch)
-                             .ContinueWith(t =>
-                             {
-                                 stopwatch.Stop();
+                                    .ContinueWith(t =>
+                                    {
+                                        stopwatch.Stop();
 
-                                 //some messages were received, but not all expected
-                                 if(!_waitIsOver(_allExpectedMessages))
-                                       throw new TimeoutException(); 
+                                        //only part of expected messages were received until timeout
+                                        if(!IsAllExpectedMessagedReceived())
+                                              throw new TimeoutException(); 
 
-                                 return (IWaitResults)new WaitResults(_allExpectedMessages);
-                             },TaskContinuationOptions.OnlyOnRanToCompletion);
+                                        return (IWaitResults)new WaitResults(_allExpectedMessages);
+                                    },TaskContinuationOptions.OnlyOnRanToCompletion);
 
             return WhenReceiveAll;
         }
@@ -76,34 +76,44 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
            return _inbox.ReceiveAsync(maxTimeout - watch.Elapsed)
                         .ContinueWith(t =>
                         {
-                            if (t.IsCanceled)
-                            {
-                                throw new TimeoutException();
-                            }
-                            if (t.IsFaulted)
-                            {
-                                ExceptionDispatchInfo.Capture(t.Exception).Throw();
-                            }
+                            CheckExecutionError(t);
 
-                            t.Result.Match()
-                                    .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
-                                    .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
-
-                            return t.Result;
-                        })
-                        .ContinueWith(t =>
-                        {
                             var message = t.Result;
 
-                            if (_filters.Values.Any(f => f(message)))
+                            if (IsExpected(message))
                                 _allExpectedMessages.Add(message);
                             else
                                 _ignoredMessages.Add(message);
 
-
-                            return !_waitIsOver(_allExpectedMessages) ? ReceiveWithin(maxTimeout,watch) : message;
+                            return !IsAllExpectedMessagedReceived() ? ReceiveWithin(maxTimeout,watch) : message;
 
                         },TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
+        private bool IsAllExpectedMessagedReceived()
+        {
+            return _waitIsOver(_allExpectedMessages);
+        }
+
+        private bool IsExpected(object message)
+        {
+            return _filters.Values.Any(f => f(message));
+        }
+
+        private static void CheckExecutionError(Task<object> t)
+        {
+            if (t.IsCanceled)
+            {
+                throw new TimeoutException();
+            }
+            if (t.IsFaulted)
+            {
+                ExceptionDispatchInfo.Capture(t.Exception).Throw();
+            }
+
+            t.Result.Match()
+                    .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
+                    .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }
 
 

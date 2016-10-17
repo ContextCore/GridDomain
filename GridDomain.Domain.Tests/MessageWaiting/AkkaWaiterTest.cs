@@ -25,10 +25,10 @@ namespace GridDomain.Tests.MessageWaiting
         protected AkkaMessageLocalWaiter Waiter { get; private set; }
         
 
-        protected Task<IWaitResults> Publish(params object[] messages)
+        protected void Publish(params object[] messages)
         {
-            _transport.Publish(messages);
-            return Waiter.WhenReceiveAll;
+            foreach(var msg in messages)
+              _transport.Publish(msg);
         }
 
         protected void Expect<T>(T msg, Predicate<T> filter = null)

@@ -10,24 +10,24 @@ namespace GridDomain.Tests.MessageWaiting
         private string _messageA = "et";
         private char _messageB = 'a';
 
-        [OneTimeSetUp]
+        [SetUp]
         public void Init()
         {
-            _messageA = "testMsg";
-
             Waiter.Expect<string>()
-                .And<char>()
-                .Within(TimeSpan.FromSeconds(1));
+                  .And<char>()
+                  .Within(TimeSpan.FromSeconds(1000));
 
+            Publish(_messageA);
+            Publish(_messageB);
         }
 
         [Test]
-        public void A_and_B_should_end_wait()
+        public void A_and_B_should_be_received()
         {
-            Publish(_messageA, _messageB);
-
-            Expect(_messageA);
             Expect(_messageB);
+            Expect(_messageA);
         }
+
+  
     }
 }
