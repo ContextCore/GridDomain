@@ -31,14 +31,14 @@ namespace GridDomain.Tests.MessageWaiting
             {
                 var a = _waiter.WhenReceiveAll.Result;
             });
-            Assert.IsInstanceOf<TaskCanceledException>(e.InnerExceptions.FirstOrDefault());
+            Assert.IsInstanceOf<TimeoutException>(e.InnerExceptions.FirstOrDefault());
         }
 
         [Test]
         public void Timeout_should_be_fired_on_wait_without_messages()
         {
             var e = Assert.Throws<AggregateException>(() =>_waiter.WhenReceiveAll.Wait());
-            Assert.IsInstanceOf<TaskCanceledException>(e.InnerExceptions.FirstOrDefault());
+            Assert.IsInstanceOf<TimeoutException>(e.InnerExceptions.FirstOrDefault());
         }
 
         [Test]

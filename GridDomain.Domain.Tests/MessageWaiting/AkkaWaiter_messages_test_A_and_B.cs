@@ -24,8 +24,8 @@ namespace GridDomain.Tests.MessageWaiting
         [Test]
         public void A_and_B_should_be_received()
         {
-            Expect(_messageB);
-            Expect(_messageA);
+            ExpectMsg(_messageB);
+            ExpectMsg(_messageA);
         }
 
   

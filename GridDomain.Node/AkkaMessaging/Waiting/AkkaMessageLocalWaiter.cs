@@ -35,7 +35,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         internal void Subscribe<TMsg>(Func<Predicate<IEnumerable<object>>, Predicate<IEnumerable<object>>> waitOverConditionMutator,
                                       Predicate<TMsg> filter)
         {
-            _filters[typeof(TMsg)] = o => filter((TMsg)o);
+            _filters[typeof(TMsg)] = o => o is TMsg && filter((TMsg)o);
             _waitIsOver = waitOverConditionMutator(_waitIsOver);
             _subscriber.Subscribe<TMsg>(_inbox.Receiver);
         }
@@ -54,40 +54,30 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         
         public Task<IWaitResults> Start(TimeSpan timeout)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            WhenReceiveAll = ReceiveWithin(timeout, stopwatch)
-                                    .ContinueWith(t =>
-                                    {
-                                        stopwatch.Stop();
+            return WhenReceiveAll = Task.Run(() =>
+            {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                try
+                {
+                    while (!IsAllExpectedMessagedReceived())
+                    {
+                        var message = _inbox.Receive(timeout - stopwatch.Elapsed);
+                        CheckExecutionError(message);
 
-                                        //only part of expected messages were received until timeout
-                                        if(!IsAllExpectedMessagedReceived())
-                                              throw new TimeoutException(); 
+                        if (IsExpected(message))
+                            _allExpectedMessages.Add(message);
+                        else
+                            _ignoredMessages.Add(message);
+                    }
 
-                                        return (IWaitResults)new WaitResults(_allExpectedMessages);
-                                    },TaskContinuationOptions.OnlyOnRanToCompletion);
-
-            return WhenReceiveAll;
-        }
-
-        private Task<object> ReceiveWithin(TimeSpan maxTimeout, Stopwatch watch)
-        {
-           return _inbox.ReceiveAsync(maxTimeout - watch.Elapsed)
-                        .ContinueWith(t =>
-                        {
-                            CheckExecutionError(t);
-
-                            var message = t.Result;
-
-                            if (IsExpected(message))
-                                _allExpectedMessages.Add(message);
-                            else
-                                _ignoredMessages.Add(message);
-
-                            return !IsAllExpectedMessagedReceived() ? ReceiveWithin(maxTimeout,watch) : message;
-
-                        },TaskContinuationOptions.OnlyOnRanToCompletion);
+                    return (IWaitResults) new WaitResults(_allExpectedMessages);
+                }
+                finally
+                {
+                    stopwatch.Stop();
+                }
+            });
         }
 
         private bool IsAllExpectedMessagedReceived()
@@ -100,18 +90,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return _filters.Values.Any(f => f(message));
         }
 
-        private static void CheckExecutionError(Task<object> t)
+        private static void CheckExecutionError(object t)
         {
-            if (t.IsCanceled)
-            {
-                throw new TimeoutException();
-            }
-            if (t.IsFaulted)
-            {
-                ExceptionDispatchInfo.Capture(t.Exception).Throw();
-            }
+            //if (t.IsCanceled)
+            //    throw new TimeoutException();
+            //
+            //if (t.IsFaulted)
+            //    ExceptionDispatchInfo.Capture(t.Exception).Throw();
 
-            t.Result.Match()
+            t.Match()
                     .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
                     .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }

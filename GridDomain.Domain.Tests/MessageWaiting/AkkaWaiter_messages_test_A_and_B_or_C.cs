@@ -3,13 +3,14 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.MessageWaiting
 {
+    [TestFixture]
     public class AkkaWaiter_messages_test_A_and_B_or_C : AkkaWaiterTest
     {
         private string _messageA;
         private char _messageB;
         private int _messageC;
 
-        [OneTimeSetUp]
+        [SetUp]
         public void Init()
         {
             _messageA = "testMsg";
@@ -26,14 +27,15 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageC);
 
-            Expect(_messageC);
+            ExpectMsg(_messageC);
         }
 
         [Test]
         public void A_message_should_not_end_wait()
         {
             Publish(_messageA);
-            Assert.Throws<TimeoutException>(() => Expect(_messageA));
+            var e = Assert.Throws<AggregateException>(() => ExpectMsg(_messageA));
+            Assert.IsInstanceOf<TimeoutException>(e.InnerException);
         }
 
 
@@ -42,8 +44,8 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageA,_messageB);
 
-            Expect(_messageA);
-            Expect(_messageB);
+            ExpectMsg(_messageA);
+            ExpectMsg(_messageB);
         }
     }
 }
