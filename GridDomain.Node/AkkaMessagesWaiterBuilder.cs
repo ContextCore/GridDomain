@@ -30,10 +30,7 @@ namespace GridDomain.Node
 
         public IMessagesWaiterBuilder<ICommandWaiter> ExpectCommand()
         {
-            return new MessageWaiterConfigurator<CommandMessageWaiter>(
-                                            () => new CommandMessageWaiter(_executor, _system, _timeout), 
-                                            _subscriber);
-
+          throw new NotImplementedException();
         }
     }
 }

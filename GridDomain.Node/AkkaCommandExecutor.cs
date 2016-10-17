@@ -36,15 +36,22 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-            var commandWaiter = new CommandMessageWaiter(this, _system, plan.Timeout);
+          //  var commandWaiter = new CommandMessageWaiter(this, _system, plan.Timeout);
             
+           // var waiter = new AkkaMessageLocalWaiter(_system,_transport, plan.Timeout);
+            //foreach (var expectedMessage in plan.ExpectedMessages)
+            //{
+            //    _transport.Subscribe(expectedMessage.MessageType, waiter.Receiver);
+            //}
             foreach (var expectedMessage in plan.ExpectedMessages)
             {
-                _transport.Subscribe(expectedMessage.MessageType, commandWaiter.Receiver);
-            }
-            Execute(plan.Command);
 
-            return commandWaiter.WaitFor(plan);
+            }
+
+
+            Execute(plan.Command);
+            throw new NotImplementedException();
+          // return commandWaiter.WaitFor(plan);
         }
 
        

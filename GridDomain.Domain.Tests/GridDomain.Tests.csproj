@@ -316,6 +316,12 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_message_test_filtered_message.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_One_Message_Test.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />

@@ -11,74 +11,58 @@ using GridDomain.CQRS.Messaging.Akka;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-
-    public class WaitEndInfo : EventArgs
-    {
-        public WaitEndInfo(IWaitResults results, object lastMessage)
-        {
-            Results = results;
-            LastMessage = lastMessage;
-        }
-
-        public IWaitResults Results { get; }
-        public object LastMessage { get; }
-    }
-
-    class AkkaMessageLocalWaiter : IDisposable
+    public class AkkaMessageLocalWaiter : IDisposable
     {
         private readonly IActorSubscriber _subscriber;
-        private readonly TimeSpan _defaultTimeout;
-        private readonly ConcurrentBag<MessageInfo> _allMessages = new ConcurrentBag<MessageInfo>();
-        private readonly ConcurrentBag<MessageInfo> _allExpectedMessages = new ConcurrentBag<MessageInfo>();
+        private readonly ConcurrentBag<object> _allMessages = new ConcurrentBag<object>();
+        private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
 
-        class MessageInfo
-        {
-            public readonly Type Type;
-            public readonly object Message;
-
-            public MessageInfo(Type type, object message)
-            {
-                Type = type;
-                Message = message;
-            }
-        }
+        public event EventHandler<object> OnMessageReceived = delegate { };
+        public event EventHandler<object> WaitComplete = delegate { };
 
         private readonly IDictionary<Type, Predicate<object>> _filters = new Dictionary<Type, Predicate<object>>();
-        private Predicate<IEnumerable<MessageInfo>> WaitIsOver = c => true;
+        private Predicate<IEnumerable<object>> WaitIsOver = c => true;
 
         private readonly TaskCompletionSource<WaitEndInfo> WaitEnd = new TaskCompletionSource<WaitEndInfo>();
         private readonly Inbox _inbox;
+        private ExpectBuilder _expectBuilder;
 
-        public AkkaMessageLocalWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
+
+        public AkkaMessageLocalWaiter(ActorSystem system, IActorSubscriber subscriber)
         {
-            _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
             _inbox = Inbox.Create(system);
+            _expectBuilder = new ExpectBuilder(this,subscriber,_inbox.Receiver,_allMessages);
         }
 
-        private void Subscribe<TMsg>(Func<Predicate<IEnumerable<MessageInfo>>, Predicate<IEnumerable<MessageInfo>>>  waitOverConditionMutator,
+        internal void Subscribe<TMsg>(Func<Predicate<IEnumerable<object>>, Predicate<IEnumerable<object>>> waitOverConditionMutator,
                                      Predicate<TMsg> filter)
         {
             _filters[typeof(TMsg)] = o => filter((TMsg)o);
             WaitIsOver = waitOverConditionMutator(WaitIsOver);
             _subscriber.Subscribe<TMsg>(_inbox.Receiver);
         }
-        public void And<TMsg>(Predicate<TMsg> filter = null)
-        {
-            filter = filter ?? (t => true);
-            Subscribe(oldPredicate => (c => oldPredicate(c) && WasReceived(filter)),filter);
-        }
 
-        private bool WasReceived<TMsg>(Predicate<TMsg> filter)
+        public ExpectBuilder Expect<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return _expectBuilder.And<TMsg>(filter);
+        }
+        //public void And<TMsg>(Predicate<TMsg> filter = null)
+        //{
+        //    filter = filter ?? (t => true);
+        //    Subscribe(oldPredicate => (c => oldPredicate(c) && WasReceived(filter)),filter);
+        //}
+        internal bool WasReceived<TMsg>(Predicate<TMsg> filter)
         {
             return _allMessages.OfType<TMsg>().Any(m => filter(m));
         }
 
-        public void Or<TMsg>(Predicate<TMsg> filter = null)
-        {
-            filter = filter ?? (t => true);
-            Subscribe(oldPredicate => (c => oldPredicate(c) || WasReceived(filter)), filter);
-        }
+
+        //public void Or<TMsg>(Predicate<TMsg> filter = null)
+        //{
+        //    filter = filter ?? (t => true);
+        //    Subscribe(oldPredicate => (c => oldPredicate(c) || WasReceived(filter)), filter);
+        //}
 
         //private bool IsFault(object lastMessage)
         //{
@@ -86,8 +70,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         //    _allMessages.Add(lastMessage);
         //    return true;
         //}
+        public Task<IWaitResults> WhenReceiveAll()
+        {
+            return WaitEnd.Task.ContinueWith(t => t.Result.Results, TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
 
-        public void Start(TimeSpan timeout)
+        public Task<IWaitResults> Start(TimeSpan timeout)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -100,6 +88,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                         WaitEnd.SetResult(waitResults);
                         WaitComplete(this, waitResults);
                     });
+
+            
+            return WhenReceiveAll();
         }
 
         private Task<object> ReceiveWithin(TimeSpan maxTimeout, Stopwatch watch)
@@ -107,18 +98,30 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
            return _inbox.ReceiveAsync(maxTimeout - watch.Elapsed)
                         .ContinueWith(t =>
                         {
+                            if (t.IsCanceled)
+                            {
+                                WaitEnd.SetCanceled();
+                                throw new TimeoutException();
+                            }
+                            if (t.IsFaulted)
+                            {
+                                WaitEnd.SetException(t.Exception);
+                                throw t.Exception;
+                            }
+
+                            return t.Result;
+                        })
+                        .ContinueWith(t =>
+                        {
                             var currentMessage = t.Result;
-                            _allMessages.Add(new MessageInfo(currentMessage.GetType(), currentMessage));
+                            _allMessages.Add(currentMessage);
 
                             OnMessageReceived(this, currentMessage);
 
                             return !WaitIsOver(_allExpectedMessages) ? ReceiveWithin(maxTimeout,watch) : currentMessage;
 
-                        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                        },TaskContinuationOptions.OnlyOnRanToCompletion);
         }
-
-        public event EventHandler<object> OnMessageReceived = delegate { };
-        public event EventHandler<object> WaitComplete = delegate { };
 
 
         public void Dispose()

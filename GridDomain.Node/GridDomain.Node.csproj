@@ -247,6 +247,7 @@
     <Compile Include="AkkaMessaging\Waiting\AllMessagesWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandMessageWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\Example.cs" />
+    <Compile Include="AkkaMessaging\Waiting\ExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedFault.cs" />
     <Compile Include="AkkaMessaging\Waiting\IMessageWaiterProducer.cs" />
     <Compile Include="AkkaMessaging\Waiting\ICommandWaiter.cs" />
@@ -257,7 +258,7 @@
     <Compile Include="AkkaMessaging\Waiting\MessageWaiterConfigurator.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
-    <Compile Include="AkkaMessaging\Waiting\TransportMessageWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaitEndInfo.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
@@ -309,7 +310,7 @@
     <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
-    <Compile Include="NodeWaiterBuilder.cs" />
+    <Compile Include="AkkaMessagesWaiterBuilder.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
