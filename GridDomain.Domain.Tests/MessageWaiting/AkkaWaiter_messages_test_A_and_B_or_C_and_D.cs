@@ -15,10 +15,10 @@ namespace GridDomain.Tests.MessageWaiting
         public void Init()
         {
             Waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                .And<Message>(m => m.Id == _messageB.Id)
-                .Or<Message>(m => m.Id == _messageC.Id)
-                .And<Message>(m => m.Id == _messageD.Id)
-                .Within(TimeSpan.FromMilliseconds(50));
+                  .And<Message>(m => m.Id == _messageB.Id)
+                  .Or<Message>(m => m.Id == _messageC.Id)
+                  .And<Message>(m => m.Id == _messageD.Id)
+                  .Within(TimeSpan.FromMilliseconds(100));
         }
 
         [Test]

@@ -22,10 +22,12 @@ namespace GridDomain.Tests.MessageWaiting
         }
 
         [Test]
-        public void Should_end_on_A()
+        public void Should_end_on_A_and_C()
         {
             Publish(_messageA);
+            Publish(_messageC);
             ExpectMsg(_messageA);
+            ExpectMsg(_messageC);
         }
 
         [Test]

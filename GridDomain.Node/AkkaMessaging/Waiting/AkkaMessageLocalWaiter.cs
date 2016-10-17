@@ -40,6 +40,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _subscriber.Subscribe<TMsg>(_inbox.Receiver);
         }
 
+     
         public ExpectBuilder Expect<TMsg>(Predicate<TMsg> filter = null)
         {
             return _expectBuilder.And(filter);
@@ -99,8 +100,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //    ExceptionDispatchInfo.Capture(t.Exception).Throw();
 
             t.Match()
-                    .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
-                    .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
+             .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
+             .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }
 
 
