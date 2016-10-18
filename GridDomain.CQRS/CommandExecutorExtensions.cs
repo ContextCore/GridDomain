@@ -27,19 +27,12 @@ namespace GridDomain.CQRS
             var task = node.Execute(plan);
             try
             {
-                return task.Result;
+              return task.Result;
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                var domainException = ex.UnwrapSingle();
-                ExceptionDispatchInfo.Capture(domainException).Throw();
+                ExceptionDispatchInfo.Capture(ex.UnwrapSingle()).Throw();
             }
-            catch (TimeoutException ex)
-            {
-                var domainException = ex.UnwrapSingle();
-                ExceptionDispatchInfo.Capture(domainException).Throw();
-            }
-
             throw new InvalidOperationException();
         }
     }

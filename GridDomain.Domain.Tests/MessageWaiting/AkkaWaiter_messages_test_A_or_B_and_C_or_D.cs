@@ -18,7 +18,7 @@ namespace GridDomain.Tests.MessageWaiting
                       .Or<Message>(m => m.Id == _messageB.Id)
                      .And<Message>(m => m.Id == _messageC.Id)
                       .Or<Message>(m => m.Id == _messageD.Id)
-                .Within(TimeSpan.FromMilliseconds(100));
+                .Start(TimeSpan.FromMilliseconds(100));
         }
 
         [Test]

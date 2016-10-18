@@ -51,34 +51,41 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return ExpectBuilder.And(type,filter);
         }
 
-        public Task<IWaitResults> WhenReceiveAll { get; private set; }
+       // public Task<IWaitResults> WhenReceiveAll { get; private set; }
         
-        public Task<IWaitResults> Start(TimeSpan timeout)
+        public async Task<IWaitResults> Start(TimeSpan timeout)
         {
-            return WhenReceiveAll = Task.Run(() =>
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            try
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                try
+                while (!IsAllExpectedMessagedReceived())
                 {
-                    while (!IsAllExpectedMessagedReceived())
+                    try
                     {
-                        var message = _inbox.Receive(timeout - stopwatch.Elapsed);
+                        var message = await _inbox.ReceiveAsync(timeout - stopwatch.Elapsed);
                         CheckExecutionError(message);
 
-                        if (IsExpected(message))
-                            _allExpectedMessages.Add(message);
-                        else
-                            _ignoredMessages.Add(message);
+                        if (IsExpected(message)) _allExpectedMessages.Add(message);
+                        else _ignoredMessages.Add(message);
                     }
+                        //catch (ArgumentOutOfRangeException)
+                        //{
+                        //    if (timeout < stopwatch.Elapsed)
+                        //        throw new TimeoutException();
+                        //}
+                    catch (Exception ex)
+                    {
+                        throw new TimeoutException();
+                    }
+                }
 
-                    return (IWaitResults) new WaitResults(_allExpectedMessages);
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                }
-            });
+                return new WaitResults(_allExpectedMessages);
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
         }
 
         private bool IsAllExpectedMessagedReceived()
@@ -93,12 +100,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private static void CheckExecutionError(object t)
         {
-            //if (t.IsCanceled)
-            //    throw new TimeoutException();
-            //
-            //if (t.IsFaulted)
-            //    ExceptionDispatchInfo.Capture(t.Exception).Throw();
-
             t.Match()
              .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
              .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());

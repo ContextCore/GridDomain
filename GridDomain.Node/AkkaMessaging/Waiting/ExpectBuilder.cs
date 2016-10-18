@@ -26,7 +26,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _waiter = waiter;
         }
 
-        public Task<IWaitResults> Within(TimeSpan timeout)
+        public Task<IWaitResults> Start(TimeSpan timeout)
         {
             return _waiter.Start(timeout);
         }

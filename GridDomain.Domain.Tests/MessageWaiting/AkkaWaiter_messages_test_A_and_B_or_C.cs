@@ -19,7 +19,7 @@ namespace GridDomain.Tests.MessageWaiting
             Waiter.Expect<string>()
                 .And<char>()
                 .Or<int>()
-                .Within(TimeSpan.FromMilliseconds(50));
+                .Start(TimeSpan.FromMilliseconds(50));
         }
 
         [Test]

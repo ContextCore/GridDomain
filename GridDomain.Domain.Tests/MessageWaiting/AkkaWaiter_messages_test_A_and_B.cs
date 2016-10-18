@@ -15,7 +15,7 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Waiter.Expect<string>()
                   .And<char>()
-                  .Within(TimeSpan.FromSeconds(1000));
+                  .Start(TimeSpan.FromSeconds(100));
 
             Publish(_messageA);
             Publish(_messageB);

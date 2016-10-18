@@ -17,7 +17,7 @@ namespace GridDomain.Tests.MessageWaiting
             Waiter.Expect<Message>(m => m.Id == _messageA.Id)
                       .Or<Message>(m => m.Id == _messageB.Id)
                       .Or<Message>(m => m.Id == _messageC.Id)
-                  .Within(TimeSpan.FromMilliseconds(100));
+                  .Start(TimeSpan.FromMilliseconds(100));
 
         }
 

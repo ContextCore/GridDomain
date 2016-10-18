@@ -14,6 +14,7 @@ namespace GridDomain.Tests.MessageWaiting
     {
         private AkkaMessageLocalWaiter _waiter;
         private AkkaEventBusTransport _transport;
+        private Task<IWaitResults> results;
 
         [SetUp]
         public void Given_waiter_subscribed_for_message_When_publishing_message()
@@ -21,7 +22,7 @@ namespace GridDomain.Tests.MessageWaiting
             _transport = new AkkaEventBusTransport(Sys);
             _waiter = new AkkaMessageLocalWaiter(Sys, _transport);
             _waiter.Expect<string>(m => m.Like("Msg"));
-            _waiter.Start(TimeSpan.FromMilliseconds(50));
+            results = _waiter.Start(TimeSpan.FromMilliseconds(50));
         }
 
         [Test]
@@ -29,7 +30,7 @@ namespace GridDomain.Tests.MessageWaiting
         {
             var e = Assert.Throws<AggregateException>(() =>
             {
-                var a = _waiter.WhenReceiveAll.Result;
+                var a = results.Result;
             });
             Assert.IsInstanceOf<TimeoutException>(e.InnerExceptions.FirstOrDefault());
         }
@@ -37,7 +38,7 @@ namespace GridDomain.Tests.MessageWaiting
         [Test]
         public void Timeout_should_be_fired_on_wait_without_messages()
         {
-            var e = Assert.Throws<AggregateException>(() =>_waiter.WhenReceiveAll.Wait());
+            var e = Assert.Throws<AggregateException>(() => results.Wait());
             Assert.IsInstanceOf<TimeoutException>(e.InnerExceptions.FirstOrDefault());
         }
 
@@ -45,7 +46,7 @@ namespace GridDomain.Tests.MessageWaiting
         public void Message_satisfying_filter_should_be_received()
         {
             _transport.Publish("TestMsg");
-            Assert.AreEqual("TestMsg",_waiter.WhenReceiveAll.Result.Message<string>());
+            Assert.AreEqual("TestMsg", results.Result.Message<string>());
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace GridDomain.Tests.MessageWaiting
         {
             _transport.Publish("Test");
 
-            var e = Assert.Throws<AggregateException>(() => _waiter.WhenReceiveAll.Result.Message<string>());
+            var e = Assert.Throws<AggregateException>(() => results.Result.Message<string>());
             Assert.IsInstanceOf<TimeoutException>(e.InnerException);
         }
     }

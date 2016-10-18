@@ -67,7 +67,6 @@
     <Compile Include="IContainerConfiguration.cs" />
     <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TasksExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

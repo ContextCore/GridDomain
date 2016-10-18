@@ -5,6 +5,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
@@ -36,26 +37,64 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-          //  var commandWaiter = new CommandMessageWaiter(this, _system, plan.Timeout);
-            
             var waiter = new AkkaMessageLocalWaiter(_system,_transport);
             
-            //var expectBuilder = waiter.Expect();
+            var expectBuilder = waiter.ExpectBuilder;
 
-            foreach (var expectedMessage in plan.ExpectedMessages)
+            foreach (var expectedMessage in plan.ExpectedMessages.Where(e => !typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
+                expectBuilder.And(expectedMessage.MessageType, o => expectedMessage.Match(o));
             }
 
+            foreach (var expectedMessage in plan.ExpectedMessages.Where(e => e.MessageType.IsInstanceOfType(typeof(IFault))))
+            {
+                expectBuilder.Or(expectedMessage.MessageType,
+                                 o => expectedMessage.Match(o) &&
+                                      (!expectedMessage.Sources.Any() ||
+                                        expectedMessage.Sources.Contains((o as IFault)?.Processor)));
+            }
+
+            var commandFaultType = typeof(IFault<>).MakeGenericType(plan.Command.GetType());
+
+            expectBuilder.Or(commandFaultType,
+                             o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
+
+
+            var task = expectBuilder.Start(plan.Timeout)
+                                    .ContinueWith(t =>
+                                    {
+                                        CheckTaskFault(t);
+
+                                        var expectedFault = t.Result.Message<IFault>(f => commandFaultType.IsInstanceOfType(f));
+                                        if (expectedFault != null)
+                                            ExceptionDispatchInfo.Capture(expectedFault.Exception.UnwrapSingle()).Throw();
+
+                                        return t.Result.All.Count > 1 ? t.Result.All.ToArray() : t.Result.All.FirstOrDefault();
+
+                                    });
+
             Execute(plan.Command);
-            throw new NotImplementedException();
-          // return commandWaiter.WaitFor(plan);
+
+            return task;
         }
 
-       
+        private static void CheckTaskFault(Task t)
+        {
+            if (t.IsCanceled)
+                throw new TimeoutException();
+
+            if (t.IsFaulted)
+                ExceptionDispatchInfo.Capture(t.Exception.UnwrapSingle()).Throw();
+        }
+
 
         public Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            return Execute((CommandPlan)plan).ContinueWithSafeResultCast(result => (T)result);
+            return Execute((CommandPlan)plan).ContinueWith(t =>
+            {
+                CheckTaskFault(t);
+                return (T) t.Result;
+            });
         }
     }
 }

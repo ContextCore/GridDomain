@@ -182,19 +182,18 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId,
                 typeof(OddFaultyMessageHandler));
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
-                syncCommand.AggregateId);
+                                                                                    syncCommand.AggregateId);
 
             try
             {
-                GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
+               var a = GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Result;
             }
-            catch (Exception ex)
+            catch (AggregateException ex)
             {
                 var exception = ex.InnerException;
                 Assert.IsInstanceOf<SampleAggregateException>(exception, exception.ToPropsString());
             }
         }
-
 
         [Then]
         public void When_one_of_two_aggregate_throws_fault_not_received_expected_messages_are_ignored()
@@ -217,9 +216,9 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             {
                 var exception = ex.InnerException;
 
-                if (exception is SampleAggregateException) Assert.Pass("Got expection from create message handler");
-                if (exception is MessageHandleException) Assert.Pass("Got expection from change message handler");
-                Assert.Fail("Unknown excpetion type");
+                if (exception is SampleAggregateException) Assert.Pass("Got exception from create message handler");
+                if (exception is MessageHandleException) Assert.Pass("Got exception from change message handler");
+                Assert.Fail("Unknown exception type");
             }
         }
     }

@@ -43,12 +43,12 @@ namespace GridDomain.Tests.MessageWaiting
 
         protected void ExpectMsg<T>(T msg, Predicate<T> filter = null)
         {
-            Assert.AreEqual(msg, Waiter.WhenReceiveAll.Result.Message(filter));
+            Assert.AreEqual(msg, _results.Result.Message(filter));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class
         {
-            if (!Waiter.WhenReceiveAll.Wait(timeout ?? DefaultTimeout))
+            if (!_results.Wait(timeout ?? DefaultTimeout))
                 return;
 
             var e = Assert.Throws<AggregateException>(() => ExpectMsg(msg));
