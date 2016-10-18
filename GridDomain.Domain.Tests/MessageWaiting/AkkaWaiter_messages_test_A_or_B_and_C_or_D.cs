@@ -22,10 +22,10 @@ namespace GridDomain.Tests.MessageWaiting
         }
 
         [Test]
-        public void Should_end_on_A()
+        public void Should_not_end_on_A()
         {
             Publish(_messageA);
-            ExpectMsg(_messageA);
+            ExpectNoMsg();
         }
 
         [Test]
@@ -37,10 +37,10 @@ namespace GridDomain.Tests.MessageWaiting
         }
 
         [Test]
-        public void Condition_wait_end_should_be_true_on_A()
+        public void Condition_wait_end_should_be_false_on_A()
         {
             var sampleObjectsReceived = new object[] { _messageA };
-            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+            Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
         [Test]

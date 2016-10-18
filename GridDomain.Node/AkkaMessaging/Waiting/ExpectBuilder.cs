@@ -21,7 +21,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         private readonly AkkaMessageLocalWaiter _waiter;
         internal Expression<Func<IEnumerable<object>, bool>> WaitIsOver = c => true;
-
         public ExpectBuilder(AkkaMessageLocalWaiter waiter)
         {
             _waiter = waiter;
