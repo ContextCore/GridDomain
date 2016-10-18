@@ -6,7 +6,6 @@ namespace GridDomain.Tests.MessageWaiting
     [TestFixture]
     public class AkkaWaiter_messages_test_A_or_B_and_C : AkkaWaiterTest
     {
-
         private readonly Message _messageA = new Message("A");
         private readonly Message _messageB = new Message("B");
         private readonly Message _messageC = new Message("C");
@@ -16,9 +15,9 @@ namespace GridDomain.Tests.MessageWaiting
         public void Init()
         {
             Waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                .Or<Message>(m => m.Id == _messageB.Id)
-                .And<Message>(m => m.Id == _messageC.Id)
-                .Within(TimeSpan.FromMilliseconds(100));
+                        .Or<Message>(m => m.Id == _messageB.Id)
+                        .And<Message>(m => m.Id == _messageC.Id)
+                        .Within(TimeSpan.FromMilliseconds(200));
         }
 
         [Test]
@@ -26,8 +25,8 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageA);
             Publish(_messageC);
-            ExpectMsg(_messageA);
-            ExpectMsg(_messageC);
+            ExpectMsg(_messageA,m => m.Id == _messageA.Id);
+            ExpectMsg(_messageC,m => m.Id == _messageC.Id);
         }
 
         [Test]
@@ -35,8 +34,15 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageB);
             Publish(_messageC);
-            ExpectMsg(_messageB);
-            ExpectMsg(_messageC);
+            ExpectMsg(_messageB, m => m.Id == _messageB.Id);
+            ExpectMsg(_messageC, m => m.Id == _messageC.Id);
+        }
+
+        [Test]
+        public void Condition_wait_end_should_be_true_on_B_and_C()
+        {
+            var sampleObjectsReceived = new object[] { _messageB, _messageC };
+            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
         [Test]

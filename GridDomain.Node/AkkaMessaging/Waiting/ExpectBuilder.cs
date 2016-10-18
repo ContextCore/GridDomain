@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
@@ -17,6 +20,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public class ExpectBuilder
     {
         private readonly AkkaMessageLocalWaiter _waiter;
+        internal Expression<Func<IEnumerable<object>, bool>> WaitIsOver = c => true;
 
         public ExpectBuilder(AkkaMessageLocalWaiter waiter)
         {
@@ -27,21 +31,30 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return _waiter.Start(timeout);
         }
-
  
         public ExpectBuilder And<TMsg>(Predicate<TMsg> filter = null)
         {
-            filter = filter ?? (t => true);
-            _waiter.Subscribe(oldPredicate => (c => oldPredicate(c) && _waiter.WasReceived(filter)), filter);
-            return this;
+            return filter == null ? And(typeof(TMsg), o => o is TMsg) :
+                                    And(typeof(TMsg), o => o is TMsg && filter((TMsg)o));
         }
-        public ExpectBuilder Or<TMsg>(Predicate<TMsg> filter = null)
+        public ExpectBuilder Or<TMsg>(Func<TMsg, bool> filter = null)
         {
-            filter = filter ?? (t => true);
-            _waiter.Subscribe(oldPredicate => (c => oldPredicate(c) || _waiter.WasReceived(filter)), filter);
+            return filter == null ? Or(typeof(TMsg), o => o is TMsg) :
+                                    Or(typeof(TMsg), o => o is TMsg && filter((TMsg)o));
+        }
+
+        public ExpectBuilder And(Type type,Func<object,bool> filter)
+        {
+            WaitIsOver = WaitIsOver.And(c => c.Any(filter));
+            _waiter.Subscribe(type, filter, WaitIsOver.Compile());
             return this;
         }
 
-   
+        public ExpectBuilder Or(Type type, Func<object,bool> filter)
+        {
+            WaitIsOver = WaitIsOver.Or(c => c.Any(filter));
+            _waiter.Subscribe(type,filter, WaitIsOver.Compile());
+            return this;
+        }
     }
 }

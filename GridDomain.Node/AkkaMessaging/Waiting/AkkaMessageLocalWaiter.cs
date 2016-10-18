@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Timers;
@@ -19,36 +20,35 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private readonly ConcurrentBag<object> _ignoredMessages = new ConcurrentBag<object>();
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
 
-        private readonly IDictionary<Type, Predicate<object>> _filters = new Dictionary<Type, Predicate<object>>();
-        private Predicate<IEnumerable<object>> _waitIsOver = c => true;
+        private readonly List<Func<object,bool>> _filters = new List<Func<object, bool>>();
+        private Func<IEnumerable<object>,bool> _stopCondition;
 
         private readonly Inbox _inbox;
-        private readonly ExpectBuilder _expectBuilder;
+        internal readonly ExpectBuilder ExpectBuilder;
 
         public AkkaMessageLocalWaiter(ActorSystem system, IActorSubscriber subscriber)
         {
             _subscriber = subscriber;
             _inbox = Inbox.Create(system);
-            _expectBuilder = new ExpectBuilder(this);
+            ExpectBuilder = new ExpectBuilder(this);
         }
 
-        internal void Subscribe<TMsg>(Func<Predicate<IEnumerable<object>>, Predicate<IEnumerable<object>>> waitOverConditionMutator,
-                                      Predicate<TMsg> filter)
+        internal void Subscribe(Type type, 
+                                Func<object,bool> filter,
+                                Func<IEnumerable<object>, bool> stopCondition)
         {
-            _filters[typeof(TMsg)] = o => o is TMsg && filter((TMsg)o);
-            _waitIsOver = waitOverConditionMutator(_waitIsOver);
-            _subscriber.Subscribe<TMsg>(_inbox.Receiver);
+            _filters.Add(filter);
+            _stopCondition = stopCondition;
+            _subscriber.Subscribe(type,_inbox.Receiver);
         }
 
-     
         public ExpectBuilder Expect<TMsg>(Predicate<TMsg> filter = null)
         {
-            return _expectBuilder.And(filter);
+            return ExpectBuilder.And(filter);
         }
- 
-        internal bool WasReceived<TMsg>(Predicate<TMsg> filter)
+        public ExpectBuilder Expect(Type type, Func<object,bool> filter = null)
         {
-            return _allExpectedMessages.OfType<TMsg>().Any(m => filter(m));
+            return ExpectBuilder.And(type,filter);
         }
 
         public Task<IWaitResults> WhenReceiveAll { get; private set; }
@@ -83,12 +83,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool IsAllExpectedMessagedReceived()
         {
-            return _waitIsOver(_allExpectedMessages);
+            return _stopCondition(_allExpectedMessages);
         }
 
         private bool IsExpected(object message)
         {
-            return _filters.Values.Any(f => f(message));
+            return _filters.Any(f => f(message));
         }
 
         private static void CheckExecutionError(object t)

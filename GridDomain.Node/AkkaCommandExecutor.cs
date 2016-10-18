@@ -38,16 +38,13 @@ namespace GridDomain.Node
         {
           //  var commandWaiter = new CommandMessageWaiter(this, _system, plan.Timeout);
             
-           // var waiter = new AkkaMessageLocalWaiter(_system,_transport, plan.Timeout);
-            //foreach (var expectedMessage in plan.ExpectedMessages)
-            //{
-            //    _transport.Subscribe(expectedMessage.MessageType, waiter.Receiver);
-            //}
+            var waiter = new AkkaMessageLocalWaiter(_system,_transport);
+            
+            //var expectBuilder = waiter.Expect();
+
             foreach (var expectedMessage in plan.ExpectedMessages)
             {
-
             }
-
 
             Execute(plan.Command);
             throw new NotImplementedException();

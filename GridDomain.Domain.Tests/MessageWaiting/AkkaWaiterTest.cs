@@ -15,13 +15,21 @@ namespace GridDomain.Tests.MessageWaiting
     public class AkkaWaiterTest
     {
         private AkkaEventBusTransport _transport;
-        
+        private ActorSystem _actorSystem;
+
         [SetUp]
         public void Configure()
         {
-            var actorSystem = ActorSystem.Create("test");
-            _transport = new AkkaEventBusTransport(actorSystem);
-            Waiter = new AkkaMessageLocalWaiter(actorSystem, _transport);
+            _actorSystem = ActorSystem.Create("test");
+            _transport = new AkkaEventBusTransport(_actorSystem);
+            Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport);
+        }
+
+        [TearDown]
+        public void Clear()
+        {
+            Waiter.Dispose();
+            _actorSystem.Terminate().Wait();
         }
 
         protected AkkaMessageLocalWaiter Waiter { get; private set; }
@@ -35,7 +43,7 @@ namespace GridDomain.Tests.MessageWaiting
 
         protected void ExpectMsg<T>(T msg, Predicate<T> filter = null)
         {
-            Assert.AreEqual(msg, Waiter.WhenReceiveAll.Result.Message<T>(filter));
+            Assert.AreEqual(msg, Waiter.WhenReceiveAll.Result.Message(filter));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class

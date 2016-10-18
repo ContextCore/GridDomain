@@ -15,9 +15,9 @@ namespace GridDomain.Tests.MessageWaiting
         public void Init()
         {
             Waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                .Or<Message>(m => m.Id == _messageB.Id)
-                .And<Message>(m => m.Id == _messageC.Id)
-                .Or<Message>(m => m.Id == _messageD.Id)
+                      .Or<Message>(m => m.Id == _messageB.Id)
+                     .And<Message>(m => m.Id == _messageC.Id)
+                      .Or<Message>(m => m.Id == _messageD.Id)
                 .Within(TimeSpan.FromMilliseconds(100));
         }
 
@@ -26,6 +26,21 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageA);
             ExpectMsg(_messageA);
+        }
+
+        [Test]
+        public void Should_end_on_A_and_C()
+        {
+            Publish(_messageC, _messageA);
+            ExpectMsg(_messageC, m => m.Id == _messageC.Id);
+            ExpectMsg(_messageA, m => m.Id == _messageA.Id);
+        }
+
+        [Test]
+        public void Condition_wait_end_should_be_true_on_A()
+        {
+            var sampleObjectsReceived = new object[] { _messageA };
+            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
         [Test]
@@ -39,8 +54,8 @@ namespace GridDomain.Tests.MessageWaiting
         public void Should_end_on_B_and_C()
         {
             Publish(_messageC,_messageB);
-            ExpectMsg(_messageC);
-            ExpectMsg(_messageB);
+            ExpectMsg(_messageC, m => m.Id == _messageC.Id);
+            ExpectMsg(_messageB, m => m.Id == _messageB.Id);
         }
 
         [Test]

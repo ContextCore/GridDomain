@@ -29,6 +29,13 @@ namespace GridDomain.Tests.MessageWaiting
             ExpectMsg(_messageA);
             ExpectMsg(_messageB);
         }
+        [Test]
+        public void Condition_wait_end_should_be_true_on_A_and_B()
+        {
+            var sampleObjectsReceived = new object[] { _messageA, _messageB };
+            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+        }
+
 
         [Test]
         public void Should_not_end_on_C_and_A()
@@ -39,6 +46,14 @@ namespace GridDomain.Tests.MessageWaiting
             ExpectNoMsg();
         }
 
+        [Test]
+        public void Condition_wait_end_should_be_false_on_A_and_C()
+        {
+            var sampleObjectsReceived = new object[] { _messageA, _messageC };
+            Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+        }
+
+   
         [Test]
         public void Should_not_end_on_D_and_B()
         {
@@ -53,8 +68,8 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageC, _messageD);
 
-            ExpectMsg(_messageC);
-            ExpectMsg(_messageD);
+            ExpectMsg(_messageC,m => m.Id == _messageC.Id);
+            ExpectMsg(_messageD, m => m.Id == _messageD.Id);
         }
     }
 }
