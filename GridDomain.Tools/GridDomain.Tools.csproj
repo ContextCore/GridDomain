@@ -95,6 +95,7 @@
   <ItemGroup>
     <Compile Include="Repositories\DomainEventsRepository.cs" />
     <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\PersistanceFailureException.cs" />
     <Compile Include="Repositories\RawSqlAkkaPersistenceRepository.cs" />
     <Compile Include="Persistence\WireHexDeserializer.cs" />
     <Compile Include="Repositories\ActorSystemEventRepository.cs" />
