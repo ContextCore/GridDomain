@@ -51,8 +51,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return ExpectBuilder.And(type,filter);
         }
 
-       // public Task<IWaitResults> WhenReceiveAll { get; private set; }
-        
         public async Task<IWaitResults> Start(TimeSpan timeout)
         {
             var stopwatch = new Stopwatch();
@@ -69,14 +67,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                         if (IsExpected(message)) _allExpectedMessages.Add(message);
                         else _ignoredMessages.Add(message);
                     }
-                        //catch (ArgumentOutOfRangeException)
-                        //{
-                        //    if (timeout < stopwatch.Elapsed)
-                        //        throw new TimeoutException();
-                        //}
-                    catch (Exception ex)
+                    catch (ArgumentOutOfRangeException)
                     {
-                        throw new TimeoutException();
+                        if (timeout < stopwatch.Elapsed)
+                            throw new TimeoutException();
                     }
                 }
 

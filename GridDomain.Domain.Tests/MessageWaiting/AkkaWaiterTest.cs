@@ -12,10 +12,11 @@ using NUnit.Framework;
 namespace GridDomain.Tests.MessageWaiting
 {
 
-    public class AkkaWaiterTest
+    public abstract class AkkaWaiterTest
     {
         private AkkaEventBusTransport _transport;
         private ActorSystem _actorSystem;
+        private Task<IWaitResults> _results;
 
         [SetUp]
         public void Configure()
@@ -23,7 +24,10 @@ namespace GridDomain.Tests.MessageWaiting
             _actorSystem = ActorSystem.Create("test");
             _transport = new AkkaEventBusTransport(_actorSystem);
             Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport);
+            _results = ConfigureWaiter(Waiter);
         }
+
+        protected abstract Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter);
 
         [TearDown]
         public void Clear()
@@ -57,7 +61,8 @@ namespace GridDomain.Tests.MessageWaiting
 
         public TimeSpan DefaultTimeout { get; protected set; } = TimeSpan.FromMilliseconds(50);
 
-        protected void ExpectNoMsg()        {
+        protected void ExpectNoMsg()
+        {
             var e = Assert.Throws<AggregateException>(() => ExpectMsg<object>(null));
             Assert.IsInstanceOf<TimeoutException>(e.InnerException);
         }

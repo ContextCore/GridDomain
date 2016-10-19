@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.MessageWaiting
@@ -11,14 +13,13 @@ namespace GridDomain.Tests.MessageWaiting
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
 
-        [SetUp]
-        public void Init()
+        protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-            Waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                  .And<Message>(m => m.Id == _messageB.Id)
-                  .Or<Message>(m => m.Id == _messageC.Id)
-                  .And<Message>(m => m.Id == _messageD.Id)
-                  .Start(TimeSpan.FromMilliseconds(100));
+            return waiter.Expect<Message>(m => m.Id == _messageA.Id)
+                         .And<Message>(m => m.Id == _messageB.Id)
+                         .Or<Message>(m => m.Id == _messageC.Id)
+                         .And<Message>(m => m.Id == _messageD.Id)
+                         .Start(TimeSpan.FromMilliseconds(100));
         }
 
         [Test]
@@ -58,7 +59,6 @@ namespace GridDomain.Tests.MessageWaiting
         {
             Publish(_messageB, _messageD);
 
-            ExpectNoMsg();
             ExpectNoMsg();
         }
 

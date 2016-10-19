@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.MessageWaiting
@@ -10,15 +12,16 @@ namespace GridDomain.Tests.MessageWaiting
         private string _messageA = "et";
         private char _messageB = 'a';
 
-        [SetUp]
-        public void Init()
+        protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-            Waiter.Expect<string>()
-                  .And<char>()
-                  .Start(TimeSpan.FromSeconds(100));
+            var task = Waiter.Expect<string>()
+                             .And<char>()
+                             .Start(TimeSpan.FromSeconds(100));
 
             Publish(_messageA);
             Publish(_messageB);
+
+            return task;
         }
 
         [Test]
