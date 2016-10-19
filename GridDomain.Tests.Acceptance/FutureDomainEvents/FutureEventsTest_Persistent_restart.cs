@@ -22,27 +22,31 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(1000);
 
         [OneTimeSetUp]
         public void Given_aggregate_When_raising_future_event()
         {
-            var scheduledTime = DateTime.Now.AddSeconds(5);
-            _testCommand = new RaiseEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
+            _testCommand = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(10), 
+                                                         Guid.NewGuid(), 
+                                                         "test value");
+
             ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand);
+            //FutureEventScheduledEvent is a trigger for schedule an event to Quartz, lets give it some time to process
+            Thread.Sleep(1000);
         }
 
         [Then]
         public void It_fires_after_node_restart()
         {
             GridNode.Stop();
-
             GridNode.Start(new LocalDbConfiguration());
 
-            WaitFor<TestDomainEvent>();
+            //event is not passed to waiter, but raised
+            WaitFor<FutureEventOccuredEvent>();
 
             var aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
-            Assert.LessOrEqual(aggregate.ProcessedTime - _testCommand.RaiseTime, TimeSpan.FromSeconds(1));
+            Assert.LessOrEqual(aggregate.ProcessedTime - _testCommand.RaiseTime, TimeSpan.FromSeconds(2));
         }
     }
 }
