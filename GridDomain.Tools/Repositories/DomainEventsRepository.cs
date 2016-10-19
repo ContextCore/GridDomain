@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using GridDomain.EventSourcing;
@@ -52,7 +53,17 @@ namespace GridDomain.Tools.Persistence
             var serializer = new Serializer(new SerializerOptions(true,true));
             return
                 _rawDataRepo.Load(id)
-                    .Select(d => serializer.Deserialize(new MemoryStream(d.Payload)))
+                    .Select(d =>
+                    {
+                        try
+                        {
+                            return serializer.Deserialize(new MemoryStream(d.Payload));
+                        }
+                        catch (NullReferenceException ex)
+                        {
+                            throw new PersistanceFailureException(d, ex);
+                        }
+                    })
                     .Cast<DomainEvent>()
                     .ToArray();
         }
