@@ -16,6 +16,7 @@ namespace GridDomain.Tests.Acceptance.Chronicles
     //TODO: replace with messaging
 
     [TestFixture]
+    [Ignore("Frozen for persistent queue investigation")]
     public class Given_persisted_events_replay : SampleDomainCommandExecutionTests
     {
         public Given_persisted_events_replay():base(false)

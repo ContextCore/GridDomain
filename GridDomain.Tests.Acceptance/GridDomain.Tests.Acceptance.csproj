@@ -228,7 +228,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="Chronicles\EventsReplayInfoHolder.cs" />
     <Compile Include="Chronicles\Given_persisted_events_replay.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\Given_aggregate_with_upgraded_event_with_new_field_Persistent.cs" />
