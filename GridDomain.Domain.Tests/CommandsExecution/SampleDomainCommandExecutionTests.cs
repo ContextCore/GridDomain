@@ -28,5 +28,9 @@ namespace GridDomain.Tests.CommandsExecution
         public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
         {
         }
+
+        public SampleDomainCommandExecutionTests()
+        {
+        }
     }
 }
