@@ -35,8 +35,7 @@ namespace GridDomain.Tests.MessageWaiting
         public void A_message_should_not_end_wait()
         {
             Publish(_messageA);
-            var e = Assert.Throws<AggregateException>(() => ExpectMsg(_messageA));
-            Assert.IsInstanceOf<TimeoutException>(e.InnerException);
+            ExpectNoMsg();
         }
 
 

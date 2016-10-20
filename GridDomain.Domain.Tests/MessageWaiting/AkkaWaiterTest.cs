@@ -45,8 +45,11 @@ namespace GridDomain.Tests.MessageWaiting
               _transport.Publish(msg);
         }
 
-        protected void ExpectMsg<T>(T msg, Predicate<T> filter = null)
+        protected void ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
         {
+            if(!_results.Wait(timeout ?? DefaultTimeout))
+                throw new TimeoutException();
+
             Assert.AreEqual(msg, _results.Result.Message(filter));
         }
 
@@ -55,16 +58,14 @@ namespace GridDomain.Tests.MessageWaiting
             if (!_results.Wait(timeout ?? DefaultTimeout))
                 return;
 
-            var e = Assert.Throws<AggregateException>(() => ExpectMsg(msg));
-            Assert.IsInstanceOf<TimeoutException>(e.InnerException);
+            var e = Assert.Throws<TimeoutException>(() => ExpectMsg(msg));
         }
 
         public TimeSpan DefaultTimeout { get; protected set; } = TimeSpan.FromMilliseconds(50);
 
         protected void ExpectNoMsg()
         {
-            var e = Assert.Throws<AggregateException>(() => ExpectMsg<object>(null));
-            Assert.IsInstanceOf<TimeoutException>(e.InnerException);
+           ExpectNoMsg<object>(null);
         }
     }
 }

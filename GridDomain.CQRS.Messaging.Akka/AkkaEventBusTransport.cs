@@ -10,7 +10,7 @@ namespace GridDomain.CQRS.Messaging.Akka
     {
         private readonly EventStream _bus;
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
-        private ISoloLogger _log = LogManager.GetLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         public AkkaEventBusTransport(ActorSystem system)
         {
