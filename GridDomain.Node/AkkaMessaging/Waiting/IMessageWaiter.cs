@@ -1,15 +1,13 @@
 using System;
 using System.Diagnostics;
 using System.Security.Policy;
-using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public interface IMessageWaiter
+    public interface IMessageWaiter<T>
     {
-        Task<TMsg> Receive<TMsg>(Predicate<TMsg> filter = null);
-        Task<IWaitResults> ReceiveAll();
+        IExpectBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null);
     }
 }

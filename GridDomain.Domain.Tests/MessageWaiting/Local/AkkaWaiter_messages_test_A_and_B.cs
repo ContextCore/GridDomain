@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.MessageWaiting
+namespace GridDomain.Tests.MessageWaiting.Local
 {
     [TestFixture]
 
@@ -16,7 +16,7 @@ namespace GridDomain.Tests.MessageWaiting
         {
             var task = Waiter.Expect<string>()
                              .And<char>()
-                             .Start(TimeSpan.FromSeconds(100));
+                             .Create(TimeSpan.FromSeconds(100));
 
             Publish(_messageA);
             Publish(_messageB);

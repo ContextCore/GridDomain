@@ -117,9 +117,21 @@ namespace GridDomain.Node
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
-            Start();
+            _stopping = false;
+            _log.Debug("Launching GridDomain node {Id}",Id);
 
-            //Listener = new MessagesListener(System,Transport);
+            var props = System.DI().Props<GridNodeController>();
+            var nodeController = System.ActorOf(props,nameof(GridNodeController));
+
+            nodeController.Ask(new GridNodeController.Start
+            {
+                RoutingActorType = RoutingActorType[_transportMode]
+            })
+                .Wait(TimeSpan.FromSeconds(2));
+
+            _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+
+            _commandExecutor = new AkkaCommandExecutor(System,Transport);
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -157,25 +169,6 @@ namespace GridDomain.Node
             _log.Debug("GridDomain node {Id} stopped",Id);
         }
 
-        private void Start()
-        {
-            _stopping = false;
-            _log.Debug("Launching GridDomain node {Id}",Id);
-
-            var props = System.DI().Props<GridNodeController>();
-            var nodeController = System.ActorOf(props,nameof(GridNodeController));
-
-            nodeController.Ask(new GridNodeController.Start
-            {
-                RoutingActorType = RoutingActorType[_transportMode]
-            })
-            .Wait(TimeSpan.FromSeconds(2));
-
-            _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
-
-            _commandExecutor = new AkkaCommandExecutor(System,Transport);
-        }
-
         public void Execute(params ICommand[] commands)
         {
             _commandExecutor.Execute(commands);
@@ -191,5 +184,14 @@ namespace GridDomain.Node
             return _commandExecutor.Execute(plan);
         }
 
+        public IMessageWaiter<Task<IWaitResults>> NewWaiter()
+        {
+            return new AkkaMessageLocalWaiter(System,Transport);
+        }
+
+        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter()
+        {
+            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport);
+        }
     }
 }

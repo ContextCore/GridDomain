@@ -7,7 +7,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.MessageWaiting
+namespace GridDomain.Tests.MessageWaiting.Local
 {
     [TestFixture]
     public class AkkaWaiter_message_test_filtered_message : TestKit

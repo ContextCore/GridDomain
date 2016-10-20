@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.TestKit.NUnit3;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.MessageWaiting
+namespace GridDomain.Tests.MessageWaiting.Local
 {
 
     public abstract class AkkaWaiterTest

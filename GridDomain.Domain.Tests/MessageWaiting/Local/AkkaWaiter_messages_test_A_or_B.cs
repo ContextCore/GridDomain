@@ -5,7 +5,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.MessageWaiting
+namespace GridDomain.Tests.MessageWaiting.Local
 {
     [TestFixture]
 
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.MessageWaiting
             _transport = new AkkaEventBusTransport(Sys);
             _waiter = new AkkaMessageLocalWaiter(Sys, _transport);
             _waiter.Expect<string>()
-                .Or<bool>();
+                   .Or<bool>();
             _received = _waiter.Start(TimeSpan.FromSeconds(1));
         }
 

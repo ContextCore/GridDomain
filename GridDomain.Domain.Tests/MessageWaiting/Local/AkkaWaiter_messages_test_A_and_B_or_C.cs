@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.MessageWaiting
+namespace GridDomain.Tests.MessageWaiting.Local
 {
     [TestFixture]
     public class AkkaWaiter_messages_test_A_and_B_or_C : AkkaWaiterTest
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.MessageWaiting
             return waiter.Expect<string>()
                          .And<char>()
                          .Or<int>()
-                         .Start(TimeSpan.FromMilliseconds(50));
+                         .Create(TimeSpan.FromMilliseconds(50));
         }
 
         [Test]

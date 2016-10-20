@@ -23,7 +23,6 @@ namespace GridDomain.Tests.CommandsExecution
             var container = new UnityContainer();
             container.Register(CreateConfiguration());
             return new SampleRouteMap(container);
-
         }
 
         public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)

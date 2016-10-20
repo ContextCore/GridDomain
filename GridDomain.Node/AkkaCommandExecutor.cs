@@ -60,7 +60,7 @@ namespace GridDomain.Node
                              o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
-            var task = expectBuilder.Start(plan.Timeout)
+            var task = expectBuilder.Create(plan.Timeout)
                                     .ContinueWith(t =>
                                     {
                                         CheckTaskFault(t);
