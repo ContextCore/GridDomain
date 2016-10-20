@@ -136,8 +136,6 @@ namespace GridDomain.Node.Actors
 
             PersistAll(events, e =>
             {
-                _publisher.Publish(e);
-
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
                 // how to pass aggregate type in this case? 
                 //direct call to method to not postpone process of event scheduling, 
@@ -145,6 +143,7 @@ namespace GridDomain.Node.Actors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
                          .With<FutureEventCanceledEvent>(Handle);
 
+                _publisher.Publish(e);
             });
             aggregate.ClearUncommittedEvents();
 

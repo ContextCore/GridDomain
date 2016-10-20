@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.1.1.2\lib\net45\Akka.dll</HintPath>
+    <Reference Include="Akka, Version=1.1.2.281, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.1.2.281-beta\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Cluster, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
@@ -54,8 +54,8 @@
       <HintPath>..\packages\Akka.Logger.Serilog.1.1.1\lib\net45\Akka.Logger.Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Persistence, Version=1.1.2.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.1.1.2.30-beta\lib\net45\Akka.Persistence.dll</HintPath>
+    <Reference Include="Akka.Persistence, Version=1.1.2.281, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.1.1.2.281-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -256,7 +256,6 @@
     <Compile Include="CommandsExecution\InMemory_When_SyncExecute_until_projection_group_fault.cs" />
     <Compile Include="CommandsExecution\InMemory_When_SyncExecute_waiting_several_messages.cs" />
     <Compile Include="DateTimeSpec.cs" />
-    <Compile Include="DependencyInjection\AggregateActor_can_be_created_with_iServiceLocator.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\NamedActorA.cs" />
