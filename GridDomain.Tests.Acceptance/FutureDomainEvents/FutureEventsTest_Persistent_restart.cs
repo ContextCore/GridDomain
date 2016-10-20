@@ -22,12 +22,12 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(1000);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
 
         [OneTimeSetUp]
         public void Given_aggregate_When_raising_future_event()
         {
-            _testCommand = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(10), 
+            _testCommand = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(5), 
                                                          Guid.NewGuid(), 
                                                          "test value");
 
@@ -40,9 +40,9 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         public void It_fires_after_node_restart()
         {
             GridNode.Stop();
+            GridNode = CreateGridDomainNode(AkkaCfg, new LocalDbConfiguration());
             GridNode.Start(new LocalDbConfiguration());
-
-            //event is not passed to waiter, but raised
+          // event is not passed to waiter, but raised
             WaitFor<FutureEventOccuredEvent>();
 
             var aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);

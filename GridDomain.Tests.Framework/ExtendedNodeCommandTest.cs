@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Framework
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
         protected readonly bool InMemory;
-        private static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
+        protected static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
 

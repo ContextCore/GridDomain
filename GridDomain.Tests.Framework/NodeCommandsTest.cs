@@ -29,7 +29,6 @@ namespace GridDomain.Tests.Framework
         protected GridDomainNode GridNode;
       
         private readonly Stopwatch _watch = new Stopwatch();
-        private IActorSubscriber _actorSubscriber;
         private readonly bool _clearDataOnStart;
 
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
@@ -64,8 +63,6 @@ namespace GridDomain.Tests.Framework
 
             GridNode = CreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
             GridNode.Start(autoTestGridDomainConfiguration);
-            _actorSubscriber = GridNode.Container.Resolve<IActorSubscriber>();
-
         }
 
         /// <summary>
@@ -131,12 +128,12 @@ namespace GridDomain.Tests.Framework
 
         private ExpectedMessagesReceived Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
         {
-            var actor = system
-                                .ActorOf(Props.Create(() => new AllMessageWaiter(TestActor, expectedMessages)),
+            var actor = system.ActorOf(Props.Create(() => new AllMessageWaiter(TestActor, expectedMessages)),
                                          "MessageWaiter_" + Guid.NewGuid());
+            var actorSubscriber= GridNode.Container.Resolve<IActorSubscriber>();
 
             foreach (var m in expectedMessages)
-                _actorSubscriber.Subscribe(m.MessageType, actor);
+                actorSubscriber.Subscribe(m.MessageType, actor);
 
             act();
 
