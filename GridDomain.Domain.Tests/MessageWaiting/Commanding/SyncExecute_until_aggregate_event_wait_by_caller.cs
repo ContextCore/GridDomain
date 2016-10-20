@@ -21,7 +21,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         }
 
         [Test]
-        public void Then_SyncExecute_until_aggregate_event_wait_by_caller()
+        public void Then_CommandWaiter_waits_until_aggregate_event()
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
@@ -29,6 +29,25 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                    .Create(Timeout)
                                  .Execute(cmd);
+
+            if (!waiter.Wait(Timeout))
+                throw new TimeoutException();
+
+            //to finish persistence
+            var aggregate = LoadAggregate<SampleAggregate>(cmd.AggregateId);
+            Assert.AreEqual(cmd.Parameter.ToString(), aggregate.Value);
+        }
+
+        [Test]
+        public void Then_MessageWaiter_waits_until_aggregate_event()
+        {
+            var cmd = new LongOperationCommand(1000, Guid.NewGuid());
+
+            var waiter = GridNode.NewWaiter()
+                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                 .Create(Timeout);
+
+            GridNode.Execute(cmd);
 
             if (!waiter.Wait(Timeout))
                 throw new TimeoutException();
