@@ -17,7 +17,7 @@ namespace GridDomain.Logging
 
         public override ISoloLogger GetLogger(string className = null)
         {
-            className = className ?? GetClassName() ;
+            className = className ?? GetClassName();
             return LoggerFactory.Value.ForContext("className", className);
 
         }
