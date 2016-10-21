@@ -1,26 +1,35 @@
 using System;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    class ExpectedCommandExecutor : IExpectedCommandExecutor
+    class ExpectedCommandExecutor: IExpectedCommandExecutor
     {
-        public ICommandExecutor Executor { get; }
-        public Task<IWaitResults> Awaiter { get; }
+        private readonly LocalMessagesWaiter<IExpectedCommandExecutor> _waiter;
+        private TimeSpan _timeout;
 
-        public ExpectedCommandExecutor(ICommandExecutor executor, Task<IWaitResults> awaiter )
+        public ICommandExecutor Executor { get; }
+
+        public ExpectedCommandExecutor(ICommandExecutor executor, LocalMessagesWaiter<IExpectedCommandExecutor> waiter, TimeSpan timeout)
         {
-            Awaiter = awaiter;
             Executor = executor;
+            _waiter = waiter;
+            _timeout = timeout;
         }
 
-        public Task<IWaitResults> Execute(ICommand command, bool failOnFaults = true)
+        public Task<IWaitResults> Execute<T>(T command, bool failOnFaults = true) where T : ICommand
         {
+            _waiter.ExpectBuilder.Or<IFault<T>>(f => f.Message.Id == command.Id);
+
             Executor.Execute(command);
-            return Awaiter.ContinueWith(t =>
+            return _waiter.Start(_timeout).ContinueWith(t =>
             {
+                if(t.IsFaulted)
+                    ExceptionDispatchInfo.Capture(t.Exception).Throw();
+
                 if (!failOnFaults) return t.Result;
 
                 var faults = t.Result.All.OfType<IFault>().ToArray();

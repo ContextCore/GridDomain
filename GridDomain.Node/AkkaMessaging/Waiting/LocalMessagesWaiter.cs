@@ -53,25 +53,28 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var workTimeout = timeout ;//?? _defaultTimeout;
             try
             {
                 while (!IsAllExpectedMessagedReceived())
                 {
                     try
                     {
-                        var message = await _inbox.ReceiveAsync(workTimeout - stopwatch.Elapsed);
+                        var message = await _inbox.ReceiveAsync(timeout - stopwatch.Elapsed);
                         CheckExecutionError(message);
 
                         if (IsExpected(message)) _allExpectedMessages.Add(message);
                         else _ignoredMessages.Add(message);
                     }
-                    catch (ArgumentOutOfRangeException)
+                    catch (Exception e)
                     {
-                        if (timeout < stopwatch.Elapsed)
+                        _inbox.Dispose();
+                        if(e is ArgumentOutOfRangeException && timeout < stopwatch.Elapsed)
                             throw new TimeoutException();
+                        throw;
                     }
+                   
                 }
+                _inbox.Dispose();
                 return new WaitResults(_allExpectedMessages);
             }
             finally

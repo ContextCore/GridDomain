@@ -7,6 +7,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.MessageWaiting.Commanding;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(500), expectedMessage);
 
-            AssertInnerException<TimeoutException>(() => GridNode.Execute(plan).Wait());
+            AssertEx.ThrowsInner<TimeoutException>(() => GridNode.Execute(plan).Wait());
         }
 
         [Then]
@@ -44,22 +45,10 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var plan = CommandPlan.New(syncCommand, TimeSpan.FromSeconds(0.5), expectedMessage);
-            AssertInnerException<TimeoutException>(() => GridNode.Execute(plan).Wait());
+            AssertEx.ThrowsInner<TimeoutException>(() => GridNode.Execute(plan).Wait());
         }
 
-        private static void AssertInnerException<T>(Action act) where T: Exception
-        {
-            try
-            {
-                act.Invoke();
-                Assert.Fail("Timeout exception was not raised");
-            }
-            catch (AggregateException ex)
-            {
-                var e = ex.InnerExceptions.First();
-                Assert.IsInstanceOf<T>(e, e.ToPropsString());
-            }
-        }
+     
 
         [Then]
         public void PlanExecute_by_result_throws_exception_after_default_timeout()
@@ -67,8 +56,8 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(500), expectedMessage);
-            
-            AssertInnerException<TimeoutException>(() => { object res = GridNode.Execute(plan).Result; });
+
+            AssertEx.ThrowsInner<TimeoutException>(() => { object res = GridNode.Execute(plan).Result; });
         }
 
 

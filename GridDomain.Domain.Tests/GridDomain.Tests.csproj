@@ -303,9 +303,10 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
+    <Compile Include="AssertEx.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_until_projection_build_event_fetching_results.cs" />
-    <Compile Include="MessageWaiting\Commanding\SyncExecute_until_projection_group_fault.cs" />
+    <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_expected_faults_from_projection_group.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_results_tests.cs" />
     <Compile Include="MessageWaiting\Commanding\SyncExecute_without_timeout.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_expected_faults.cs" />

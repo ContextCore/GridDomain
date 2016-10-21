@@ -105,7 +105,7 @@ namespace GridDomain.Node.Actors
             //Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
             Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
             Recover<RecoveryCompleted>(message =>
-            {
+             {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                 //notify all 
                 foreach(var waiter in _recoverWaiters)

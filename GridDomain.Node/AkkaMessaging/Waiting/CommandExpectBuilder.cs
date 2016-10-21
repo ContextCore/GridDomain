@@ -14,7 +14,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public override IExpectedCommandExecutor Create(TimeSpan? timeout=null)
         {
-            return new ExpectedCommandExecutor(_executor,_waiter.Start(timeout ?? DefaultTimeout));
+            return new ExpectedCommandExecutor(_executor,_waiter, timeout ?? DefaultTimeout);
         }
     }
 }

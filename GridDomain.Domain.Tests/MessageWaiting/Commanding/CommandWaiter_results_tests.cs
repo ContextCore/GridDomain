@@ -32,7 +32,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
 
             _results = GridNode.NewCommandWaiter()
                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                               .And<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                               .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
                                .Create(Timeout)
                                .Execute(cmd).Result;
         }

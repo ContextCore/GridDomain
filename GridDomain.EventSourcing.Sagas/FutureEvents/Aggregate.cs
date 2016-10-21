@@ -22,8 +22,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
         {
-            var entityToArrayTask = eventProducer
-                .ContinueWith(t => new DomainEvent[] { t.Result },TaskContinuationOptions.OnlyOnRanToCompletion);
+            var entityToArrayTask = eventProducer.ContinueWith(t => new DomainEvent[] { t.Result });
             RaiseEventAsync(entityToArrayTask);
         }
 
