@@ -155,6 +155,7 @@ namespace GridDomain.Node
 
         bool _stopping = false;
         private AkkaCommandExecutor _commandExecutor;
+        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
         public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
@@ -184,14 +185,14 @@ namespace GridDomain.Node
             return _commandExecutor.Execute(plan);
         }
 
-        public IMessageWaiter<Task<IWaitResults>> NewWaiter()
+        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return new AkkaMessageLocalWaiter(System,Transport);
+            return new AkkaMessageLocalWaiter(System,Transport, defaultTimeout ?? DefaultTimeout);
         }
 
-        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter()
+        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null)
         {
-            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport);
+            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout);
         }
     }
 }

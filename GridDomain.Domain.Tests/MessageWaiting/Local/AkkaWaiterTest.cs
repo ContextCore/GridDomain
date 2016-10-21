@@ -19,7 +19,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         {
             _actorSystem = ActorSystem.Create("test");
             _transport = new AkkaEventBusTransport(_actorSystem);
-            Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport);
+            Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(10));
             _results = ConfigureWaiter(Waiter);
         }
 

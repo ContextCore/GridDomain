@@ -9,18 +9,9 @@ using NUnit.Framework;
 namespace GridDomain.Tests.MessageWaiting.Commanding
 {
     [TestFixture]
-    public class SyncExecute_until_projection_group_fault : When_SyncExecute_until_projection_fault
+    public class CommandWaiter_waits_for_expected_faults_from_projection_group : CommandWaiter_waits_for_expected_faults
     {
 
-        public SyncExecute_until_projection_group_fault() : base(true)
-        {
-
-        }
-
-        public SyncExecute_until_projection_group_fault(bool inMemory = true) : base(inMemory)
-        {
-
-        }
 
         protected override IMessageRouteMap CreateMap()
         {

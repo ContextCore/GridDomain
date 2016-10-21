@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 
@@ -14,10 +16,18 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             Executor = executor;
         }
 
-        public Task<IWaitResults> Execute(ICommand command)
+        public Task<IWaitResults> Execute(ICommand command, bool failOnFaults = true)
         {
             Executor.Execute(command);
-            return Awaiter;
+            return Awaiter.ContinueWith(t =>
+            {
+                if (!failOnFaults) return t.Result;
+
+                var faults = t.Result.All.OfType<IFault>().ToArray();
+                if (faults.Any())
+                    throw new AggregateException(faults.Select(f => f.Exception));
+                return t.Result;
+            });
         }
     }
 }

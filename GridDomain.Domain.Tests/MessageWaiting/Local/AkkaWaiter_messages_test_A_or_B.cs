@@ -22,7 +22,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         public void Given_waiter_subscribed_for_one_of_two_messages()
         {
             _transport = new AkkaEventBusTransport(Sys);
-            _waiter = new AkkaMessageLocalWaiter(Sys, _transport);
+            _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10));
             _waiter.Expect<string>()
                    .Or<bool>();
             _received = _waiter.Start(TimeSpan.FromSeconds(1));

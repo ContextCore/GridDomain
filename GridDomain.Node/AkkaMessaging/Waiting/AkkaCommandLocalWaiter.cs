@@ -9,10 +9,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         private readonly ICommandExecutor _executor;
 
-        public AkkaCommandLocalWaiter(ICommandExecutor executor,ActorSystem system, IActorSubscriber subscriber) : base(system, subscriber)
+        public AkkaCommandLocalWaiter(ICommandExecutor executor,ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout) : base(system, subscriber, defaultTimeout)
         {
             _executor = executor;
-            ExpectBuilder = new CommandExpectBuilder(_executor, this, TimeSpan.FromSeconds(10));
+            ExpectBuilder = new CommandExpectBuilder(_executor, this, defaultTimeout);
         }
 
         internal override ExpectBuilder<IExpectedCommandExecutor> ExpectBuilder { get; } 

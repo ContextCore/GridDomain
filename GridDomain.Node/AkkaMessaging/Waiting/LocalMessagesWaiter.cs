@@ -21,10 +21,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private Func<IEnumerable<object>,bool> _stopCondition;
 
         private readonly Inbox _inbox;
+        private readonly TimeSpan _defaultTimeout;
         internal abstract ExpectBuilder<T> ExpectBuilder { get; }
 
-        public LocalMessagesWaiter(ActorSystem system, IActorSubscriber subscriber)
+        public LocalMessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
         {
+            _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
             _inbox = Inbox.Create(system);
         }
@@ -51,13 +53,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
+            var workTimeout = timeout ;//?? _defaultTimeout;
             try
             {
                 while (!IsAllExpectedMessagedReceived())
                 {
                     try
                     {
-                        var message = await _inbox.ReceiveAsync(timeout - stopwatch.Elapsed);
+                        var message = await _inbox.ReceiveAsync(workTimeout - stopwatch.Elapsed);
                         CheckExecutionError(message);
 
                         if (IsExpected(message)) _allExpectedMessages.Add(message);

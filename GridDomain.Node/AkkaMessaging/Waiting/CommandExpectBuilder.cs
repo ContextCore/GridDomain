@@ -12,9 +12,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _executor = executor;
         }
 
-        public override IExpectedCommandExecutor Create(TimeSpan timeout)
+        public override IExpectedCommandExecutor Create(TimeSpan? timeout=null)
         {
-            return new ExpectedCommandExecutor(_executor,_waiter.Start(timeout));
+            return new ExpectedCommandExecutor(_executor,_waiter.Start(timeout ?? DefaultTimeout));
         }
     }
 }

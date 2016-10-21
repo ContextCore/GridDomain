@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 using GridDomain.Node;
@@ -13,15 +14,18 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.MessageWaiting.Commanding
 {
+
+    public static class ExceptionExtensions
+    {
+        public static void AssertInner<T>(this Exception e) where T: Exception
+        {
+            Assert.IsInstanceOf<T>(e.UnwrapSingle());
+        }
+    }
+
     [TestFixture]
     public class SyncExecute_without_timeout : SampleDomainCommandExecutionTests
     {
-
-        public SyncExecute_without_timeout() : base(true)
-        {
-
-        }
-
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
             return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },
@@ -29,22 +33,41 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         }
 
         [Then]
-        public void PlanExecute_throw_exception_after_wait_without_timeout()
+        public void CommandWaiter_throws_exception_after_wait_with_obly_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000,Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(500), expectedMessage);
+            var waiter = GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(100))
+                                 .Expect<SampleAggregateChangedEvent>()
+                                 .Create()
+                                 .Execute(syncCommand);
 
-            AssertInnerException<TimeoutException>(() => GridNode.Execute(plan).Wait());
+            AssertInnerException<TimeoutException>(() => waiter.Wait());
         }
 
         [Then]
         public void SyncExecute_throw_exception_after_wait_without_timeout()
         {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, TimeSpan.FromSeconds(0.5), expectedMessage);
-            AssertInnerException<TimeoutException>(() => GridNode.Execute(plan).Wait());
+            var syncCommand = new LongOperationCommand(1000000, Guid.NewGuid());
+            var waiter = GridNode.NewCommandWaiter()
+                                 .Expect<SampleAggregateChangedEvent>()
+                                 .Create()
+                                 .Execute(syncCommand);
+
+            //default built-in timeout for 10 sec
+            AssertInnerException<TimeoutException>(() => waiter.Wait());
+        }
+
+        [Then]
+        public void SyncExecute_throw_exception_according_to_node_default_timeout()
+        {
+            var syncCommand = new LongOperationCommand(1000000, Guid.NewGuid());
+            GridNode.DefaultTimeout = TimeSpan.FromMilliseconds(500);
+            var waiter = GridNode.NewCommandWaiter()
+                                 .Expect<SampleAggregateChangedEvent>()
+                                 .Create()
+                                 .Execute(syncCommand);
+
+            AssertInnerException<TimeoutException>(() => waiter.Wait());
         }
 
         private static void AssertInnerException<T>(Action act) where T: Exception
@@ -54,55 +77,21 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
                 act.Invoke();
                 Assert.Fail("Timeout exception was not raised");
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                var e = ex.InnerExceptions.First();
-                Assert.IsInstanceOf<T>(e, e.ToPropsString());
+                ex.AssertInner<T>();
             }
         }
 
         [Then]
-        public void PlanExecute_by_result_throws_exception_after_default_timeout()
+        public void CommandWaiter_doesnt_throw_exception_after_wait_with_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(500), expectedMessage);
-            
-            AssertInnerException<TimeoutException>(() => { object res = GridNode.Execute(plan).Result; });
+            GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(100))
+                                 .Expect<SampleAggregateChangedEvent>()
+                                 .Create()
+                                 .Execute(syncCommand)
+                                 .Wait(100);
         }
-
-
-        [Then]
-        public void SyncExecute_by_result_throws_exception_after_default_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = new CommandPlan<object>(syncCommand,TimeSpan.FromMilliseconds(500),expectedMessage);
-
-            Assert.Throws<TimeoutException>(() => GridNode.ExecuteSync(plan));
-        }
-
-
-        [Then]
-        public void PlanExecute_doesnt_throw_exception_after_wait_with_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, expectedMessage);
-
-            Assert.False(GridNode.Execute(plan).Wait(100));
-        }
-
-        [Then]
-        public void SyncExecute_doesnt_throw_exception_after_wait_with_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-
-            Assert.False(GridNode.Execute(syncCommand, expectedMessage).Wait(100));
-        }
-
-
-
     }
 }

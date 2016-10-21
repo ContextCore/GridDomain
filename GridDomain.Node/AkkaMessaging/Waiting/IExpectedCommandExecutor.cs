@@ -5,9 +5,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public interface IExpectedCommandExecutor
     {
-        Task<IWaitResults> Execute(ICommand command);
-
-       // Task<IWaitResults> Awaiter { get; }
-       // ICommandExecutor Executor { get; }
+        Task<IWaitResults> Execute(ICommand command, bool failOnFaults = false);
     }
 }

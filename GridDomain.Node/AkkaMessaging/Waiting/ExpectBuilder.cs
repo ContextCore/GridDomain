@@ -20,13 +20,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         protected readonly LocalMessagesWaiter<T> _waiter;
         internal Expression<Func<IEnumerable<object>, bool>> WaitIsOver = c => true;
+        protected TimeSpan DefaultTimeout;
 
         protected ExpectBuilder(LocalMessagesWaiter<T> waiter, TimeSpan defaultTimeout)
         {
+            DefaultTimeout = defaultTimeout;
             _waiter = waiter;
         }
 
-        public abstract T Create(TimeSpan timeout);
+        public abstract T Create(TimeSpan? timeout = null);
 
         public IExpectBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)
         {

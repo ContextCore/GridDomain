@@ -12,7 +12,7 @@ namespace GridDomain.Common
             if (aggregateException.InnerExceptions.Count > 1)
                 return aggregateException;
 
-            return aggregateException.InnerExceptions.First();
+            return aggregateException.InnerExceptions.First().UnwrapSingle();
         }
 
         public static Exception UnwrapSingle(this Exception exeption)

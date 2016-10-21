@@ -37,7 +37,7 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-            var waiter = new AkkaMessageLocalWaiter(_system,_transport);
+            var waiter = new AkkaMessageLocalWaiter(_system,_transport, TimeSpan.FromSeconds(10));
             
             var expectBuilder = waiter.ExpectBuilder;
 
