@@ -13,12 +13,13 @@ namespace GridDomain.Tests
             try
             {
                 act.Invoke();
-                Assert.Fail($"{typeof(T).Name} was not raised");
             }
             catch (Exception ex)
             {
                 Assert.IsInstanceOf<T>(ex.UnwrapSingle());
+                return;
             }
+            Assert.Fail($"{typeof(T).Name} was not raised");
         }
     }
 }

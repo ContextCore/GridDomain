@@ -67,19 +67,18 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                     }
                     catch (Exception e)
                     {
-                        _inbox.Dispose();
                         if(e is ArgumentOutOfRangeException && timeout < stopwatch.Elapsed)
                             throw new TimeoutException();
                         throw;
                     }
                    
                 }
-                _inbox.Dispose();
                 return new WaitResults(_allExpectedMessages);
             }
             finally
             {
                 stopwatch.Stop();
+                _inbox.Dispose();
             }
         }
 

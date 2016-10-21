@@ -14,6 +14,8 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
     [TestFixture]
     public class Execute_command_waiting_aggregate_event : SampleDomainCommandExecutionTests
     {
+        protected override bool CreateNodeOnEachTest { get; } = true;
+
         [Test]
         public void CommandWaiter_Should_wait_until_aggregate_event()
         {
@@ -28,7 +30,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             var aggregate = LoadAggregate<SampleAggregate>(cmd.AggregateId);
             Assert.AreEqual(cmd.Parameter.ToString(), aggregate.Value);
         }
-
+        
         [Test]
         public void MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
         {

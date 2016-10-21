@@ -42,42 +42,30 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId,
-                syncCommand.AggregateId,
-                typeof(EvenFaultyMessageHandler),
-                typeof(OddFaultyMessageHandler));
+                                                                          syncCommand.AggregateId,
+                                                                          typeof(EvenFaultyMessageHandler),
+                                                                          typeof(OddFaultyMessageHandler));
 
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
-                syncCommand.AggregateId);
+                                                                                    syncCommand.AggregateId);
 
-            try
-            {
-                var result = GridNode.Execute(new CommandPlan(syncCommand,expectedFault, expectedMessage)).Result;
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException);
-            }
+            AssertEx.ThrowsInner<MessageHandleException>(
+                ()=>
+                    GridNode.Execute(new CommandPlan(syncCommand,expectedFault, expectedMessage))
+                            .Wait()
+                );
         }
 
         [Then]
-        public void
-            SyncExecute_with_projection_fault_expecting_fault_wihout_source_type_delivers_error_to_caller_from_any_source
-            ()
+        public void SyncExecute_with_projection_fault_expecting_fault_wihout_source_type_delivers_error_to_caller_from_any_source()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 
-            try
-            {
-                var result =
-                    GridNode.Execute(new CommandPlan(syncCommand, expectedFault, expectedMessage)).Result;
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException);
-            }
+            AssertEx.ThrowsInner<MessageHandleException>(() =>
+                GridNode.Execute(new CommandPlan(syncCommand, expectedFault, expectedMessage)).Wait());
         }
 
         [Then]
@@ -86,15 +74,10 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
-            var plan = new CommandPlan(syncCommand, TimeSpan.FromMilliseconds(1),expectedMessage);
-            try
-            {
-                GridNode.Execute(plan).Wait();
-            }
-            catch (AggregateException ex)
-            {
-                Assert.IsInstanceOf<TimeoutException>(ex.UnwrapSingle(), ex.InnerException.ToPropsString());
-            }
+
+            var plan = new CommandPlan(syncCommand, TimeSpan.FromMilliseconds(10),expectedMessage);
+
+            AssertEx.ThrowsInner<TimeoutException>(() => GridNode.Execute(plan).Wait());
         }
 
         [Then]
@@ -107,15 +90,8 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
                 syncCommand.AggregateId);
             var plan = new CommandPlan<AggregateChangedEventNotification>(syncCommand, expectedMessage, expectedFault);
 
-            try
-            {
-                var evt = GridNode.Execute<AggregateChangedEventNotification>(plan).Result;
-            }
-            catch (Exception ex)
-            {
 
-                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException, ex.InnerException.ToPropsString());
-            }
+            AssertEx.ThrowsInner<MessageHandleException>(() => GridNode.Execute(plan).Wait());
         }
 
         [Then]
@@ -144,14 +120,10 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 
-            try
+            AssertEx.ThrowsInner<MessageHandleException>(() =>
             {
                 GridNode.Execute<object>(syncCommand, expectedFault, expectedMessage).Wait();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<MessageHandleException>(ex.InnerException, ex.InnerException.ToPropsString());
-            }
+            });
         }
 
 
@@ -164,14 +136,10 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 
-            try
+            AssertEx.ThrowsInner<TimeoutException>(() =>
             {
                 GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<TimeoutException>(ex.InnerException, ex.InnerException.ToPropsString());
-            }
+            });
         }
 
         [Then]
@@ -184,15 +152,10 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                                                                                     syncCommand.AggregateId);
 
-            try
+            AssertEx.ThrowsInner<TimeoutException>(() =>
             {
-               var a = GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Result;
-            }
-            catch (AggregateException ex)
-            {
-                var exception = ex.InnerException;
-                Assert.IsInstanceOf<SampleAggregateException>(exception, exception.ToPropsString());
-            }
+                GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
+            });
         }
 
         [Then]

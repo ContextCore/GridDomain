@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
-    <Compile Include="CommandAndConfirmation.cs" />
     <Compile Include="CommandPlan.cs" />
     <Compile Include="Expect.cs" />
     <Compile Include="ExpectedFault.cs" />
