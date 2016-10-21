@@ -20,8 +20,10 @@ namespace GridDomain.Logging
             var level = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), consoleLevel);
             elasticOptions.MinimumLogEventLevel = level;
             var configuration = new LoggerConfiguration();
+            var instrumentationKey = ConfigurationManager.AppSettings["instrumentationKey"] ?? "4dab6b28-6e3c-4690-a7b5-28986ee403e3";
             configuration = configuration.WriteTo.RollingFile(filePath + "\\logs-{Date}.txt")
                 .WriteTo.Elasticsearch(elasticOptions)
+                .WriteTo.ApplicationInsightsTraces(instrumentationKey, level)
                 .WriteTo.Console(level)
                 .Enrich.WithProperty("MachineName", machineName);
 
