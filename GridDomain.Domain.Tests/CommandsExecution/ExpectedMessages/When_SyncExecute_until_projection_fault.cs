@@ -152,7 +152,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                                                                                     syncCommand.AggregateId);
 
-            AssertEx.ThrowsInner<TimeoutException>(() =>
+            AssertEx.ThrowsInner<SampleAggregateException>(() =>
             {
                 GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
             });
