@@ -12,6 +12,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
@@ -56,14 +57,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             public void Register(IUnityContainer container)
             {
                 container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
-                //container.RegisterType<AggregateActor<TestAggregate>>();
-                //container.RegisterType<AggregateHubActor<TestAggregate>>();
-                //container.RegisterType<ICommandAggregateLocator<TestAggregate>, TestAggregateCommandHandler>();
-                //container.RegisterType<IAggregateCommandsHandler<TestAggregate>, TestAggregateCommandHandler>();
                 container.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
-                //container.RegisterType<ISagaFactory<TestSaga, TestSagaState>, TestSagaFactory>();
-                //container.RegisterType<ISagaFactory<TestSaga, TestSagaStartMessage>, TestSagaFactory>();
-                //container.RegisterType<ISagaFactory<TestSaga, Guid>, TestSagaFactory>();
+                container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
                 container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaFactory, TestSagaStartMessage>(TestSaga.SagaDescriptor);
             }
         }
@@ -125,16 +120,21 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_two_commands_with_same_success_event_are_published_Then_first_successfully_handled_command_doesnt_change_second_commands_saga_state()
         {
             var firstCommand = new TimeoutCommand("timeout", TimeSpan.FromMilliseconds(300));
-            var secondCommand = new TimeoutCommand("timeout", TimeSpan.FromSeconds(3));
+            var secondCommand = new TimeoutCommand("timeout", TimeSpan.FromSeconds(10));
             var firstKey = Guid.NewGuid();
             var secondKey = Guid.NewGuid();
+
             _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
             _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
-            WaitFor<SagaTransitionEvent<ScheduledCommandProcessingSaga.States, ScheduledCommandProcessingSaga.Transitions>>();
+          
+            WaitFor<ScheduledCommandSuccessfullyProcessed>();
             Thread.Sleep(1000);
+
             var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(firstKey);
-            var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(secondKey);
-            Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.SuccessfullyProcessed && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
+            var secondSaga =     LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(secondKey);
+
+            Assert.AreEqual(ScheduledCommandProcessingSaga.States.MessageSent, secondSaga.MachineState);
+            Assert.AreEqual(ScheduledCommandProcessingSaga.States.SuccessfullyProcessed, firstSagaState.MachineState);
         }
 
 

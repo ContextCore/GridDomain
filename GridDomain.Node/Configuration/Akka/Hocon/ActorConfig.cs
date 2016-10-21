@@ -2,14 +2,14 @@ using System;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
-    public abstract class ActorConfig : IAkkaConfig
+    public abstract class RemoteActorConfig : IAkkaConfig
     {
         private readonly string _host;
         private readonly int _port;
         private readonly string _publicHost;
         private readonly bool _enforceIpVersion;
 
-        private ActorConfig(int port, string host, string publicHost, bool enforceIpVersion)
+        private RemoteActorConfig(int port, string host, string publicHost, bool enforceIpVersion)
         {
             _enforceIpVersion = enforceIpVersion;
             _publicHost = publicHost;
@@ -17,7 +17,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             _port = port;
         }
 
-        protected ActorConfig(IAkkaNetworkAddress config) : this(config.PortNumber, config.Host, config.PublicHost, config.EnforceIpVersion)
+        protected RemoteActorConfig(IAkkaNetworkAddress config) : this(config.PortNumber, config.Host, config.PublicHost, config.EnforceIpVersion)
         {
         }
 
@@ -59,7 +59,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                port = " + port + @"
                                hostname =  " + hostName + @"
                                public-hostname = " + publicHostName + @"
-                               enforce-ip-env = " + (enforceIpEnv ? "true":"false") + @"
+                               enforce-ip-family = " + (enforceIpEnv ? "true":"false") + @"
                     }
             }";
             return transportString;

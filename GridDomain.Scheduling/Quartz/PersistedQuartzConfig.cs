@@ -5,8 +5,10 @@ namespace GridDomain.Scheduling.Quartz
 {
     public class PersistedQuartzConfig : IQuartzConfig
     {
-        public string ConnectionString => ConfigurationManager.ConnectionStrings["GridDomainQuartzTestString"]?.ConnectionString 
-            ?? "Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipSchedulerTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True;";
+        private const string QuartzConnectionStringName = "Quartz";
+
+        public string ConnectionString => ConfigurationManager.ConnectionStrings[QuartzConnectionStringName]?.ConnectionString ??
+            "Server=(local); Database=Quartz; Integrated Security=true;MultipleActiveResultSets=True;";
         public string StorageType => "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
 
         public NameValueCollection Settings => new NameValueCollection
@@ -18,7 +20,6 @@ namespace GridDomain.Scheduling.Quartz
             ["quartz.jobStore.lockHandler.type"] = "Quartz.Impl.AdoJobStore.UpdateLockRowSemaphore, Quartz",
             ["quartz.dataSource.default.connectionString"] = ConnectionString,
             ["quartz.dataSource.default.provider"] = "SqlServer-20",
-
             ["quartz.scheduler.instanceId"] = "AUTO"
         };
     }

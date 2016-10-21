@@ -164,7 +164,7 @@ namespace GridDomain.Node
             if (_stopping) return;
             _stopping = true;
 
-            _quartzScheduler.Shutdown(false);
+            _quartzScheduler.Shutdown(true);
             System.Terminate();
             System.Dispose();
             _log.Debug("GridDomain node {Id} stopped",Id);

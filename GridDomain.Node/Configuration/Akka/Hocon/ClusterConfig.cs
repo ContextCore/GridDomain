@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
-    public class ClusterConfig : ActorConfig
+    public class ClusterConfig : RemoteActorConfig
     {
         private readonly string[] _seedNodes;
 
