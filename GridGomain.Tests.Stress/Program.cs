@@ -7,8 +7,6 @@ using Akka.Actor;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
