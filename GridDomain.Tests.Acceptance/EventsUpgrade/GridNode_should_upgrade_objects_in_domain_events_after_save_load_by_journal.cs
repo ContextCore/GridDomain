@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.EventsUpgrade
 {
     [TestFixture]
-    class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : PersistentSampleDomainTests
+    class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : SampleDomainCommandExecutionTests
     {
 
         class EventA : DomainEvent
@@ -69,12 +69,17 @@ namespace GridDomain.Tests.EventsUpgrade
             }
         }
 
+        protected override bool InMemory { get; } = false;
+
         [Test]
         public void GridNode_updates_objects_in_events_by_adapter()
         {
             GridNode.DomainEventsSerializer.Register(new BookOrderAdapter());
-            var journal = Persistence.Instance.Apply(GridNode.System).JournalFor(null);
+            var persistenceExtension = Persistence.Instance.Apply(GridNode.System);
 
+            var settings = persistenceExtension.Settings;
+            var journal = persistenceExtension.JournalFor(null);
+            
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
             var id = Guid.NewGuid();
@@ -94,7 +99,7 @@ namespace GridDomain.Tests.EventsUpgrade
 
             var writeMsg = new WriteMessages(envelop, TestActor,1);
 
-            journal.Ask<object>(writeMsg).Wait();
+            journal.Ask<object>(writeMsg);//.Wait();
 
             var msg = ExpectMsg<object>();
 

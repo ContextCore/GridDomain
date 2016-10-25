@@ -80,20 +80,5 @@ namespace GridDomain.Tests.EventsUpgrade
 
             Assert.IsInstanceOf<SubObject_V2>(restoredEvent.Payload);
         }
-
-       //[Test]
-       //public void Root_object_also_Should_be_converted()
-       //{
-       //    var initialEvent = new SubObject_V1() {Name = "10", Value = "123"};
-       //
-       //    var settings = DomainEventSerialization.GetDefault();
-       //    settings.Converters.Add(new SubObjectConverter());
-       //
-       //    var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
-       //
-       //    var restoredEvent = JsonConvert.DeserializeObject<SubObject_V1>(serializedValue, settings);
-       //
-       //    Assert.IsInstanceOf<SubObject_V2>(restoredEvent);
-       //}
     }
 }

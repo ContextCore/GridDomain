@@ -9,10 +9,12 @@ namespace GridDomain.Tests.Framework.Configuration
         private const string JournalConnectionStringName = "WriteModel";
 
         public string SnapshotConnectionString
-            => ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString ?? "Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipWriteAutoTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True";
+            => ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString ??
+            "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string JournalConnectionString
-            => ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString ?? "Server=tcp:soloinfra.cloudapp.net,5099;Database=sandboxMembershipWriteAutoTests;User ID=solomoto;Password=s0l0moto;MultipleActiveResultSets=True";
+            => ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString ??
+            "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";
