@@ -26,6 +26,7 @@ namespace GridDomain.Node
         public void Register(JsonConverter converter)
         {
             _converters.Add(converter);
+            Init();
         }
         public void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
         {
