@@ -382,6 +382,7 @@
   <ItemGroup>
     <Content Include="1.4-1.5_migration.sql" />
     <Content Include="1.6-1.7_migration.sql" />
+    <Content Include="Database schema full.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -72,8 +72,6 @@ namespace GridDomain.Tests.EventsUpgrade
 
         protected override bool InMemory { get; } = false;
         protected override bool ClearDataOnStart { get; } = true;
-
-
       
         [Test]
         public void GridNode_updates_objects_in_events_by_adapter()

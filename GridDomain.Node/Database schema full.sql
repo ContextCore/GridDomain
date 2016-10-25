@@ -4,7 +4,7 @@
 ALTER TABLE Journal DROP CONSTRAINT PK_Journal;
 ALTER TABLE Journal ADD Ordering BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL;
 ALTER TABLE Journal ADD CONSTRAINT QU_Journal UNIQUE (PersistenceID, SequenceNr);
-
+GO
 create View HumanJournal AS 
 SELECT [PersistenceId]
       ,[SequenceNr]

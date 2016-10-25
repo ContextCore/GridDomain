@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 
 namespace GridDomain.Node
 {
-
     public class DomainEventsJsonSerializer : Serializer
     {
         private JsonSerializer _serializer;

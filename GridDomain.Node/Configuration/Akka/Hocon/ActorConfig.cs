@@ -41,8 +41,8 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              }
              
              serialization-bindings {
-                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
-                                   """ + typeof(IAggregate).AssemblyQualifiedShortName() + @""" = json
+                                   #""" + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
+                                   #""" + typeof(IAggregate).AssemblyQualifiedShortName() + @""" = json
                                    ""System.Object"" = wire
 
              }
