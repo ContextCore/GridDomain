@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.Persistence;
@@ -70,15 +71,14 @@ namespace GridDomain.Tests.EventsUpgrade
         }
 
         protected override bool InMemory { get; } = false;
+        protected override bool ClearDataOnStart { get; } = true;
 
+
+      
         [Test]
         public void GridNode_updates_objects_in_events_by_adapter()
         {
             GridNode.DomainEventsSerializer.Register(new BookOrderAdapter());
-            var persistenceExtension = Persistence.Instance.Apply(GridNode.System);
-
-            var settings = persistenceExtension.Settings;
-            var journal = persistenceExtension.JournalFor(null);
             
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
@@ -88,34 +88,13 @@ namespace GridDomain.Tests.EventsUpgrade
                 new EventA(id, orderA),
                 new EventB(id, orderB)
             };
+            SaveToJournal(events);
+            var loadedEvents = LoadFromJournal("testId", 2).ToArray();
+            var expectA = loadedEvents.OfType<EventA>().FirstOrDefault();
+            var expectB = loadedEvents.OfType<EventB>().FirstOrDefault();
 
-            int seqNumber=0;
-            var envelop =
-                events.Select(e => new Akka.Persistence.AtomicWrite(
-                             new Persistent(e, seqNumber++, "testId", e.GetType()
-                                                                      .AssemblyQualifiedShortName())))
-                      .Cast<IPersistentEnvelope>()
-                      .ToArray();
-
-            var writeMsg = new WriteMessages(envelop, TestActor,1);
-
-            journal.Ask<object>(writeMsg);//.Wait();
-
-            var msg = ExpectMsg<object>();
-
-            Assert.IsInstanceOf<WriteMessagesSuccessful>(msg);
-            var loadMsg = new ReplayMessages(0,5,5,"testId",TestActor);
-
-            journal.Tell(loadMsg);
-
-            var confirmWriteA = ExpectMsg<WriteMessageSuccess>();
-            var confirmWriteB = ExpectMsg<WriteMessageSuccess>();
-
-            var expectA = ExpectMsg<ReplayedMessage>();
-            var expectB = ExpectMsg<ReplayedMessage>();
-
-            Assert.IsInstanceOf<BookOrder_V2>((expectA.Persistent.Payload as EventA)?.Order);
-            Assert.IsInstanceOf<BookOrder_V2>((expectB.Persistent.Payload as EventB)?.Order);
+            Assert.IsInstanceOf<BookOrder_V2>(expectA.Order);
+            Assert.IsInstanceOf<BookOrder_V2>(expectB.Order);
          }
     }
 
