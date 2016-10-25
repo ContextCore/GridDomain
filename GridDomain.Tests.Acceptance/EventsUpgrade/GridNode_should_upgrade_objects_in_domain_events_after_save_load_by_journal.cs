@@ -81,18 +81,21 @@ namespace GridDomain.Tests.EventsUpgrade
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
             var id = Guid.NewGuid();
+
             var events = new DomainEvent[]
             {
                 new EventA(id, orderA),
                 new EventB(id, orderB)
             };
+
             SaveToJournal(events);
+
             var loadedEvents = LoadFromJournal("testId", 2).ToArray();
             var expectA = loadedEvents.OfType<EventA>().FirstOrDefault();
             var expectB = loadedEvents.OfType<EventB>().FirstOrDefault();
 
-            Assert.IsInstanceOf<BookOrder_V2>(expectA.Order);
-            Assert.IsInstanceOf<BookOrder_V2>(expectB.Order);
+            Assert.IsInstanceOf<BookOrder_V2>(expectA?.Order);
+            Assert.IsInstanceOf<BookOrder_V2>(expectB?.Order);
          }
     }
 

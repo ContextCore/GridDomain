@@ -5,7 +5,9 @@ using System.Text;
 using Akka.Actor;
 using Akka.Serialization;
 using Akka.Util;
+using GridDomain.Common;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Logging;
 using Newtonsoft.Json;
 
 namespace GridDomain.Node
@@ -15,17 +17,21 @@ namespace GridDomain.Node
         private JsonSerializer _serializer;
         private readonly List<JsonConverter> _converters = new List<JsonConverter>();
         private JsonSerializerSettings _jsonSerializerSettings;
-
+        private readonly LegacyWireDeserializer _oldWire;
+        private ISoloLogger _log;
+        public bool SupportLegacyWire = true;
 
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
             Init();
+            _oldWire = new LegacyWireDeserializer();
         }
 
         public void Register(JsonConverter converter)
         {
             _converters.Add(converter);
             Init();
+            _log = LogManager.GetLogger();
         }
         public void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
         {
@@ -59,13 +65,6 @@ namespace GridDomain.Node
         /// <returns>A byte array containing the serialized object</returns>
         public override byte[] ToBinary(object obj)
         {
-            //using (var stream = new MemoryStream())
-            //using (var streamw = new StreamWriter(stream))
-            //using (var writer = new JsonTextWriter(streamw))
-            //{
-            //    _serializer.Serialize(writer,obj);
-            //    return stream.ToArray();
-            //}
             //TODO: use faster realization with reusable serializer
             var stringJson = JsonConvert.SerializeObject(obj, _jsonSerializerSettings);
             return Encoding.Unicode.GetBytes(stringJson);
@@ -80,9 +79,18 @@ namespace GridDomain.Node
         /// <returns>The object contained in the array</returns>
         public override object FromBinary(byte[] bytes, Type type)
         {
-             using (var stream = new MemoryStream(bytes))
-             using (var reader = new StreamReader(stream,Encoding.Unicode))
-                  return _serializer.Deserialize(reader, type);;
+            try
+            {
+                return _oldWire.Deserialize(bytes, type);
+            }
+            catch(Exception ex)
+            {
+               _log.Trace("Received an error while deserializing {type} by wire, switching to json. {Error}",type,ex);
+            }
+
+            using (var stream = new MemoryStream(bytes))
+            using (var reader = new StreamReader(stream, Encoding.Unicode))
+                return _serializer.Deserialize(reader, type);
         }
     }
 }
