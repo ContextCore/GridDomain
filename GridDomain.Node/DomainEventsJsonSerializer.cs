@@ -81,7 +81,7 @@ namespace GridDomain.Node
         public override object FromBinary(byte[] bytes, Type type)
         {
              using (var stream = new MemoryStream(bytes))
-             using (var reader = new StreamReader(stream))
+             using (var reader = new StreamReader(stream,Encoding.Unicode))
                   return _serializer.Deserialize(reader, type);;
         }
     }
