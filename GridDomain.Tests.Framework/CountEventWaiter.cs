@@ -1,4 +1,5 @@
 using Akka.Actor;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Tests.Framework
@@ -14,7 +15,7 @@ namespace GridDomain.Tests.Framework
                 msg =>
                 {
                     if (-- _count > 0) return;
-                    notifyActor.Tell(new ExpectedMessagesRecieved<T>(msg));
+                    notifyActor.Tell(new ExpectedMessagesReceived<T>(msg));
                 });
         }
     }

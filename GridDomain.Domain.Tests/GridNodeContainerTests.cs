@@ -11,10 +11,11 @@ namespace GridDomain.Tests
         {
             var container = new UnityContainer();
 
-            CompositionRoot.Init(container,
-                ActorSystemBuilders[mode](),
-                mode);
+            var actorSystem = ActorSystemBuilders[mode]();
 
+            CompositionRoot.Init(container, actorSystem, mode);
+
+            actorSystem.Terminate();
             return container;
         }
     }

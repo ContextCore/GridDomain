@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Akka;
 using Akka.Actor;
 using GridDomain.CQRS;
 
@@ -8,18 +9,26 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public abstract class MessageWaiter<T> : UntypedActor where T : ExpectedMessage
     {
-        protected readonly Dictionary<Type, int> MessageReceivedCounters;
-        protected readonly Dictionary<Type, T> ExpectedMessages;
-        private readonly IActorRef _notifyActor;
-        private readonly List<object> _allReceivedEvents;
+        private readonly List<IActorRef> subscribers;
+        protected readonly Dictionary<Type, ExpectedMessageHistory> ReceivedMessagesHistory;
 
-        protected MessageWaiter(IActorRef notifyActor, params T[] expectedMessages)
+        protected class ExpectedMessageHistory
         {
-            _notifyActor = notifyActor;
-            MessageReceivedCounters = expectedMessages.ToDictionary(m => m.MessageType, m => m.MessageCount);
-            ExpectedMessages = expectedMessages.ToDictionary(m => m.MessageType, m => m);
+            public List<object> Received { get; } = new List<object>();
+            public T Expected { get; }
 
-            _allReceivedEvents = new List<object>();
+            public ExpectedMessageHistory(T expected)
+            {
+                Expected = expected;
+            }
+        }
+
+        protected MessageWaiter(IActorRef subscriber, params T[] expectedMessages)
+        {
+            subscribers = new List<IActorRef>{subscriber};
+
+            ReceivedMessagesHistory = expectedMessages.ToDictionary(m => m.MessageType, 
+                                                                    m => new ExpectedMessageHistory(m));
         }
 
         /// <summary>
@@ -29,24 +38,31 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected override void OnReceive(object message)
         {
             var msgType = message.GetType();
-            _allReceivedEvents.Add(message);
-
-            var registeredType = MessageReceivedCounters.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
+          
+            var registeredType = ReceivedMessagesHistory.Keys.FirstOrDefault(k => k.IsAssignableFrom(msgType));
             if (registeredType == null) return;
 
-            var expect = ExpectedMessages[registeredType];
+            var history = ReceivedMessagesHistory[registeredType];
+
+            var expect = history.Expected;
             if (!expect.Match(message)) return;
 
-            --MessageReceivedCounters[registeredType];
+            history.Received.Add(message);
+
             if (!WaitIsOver(message, expect)) return;
 
-            _notifyActor.Tell(BuildAnswerMessage(message));
+            var answerMessage = BuildAnswerMessage(message);
+
+            foreach (var s in subscribers)
+                s.Tell(answerMessage);
+
+            Context.Stop(Self);
         }
 
         protected abstract bool WaitIsOver(object message, ExpectedMessage expect);
         protected virtual object BuildAnswerMessage(object message)
         {
-            return new ExpectedMessagesRecieved(message, _allReceivedEvents);
+            return new ExpectedMessagesReceived(message, ReceivedMessagesHistory.Values.SelectMany(v => v.Received).ToArray());
         }
     }
 }

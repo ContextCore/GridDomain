@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
@@ -22,7 +23,7 @@ namespace GridDomain.Tests.AsyncAggregates
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,
                                                                                     syncCommand.AggregateId);
-            var task = GridNode.Execute(syncCommand, new []{ expectedMessage});
+            var task = GridNode.Execute(CommandPlan.New(syncCommand, expectedMessage));
             if (!task.Wait(Timeout))
                 throw new TimeoutException();
 

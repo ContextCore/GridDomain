@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
-    internal class StandAloneConfig : ActorConfig
+    internal class StandAloneConfig : RemoteActorConfig
     {
         public StandAloneConfig(IAkkaNetworkAddress address) : base(address)
         {

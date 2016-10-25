@@ -13,16 +13,15 @@ namespace GridDomain.Node.Actors
     {
         private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
-        private readonly IActorSubscriber _subscriber;
 
         public GridNodeController(IPublisher transport,
                                   IActorSubscriber subscriber,
                                   IMessageRouteMap messageRouting)
         {
-            _subscriber = subscriber;
             _messageRouting = messageRouting;
             _messagePublisher = transport;
             _monitor = new ActorMonitor(Context);
+            _listener = new MessagesListener(Context.System, subscriber);
         }
 
         public void Handle(Start msg)
@@ -46,15 +45,11 @@ namespace GridDomain.Node.Actors
 
         public void Handle(CommandPlan commandWithConfirmation)
         {
-            var props = Props.Create(() => new CommandWaiter(Sender, commandWithConfirmation.Command, commandWithConfirmation.ExpectedMessages));
-            var waitActor = Context.System.ActorOf(props,"MessageWaiter_command_"+commandWithConfirmation.Command.Id);
-
-            foreach(var expectedMessage in commandWithConfirmation.ExpectedMessages)
-                    _subscriber.Subscribe(expectedMessage.MessageType, waitActor);
-
+            _listener.WaitForCommand(commandWithConfirmation).PipeTo(Sender);
             Handle(commandWithConfirmation.Command);
         }
-        
+
+      
         public class Start
         {
             public Type RoutingActorType;
@@ -65,6 +60,7 @@ namespace GridDomain.Node.Actors
         }
 
         private readonly ActorMonitor _monitor;
+        private readonly MessagesListener _listener;
 
         protected override void PreStart()
         {

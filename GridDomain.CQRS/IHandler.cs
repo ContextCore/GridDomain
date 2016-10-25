@@ -1,8 +1,9 @@
-﻿namespace GridDomain.CQRS
+﻿using System;
+
+namespace GridDomain.CQRS
 {
     public interface IHandler<in T>
     {
         void Handle(T msg);
     }
-    
 }

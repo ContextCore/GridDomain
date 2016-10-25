@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
@@ -42,9 +43,6 @@ namespace GridDomain.Tests.Tools.Console
                                        () => serverConfig.CreateInMemorySystem());
 
             _node.Start(new LocalDbConfiguration());
-
-            Thread.Sleep(5000);
-
             _console = new GridConsole(serverConfig.Network);
             _console.Connect();
         }
@@ -75,7 +73,7 @@ namespace GridDomain.Tests.Tools.Console
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
 
-            var evt = _console.Execute(command, TimeSpan.FromSeconds(30), expect);
+            var evt = _console.ExecuteSync(command, TimeSpan.FromSeconds(30), expect);
             Assert.AreEqual(command.Parameter.ToString(), evt.Value);
         }
 

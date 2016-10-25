@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
@@ -9,11 +10,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         protected override bool WaitIsOver(object message, ExpectedMessage expect)
         {
-            return !MessageReceivedCounters.Any(c => c.Value > 0);
+            return ReceivedMessagesHistory.Values.All(h => h.Received.Count >= h.Expected.MessageCount);
         }
 
-        public AllMessageWaiter(IActorRef notifyActor, params ExpectedMessage[] expectedMessages) : base(notifyActor, expectedMessages)
+        public AllMessageWaiter(IActorRef subscribers, params ExpectedMessage[] expectedMessages) : base(subscribers, expectedMessages)
         {
         }
+
+
     }
 }

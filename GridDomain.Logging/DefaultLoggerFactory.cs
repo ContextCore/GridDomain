@@ -1,6 +1,6 @@
 using System;
-using System.Configuration;
 using Serilog;
+using Serilog.Events;
 
 namespace GridDomain.Logging
 {
@@ -10,25 +10,14 @@ namespace GridDomain.Logging
 
         private static LoggerConfiguration GetConfiguration()
         {
-            var filePath = ConfigurationManager.AppSettings["logFilePath"] ?? @"C:\Logs";
-            var machineName = ConfigurationManager.AppSettings["envName"] ?? Environment.MachineName;
-            var elasticEndpoint = ConfigurationManager.AppSettings["logElasticEndpoint"] ?? "http://soloinfra.cloudapp.net:9222";
             var configuration = new LoggerConfiguration();
-            configuration = configuration.WriteTo.RollingFile(filePath + "\\logs-{Date}.txt")
-                .WriteTo.Elasticsearch(elasticEndpoint)
-                .WriteTo.Console()
-                .Enrich.WithProperty("MachineName", machineName);
-
-            foreach (var type in TypesForScalarDestructionHolder.Types)
-            {
-                configuration = configuration.Destructure.AsScalar(type);
-            }
+            configuration = configuration.WriteTo.Console(LogEventLevel.Information);
             return configuration;
         }
 
         public override ISoloLogger GetLogger(string className = null)
         {
-            className = className ?? GetClassName() ;
+            className = className ?? GetClassName();
             return LoggerFactory.Value.ForContext("className", className);
 
         }

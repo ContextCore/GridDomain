@@ -17,6 +17,6 @@ namespace GridDomain.Tests.FutureEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(Debugger.IsAttached ? 1000 : 1);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(1);
     }
 }

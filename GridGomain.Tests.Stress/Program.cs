@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
@@ -56,7 +55,7 @@ namespace GridGomain.Tests.Stress
                 var changeCExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandC.AggregateId);
 
                 // A, B+C in parallel, C
-                var executionPlan = node.Execute(createAggregateCommand, createExpect)
+                var executionPlan = CommandExecutorExtensions.Execute(node, createAggregateCommand, createExpect)
                     .ContinueWith(t1 => node.Execute(changeAggregateCommandA, changeAExpect))
                         .ContinueWith(t2 => node.Execute(changeAggregateCommandB, changeBExpect))
                             .ContinueWith(t3 => node.Execute(changeAggregateCommandC, changeCExpect));

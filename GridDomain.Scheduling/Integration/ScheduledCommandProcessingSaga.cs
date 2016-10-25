@@ -66,7 +66,7 @@ namespace GridDomain.Scheduling.Integration
 
             Machine
                 .Configure(States.SuccessfullyProcessed)
-                .OnEntryFrom(eventrTrigger, domainEvent => { _log.Info("Scheduled command successfully processed {SagaId}", domainEvent.SagaId); });
+                .OnEntryFrom(eventrTrigger, domainEvent => { _log.Trace("Scheduled command successfully processed {SagaId}", domainEvent.SagaId); });
 
             Machine
                 .Configure(States.MessageSent)

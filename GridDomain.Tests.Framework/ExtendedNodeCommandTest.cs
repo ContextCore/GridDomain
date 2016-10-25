@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Framework
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
         protected readonly bool InMemory;
-        private static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
+        protected static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
 
@@ -33,9 +33,7 @@ namespace GridDomain.Tests.Framework
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            Func<ActorSystem[]> actorSystem = () => new [] { InMemory ? Sys : akkaConf.CreateSystem()};
-
-            return new GridDomainNode(CreateConfiguration(),CreateMap(), actorSystem);
+            return new GridDomainNode(CreateConfiguration(),CreateMap(), () => InMemory ? Sys : akkaConf.CreateSystem());
         }
 
         protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase

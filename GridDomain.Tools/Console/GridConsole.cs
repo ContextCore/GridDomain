@@ -13,12 +13,11 @@ namespace GridDomain.Tools.Console
     /// GridConsole is used to manually issue commands to an existing grid node. 
     /// It can be used for manual domain state fixes, bebugging, support. 
     /// </summary>
-    public class GridConsole : IGridDomainNode, IDisposable
+    public class GridConsole : ICommandExecutor, IDisposable
     {
         private readonly ActorSystem _consoleSystem;
         public IActorRef NodeController;
-        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(60);
-        private static readonly TimeSpan DefaultCommandExecutionTimeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(5);
         private NodeCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
 
@@ -47,7 +46,7 @@ namespace GridDomain.Tools.Console
         {
             NodeController = GetActor(GetSelection(nameof(GridNodeController)));
 
-            _commandExecutor = new NodeCommandExecutor(NodeController, DefaultCommandExecutionTimeout);
+            _commandExecutor = new NodeCommandExecutor(NodeController);
         }
       
         public void Dispose()
@@ -60,9 +59,15 @@ namespace GridDomain.Tools.Console
             _commandExecutor.Execute(commands);
         }
 
-        public Task<object> Execute(ICommand command, ExpectedMessage[] expectedMessage, TimeSpan? timeout = null)
+        public Task<object> Execute(CommandPlan plan)
         {
-            return _commandExecutor.Execute(command, expectedMessage, timeout);
+           return _commandExecutor.Execute(plan);
         }
+
+        public Task<T> Execute<T>(CommandPlan<T> plan)
+        {
+            return _commandExecutor.Execute(plan);
+        }
+
     }
 }
