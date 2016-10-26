@@ -26,6 +26,8 @@ namespace GridDomain.Node
                                 TransportMode transportMode,
                                 IQuartzConfig config = null)
         {
+            container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
+
             //TODO: replace with config
             IActorTransport transport;
             switch (transportMode)
@@ -50,17 +52,17 @@ namespace GridDomain.Node
                                                                   new DefaultAppInsightsConfiguration());
             container.RegisterInstance<IPerformanceCountersConfiguration>(PerformanceCountersConfigSection.Default ??
                                                                   new DefaultPerfCountersConfiguration());
-            container.RegisterInstance(actorSystem);
-            container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
 
-              //public SagaActor(ISagaFactory<TSaga, object> sagaStarter,
-              //                 ISagaFactory<TSaga, TSagaState> sagaFactory,
-              //                 IPublisher publisher,
-              //                 Type[] startMessages)
+            container.RegisterInstance(actorSystem);
+
+            //public SagaActor(ISagaFactory<TSaga, object> sagaStarter,
+            //                 ISagaFactory<TSaga, TSagaState> sagaFactory,
+            //                 IPublisher publisher,
+            //                 Type[] startMessages)
 
             //container.RegisterType(typeof(SagaActor<,>),
-                                    //new InjectionConstructor(
-                                    //new InjectionParameter<Type[]>(nameof(TSaga))))
+            //new InjectionConstructor(
+            //new InjectionParameter<Type[]>(nameof(TSaga))))
         }
     }
 
