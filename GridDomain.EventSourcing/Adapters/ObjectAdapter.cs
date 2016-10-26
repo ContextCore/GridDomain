@@ -12,7 +12,7 @@ namespace GridDomain.EventSourcing.Adapters
     /// <typeparam name="TFrom"></typeparam>
     /// <typeparam name="TTo"></typeparam>
     public abstract class ObjectAdapter<TFrom, TTo> : JsonConverter,
-                                                      IObjectAdapter<TFrom,TTo>
+                                                      IObjectAdapter<TFrom,TTo> where TFrom : class where TTo:class
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -21,7 +21,8 @@ namespace GridDomain.EventSourcing.Adapters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.StartObject && existingValue == null)
+            if (reader.TokenType == JsonToken.StartObject 
+             && existingValue == null)
             {
                 object value;
                 //prevent infinite recursion
@@ -30,7 +31,7 @@ namespace GridDomain.EventSourcing.Adapters
                 finally { if (removed) serializer.Converters.Add(this);}
 
                 if (value is TFrom)
-                    return Convert((TFrom) value);
+                    return ConvertAny(value);
                 
                 return value;
 
@@ -52,9 +53,9 @@ namespace GridDomain.EventSourcing.Adapters
             return objectType.IsAssignableFrom(typeof(TFrom));
         }
 
-        public object Convert(object evt)
+        public object ConvertAny(object evt)
         {
-            throw new NotImplementedException();
+            return Convert((TFrom) evt);
         }
     }
 }

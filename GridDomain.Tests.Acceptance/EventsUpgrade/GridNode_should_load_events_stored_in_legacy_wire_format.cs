@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using GridDomain.EventSourcing;
+using GridDomain.Node;
 using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.CommandsExecution;
 using NUnit.Framework;
@@ -11,12 +12,16 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     class GridNode_should_load_events_stored_in_legacy_wire_format : SampleDomainCommandExecutionTests
     {
         protected override bool ClearDataOnStart { get; } = true;
-        protected override bool InMemory { get; } = false;
+
+        public GridNode_should_load_events_stored_in_legacy_wire_format():base(false)
+        {
+            
+        }
 
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
-            GridNode.DomainEventsSerializer.Register(new BookOrderAdapter());
+            DomainEventsJsonSerializer.Register(new BookOrderAdapter());
 
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");

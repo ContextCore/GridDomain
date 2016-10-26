@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.CommandsExecution;
@@ -16,14 +17,18 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
         private object[] _loadedEvents;
         private static readonly RawSqlAkkaPersistenceRepository RawDataRepository = new RawSqlAkkaPersistenceRepository(AkkaCfg.Persistence.JournalConnectionString);
+        private string _persistenceId;
         protected override bool ClearDataOnStart { get; } = true;
-        protected override bool InMemory { get; } = false;
-        
+
+        public GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format():base(false)
+        {
+            
+        }
 
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
-            GridNode.DomainEventsSerializer.Register(new BookOrderAdapter());
+            DomainEventsJsonSerializer.Register(new BookOrderAdapter());
 
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
@@ -35,10 +40,10 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                 new EventB(id, orderB)
             };
 
-            var persistenceId = "testId";
-            SaveWithLegacyWire(persistenceId, events);
+            _persistenceId = "testId";
+            SaveWithLegacyWire(_persistenceId, events);
 
-            _loadedEvents = LoadFromJournal(persistenceId, 2).ToArray();
+            _loadedEvents = LoadFromJournal(_persistenceId, 2).ToArray();
 
             SaveToJournal(_loadedEvents);
 
@@ -47,20 +52,10 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Test]
         public void Then_it_should_be_serialized_to_json()
         {
-            var convertedItems = RawDataRepository.Load("testId");
+            var convertedItems = RawDataRepository.Load(_persistenceId);
             var restoredFromJson = convertedItems.Select(i => GridNode.DomainEventsSerializer.FromBinary(i.Payload,Type.GetType(i.Manifest)));
 
             CollectionAssert.AllItemsAreNotNull(restoredFromJson);
-        }
-
-        [Test]
-        public void Then_it_should_be_upgraded_by_json_custom_adapter()
-        {
-            var expectA = _loadedEvents.OfType<EventA>().FirstOrDefault();
-            var expectB = _loadedEvents.OfType<EventB>().FirstOrDefault();
-            
-            Assert.IsInstanceOf<BookOrder_V2>(expectA?.Order);
-            Assert.IsInstanceOf<BookOrder_V2>(expectB?.Order);
         }
 
         public static void SaveWithLegacyWire(string testid, DomainEvent[] events)

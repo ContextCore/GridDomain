@@ -32,7 +32,7 @@ namespace GridDomain.EventSourcing.Adapters
 
     public interface IObjectAdapter
     {
-        object Convert(object evt);
+        object ConvertAny(object evt);
     }
 
 }

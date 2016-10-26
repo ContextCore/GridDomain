@@ -211,11 +211,9 @@ namespace GridDomain.Tests.Framework
 
             var writeMsg = new WriteMessages(envelop, TestActor, 1);
 
-            journal.Ask<object>(writeMsg);
+            journal.Tell(writeMsg);
 
-            var msg = ExpectMsg<object>();
-
-            Assert.IsInstanceOf<WriteMessagesSuccessful>(msg);
+            FishForMessage<WriteMessagesSuccessful>(m => true);
         }
 
 

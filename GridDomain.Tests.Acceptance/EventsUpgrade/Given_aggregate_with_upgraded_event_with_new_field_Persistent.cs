@@ -20,8 +20,11 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
 
         protected override bool ClearDataOnStart { get; } = true;
-        protected override bool InMemory { get; } = false;
 
+        public Given_aggregate_with_upgraded_event_with_new_field_Persistent():base(false)
+        {
+            
+        }
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate,BalanceAggregatesCommandHandler>(),

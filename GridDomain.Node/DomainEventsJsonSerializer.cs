@@ -14,35 +14,28 @@ namespace GridDomain.Node
 {
     public class DomainEventsJsonSerializer : Serializer
     {
-        private JsonSerializer _serializer;
-        private readonly List<JsonConverter> _converters = new List<JsonConverter>();
-        private JsonSerializerSettings _jsonSerializerSettings;
-        private readonly LegacyWireSerializer _oldWire;
-        private ISoloLogger _log;
-        public bool SupportLegacyWire = true;
+        private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
+        private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
+        private readonly ISoloLogger _log;
 
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
-            Init();
-            _oldWire = new LegacyWireSerializer();
-        }
-
-        public void Register(JsonConverter converter)
-        {
-            _converters.Add(converter);
-            Init();
             _log = LogManager.GetLogger();
         }
-        public void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
+
+        public static void Register(JsonConverter converter)
         {
-            Register((JsonConverter)converter);
+            JsonSerializerSettings.Converters.Add(converter);
         }
 
-        public void Init()
+        public static void Clear()
         {
-            _jsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
-            _jsonSerializerSettings.Converters = _converters;
-            _serializer = JsonSerializer.Create(_jsonSerializerSettings);
+            JsonSerializerSettings.Converters.Clear();
+        }
+
+        public static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter) where TFrom : class where TTo : class
+        {
+            Register((JsonConverter)converter);
         }
 
         /// <summary>
@@ -66,7 +59,7 @@ namespace GridDomain.Node
         public override byte[] ToBinary(object obj)
         {
             //TODO: use faster realization with reusable serializer
-            var stringJson = JsonConvert.SerializeObject(obj, _jsonSerializerSettings);
+            var stringJson = JsonConvert.SerializeObject(obj, JsonSerializerSettings);
             return Encoding.Unicode.GetBytes(stringJson);
         }
 
@@ -83,14 +76,18 @@ namespace GridDomain.Node
             {
                 using (var stream = new MemoryStream(bytes))
                 using (var reader = new StreamReader(stream, Encoding.Unicode))
-                    return _serializer.Deserialize(reader, type) ?? _oldWire.Deserialize(bytes, type);
+                {
+                    var readToEnd = reader.ReadToEnd();
+                    var deserializeObject = JsonConvert.DeserializeObject(readToEnd,JsonSerializerSettings);
+                    return deserializeObject ?? OldWire.Deserialize(bytes, type);
+                }
             }
             catch(Exception ex)
             {
                _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}",type,ex);
             }
 
-            return _oldWire.Deserialize(bytes, type);
+            return OldWire.Deserialize(bytes, type);
         }
     }
 }
