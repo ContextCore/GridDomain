@@ -81,16 +81,16 @@ namespace GridDomain.Node
         {
             try
             {
-                return _oldWire.Deserialize(bytes, type);
+                using (var stream = new MemoryStream(bytes))
+                using (var reader = new StreamReader(stream, Encoding.Unicode))
+                    return _serializer.Deserialize(reader, type);
             }
             catch(Exception ex)
             {
-               _log.Trace("Received an error while deserializing {type} by wire, switching to json. {Error}",type,ex);
+               _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}",type,ex);
             }
 
-            using (var stream = new MemoryStream(bytes))
-            using (var reader = new StreamReader(stream, Encoding.Unicode))
-                return _serializer.Deserialize(reader, type);
+            return _oldWire.Deserialize(bytes, type);
         }
     }
 }
