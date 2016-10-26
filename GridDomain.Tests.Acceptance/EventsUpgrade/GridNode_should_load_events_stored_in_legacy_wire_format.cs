@@ -8,16 +8,16 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     [TestFixture]
-    class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : SampleDomainCommandExecutionTests
+    class GridNode_should_load_events_stored_in_legacy_wire_format : SampleDomainCommandExecutionTests
     {
-        protected override bool InMemory { get; } = false;
         protected override bool ClearDataOnStart { get; } = true;
-      
-        [Test]
-        public void GridNode_updates_objects_in_events_by_adapter()
+        protected override bool InMemory { get; } = false;
+
+        [OneTimeSetUp]
+        public void When_wire_stored_events_loaded_and_saved_back()
         {
             GridNode.DomainEventsSerializer.Register(new BookOrderAdapter());
-            
+
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
             var id = Guid.NewGuid();
@@ -28,17 +28,12 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                 new EventB(id, orderB)
             };
 
-            SaveToJournal(events);
+            var persistenceId = "testId";
+            GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format.SaveWithLegacyWire(persistenceId, events);
 
-            var loadedEvents = LoadFromJournal("testId", 2).ToArray();
-            var expectA = loadedEvents.OfType<EventA>().FirstOrDefault();
-            var expectB = loadedEvents.OfType<EventB>().FirstOrDefault();
+            var _loadedEvents = LoadFromJournal(persistenceId, 2).ToArray();
 
-            Assert.IsInstanceOf<BookOrder_V2>(expectA?.Order);
-            Assert.IsInstanceOf<BookOrder_V2>(expectB?.Order);
-         }
-
+            Assert.NotNull(_loadedEvents);
+        }
     }
-
-   
 }

@@ -15,7 +15,7 @@ namespace GridDomain.Common
         public LegacyWireSerializer()
         {
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(LegacyWireSerializer)).Location),
-                                    @"LegacyWire_0.0.6.dll");
+                                    @"LegacyBinaries\LegacyWire_0.0.6.dll");
 
             if (!File.Exists(path)) 
                  throw new CannotFindLegacyWireLibraryException();
@@ -32,9 +32,6 @@ namespace GridDomain.Common
             _deserializeMethod = _serializer.GetType().GetMethods().FirstOrDefault(m => m.Name == "Deserialize" & !m.IsGenericMethod);
             if (_deserializeMethod == null)
                 throw new MissingMethodException("Cannot find deserialize method for legacy wire");
-
-
-
         }
 
         private static object CreateByConstructor(Assembly assembly, string typeName, object[] parameters)

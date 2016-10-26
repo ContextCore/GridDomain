@@ -16,6 +16,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
         private object[] _loadedEvents;
         private static readonly RawSqlAkkaPersistenceRepository RawDataRepository = new RawSqlAkkaPersistenceRepository(AkkaCfg.Persistence.JournalConnectionString);
+        protected override bool ClearDataOnStart { get; } = true;
+        protected override bool InMemory { get; } = false;
+        
 
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
@@ -32,9 +35,10 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                 new EventB(id, orderB)
             };
 
-            SaveWithLegacyWire(events);
+            var persistenceId = "testId";
+            SaveWithLegacyWire(persistenceId, events);
 
-            _loadedEvents = LoadFromJournal("testId", 2).ToArray();
+            _loadedEvents = LoadFromJournal(persistenceId, 2).ToArray();
 
             SaveToJournal(_loadedEvents);
 
@@ -59,11 +63,11 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             Assert.IsInstanceOf<BookOrder_V2>(expectB?.Order);
         }
 
-        private static void SaveWithLegacyWire(DomainEvent[] events)
+        public static void SaveWithLegacyWire(string testid, DomainEvent[] events)
         {
             var legacySerializer = new LegacyWireSerializer();
             long seqNum = 0;
-            var journalEntries = events.Select(e => new JournalItem("testId",
+            var journalEntries = events.Select(e => new JournalItem(testid,
                 seqNum++,
                 false,
                 e.GetType().AssemblyQualifiedShortName(),
@@ -72,7 +76,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                 legacySerializer.Serialize(e)))
                 .ToArray();
 
-            RawDataRepository.Save("testId", journalEntries);
+            RawDataRepository.Save(testid, journalEntries);
         }
     }
 }

@@ -23,5 +23,10 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             Tags = tags;
             Payload = payload;
         }
+
+        public JournalItem()
+        {
+            
+        }
     }
 }

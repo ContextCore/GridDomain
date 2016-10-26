@@ -83,7 +83,7 @@ namespace GridDomain.Node
             {
                 using (var stream = new MemoryStream(bytes))
                 using (var reader = new StreamReader(stream, Encoding.Unicode))
-                    return _serializer.Deserialize(reader, type);
+                    return _serializer.Deserialize(reader, type) ?? _oldWire.Deserialize(bytes, type);
             }
             catch(Exception ex)
             {

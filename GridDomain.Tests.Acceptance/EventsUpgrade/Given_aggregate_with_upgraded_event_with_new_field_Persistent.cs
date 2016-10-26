@@ -18,10 +18,10 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     [TestFixture]
     public class Given_aggregate_with_upgraded_event_with_new_field_Persistent: Given_aggregate_with_upgraded_event_with_new_field
     {
-        public Given_aggregate_with_upgraded_event_with_new_field_Persistent() : base(false)
-        {
-            
-        }
+
+        protected override bool ClearDataOnStart { get; } = true;
+        protected override bool InMemory { get; } = false;
+
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate,BalanceAggregatesCommandHandler>(),
