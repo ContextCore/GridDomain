@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
 
-           //u DomainEventsJsonSerializer.Register(new InIncreaseByInstanceAdapter());
+            DomainEventsJsonSerializer.Register(new InIncreaseByInstanceAdapter());
             DomainEventsJsonSerializer.Register(new NullAdapter());
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>();

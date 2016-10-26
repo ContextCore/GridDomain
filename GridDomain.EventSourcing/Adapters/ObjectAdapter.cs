@@ -12,7 +12,7 @@ namespace GridDomain.EventSourcing.Adapters
     /// <typeparam name="TFrom"></typeparam>
     /// <typeparam name="TTo"></typeparam>
     public abstract class ObjectAdapter<TFrom, TTo> : JsonConverter,
-                                                      IObjectAdapter<TFrom,TTo> where TFrom : class where TTo:class
+                                                      IObjectAdapter<TFrom,TTo>
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -21,26 +21,22 @@ namespace GridDomain.EventSourcing.Adapters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.StartObject 
-             && existingValue == null)
-            {
-                object value;
-                //prevent infinite recursion
-                var removed = serializer.Converters.Remove(this);
-                try { value = serializer.Deserialize(reader); }
-                finally { if (removed) serializer.Converters.Add(this);}
+             object value;
+             //prevent infinite recursion
+             var removed = serializer.Converters.Remove(this);
+             try
+             {
+                 value = serializer.Deserialize(reader);
+             }
+             finally
+             {
+                 if (removed) serializer.Converters.Add(this);
+             }
 
-                if (value is TFrom)
-                    return ConvertAny(value);
-                
-                return value;
-
-            }
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
-            throw new JsonSerializationException();
+             if (value is TFrom)
+                 return ConvertAny(value);
+             
+             return value;
         }
 
         public abstract TTo Convert(TFrom value);

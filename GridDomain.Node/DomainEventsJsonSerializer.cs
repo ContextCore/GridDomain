@@ -33,7 +33,7 @@ namespace GridDomain.Node
             JsonSerializerSettings.Converters.Clear();
         }
 
-        public static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter) where TFrom : class where TTo : class
+        public static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
         {
             Register((JsonConverter)converter);
         }
