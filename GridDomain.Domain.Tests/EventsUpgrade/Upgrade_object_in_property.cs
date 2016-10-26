@@ -49,7 +49,7 @@ namespace GridDomain.Tests.EventsUpgrade
         [Test]
         public void Property_upgraded_from_serialized_value()
         {
-            var settings = DomainEventSerialization.GetDefault();
+            var settings = DomainEventSerialization.GetDefaultSettings();
             settings.Converters.Add(new SubObjectConverter());
 
             var serializedValue = @"{
@@ -72,7 +72,7 @@ namespace GridDomain.Tests.EventsUpgrade
         {
             var initialEvent = new Event() {Payload = new SubObject_V1() {Name = "10",Value = "123"} };
 
-            var settings = DomainEventSerialization.GetDefault();
+            var settings = DomainEventSerialization.GetDefaultSettings();
             settings.Converters.Add(new SubObjectConverter());
      
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);

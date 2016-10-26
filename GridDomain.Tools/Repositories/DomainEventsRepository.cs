@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
+using Newtonsoft.Json;
 using Wire;
 
 //using Wire.Extensions;
@@ -12,13 +15,13 @@ namespace GridDomain.Tools.Repositories
 {
     public class DomainEventsRepository : IRepository<DomainEvent>
     {
-        private readonly IRepository<JournalEntry> _rawDataRepo;
+        private readonly IRepository<JournalItem> _rawDataRepo;
 
         public void Dispose()
         {
         }
 
-        public DomainEventsRepository(IRepository<JournalEntry> rawDataRepo)
+        public DomainEventsRepository(IRepository<JournalItem> rawDataRepo)
         {
             _rawDataRepo = rawDataRepo;
         }
@@ -26,23 +29,18 @@ namespace GridDomain.Tools.Repositories
         //Event order matter!!
         public void Save(string id, params DomainEvent[] messages)
         {
-            var serializer = new Serializer(new SerializerOptions(true,true));
-            int counter=0;
+            long counter=0;
 
             var journalEntries = messages.Select(m =>
             {
-                var stream = new MemoryStream();
-                serializer.Serialize(m, stream);
-
-                return new JournalEntry()
-                {
-                    IsDeleted = false,
-                    Manifest = m.GetType().AssemblyQualifiedShortName(),
-                    Payload =stream.ToArray(),
-                    PersistenceId = id,
-                    SequenceNr = ++counter,
-                    Timestamp = m.CreatedTime.Ticks
-                };
+                var json = JsonConvert.SerializeObject(m, DomainEventSerialization.GetDefaultSettings());
+                return new JournalItem(id,
+                                       ++counter,
+                                       false,
+                                       m.GetType().AssemblyQualifiedShortName(),
+                                       m.CreatedTime,
+                                       "",
+                                       Encoding.Unicode.GetBytes(json));
             }).ToArray();
 
             _rawDataRepo.Save(id, journalEntries);

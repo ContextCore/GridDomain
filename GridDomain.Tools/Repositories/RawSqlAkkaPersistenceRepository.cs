@@ -10,7 +10,7 @@ namespace GridDomain.Tools.Repositories
     /// For example, when you have different versions of events with same type persisted
     /// for different instance of one aggregate type.
     /// </summary>
-    public class RawSqlAkkaPersistenceRepository : IRepository<JournalEntry>
+    public class RawSqlAkkaPersistenceRepository : IRepository<JournalItem>
     {
         private readonly string _connectionString;
 
@@ -23,7 +23,7 @@ namespace GridDomain.Tools.Repositories
         {
         }
 
-        public void Save(string id, params JournalEntry[] messages)
+        public void Save(string id, params JournalItem[] messages)
         {
             foreach (var m in messages)
                 m.PersistenceId = id;
@@ -35,7 +35,7 @@ namespace GridDomain.Tools.Repositories
             }
         }
 
-        public JournalEntry[] Load(string id)
+        public JournalItem[] Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {

@@ -49,7 +49,7 @@ namespace GridDomain.EventSourcing.Adapters
                 return a => method.Invoke(null, a);
             }
         }
-        public static JsonSerializerSettings GetDefault()
+        public static JsonSerializerSettings GetDefaultSettings()
         {
             return new JsonSerializerSettings
             {

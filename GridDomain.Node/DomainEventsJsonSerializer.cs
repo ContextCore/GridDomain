@@ -17,14 +17,14 @@ namespace GridDomain.Node
         private JsonSerializer _serializer;
         private readonly List<JsonConverter> _converters = new List<JsonConverter>();
         private JsonSerializerSettings _jsonSerializerSettings;
-        private readonly LegacyWireDeserializer _oldWire;
+        private readonly LegacyWireSerializer _oldWire;
         private ISoloLogger _log;
         public bool SupportLegacyWire = true;
 
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
             Init();
-            _oldWire = new LegacyWireDeserializer();
+            _oldWire = new LegacyWireSerializer();
         }
 
         public void Register(JsonConverter converter)
@@ -40,7 +40,7 @@ namespace GridDomain.Node
 
         public void Init()
         {
-            _jsonSerializerSettings = DomainEventSerialization.GetDefault();
+            _jsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
             _jsonSerializerSettings.Converters = _converters;
             _serializer = JsonSerializer.Create(_jsonSerializerSettings);
         }

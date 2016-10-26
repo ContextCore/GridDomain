@@ -1,24 +1,19 @@
 using System;
-using System.Threading;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.EventsUpgrade;
 using GridDomain.Tests.EventsUpgrade.Domain;
-using GridDomain.Tests.EventsUpgrade.Domain.Events;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     [TestFixture]
     public class Given_aggregate_with_upgraded_event_with_new_field_Persistent: Given_aggregate_with_upgraded_event_with_new_field

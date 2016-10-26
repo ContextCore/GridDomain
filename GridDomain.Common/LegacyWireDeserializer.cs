@@ -4,7 +4,7 @@ using Wire;
 
 namespace GridDomain.Common
 {
-    public class LegacyWireDeserializer
+    public class LegacyWireSerializer
     {
         readonly Serializer _serializer = new Serializer(new SerializerOptions(true));
 
