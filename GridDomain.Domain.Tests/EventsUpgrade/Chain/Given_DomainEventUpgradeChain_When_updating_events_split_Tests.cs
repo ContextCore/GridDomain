@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Events;
 using NUnit.Framework;
@@ -17,7 +17,7 @@ namespace GridDomain.Tests.EventsUpgrade.Chain
         [OneTimeSetUp]
         public void When_updating_single_event_Tests()
         {
-            var chain = new EventAdaptersCatalog();
+            var chain = new EventsAdaptersCatalog();
             chain.Register(new DomainEventUpdater3());
             var balanceAggregate = new BalanceAggregate(Guid.NewGuid(), 10);
             _initialEvent = new TestEvent_V2(balanceAggregate.Id);

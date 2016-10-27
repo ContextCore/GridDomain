@@ -65,12 +65,18 @@
     <Compile Include="DateTimeStrategyHolder.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IContainerConfiguration.cs" />
+    <Compile Include="LegacyWireSerializer.cs" />
     <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TasksExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LegacyBinaries\LegacyWire_0.0.6.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

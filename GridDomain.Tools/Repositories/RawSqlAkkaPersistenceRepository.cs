@@ -1,10 +1,8 @@
-using System;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using GridDomain.Tools.Persistence.SqlPersistence;
-using GridDomain.Tools.Repositories;
 
-namespace GridDomain.Tools.Persistence
+namespace GridDomain.Tools.Repositories
 {
     /// <summary>
     /// Class for reading \ writing data persisted in sql db with wire
@@ -12,7 +10,7 @@ namespace GridDomain.Tools.Persistence
     /// For example, when you have different versions of events with same type persisted
     /// for different instance of one aggregate type.
     /// </summary>
-    public class RawSqlAkkaPersistenceRepository : IRepository<JournalEntry>
+    public class RawSqlAkkaPersistenceRepository : IRepository<JournalItem>
     {
         private readonly string _connectionString;
 
@@ -25,7 +23,7 @@ namespace GridDomain.Tools.Persistence
         {
         }
 
-        public void Save(string id, params JournalEntry[] messages)
+        public void Save(string id, params JournalItem[] messages)
         {
             foreach (var m in messages)
                 m.PersistenceId = id;
@@ -37,7 +35,7 @@ namespace GridDomain.Tools.Persistence
             }
         }
 
-        public JournalEntry[] Load(string id)
+        public JournalItem[] Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {

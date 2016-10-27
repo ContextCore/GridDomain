@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 
-namespace GridDomain.EventSourcing.DomainEventAdapters
+namespace GridDomain.EventSourcing.Adapters
 {
     public class VersionedTypeSerializationBinder : SerializationBinder
     {

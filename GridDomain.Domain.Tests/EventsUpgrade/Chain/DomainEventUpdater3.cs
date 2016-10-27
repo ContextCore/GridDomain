@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.EventsUpgrade.Events;
 
 namespace GridDomain.Tests.EventsUpgrade.Chain

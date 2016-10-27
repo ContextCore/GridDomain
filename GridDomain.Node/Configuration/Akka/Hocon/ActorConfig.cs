@@ -1,4 +1,7 @@
 using System;
+using Akka.Serialization;
+using CommonDomain;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
@@ -25,19 +28,24 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         public string Build()
         {
             string messageSerialization = "";
-//#if DEBUG
-//            messageSerialization = @"serialize-messages = on
-//                                     serialize-creators = on";
-//#endif
+
+#if DEBUG
+            messageSerialization = @"# serialize-messages = on
+                                       serialize-creators = on";
+#endif
             var actorConfig = @"   
        actor {
              "+messageSerialization+ @"
              serializers {
-                        wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""
+                        wire = """+typeof(WireSerializer).AssemblyQualifiedShortName()+ @"""
+                        json = """+typeof(DomainEventsJsonSerializer).AssemblyQualifiedShortName() + @"""
              }
              
              serialization-bindings {
+                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
+                                   """ + typeof(IAggregate).AssemblyQualifiedShortName() + @""" = json
                                    ""System.Object"" = wire
+
              }
        }";
 

@@ -250,6 +250,7 @@
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
+    <Compile Include="DomainEventsAdapters.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
+    <Compile Include="DomainEventsJsonSerializer.cs" />
     <Compile Include="NodeCommandExecutor.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
@@ -381,6 +383,7 @@
   <ItemGroup>
     <Content Include="1.4-1.5_migration.sql" />
     <Content Include="1.6-1.7_migration.sql" />
+    <Content Include="Database schema full.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

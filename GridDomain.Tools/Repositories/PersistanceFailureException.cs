@@ -5,12 +5,12 @@ namespace GridDomain.Tools.Repositories
 {
     public class PersistanceFailureException : NullReferenceException
     {
-        public JournalEntry Entry { get; }
+        public JournalItem Item { get; }
 
-        public PersistanceFailureException(JournalEntry entry, NullReferenceException exception)
+        public PersistanceFailureException(JournalItem item, NullReferenceException exception)
             : base("persistance failure", exception)
         {
-            Entry = entry;
+            Item = item;
         }
     }
 }

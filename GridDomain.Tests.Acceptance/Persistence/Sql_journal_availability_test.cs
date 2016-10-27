@@ -1,3 +1,4 @@
+using System;
 using Akka.Actor;
 using Akka.TestKit.NUnit3;
 using GridDomain.Node;
@@ -15,7 +16,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
         private static void PingSqlJournal(ActorSystem actorSystem)
         {
             var plugin = Akka.Persistence.Persistence.Instance.Apply(actorSystem).JournalFor(null);
-            plugin.Ask(new object());
+            plugin.Ask(new object(),TimeSpan.FromSeconds(1));
         }
 
         [Test]

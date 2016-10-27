@@ -1,14 +1,12 @@
-using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 
 namespace GridDomain.Node
 {
-
     /// <summary>
     /// How to update an event
     /// 1) Create a copy of event and add existing number in type by convention _V(N) where N is version
@@ -29,8 +27,7 @@ namespace GridDomain.Node
 
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
-        public static readonly EventAdaptersCatalog UpgradeChain = new EventAdaptersCatalog();
-        private readonly ExtendedActorSystem _system;
+        public static readonly EventsAdaptersCatalog UpgradeChain = new EventsAdaptersCatalog();
 
         //always called first from Akka internals 
         //if no constructor with system found, we would have en log polluted with confusing exception 
@@ -38,7 +35,6 @@ namespace GridDomain.Node
         //https://github.com/akkadotnet/akka.net/blob/df5f6ebc9e7f6b92aef3ca6d63bb1ab365f1c8fa/src/core/Akka.Persistence/Journal/EventAdapters.cs#L336
         public AkkaDomainEventsAdapter(ExtendedActorSystem system)
         {
-           _system = system;
         }
 
         public string Manifest(object evt)

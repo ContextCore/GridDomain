@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GridDomain.EventSourcing.DomainEventAdapters
+namespace GridDomain.EventSourcing.Adapters
 {
     public abstract class DomainEventAdapter<TFrom, TTo> : IDomainEventAdapter<TFrom, TTo> where TFrom : DomainEvent where TTo : DomainEvent
     {
         public abstract IEnumerable<TTo> ConvertEvent(TFrom evt);
-
-        public EventAdapterDescriptor Descriptor { get; } = new EventAdapterDescriptor(typeof(TFrom), typeof(TTo));
 
         IEnumerable<object> IEventAdapter.Convert(object evt)
         {
