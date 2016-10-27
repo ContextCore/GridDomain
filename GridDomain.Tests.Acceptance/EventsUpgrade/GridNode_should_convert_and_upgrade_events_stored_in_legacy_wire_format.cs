@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
@@ -53,7 +54,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         public void Then_it_should_be_serialized_to_json()
         {
             var convertedItems = RawDataRepository.Load(_persistenceId);
-            var restoredFromJson = convertedItems.Select(i => GridNode.DomainEventsSerializer.FromBinary(i.Payload,Type.GetType(i.Manifest)));
+            var serializer = new DomainEventsJsonSerializer((ExtendedActorSystem)GridNode.System);
+            var restoredFromJson = convertedItems.Select(i => serializer.FromBinary(i.Payload,Type.GetType(i.Manifest)));
 
             CollectionAssert.AllItemsAreNotNull(restoredFromJson);
         }

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     [TestFixture]
-    class GridNode_should_load_events_stored_in_legacy_wire_format : SampleDomainCommandExecutionTests
+    public class GridNode_should_load_events_stored_in_legacy_wire_format : SampleDomainCommandExecutionTests
     {
         protected override bool ClearDataOnStart { get; } = true;
 
@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             
         }
 
-        [OneTimeSetUp]
+        [Test]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
             DomainEventsJsonSerializer.Register(new BookOrderAdapter());

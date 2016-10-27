@@ -100,9 +100,6 @@ namespace GridDomain.Node
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
 
-            DomainEventsSerializer = (DomainEventsJsonSerializer)
-                System.Serialization.FindSerializerForType(typeof(DomainEvent));
-
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
@@ -153,8 +150,6 @@ namespace GridDomain.Node
         private NodeCommandExecutor _commandExecutor;
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
-
-        public DomainEventsJsonSerializer DomainEventsSerializer { get; private set; }
 
         public void Stop()
         {
