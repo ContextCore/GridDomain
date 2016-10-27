@@ -9,6 +9,7 @@ using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using Microsoft.Practices.Unity;
+using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.StateSagas
 {
@@ -17,7 +18,13 @@ namespace GridDomain.Tests.Sagas.StateSagas
         public SoftwareProgramming_StateSaga_Test(bool inMemory = true) : base(inMemory)
         {
         }
+        protected IPublisher Publisher { get; private set; }
 
+        [SetUp]
+        public void InitPublisher()
+        {
+            Publisher = GridNode.Container.Resolve<IPublisher>();
+        }
         protected override IContainerConfiguration CreateConfiguration()
         {
             return 

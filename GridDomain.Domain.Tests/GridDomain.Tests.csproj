@@ -302,10 +302,11 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
-    <Compile Include="MessageListener_Tests.cs" />
+    <Compile Include="Message_Listener_waiting_for_expected_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_instance_saga_actor_can_be_created_for_non_domain_event.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
@@ -318,7 +319,7 @@
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaMap.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="Sagas\InstanceSagas\When_saga_raise_an_exception.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_instance_saga_When_exception_on_transit.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\Triggers.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
@@ -362,13 +363,14 @@
     <Compile Include="Sagas\StateSagas\Given_SagaStart_with_predifined_id.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\UndefinedCoffeMachineException.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
     <Compile Include="Sagas\StateSagas\Given_state_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_State_SoftareProgramming_Saga.cs" />
-    <Compile Include="Sagas\StateSagas\When_saga_raise_an_exception.cs" />
+    <Compile Include="Sagas\StateSagas\When_state_saga_raises_an_exception.cs" />
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />

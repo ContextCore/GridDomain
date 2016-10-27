@@ -29,7 +29,6 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         {
             PersonId = e.PersonId;
         }
-
         public Guid CoffeMachineId { get; private set; }
         public Guid PersonId { get; private set; }
 

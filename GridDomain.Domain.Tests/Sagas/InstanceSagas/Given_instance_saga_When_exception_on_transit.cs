@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
     [TestFixture]
     public class Given_instance_saga_When_exception_on_transit : ProgrammingSoftwareSagaTest
     {
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(1000);
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
 
         [SetUp]
         public void When_saga_receives_a_message_that_case_saga_exception()
@@ -54,14 +54,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var fault = (IFault<CoffeMakeFailedEvent>)WaitFor<IFault<CoffeMakeFailedEvent>>(false).Message;
             Assert.IsInstanceOf<UndefinedCoffeMachineException>(fault.Exception.UnwrapInner());
-        }
-    }
-
-    public static class ExceptionExtensions
-    {
-        public static Exception UnwrapInner(this Exception exception)
-        {
-            return exception.InnerException == null ? exception : UnwrapInner(exception.InnerException);
         }
     }
 }

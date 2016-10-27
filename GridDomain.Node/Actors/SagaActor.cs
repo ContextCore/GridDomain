@@ -115,11 +115,6 @@ namespace GridDomain.Node.Actors
             });
         }
 
-        protected override bool Receive(object message)
-        {
-            return base.Receive(message);
-        }
-
         protected virtual void Shutdown()
         {
             //TODO: raise faults for all messages in stash

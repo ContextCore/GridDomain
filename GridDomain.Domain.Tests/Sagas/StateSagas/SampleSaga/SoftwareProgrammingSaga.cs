@@ -86,8 +86,4 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             Sleeping
         }
     }
-
-    public class UndefinedCoffeMachineException : Exception
-    {
-    }
 }
