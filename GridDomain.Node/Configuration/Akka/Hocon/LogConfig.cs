@@ -28,8 +28,9 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                       autoreceive = on
                       lifecycle = on
                       event-stream = on "
+                      +
 #endif
-                            +@"
+                             @"
                       unhandled = on
                 }";
 
