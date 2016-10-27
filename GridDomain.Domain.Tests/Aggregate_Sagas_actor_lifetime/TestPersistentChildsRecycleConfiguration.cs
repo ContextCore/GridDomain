@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Node.Actors;
 
-namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors
+namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
 {
     internal class TestPersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
     {

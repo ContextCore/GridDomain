@@ -10,11 +10,13 @@ using Akka.DI.Unity;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
+using Akka.Serialization;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.EventSourcing.DomainEventAdapters;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
@@ -72,7 +74,8 @@ namespace GridDomain.Node
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting, 
                                                     new SchedulingRouteMap(),
-                                                    new TransportMessageDumpMap());
+                                                    new TransportMessageDumpMap()
+                                                  );
 
             Container = new UnityContainer();
         }
@@ -93,8 +96,11 @@ namespace GridDomain.Node
         public void Start(IDbConfiguration databaseConfiguration)
         {
             Systems = _actorSystemFactory.Invoke();
+
+           
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
+
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
@@ -157,7 +163,7 @@ namespace GridDomain.Node
         private AkkaCommandExecutor _commandExecutor;
         public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
-        public EventAdaptersCatalog EventAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
         {

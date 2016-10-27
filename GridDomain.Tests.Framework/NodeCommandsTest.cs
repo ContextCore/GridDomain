@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
@@ -29,12 +31,12 @@ namespace GridDomain.Tests.Framework
         protected GridDomainNode GridNode;
       
         private readonly Stopwatch _watch = new Stopwatch();
-        private readonly bool _clearDataOnStart;
+        protected virtual bool ClearDataOnStart { get; } = false;
         protected virtual bool CreateNodeOnEachTest { get; } = false;
 
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
-            _clearDataOnStart = clearDataOnStart;
+            ClearDataOnStart = clearDataOnStart;
         }
 
         protected abstract TimeSpan Timeout { get; }
@@ -74,7 +76,7 @@ namespace GridDomain.Tests.Framework
             LogManager.SetLoggerFactory(new AutoTestLogFactory());
 
             var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
-            if (_clearDataOnStart)
+            if (ClearDataOnStart)
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 
             GridNode = CreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
@@ -206,5 +208,44 @@ namespace GridDomain.Tests.Framework
 
             ((ICommandExecutor)GridNode).Execute(commands);
         }
+
+
+        protected void SaveToJournal(params object[] messages)
+        {
+            var persistenceExtension = Persistence.Instance.Get(GridNode.System) ?? Persistence.Instance.Apply(GridNode.System);
+
+            var settings = persistenceExtension.Settings;
+            var journal = persistenceExtension.JournalFor(null);
+
+            int seqNumber = 0;
+            var envelop =
+                messages.Select(e => new Akka.Persistence.AtomicWrite(
+                             new Persistent(e, seqNumber++, "testId", e.GetType()
+                                                                      .AssemblyQualifiedShortName())))
+                      .Cast<IPersistentEnvelope>()
+                      .ToArray();
+
+            var writeMsg = new WriteMessages(envelop, TestActor, 1);
+
+            journal.Tell(writeMsg);
+
+            FishForMessage<WriteMessagesSuccessful>(m => true);
+        }
+
+
+        protected IEnumerable<object> LoadFromJournal(string persistenceId, int expectedCount)
+        {
+            var persistenceExtension = Persistence.Instance.Get(GridNode.System) ?? Persistence.Instance.Apply(GridNode.System);
+            var settings = persistenceExtension.Settings;
+            var journal = persistenceExtension.JournalFor(null);
+
+            var loadMsg = new ReplayMessages(0, long.MaxValue, long.MaxValue, persistenceId, TestActor);
+
+            journal.Tell(loadMsg);
+
+            for (int i = 0; i < expectedCount; i++)
+                yield return FishForMessage<ReplayedMessage>(m => m.Persistent.PersistenceId == persistenceId).Persistent.Payload;
+        }
+
     }
 }

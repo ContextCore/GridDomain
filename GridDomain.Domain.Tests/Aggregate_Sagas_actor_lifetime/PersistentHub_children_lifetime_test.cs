@@ -10,7 +10,6 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Sagas.InstanceSagas;

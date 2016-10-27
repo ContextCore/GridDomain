@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GridDomain.EventSourcing.DomainEventAdapters
+namespace GridDomain.EventSourcing.Adapters
 {
     /// <summary>
     /// How to updata and event
@@ -21,7 +21,7 @@ namespace GridDomain.EventSourcing.DomainEventAdapters
     /// </summary>
     public interface IEventAdapter
     {
-        EventAdapterDescriptor Descriptor { get; }
+        //EventAdapterDescriptor Descriptor { get; }
         IEnumerable<object> Convert(object evt);
     }
 }

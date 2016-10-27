@@ -2,6 +2,7 @@
 using Microsoft.Owin.Hosting;
 using Quartz;
 
+
 namespace GridDomain.Scheduling.WebUI
 {
     public class WebUiWrapper : IWebUiWrapper

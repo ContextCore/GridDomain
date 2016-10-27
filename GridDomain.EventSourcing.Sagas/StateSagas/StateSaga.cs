@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using CommonDomain;
 using GridDomain.CQRS;
 using Stateless;
@@ -28,6 +29,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         public IReadOnlyCollection<Type> StartMessages => _startMessages;
         public Type StateType { get; } = typeof(TStateData);
         public Type SagaType => this.GetType();
+        public Type StateMachineType => SagaType;
 
         public readonly StateMachine<TSagaStates, TSagaTriggers> Machine;
 
@@ -71,7 +73,15 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         public virtual void Transit(object msg)
         {
             MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
-            genericTransit.Invoke(this, new[] { msg });
+            try
+            {
+                genericTransit.Invoke(this, new[] {msg});
+            }
+            catch (TargetInvocationException e)
+            {
+                //catch special exception and rethrow, otherwire caller cannot handle it
+                ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+            }
         }
 
         public void Transit<T>(T message) where T : class

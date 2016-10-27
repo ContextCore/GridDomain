@@ -58,13 +58,12 @@
       <HintPath>..\packages\Akka.Persistence.1.1.2.281-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Akka.Persistence.Sql.Common, Version=1.1.2.257, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.Sql.Common.1.1.2.257-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Persistence.SqlServer, Version=1.1.1.158, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.SqlServer.1.1.1.158-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Persistence.TestKit, Version=1.1.2.30, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.TestKit.1.1.2.30-beta\lib\net45\Akka.Persistence.TestKit.dll</HintPath>
@@ -82,9 +81,8 @@
       <HintPath>..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.1\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Akka.TestKit.NUnit3">
+      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
     </Reference>
     <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
@@ -170,8 +168,8 @@
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.0.5797.27534, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.0.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -266,6 +264,7 @@
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater3.cs" />
     <Compile Include="EventsUpgrade\Chain\Given_DomainEventUpgradeChain_When_updating_events_split_Tests.cs" />
     <Compile Include="EventsUpgrade\Chain\Given_DomainEventUpgradeChain_When_updating_single_event_Tests.cs" />
+    <Compile Include="EventsUpgrade\Collection_nested_property_upgrade_by_constructor.cs" />
     <Compile Include="EventsUpgrade\Domain\BalanceAggregate.cs" />
     <Compile Include="EventsUpgrade\Domain\BalanceAggregatesCommandHandler.cs" />
     <Compile Include="EventsUpgrade\Domain\BalanceRouteMap.cs" />
@@ -288,6 +287,10 @@
     <Compile Include="EventsUpgrade\Events\TestEvent_V1.cs" />
     <Compile Include="EventsUpgrade\Events\TestType.cs" />
     <Compile Include="EventsUpgrade\Events\TestType_V1.cs" />
+    <Compile Include="EventsUpgrade\LegacyWireSerializerTests.cs" />
+    <Compile Include="EventsUpgrade\Nested_property_upgrade.cs" />
+    <Compile Include="EventsUpgrade\Nested_property_upgrade_with_custom_constructor.cs" />
+    <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeSerializationBinderTests.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
@@ -323,6 +326,7 @@
     <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_instance_saga_actor_can_be_created_for_non_domain_event.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
@@ -335,6 +339,7 @@
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaMap.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_instance_saga_When_exception_on_transit.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\Triggers.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
@@ -378,12 +383,14 @@
     <Compile Include="Sagas\StateSagas\Given_SagaStart_with_predifined_id.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
+    <Compile Include="Sagas\StateSagas\SampleSaga\UndefinedCoffeMachineException.cs" />
     <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
     <Compile Include="Sagas\StateSagas\Given_state_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_State_SoftareProgramming_Saga.cs" />
+    <Compile Include="Sagas\StateSagas\When_state_saga_raises_an_exception.cs" />
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />

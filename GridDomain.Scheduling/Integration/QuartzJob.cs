@@ -54,8 +54,9 @@ namespace GridDomain.Scheduling.Integration
                     var genericProps = CreateGenericProps(options);
                     var sagaCreator = _actorSystem.ActorOf(genericProps);
                     var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
-                    result.Wait(options.Timeout);
-                    sagaCreator.Tell(PoisonPill.Instance,ActorRefs.NoSender);
+                    var r = result.Wait(options.Timeout);
+                    if(!r) throw new Exception("saga was not created");
+                    sagaCreator.Tell(PoisonPill.Instance, ActorRefs.NoSender);
                 }
                 else
                 {

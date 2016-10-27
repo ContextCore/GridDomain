@@ -86,8 +86,8 @@
       <HintPath>..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.1\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
+    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.2.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -166,8 +166,8 @@
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.0.5797.27534, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.0.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
@@ -230,7 +230,17 @@
   <ItemGroup>
     <Compile Include="Chronicles\EventsReplayInfoHolder.cs" />
     <Compile Include="Chronicles\Given_persisted_events_replay.cs" />
-    <Compile Include="EventsUpgrade\SampleDomain\Given_aggregate_with_upgraded_event_with_new_field_Persistent.cs" />
+    <Compile Include="EventsUpgrade\GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format.cs" />
+    <Compile Include="EventsUpgrade\GridNode_should_load_events_stored_in_legacy_wire_format.cs" />
+    <Compile Include="EventsUpgrade\GridNode_upgrade_events_stored_in_legacy_wire_format_when_loading_aggregate.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\BookOrderAdapter.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\BookOrder_V1.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\BookOrder_V2.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\EventA.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\EventB.cs" />
+    <Compile Include="EventsUpgrade\GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal.cs" />
+    <Compile Include="EventsUpgrade\Given_aggregate_with_upgraded_event_with_new_field_Persistent.cs" />
+    <Compile Include="EventsUpgrade\SampleDomain\IOrder.cs" />
     <Compile Include="FutureDomainEvents\Raising_future_events_too_late_Persisted.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
@@ -357,6 +367,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

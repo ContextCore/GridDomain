@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using Akka.Actor;
-using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
