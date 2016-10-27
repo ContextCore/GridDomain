@@ -28,8 +28,6 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var faultyHandlerMap =
                 new CustomRouteMap(
                     r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
-                    r => r.RegisterHandler<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId),
-                    r => r.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(e => e.SourceId),
                     r => r.RegisterHandler<SampleAggregateCreatedEvent, CreateProjectionBuilder>(e => e.SourceId),
                     r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
