@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas
 {
@@ -14,11 +15,13 @@ namespace GridDomain.EventSourcing.Sagas
 
         public Type StateType { get; } 
         public Type SagaType { get; }
+        public Type StateMachineType { get; }
 
-        public SagaDescriptor(Type saga, Type state)
+        public SagaDescriptor(Type saga, Type state, Type stateMachine)
         {
             StateType = state;
             SagaType = saga;
+            StateMachineType = stateMachine;
         }
 
         public void AddAcceptedMessage(Type messageType, string correlationFieldName = nameof(DomainEvent.SagaId))

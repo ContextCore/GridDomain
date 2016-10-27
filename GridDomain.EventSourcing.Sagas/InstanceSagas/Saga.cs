@@ -90,7 +90,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             try
             {
-                this.RaiseEvent(progress, machineEvent, message).Wait(1000);
+                if (!this.RaiseEvent(progress, machineEvent, message).Wait(1000))
+                    throw new SagaTransitionTimeoutException(machineEvent.Name,message);
             }
             catch(Exception ex)
             {
@@ -104,6 +105,18 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev))
                 throw new UnbindedMessageReceivedException(message, typeof(TMessage));
             return (Event<TMessage>)ev;
+        }
+    }
+
+    public class SagaTransitionTimeoutException : Exception
+    {
+        public string MachineEvent { get; }
+        public object Message { get; }
+
+        public SagaTransitionTimeoutException(string machineEvent, object message)
+        {
+            this.MachineEvent = machineEvent;
+            this.Message = message;
         }
     }
 }

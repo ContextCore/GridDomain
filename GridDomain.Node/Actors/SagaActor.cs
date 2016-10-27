@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Akka;
 using Akka.Actor;
 using Akka.Monitoring;
@@ -14,6 +15,8 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
@@ -32,7 +35,8 @@ namespace GridDomain.Node.Actors
         private readonly ISagaProducer<TSaga> _producer;
         private readonly IPublisher _publisher;
         private TSaga _saga;
-        private IAggregate _sagaData;
+        private readonly IAggregate _sagaData;
+        private ISoloLogger _log = LogManager.GetLogger();
         public readonly Guid Id;
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
         private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
@@ -124,7 +128,18 @@ namespace GridDomain.Node.Actors
 
         private void ProcessSaga(object message)
         {
-            Saga.Transit(message);
+            try
+            {
+                Saga.Transit(message);
+            }
+            catch (Exception ex)
+            {
+                var processorType = _producer.Descriptor.StateMachineType;
+
+                _log.Error(ex,"Saga {saga} {id} raised an error on {message}", processorType, Id, message);
+                var fault = Fault.NewGeneric(message, ex, processorType, Id);
+                _publisher.Publish(fault);
+            }
 
             ProcessSagaStateChange();
 

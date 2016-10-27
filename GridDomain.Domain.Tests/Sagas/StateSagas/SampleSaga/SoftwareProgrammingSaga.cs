@@ -29,13 +29,13 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                    .Permit(Triggers.GoForCoffe, States.MakingCoffe);
 
             Machine.Configure(States.MakingCoffe)
-                .OnEntryFrom(gotTiredTriggerTrigger, e =>
-                {
-                    State.RememberPerson(e.PersonId);
-                    Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
-                })
-                .Permit(Triggers.FeelWell, States.Working)
-                .Permit(Triggers.GoToSleep, States.Sleeping);
+                   .OnEntryFrom(gotTiredTriggerTrigger, e =>
+                   {
+                       State.RememberPerson(e.PersonId);
+                       Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
+                   })
+                   .Permit(Triggers.FeelWell, States.Working)
+                   .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
                    .OnEntryFrom(coffeMakeFailedTrigger,

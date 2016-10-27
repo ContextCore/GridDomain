@@ -1,27 +1,39 @@
 using System;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using SoftwareProgrammingSaga = GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga;
 
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     public class When_state_saga_raises_an_exception : SoftwareProgramming_StateSaga_Test
     {
-        private Guid _sagaId;
-        private Guid _personId;
-        
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(1000);
+
         [SetUp]
         public void When_saga_receives_a_message_that_case_saga_exception()
         {
-            _sagaId = Guid.NewGuid();
-            _personId = Guid.NewGuid();
+            var sagaId = Guid.NewGuid();
+            var personId = Guid.NewGuid();
+
+            //prepare initial saga state
+            var sagaData = new SoftwareProgrammingSagaData(nameof(InstanceSagas.SoftwareProgrammingSaga.MakingCoffee))
+            {
+                PersonId = personId
+            };
+            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
+            SaveInJournal<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
+
 
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            publisher.Publish(new CoffeMakeFailedEvent(Guid.Empty,_personId).CloneWithSaga(_sagaId));
+            publisher.Publish(new CoffeMakeFailedEvent(Guid.Empty,personId).CloneWithSaga(sagaId));
         }
 
         [Test]

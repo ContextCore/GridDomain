@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Automatonymous;
 using CommonDomain;
 using GridDomain.Logging;
@@ -92,7 +93,15 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             var method = _transitGenericMethodInfo.MakeGenericMethod(messageType);
 
-            method.Invoke(this, new[] { message });
+            try
+            {
+                method.Invoke(this, new[] {message});
+            }
+            catch (TargetInvocationException e)
+            {
+                //catch special exception and rethrow, otherwise caller cannot handle it
+                ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+            }
         }
 
         public void Transit<TMessage>(TMessage message) where TMessage : class

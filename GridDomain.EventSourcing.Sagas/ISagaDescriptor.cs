@@ -12,5 +12,6 @@ namespace GridDomain.EventSourcing.Sagas
         IReadOnlyCollection<Type> StartMessages { get; } 
         Type StateType { get; }
         Type SagaType { get; }
+        Type StateMachineType { get; }
     }
 }
