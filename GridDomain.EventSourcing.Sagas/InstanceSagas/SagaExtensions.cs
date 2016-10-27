@@ -44,7 +44,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             if (!startMessages.Any())
                 throw new StartMessagesMissedException();
 
-            var descriptor = new SagaDescriptor(typeof(ISagaInstance<TSaga, TSagaData>),typeof(SagaDataAggregate<TSagaData>));
+            var descriptor = new SagaDescriptor(typeof(ISagaInstance<TSaga, TSagaData>),typeof(SagaDataAggregate<TSagaData>),typeof(TSaga));
 
             FillAcceptMessages(saga, descriptor);
             FillCommands(saga, descriptor);

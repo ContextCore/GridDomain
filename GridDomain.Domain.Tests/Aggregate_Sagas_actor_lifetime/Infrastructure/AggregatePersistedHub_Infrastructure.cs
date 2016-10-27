@@ -2,7 +2,6 @@ using System;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.Node.Actors;
-using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Actors;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 

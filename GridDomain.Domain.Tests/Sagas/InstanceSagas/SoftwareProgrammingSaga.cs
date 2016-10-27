@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.Remoting.Channels;
 using Automatonymous;
 using GridDomain.CQRS;
@@ -6,6 +7,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using NMoneys;
 
 
@@ -48,8 +50,12 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
             During(MakingCoffee, 
                 When(CoffeNotAvailable)
-                    .Then(context => 
-                        Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId)))
+                    .Then(context => {
+                        if(context.Data.CoffeMachineId == Guid.Empty)
+                            throw new UndefinedCoffeMachineException();
+
+                        Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId));
+                    })
                     .TransitionTo(Sleeping),
                 When(CoffeReady)
                     .TransitionTo(Coding));

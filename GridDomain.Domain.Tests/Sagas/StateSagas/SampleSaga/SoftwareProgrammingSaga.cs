@@ -29,21 +29,25 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                    .Permit(Triggers.GoForCoffe, States.MakingCoffe);
 
             Machine.Configure(States.MakingCoffe)
-                .OnEntryFrom(gotTiredTriggerTrigger, e =>
-                {
-                    State.RememberPerson(e.PersonId);
-                    Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
-                })
-                .Permit(Triggers.FeelWell, States.Working)
-                .Permit(Triggers.GoToSleep, States.Sleeping);
+                   .OnEntryFrom(gotTiredTriggerTrigger, e =>
+                   {
+                       State.RememberPerson(e.PersonId);
+                       Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
+                   })
+                   .Permit(Triggers.FeelWell, States.Working)
+                   .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
-                .OnEntryFrom(coffeMakeFailedTrigger,
-                    e => {
-                        State.RememberBadCoffeMachine(e.CoffeMachineId);
-                        Dispatch(new GoToWorkCommand(e.ForPersonId));
-                    })
-                .Permit(Triggers.SleepAnough, States.Working);
+                   .OnEntryFrom(coffeMakeFailedTrigger,
+                       e =>
+                       {
+                           if (e.CoffeMachineId == Guid.Empty)
+                               throw new UndefinedCoffeMachineException();
+
+                           State.RememberBadCoffeMachine(e.CoffeMachineId);
+                           Dispatch(new GoToWorkCommand(e.ForPersonId));
+                       })
+                   .Permit(Triggers.SleepAnough, States.Working);
         }
 
         public void Handle(GotTiredEvent e)

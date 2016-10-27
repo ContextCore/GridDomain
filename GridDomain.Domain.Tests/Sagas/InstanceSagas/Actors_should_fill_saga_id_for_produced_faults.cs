@@ -7,6 +7,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
