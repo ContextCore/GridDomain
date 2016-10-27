@@ -318,6 +318,7 @@
     <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaMap.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\When_saga_raise_an_exception.cs" />
     <Compile Include="Sagas\SagaRecycling\Saga\Triggers.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
