@@ -367,6 +367,7 @@
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_State_SoftareProgramming_Saga.cs" />
+    <Compile Include="Sagas\StateSagas\When_saga_raise_an_exception.cs" />
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />

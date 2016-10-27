@@ -38,12 +38,16 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                 .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
-                .OnEntryFrom(coffeMakeFailedTrigger,
-                    e => {
-                        State.RememberBadCoffeMachine(e.CoffeMachineId);
-                        Dispatch(new GoToWorkCommand(e.ForPersonId));
-                    })
-                .Permit(Triggers.SleepAnough, States.Working);
+                   .OnEntryFrom(coffeMakeFailedTrigger,
+                       e =>
+                       {
+                           if (e.CoffeMachineId == Guid.Empty)
+                               throw new UndefinedCoffeMachineException();
+
+                           State.RememberBadCoffeMachine(e.CoffeMachineId);
+                           Dispatch(new GoToWorkCommand(e.ForPersonId));
+                       })
+                   .Permit(Triggers.SleepAnough, States.Working);
         }
 
         public void Handle(GotTiredEvent e)
@@ -81,5 +85,9 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             MakingCoffe,
             Sleeping
         }
+    }
+
+    public class UndefinedCoffeMachineException : Exception
+    {
     }
 }
