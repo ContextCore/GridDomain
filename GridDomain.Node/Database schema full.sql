@@ -8,7 +8,7 @@ GO
 create View HumanJournal AS 
 SELECT [PersistenceId]
       ,[SequenceNr]
-      ,NetFxUtcTicksToDateTime ([Timestamp]) Time
+      ,dbo.NetFxUtcTicksToDateTime ([Timestamp]) Time
       ,[IsDeleted]
       ,[Manifest]
 	  ,CONVERT(NVARCHAR(max), [Payload], 0) Payload
