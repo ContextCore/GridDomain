@@ -29,8 +29,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
-            DomainEventsJsonSerializer.Register(new BookOrderAdapter());
-
+            DomainEventAdapters.Register(new BookOrderAdapter());
+            
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
             var id = Guid.NewGuid();

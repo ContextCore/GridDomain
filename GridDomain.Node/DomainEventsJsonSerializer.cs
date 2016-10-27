@@ -23,7 +23,7 @@ namespace GridDomain.Node
             _log = LogManager.GetLogger();
         }
 
-        public static void Register(JsonConverter converter)
+        internal static void Register(JsonConverter converter)
         {
             JsonSerializerSettings.Converters.Add(converter);
         }
@@ -33,7 +33,7 @@ namespace GridDomain.Node
             JsonSerializerSettings.Converters.Clear();
         }
 
-        public static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
+        internal static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
         {
             Register((JsonConverter)converter);
         }

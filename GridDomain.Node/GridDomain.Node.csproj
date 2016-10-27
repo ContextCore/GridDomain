@@ -250,6 +250,7 @@
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
+    <Compile Include="DomainEventsAdapters.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
