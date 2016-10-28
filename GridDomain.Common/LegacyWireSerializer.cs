@@ -1,26 +1,54 @@
+extern alias oldwire;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using oldwire::Wire;
 
 namespace GridDomain.Common
 {
+
+    public class LegacyAliasWireSerializer
+    {
+        private readonly Serializer _serializer = new oldwire::Wire.Serializer(new oldwire::Wire.SerializerOptions(true,null, false,null));
+    
+        public object Deserialize(byte[] payload, Type type)
+        {
+            using (var stream = new MemoryStream(payload))
+                return _serializer.Deserialize(stream);
+        }
+
+        public byte[] Serialize(object obj)
+        {
+            using (var stream = new MemoryStream())
+            {
+                _serializer.Serialize(obj, stream);
+                return stream.ToArray();
+            }
+        }
+    }
+
     public class LegacyWireSerializer
     {
         private readonly object _serializer;
         private readonly MethodInfo _serializeMethod;
         private readonly MethodInfo _deserializeMethod;
 
+
+        public Assembly LoadLegacyWireFromResources()
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GridDomain.Common.Wire.0.0.6.dll"))
+            {
+                Byte[] assemblyData = new Byte[stream.Length];
+                stream.Read(assemblyData, 0, assemblyData.Length);
+                return Assembly.Load(assemblyData);
+            }
+        }
+
         public LegacyWireSerializer()
         {
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(LegacyWireSerializer)).Location),
-                                    @"LegacyBinaries\LegacyWire_0.0.6.dll");
-
-            if (!File.Exists(path)) 
-                 throw new CannotFindLegacyWireLibraryException();
-
-            var assembly = Assembly.LoadFile(path);
+            var assembly = LoadLegacyWireFromResources();
 
             var options = CreateByConstructor(assembly, "Wire.SerializerOptions", new object[] { true,null,false,null});
             _serializer = CreateByConstructor(assembly, "Wire.Serializer", new [] {options});
@@ -59,9 +87,5 @@ namespace GridDomain.Common
                 return stream.ToArray();
             }
         }
-    }
-
-    public class CannotFindLegacyWireLibraryException : Exception
-    {
     }
 }
