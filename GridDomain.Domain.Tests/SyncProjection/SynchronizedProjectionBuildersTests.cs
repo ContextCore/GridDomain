@@ -65,7 +65,7 @@ namespace GridDomain.Tests.SyncProjection
 
         private void AllEventsForOneAggregate_should_be_ordered_by(Func<IHaveProcessingHistory, long> valueSelector)
         {
-            foreach (var eventsForOneAggregate in _processedEvents.Recieved.Cast<DomainEvent>().GroupBy(e => e.SourceId))
+            foreach (var eventsForOneAggregate in _processedEvents.Received.Cast<DomainEvent>().GroupBy(e => e.SourceId))
             {
                 CheckOrderedValues(eventsForOneAggregate.Cast<IHaveProcessingHistory>(),
                                    valueSelector);

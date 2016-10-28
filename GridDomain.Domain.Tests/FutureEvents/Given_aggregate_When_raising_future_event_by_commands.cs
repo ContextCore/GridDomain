@@ -25,8 +25,8 @@ namespace GridDomain.Tests.FutureEvents
             _scheduledTime = DateTime.Now.AddSeconds(1);
             _testCommand = new RaiseEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Recieved.First();
-            _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Recieved.First();
+            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
+            _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Received.First();
 
             _aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
         }

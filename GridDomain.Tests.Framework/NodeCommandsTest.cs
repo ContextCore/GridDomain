@@ -32,6 +32,7 @@ namespace GridDomain.Tests.Framework
       
         private readonly Stopwatch _watch = new Stopwatch();
         protected virtual bool ClearDataOnStart { get; } = false;
+        protected virtual bool CreateNodeOnEachTest { get; } = false;
 
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
@@ -43,22 +44,37 @@ namespace GridDomain.Tests.Framework
         [OneTimeTearDown]
         public void DeleteSystems()
         {
+            if (CreateNodeOnEachTest) return;
             Console.WriteLine();
             Console.WriteLine("Stopping node");
             GridNode.Stop();
             Sys.Terminate();
         }
 
-        //do not terminate actor system after each [Test] run
         protected override void AfterAll()
         {
+            if (CreateNodeOnEachTest)
+                GridNode.Stop();
+        }
+
+        [SetUp]
+        public void CreateNode()
+        {
+            if (!CreateNodeOnEachTest) return;
+            Start();
         }
 
         [OneTimeSetUp]
         public void Init()
         {
+            if (CreateNodeOnEachTest) return;
+            Start();
+        }
+
+        private void Start()
+        {
             LogManager.SetLoggerFactory(new AutoTestLogFactory());
-            
+
             var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             if (ClearDataOnStart)
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
@@ -130,7 +146,7 @@ namespace GridDomain.Tests.Framework
 
         private ExpectedMessagesReceived Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
         {
-            var actor = system.ActorOf(Props.Create(() => new AllMessageWaiter(TestActor, expectedMessages)),
+            var actor = system.ActorOf(Props.Create(() => new AllMessageWaiterActor(TestActor, expectedMessages)),
                                          "MessageWaiter_" + Guid.NewGuid());
             var actorSubscriber= GridNode.Container.Resolve<IActorSubscriber>();
 

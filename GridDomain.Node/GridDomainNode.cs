@@ -54,7 +54,7 @@ namespace GridDomain.Node
 
 
         public IActorTransport Transport { get; private set; }
-        public MessagesListener Listener { get; private set; }
+       // public MessagesListener Listener { get; private set; }
 
         public ActorSystem System;
 
@@ -120,12 +120,24 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-            StartController(System);
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+            _stopping = false;
+            _log.Debug("Launching GridDomain node {Id}",Id);
 
-            Listener = new MessagesListener(System,Transport);
+            var props = System.DI().Props<GridNodeController>();
+            var nodeController = System.ActorOf(props,nameof(GridNodeController));
+
+            nodeController.Ask(new GridNodeController.Start
+            {
+                RoutingActorType = RoutingActorType[_transportMode]
+            })
+                .Wait(TimeSpan.FromSeconds(2));
+
+            _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+
+            _commandExecutor = new AkkaCommandExecutor(System,Transport);
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -148,7 +160,8 @@ namespace GridDomain.Node
         }
 
         bool _stopping = false;
-        private NodeCommandExecutor _commandExecutor;
+        private AkkaCommandExecutor _commandExecutor;
+        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
@@ -161,25 +174,6 @@ namespace GridDomain.Node
             System.Terminate();
             System.Dispose();
             _log.Debug("GridDomain node {Id} stopped",Id);
-        }
-
-        private void StartController(ActorSystem actorSystem)
-        {
-            _stopping = false;
-            _log.Debug("Launching GridDomain node {Id}",Id);
-
-            var props = actorSystem.DI().Props<GridNodeController>();
-            var nodeController = actorSystem.ActorOf(props,nameof(GridNodeController));
-
-            nodeController.Ask(new GridNodeController.Start
-            {
-                RoutingActorType = RoutingActorType[_transportMode]
-            })
-            .Wait(TimeSpan.FromSeconds(2));
-
-            _log.Debug("GridDomain node {Id} started at home {Home}", Id, actorSystem.Settings.Home);
-
-            _commandExecutor = new NodeCommandExecutor(nodeController);
         }
 
         public void Execute(params ICommand[] commands)
@@ -197,5 +191,14 @@ namespace GridDomain.Node
             return _commandExecutor.Execute(plan);
         }
 
+        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return new AkkaMessageLocalWaiter(System,Transport, defaultTimeout ?? DefaultTimeout);
+        }
+
+        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout);
+        }
     }
 }

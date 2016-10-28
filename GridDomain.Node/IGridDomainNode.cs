@@ -9,10 +9,8 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public interface IGridDomainNode : ICommandExecutor
+    public interface IGridDomainNode : ICommandExecutor , IMessageWaiterFactory
     {
-        MessagesListener Listener { get; }
+        //IMessageWaiterProducer Producer { get; }
     }
-
- 
 }

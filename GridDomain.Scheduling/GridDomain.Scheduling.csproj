@@ -137,8 +137,11 @@
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
+    <Compile Include="Akka\Messages\ExtendedExecutionOptions.cs" />
     <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
+    <Compile Include="Integration\NodeQuartzJob.cs" />
+    <Compile Include="Integration\SheduledCommandPlan.cs" />
     <Compile Include="SchedulerConfiguration.cs" />
     <Compile Include="Integration\CompleteJob.cs" />
     <Compile Include="Integration\StartSchedulerSaga.cs" />

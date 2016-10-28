@@ -25,11 +25,10 @@ namespace GridDomain.Tests.AsyncAggregates
            var asyncCommandTask = GridNode.Execute(asyncCommand,
                                                     Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
                                                                                                      asyncCommand.AggregateId));
-
-            GridNode.ExecuteSync(syncCommand, Timeout,
-                             Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
-                                                                               syncCommand.AggregateId)
-                             );
+            GridNode.ExecuteSync(syncCommand, 
+                                 TimeSpan.FromSeconds(1), 
+                                 Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
+                                                                             syncCommand.AggregateId));
 
             var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), sampleAggregate.Value);

@@ -56,7 +56,7 @@
     <Compile Include="CannotFindFactoryForSagaCreation.cs" />
     <Compile Include="FactoryAlreadyRegisteredException.cs" />
     <Compile Include="FutureEvents\Aggregate.cs" />
-    <Compile Include="FutureEvents\AsyncEventsRecieved.cs" />
+    <Compile Include="FutureEvents\AsyncEventsReceived.cs" />
     <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
     <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
     <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />

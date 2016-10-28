@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Framework
 {
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
-        protected bool InMemory { get; }
+        protected virtual bool InMemory { get; } = true;
         protected static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
@@ -29,6 +29,11 @@ namespace GridDomain.Tests.Framework
                 , !inMemory)
         {
             InMemory = inMemory;
+        }
+
+        protected ExtendedNodeCommandTest() : this(true)
+        {
+
         }
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)

@@ -10,7 +10,7 @@ namespace GridDomain.CQRS.Messaging.Akka
     {
         private readonly EventStream _bus;
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
-        private ISoloLogger _log = LogManager.GetLogger();
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         public AkkaEventBusTransport(ActorSystem system)
         {
@@ -20,6 +20,11 @@ namespace GridDomain.CQRS.Messaging.Akka
         public void Subscribe<TMessage>(IActorRef actor)
         {
             Subscribe(typeof (TMessage), actor);
+        }
+
+        public void Unsubscribe(IActorRef actor, Type topic)
+        {
+            _bus.Unsubscribe(actor,topic);
         }
 
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)

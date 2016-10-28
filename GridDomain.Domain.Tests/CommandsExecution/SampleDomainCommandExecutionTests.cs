@@ -11,7 +11,7 @@ namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new SampleDomainContainerConfiguration();
@@ -22,14 +22,13 @@ namespace GridDomain.Tests.CommandsExecution
             var container = new UnityContainer();
             container.Register(CreateConfiguration());
             return new SampleRouteMap(container);
-
-        }
-
-        public SampleDomainCommandExecutionTests() : base(true)
-        {
         }
 
         public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
+        {
+        }
+
+        public SampleDomainCommandExecutionTests()
         {
         }
     }
