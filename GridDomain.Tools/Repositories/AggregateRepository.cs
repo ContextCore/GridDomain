@@ -10,6 +10,17 @@ using GridDomain.Tools.Persistence;
 
 namespace GridDomain.Tools.Repositories
 {
+    public class AggregateSnapshotRepository : IDisposable
+    {
+
+        public AggregateSnapshotRepository(string akkaWriteDbConnectionString)
+        {
+            
+        }
+
+      
+    }
+
     public class AggregateRepository : IDisposable
     {
         private readonly IRepository<DomainEvent> _eventRepository;

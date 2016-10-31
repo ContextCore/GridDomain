@@ -70,6 +70,7 @@
     <Compile Include="DateTimeStrategyHolder.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IContainerConfiguration.cs" />
+    <Compile Include="LegacyAliasWireSerializer.cs" />
     <Compile Include="LegacyWireSerializer.cs" />
     <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

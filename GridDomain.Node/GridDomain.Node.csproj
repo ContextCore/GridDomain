@@ -266,14 +266,14 @@
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
-    <Compile Include="DomainEventsAdapters.cs" />
+    <Compile Include="DomainEventAdapters.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
     <Compile Include="Actors\SynchronizationProcessingActor.cs" />
-    <Compile Include="Actors\ShutdownRequest.cs" />
+    <Compile Include="Actors\GracefullShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaConfigurationExtensions.cs" />
@@ -315,7 +315,7 @@
     <Compile Include="DomainEventsJsonSerializer.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
-    <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
+    <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
     <Compile Include="Configuration\Akka\Hocon\EmptyConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\PersistenceConfig.cs" />

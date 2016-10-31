@@ -16,20 +16,6 @@ namespace GridDomain.EventSourcing.Adapters
         IEnumerable<TTo> ConvertEvent(TFrom evt);
     }
 
-    /// <summary>
-    /// Object adapter used for value object upgrade in domain events
-    /// If value object is changed, you should create one object adaptor for this
-    /// and none of domain event adapter.
-    /// Works as part of deserialiation logic.
-    /// Can be used on interface implementation or child classes change  
-    /// </summary>
-    /// <typeparam name="TFrom"></typeparam>
-    /// <typeparam name="TTo"></typeparam>
-    public interface IObjectAdapter<TFrom, TTo> : IObjectAdapter
-    {
-        TTo Convert(TFrom evt);
-    }
-
     public interface IObjectAdapter
     {
         object ConvertAny(object evt);

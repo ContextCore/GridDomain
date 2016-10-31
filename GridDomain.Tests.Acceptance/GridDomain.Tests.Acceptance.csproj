@@ -232,7 +232,7 @@
     <Compile Include="Chronicles\Given_persisted_events_replay.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_load_events_stored_in_legacy_wire_format.cs" />
-    <Compile Include="EventsUpgrade\GridNode_upgrade_events_stored_in_legacy_wire_format_when_loading_aggregate.cs" />
+    <Compile Include="EventsUpgrade\GridNode_upgrade_events_by_json_adapters_when_loading_aggregate.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BookOrderAdapter.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BookOrder_V1.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BookOrder_V2.cs" />
@@ -290,6 +290,12 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
+    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_each_10_messages.cs" />
+    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
+    <Compile Include="Snapshots\Given_snapshot_saga_Should_recover.cs" />
+    <Compile Include="Snapshots\Saga_Should_save_snapshots_each_10_messages.cs" />
+    <Compile Include="Snapshots\Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
+    <Compile Include="Snapshots\Given_snapshot_aggregate_Should_recover.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedAsyncExecuteDontWaitExecution.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />

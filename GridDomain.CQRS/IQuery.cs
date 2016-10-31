@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GridDomain.CQRS.Quering
+namespace GridDomain.CQRS
 {
     public interface IQuery<TReturn> : IGenericQuery<IReadOnlyCollection<TReturn>>
     {
