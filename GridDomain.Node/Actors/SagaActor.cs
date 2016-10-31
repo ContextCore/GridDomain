@@ -35,13 +35,16 @@ namespace GridDomain.Node.Actors
         private readonly ISagaProducer<TSaga> _producer;
         private readonly IPublisher _publisher;
         private TSaga _saga;
-        private readonly IAggregate _sagaData;
-        private ISoloLogger _log = LogManager.GetLogger();
+        private IAggregate _sagaData;
+        private readonly ISoloLogger _log = LogManager.GetLogger();
         public readonly Guid Id;
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
         private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
+        private readonly SnapshotsSavePolicy _snapshotsPolicy;
+
+
 
         private Guid GetSagaId(DomainEvent msg)
         {
@@ -61,14 +64,14 @@ namespace GridDomain.Node.Actors
             _publisher = publisher;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
-
+            _snapshotsPolicy = new SnapshotsSavePolicy(() => this.SaveSnapshot(Saga.Data));
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
             _sagaData = _aggregateFactory.Build<TSagaState>(Id);
 
 
          
-            Command<ShutdownRequest>(req =>
+            Command<GracefullShutdownRequest>(req =>
             {
                 _monitor.IncrementMessagesReceived();
                 Shutdown();
@@ -91,7 +94,6 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 if (_sagaStartMessageTypes.Contains(msg.GetType()))
                     _saga = _producer.Create(msg);
-
                 ProcessSaga(msg);
             }, e => GetSagaId(e) == Id);
 
@@ -103,8 +105,12 @@ namespace GridDomain.Node.Actors
 
 
             //recover messages will be provided only to right saga by using peristenceId
-            //Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
-            Recover<DomainEvent>(e => _sagaData.ApplyEvent(e));
+            Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
+            Recover<DomainEvent>(e =>
+            {
+                _sagaData.ApplyEvent(e);
+                _snapshotsPolicy.RefreshActivity(e.CreatedTime);
+            });
             Recover<RecoveryCompleted>(message =>
             {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
@@ -139,6 +145,8 @@ namespace GridDomain.Node.Actors
             ProcessSagaStateChange();
 
             ProcessSagaCommands();
+
+            _snapshotsPolicy.TrySave(message);
         }
 
         private void ProcessSagaCommands()
@@ -151,7 +159,7 @@ namespace GridDomain.Node.Actors
 
         private void ProcessSagaStateChange()
         {
-            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>();
+            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>().ToArray();
 
             PersistAll(stateChangeEvents, e => _publisher.Publish(e));
 

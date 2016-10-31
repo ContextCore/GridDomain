@@ -1,14 +1,11 @@
-using System;
-
 namespace GridDomain.Node.Actors
 {
-    class ShutdownRequest
+    class GracefullShutdownRequest
     {
-        public Guid ChildId;
-
-        public ShutdownRequest(Guid childId)
+        private GracefullShutdownRequest()
         {
-            ChildId = childId;
         }
+
+        public static GracefullShutdownRequest Instance = new GracefullShutdownRequest();
     }
 }

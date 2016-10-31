@@ -239,6 +239,7 @@
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\NotifyOnRecoverComplete.cs" />
+    <Compile Include="Actors\SnapshotsSavePolicy.cs" />
     <Compile Include="AkkaCommandExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
@@ -395,7 +396,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="1.4-1.5_migration.sql" />
     <Content Include="1.6-1.7_migration.sql" />
     <Content Include="Database schema full.sql" />
   </ItemGroup>

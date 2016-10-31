@@ -41,7 +41,7 @@ namespace GridDomain.Node.Actors
            foreach (var childId in childsToTerminate)
            {
                 //TODO: wait for child termination
-               Children[childId].Ref.Tell(new ShutdownRequest(childId));
+               Children[childId].Ref.Tell(GracefullShutdownRequest.Instance);
                Children.Remove(childId);
            }
         }

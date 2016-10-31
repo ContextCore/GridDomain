@@ -37,6 +37,7 @@ namespace GridDomain.Node.Actors
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
         private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
         public readonly Guid Id;
+        private readonly SnapshotsSavePolicy _snapshotsPolicy;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
@@ -52,7 +53,8 @@ namespace GridDomain.Node.Actors
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
             Aggregate = factory.Build<TAggregate>(Id);
             _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
-       
+            _snapshotsPolicy = new SnapshotsSavePolicy(() => SaveSnapshot(Aggregate));
+
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
             Command<AsyncEventsReceived>(m =>
@@ -68,7 +70,7 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
 
-            Command<ShutdownRequest>(req =>
+            Command<GracefullShutdownRequest>(req =>
             {
                 _monitor.IncrementMessagesReceived();
                 Shutdown();
@@ -102,8 +104,12 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(cmd);
             });
 
-            //Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
-            Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+            Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
+            Recover<DomainEvent>(e =>
+            {
+                ((IAggregate) Aggregate).ApplyEvent(e);
+                _snapshotsPolicy.RefreshActivity(e.CreatedTime);
+            });
             Recover<RecoveryCompleted>(message =>
              {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
@@ -148,6 +154,8 @@ namespace GridDomain.Node.Actors
             aggregate.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command);
+
+            _snapshotsPolicy.TrySave(command);
         }
 
         private void ProcessAsyncMethods(ICommand command)
