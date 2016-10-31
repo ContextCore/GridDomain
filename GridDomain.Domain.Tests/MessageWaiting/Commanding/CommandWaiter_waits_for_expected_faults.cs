@@ -23,8 +23,6 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             var faultyHandlerMap =
                 new CustomRouteMap(
                     r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
-                    //r => r.RegisterHandler<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId),
-                    //r => r.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(e => e.SourceId),
                     r => r.RegisterHandler<SampleAggregateCreatedEvent, CreateProjectionBuilder>(e => e.SourceId),
                     r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
@@ -36,12 +34,12 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         public void When_expected_fault_received_it_contains_error()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var res = GridNode.NewCommandWaiter()
+            var res = GridNode.NewCommandWaiter(Timeout, false)
                                 .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
                                 .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId && 
                                                                                   (f.Processor == typeof(EvenFaultyMessageHandler) || 
                                                                                    f.Processor == typeof(OddFaultyMessageHandler)))
-                              .Create(Timeout)
+                              .Create()
                               .Execute(syncCommand)
                               .Result;
 
@@ -52,10 +50,10 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         public void When_expecting_generic_fault_without_processor_received_fault_contains_error()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var res = GridNode.NewCommandWaiter()
+            var res = GridNode.NewCommandWaiter(Timeout,false)
                                 .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
                                 .Or<IFault>(f => (f.Message as DomainEvent)?.SourceId == syncCommand.AggregateId)
-                              .Create(Timeout)
+                              .Create()
                               .Execute(syncCommand)
                               .Result;
 
@@ -102,10 +100,10 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             //will throw exception in aggregate and in message handler
             var syncCommand = new AsyncFaultWithOneEventCommand(50, Guid.NewGuid());
 
-             var res = GridNode.NewCommandWaiter()
+             var res = GridNode.NewCommandWaiter(Timeout,false)
                                .Expect<AggregateChangedEventNotification>()
                                .Or<IFault<SampleAggregateChangedEvent>>()
-                               .Create(Timeout)
+                               .Create()
                                .Execute(syncCommand)
                                .Result;
 
@@ -120,7 +118,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             AssertEx.ThrowsInner<SampleAggregateException>(() =>
                                  GridNode.NewCommandWaiter(Timeout,true)
                                      .Expect<AggregateChangedEventNotification>()
-                                     .Create()
+                                     .Create(Timeout)
                                      .Execute(syncCommand)
                                      .Wait()
                 );
