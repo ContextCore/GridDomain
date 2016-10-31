@@ -37,15 +37,18 @@ namespace GridDomain.Node
 
         public Task<object> Execute(CommandPlan plan)
         {
-            var waiter = new AkkaCommandLocalWaiter(this,_system,_transport,plan.Timeout);
+            var waiter = new AkkaCommandLocalWaiter(this,_system,_transport,plan.Timeout,true);
             
             var expectBuilder = waiter.ExpectBuilder;
 
+            //All expected messages should be received 
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => !typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
                 expectBuilder.And(expectedMessage.MessageType, o => expectedMessage.Match(o));
             }
 
+
+            //All expected faults should end waiting
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
                 expectBuilder.Or(expectedMessage.MessageType,
@@ -54,19 +57,19 @@ namespace GridDomain.Node
                                         expectedMessage.Sources.Contains((o as IFault)?.Processor)));
             }
 
+            //Command fault should always end waiting
             var commandFaultType = typeof(IFault<>).MakeGenericType(plan.Command.GetType());
-
             expectBuilder.Or(commandFaultType,
                              o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
-            var expectedExecutor = new ExpectedCommandExecutor(this, waiter, plan.Timeout);
-            return expectedExecutor.Execute(plan.Command)
-                                   .ContinueWith(t =>
-                                   {
-                                       CheckTaskFault(t);
-                                       return t.Result.All.Count > 1 ? t.Result.All.ToArray() : t.Result.All.FirstOrDefault();
-                                   });
+            return expectBuilder.Create()
+                                .Execute(plan.Command)
+                                .ContinueWith(t =>
+                                {
+                                    CheckTaskFault(t);
+                                    return t.Result.All.Count > 1 ? t.Result.All.ToArray() : t.Result.All.FirstOrDefault();
+                                });
         }
 
         private static void CheckTaskFault(Task t)
