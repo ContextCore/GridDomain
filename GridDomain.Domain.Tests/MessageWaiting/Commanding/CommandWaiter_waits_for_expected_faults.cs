@@ -118,10 +118,10 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         {
             var syncCommand = new AsyncFaultWithOneEventCommand(500, Guid.NewGuid());
             AssertEx.ThrowsInner<SampleAggregateException>(() =>
-                                 GridNode.NewCommandWaiter()
+                                 GridNode.NewCommandWaiter(Timeout,true)
                                      .Expect<AggregateChangedEventNotification>()
-                                     .Create(Timeout)
-                                     .Execute(syncCommand, true)
+                                     .Create()
+                                     .Execute(syncCommand)
                                      .Wait()
                 );
         }

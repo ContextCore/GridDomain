@@ -196,9 +196,9 @@ namespace GridDomain.Node
             return new AkkaMessageLocalWaiter(System,Transport, defaultTimeout ?? DefaultTimeout);
         }
 
-        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failOnAnyFault = true)
         {
-            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout);
+            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout,failOnAnyFault);
         }
     }
 }

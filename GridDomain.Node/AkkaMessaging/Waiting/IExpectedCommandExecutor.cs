@@ -5,6 +5,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public interface IExpectedCommandExecutor
     {
-        Task<IWaitResults> Execute<T>(T command, bool failOnFaults = false) where T : ICommand;
+        Task<IWaitResults> Execute<T>(params T[] command) where T : ICommand;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
@@ -10,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.MessageWaiting.Commanding
 {
     [TestFixture]
-    public class Execute_command_until_projection_build_event_fetching_results: SampleDomainCommandExecutionTests
+    public class Execute_command_until_projection_build_notification_fetching_results: SampleDomainCommandExecutionTests
     {
         private AggregateChangedEventNotification _changedEvent;
         private SampleAggregate _aggregate;
@@ -22,8 +23,6 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         public void Given_command_executes_with_waiter_When_fetching_results()
         {
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,_syncCommand.AggregateId);
-
 
 
            _results = GridNode.NewCommandWaiter()

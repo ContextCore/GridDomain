@@ -11,6 +11,5 @@ namespace GridDomain.Node
 {
     public interface IGridDomainNode : ICommandExecutor , IMessageWaiterFactory
     {
-        //IMessageWaiterProducer Producer { get; }
     }
 }
