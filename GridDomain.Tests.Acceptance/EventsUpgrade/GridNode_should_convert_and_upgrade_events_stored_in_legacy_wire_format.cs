@@ -62,7 +62,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         public static void SaveWithLegacyWire(string testid, DomainEvent[] events)
         {
-            var legacySerializer = new LegacyWireSerializer(true, false);
+            var legacySerializer = new LegacyWireSerializer();
             long seqNum = 0;
             var journalEntries = events.Select(e => new JournalItem(testid,
                 seqNum++,

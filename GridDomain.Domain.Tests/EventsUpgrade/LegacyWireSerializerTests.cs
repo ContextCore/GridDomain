@@ -12,7 +12,7 @@ namespace GridDomain.Tests.EventsUpgrade
         [Test]
         public void LegacySerializer_can_be_created()
         {
-           var ser = new LegacyWireSerializer(true, false);
+           var ser = new LegacyWireSerializer();
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.EventsUpgrade
         {
             var evt = new SubObject_V1 {Name = "10", Value = "123"};
 
-            var serializer = new LegacyWireSerializer(true, false);
+            var serializer = new LegacyWireSerializer();
             var bytes = serializer.Serialize(evt);
             var restored = (SubObject_V1)serializer.Deserialize(bytes, evt.GetType());
 

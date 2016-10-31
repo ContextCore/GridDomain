@@ -15,7 +15,7 @@ namespace GridDomain.Node
     public class DomainEventsJsonSerializer : Serializer
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
-        private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer(true, false);
+        private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
         private readonly ISoloLogger _log;
 
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
