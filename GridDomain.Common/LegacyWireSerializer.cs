@@ -46,11 +46,11 @@ namespace GridDomain.Common
             }
         }
 
-        public LegacyWireSerializer()
+        public LegacyWireSerializer(bool versionTolerance = true, bool preserveReferences = true)
         {
             var assembly = LoadLegacyWireFromResources();
 
-            var options = CreateByConstructor(assembly, "Wire.SerializerOptions", new object[] { true,null,false,null});
+            var options = CreateByConstructor(assembly, "Wire.SerializerOptions", new object[] { versionTolerance, null, preserveReferences, null});
             _serializer = CreateByConstructor(assembly, "Wire.Serializer", new [] {options});
 
             _serializeMethod = _serializer.GetType().GetMethod("Serialize", new [] {typeof(object), typeof(Stream)});
