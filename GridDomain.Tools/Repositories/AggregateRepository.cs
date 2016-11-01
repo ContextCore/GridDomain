@@ -10,15 +10,19 @@ using GridDomain.Tools.Persistence;
 
 namespace GridDomain.Tools.Repositories
 {
-    public class AggregateSnapshotRepository : IDisposable
+    public class AggregateSnapshotRepository
     {
+        private string _writeString;
 
         public AggregateSnapshotRepository(string akkaWriteDbConnectionString)
         {
-            
+            _writeString = akkaWriteDbConnectionString;
         }
 
-      
+        public T Load<T>(Guid id) where T:IAggregate
+        {
+            using(var repo = new RawSqlAkkaPersistenceRepository(_writeString))
+        }
     }
 
     public class AggregateRepository : IDisposable

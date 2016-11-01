@@ -29,27 +29,4 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             
         }
     }
-
-    public class SnapshotItem
-    {
-        public string PersistenceId { get; set; } // PersistenceId (Primary key) (length: 255)
-        public long SequenceNr { get; set; } // SequenceNr (Primary key)
-        public long Timestamp { get; set; } // Timestamp datetime2(7)
-        public string Manifest { get; set; } // Manifest (length: 500)
-        public byte[] Snapshot { get; set; } // Payload
-
-        public SnapshotItem(string id, long seqNum, string manifest, DateTime timestamp, byte[] snapshot)
-        {
-            PersistenceId = id;
-            SequenceNr = seqNum;
-            Manifest = manifest;
-            Timestamp = timestamp.Ticks;
-            Snapshot = snapshot;
-        }
-
-        public SnapshotItem()
-        {
-
-        }
-    }
 }

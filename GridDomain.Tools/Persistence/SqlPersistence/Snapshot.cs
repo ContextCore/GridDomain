@@ -1,7 +1,7 @@
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
-    public class Snapshot
+    public class SnapshotItem
     {
         public string PersistenceId { get; set; } // PersistenceId (Primary key) (length: 255)
         public long SequenceNr { get; set; } // SequenceNr (Primary key)

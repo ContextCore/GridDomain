@@ -7,7 +7,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
     {
         public System.Data.Entity.DbSet<JournalItem> Journal { get; set; } // JournalEntry
         public System.Data.Entity.DbSet<Metadata> Metadatas { get; set; } // Metadata
-        public System.Data.Entity.DbSet<Snapshot> Snapshots { get; set; } // Snapshots
+        public System.Data.Entity.DbSet<SnapshotItem> Snapshots { get; set; } // Snapshots
 
         static AkkaSqlPersistenceContext()
         {

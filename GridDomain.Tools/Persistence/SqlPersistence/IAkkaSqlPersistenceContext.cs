@@ -4,7 +4,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
     {
         System.Data.Entity.DbSet<JournalItem> Journal { get; set; } // JournalEntry
         System.Data.Entity.DbSet<Metadata> Metadatas { get; set; } // Metadata
-        System.Data.Entity.DbSet<Snapshot> Snapshots { get; set; } // Snapshots
+        System.Data.Entity.DbSet<SnapshotItem> Snapshots { get; set; } // Snapshots
 
         int SaveChanges();
         System.Threading.Tasks.Task<int> SaveChangesAsync();

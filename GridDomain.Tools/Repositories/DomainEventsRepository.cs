@@ -68,7 +68,7 @@ namespace GridDomain.Tools.Repositories
 
         public static DomainEventsRepository New(string connectionString)
         {
-            return new DomainEventsRepository(new RawSqlAkkaPersistenceRepository(connectionString));
+            return new DomainEventsRepository(new RawJournalRepository(connectionString));
         }
     }
 }

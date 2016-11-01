@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     class GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format : SampleDomainCommandExecutionTests
     {
         private object[] _loadedEvents;
-        private static readonly RawSqlAkkaPersistenceRepository RawDataRepository = new RawSqlAkkaPersistenceRepository(AkkaCfg.Persistence.JournalConnectionString);
+        private static readonly RawJournalRepository RawDataRepository = new RawJournalRepository(AkkaCfg.Persistence.JournalConnectionString);
         private string _persistenceId;
         protected override bool ClearDataOnStart { get; } = true;
 

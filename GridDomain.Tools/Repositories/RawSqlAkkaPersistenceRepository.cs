@@ -4,17 +4,54 @@ using GridDomain.Tools.Persistence.SqlPersistence;
 
 namespace GridDomain.Tools.Repositories
 {
+
+
+
+    public class RawSnapshotsRepository : IRepository<Snapshot>
+    {
+        private readonly string _connectionString;
+
+        public RawSnapshotsRepository(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public void Dispose()
+        {
+        }
+        public void Save(string id, params Snapshot[] messages)
+        {
+
+            foreach (var m in messages)
+                m.PersistenceId = id;
+
+            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            {
+                context.Snapshots.AddOrUpdate(messages);
+                context.SaveChanges();
+            }
+        }
+
+        public Snapshot[] Load(string id)
+        {
+            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            {
+                return context.Snapshots.Where(j => j.PersistenceId == id).ToArray();
+            }
+        }
+
+    }
     /// <summary>
     /// Class for reading \ writing data persisted in sql db with wire
     /// Use only in emergency cases by own risk!
     /// For example, when you have different versions of events with same type persisted
     /// for different instance of one aggregate type.
     /// </summary>
-    public class RawSqlAkkaPersistenceRepository : IRepository<JournalItem>, IRepository<Snapshot>
+    public class RawJournalRepository : IRepository<JournalItem>
     {
         private readonly string _connectionString;
 
-        public RawSqlAkkaPersistenceRepository(string connectionString)
+        public RawJournalRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
@@ -35,27 +72,7 @@ namespace GridDomain.Tools.Repositories
             }
         }
 
-        public void Save(string id, params Snapshot[] messages)
-        {
-
-            foreach (var m in messages)
-                m.PersistenceId = id;
-
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
-            {
-                context.Snapshots.AddOrUpdate(messages);
-                context.SaveChanges();
-            }
-        }
-
-        Snapshot[] IRepository<Snapshot>.Load(string id)
-        {
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
-            {
-                return context.Snapshots.Where(j => j.PersistenceId == id).ToArray();
-            }
-        }
-
+    
         public JournalItem[] Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
