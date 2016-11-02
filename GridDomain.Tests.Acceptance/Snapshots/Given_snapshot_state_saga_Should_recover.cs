@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class Given_snapshot_state_saga_Should_recover : ProgrammingSoftwareStateSagaTest
+    class Given_snapshot_state_saga_Should_recover : SoftwareProgrammingStateSagaTest
     {
         private SoftwareProgrammingSagaState _sagaState;
         private SoftwareProgrammingSagaState _restoredState;

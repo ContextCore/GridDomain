@@ -1,11 +1,8 @@
 using System;
-using Akka.DI.Core;
-using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Snapshots
+namespace GridDomain.Tests.Serialization
 {
     [TestFixture]
     class Private_setters_without_parameter_in_constructor_deserialization

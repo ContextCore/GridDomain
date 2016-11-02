@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    public class Given_instance_saga_When_exception_on_transit : ProgrammingSoftwareInstanceSagaTest
+    public class Given_instance_saga_When_exception_on_transit : SoftwareProgrammingInstanceSagaTest
     {
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
 

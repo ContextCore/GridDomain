@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_start_again : ProgrammingSoftwareInstanceSagaTest
+    class Given_saga_When_publishing_start_again : SoftwareProgrammingInstanceSagaTest
     {
         private GotTiredEvent _startMessage;
         private CoffeMadeEvent _coffeMadeEvent;

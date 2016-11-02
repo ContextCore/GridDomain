@@ -371,7 +371,7 @@
     <Compile Include="Sagas\SagaRecycling\Saga\States.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
-    <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingInstanceSagaTest.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
@@ -387,7 +387,7 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\UndefinedCoffeMachineException.cs" />
-    <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
+    <Compile Include="Sagas\StateSagas\SoftwareProgrammingStateSagaTest.cs" />
     <Compile Include="Sagas\StateSagas\Given_state_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
@@ -482,7 +482,7 @@
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
-    <Compile Include="Serialization\State_sagas_should_be_serialize_and_desirialize.cs" />
+    <Compile Include="Serialization\State_sagas_should_be_serialize_and_deserialize.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Console\GridConsoleTests.cs" />

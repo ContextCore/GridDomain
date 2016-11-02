@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    public class Saga_produced_events_and_commands_has_sagaId : ProgrammingSoftwareInstanceSagaTest
+    public class Saga_produced_events_and_commands_has_sagaId : SoftwareProgrammingInstanceSagaTest
     {
         public Saga_produced_events_and_commands_has_sagaId() : base(true)
         {

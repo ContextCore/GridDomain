@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    public class ProgrammingSoftwareInstanceSagaTest : SampleDomainCommandExecutionTests
+    public class SoftwareProgrammingInstanceSagaTest : SampleDomainCommandExecutionTests
     {
         protected override IMessageRouteMap CreateMap()
         {
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 );
         }
 
-        public ProgrammingSoftwareInstanceSagaTest(bool inMemory = true) : base(inMemory)
+        public SoftwareProgrammingInstanceSagaTest(bool inMemory = true) : base(inMemory)
         {
         }
     }

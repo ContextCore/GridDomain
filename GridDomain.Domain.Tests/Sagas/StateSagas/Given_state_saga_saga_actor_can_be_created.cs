@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 {
     
     [TestFixture]
-    public class Given_state_saga_saga_actor_can_be_created : ProgrammingSoftwareStateSagaTest
+    public class Given_state_saga_saga_actor_can_be_created : SoftwareProgrammingStateSagaTest
     {
         [Then]
         public void State_saga_actor_can_be_created()

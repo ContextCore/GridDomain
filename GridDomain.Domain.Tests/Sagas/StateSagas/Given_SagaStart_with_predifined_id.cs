@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     public class Given_SagaStart_with_predifined_id:
-        ProgrammingSoftwareStateSagaTest
+        SoftwareProgrammingStateSagaTest
     {
         private Guid _sagaId;
         private SoftwareProgrammingSagaState _sagaState;

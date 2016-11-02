@@ -4,10 +4,10 @@ using GridDomain.Tests.Sagas.InstanceSagas;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Snapshots
+namespace GridDomain.Tests.Serialization
 {
     [TestFixture]
-    class Instance_sagas_should_be_serialize_and_deserialize : ProgrammingSoftwareInstanceSagaTest
+    class Instance_sagas_should_be_serialize_and_deserialize : SoftwareProgrammingInstanceSagaTest
     {
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaState;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _restoredState;

@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class Given_saga_When_publishing_start_messages : ProgrammingSoftwareInstanceSagaTest   
+    class Given_saga_When_publishing_start_messages : SoftwareProgrammingInstanceSagaTest   
     {
         protected readonly Guid _sagaId;
         private readonly object[] _sagaMessages;

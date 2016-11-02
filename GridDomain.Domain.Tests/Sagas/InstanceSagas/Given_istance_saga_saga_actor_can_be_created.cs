@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_istance_saga_saga_actor_can_be_created : ProgrammingSoftwareInstanceSagaTest
+    class Given_istance_saga_saga_actor_can_be_created : SoftwareProgrammingInstanceSagaTest
     {
         [Then]
         public void Instance_saga_actor_can_be_created()

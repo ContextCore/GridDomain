@@ -13,7 +13,7 @@ using NMoneys;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
+    public class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
             = SagaExtensions.CreateDescriptor<SoftwareProgrammingSaga,

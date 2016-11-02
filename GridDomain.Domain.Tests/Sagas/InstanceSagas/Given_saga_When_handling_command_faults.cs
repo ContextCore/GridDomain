@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_saga_When_handling_command_faults : ProgrammingSoftwareInstanceSagaTest
+    class Given_saga_When_handling_command_faults : SoftwareProgrammingInstanceSagaTest
     {
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
         private CoffeMakeFailedEvent _coffeMakeFailedEvent;
