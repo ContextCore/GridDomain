@@ -292,7 +292,9 @@
     <Compile Include="SimpleClusterListener.cs" />
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_each_10_messages.cs" />
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
-    <Compile Include="Snapshots\Given_snapshot_saga_Should_recover.cs" />
+    <Compile Include="Snapshots\Given_snapshot_instance_saga_Should_recover.cs" />
+    <Compile Include="Snapshots\Given_snapshot_state_saga_provide_setters_should_be_deserialized.cs" />
+    <Compile Include="Snapshots\Given_snapshot_state_saga_Should_recover.cs" />
     <Compile Include="Snapshots\Saga_Should_save_snapshots_each_10_messages.cs" />
     <Compile Include="Snapshots\Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Given_snapshot_aggregate_Should_recover.cs" />

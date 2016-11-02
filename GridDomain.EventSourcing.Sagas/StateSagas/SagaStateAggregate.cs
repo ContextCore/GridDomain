@@ -8,7 +8,7 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
                                                              where TState : struct
                                                              where TTransition : struct
     {
-        public TState MachineState;
+        public TState MachineState { get; private set; }
 
         protected SagaStateAggregate(Guid id)
         {

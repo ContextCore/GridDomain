@@ -306,6 +306,8 @@
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="AssertEx.cs" />
+    <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
+    <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_until_projection_build_notification_fetching_results.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_expected_faults_from_projection_group.cs" />
@@ -480,6 +482,7 @@
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
+    <Compile Include="Serialization\State_sagas_should_be_serialize_and_desirialize.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Console\GridConsoleTests.cs" />

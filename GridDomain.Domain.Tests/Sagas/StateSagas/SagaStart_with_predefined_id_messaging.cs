@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    public class SagaStart_with_predefined_id_messaging : SoftwareProgramming_StateSaga_Test
+    public class SagaStart_with_predefined_id_messaging : ProgrammingSoftwareStateSagaTest
     {
         [Test]
         public void When_dispatch_command_than_command_should_have_right_sagaId()

@@ -4,7 +4,7 @@ using GridDomain.Tools.Persistence.SqlPersistence;
 
 namespace GridDomain.Tools.Repositories
 {
-    public class RawSnapshotsRepository : IRepository<Snapshot>
+    public class RawSnapshotsRepository : IRepository<SnapshotItem>
     {
         private readonly string _connectionString;
 
@@ -16,7 +16,7 @@ namespace GridDomain.Tools.Repositories
         public void Dispose()
         {
         }
-        public void Save(string id, params Snapshot[] messages)
+        public void Save(string id, params SnapshotItem[] messages)
         {
 
             foreach (var m in messages)
@@ -29,7 +29,7 @@ namespace GridDomain.Tools.Repositories
             }
         }
 
-        public Snapshot[] Load(string id)
+        public SnapshotItem[] Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {

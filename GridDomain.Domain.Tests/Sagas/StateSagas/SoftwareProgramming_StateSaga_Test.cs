@@ -13,9 +13,9 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.StateSagas
 {
-    public class SoftwareProgramming_StateSaga_Test : SampleDomainCommandExecutionTests
+    public class ProgrammingSoftwareStateSagaTest : SampleDomainCommandExecutionTests
     {
-        public SoftwareProgramming_StateSaga_Test(bool inMemory = true) : base(inMemory)
+        public ProgrammingSoftwareStateSagaTest(bool inMemory = true) : base(inMemory)
         {
         }
         protected IPublisher Publisher { get; private set; }

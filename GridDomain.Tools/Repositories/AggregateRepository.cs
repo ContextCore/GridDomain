@@ -10,21 +10,6 @@ using GridDomain.Tools.Persistence;
 
 namespace GridDomain.Tools.Repositories
 {
-    public class AggregateSnapshotRepository
-    {
-        private string _writeString;
-
-        public AggregateSnapshotRepository(string akkaWriteDbConnectionString)
-        {
-            _writeString = akkaWriteDbConnectionString;
-        }
-
-        public T Load<T>(Guid id) where T:IAggregate
-        {
-            using(var repo = new RawSqlAkkaPersistenceRepository(_writeString))
-        }
-    }
-
     public class AggregateRepository : IDisposable
     {
         private readonly IRepository<DomainEvent> _eventRepository;
@@ -59,7 +44,7 @@ namespace GridDomain.Tools.Repositories
 
         public static AggregateRepository New(string akkaWriteDbConnectionString, EventsAdaptersCatalog upgradeCatalog = null)
         {
-            var rawSqlAkkaPersistenceRepository = new RawSqlAkkaPersistenceRepository(akkaWriteDbConnectionString);
+            var rawSqlAkkaPersistenceRepository = new RawJournalRepository(akkaWriteDbConnectionString);
             var domainEventsRepository = new DomainEventsRepository(rawSqlAkkaPersistenceRepository);
             return new AggregateRepository(domainEventsRepository, upgradeCatalog);
         }

@@ -11,7 +11,7 @@ using SoftwareProgrammingSaga = GridDomain.Tests.Sagas.StateSagas.SampleSaga.Sof
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    public class When_state_saga_raises_an_exception : SoftwareProgramming_StateSaga_Test
+    public class When_state_saga_raises_an_exception : ProgrammingSoftwareStateSagaTest
     {
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
 
