@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using Newtonsoft.Json;
@@ -19,6 +20,7 @@ namespace GridDomain.Tests.Serialization
         {
             _sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(), SoftwareProgrammingSaga.States.MakingCoffe);
             _sagaState.RememberPerson(Guid.NewGuid());
+            _sagaState.ClearEvents();
 
             var data = JsonConvert.SerializeObject(_sagaState);
             _restoredState = JsonConvert.DeserializeObject<SoftwareProgrammingSagaState>(data);

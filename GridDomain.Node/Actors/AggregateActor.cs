@@ -38,6 +38,11 @@ namespace GridDomain.Node.Actors
         private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
         public readonly Guid Id;
         private readonly SnapshotsSavePolicy _snapshotsPolicy;
+        public TAggregate Aggregate { get; private set; }
+        public override string PersistenceId { get; }
+
+        private readonly ActorMonitor _monitor;
+
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               AggregateFactory factory,
@@ -104,7 +109,11 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(cmd);
             });
 
-            Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
+            Recover<SnapshotOffer>(offer =>
+            {
+                Aggregate = (TAggregate) offer.Snapshot;
+                ((IAggregate)Aggregate).ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+            });
             Recover<DomainEvent>(e =>
             {
                 ((IAggregate) Aggregate).ApplyEvent(e);
@@ -207,10 +216,6 @@ namespace GridDomain.Node.Actors
             _unscheduleActorRef.Handle(unscheduleMessage);
         }
 
-        public TAggregate Aggregate { get; private set; }
-        public override string PersistenceId { get; }
-
-        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {

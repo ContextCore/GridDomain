@@ -105,7 +105,11 @@ namespace GridDomain.Node.Actors
 
 
             //recover messages will be provided only to right saga by using peristenceId
-            Recover<SnapshotOffer>(offer => _sagaData = (IAggregate)offer.Snapshot);
+            Recover<SnapshotOffer>(offer =>
+            {
+                _sagaData = (IAggregate) offer.Snapshot;
+               // _sagaData.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+            });
             Recover<DomainEvent>(e =>
             {
                 _sagaData.ApplyEvent(e);
@@ -119,6 +123,12 @@ namespace GridDomain.Node.Actors
                     waiter.Tell(RecoveryCompleted.Instance,Self);
                 _recoverWaiters.Clear();
             });
+            
+        }
+
+        protected override void OnRecoveryFailure(Exception reason, object message = null)
+        {
+            base.OnRecoveryFailure(reason, message);
         }
 
         protected virtual void Shutdown()

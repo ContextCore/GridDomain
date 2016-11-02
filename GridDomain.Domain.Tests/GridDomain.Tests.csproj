@@ -306,6 +306,7 @@
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="AssertEx.cs" />
+    <Compile Include="Serialization\Aggregate_Should_serializer_and_desirialize_by_json.cs" />
     <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_waiting_aggregate_event.cs" />

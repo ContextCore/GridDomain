@@ -1,5 +1,6 @@
 using System;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -21,6 +22,7 @@ namespace GridDomain.Tests.Serialization
 
             _sagaState = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(), state);
             _sagaState.RememberEvent(saga.CoffeReady, state, new object());
+            _sagaState.ClearEvents();
 
             var json = JsonConvert.SerializeObject(_sagaState);
             _restoredState = JsonConvert.DeserializeObject<SagaDataAggregate<SoftwareProgrammingSagaData>>(json);

@@ -1,5 +1,7 @@
 using System;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tools.Repositories;
 using Newtonsoft.Json;
@@ -13,7 +15,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaState;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _restoredState;
-        public Given_snapshot_instance_saga_Should_recover() : base(true) { }
+        public Given_snapshot_instance_saga_Should_recover() : base(false) { }
+
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(100);
 
         [OneTimeSetUp]
         public void Test()
@@ -23,14 +27,14 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             _sagaState = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(), state);
             _sagaState.RememberEvent(saga.CoffeReady, state, new object());
+            _sagaState.ClearEvents();
 
             var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString);
             repo.Add(_sagaState);
 
-        //    _restoredState = Load
+            _restoredState = LoadInstanceSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaState.Id);
         }
-
-
+         
         [Test]
         public void CoffeMachineId_should_be_equal()
         {
@@ -38,9 +42,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void Id_should_be_equal()
+        public void State_restored_from_sanapshot_should_not_have_uncommited_events()
         {
-            Assert.AreEqual(_sagaState.Id, _restoredState.Id);
+            CollectionAssert.IsEmpty(_restoredState.GetEvents());
         }
 
         [Test]

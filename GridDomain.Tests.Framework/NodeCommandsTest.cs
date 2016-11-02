@@ -11,6 +11,7 @@ using CommonDomain.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
@@ -99,7 +100,7 @@ namespace GridDomain.Tests.Framework
         {
             var props = GridNode.System.DI().Props<AggregateActor<T>>();
             var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
-            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance).Wait();
+            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance,Timeout).Wait();
 
             return actor.UnderlyingActor.Aggregate;
         }
@@ -109,9 +110,16 @@ namespace GridDomain.Tests.Framework
             var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState>>();
             var name = AggregateActorName.New<TSagaState>(id).ToString();
             var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState>>(props, name);
-            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance).Wait();
+            actor.Tell(NotifyOnRecoverComplete.Instance);
+            ExpectMsg<RecoveryCompleted>(Timeout);
             return (TSagaState)actor.UnderlyingActor.Saga.Data;
         }
+        public SagaDataAggregate<TSagaState> LoadInstanceSagaState<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
+                                                                            where TSaga : Saga<TSagaState>
+        {
+            return LoadSagaState<SagaInstance<TSaga,TSagaState>, SagaDataAggregate<TSagaState>>(id);
+        }
+
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
 

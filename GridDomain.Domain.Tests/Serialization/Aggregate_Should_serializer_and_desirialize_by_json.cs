@@ -1,18 +1,19 @@
-﻿using System;
-using GridDomain.Tests.CommandsExecution;
+using System;
+using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tools.Repositories;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Acceptance.Snapshots
+namespace GridDomain.Tests.Serialization
 {
     [TestFixture]
-    class Given_snapshot_aggregate_Should_recover : SampleDomainCommandExecutionTests
+    class Aggregate_Should_serializer_and_deserialize_by_json
     {
         private SampleAggregate _aggregate;
         private SampleAggregate _restoredAggregate;
-        public Given_snapshot_aggregate_Should_recover(): base(false) {}
 
         [OneTimeSetUp]
         public void Test()
@@ -21,10 +22,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _aggregate.ChangeState(10);
             _aggregate.ClearEvents();
 
-            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString);
-            repo.Add(_aggregate);
-
-            _restoredAggregate = LoadAggregate<SampleAggregate>(_aggregate.Id);
+            var jsonString = JsonConvert.SerializeObject(_aggregate, DomainEventSerialization.GetDefaultSettings());
+            _restoredAggregate = JsonConvert.DeserializeObject<SampleAggregate>(jsonString,DomainEventSerialization.GetDefaultSettings());
         }
 
         [Test]
@@ -34,15 +33,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void State_restored_from_sanapshot_should_not_have_uncommited_events()
-        {
-            CollectionAssert.IsEmpty(_restoredAggregate.GetEvents());
-        }
-        [Test]
         public void Ids_should_be_equal()
         {
             Assert.AreEqual(_aggregate.Id, _restoredAggregate.Id);
         }
-
     }
 }

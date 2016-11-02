@@ -92,13 +92,13 @@ namespace GridDomain.EventSourcing.Adapters
         {
             return new JsonSerializerSettings
             {
-               //Formatting = Formatting.Indented,
-               //PreserveReferencesHandling = PreserveReferencesHandling.All,
-               //TypeNameHandling = TypeNameHandling.All,
-               //TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
-               //CheckAdditionalContent = false,
-               //ContractResolver = new MostSpecifiedContructorResolver(),
-               //ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+               Formatting = Formatting.Indented,
+               PreserveReferencesHandling = PreserveReferencesHandling.All,
+               TypeNameHandling = TypeNameHandling.All,
+               TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
+               CheckAdditionalContent = false,
+              // ContractResolver = new MostSpecifiedContructorResolver(),
+               ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
             };
         }
     }
