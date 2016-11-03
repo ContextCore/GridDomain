@@ -5,6 +5,7 @@ using Akka.Serialization;
 using GridDomain.Node;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
+using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests
 {
@@ -54,7 +55,9 @@ namespace GridDomain.Tests
         {
             var objectsCache = objects.ToDictionary(o => o.GetType(), o => o);
             var typesToCheck = assembly.GetTypes().Where(t => typeof(T).IsAssignableFrom(t));
+            var fixture = new Fixture();
 
+            //fixture.Build<>
 
         }
     }
