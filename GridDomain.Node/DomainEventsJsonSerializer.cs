@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 using Akka.Actor;
 using Akka.Serialization;
@@ -79,7 +80,9 @@ namespace GridDomain.Node
                 {
                     var readToEnd = reader.ReadToEnd();
                     var deserializeObject = JsonConvert.DeserializeObject(readToEnd,JsonSerializerSettings);
-                    return deserializeObject ?? OldWire.Deserialize(bytes, type);
+                    if(deserializeObject == null)
+                        throw new SerializationException();
+                    return deserializeObject;
                 }
             }
             catch(Exception ex)

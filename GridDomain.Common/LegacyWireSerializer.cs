@@ -11,7 +11,7 @@ namespace GridDomain.Common
 
     public class LegacyAliasWireSerializer
     {
-        private readonly Serializer _serializer = new oldwire::Wire.Serializer(new oldwire::Wire.SerializerOptions(true,null, false,null));
+        private readonly Serializer _serializer = new oldwire::Wire.Serializer(new oldwire::Wire.SerializerOptions(true, null, true, null));
     
         public object Deserialize(byte[] payload, Type type)
         {
