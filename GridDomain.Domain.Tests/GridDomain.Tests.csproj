@@ -481,7 +481,6 @@
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
-    <Compile Include="ObjectDeserializationChecker.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Console\GridConsoleTests.cs" />
@@ -489,7 +488,6 @@
     <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
     <Compile Include="Tools\Repositories\TestRepository.cs" />
     <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
-    <Compile Include="Types_should_be_deserializable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

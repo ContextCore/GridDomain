@@ -5,13 +5,15 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
 using NUnit.Framework;
 
 namespace GridDomain.Tests
 {
     [TestFixture]
-    public class Aggregates_should_be_deserializable : Types_should_be_deserializable
+    [Ignore("Under development")]
+    public class Aggregates_should_be_deserializable : TypesDeserializationTest
     {
         [Test]
         public void Aggreagtes_from_all_assemblies_should_be_deserializable()

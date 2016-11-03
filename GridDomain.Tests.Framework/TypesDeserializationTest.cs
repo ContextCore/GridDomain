@@ -7,9 +7,9 @@ using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 
-namespace GridDomain.Tests
+namespace GridDomain.Tests.Framework
 {
-    public class Types_should_be_deserializable
+    public class TypesDeserializationTest
     {
         private readonly ObjectDeserializationChecker _checker = new ObjectDeserializationChecker();
 
