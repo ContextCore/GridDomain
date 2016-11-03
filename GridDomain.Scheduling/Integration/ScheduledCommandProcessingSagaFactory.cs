@@ -22,7 +22,7 @@ namespace GridDomain.Scheduling.Integration
 
         public ScheduledCommandProcessingSaga Create(Guid id)
         {
-            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(id));
+            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(Guid.Empty, ScheduledCommandProcessingSaga.States.MessageSent, null, null, null));
         }
     }
 }

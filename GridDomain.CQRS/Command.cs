@@ -3,7 +3,7 @@ using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
-    public class Command : ICommand
+    public abstract class Command : ICommand
     {
         protected Command(Guid id, Guid sagaId, DateTime time)
         {

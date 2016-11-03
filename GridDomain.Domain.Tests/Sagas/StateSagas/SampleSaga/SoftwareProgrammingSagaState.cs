@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
     public class SoftwareProgrammingSagaState :
         SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>
     {
-        public SoftwareProgrammingSagaState(Guid id) : base(id)
+        private SoftwareProgrammingSagaState(Guid id) : base(id)
         {
         }
 

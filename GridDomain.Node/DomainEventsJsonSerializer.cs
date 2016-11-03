@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
 using System.Text;
 using Akka.Actor;
@@ -18,6 +19,7 @@ namespace GridDomain.Node
         private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
         private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
         private readonly ISoloLogger _log;
+        public bool UseWire { get; set; } = true;
 
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
@@ -82,15 +84,17 @@ namespace GridDomain.Node
                     var deserializeObject = JsonConvert.DeserializeObject(readToEnd,JsonSerializerSettings);
                     if(deserializeObject == null)
                         throw new SerializationException();
+
                     return deserializeObject;
                 }
             }
             catch(Exception ex)
             {
+                if(!UseWire) ExceptionDispatchInfo.Capture(ex).Throw();
                _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}",type,ex);
-            }
+                return OldWire.Deserialize(bytes, type);
 
-            return OldWire.Deserialize(bytes, type);
+            }
         }
     }
 }

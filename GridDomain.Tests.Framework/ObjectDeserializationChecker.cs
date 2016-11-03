@@ -13,7 +13,7 @@ namespace GridDomain.Tests
 
         public ObjectDeserializationChecker(Serializer serializer = null, CompareLogic logic = null)
         {
-            _serializer = serializer ?? new DomainEventsJsonSerializer(null);
+            _serializer = serializer ?? new DomainEventsJsonSerializer(null) {UseWire = false};
             _compareLogic = logic ?? new CompareLogic {Config = new ComparisonConfig() {ComparePrivateFields = true}};
         }
 

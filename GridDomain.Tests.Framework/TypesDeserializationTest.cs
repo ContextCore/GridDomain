@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using GridDomain.CQRS;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
@@ -17,10 +18,15 @@ namespace GridDomain.Tests.Framework
         {
             var allTypes =
                 assembly.SelectMany(a => a.GetTypes())
-                        .Where(t => typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+                        .Where(t => typeof(T).IsAssignableFrom(t) 
+                                   &&  t.IsClass 
+                                   && !t.IsAbstract 
+                                   && !t.ContainsGenericParameters
+                                   && !t.IsInterface
+                                   &&  t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
 
-            CheckAllChildrenOfAssembly<T>(allTypes.ToArray());
+            CheckAll<T>(allTypes.ToArray());
         }
 
         class RestoreResult
@@ -30,9 +36,16 @@ namespace GridDomain.Tests.Framework
             public Type Type;
         }
 
-        protected void CheckAllChildrenOfAssembly<T>(params Type[] types)
+        class FakeCommand : Command
+        {
+            
+        }
+        protected void CheckAll<T>(params Type[] types)
         {
             var fixture = new Fixture();
+            fixture.Register<ICommand>(() => new FakeCommand());
+            fixture.Register<Command>(() => new FakeCommand());
+
             var failedTypes = new List<RestoreResult>();
             var okTypes = new List<RestoreResult>();
 
@@ -43,6 +56,7 @@ namespace GridDomain.Tests.Framework
                     var createMethodInfo =
                         typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
                             new[] {typeof(ISpecimenBuilder)}).MakeGenericMethod(type);
+
                     var obj = createMethodInfo.Invoke(null, new object[] {fixture});
                     string difference;
 

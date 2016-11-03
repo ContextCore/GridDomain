@@ -12,46 +12,33 @@ using NUnit.Framework;
 namespace GridDomain.Tests
 {
     [TestFixture]
-    [Ignore("Under development")]
-    public class Aggregates_should_be_deserializable : TypesDeserializationTest
+    public class Types_should_be_deserializable : TypesDeserializationTest
     {
+        private readonly Assembly[] _allAssemblies = {
+            Assembly.GetAssembly(typeof(GridDomainNode)),
+            Assembly.GetAssembly(typeof(SchedulerConfiguration)),
+            Assembly.GetAssembly(typeof(SchedulerConfiguration)),
+            Assembly.GetAssembly(typeof(SampleAggregate)),
+            Assembly.GetAssembly(typeof(ISagaProducer<>)),
+            Assembly.GetAssembly(typeof(DomainEvent))
+        };
+
         [Test]
-        public void Aggreagtes_from_all_assemblies_should_be_deserializable()
+        public void Aggregates_from_all_assemblies_should_be_deserializable()
         {
-            base.CheckAllChildrenOf<IAggregate>(
-                Assembly.GetAssembly(typeof(GridDomainNode)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SampleAggregate)),
-                Assembly.GetAssembly(typeof(ISagaProducer<>)),
-                Assembly.GetAssembly(typeof(DomainEvent))
-                );
+            CheckAllChildrenOf<IAggregate>(_allAssemblies);
         }
 
         [Test]
         public void DomainEvents_from_all_assemblies_should_be_deserializable()
         {
-            base.CheckAllChildrenOf<DomainEvent>(
-                Assembly.GetAssembly(typeof(GridDomainNode)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SampleAggregate)),
-                Assembly.GetAssembly(typeof(ISagaProducer<>)),
-                Assembly.GetAssembly(typeof(DomainEvent))
-                );
+            CheckAllChildrenOf<DomainEvent>(_allAssemblies);
         }
 
         [Test]
         public void Commands_from_all_assemblies_should_be_deserializable()
         {
-            base.CheckAllChildrenOf<ICommand>(
-                Assembly.GetAssembly(typeof(GridDomainNode)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SampleAggregate)),
-                Assembly.GetAssembly(typeof(ISagaProducer<>)),
-                Assembly.GetAssembly(typeof(DomainEvent))
-                );
+            CheckAllChildrenOf<ICommand>(_allAssemblies);
         }
     }
 }

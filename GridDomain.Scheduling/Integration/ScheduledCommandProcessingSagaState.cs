@@ -8,7 +8,7 @@ namespace GridDomain.Scheduling.Integration
 {
     public class ScheduledCommandProcessingSagaState : SagaStateAggregate<ScheduledCommandProcessingSaga.States, ScheduledCommandProcessingSaga.Transitions>
     {
-        public ScheduledCommandProcessingSagaState(Guid id) : base(id)
+        private ScheduledCommandProcessingSagaState(Guid id) : base(id)
         {
         }
 
