@@ -97,7 +97,7 @@ namespace GridDomain.EventSourcing.Adapters
                TypeNameHandling = TypeNameHandling.All,
                TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
                CheckAdditionalContent = false,
-              // ContractResolver = new MostSpecifiedContructorResolver(),
+               ContractResolver = new PrivateSetterContractResolver(),
                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
             };
         }

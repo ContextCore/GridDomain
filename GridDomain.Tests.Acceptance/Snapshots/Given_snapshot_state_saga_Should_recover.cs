@@ -26,6 +26,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             _sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(), SoftwareProgrammingSaga.States.MakingCoffe);
             _sagaState.RememberPerson(Guid.NewGuid());
+            _sagaState.RememberBadCoffeMachine(Guid.NewGuid());
             _sagaState.ClearEvents();
 
             var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString);
@@ -47,7 +48,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void State_restored_from_sanapshot_should_not_have_uncommited_events()
+        public void State_restored_from_snapshot_should_not_have_uncommited_events()
         {
             CollectionAssert.IsEmpty(_restoredState.GetEvents());
         }

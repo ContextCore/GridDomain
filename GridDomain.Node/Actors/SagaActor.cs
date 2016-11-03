@@ -108,7 +108,7 @@ namespace GridDomain.Node.Actors
             Recover<SnapshotOffer>(offer =>
             {
                 _sagaData = (IAggregate) offer.Snapshot;
-               // _sagaData.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+                _sagaData.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
             });
             Recover<DomainEvent>(e =>
             {
