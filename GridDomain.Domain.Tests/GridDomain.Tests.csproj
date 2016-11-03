@@ -236,6 +236,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregates_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\IPersistentActorTestsInfrastructure.cs" />
@@ -307,7 +308,7 @@
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="AssertEx.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_waiting_aggregate_event.cs" />
-    <Compile Include="MessageWaiting\Commanding\Execute_command_until_projection_build_event_fetching_results.cs" />
+    <Compile Include="MessageWaiting\Commanding\Execute_command_until_projection_build_notification_fetching_results.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_expected_faults_from_projection_group.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_results_tests.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_several_commands_until_projection_build_notification_fetching_results.cs" />

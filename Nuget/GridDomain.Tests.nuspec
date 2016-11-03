@@ -14,6 +14,8 @@
     <tags>CQRS ES DDD Akka</tags>
 	<dependencies>
       <dependency id="GridDomain.Node" version= "1.6.229-alfa"/>
+      <dependency id="CompareNETObjects" version="3.05.0.0"/>
+      <dependency id="AutoFixture" version="3.50.2"/>
     </dependencies>
   </metadata>
 
