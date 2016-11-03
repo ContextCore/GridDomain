@@ -212,7 +212,7 @@ namespace GridDomain.Tests.Framework
 
         protected void SaveToJournal(params object[] messages)
         {
-            var persistenceExtension = Persistence.Instance.Get(GridNode.System) ?? Persistence.Instance.Apply(GridNode.System);
+            var persistenceExtension = Akka.Persistence.Persistence.Instance.Get(GridNode.System) ?? Akka.Persistence.Persistence.Instance.Apply(GridNode.System);
 
             var settings = persistenceExtension.Settings;
             var journal = persistenceExtension.JournalFor(null);
@@ -235,7 +235,7 @@ namespace GridDomain.Tests.Framework
 
         protected IEnumerable<object> LoadFromJournal(string persistenceId, int expectedCount)
         {
-            var persistenceExtension = Persistence.Instance.Get(GridNode.System) ?? Persistence.Instance.Apply(GridNode.System);
+            var persistenceExtension = Akka.Persistence.Persistence.Instance.Get(GridNode.System) ?? Akka.Persistence.Persistence.Instance.Apply(GridNode.System);
             var settings = persistenceExtension.Settings;
             var journal = persistenceExtension.JournalFor(null);
 
