@@ -31,14 +31,14 @@ namespace GridDomain.Node.Configuration.Composition
         public void Register(IUnityContainer container)
         {
             container.RegisterInstance<ISagaProducer<TSaga>>(Producer);
+            container.RegisterInstance(Producer);
         }
 
         public static SagaConfiguration<TSaga> New<TFactory, TState>(TFactory factory, ISagaDescriptor descriptor)
                                                                      where TFactory : ISagaFactory<TSaga, TState>
         {
             var conf = new SagaConfiguration<TSaga>(new SagaProducer<TSaga>(descriptor));
-            //conf.Register<Guid>(factory); - replaced by aggregate factory inside saga actor
-            conf.Register<TState>(factory);
+            conf.Register(factory);
             return conf;
         }
     }

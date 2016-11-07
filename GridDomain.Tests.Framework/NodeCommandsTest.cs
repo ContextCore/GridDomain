@@ -98,26 +98,28 @@ namespace GridDomain.Tests.Framework
 
         public T LoadAggregate<T>(string name) where T : AggregateBase
         {
-            var props = GridNode.System.DI().Props<AggregateActor<T>>();
-            var actor = ActorOfAsTestActorRef<AggregateActor<T>>(props, name);
-            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance,Timeout).Wait();
+            var actor = LoadActorByDI<AggregateActor<T>>(name);
+            return actor.Aggregate;
+        }
 
-            return actor.UnderlyingActor.Aggregate;
+        private T LoadActorByDI<T>(string name) where T : ActorBase
+        {
+            var props = GridNode.System.DI().Props<T>();
+            var actor = ActorOfAsTestActorRef<T>(props, name);
+            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance).Wait(Timeout);
+            return actor.UnderlyingActor;
         }
 
         public TSagaState LoadSagaState<TSaga, TSagaState>(Guid id) where TSagaState : AggregateBase where TSaga : class, ISagaInstance
         {
-            var props = GridNode.System.DI().Props<SagaActor<TSaga, TSagaState>>();
             var name = AggregateActorName.New<TSagaState>(id).ToString();
-            var actor = ActorOfAsTestActorRef<SagaActor<TSaga, TSagaState>>(props, name);
-            actor.Tell(NotifyOnRecoverComplete.Instance);
-            ExpectMsg<RecoveryCompleted>(Timeout);
-            return (TSagaState)actor.UnderlyingActor.Saga.Data;
+            var actor = LoadActorByDI<SagaActor<TSaga, TSagaState>>(name);
+            return (TSagaState)actor.Saga.Data;
         }
         public SagaDataAggregate<TSagaState> LoadInstanceSagaState<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
                                                                             where TSaga : Saga<TSagaState>
         {
-            return LoadSagaState<SagaInstance<TSaga,TSagaState>, SagaDataAggregate<TSagaState>>(id);
+            return LoadSagaState<ISagaInstance<TSaga,TSagaState>, SagaDataAggregate<TSagaState>>(id);
         }
 
 
