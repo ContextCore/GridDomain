@@ -1,1 +1,1 @@
-﻿This is your NuGet package.
+﻿Solomoto.GridDOmain NuGet project.
