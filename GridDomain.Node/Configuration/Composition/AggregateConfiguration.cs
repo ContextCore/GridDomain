@@ -14,7 +14,15 @@ namespace GridDomain.Node.Configuration.Composition
     public class AggregateConfiguration<TAggregate, TCommandAggregateLocator> :
         AggregateConfiguration<TAggregate, TCommandAggregateLocator, TCommandAggregateLocator> where TAggregate : AggregateBase where TCommandAggregateLocator : ICommandAggregateLocator<TAggregate>, IAggregateCommandsHandler<TAggregate>
     {
-        
+        public AggregateConfiguration(SnapshotsSavePolicy snapshotsPolicy) : base(snapshotsPolicy)
+        {
+            
+        }
+
+        public AggregateConfiguration() : base(null)
+        {
+
+        }
     }
 
     public class AggregateConfiguration<TAggregate, TCommandAggregateLocator, TAggregateCommandsHandler>:

@@ -6,7 +6,7 @@ namespace GridDomain.Node.Actors
     public class SnapshotsSavePolicy
     {
         private int _messagesProduced;
-        private DateTime _lastActivityTime = BusinessDateTime.UtcNow;
+        private DateTime _lastActivityTime;
         private readonly TimeSpan _sleepTime;
         private readonly int _saveOnEach;
 
@@ -16,8 +16,12 @@ namespace GridDomain.Node.Actors
             _sleepTime = sleepTime;
         }
 
-        public bool ShouldSave(object lastMessage)
+
+        public bool ShouldSave()
         {
+            if(_messagesProduced == 0 && _lastActivityTime == default(DateTime))
+               RefreshActivity();
+
             if (++_messagesProduced%_saveOnEach == 0 || _lastActivityTime + _sleepTime < BusinessDateTime.UtcNow)
                 return true;
 

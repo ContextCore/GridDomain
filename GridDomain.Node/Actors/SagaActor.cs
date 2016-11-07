@@ -150,7 +150,7 @@ namespace GridDomain.Node.Actors
 
             ProcessSagaCommands();
 
-            if(_snapshotsPolicy.ShouldSave(message))
+            if(_snapshotsPolicy.ShouldSave())
                 SaveSnapshot(Saga.Data);
         }
 

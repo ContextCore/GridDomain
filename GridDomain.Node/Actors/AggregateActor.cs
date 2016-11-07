@@ -164,7 +164,7 @@ namespace GridDomain.Node.Actors
 
             ProcessAsyncMethods(command);
 
-            if(_snapshotsPolicy.ShouldSave(command))
+            if(_snapshotsPolicy.ShouldSave())
                 SaveSnapshot(Aggregate);
         }
 

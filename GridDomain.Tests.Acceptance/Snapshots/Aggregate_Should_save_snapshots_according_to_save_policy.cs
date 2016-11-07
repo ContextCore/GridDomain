@@ -15,6 +15,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     [TestFixture]
     class Aggregate_Should_save_snapshots_according_to_save_policy: SampleDomainCommandExecutionTests
     {
+
+  
         private Guid _aggregateId;
         private AggregateVersion<SampleAggregate>[] _snapshots;
         private int _initialParameter;
