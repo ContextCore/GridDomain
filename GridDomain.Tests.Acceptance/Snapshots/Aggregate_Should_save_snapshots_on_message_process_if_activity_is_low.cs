@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using GridDomain.Common;
-using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
@@ -13,14 +12,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    class TestSnapshotsSavePolicy : SnapshotsSavePolicy
-    {
-        public TestSnapshotsSavePolicy() : base(TimeSpan.FromSeconds(1), 100)
-        {
-
-        }
-    }
-
     [TestFixture]
     class Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low : SampleDomainCommandExecutionTests
     {

@@ -298,9 +298,10 @@
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Given_snapshot_instance_saga_Should_recover.cs" />
     <Compile Include="Snapshots\Given_snapshot_state_saga_Should_recover.cs" />
-    <Compile Include="Snapshots\Saga_Should_save_snapshots_each_10_messages.cs" />
-    <Compile Include="Snapshots\Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
+    <Compile Include="Snapshots\Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
+    <Compile Include="Snapshots\Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Given_snapshot_aggregate_Should_recover.cs" />
+    <Compile Include="Snapshots\TestSnapshotsSavePolicy.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedAsyncExecuteDontWaitExecution.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />

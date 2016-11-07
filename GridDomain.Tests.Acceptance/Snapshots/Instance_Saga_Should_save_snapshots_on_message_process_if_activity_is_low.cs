@@ -4,8 +4,10 @@ using System.Threading;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.SampleDomain;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 
@@ -17,9 +19,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private Guid _sagaId;
         private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
 
-        public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)
+        public Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
         {
 
+        }
+
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return new CustomContainerConfiguration(
+                c => base.CreateConfiguration().Register(c),
+                c => new SagaConfiguration<SoftwareProgrammingSaga, SampleAggregatesCommandHandler>(new TestSnapshotsSavePolicy()).Register(c));
         }
 
         [OneTimeSetUp]
