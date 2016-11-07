@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Actors;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -45,10 +46,14 @@ namespace GridDomain.Node.Configuration.Composition
                                new()
         {
             var factory = new TFactory();
-            var conf = SagaConfiguration<ISagaInstance<TSaga, TData>>.New<TFactory,SagaDataAggregate<TData>>(factory, descriptor);
-            conf.Register<TStartMessageA>(factory);
-            conf.Register<TStartMessageB>(factory);
-            conf.Register<TStartMessageC>(factory);
+            var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
+            producer.Register<TStartMessageA>(factory);
+            producer.Register<TStartMessageB>(factory);
+            producer.Register<TStartMessageC>(factory);
+            producer.Register<SagaDataAggregate<TData>>(factory);
+
+            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer);
+            
             container.Register(conf);
         }
 
@@ -62,18 +67,26 @@ namespace GridDomain.Node.Configuration.Composition
                                  new()
         {
             var factory = new TFactory();
-            var conf = SagaConfiguration<ISagaInstance<TSaga, TData>>.New<TFactory, SagaDataAggregate<TData>>(factory, descriptor);
-            conf.Register<TStartMessageA>(factory);
-            conf.Register<TStartMessageB>(factory);
+            var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
+            producer.Register<TStartMessageA>(factory);
+            producer.Register<TStartMessageB>(factory);
+            producer.Register<SagaDataAggregate<TData>>(factory);
+
+            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer);
+
             container.Register(conf);
         }
 
 
-        public static void RegisterSaga<TSaga, TData>(this IUnityContainer container,  Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor)
+        public static void RegisterSaga<TSaga, TData>(this IUnityContainer container,  Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor, Func<SnapshotsSavePolicy> snapShotsPolicy = null)
                  where TSaga : Saga<TData>
                  where TData : class, ISagaState
         {
-            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>>(factory, descriptor);
+            var producer = new SagaProducer<ISagaInstance<TSaga,TData>>(descriptor);
+            foreach (var dataType in descriptor.StartMessages)
+                producer.Register(dataType, factory);
+
+            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>,SagaDataAggregate<TData>>(producer, snapShotsPolicy);
             conf.Register(container);
         }
 
@@ -82,10 +95,15 @@ namespace GridDomain.Node.Configuration.Composition
                                  ISagaFactory<TSaga, TStartMessage>, 
                                  new()
 
-                where TSaga : ISagaInstance
+                where TSaga : class, ISagaInstance 
+                where TState : AggregateBase
         {
             var factory = new TFactory();
-            var conf = SagaConfiguration<TSaga>.New<TFactory,TState>(factory, descriptor);
+            var producer = new SagaProducer<ISagaInstance<TSaga, TState>>(descriptor);
+            foreach (var dataType in descriptor.StartMessages)
+                producer.Register(dataType, factory);
+
+            var conf = new SagaConfiguration<TSaga, TState>.New<TFactory>(factory, descriptor);
             conf.Register<TStartMessage>(factory);
             container.Register(conf);
         }

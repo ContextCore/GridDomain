@@ -23,6 +23,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         protected IPublisher Publisher { get; private set; }
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
 
+        [OneTimeSetUp]
         [SetUp]
         public void InitPublisher()
         {

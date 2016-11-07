@@ -13,6 +13,14 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
+    class TestSnapshotsSavePolicy : SnapshotsSavePolicy
+    {
+        public TestSnapshotsSavePolicy() : base(TimeSpan.FromSeconds(1), 100)
+        {
+
+        }
+    }
+
     [TestFixture]
     class Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low : SampleDomainCommandExecutionTests
     {
@@ -21,13 +29,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private int _initialParameter;
         private int _changedParameter;
 
-        class TestSnapshotsSavePolicy : SnapshotsSavePolicy
-        {
-            public TestSnapshotsSavePolicy() : base(TimeSpan.FromSeconds(1), 100)
-            {
-
-            }
-        }
+ 
 
         public Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
         {

@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Framework
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(CreateConfiguration(),CreateMap(),() => Sys);
+            return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => Sys);
         }
 
         protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
