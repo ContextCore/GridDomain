@@ -58,19 +58,18 @@ namespace GridDomain.Node.Actors
         }
 
         public SagaActor(ISagaProducer<TSaga> producer,
-                         IPublisher publisher)
+                         IPublisher publisher,
+                         SnapshotsSavePolicy snapshotsSavePolicy)
         {
             _producer = producer;
             _publisher = publisher;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
-            _snapshotsPolicy = new SnapshotsSavePolicy(() => this.SaveSnapshot(Saga.Data));
+            _snapshotsPolicy = snapshotsSavePolicy;
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
             _sagaData = _aggregateFactory.Build<TSagaState>(Id);
 
-
-         
             Command<GracefullShutdownRequest>(req =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -126,11 +125,6 @@ namespace GridDomain.Node.Actors
             
         }
 
-        protected override void OnRecoveryFailure(Exception reason, object message = null)
-        {
-            base.OnRecoveryFailure(reason, message);
-        }
-
         protected virtual void Shutdown()
         {
             //TODO: raise faults for all messages in stash
@@ -156,7 +150,8 @@ namespace GridDomain.Node.Actors
 
             ProcessSagaCommands();
 
-            _snapshotsPolicy.TrySave(message);
+            if(_snapshotsPolicy.ShouldSave(message))
+                SaveSnapshot(Saga.Data);
         }
 
         private void ProcessSagaCommands()

@@ -45,10 +45,10 @@ namespace GridDomain.Node.Actors
 
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-                              AggregateFactory factory,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               TypedMessageActor<Unschedule> unscheduleActorRef,
-                              IPublisher publisher)
+                              IPublisher publisher,
+                              SnapshotsSavePolicy snapshotsSavePolicy)
         {
             _schedulerActorRef = schedulerActorRef;
             _unscheduleActorRef = unscheduleActorRef;
@@ -56,9 +56,9 @@ namespace GridDomain.Node.Actors
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
-            Aggregate = factory.Build<TAggregate>(Id);
+            Aggregate = EventSourcing.Sagas.FutureEvents.Aggregate.Empty<TAggregate>(Id);
             _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
-            _snapshotsPolicy = new SnapshotsSavePolicy(() => SaveSnapshot(Aggregate));
+            _snapshotsPolicy = snapshotsSavePolicy;
 
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
@@ -164,7 +164,8 @@ namespace GridDomain.Node.Actors
 
             ProcessAsyncMethods(command);
 
-            _snapshotsPolicy.TrySave(command);
+            if(_snapshotsPolicy.ShouldSave(command))
+                SaveSnapshot(Aggregate);
         }
 
         private void ProcessAsyncMethods(ICommand command)

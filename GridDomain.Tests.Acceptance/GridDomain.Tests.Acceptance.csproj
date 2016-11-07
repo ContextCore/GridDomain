@@ -294,7 +294,7 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
-    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_each_10_messages.cs" />
+    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_according_to_save_policy.cs" />
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Given_snapshot_instance_saga_Should_recover.cs" />
     <Compile Include="Snapshots\Given_snapshot_state_saga_Should_recover.cs" />

@@ -3,31 +3,26 @@ using GridDomain.Common;
 
 namespace GridDomain.Node.Actors
 {
-    class SnapshotsSavePolicy
+    public class SnapshotsSavePolicy
     {
-        private readonly Action _save;
         private int _messagesProduced;
         private DateTime _lastActivityTime = BusinessDateTime.UtcNow;
         private readonly TimeSpan _sleepTime;
         private readonly int _saveOnEach;
 
-        public SnapshotsSavePolicy(Action save, TimeSpan? sleepTime = null, int saveOnEach = 10)
+        public SnapshotsSavePolicy(TimeSpan sleepTime, int saveOnEach)
         {
             _saveOnEach = saveOnEach;
-            _save = save;
-            _sleepTime = sleepTime ?? TimeSpan.FromMinutes(1);
+            _sleepTime = sleepTime;
         }
 
-        public bool TrySave(object lastMessage)
+        public bool ShouldSave(object lastMessage)
         {
-            if (++_messagesProduced%_saveOnEach != 0 && _lastActivityTime + _sleepTime >= BusinessDateTime.UtcNow)
-            {
-                RefreshActivity();
-                return false;
-            }
+            if (++_messagesProduced%_saveOnEach == 0 || _lastActivityTime + _sleepTime < BusinessDateTime.UtcNow)
+                return true;
 
-            _save();
-            return true;
+            RefreshActivity();
+            return false;
         }
 
         public void RefreshActivity(DateTime? lastActivityTime = null)

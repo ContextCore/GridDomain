@@ -1,7 +1,10 @@
 using CommonDomain.Core;
 using GridDomain.Common;
+using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Actors;
+using GridDomain.Scheduling.Akka.Messages;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -20,12 +23,26 @@ namespace GridDomain.Node.Configuration.Composition
         where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
         where TAggregate : AggregateBase
     {
+        private readonly SnapshotsSavePolicy _snapshotsPolicy;
+
+        public AggregateConfiguration(SnapshotsSavePolicy snapshotsPolicy = null)
+        {
+            _snapshotsPolicy = snapshotsPolicy ?? new DefaultSnapshotsSavePolicy();
+        }
+
         public void Register(IUnityContainer container)
         {
-            container.RegisterType<AggregateActor<TAggregate>>();
             container.RegisterType<AggregateHubActor<TAggregate>>();
             container.RegisterType<ICommandAggregateLocator<TAggregate>, TCommandAggregateLocator>();
             container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
+            container.RegisterType<AggregateActor<TAggregate>>(
+                new InjectionConstructor(
+                    new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
+                    new ResolvedParameter<TypedMessageActor<ScheduleCommand>>(),
+                    new ResolvedParameter<TypedMessageActor<Unschedule>>(),
+                    new ResolvedParameter<IPublisher>(),
+                    _snapshotsPolicy
+                    ));
         }
     }
 }
