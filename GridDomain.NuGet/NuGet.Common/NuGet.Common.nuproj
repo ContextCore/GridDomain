@@ -14,7 +14,7 @@
     <ProjectGuid>0f56b1f9-cc41-4176-9ac4-102008ee55bf</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\</NuProjPath>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\..\packages\NuProj.0.11.14-beta\tools</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
@@ -46,8 +46,8 @@
     <ProjectReference Include="..\..\GridDomain.Logging\GridDomain.Logging.csproj" />
   </ItemGroup>
   <PropertyGroup>
-    <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">..\NuProj.targets</NuProjTargetsPath>
-	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">..\NuProj.Tasks.dll</NuProjTasksPath>
+    <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">$(NuProjPath)\NuProj.targets</NuProjTargetsPath>
+	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">$(NuProjPath)\NuProj.Tasks.dll</NuProjTasksPath>
   </PropertyGroup>
   <Import Project="..\NuProj.targets" />
 </Project>
