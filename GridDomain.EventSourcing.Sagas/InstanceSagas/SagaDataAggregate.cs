@@ -27,7 +27,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public void RememberEvent(Event @event, TSagaData sagaData, object message)
         {
-            RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event, message));
+            RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event.Name, message));
         }
         public void Apply(SagaCreatedEvent<TSagaData> e)
         {

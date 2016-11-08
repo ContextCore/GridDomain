@@ -4,29 +4,42 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node;
+using GridDomain.Scheduling;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 
 namespace GridDomain.Tests.Framework
 {
-    public class TypesDeserializationTest
+    public abstract class TypesDeserializationTest
     {
         private readonly ObjectDeserializationChecker _checker = new ObjectDeserializationChecker();
+
+        protected abstract Assembly[] AllAssemblies { get; }
+        protected Type[] TypesCache { get; }
 
         protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
         {
             var allTypes =
                 assembly.SelectMany(a => a.GetTypes())
                         .Where(t => typeof(T).IsAssignableFrom(t) 
-                                   &&  t.IsClass 
-                                   && !t.IsAbstract 
-                                   && !t.ContainsGenericParameters
-                                   && !t.IsInterface
-                                   &&  t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
+                                &&  t.IsClass 
+                                && !t.IsAbstract 
+                               // && !t.ContainsGenericParameters
+                                && !t.IsInterface
+                                &&  t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
 
             CheckAll<T>(allTypes.ToArray());
+        }
+
+        public TypesDeserializationTest()
+        {
+            TypesCache = AllAssemblies.SelectMany(a => a.GetTypes()).ToArray();
         }
 
         class RestoreResult
@@ -53,21 +66,43 @@ namespace GridDomain.Tests.Framework
             {
                 try
                 {
+                    var constructedType = type;
+                    if (type.IsGenericType && type.ContainsGenericParameters)
+                    {
+                        var genericTypeParameters = new List<Type>();
+                        foreach (var parameterType in type.GetGenericArguments())
+                        {
+                            var typeConstraints = parameterType.GetGenericParameterConstraints();
+                            var parameterTypeValue =
+                                TypesCache.FirstOrDefault(t => t.IsClass 
+                                                           && !t.IsAbstract 
+                                                           && !t.ContainsGenericParameters 
+                                                           &&  typeConstraints.All(c => c.IsAssignableFrom(t)));
+
+                            if (parameterTypeValue == null)
+                                throw new CannotCreateGenericType(type, typeConstraints);
+
+                            genericTypeParameters.Add(parameterTypeValue);
+                        }
+                        constructedType = type.MakeGenericType(genericTypeParameters.ToArray());
+                    }
+
                     var createMethodInfo =
                         typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
-                            new[] {typeof(ISpecimenBuilder)}).MakeGenericMethod(type);
+                            new[] {typeof(ISpecimenBuilder)}).MakeGenericMethod(constructedType);
+
 
                     var obj = createMethodInfo.Invoke(null, new object[] {fixture});
                     string difference;
 
                     if (_checker.IsRestorable(obj, out difference))
-                        okTypes.Add(new RestoreResult {Difference = difference, Type = type});
+                        okTypes.Add(new RestoreResult {Difference = difference, Type = constructedType });
                     else
-                        okTypes.Add(new RestoreResult {Type = type});
+                        okTypes.Add(new RestoreResult {Type = constructedType });
                 }
                 catch (Exception ex)
                 {
-                    failedTypes.Add(new RestoreResult {Exception = ex, Type = type});
+                    failedTypes.Add(new RestoreResult {Exception = ex, Type = type });
                 }
             }
 
@@ -123,5 +158,19 @@ namespace GridDomain.Tests.Framework
             }
         }
 
+    }
+
+    public class CannotCreateGenericType : Exception
+    {
+        public Type Type { get; }
+        public Type[] TypeConstraints { get; }
+
+        public CannotCreateGenericType(Type type, Type[] typeConstraints):base(
+            $"Cannot create generic type {type} : Cannpt find type to use as parameter with constraints " +
+            $"{string.Join(",",typeConstraints.Select(t => t.Name))} ")
+        {
+            TypeConstraints = typeConstraints;
+            Type = type;
+        }
     }
 }

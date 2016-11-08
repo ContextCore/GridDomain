@@ -3,6 +3,7 @@ using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Tests.Framework;
@@ -14,31 +15,33 @@ namespace GridDomain.Tests
     [TestFixture]
     public class Types_should_be_deserializable : TypesDeserializationTest
     {
-        private readonly Assembly[] _allAssemblies = {
-            Assembly.GetAssembly(typeof(GridDomainNode)),
-            Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-            Assembly.GetAssembly(typeof(SchedulerConfiguration)),
-            Assembly.GetAssembly(typeof(SampleAggregate)),
-            Assembly.GetAssembly(typeof(ISagaProducer<>)),
-            Assembly.GetAssembly(typeof(DomainEvent))
-        };
-
         [Test]
         public void Aggregates_from_all_assemblies_should_be_deserializable()
         {
-            CheckAllChildrenOf<IAggregate>(_allAssemblies);
+            CheckAllChildrenOf<IAggregate>(AllAssemblies);
         }
 
         [Test]
         public void DomainEvents_from_all_assemblies_should_be_deserializable()
         {
-            CheckAllChildrenOf<DomainEvent>(_allAssemblies);
+            CheckAllChildrenOf<DomainEvent>(AllAssemblies);
         }
 
         [Test]
         public void Commands_from_all_assemblies_should_be_deserializable()
         {
-            CheckAllChildrenOf<ICommand>(_allAssemblies);
+            CheckAllChildrenOf<ICommand>(AllAssemblies);
         }
+
+        protected override Assembly[] AllAssemblies { get; } =
+            {
+                Assembly.GetAssembly(typeof(GridDomainNode)),
+                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
+                Assembly.GetAssembly(typeof(SagaTransitionEvent<>)),
+                Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
+                Assembly.GetAssembly(typeof(SampleAggregate)),
+                Assembly.GetAssembly(typeof(ISagaProducer<>)),
+                Assembly.GetAssembly(typeof(DomainEvent))
+            };
     }
 }

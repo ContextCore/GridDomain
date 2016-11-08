@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 
             yield return new SagaMessageReceivedEvent<SoftwareProgrammingSagaData>(_sagaId,
                 _softwareProgrammingSagaData, 
-                _machine.GotTired,
+                _machine.GotTired.Name,
                 _message);
 
             yield return new SagaTransitionEvent<SoftwareProgrammingSagaData>(_sagaId,_softwareProgrammingSagaData);
