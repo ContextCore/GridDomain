@@ -34,6 +34,8 @@ namespace GridDomain.Tests.Framework
         private readonly Stopwatch _watch = new Stopwatch();
         protected virtual bool ClearDataOnStart { get; } = false;
         protected virtual bool CreateNodeOnEachTest { get; } = false;
+        
+
 
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
@@ -55,7 +57,7 @@ namespace GridDomain.Tests.Framework
         protected override void AfterAll()
         {
             if (CreateNodeOnEachTest)
-                GridNode.Stop();
+                GridNode?.Stop();
         }
 
         [SetUp]
@@ -99,7 +101,7 @@ namespace GridDomain.Tests.Framework
         public T LoadAggregate<T>(string name) where T : AggregateBase
         {
             var actor = LoadActorByDI<AggregateActor<T>>(name);
-            return actor.Aggregate;
+            return (T)actor.Aggregate;
         }
 
         private T LoadActorByDI<T>(string name) where T : ActorBase

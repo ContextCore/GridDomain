@@ -153,6 +153,11 @@ namespace GridDomain.Node.Actors
             if(_snapshotsPolicy.ShouldSave(stateChange))
                 SaveSnapshot(Saga.Data);
         }
+        
+        protected override void OnRecoveryFailure(Exception reason, object message = null)
+        {
+            base.OnRecoveryFailure(reason, message);
+        }
 
         private void ProcessSagaCommands()
         {

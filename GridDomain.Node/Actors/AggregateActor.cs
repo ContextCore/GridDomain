@@ -39,11 +39,11 @@ namespace GridDomain.Node.Actors
         private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
         public readonly Guid Id;
         private readonly SnapshotsSavePolicy _snapshotsPolicy;
-        public TAggregate Aggregate { get; private set; }
+        public IAggregate Aggregate { get; private set; }
         public override string PersistenceId { get; }
 
         private readonly ActorMonitor _monitor;
-
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
@@ -98,7 +98,7 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 try
                 {
-                    Aggregate = _handler.Execute(Aggregate, cmd);
+                    Aggregate = _handler.Execute((TAggregate)Aggregate, cmd);
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +131,7 @@ namespace GridDomain.Node.Actors
             
 
         }
-
+        
         protected virtual void Shutdown()
         {
             Context.Stop(Self);
@@ -163,9 +163,15 @@ namespace GridDomain.Node.Actors
             ProcessAsyncMethods(command);
 
             if(_snapshotsPolicy.ShouldSave(events))
-                SaveSnapshot(Aggregate);
+                SaveSnapshot((IAggregate)Aggregate);
         }
 
+        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
+        {
+            _log.Error(cause,"Cannot persist {object} ", @event);
+            base.OnPersistFailure(cause, @event, sequenceNr);
+        }
+        
         private void ProcessAsyncMethods(ICommand command)
         {
             var extendedAggregate = Aggregate as Aggregate;
@@ -175,11 +181,11 @@ namespace GridDomain.Node.Actors
             //actor should schedule results to process it
             //command is included to safe access later, after async execution complete
             var cmd = command;
-            foreach (var asyncMethod in extendedAggregate.AsyncUncomittedEvents)
+            foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
                 asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsReceived(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
                                           .PipeTo(Self);
 
-            extendedAggregate.AsyncUncomittedEvents.Clear();
+            extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
         public void Handle(FutureEventScheduledEvent message)

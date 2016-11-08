@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using Newtonsoft.Json;
@@ -16,6 +17,7 @@ namespace GridDomain.Tools.Repositories
     public class DomainEventsRepository : IRepository<DomainEvent>
     {
         private readonly IRepository<JournalItem> _rawDataRepo;
+        private readonly DomainEventsJsonSerializer _serializer = new DomainEventsJsonSerializer(null);
 
         public void Dispose()
         {
@@ -31,31 +33,28 @@ namespace GridDomain.Tools.Repositories
         {
             long counter=0;
 
-            var journalEntries = messages.Select(m =>
-            {
-                var json = JsonConvert.SerializeObject(m, DomainEventSerialization.GetDefaultSettings());
-                return new JournalItem(id,
-                                       ++counter,
-                                       false,
-                                       m.GetType().AssemblyQualifiedShortName(),
-                                       m.CreatedTime,
-                                       "",
-                                       Encoding.Unicode.GetBytes(json));
-            }).ToArray();
+            var journalEntries = messages.Select(m => new JournalItem(id,
+                                                                      ++counter,
+                                                                      false,
+                                                                      m.GetType().AssemblyQualifiedShortName(),
+                                                                      m.CreatedTime,
+                                                                      "",
+                                                                      _serializer.ToBinary(m))
+                                                                     )
+                                         .ToArray();
 
             _rawDataRepo.Save(id, journalEntries);
         }
 
         public DomainEvent[] Load(string id)
         {
-            var serializer = new Serializer(new SerializerOptions(true,true));
             return
                 _rawDataRepo.Load(id)
                     .Select(d =>
                     {
                         try
                         {
-                            return serializer.Deserialize(new MemoryStream(d.Payload));
+                            return _serializer.FromBinary(d.Payload,Type.GetType(d.Manifest));
                         }
                         catch (NullReferenceException ex)
                         {

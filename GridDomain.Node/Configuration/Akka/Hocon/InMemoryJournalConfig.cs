@@ -11,20 +11,16 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         public string Build()
         {
-            var persistenceJournalConfig = @"
-            persistence {
-                 publish-plugin-commands = on
+            return @"
                  journal {
                     plugin = ""akka.persistence.journal.inmem""
                     inmem {
                             class = ""Akka.Persistence.Journal.MemoryJournal, Akka.Persistence""
                             plugin-dispatcher = ""akka.actor.default-dispatcher""
-            "+ _eventAdaptersConfig.Build() + @"
+                            "+ _eventAdaptersConfig.Build() + @"
                                 }
                         }
-            }
 ";
-            return persistenceJournalConfig;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace GridDomain.Tests.AsyncAggregates
         public void It_places_continuation_in_uncommited_async_events_collection()
         {
             var aggregate = WhenRaiseAsyncEvents();
-            Assert.AreEqual(1, aggregate.AsyncUncomittedEvents.Count);
+            Assert.AreEqual(1, aggregate.GetAsyncUncomittedEvents().Count);
         }
 
         [Then]
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.AsyncAggregates
         public void Then_it_results_can_be_applied_to_aggregate()
         {
             var aggregate = WhenRaiseAsyncEvents();
-            var asyncEvents = aggregate.AsyncUncomittedEvents.First();
+            var asyncEvents = aggregate.GetAsyncUncomittedEvents().First();
             Thread.Sleep(1500);
             aggregate.FinishAsyncExecution(asyncEvents.InvocationId);
             Assert.AreEqual("42", aggregate.Value);

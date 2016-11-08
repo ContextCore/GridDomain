@@ -15,12 +15,18 @@ namespace GridDomain.Tests.CommandsExecution
         protected IPublisher Publisher { get; private set; }
 
         [SetUp]
-        [OneTimeSetUp]
         public void InitPublisher()
         {
-            Publisher = GridNode.Container.Resolve<IPublisher>();
+            if(CreateNodeOnEachTest)
+                Publisher = GridNode.Container?.Resolve<IPublisher>();
         }
 
+        [OneTimeSetUp]
+        public void InitPublisherOnce()
+        {
+            if(!CreateNodeOnEachTest)
+                Publisher = GridNode.Container?.Resolve<IPublisher>();
+        }
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
         protected override IContainerConfiguration CreateConfiguration()
         {

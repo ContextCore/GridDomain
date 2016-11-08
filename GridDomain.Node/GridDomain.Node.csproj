@@ -264,6 +264,7 @@
     <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
+    <Compile Include="Configuration\Akka\Hocon\InMemorySnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />

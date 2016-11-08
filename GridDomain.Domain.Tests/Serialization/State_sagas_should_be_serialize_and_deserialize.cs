@@ -1,4 +1,6 @@
 using System;
+using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
@@ -22,8 +24,8 @@ namespace GridDomain.Tests.Serialization
             _sagaState.RememberPerson(Guid.NewGuid());
             _sagaState.ClearEvents();
 
-            var data = JsonConvert.SerializeObject(_sagaState);
-            _restoredState = JsonConvert.DeserializeObject<SoftwareProgrammingSagaState>(data);
+            var data = DomainEventSerialization.Serialize(_sagaState);
+            _restoredState = DomainEventSerialization.Deserialize<SoftwareProgrammingSagaState>(data);
         }
 
         [Test]

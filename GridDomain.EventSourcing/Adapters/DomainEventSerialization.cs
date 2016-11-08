@@ -101,5 +101,16 @@ namespace GridDomain.EventSourcing.Adapters
                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
             };
         }
+
+        private static readonly JsonSerializerSettings Settings = GetDefaultSettings();
+        public static string Serialize(object obj)
+        {
+            return JsonConvert.SerializeObject(obj, Settings);
+        }
+
+        public static T Deserialize<T>(string jsonString)
+        {
+            return JsonConvert.DeserializeObject<T>(jsonString, Settings);
+        }
     }
 }
