@@ -12,21 +12,8 @@ namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
-        protected IPublisher Publisher { get; private set; }
+        protected IPublisher Publisher => GridNode.Transport;
 
-        [SetUp]
-        public void InitPublisher()
-        {
-            if(CreateNodeOnEachTest)
-                Publisher = GridNode.Container?.Resolve<IPublisher>();
-        }
-
-        [OneTimeSetUp]
-        public void InitPublisherOnce()
-        {
-            if(!CreateNodeOnEachTest)
-                Publisher = GridNode.Container?.Resolve<IPublisher>();
-        }
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
         protected override IContainerConfiguration CreateConfiguration()
         {

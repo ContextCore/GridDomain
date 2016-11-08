@@ -13,11 +13,11 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling 
 {
-    public class SchedulerConfiguration : IContainerConfiguration
+    public class QuartzSchedulerConfiguration : IContainerConfiguration
     {
         private readonly IQuartzConfig _quartzConfig;
 
-        public SchedulerConfiguration(IQuartzConfig quartzConfig)
+        public QuartzSchedulerConfiguration(IQuartzConfig quartzConfig)
         {
             _quartzConfig = quartzConfig;
         }
@@ -37,15 +37,6 @@ namespace GridDomain.Scheduling
 
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
-
-            //TODO: unify with GridDomain.Node.Configuration.Composition.SagaConfiguration
-
-            var factory = new ScheduledCommandProcessingSagaFactory();
-            var producer = new SagaProducer<ScheduledCommandProcessingSaga>(ScheduledCommandProcessingSaga.SagaDescriptor);
-            producer.Register<ScheduledCommandProcessingStarted>(factory);
-            producer.Register<ScheduledCommandProcessingSagaState>(factory);
-
-            container.RegisterInstance<ISagaProducer<ScheduledCommandProcessingSaga>>(producer);
         }
     }
 }

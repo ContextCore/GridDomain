@@ -154,10 +154,6 @@ namespace GridDomain.Node.Actors
                 SaveSnapshot(Saga.Data);
         }
         
-        protected override void OnRecoveryFailure(Exception reason, object message = null)
-        {
-            base.OnRecoveryFailure(reason, message);
-        }
 
         private void ProcessSagaCommands()
         {
@@ -167,9 +163,9 @@ namespace GridDomain.Node.Actors
             Saga.ClearCommandsToDispatch();
         }
 
-        private DomainEvent[] ProcessSagaStateChange()
+        private object[] ProcessSagaStateChange()
         {
-            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>().ToArray();
             PersistAll(stateChangeEvents, e => _publisher.Publish(e));
             Saga.Data.ClearUncommittedEvents();
             return stateChangeEvents;

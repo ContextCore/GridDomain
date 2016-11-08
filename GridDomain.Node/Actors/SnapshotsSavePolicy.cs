@@ -19,7 +19,7 @@ namespace GridDomain.Node.Actors
         }
 
 
-        public bool ShouldSave(params DomainEvent[] stateChanges)
+        public bool ShouldSave(params object[] stateChanges)
         {
             if (!stateChanges.Any()) return false;
 

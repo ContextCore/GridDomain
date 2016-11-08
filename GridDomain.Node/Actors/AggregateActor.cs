@@ -113,11 +113,11 @@ namespace GridDomain.Node.Actors
             Recover<SnapshotOffer>(offer =>
             {
                 Aggregate = (TAggregate) offer.Snapshot;
-                ((IAggregate)Aggregate).ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+                Aggregate.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
             });
             Recover<DomainEvent>(e =>
             {
-                ((IAggregate) Aggregate).ApplyEvent(e);
+                Aggregate.ApplyEvent(e);
                 _snapshotsPolicy.RefreshActivity(e.CreatedTime);
             });
             Recover<RecoveryCompleted>(message =>

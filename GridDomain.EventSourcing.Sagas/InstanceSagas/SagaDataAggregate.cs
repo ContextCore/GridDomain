@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public TSagaData Data { get; private set; }
         //for debugging purposes
-        public readonly IList<object> ReceivedMessages = new List<object>();
+        public IList<object> ReceivedMessages { get; } = new List<object>();
 
         private SagaDataAggregate(Guid id)
         {

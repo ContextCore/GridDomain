@@ -1,12 +1,13 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 
 namespace GridDomain.Scheduling.Integration
 {
     public class ScheduledCommandProcessingSagaFactory :
         ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>,
         ISagaFactory<ScheduledCommandProcessingSaga, ScheduledCommandProcessingStarted>,
-        ISagaFactory<ScheduledCommandProcessingSaga,Guid>
+        ISagaFactory<ScheduledCommandProcessingSaga, Guid>
 
     {
         public ScheduledCommandProcessingSaga Create(ScheduledCommandProcessingStarted command)
@@ -22,7 +23,7 @@ namespace GridDomain.Scheduling.Integration
 
         public ScheduledCommandProcessingSaga Create(Guid id)
         {
-            return new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(id));
+            return new ScheduledCommandProcessingSaga(Aggregate.Empty<ScheduledCommandProcessingSagaState>(id));
         }
     }
 }

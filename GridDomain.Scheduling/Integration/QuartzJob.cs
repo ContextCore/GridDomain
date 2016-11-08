@@ -55,8 +55,8 @@ namespace GridDomain.Scheduling.Integration
                     var sagaCreator = _actorSystem.ActorOf(genericProps);
                     var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
                     var r = result.Wait(options.Timeout);
-                    if(!r) throw new Exception("saga was not created");
                     sagaCreator.Tell(PoisonPill.Instance, ActorRefs.NoSender);
+                    if (!r) throw new Exception("scheduling saga was not created");
                 }
                 else
                 {

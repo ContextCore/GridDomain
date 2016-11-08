@@ -36,7 +36,6 @@ namespace GridDomain.Tests.Framework
         protected virtual bool CreateNodeOnEachTest { get; } = false;
         
 
-
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
             ClearDataOnStart = clearDataOnStart;
@@ -56,8 +55,9 @@ namespace GridDomain.Tests.Framework
 
         protected override void AfterAll()
         {
-            if (CreateNodeOnEachTest)
-                GridNode?.Stop();
+            if (!CreateNodeOnEachTest) return;
+            GridNode?.Stop();
+            base.AfterAll();
         }
 
         [SetUp]

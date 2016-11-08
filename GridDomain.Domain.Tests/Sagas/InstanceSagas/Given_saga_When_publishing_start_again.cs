@@ -46,8 +46,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Saga_state_should_contain_all_messages()
         {
-            var messagesSent = new DomainEvent[] {_startMessage, _coffeMadeEvent, _reStartEvent}
-                                    ;
+            var messagesSent = new DomainEvent[] {_startMessage, _coffeMadeEvent, _reStartEvent};
             CollectionAssert.AreEquivalent(messagesSent.Select(m => m.SourceId), 
                 _sagaDataAggregate.ReceivedMessages.Cast<DomainEvent>().Select(m => m.SourceId));
         }

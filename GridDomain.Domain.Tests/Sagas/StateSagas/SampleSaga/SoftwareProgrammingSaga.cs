@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         IHandler<CoffeMadeEvent>
     {
 
-        public static ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
+        public static readonly ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
         public SoftwareProgrammingSaga(SoftwareProgrammingSagaState state) : base(state)
         {
             var gotTiredTriggerTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);

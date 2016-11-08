@@ -20,9 +20,9 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
             base.RaiseEvent(e.CloneWithSaga(Id));
         }
 
-        public SagaStateAggregate(Guid id, TState state):this(id)
+        public SagaStateAggregate(Guid id, TState machineState):this(id)
         {
-            RaiseEvent(new SagaCreatedEvent<TState>(state, id));
+            RaiseEvent(new SagaCreatedEvent<TState>(machineState, id));
         }
 
         public void Apply(SagaCreatedEvent<TState> e)
