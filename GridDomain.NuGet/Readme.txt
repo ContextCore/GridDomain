@@ -1,1 +1,0 @@
-﻿Framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model. 

@@ -1,1 +1,0 @@
-﻿Solomoto.GridDOmain NuGet project.
