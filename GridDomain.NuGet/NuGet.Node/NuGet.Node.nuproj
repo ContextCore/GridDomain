@@ -43,5 +43,5 @@
     <ProjectReference Include="..\..\GridDomain.Node\GridDomain.Node.csproj" />
     <ProjectReference Include="..\..\GridDomain.Scheduling\GridDomain.Scheduling.csproj" />
   </ItemGroup>
-  <Import Project="$(NuProjPath)\NuProj.targets" />
+  <Import Project="..\NuProj.targets" />
 </Project>
