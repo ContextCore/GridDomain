@@ -28,7 +28,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
-                c => new SagaConfiguration<SoftwareProgrammingSaga, SampleAggregatesCommandHandler>(new TestSnapshotsSavePolicy()).Register(c));
+                c => SagaConfiguration.Instance<SoftwareProgrammingSaga,
+                                                SoftwareProgrammingSagaData,
+                                                SoftwareProgrammingSagaFactory,
+                                                GotTiredEvent,
+                                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new TestSnapshotsSavePolicy()));
         }
 
         [OneTimeSetUp]

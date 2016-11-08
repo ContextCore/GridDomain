@@ -27,34 +27,15 @@ namespace GridDomain.Node.Configuration.Composition
             Register<AggregateConfiguration<TAggregate, TCommandsHandler>>(container);
         }
 
+        [Obsolete("Use create configuration via SagaConfiguration.Instance and register in container instead")]
         public static void RegisterSaga<TSaga, TData,TFactory, TStartMessage>(this IUnityContainer container, ISagaDescriptor descriptor)
            where TSaga : Saga<TData>
            where TData : class, ISagaState
            where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
                             ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage> ,new()
         {
-            RegisterStateSaga<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TFactory, TStartMessage>(container, descriptor);
-        }
-
-        public static void RegisterSaga<TSaga, TData, TFactory, TStartMessageA, TStartMessageB, TStartMessageC>(this IUnityContainer container, ISagaDescriptor descriptor)
-               where TSaga : Saga<TData>
-               where TData : class, ISagaState
-               where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
-                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageA>,
-                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageB>,
-                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageC>,
-                               new()
-        {
-            var factory = new TFactory();
-            var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
-            producer.Register<TStartMessageA>(factory);
-            producer.Register<TStartMessageB>(factory);
-            producer.Register<TStartMessageC>(factory);
-            producer.Register<SagaDataAggregate<TData>>(factory);
-
-            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer);
-            
-            container.Register(conf);
+            SagaConfiguration.Instance<TSaga, TData, TFactory, TStartMessage>(descriptor)
+                             .Register(container);
         }
 
 
@@ -66,28 +47,34 @@ namespace GridDomain.Node.Configuration.Composition
                                   ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageB>,
                                  new()
         {
-            var factory = new TFactory();
-            var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
-            producer.Register<TStartMessageA>(factory);
-            producer.Register<TStartMessageB>(factory);
-            producer.Register<SagaDataAggregate<TData>>(factory);
-
-            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer);
-
-            container.Register(conf);
+            SagaConfiguration.Instance<TSaga, TData, TFactory, TStartMessageA, TStartMessageB>(descriptor)
+                             .Register(container);
         }
+
+        [Obsolete("Use create configuration via SagaConfiguration.Instance and register in container instead")]
+        public static void RegisterSaga<TSaga, TData, TFactory, TStartMessageA, TStartMessageB, TStartMessageC>(this IUnityContainer container, ISagaDescriptor descriptor)
+               where TSaga : Saga<TData>
+               where TData : class, ISagaState
+               where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
+                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageA>,
+                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageB>,
+                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageC>,
+                               new()
+        {
+            SagaConfiguration.Instance<TSaga, TData, TFactory, TStartMessageA, TStartMessageB, TStartMessageC>(descriptor)
+                             .Register(container);
+        }
+
+
+        [Obsolete("Use create configuration via SagaConfiguration.Instance and register in container instead")]
 
 
         public static void RegisterSaga<TSaga, TData>(this IUnityContainer container,  Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor, Func<SnapshotsSavePolicy> snapShotsPolicy = null)
                  where TSaga : Saga<TData>
                  where TData : class, ISagaState
         {
-            var producer = new SagaProducer<ISagaInstance<TSaga,TData>>(descriptor);
-            foreach (var dataType in descriptor.StartMessages)
-                producer.Register(dataType, factory);
-
-            var conf = new SagaConfiguration<ISagaInstance<TSaga, TData>,SagaDataAggregate<TData>>(producer, snapShotsPolicy);
-            conf.Register(container);
+            SagaConfiguration.Instance<TSaga, TData>(factory,descriptor)
+                             .Register(container);
         }
 
         public static void RegisterStateSaga<TSaga, TState, TFactory, TStartMessage>(this IUnityContainer container,ISagaDescriptor descriptor)
@@ -98,16 +85,13 @@ namespace GridDomain.Node.Configuration.Composition
                 where TSaga : class, ISagaInstance 
                 where TState : AggregateBase
         {
+            var producer = new SagaProducer<TSaga>(descriptor);
             var factory = new TFactory();
-            var producer = new SagaProducer<ISagaInstance<TSaga, TState>>(descriptor);
-            foreach (var dataType in descriptor.StartMessages)
-                producer.Register(dataType, factory);
+            producer.Register<TState>(factory);
+            producer.Register<TStartMessage>(factory);
 
-            var conf = new SagaConfiguration<TSaga, TState>.New<TFactory>(factory, descriptor);
-            conf.Register<TStartMessage>(factory);
+            var conf = new SagaConfiguration<TSaga, TState>(producer);
             container.Register(conf);
         }
-
-
     }
 }
