@@ -126,4 +126,41 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="_NuProjGetProjectClosure"
+          DependsOnTargets="ResolveProjectReferences"
+          Inputs="%(_MSBuildProjectReferenceExistent.Identity)"
+          Outputs="fake"
+          Returns="@(_ProjectReferenceClosure)">
+
+    <!-- Get closure of indirect references -->
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
+             Targets="_NuProjGetProjectClosure"
+             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
+             ContinueOnError="WarnAndContinue">
+      <Output TaskParameter="TargetOutputs"
+              ItemName="_ProjectReferenceClosureWithDuplicates" />
+    </MSBuild>
+
+    <!-- Remove duplicates from closure -->
+    <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
+      <Output TaskParameter="Filtered"
+              ItemName="_ProjectReferenceClosureWithoutMetadata"/>
+    </RemoveDuplicates>
+
+    <ItemGroup>
+      <!-- Remove references that are also direct references -->
+      <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
+      <!-- We can now mark all the closure references as indirect -->
+      <_ProjectReferenceClosure Include="@(_ProjectReferenceClosureWithoutMetadata)">
+        <DependencyKind>Indirect</DependencyKind>
+        <PackageDirectory>%(_MSBuildProjectReferenceExistent.PackageDirectory)</PackageDirectory>
+        <TargetSubdirectory>%(_MSBuildProjectReferenceExistent.TargetSubdirectory)</TargetSubdirectory>
+      </_ProjectReferenceClosure>
+      <!-- Now add the direct references, preserving metadata -->
+      <_ProjectReferenceClosure Include="@(_MSBuildProjectReferenceExistent->'%(FullPath)')">
+        <DependencyKind>Direct</DependencyKind>
+      </_ProjectReferenceClosure>
+    </ItemGroup>
+
+  </Target>
 </Project>
