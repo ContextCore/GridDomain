@@ -41,5 +41,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj" />
   </ItemGroup>
-  <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>

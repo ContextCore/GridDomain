@@ -41,5 +41,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj" />
   </ItemGroup>
-  <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>

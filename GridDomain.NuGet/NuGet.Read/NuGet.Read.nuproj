@@ -41,5 +41,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.CQRS.ReadModel\GridDomain.CQRS.ReadModel.csproj" />
   </ItemGroup>
-  <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
