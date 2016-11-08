@@ -14,7 +14,7 @@
     <ProjectGuid>a81eb120-3cf7-4d02-a132-1d21d3bfdfd0</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
@@ -43,5 +43,9 @@
     <ProjectReference Include="..\..\GridDomain.Node\GridDomain.Node.csproj" />
     <ProjectReference Include="..\..\GridDomain.Scheduling\GridDomain.Scheduling.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+    <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">..\NuProj.targets</NuProjTargetsPath>
+	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">..\NuProj.Tasks.dll</NuProjTasksPath>
+  </PropertyGroup>
   <Import Project="..\NuProj.targets" />
 </Project>

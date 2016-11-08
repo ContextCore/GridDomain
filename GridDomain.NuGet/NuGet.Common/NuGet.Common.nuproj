@@ -14,7 +14,7 @@
     <ProjectGuid>0f56b1f9-cc41-4176-9ac4-102008ee55bf</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
@@ -45,5 +45,9 @@
     <ProjectReference Include="..\..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
     <ProjectReference Include="..\..\GridDomain.Logging\GridDomain.Logging.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+    <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">..\NuProj.targets</NuProjTargetsPath>
+	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">..\NuProj.Tasks.dll</NuProjTasksPath>
+  </PropertyGroup>
   <Import Project="..\NuProj.targets" />
 </Project>

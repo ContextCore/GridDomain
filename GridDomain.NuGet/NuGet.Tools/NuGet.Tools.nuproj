@@ -14,7 +14,7 @@
     <ProjectGuid>a1d32978-7d9f-4eb0-a5c6-4702d0e52807</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">..\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
@@ -42,5 +42,9 @@
     <ProjectReference Include="..\..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj" />
     <ProjectReference Include="..\..\GridDomain.Tools\GridDomain.Tools.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+    <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">..\NuProj.targets</NuProjTargetsPath>
+	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">..\NuProj.Tasks.dll</NuProjTasksPath>
+  </PropertyGroup>
   <Import Project="..\NuProj.targets" />
 </Project>
