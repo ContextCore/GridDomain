@@ -18,13 +18,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         public SoftwareProgrammingStateSagaTest(bool inMemory = true) : base(inMemory)
         {
         }
-        protected IPublisher Publisher { get; private set; }
-
-        [SetUp]
-        public void InitPublisher()
-        {
-            Publisher = GridNode.Container.Resolve<IPublisher>();
-        }
+     
         protected override IContainerConfiguration CreateConfiguration()
         {
             return 

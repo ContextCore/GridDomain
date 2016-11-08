@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -138,15 +139,12 @@ namespace GridDomain.Node.Actors
 
         private void ProcessAggregateEvents(ICommand command)
         {
-
             var aggregate = (IAggregate) Aggregate;
 
-            var uncommittedEvents = aggregate.GetUncommittedEvents();
-
-            var events = uncommittedEvents.Cast<DomainEvent>();
+            var events = aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             if (command.SagaId != Guid.Empty)
             {
-                events = events.Select(e => e.CloneWithSaga(command.SagaId));
+                events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
             }
 
             PersistAll(events, e =>
@@ -164,7 +162,7 @@ namespace GridDomain.Node.Actors
 
             ProcessAsyncMethods(command);
 
-            if(_snapshotsPolicy.ShouldSave())
+            if(_snapshotsPolicy.ShouldSave(events))
                 SaveSnapshot(Aggregate);
         }
 

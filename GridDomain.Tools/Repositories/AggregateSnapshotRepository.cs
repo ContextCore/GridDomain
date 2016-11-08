@@ -42,6 +42,7 @@ namespace GridDomain.Tools.Repositories
                            {
                                var jsonString = Encoding.Unicode.GetString(s.Snapshot);
                                var aggregate = JsonConvert.DeserializeObject<T>(jsonString, DomainEventSerialization.GetDefaultSettings());
+                               aggregate.ClearUncommittedEvents(); //in case json will call public constructor
                                return new AggregateVersion<T>(aggregate, s.Timestamp);
                            }).ToArray();
         }

@@ -6,11 +6,21 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
 using Microsoft.Practices.Unity;
+using NUnit.Framework;
 
 namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
+        protected IPublisher Publisher { get; private set; }
+
+        [SetUp]
+        [OneTimeSetUp]
+        public void InitPublisher()
+        {
+            Publisher = GridNode.Container.Resolve<IPublisher>();
+        }
+
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
         protected override IContainerConfiguration CreateConfiguration()
         {

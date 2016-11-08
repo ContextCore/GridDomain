@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using GridDomain.Common;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Actors
 {
@@ -17,12 +19,15 @@ namespace GridDomain.Node.Actors
         }
 
 
-        public bool ShouldSave()
+        public bool ShouldSave(params DomainEvent[] stateChanges)
         {
+            if (!stateChanges.Any()) return false;
+
             if(_messagesProduced == 0 && _lastActivityTime == default(DateTime))
                RefreshActivity();
 
-            if (++_messagesProduced%_saveOnEach == 0 || _lastActivityTime + _sleepTime < BusinessDateTime.UtcNow)
+            _messagesProduced += stateChanges.Length;
+            if ((_messagesProduced % _saveOnEach == 0) || _lastActivityTime + _sleepTime < BusinessDateTime.UtcNow)
                 return true;
 
             RefreshActivity();

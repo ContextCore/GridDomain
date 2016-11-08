@@ -38,6 +38,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             CollectionAssert.IsEmpty(_restoredAggregate.GetEvents());
         }
+
         [Test]
         public void Ids_should_be_equal()
         {

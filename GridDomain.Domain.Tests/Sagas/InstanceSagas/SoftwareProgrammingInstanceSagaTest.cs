@@ -20,15 +20,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             return new SoftwareProgrammingSagaRoutes();
         }
 
-        protected IPublisher Publisher { get; private set; }
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
 
-        [OneTimeSetUp]
-        [SetUp]
-        public void InitPublisher()
-        {
-            Publisher = GridNode.Container.Resolve<IPublisher>();
-        }
         protected override IContainerConfiguration CreateConfiguration()
         {
             var baseConf = base.CreateConfiguration();

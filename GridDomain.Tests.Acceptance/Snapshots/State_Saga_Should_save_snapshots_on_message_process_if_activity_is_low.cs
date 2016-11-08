@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
@@ -42,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
             var waiter = GridNode.NewWaiter()
-                                 .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                                 .Expect<SagaCreatedEvent<SoftwareProgrammingSaga.States>>()
                                  .Create(TimeSpan.FromSeconds(100));
 
             Publisher.Publish(sagaStartEvent);
@@ -84,13 +85,19 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Test]
         public void First_snapshot_should_have_state_from_first_event()
         {
-            Assert.AreEqual(nameof(SoftwareProgrammingSaga.States.MakingCoffee), _snapshots.First().Aggregate.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffee, _snapshots.First().Aggregate.MachineState);
         }
 
         [Test]
         public void Second_snapshot_should_have_parameters_from_second_command()
         {
-            Assert.AreEqual(nameof(SoftwareProgrammingSaga.States.Sleeping), _snapshots.Skip(1).First().Aggregate.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping, _snapshots.Skip(1).First().Aggregate.MachineState);
+        }
+
+        [Test]
+        public void All_snapshots_should_not_have_uncommited_events()
+        {
+            CollectionAssert.IsEmpty(_snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
     }
 }

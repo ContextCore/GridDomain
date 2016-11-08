@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.CommandsExecution;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
@@ -75,6 +76,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public void Second_snapshot_should_have_parameters_from_second_command()
         {
             Assert.True(_snapshots.Skip(1).First().Aggregate.Value == _changedParameter.ToString());
+        }
+
+        [Test]
+        public void All_snapshots_should_not_have_uncommited_events()
+        {
+            CollectionAssert.IsEmpty(_snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
     }
 }

@@ -146,29 +146,28 @@ namespace GridDomain.Node.Actors
                 _publisher.Publish(fault);
             }
 
-            ProcessSagaStateChange();
+            var stateChange = ProcessSagaStateChange();
 
             ProcessSagaCommands();
 
-            if(_snapshotsPolicy.ShouldSave())
+            if(_snapshotsPolicy.ShouldSave(stateChange))
                 SaveSnapshot(Saga.Data);
         }
 
         private void ProcessSagaCommands()
         {
             foreach (var msg in Saga.CommandsToDispatch)
-                      _publisher.Publish(msg);
+                 _publisher.Publish(msg);
 
             Saga.ClearCommandsToDispatch();
         }
 
-        private void ProcessSagaStateChange()
+        private DomainEvent[] ProcessSagaStateChange()
         {
-            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>().ToArray();
-
+            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             PersistAll(stateChangeEvents, e => _publisher.Publish(e));
-
             Saga.Data.ClearUncommittedEvents();
+            return stateChangeEvents;
         }
 
         private readonly ActorMonitor _monitor = new ActorMonitor(Context, typeof(TSaga).Name);

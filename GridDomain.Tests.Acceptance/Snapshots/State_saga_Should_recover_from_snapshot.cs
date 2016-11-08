@@ -64,5 +64,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             Assert.AreEqual(_sagaState.MachineState, _restoredState.MachineState);
         }
+
     }
 }

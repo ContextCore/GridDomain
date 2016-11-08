@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.SampleDomain;
@@ -88,6 +89,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public void Snapshot_should_have_parameters_from_second_command()
         {
             Assert.AreEqual(nameof(SoftwareProgrammingSaga.Sleeping), _snapshots.First().Aggregate.Data.CurrentStateName);
+        }
+
+        [Test]
+        public void All_snapshots_should_not_have_uncommited_events()
+        {
+            CollectionAssert.IsEmpty(_snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
     }
 }
