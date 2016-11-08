@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             //prepare initial saga state
             
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSaga.States>(SoftwareProgrammingSaga.States.MakingCoffe, sagaId);
+            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSaga.States>(SoftwareProgrammingSaga.States.MakingCoffee, sagaId);
             SaveInJournal<SoftwareProgrammingSagaState>(sagaId, sagaDataEvent);
 
             Publisher.Publish(new CoffeMakeFailedEvent(Guid.Empty,personId).CloneWithSaga(sagaId));

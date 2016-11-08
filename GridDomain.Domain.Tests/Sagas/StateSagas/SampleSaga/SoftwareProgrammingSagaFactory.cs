@@ -4,7 +4,7 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
-    class SoftwareProgrammingSagaFactory : 
+    public class SoftwareProgrammingSagaFactory : 
         ISagaFactory<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>,
         ISagaFactory<SoftwareProgrammingSaga, GotTiredEvent>,
         ISagaFactory<SoftwareProgrammingSaga, Guid>

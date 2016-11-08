@@ -8,11 +8,11 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class Given_snapshot_aggregate_Should_recover : SampleDomainCommandExecutionTests
+    class Aggregate_should_recover_from_snapshot : SampleDomainCommandExecutionTests
     {
         private SampleAggregate _aggregate;
         private SampleAggregate _restoredAggregate;
-        public Given_snapshot_aggregate_Should_recover(): base(false) {}
+        public Aggregate_should_recover_from_snapshot(): base(false) {}
 
         [OneTimeSetUp]
         public void Test()

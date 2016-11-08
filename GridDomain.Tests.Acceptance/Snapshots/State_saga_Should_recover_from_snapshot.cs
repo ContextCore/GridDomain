@@ -12,19 +12,19 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class Given_snapshot_state_saga_Should_recover : SoftwareProgrammingStateSagaTest
+    class State_saga_Should_recover_from_snapshot : SoftwareProgrammingStateSagaTest
     {
         private SoftwareProgrammingSagaState _sagaState;
         private SoftwareProgrammingSagaState _restoredState;
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(100);
 
-        public Given_snapshot_state_saga_Should_recover(): base(false) { }
+        public State_saga_Should_recover_from_snapshot(): base(false) { }
 
         [OneTimeSetUp]
         public void Test()
         {
-            _sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(), SoftwareProgrammingSaga.States.MakingCoffe);
+            _sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(), SoftwareProgrammingSaga.States.MakingCoffee);
             _sagaState.RememberPerson(Guid.NewGuid());
             _sagaState.RememberBadCoffeMachine(Guid.NewGuid());
             _sagaState.ClearEvents();

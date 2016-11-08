@@ -99,24 +99,27 @@ namespace GridDomain.Node.Configuration.Composition
 
     public class SagaConfiguration<TSaga,TState> : IContainerConfiguration where TSaga : class, ISagaInstance where TState : AggregateBase
     {
-        protected readonly SagaProducer<TSaga> Producer;
+        private readonly SagaProducer<TSaga> _producer;
         private readonly Func<SnapshotsSavePolicy> _snapshotsPolicyFactory;
 
         public SagaConfiguration(SagaProducer<TSaga> producer, Func<SnapshotsSavePolicy> snapShotsPolicy = null)
         {
             _snapshotsPolicyFactory = snapShotsPolicy ?? (() => new DefaultSnapshotsSavePolicy());
-            Producer = producer;
+            _producer = producer;
         }
         
         public void Register(IUnityContainer container)
         {
-            container.RegisterInstance<ISagaProducer<TSaga>>(Producer);
-            container.RegisterInstance(Producer);
-            container.RegisterType<SnapshotsSavePolicy>(typeof(TSaga).Name,new InjectionFactory(c => _snapshotsPolicyFactory()));
+            container.RegisterInstance<ISagaProducer<TSaga>>(_producer);
+            container.RegisterInstance(_producer);
+
+            var snapshotsPolicyRegistrationName = typeof(TSaga).Name;
+
+            container.RegisterType<SnapshotsSavePolicy>(snapshotsPolicyRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
             container.RegisterType<SagaActor<TSaga, TState>>(
                 new InjectionConstructor(new ResolvedParameter<ISagaProducer<TSaga>>(),
                                          new ResolvedParameter<IPublisher>(), 
-                                         new ResolvedParameter<SnapshotsSavePolicy>(typeof(TSaga).Name)));
+                                         new ResolvedParameter<SnapshotsSavePolicy>(snapshotsPolicyRegistrationName)));
         }
 
 

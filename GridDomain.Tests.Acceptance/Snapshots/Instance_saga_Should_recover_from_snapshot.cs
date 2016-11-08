@@ -11,12 +11,12 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class Given_snapshot_instance_saga_Should_recover : SoftwareProgrammingInstanceSagaTest
+    class Instance_saga_Should_recover_from_snapshot : SoftwareProgrammingInstanceSagaTest
     {
 
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaState;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _restoredState;
-        public Given_snapshot_instance_saga_Should_recover() : base(false) { }
+        public Instance_saga_Should_recover_from_snapshot() : base(false) { }
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
 

@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Serialization
         [OneTimeSetUp]
         public void Test()
         {
-            _sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(), SoftwareProgrammingSaga.States.MakingCoffe);
+            _sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(), SoftwareProgrammingSaga.States.MakingCoffee);
             _sagaState.RememberPerson(Guid.NewGuid());
             _sagaState.ClearEvents();
 

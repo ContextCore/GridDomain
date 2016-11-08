@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         public void State_raised_creation_event_on_machine_creation()
         {
             var given = new Given_State_SoftareProgramming_Saga(
-                SoftwareProgrammingSaga.States.MakingCoffe);
+                SoftwareProgrammingSaga.States.MakingCoffee);
 
             var creationEvent = given.SagaDataAggregate.GetEvent<DomainEvent>();
             Assert.IsInstanceOf<SagaCreatedEvent<SoftwareProgrammingSaga.States>>(creationEvent);
@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         [Then]
         public void State_is_changed()
         {
-            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffe);
+            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffee);
 
             When_execute_valid_transaction(given.SagaMachine, new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
             Assert.AreEqual(SoftwareProgrammingSaga.States.Working, given.SagaMachine.State.MachineState);
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         [Then]
         public void State_is_changed_on_using_non_generic_transit_method()
         {
-            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffe);
+            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffee);
 
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
             given.SagaMachine.Transit(msg);
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         [Then]
         public void State_transitioned_event_is_raised()
         {
-            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffe);
+            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffee);
 
             given.SagaDataAggregate.ClearEvents();
             When_execute_valid_transaction(given.SagaMachine, new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
@@ -89,7 +89,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         [Then]
         public void State_transitioned_events_are_filled_with_sagadata()
         {
-            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffe);
+            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffee);
             given.SagaDataAggregate.ClearEvents();
             When_execute_valid_transaction(given.SagaInstance, new CoffeMadeEvent(Guid.NewGuid(),Guid.NewGuid()));
             var stateChangeEvent = given.SagaDataAggregate.GetEvent

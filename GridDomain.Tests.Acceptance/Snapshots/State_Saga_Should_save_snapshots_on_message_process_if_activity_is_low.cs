@@ -3,23 +3,23 @@ using System.Linq;
 using System.Threading;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
-using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.Sagas.StateSagas;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low: SoftwareProgrammingInstanceSagaTest
+    class State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low: SoftwareProgrammingStateSagaTest
     {
         private Guid _sagaId;
-        private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
+        private AggregateVersion<SoftwareProgrammingSagaState>[] _snapshots;
 
-        public Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
+        public State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
         {
 
         }
@@ -28,11 +28,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
-                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,
-                                SoftwareProgrammingSagaData,
-                                SoftwareProgrammingSagaFactory,
-                                GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new TestSnapshotsSavePolicy())));
+                c => SagaConfiguration.State<SoftwareProgrammingSaga,
+                                             SoftwareProgrammingSagaState,
+                                             SoftwareProgrammingSagaFactory,
+                                             GotTiredEvent>
+                                             (SoftwareProgrammingSaga.Descriptor, () => new TestSnapshotsSavePolicy()));
         }
 
         [OneTimeSetUp]
@@ -42,13 +42,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
             var waiter = GridNode.NewWaiter()
-                                 .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                                 .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                                  .Create(TimeSpan.FromSeconds(100));
 
             Publisher.Publish(sagaStartEvent);
             waiter.Wait();
-
-            Thread.Sleep(1000);
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(_sagaId,
                                                              sagaStartEvent.PersonId,
@@ -56,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                             _sagaId);
 
             var waiterB = GridNode.NewWaiter(Timeout)
-                                  .Expect<SagaTransitionEvent<SoftwareProgrammingSagaData>>()
+                                  .Expect<SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>>()
                                   .Create();
 
             Publisher.Publish(sagaContinueEvent);
@@ -68,13 +66,13 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Thread.Sleep(200);
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString)
-                                .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
+                                .Load<SoftwareProgrammingSagaState>(sagaStartEvent.SagaId);
         }
 
         [Test]
-        public void Snapshot_should_be_saved_one_time()
+        public void Snapshots_should_be_saved_two_times()
         {
-            Assert.AreEqual(1, _snapshots.Length);
+            Assert.AreEqual(2, _snapshots.Length);
         }
 
         [Test]
@@ -83,11 +81,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Assert.True(_snapshots.All(s => s.Aggregate.Id == _sagaId));
         }
 
+        [Test]
+        public void First_snapshot_should_have_state_from_first_event()
+        {
+            Assert.AreEqual(nameof(SoftwareProgrammingSaga.States.MakingCoffee), _snapshots.First().Aggregate.MachineState);
+        }
 
         [Test]
-        public void Snapshot_should_have_parameters_from_second_command()
+        public void Second_snapshot_should_have_parameters_from_second_command()
         {
-            Assert.AreEqual(nameof(SoftwareProgrammingSaga.Sleeping), _snapshots.First().Aggregate.Data.CurrentStateName);
+            Assert.AreEqual(nameof(SoftwareProgrammingSaga.States.Sleeping), _snapshots.Skip(1).First().Aggregate.MachineState);
         }
     }
 }

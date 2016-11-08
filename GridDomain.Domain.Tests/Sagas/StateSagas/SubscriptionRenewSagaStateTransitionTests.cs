@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Test]
         public void When_valid_transition_Then_state_is_changed()
         {
-            Given_new_saga_with_state(SoftwareProgrammingSaga.States.MakingCoffe);
+            Given_new_saga_with_state(SoftwareProgrammingSaga.States.MakingCoffee);
             SagaInstance.Handle(new CoffeMadeEvent(Guid.NewGuid(),Guid.NewGuid()));
 
             Assert.AreEqual(SoftwareProgrammingSaga.States.Working, SagaInstance.DomainState);
