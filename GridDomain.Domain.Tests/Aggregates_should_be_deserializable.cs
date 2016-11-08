@@ -1,20 +1,50 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.SampleDomain;
 using NUnit.Framework;
+using SoftwareProgrammingSaga = GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga;
 
 namespace GridDomain.Tests
 {
     [TestFixture]
     public class Types_should_be_deserializable : TypesDeserializationTest
     {
+        protected override IEnumerable<Type> ExcludeTypes
+        {
+            get
+            {
+                yield return typeof(SagaDataAggregate<>);
+                yield return typeof(SagaStateAggregate<,>);
+                yield return typeof(SagaCreatedEvent<>);
+                yield return typeof(SagaMessageReceivedEvent<>);
+                yield return typeof(SagaTransitionEvent<>);
+                yield return typeof(SagaTransitionEvent<,>);
+            }
+        }
+
+        [Test]
+        public void Generic_domain_classes_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>),
+                             typeof(SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
+                             typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>),
+                             typeof(SagaMessageReceivedEvent<object>),
+                             typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>),
+                             typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>)
+                            );
+        }
+
         [Test]
         public void Aggregates_from_all_assemblies_should_be_deserializable()
         {

@@ -12,22 +12,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public Guid CoffeeMachineId { get; }
         public Guid SofaId { get; set; }
 
-        public SoftwareProgrammingSagaData(string stateName,
+        public SoftwareProgrammingSagaData(string currentStateName,
                                            Guid sofaId = default(Guid),
-                                           Guid coffeeMachineId = default(Guid))
+                                           Guid coffeeMachineId = default(Guid),
+                                           Guid personId = default(Guid))
         {
             SofaId = sofaId;
             CoffeeMachineId = coffeeMachineId;
-            CurrentStateName = stateName;
-        }
-
-        public SoftwareProgrammingSagaData(State state,
-                                         Guid sofaId = default(Guid),
-                                         Guid coffeeMachineId = default(Guid))
-        {
-            SofaId = sofaId;
-            CoffeeMachineId = coffeeMachineId;
-            CurrentStateName = state.Name;
+            CurrentStateName = currentStateName;
+            PersonId = personId;
         }
     }
 }

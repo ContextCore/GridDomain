@@ -18,8 +18,10 @@ namespace GridDomain.Tests.Framework
     public abstract class TypesDeserializationTest
     {
         private readonly ObjectDeserializationChecker _checker = new ObjectDeserializationChecker();
+        private readonly HashSet<Type> _excludes;
 
         protected abstract Assembly[] AllAssemblies { get; }
+        protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
         protected Type[] TypesCache { get; }
 
         protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
@@ -29,7 +31,6 @@ namespace GridDomain.Tests.Framework
                         .Where(t => typeof(T).IsAssignableFrom(t) 
                                 &&  t.IsClass 
                                 && !t.IsAbstract 
-                               // && !t.ContainsGenericParameters
                                 && !t.IsInterface
                                 &&  t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
@@ -39,7 +40,13 @@ namespace GridDomain.Tests.Framework
 
         public TypesDeserializationTest()
         {
-            TypesCache = AllAssemblies.SelectMany(a => a.GetTypes()).ToArray();
+            TypesCache = AllAssemblies.SelectMany(a => a.GetTypes())
+                                      .SelectMany( t => t.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).Union(new [] {t}))
+                                      .Where(t => t!=null)
+                                      .Distinct()
+                                      .ToArray();
+
+            _excludes = new HashSet<Type>(ExcludeTypes);
         }
 
         class RestoreResult
@@ -61,31 +68,31 @@ namespace GridDomain.Tests.Framework
 
             var failedTypes = new List<RestoreResult>();
             var okTypes = new List<RestoreResult>();
-
-            foreach (var type in types)
+            
+            foreach (var type in types.Where(t => !_excludes.Contains(t)))
             {
                 try
                 {
                     var constructedType = type;
-                    if (type.IsGenericType && type.ContainsGenericParameters)
-                    {
-                        var genericTypeParameters = new List<Type>();
-                        foreach (var parameterType in type.GetGenericArguments())
-                        {
-                            var typeConstraints = parameterType.GetGenericParameterConstraints();
-                            var parameterTypeValue =
-                                TypesCache.FirstOrDefault(t => t.IsClass 
-                                                           && !t.IsAbstract 
-                                                           && !t.ContainsGenericParameters 
-                                                           &&  typeConstraints.All(c => c.IsAssignableFrom(t)));
-
-                            if (parameterTypeValue == null)
-                                throw new CannotCreateGenericType(type, typeConstraints);
-
-                            genericTypeParameters.Add(parameterTypeValue);
-                        }
-                        constructedType = type.MakeGenericType(genericTypeParameters.ToArray());
-                    }
+                    //if (type.IsGenericType && type.ContainsGenericParameters)
+                    //{
+                    //    var genericTypeParameters = new List<Type>();
+                    //    foreach (var parameterType in type.GetGenericArguments())
+                    //    {
+                    //        var typeConstraints = parameterType.GetGenericParameterConstraints();
+                    //        var parameterTypeValue =
+                    //            TypesCache.FirstOrDefault(t => t.IsClass 
+                    //                                       && !t.IsAbstract 
+                    //                                       && !t.ContainsGenericParameters 
+                    //                                       &&  typeConstraints.All(c => c.IsAssignableFrom(t)));
+                    //
+                    //        if (parameterTypeValue == null)
+                    //            throw new CannotCreateGenericType(type, typeConstraints);
+                    //
+                    //        genericTypeParameters.Add(parameterTypeValue);
+                    //    }
+                    //    constructedType = type.MakeGenericType(genericTypeParameters.ToArray());
+                    //}
 
                     var createMethodInfo =
                         typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
@@ -166,8 +173,9 @@ namespace GridDomain.Tests.Framework
         public Type[] TypeConstraints { get; }
 
         public CannotCreateGenericType(Type type, Type[] typeConstraints):base(
-            $"Cannot create generic type {type} : Cannpt find type to use as parameter with constraints " +
-            $"{string.Join(",",typeConstraints.Select(t => t.Name))} ")
+            $"Cannot create generic type {type} : Cannot find type to use as parameter with constraints " +
+            $"{string.Join(",",typeConstraints.Select(t => t.Name))} " +
+            $" Include assembly in AllAssemblies test property")
         {
             TypeConstraints = typeConstraints;
             Type = type;

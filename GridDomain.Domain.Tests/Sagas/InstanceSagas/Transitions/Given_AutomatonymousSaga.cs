@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas.Transitions
 
         public Given_AutomatonymousSaga(Func<SoftwareProgrammingSaga, State> initialState)
         {
-            var sagaData = new SoftwareProgrammingSagaData(initialState(SagaMachine));
+            var sagaData = new SoftwareProgrammingSagaData(initialState(SagaMachine).Name);
             SagaDataAggregate = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(),
                                                                                    sagaData);
             SagaInstance = new SagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaMachine, SagaDataAggregate);
