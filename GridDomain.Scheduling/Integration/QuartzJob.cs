@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.Common;
@@ -23,6 +22,7 @@ namespace GridDomain.Scheduling.Integration
         private readonly IQuartzLogger _quartzLogger;
         private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
+        private static readonly QuartsWireJsonSerializer _serializer = new QuartsWireJsonSerializer();
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
@@ -90,7 +90,9 @@ namespace GridDomain.Scheduling.Integration
         public static IJobDetail Create(ScheduleKey key, DomainEvent eventToSchedule)
         {
             var serializedEvent = Serialize(eventToSchedule);
-            var serializedKey = Serialize(key); var jobDataMap = new JobDataMap
+            var serializedKey = Serialize(key);
+
+            var jobDataMap = new JobDataMap
             {
                 { EventKey, serializedEvent },
                 { ScheduleKey, serializedKey }
@@ -100,19 +102,12 @@ namespace GridDomain.Scheduling.Integration
 
         private static byte[] Serialize(object source)
         {
-            using (var stream = new MemoryStream())
-            {
-                new Serializer().Serialize(source, stream);
-                return stream.ToArray();
-            }
+            return _serializer.ToBinary(source);
         }
 
         private static T Deserialize<T>(byte[] source)
         {
-            using (var stream = new MemoryStream(source))
-            {
-                return new Serializer().Deserialize<T>(stream);
-            }
+            return (T)_serializer.FromBinary(source, typeof(T));
         }
 
         private Props CreateGenericProps(ExecutionOptions options)
@@ -145,16 +140,16 @@ namespace GridDomain.Scheduling.Integration
             return Deserialize<ExecutionOptions>(bytes);
         }
 
-        private static IJobDetail CreateJob(ScheduleKey key, JobDataMap jobDataMap)
+        public static IJobDetail CreateJob(ScheduleKey key, JobDataMap jobDataMap)
         {
             var jobKey = new JobKey(key.Name, key.Group);
             return JobBuilder
-                .Create<QuartzJob>()
-                .WithIdentity(jobKey)
-                .WithDescription(key.Description)
-                .UsingJobData(jobDataMap)
-                .RequestRecovery(true)
-                .Build();
+                   .Create<QuartzJob>()
+                   .WithIdentity(jobKey)
+                   .WithDescription(key.Description)
+                   .UsingJobData(jobDataMap)
+                   .RequestRecovery(true)
+                   .Build();
         }
     }
 }

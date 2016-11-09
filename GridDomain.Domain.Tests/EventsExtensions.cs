@@ -1,12 +1,65 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Integration;
+using GridDomain.Tests.CommandsExecution;
+using GridDomain.Tests.EventsUpgrade;
+using GridDomain.Tests.SampleDomain.Commands;
+using GridDomain.Tests.SampleDomain.Events;
 using KellermanSoftware.CompareNetObjects;
+using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using Quartz;
 
 namespace GridDomain.Tests
 {
+    [TestFixture]
+    public class QuartzJobSeserializationTests : InMemorySampleDomainTests
+    {
+        [Test]
+        public void QuartzJob_should_de_deserialized_from_old_wire_format()
+        {
+            var cmd = new ChangeSampleAggregateCommand(1,Guid.NewGuid());
+            var evt = new SampleAggregateCreatedEvent("1", cmd.AggregateId);
+
+            var scheduleKey = ScheduleKey.For(cmd);
+
+            var oldSerializer = new LegacyWireSerializer();
+
+            var serializedEvent = oldSerializer.Serialize(evt);
+            var serializedKey = oldSerializer.Serialize(scheduleKey);
+
+            var jobDataMap = new JobDataMap
+            {
+                { "EventKey", serializedEvent },
+                { "ScheduleKey", serializedKey }
+            };
+
+            var job = QuartzJob.CreateJob(scheduleKey, jobDataMap);
+
+            var trigger =  TriggerBuilder.Create()
+                                         .WithIdentity(job.Key.Name, job.Key.Group)
+                                         .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow()
+                                                                   .WithRepeatCount(0))
+                                         .StartAt(BusinessDateTime.Now.AddSeconds(1))
+                                         .Build();
+
+            var scheduler = GridNode.Container.Resolve<IScheduler>();
+
+            scheduler.ScheduleJob(job, trigger);
+
+
+            var waiter = GridNode.NewWaiter(Timeout)
+                                 .Expect<SampleAggregateCreatedEvent>(e => e.SourceId == evt.SourceId)
+                                 .Create();
+            waiter.Wait();
+        }
+    }
+
     public static class EventsExtensions
     {
         private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};
