@@ -4,12 +4,12 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class ExtendedExecutionOptions : ExecutionOptions
     {
-        public Guid SuccessMessageId { get; }
+        public Guid SuccessSuccessMessageId { get; }
         public string MessageIdFieldName { get; }
 
-        public ExtendedExecutionOptions(DateTime runAt, Type succesEventType, Guid messageId, string messageIdFieldName, TimeSpan timeout = new TimeSpan()) : base(runAt, succesEventType, timeout)
+        public ExtendedExecutionOptions(DateTime runAt, Type successEventType, Guid successMessageId, string messageIdFieldName, TimeSpan? timeout = null) : base(runAt, successEventType, timeout)
         {
-            SuccessMessageId = messageId;
+            SuccessSuccessMessageId = successMessageId;
             MessageIdFieldName = messageIdFieldName;
         }
     }

@@ -9,6 +9,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.SampleDomain;
@@ -46,6 +47,17 @@ namespace GridDomain.Tests
         }
 
         [Test]
+        public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(ExecutionOptions),
+                              typeof(ExtendedExecutionOptions),
+                              typeof(ScheduleKey)
+                          );
+        }
+
+
+
+        [Test]
         public void Aggregates_from_all_assemblies_should_be_deserializable()
         {
             CheckAllChildrenOf<IAggregate>(AllAssemblies);
@@ -71,7 +83,8 @@ namespace GridDomain.Tests
                 Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
                 Assembly.GetAssembly(typeof(SampleAggregate)),
                 Assembly.GetAssembly(typeof(ISagaProducer<>)),
-                Assembly.GetAssembly(typeof(DomainEvent))
+                Assembly.GetAssembly(typeof(DomainEvent)),
+                Assembly.GetAssembly(typeof(ExecutionOptions))
             };
     }
 }

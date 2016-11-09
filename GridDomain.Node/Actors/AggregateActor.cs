@@ -177,7 +177,7 @@ namespace GridDomain.Node.Actors
 
             var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
 
-            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId),
+            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid()),
                                                     scheduleKey,
                                                     new ExecutionOptions(message.RaiseTime, message.Event.GetType()));
 

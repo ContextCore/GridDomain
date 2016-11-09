@@ -156,7 +156,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [Test]
         public void Serializer_can_serialize_and_deserialize_polymorphic_types()
         {
-            var withType = new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(DateTime.MaxValue);
+            var withType = new ExecutionOptions(DateTime.MaxValue, typeof(ScheduledCommandSuccessfullyProcessed));
             var serializer = new Serializer();
             var stream = new MemoryStream();
             serializer.Serialize(withType, stream);
@@ -176,7 +176,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         private ExecutionOptions CreateOptions(double seconds)
         {
-            return new ExecutionOptions<ScheduledCommandSuccessfullyProcessed>(BusinessDateTime.UtcNow.AddSeconds(seconds), Timeout);
+            return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),typeof(ScheduledCommandSuccessfullyProcessed), Timeout);
         }
 
         [Test]
