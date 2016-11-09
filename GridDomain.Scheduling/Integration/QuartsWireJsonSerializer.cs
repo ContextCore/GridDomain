@@ -2,11 +2,13 @@ using System;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
+using System.Security.Policy;
 using System.Text;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Logging;
 using Newtonsoft.Json;
+using Wire;
 
 namespace GridDomain.Scheduling.Integration
 {
@@ -14,11 +16,9 @@ namespace GridDomain.Scheduling.Integration
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
         private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
+        private static readonly Serializer NewWire = new Serializer(new SerializerOptions(true,true));
         private readonly ISoloLogger _log = LogManager.GetLogger();
         public bool UseWire { get; set; } = true;
-
-
-
 
         // <summary>
         // Serializes the given object into a byte array
@@ -49,7 +49,7 @@ namespace GridDomain.Scheduling.Integration
                     var readToEnd = reader.ReadToEnd();
                     var deserializeObject = JsonConvert.DeserializeObject(readToEnd, JsonSerializerSettings);
                     if (deserializeObject == null)
-                        throw new SerializationException();
+                        throw new SerializationException("json string: " + readToEnd);
 
                     return deserializeObject;
                 }
@@ -57,9 +57,18 @@ namespace GridDomain.Scheduling.Integration
             catch (Exception ex)
             {
                 if (!UseWire) ExceptionDispatchInfo.Capture(ex).Throw();
-                _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}", type, ex);
-                return OldWire.Deserialize(bytes, type);
 
+                _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}", type, ex);
+                 try
+                 {
+                   return OldWire.Deserialize(bytes, type);
+                 }
+                 catch (Exception e)
+                 {
+                     _log.Trace("Received an error while deserializing {type} by old wire, switching to new wire. {Error}", type, e);
+                     using (var stream = new MemoryStream(bytes))
+                         return NewWire.Deserialize(stream);
+                 }
             }
         }
     }
