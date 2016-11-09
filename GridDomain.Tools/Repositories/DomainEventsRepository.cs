@@ -17,7 +17,7 @@ namespace GridDomain.Tools.Repositories
     public class DomainEventsRepository : IRepository<DomainEvent>
     {
         private readonly IRepository<JournalItem> _rawDataRepo;
-        private readonly DomainEventsJsonSerializer _serializer = new DomainEventsJsonSerializer(null);
+        private readonly DomainSerializer _serializer = new DomainSerializer();
 
         public void Dispose()
         {
@@ -50,19 +50,19 @@ namespace GridDomain.Tools.Repositories
         {
             return
                 _rawDataRepo.Load(id)
-                    .Select(d =>
-                    {
-                        try
-                        {
-                            return _serializer.FromBinary(d.Payload,Type.GetType(d.Manifest));
-                        }
-                        catch (NullReferenceException ex)
-                        {
-                            throw new PersistanceFailureException(d, ex);
-                        }
-                    })
-                    .Cast<DomainEvent>()
-                    .ToArray();
+                            .Select(d =>
+                            {
+                                try
+                                {
+                                    return _serializer.FromBinary(d.Payload,Type.GetType(d.Manifest));
+                                }
+                                catch (NullReferenceException ex)
+                                {
+                                    throw new PersistanceFailureException(d, ex);
+                                }
+                            })
+                            .Cast<DomainEvent>()
+                            .ToArray();
         }
 
         public static DomainEventsRepository New(string connectionString)

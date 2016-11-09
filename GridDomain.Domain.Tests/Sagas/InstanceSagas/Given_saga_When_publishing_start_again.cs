@@ -31,13 +31,11 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 new GotTiredEvent(Guid.NewGuid(),_startMessage.LovelySofaId, Guid.NewGuid())
                     .CloneWithSaga(_startMessage.SagaId);
 
-
-
             GridNode.Transport.Publish(_startMessage);
             GridNode.Transport.Publish(_coffeMadeEvent);
             GridNode.Transport.Publish(_reStartEvent);
 
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
          
             _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
         }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Akka.Actor;
@@ -12,30 +11,30 @@ using Newtonsoft.Json;
 
 namespace GridDomain.Node
 {
-    public class DomainEventsJsonSerializer : Serializer
+
+    class DomainEventsJsonAkkaSerializer : Serializer
     {
-        private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
         private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
         private readonly ISoloLogger _log;
+        private readonly Lazy<DomainSerializer> _serializer;
 
-        public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
+        public DomainEventsJsonAkkaSerializer(ExtendedActorSystem system) : base(system)
         {
             _log = LogManager.GetLogger();
-        }
 
-        internal static void Register(JsonConverter converter)
-        {
-            JsonSerializerSettings.Converters.Add(converter);
-        }
+            _serializer = new Lazy<DomainSerializer>(() =>
+            {
+                var settings = DomainSerializer.GetDefaultSettings();
+                var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(this.system);
+                if (ext == null)
+                    throw new ArgumentNullException(nameof(ext),
+                        $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
-        public static void Clear()
-        {
-            JsonSerializerSettings.Converters.Clear();
-        }
+                foreach (var c in ext.Converters)
+                    settings.Converters.Add(c);
 
-        internal static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
-        {
-            Register((JsonConverter)converter);
+                return new DomainSerializer(settings);
+            });
         }
 
         /// <summary>
@@ -58,9 +57,7 @@ namespace GridDomain.Node
         /// <returns>A byte array containing the serialized object</returns>
         public override byte[] ToBinary(object obj)
         {
-            //TODO: use faster realization with reusable serializer
-            var stringJson = JsonConvert.SerializeObject(obj, JsonSerializerSettings);
-            return Encoding.Unicode.GetBytes(stringJson);
+            return _serializer.Value.ToBinary(obj);
         }
 
         /// <summary>
@@ -74,13 +71,8 @@ namespace GridDomain.Node
         {
             try
             {
-                using (var stream = new MemoryStream(bytes))
-                using (var reader = new StreamReader(stream, Encoding.Unicode))
-                {
-                    var readToEnd = reader.ReadToEnd();
-                    var deserializeObject = JsonConvert.DeserializeObject(readToEnd,JsonSerializerSettings);
-                    return deserializeObject ?? OldWire.Deserialize(bytes, type);
-                }
+               var deserializeObject = _serializer.Value.FromBinary(bytes,type);
+               return deserializeObject ?? OldWire.Deserialize(bytes, type);
             }
             catch(Exception ex)
             {

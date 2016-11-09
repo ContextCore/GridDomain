@@ -126,16 +126,4 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorRestarted();
         }
     }
-
-    public class CannotCreateChildException : Exception
-    {
-        public object Message { get; }
-        public Type ChildActorType { get;  }
-
-        public CannotCreateChildException(object message, Type childActorType)
-        {
-            Message = message;
-            ChildActorType = childActorType;
-        }
-    }
 }

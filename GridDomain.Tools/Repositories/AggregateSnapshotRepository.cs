@@ -41,7 +41,7 @@ namespace GridDomain.Tools.Repositories
                            .Select(s =>
                            {
                                var jsonString = Encoding.Unicode.GetString(s.Snapshot);
-                               var aggregate = JsonConvert.DeserializeObject<T>(jsonString, DomainEventSerialization.GetDefaultSettings());
+                               var aggregate = JsonConvert.DeserializeObject<T>(jsonString, DomainSerializer.GetDefaultSettings());
                                aggregate.ClearUncommittedEvents(); //in case json will call public constructor
                                return new AggregateVersion<T>(aggregate, s.Timestamp);
                            }).ToArray();
@@ -51,7 +51,7 @@ namespace GridDomain.Tools.Repositories
         {
             using (var repo = new RawSnapshotsRepository(_writeString))
             {
-                var jsonString = JsonConvert.SerializeObject(aggregate, DomainEventSerialization.GetDefaultSettings());
+                var jsonString = JsonConvert.SerializeObject(aggregate, DomainSerializer.GetDefaultSettings());
                 var item = new SnapshotItem()
                 {
                     Manifest = typeof(T).AssemblyQualifiedShortName(),

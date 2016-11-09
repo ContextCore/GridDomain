@@ -40,7 +40,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              "+messageSerialization+ @"
              serializers {
                         wire = """+typeof(WireSerializer).AssemblyQualifiedShortName()+ @"""
-                        json = """+typeof(DomainEventsJsonSerializer).AssemblyQualifiedShortName() + @"""
+                        json = """+typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
              serialization-bindings {

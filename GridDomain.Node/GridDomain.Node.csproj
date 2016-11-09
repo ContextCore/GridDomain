@@ -233,6 +233,7 @@
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\CannotCreateChildException.cs" />
     <Compile Include="Actors\CheckHealth.cs" />
     <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
@@ -264,11 +265,13 @@
     <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
-    <Compile Include="Configuration\Akka\Hocon\InMemorySnapshotConfig.cs" />
+    <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
-    <Compile Include="DomainEventAdapters.cs" />
+    <Compile Include="IObjectsAdapter.cs" />
+    <Compile Include="DomainEventsJsonSerializationExtension.cs" />
+    <Compile Include="DomainEventsJsonSerializationExtensionProvider.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />

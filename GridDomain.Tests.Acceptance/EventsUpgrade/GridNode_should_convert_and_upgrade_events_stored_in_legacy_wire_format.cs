@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
-            DomainEventAdapters.Register(new BookOrderAdapter());
+            GridNode.ObjectAdapteresCatalog.Register(new BookOrderAdapter());
             
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         public void Then_it_should_be_serialized_to_json()
         {
             var convertedItems = RawDataRepository.Load(_persistenceId);
-            var serializer = new DomainEventsJsonSerializer((ExtendedActorSystem)GridNode.System);
+            var serializer = new DomainEventsJsonAkkaSerializer((ExtendedActorSystem)GridNode.System);
             var restoredFromJson = convertedItems.Select(i => serializer.FromBinary(i.Payload,Type.GetType(i.Manifest)));
 
             CollectionAssert.AllItemsAreNotNull(restoredFromJson);

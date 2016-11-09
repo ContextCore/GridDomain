@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace GridDomain.EventSourcing.Adapters
 {
-    public static class DomainEventSerialization
+    public class DomainSerializer
     {
         public class MostSpecifiedContructorResolver : DefaultContractResolver
         {
@@ -61,32 +63,18 @@ namespace GridDomain.EventSourcing.Adapters
                 if (jProperty.Writable)
                     return jProperty;
 
-                jProperty.Writable = member.IsPropertyWithSetter();
+                jProperty.Writable = IsPropertyWithSetter(member);
 
                 return jProperty;
             }
+            static bool IsPropertyWithSetter(MemberInfo member)
+            {
+                var property = member as PropertyInfo;
+
+                return property?.GetSetMethod(true) != null;
+            }
         }
-
-       //public class PrivateSetterCamelCasePropertyNamesContractResolver : CamelCasePropertyNamesContractResolver
-       //{
-       //    protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-       //    {
-       //        var jProperty = base.CreateProperty(member, memberSerialization);
-       //        if (jProperty.Writable)
-       //            return jProperty;
-       //
-       //        jProperty.Writable = member.IsPropertyWithSetter();
-       //
-       //        return jProperty;
-       //    }
-       //}
-
-        internal static bool IsPropertyWithSetter(this MemberInfo member)
-        {
-            var property = member as PropertyInfo;
-
-            return property?.GetSetMethod(true) != null;
-        }
+     
 
         public static JsonSerializerSettings GetDefaultSettings()
         {
@@ -102,15 +90,48 @@ namespace GridDomain.EventSourcing.Adapters
             };
         }
 
-        private static readonly JsonSerializerSettings Settings = GetDefaultSettings();
-        public static string Serialize(object obj)
+        private readonly JsonSerializerSettings Settings;
+
+        public static DomainSerializer Instance { get; } = new DomainSerializer();
+
+        public DomainSerializer(JsonSerializerSettings settings = null)
+        {
+            Settings = settings ?? GetDefaultSettings();
+        }
+
+
+        public string SerializeObject(object obj)
         {
             return JsonConvert.SerializeObject(obj, Settings);
         }
 
-        public static T Deserialize<T>(string jsonString)
+        public static string Serialize(object obj)
+        {
+            return Instance.SerializeObject(obj);
+        }
+
+        public T DeserializeObject<T>(string jsonString)
         {
             return JsonConvert.DeserializeObject<T>(jsonString, Settings);
+        }
+
+        public static T Deserialize<T>(string jsonString)
+        {
+            return Instance.DeserializeObject<T>(jsonString);
+        }
+
+        public byte[] ToBinary(object obj)
+        {
+            return Encoding.Unicode.GetBytes(SerializeObject(obj));
+        }
+
+        public object FromBinary(byte[] bytes, Type type = null)
+        {
+            using (var stream = new MemoryStream(bytes))
+            using (var reader = new StreamReader(stream, Encoding.Unicode))
+            {
+                return JsonConvert.DeserializeObject(reader.ReadToEnd(), Settings);
+            }
         }
     }
 }

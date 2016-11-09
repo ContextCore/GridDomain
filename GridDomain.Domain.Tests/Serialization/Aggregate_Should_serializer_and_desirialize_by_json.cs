@@ -22,8 +22,8 @@ namespace GridDomain.Tests.Serialization
             _aggregate.ChangeState(10);
             _aggregate.ClearEvents();
 
-            var jsonString = JsonConvert.SerializeObject(_aggregate, DomainEventSerialization.GetDefaultSettings());
-            _restoredAggregate = JsonConvert.DeserializeObject<SampleAggregate>(jsonString,DomainEventSerialization.GetDefaultSettings());
+            var jsonString = JsonConvert.SerializeObject(_aggregate, DomainSerializer.GetDefaultSettings());
+            _restoredAggregate = JsonConvert.DeserializeObject<SampleAggregate>(jsonString,DomainSerializer.GetDefaultSettings());
         }
 
         [Test]

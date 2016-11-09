@@ -52,11 +52,17 @@ namespace GridDomain.Node
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
+        bool _stopping = false;
+        private AkkaCommandExecutor _commandExecutor;
+        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
+        public IObjectsAdapter ObjectAdapteresCatalog { get; private set; }
 
         public IActorTransport Transport { get; private set; }
-       // public MessagesListener Listener { get; private set; }
 
-        public ActorSystem System;
+        public ActorSystem System { get; private set; }
+
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
@@ -76,7 +82,6 @@ namespace GridDomain.Node
                                                     new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                   );
-
             Container = new UnityContainer();
         }
 
@@ -100,6 +105,9 @@ namespace GridDomain.Node
            
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
+            System.AddDomainEventsJsonSerialization();
+
+            ObjectAdapteresCatalog = DomainEventsJsonSerializationExtensionProvider.Provider.Get(System);
 
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
@@ -159,20 +167,15 @@ namespace GridDomain.Node
             _configuration.Register(unityContainer);
         }
 
-        bool _stopping = false;
-        private AkkaCommandExecutor _commandExecutor;
-        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
-
-        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
         {
             if (_stopping) return;
             _stopping = true;
 
-            _quartzScheduler.Shutdown(true);
-            System.Terminate();
-            System.Dispose();
+            _quartzScheduler?.Shutdown(true);
+            System?.Terminate();
+            System?.Dispose();
             _log.Debug("GridDomain node {Id} stopped",Id);
         }
 

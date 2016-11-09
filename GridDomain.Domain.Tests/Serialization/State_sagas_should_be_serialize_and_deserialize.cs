@@ -24,8 +24,8 @@ namespace GridDomain.Tests.Serialization
             _sagaState.RememberPerson(Guid.NewGuid());
             _sagaState.ClearEvents();
 
-            var data = DomainEventSerialization.Serialize(_sagaState);
-            _restoredState = DomainEventSerialization.Deserialize<SoftwareProgrammingSagaState>(data);
+            var data = DomainSerializer.Serialize(_sagaState);
+            _restoredState = DomainSerializer.Deserialize<SoftwareProgrammingSagaState>(data);
         }
 
         [Test]

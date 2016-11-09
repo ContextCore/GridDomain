@@ -49,8 +49,8 @@ namespace GridDomain.Tests.Framework
             if (CreateNodeOnEachTest) return;
             Console.WriteLine();
             Console.WriteLine("Stopping node");
-            GridNode.Stop();
-            Sys.Terminate();
+            GridNode?.Stop();
+            Sys?.Terminate();
         }
 
         protected override void AfterAll()
