@@ -41,7 +41,7 @@ namespace GridDomain.EventSourcing
 
         public WireJsonSerializer(JsonSerializerSettings settings=null, bool useWire = true)
         {
-            JsonSerializerSettings = settings ?? DomainEventSerialization.GetDefaultSettings();
+            JsonSerializerSettings = settings ?? DomainSerializer.GetDefaultSettings();
             UseWire = useWire;
         }
         private readonly ISoloLogger _log = LogManager.GetLogger();

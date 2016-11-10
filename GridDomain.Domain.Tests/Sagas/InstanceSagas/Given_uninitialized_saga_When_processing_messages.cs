@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_uninitialized_saga_When_processing_messages : ProgrammingSoftwareSagaTest
+    class Given_uninitialized_saga_When_processing_messages : SoftwareProgrammingInstanceSagaTest
     {
         private CoffeMadeEvent _coffeMadeEvent;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;

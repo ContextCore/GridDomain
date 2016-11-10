@@ -8,5 +8,7 @@ namespace GridDomain.Node.Actors
         {
             this.Payload = payload;
         }
+
+        public static CheckHealth Instance = new CheckHealth();
     }
 }

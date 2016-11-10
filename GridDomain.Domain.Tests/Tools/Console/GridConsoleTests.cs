@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Tools.Console
         [Then]
         public void Console_commands_are_executed()
         {
-            var command = new CreateSampleAggregateCommand(42, Guid.NewGuid(), Guid.NewGuid());
+            var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
 

@@ -44,10 +44,10 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Test]
         public void Then_domain_events_should_be_upgraded_by_json_custom_adapter()
         {
-            var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid(), Guid.NewGuid());
+            var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
 
-            DomainEventAdapters.Register(new InIncreaseByInstanceAdapter());
-            DomainEventAdapters.Register(new NullAdapter());
+            GridNode.ObjectAdapteresCatalog.Register(new InIncreaseByInstanceAdapter());
+            GridNode.ObjectAdapteresCatalog.Register(new NullAdapter());
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>();
 

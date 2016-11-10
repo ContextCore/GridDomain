@@ -27,14 +27,13 @@ namespace GridDomain.Tests.FutureEvents
 
             _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
             _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Received.First();
-
             _aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
         }
 
         [Then]
         public void Future_event_fires_in_time()
         {
-            Assert.LessOrEqual(_scheduledTime.Second - _aggregate.ProcessedTime.Second,1);
+            Assert.LessOrEqual(_scheduledTime.Second - _aggregate.ProcessedTime.Second, 1);
         }
 
         [Then]

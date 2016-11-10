@@ -3,19 +3,28 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
     internal class PersistenceConfig : IAkkaConfig
     {
         private readonly AkkaConfiguration _akka;
+        private readonly IAkkaConfig _journalConfig;
+        private readonly IAkkaConfig _snapshotsConfig;
 
-        public PersistenceConfig(AkkaConfiguration akka)
+       // public PersistenceConfig(AkkaConfiguration akka)
+       // {
+       //     _akka = akka;
+       // }
+
+        public PersistenceConfig(IAkkaConfig journalConfig, IAkkaConfig snapshotsConfig)
         {
-            _akka = akka;
+            _snapshotsConfig = snapshotsConfig;
+            _journalConfig = journalConfig;
         }
 
+        //new PersistenceJournalConfig(_akka,new DomainEventAdaptersConfig()).Build() + 
         public string Build()
         {
             var akkaPersistenceConfig =
         @"persistence {
                     publish-plugin-commands = on
-" + new PersistenceJournalConfig(_akka,new DomainEventAdaptersConfig()).Build() + @"
-" + new PersistenceSnapshotConfig(_akka).Build() + @"
+" + _journalConfig.Build() +@"
+" + _snapshotsConfig.Build() + @"
         }";
             return akkaPersistenceConfig;
         }

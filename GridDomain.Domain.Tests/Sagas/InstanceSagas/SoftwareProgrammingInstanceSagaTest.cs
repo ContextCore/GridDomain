@@ -13,21 +13,13 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    public class ProgrammingSoftwareSagaTest : SampleDomainCommandExecutionTests
+    public class SoftwareProgrammingInstanceSagaTest : SampleDomainCommandExecutionTests
     {
         protected override IMessageRouteMap CreateMap()
         {
             return new SoftwareProgrammingSagaRoutes();
         }
 
-        protected IPublisher Publisher { get; private set; }
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
-
-        [SetUp]
-        public void InitPublisher()
-        {
-            Publisher = GridNode.Container.Resolve<IPublisher>();
-        }
         protected override IContainerConfiguration CreateConfiguration()
         {
             var baseConf = base.CreateConfiguration();
@@ -45,7 +37,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 );
         }
 
-        public ProgrammingSoftwareSagaTest(bool inMemory = true) : base(inMemory)
+        public SoftwareProgrammingInstanceSagaTest(bool inMemory = true) : base(inMemory)
         {
         }
     }

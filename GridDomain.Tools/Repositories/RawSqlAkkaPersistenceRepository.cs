@@ -10,11 +10,11 @@ namespace GridDomain.Tools.Repositories
     /// For example, when you have different versions of events with same type persisted
     /// for different instance of one aggregate type.
     /// </summary>
-    public class RawSqlAkkaPersistenceRepository : IRepository<JournalItem>
+    public class RawJournalRepository : IRepository<JournalItem>
     {
         private readonly string _connectionString;
 
-        public RawSqlAkkaPersistenceRepository(string connectionString)
+        public RawJournalRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
@@ -35,6 +35,7 @@ namespace GridDomain.Tools.Repositories
             }
         }
 
+    
         public JournalItem[] Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))

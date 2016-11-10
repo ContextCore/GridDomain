@@ -1,7 +1,9 @@
 using System;
 using Akka.Serialization;
 using CommonDomain;
+using CommonDomain.Core;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
@@ -38,12 +40,14 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              "+messageSerialization+ @"
              serializers {
                         wire = """+typeof(WireSerializer).AssemblyQualifiedShortName()+ @"""
-                        json = """+typeof(DomainEventsJsonSerializer).AssemblyQualifiedShortName() + @"""
+                        json = """+typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
              serialization-bindings {
-                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
-                                   """ + typeof(IAggregate).AssemblyQualifiedShortName() + @""" = json
+                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @"""   = json
+                                   """ + typeof(IAggregate).AssemblyQualifiedShortName() + @"""    = json
+                                  # for local snapshots storage
+                                   ""Akka.Persistence.Serialization.Snapshot, Akka.Persistence"" = json
                                    ""System.Object"" = wire
 
              }

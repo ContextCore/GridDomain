@@ -308,6 +308,9 @@
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="AssertEx.cs" />
+    <Compile Include="Serialization\Aggregate_Should_serializer_and_desirialize_by_json.cs" />
+    <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
+    <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_command_until_projection_build_notification_fetching_results.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_expected_faults_from_projection_group.cs" />
@@ -372,7 +375,7 @@
     <Compile Include="Sagas\SagaRecycling\Saga\States.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
-    <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingInstanceSagaTest.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
@@ -388,7 +391,7 @@
     <Compile Include="Sagas\StateSagas\SampleSaga\BadCoffeMachineRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\PersonRememberedEvent.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\UndefinedCoffeMachineException.cs" />
-    <Compile Include="Sagas\StateSagas\SoftwareProgramming_StateSaga_Test.cs" />
+    <Compile Include="Sagas\StateSagas\SoftwareProgrammingStateSagaTest.cs" />
     <Compile Include="Sagas\StateSagas\Given_state_saga_saga_actor_can_be_created.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\StateSagas\Transitions\Given_StateSaga_When_invalid_Transitions.cs" />
@@ -483,6 +486,7 @@
     <Compile Include="Sagas\StateSagas\Given_several_repeating_messages_should_dispatch_only_one_command.cs" />
     <Compile Include="Sagas\StateSagas\SubscriptionRenewSagaStateTransitionTests.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSaga.cs" />
+    <Compile Include="Serialization\State_sagas_should_be_serialize_and_deserialize.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Console\GridConsoleTests.cs" />

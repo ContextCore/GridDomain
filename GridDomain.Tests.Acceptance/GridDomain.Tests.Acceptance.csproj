@@ -90,6 +90,10 @@
       <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
@@ -290,6 +294,16 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
+    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_according_to_save_policy.cs" />
+    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
+    <Compile Include="Snapshots\Instance_saga_Should_recover_from_snapshot.cs" />
+    <Compile Include="Snapshots\State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
+    <Compile Include="Snapshots\State_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
+    <Compile Include="Snapshots\State_saga_Should_recover_from_snapshot.cs" />
+    <Compile Include="Snapshots\Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
+    <Compile Include="Snapshots\Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
+    <Compile Include="Snapshots\Aggregate_should_recover_from_snapshot.cs" />
+    <Compile Include="Snapshots\TestSnapshotsSavePolicy.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedAsyncExecuteDontWaitExecution.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />

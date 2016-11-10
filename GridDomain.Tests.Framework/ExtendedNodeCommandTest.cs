@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Framework
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
         {
-            return new GridDomainNode(CreateConfiguration(),CreateMap(), () => InMemory ? Sys : akkaConf.CreateSystem());
+            return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => Sys);
         }
 
         protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
@@ -48,9 +48,7 @@ namespace GridDomain.Tests.Framework
                 Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
-
-            Thread.Sleep(500);
+                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o)).Wait(Timeout);
         }
     }
 }

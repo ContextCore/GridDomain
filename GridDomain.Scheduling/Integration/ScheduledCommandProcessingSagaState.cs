@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Scheduling.Akka.Messages;
@@ -12,10 +13,9 @@ namespace GridDomain.Scheduling.Integration
         {
         }
 
-        public ScheduledCommandProcessingSagaState(Guid id, ScheduledCommandProcessingSaga.States state, Command command, ScheduleKey key, Type successEventType) : base(id, state)
+        public ScheduledCommandProcessingSagaState(Guid id, ScheduledCommandProcessingSaga.States machineState, Command command, ScheduleKey key, Type successEventType) : base(id, machineState)
         {
-            var sagaReceivedCommandEvent = new SagaReceivedCommandEvent(command, key, successEventType);
-            RaiseEvent(sagaReceivedCommandEvent);
+            RaiseEvent(new SagaReceivedCommandEvent(command, key, successEventType));
         }
 
         public Command Command { get; private set; }

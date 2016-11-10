@@ -77,6 +77,6 @@ namespace GridDomain.Scheduling.Integration
                 .Permit(Transitions.Success, States.SuccessfullyProcessed)
                 .Permit(Transitions.Failure, States.ProcessingFailure);
         }
-        public static ISagaDescriptor SagaDescriptor => new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(Guid.Empty, States.MessageSent,null,null,null));
+        public static ISagaDescriptor SagaDescriptor => new ScheduledCommandProcessingSaga(new ScheduledCommandProcessingSagaState(Guid.Empty,States.Created,null,null,null));
     }
 }

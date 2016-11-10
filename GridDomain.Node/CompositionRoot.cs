@@ -11,6 +11,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
@@ -26,7 +27,11 @@ namespace GridDomain.Node
                                 TransportMode transportMode,
                                 IQuartzConfig config = null)
         {
-            container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
+            container.Register(new QuartzSchedulerConfiguration(config ?? new PersistedQuartzConfig()));
+            container.Register(SagaConfiguration.State<ScheduledCommandProcessingSaga,
+                                                       ScheduledCommandProcessingSagaState,
+                                                       ScheduledCommandProcessingSagaFactory,
+                                                       ScheduledCommandProcessingStarted>(ScheduledCommandProcessingSaga.SagaDescriptor));
 
             //TODO: replace with config
             IActorTransport transport;

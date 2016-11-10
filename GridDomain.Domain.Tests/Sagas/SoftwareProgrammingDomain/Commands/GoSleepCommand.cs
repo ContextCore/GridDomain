@@ -4,7 +4,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands
 {
-    internal class GoSleepCommand: Command
+    public class GoSleepCommand: Command
     {
         public Guid SofaId { get; }
         public Guid PersonId { get; }

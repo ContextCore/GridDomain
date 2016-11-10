@@ -2,11 +2,11 @@ using System;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using Newtonsoft.Json;
 
 namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 {
-    public class SoftwareProgrammingSagaState :
-        SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>
+    public class SoftwareProgrammingSagaState:SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>
     {
         private SoftwareProgrammingSagaState(Guid id) : base(id)
         {
@@ -32,7 +32,6 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         public Guid CoffeMachineId { get; private set; }
         public Guid PersonId { get; private set; }
 
-        //  public Guid FavoritSofaId { get; private set; }
         public void RememberPerson(Guid personId)
         {
             RaiseEvent(new PersonRememberedEvent(Id,personId));

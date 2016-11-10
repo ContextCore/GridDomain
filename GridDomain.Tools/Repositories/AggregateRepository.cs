@@ -44,7 +44,7 @@ namespace GridDomain.Tools.Repositories
 
         public static AggregateRepository New(string akkaWriteDbConnectionString, EventsAdaptersCatalog upgradeCatalog = null)
         {
-            var rawSqlAkkaPersistenceRepository = new RawSqlAkkaPersistenceRepository(akkaWriteDbConnectionString);
+            var rawSqlAkkaPersistenceRepository = new RawJournalRepository(akkaWriteDbConnectionString);
             var domainEventsRepository = new DomainEventsRepository(rawSqlAkkaPersistenceRepository);
             return new AggregateRepository(domainEventsRepository, upgradeCatalog);
         }

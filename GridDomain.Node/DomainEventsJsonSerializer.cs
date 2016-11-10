@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
@@ -15,29 +14,27 @@ using Newtonsoft.Json;
 
 namespace GridDomain.Node
 {
-    public class DomainEventsJsonSerializer : Serializer
+
+    class DomainEventsJsonAkkaSerializer : Serializer
     {
-        private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
-        private static readonly WireJsonSerializer Serializer = new WireJsonSerializer(JsonSerializerSettings);
-        public bool UseWire { get; set; } = true;
+        private readonly Lazy<WireJsonSerializer> _serializer;
 
-        public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
+        public DomainEventsJsonAkkaSerializer(ExtendedActorSystem system) : base(system)
         {
-        }
 
-        internal static void Register(JsonConverter converter)
-        {
-            JsonSerializerSettings.Converters.Add(converter);
-        }
+            _serializer = new Lazy<WireJsonSerializer>(() =>
+            {
+                var settings = DomainSerializer.GetDefaultSettings();
+                var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(this.system);
+                if (ext == null)
+                    throw new ArgumentNullException(nameof(ext),
+                        $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
-        public static void Clear()
-        {
-            JsonSerializerSettings.Converters.Clear();
-        }
+                foreach (var c in ext.Converters)
+                    settings.Converters.Add(c);
 
-        internal static void Register<TFrom,TTo>(ObjectAdapter<TFrom, TTo> converter)
-        {
-            Register((JsonConverter)converter);
+                return new WireJsonSerializer(settings);
+            });
         }
 
         /// <summary>
@@ -48,7 +45,7 @@ namespace GridDomain.Node
 
         /// <summary>
         /// Completely unique value to identify this implementation of the
-        /// <see cref="Serializer"/> used to optimize network traffic
+        /// <see cref="Akka.Serialization.Serializer"/> used to optimize network traffic
         /// </summary>
         public override int Identifier => 21;
 
@@ -60,9 +57,7 @@ namespace GridDomain.Node
         /// <returns>A byte array containing the serialized object</returns>
         public override byte[] ToBinary(object obj)
         {
-            //TODO: use faster realization with reusable serializer
-            return Serializer.ToBinary(obj, JsonSerializerSettings);
-            
+            return _serializer.Value.ToBinary(obj);
         }
 
         /// <summary>
@@ -74,7 +69,7 @@ namespace GridDomain.Node
         /// <returns>The object contained in the array</returns>
         public override object FromBinary(byte[] bytes, Type type)
         {
-            return Serializer.FromBinary(bytes, type);
+           return _serializer.Value.FromBinary(bytes,type);
         }
     }
 }
