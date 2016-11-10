@@ -49,5 +49,5 @@
     <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">$(NuProjPath)\NuProj.targets</NuProjTargetsPath>
 	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">$(NuProjPath)\NuProj.Tasks.dll</NuProjTasksPath>
   </PropertyGroup>
-  <Import Project="..\NuProj.targets" />
+  <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
