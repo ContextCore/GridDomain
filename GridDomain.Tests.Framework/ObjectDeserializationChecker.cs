@@ -6,10 +6,12 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests
 {
-    class ObjectDeserializationChecker
+    public class ObjectDeserializationChecker
     {
         private readonly Serializer _serializer;
         private readonly CompareLogic _compareLogic;
+
+        public CompareLogic CompareLogic => _compareLogic;
 
         public ObjectDeserializationChecker(Serializer serializer = null, CompareLogic logic = null)
         {
