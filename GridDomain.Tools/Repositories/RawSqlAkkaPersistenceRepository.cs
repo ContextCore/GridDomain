@@ -39,7 +39,9 @@ namespace GridDomain.Tools.Repositories
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
-                return context.Journal.Where(j => j.PersistenceId == id).ToArray();
+                return context.Journal.Where(j => j.PersistenceId == id)
+                                      .OrderBy(j => j.SequenceNr)
+                                      .ToArray();
             }
         }
     }

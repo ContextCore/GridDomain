@@ -20,9 +20,8 @@ namespace GridDomain.Scheduling.Integration
         private const string ExecutionOptionsKey = nameof(ExecutionOptionsKey);
 
         private readonly IQuartzLogger _quartzLogger;
-        private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
-        private static readonly WireJsonSerializer _serializer = new WireJsonSerializer();
+        private static readonly WireJsonSerializer Serializer = new WireJsonSerializer();
         private readonly IMessageWaiterFactory _executor;
 
 
@@ -31,14 +30,13 @@ namespace GridDomain.Scheduling.Integration
                          IPublisher publisher,
                          IMessageWaiterFactory executor)
         {
-            _executor = executor;
             Condition.NotNull(()=> quartzLogger);
             Condition.NotNull(()=> actorSystem);
             Condition.NotNull(()=> publisher);
             Condition.NotNull(() => actorSystem.DI());
 
+            _executor = executor;
             _quartzLogger = quartzLogger;
-            _actorSystem = actorSystem;
             _publisher = publisher;
         }
 
@@ -111,18 +109,12 @@ namespace GridDomain.Scheduling.Integration
 
         private static byte[] Serialize(object source)
         {
-            return _serializer.ToBinary(source);
+            return Serializer.ToBinary(source);
         }
 
         private static T Deserialize<T>(byte[] source)
         {
-            return (T)_serializer.FromBinary(source, typeof(T));
-        }
-
-        private Props CreateGenericProps(ExecutionOptions options)
-        {
-            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccesEventType);
-            return _actorSystem.DI().Props(genericActorType);
+            return (T)Serializer.FromBinary(source, typeof(T));
         }
 
         private static DomainEvent GetEvent(JobDataMap jobDataMap)
