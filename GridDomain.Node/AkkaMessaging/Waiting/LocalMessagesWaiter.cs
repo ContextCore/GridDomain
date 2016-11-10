@@ -47,7 +47,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
         public IExpectBuilder<T> Expect(Type type, Func<object,bool> filter = null)
         {
-            return ExpectBuilder.And(type,filter);
+            return ExpectBuilder.And(type,filter ?? (o => true));
         }
 
         public async Task<IWaitResults> Start(TimeSpan timeout)

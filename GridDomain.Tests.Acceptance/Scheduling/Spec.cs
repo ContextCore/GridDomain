@@ -117,6 +117,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_two_commands_with_same_success_event_are_published_Then_first_successfully_handled_command_doesnt_change_second_commands_saga_state()
         {
             var firstCommand = new TimeoutCommand("timeout", TimeSpan.FromMilliseconds(300));
@@ -139,6 +140,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_two_commands_of_the_same_type_are_published_Then_first_failed_command_doesnt_change_second_commands_saga_state()
         {
             var firstCommand = new FailCommand(TimeSpan.FromMilliseconds(300));
