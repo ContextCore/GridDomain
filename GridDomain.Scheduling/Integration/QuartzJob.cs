@@ -22,7 +22,7 @@ namespace GridDomain.Scheduling.Integration
         private readonly IQuartzLogger _quartzLogger;
         private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
-        private static readonly QuartsWireJsonSerializer _serializer = new QuartsWireJsonSerializer();
+        private static readonly WireJsonSerializer _serializer = new WireJsonSerializer();
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
@@ -55,7 +55,7 @@ namespace GridDomain.Scheduling.Integration
                     var sagaCreator = _actorSystem.ActorOf(genericProps);
                     var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
                     var r = result.Wait(options.Timeout);
-                    if(!r) throw new Exception("saga was not created");
+                    if(!r) throw new Exception("Scheduling saga was not created");
                     sagaCreator.Tell(PoisonPill.Instance, ActorRefs.NoSender);
                 }
                 else

@@ -46,8 +46,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Wire.0.8.1\lib\net45\Wire.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="AggregateFactory.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
@@ -61,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Adapters\ObjectAdapter.cs" />
     <Compile Include="Adapters\TypeNameNotFoundException.cs" />
+    <Compile Include="WireJsonSerializer.cs" />
     <Compile Include="VersionedTypeSerialization\CantFindTypeException.cs" />
     <Compile Include="VersionedTypeSerialization\CantFindTypeLatestVersionException.cs" />
     <Compile Include="VersionedTypeSerialization\CantParseVersionNumberExpection.cs" />
@@ -75,6 +81,10 @@
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
       <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
       <Name>GridDomain.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

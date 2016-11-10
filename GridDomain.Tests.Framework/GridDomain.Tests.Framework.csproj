@@ -147,6 +147,7 @@
     <Compile Include="AutoFix.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="AutoTestLogFactory.cs" />
+    <Compile Include="CannotCreateGenericType.cs" />
     <Compile Include="CannotFindRequestedEventException.cs" />
     <Compile Include="ChildEcho.cs" />
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />

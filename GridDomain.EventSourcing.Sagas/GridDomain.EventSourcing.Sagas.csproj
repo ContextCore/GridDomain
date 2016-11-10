@@ -75,6 +75,7 @@
     <Compile Include="InstanceSagas\SagaInstance.cs" />
     <Compile Include="InstanceSagas\SagaTransitionEvent.cs" />
     <Compile Include="InstanceSagas\SagaTransitionException.cs" />
+    <Compile Include="InstanceSagas\SagaTransitionTimeoutException.cs" />
     <Compile Include="InstanceSagas\StartMessagesMissedException.cs" />
     <Compile Include="InstanceSagas\StateChangedData.cs" />
     <Compile Include="ISagaInstance.cs" />

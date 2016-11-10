@@ -141,7 +141,6 @@
     <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="Integration\NodeQuartzJob.cs" />
-    <Compile Include="Integration\QuartsWireJsonSerializer.cs" />
     <Compile Include="Integration\SheduledCommandPlan.cs" />
     <Compile Include="SchedulerConfiguration.cs" />
     <Compile Include="Integration\CompleteJob.cs" />

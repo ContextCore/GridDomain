@@ -40,7 +40,6 @@ namespace GridDomain.EventSourcing.Adapters
             protected override JsonObjectContract CreateObjectContract(Type objectType)
             {
                 var contract = base.CreateObjectContract(objectType);
-               // if (!IsCustomStruct(objectType)) return contract;
 
                 IList<ConstructorInfo> list = objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).OrderBy(e => e.GetParameters().Length).ToList();
                 var mostSpecific = list.LastOrDefault();

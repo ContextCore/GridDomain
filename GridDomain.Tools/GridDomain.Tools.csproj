@@ -113,7 +113,7 @@
     <Compile Include="Persistence\SqlPersistence\FakeDbAsyncQueryProvider.cs" />
     <Compile Include="Persistence\SqlPersistence\FakeDbSet.cs" />
     <Compile Include="Persistence\SqlPersistence\IAkkaSqlPersistenceContext.cs" />
-    <Compile Include="Persistence\SqlPersistence\JournalEntry.cs" />
+    <Compile Include="Persistence\SqlPersistence\JournalItem.cs" />
     <Compile Include="Persistence\SqlPersistence\JournalConfiguration.cs" />
     <Compile Include="Persistence\SqlPersistence\Metadata.cs" />
     <Compile Include="Persistence\SqlPersistence\MetadataConfiguration.cs" />

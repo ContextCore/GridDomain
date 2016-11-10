@@ -16,6 +16,7 @@ namespace GridDomain.Tools.Repositories
     public class DomainEventsRepository : IRepository<DomainEvent>
     {
         private readonly IRepository<JournalItem> _rawDataRepo;
+        private readonly WireJsonSerializer _serializer = new WireJsonSerializer();
 
         public void Dispose()
         {
@@ -31,38 +32,33 @@ namespace GridDomain.Tools.Repositories
         {
             long counter=0;
 
-            var journalEntries = messages.Select(m =>
-            {
-                var json = JsonConvert.SerializeObject(m, DomainEventSerialization.GetDefaultSettings());
-                return new JournalItem(id,
-                                       ++counter,
-                                       false,
-                                       m.GetType().AssemblyQualifiedShortName(),
-                                       m.CreatedTime,
-                                       "",
-                                       Encoding.Unicode.GetBytes(json));
-            }).ToArray();
+            var journalEntries = messages.Select(m => new JournalItem(id,
+                                                      ++counter,
+                                                      false,
+                                                      m.GetType().AssemblyQualifiedShortName(),
+                                                      m.CreatedTime,
+                                                      "",
+                                                      _serializer.ToBinary(m)))
+                                         .ToArray();
 
             _rawDataRepo.Save(id, journalEntries);
         }
 
         public DomainEvent[] Load(string id)
         {
-            var serializer = new Serializer(new SerializerOptions(true,true));
             return
                 _rawDataRepo.Load(id)
                     .Select(d =>
                     {
                         try
                         {
-                            return serializer.Deserialize(new MemoryStream(d.Payload));
+                            return (DomainEvent)_serializer.FromBinary(d.Payload, null);
                         }
                         catch (NullReferenceException ex)
                         {
                             throw new PersistanceFailureException(d, ex);
                         }
                     })
-                    .Cast<DomainEvent>()
                     .ToArray();
         }
 

@@ -265,7 +265,7 @@
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
-    <Compile Include="DomainEventsAdapters.cs" />
+    <Compile Include="DomainEventAdapters.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
@@ -314,7 +314,7 @@
     <Compile Include="DomainEventsJsonSerializer.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
-    <Compile Include="Configuration\Akka\Hocon\ActorConfig.cs" />
+    <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
     <Compile Include="Configuration\Akka\Hocon\EmptyConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\PersistenceConfig.cs" />

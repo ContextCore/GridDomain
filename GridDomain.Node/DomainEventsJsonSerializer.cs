@@ -8,6 +8,7 @@ using Akka.Actor;
 using Akka.Serialization;
 using Akka.Util;
 using GridDomain.Common;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Logging;
 using Newtonsoft.Json;
@@ -17,13 +18,11 @@ namespace GridDomain.Node
     public class DomainEventsJsonSerializer : Serializer
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
-        private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
-        private readonly ISoloLogger _log;
+        private static readonly WireJsonSerializer Serializer = new WireJsonSerializer(JsonSerializerSettings);
         public bool UseWire { get; set; } = true;
 
         public DomainEventsJsonSerializer(ExtendedActorSystem system) : base(system)
         {
-            _log = LogManager.GetLogger();
         }
 
         internal static void Register(JsonConverter converter)
@@ -62,8 +61,8 @@ namespace GridDomain.Node
         public override byte[] ToBinary(object obj)
         {
             //TODO: use faster realization with reusable serializer
-            var stringJson = JsonConvert.SerializeObject(obj, JsonSerializerSettings);
-            return Encoding.Unicode.GetBytes(stringJson);
+            return Serializer.ToBinary(obj, JsonSerializerSettings);
+            
         }
 
         /// <summary>
@@ -75,26 +74,7 @@ namespace GridDomain.Node
         /// <returns>The object contained in the array</returns>
         public override object FromBinary(byte[] bytes, Type type)
         {
-            try
-            {
-                using (var stream = new MemoryStream(bytes))
-                using (var reader = new StreamReader(stream, Encoding.Unicode))
-                {
-                    var readToEnd = reader.ReadToEnd();
-                    var deserializeObject = JsonConvert.DeserializeObject(readToEnd,JsonSerializerSettings);
-                    if(deserializeObject == null)
-                        throw new SerializationException();
-
-                    return deserializeObject;
-                }
-            }
-            catch(Exception ex)
-            {
-                if(!UseWire) ExceptionDispatchInfo.Capture(ex).Throw();
-               _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}",type,ex);
-                return OldWire.Deserialize(bytes, type);
-
-            }
+            return Serializer.FromBinary(bytes, type);
         }
     }
 }

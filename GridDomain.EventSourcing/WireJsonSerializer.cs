@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
-using System.Security.Policy;
 using System.Text;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Adapters;
@@ -10,11 +9,11 @@ using GridDomain.Logging;
 using Newtonsoft.Json;
 using Wire;
 
-namespace GridDomain.Scheduling.Integration
+namespace GridDomain.EventSourcing
 {
-    public class QuartsWireJsonSerializer 
+    public class WireJsonSerializer
     {
-        private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
+        private readonly JsonSerializerSettings JsonSerializerSettings;
         private static readonly LegacyWireSerializer OldWire_Default = new LegacyWireSerializer();
         private static readonly LegacyWireSerializer OldWire_Tolerance = new LegacyWireSerializer(true,false);
         private static readonly LegacyWireSerializer OldWire_Not_tolerance_do_not_preserve = new LegacyWireSerializer(false,false);
@@ -24,7 +23,7 @@ namespace GridDomain.Scheduling.Integration
         private static readonly Serializer NewWire_Default = new Serializer(new SerializerOptions(false, false));
         private static readonly Serializer NewWire_NotTolerante_References = new Serializer(new SerializerOptions(false, true));
 
-        private static readonly Tuple<string,Serializer>[] wireSerializers = 
+        private static readonly Tuple<string,Serializer>[] WireSerializers = 
         {
             Tuple.Create(nameof(NewWire_Default),NewWire_Default),
             Tuple.Create(nameof(NewWire_Tolerance), NewWire_Tolerance),
@@ -32,7 +31,7 @@ namespace GridDomain.Scheduling.Integration
             Tuple.Create(nameof(NewWire_NotTolerante_References), NewWire_NotTolerante_References)
         };
 
-        private static readonly Tuple<string, LegacyWireSerializer>[] oldWireSerializers =
+        private static readonly Tuple<string, LegacyWireSerializer>[] OldWireSerializers =
        {
             Tuple.Create(nameof(OldWire_Default),OldWire_Default),
             Tuple.Create(nameof(OldWire_Tolerance), OldWire_Tolerance),
@@ -40,20 +39,24 @@ namespace GridDomain.Scheduling.Integration
             Tuple.Create(nameof(OldWire_not_tolerant_preserve), OldWire_not_tolerant_preserve)
         };
 
-
-
+        public WireJsonSerializer(JsonSerializerSettings settings=null, bool useWire = true)
+        {
+            JsonSerializerSettings = settings ?? DomainEventSerialization.GetDefaultSettings();
+            UseWire = useWire;
+        }
         private readonly ISoloLogger _log = LogManager.GetLogger();
-        public bool UseWire { get; set; } = true;
+        public bool UseWire { get; set; }
 
         // <summary>
         // Serializes the given object into a byte array
         // </summary>
         /// <param name="obj">The object to serialize </param>
+        /// <param name="jsonSerializerSettings"></param>
         /// <returns>A byte array containing the serialized object</returns>
-        public byte[] ToBinary(object obj)
+        public byte[] ToBinary(object obj, JsonSerializerSettings jsonSerializerSettings=null)
         {
             //TODO: use faster realization with reusable serializer
-            var stringJson = JsonConvert.SerializeObject(obj, JsonSerializerSettings);
+            var stringJson = JsonConvert.SerializeObject(obj, jsonSerializerSettings ?? JsonSerializerSettings);
             return Encoding.Unicode.GetBytes(stringJson);
         }
 
@@ -64,7 +67,7 @@ namespace GridDomain.Scheduling.Integration
         /// <param name="bytes">The array containing the serialized object</param>
         /// <param name="type">The type hint of the object contained in the array</param>
         /// <returns>The object contained in the array</returns>
-        public object FromBinary(byte[] bytes, Type type)
+        public object FromBinary(byte[] bytes, Type type, JsonSerializerSettings settings = null)
         {
             try
             {
@@ -72,7 +75,7 @@ namespace GridDomain.Scheduling.Integration
                 using (var reader = new StreamReader(stream, Encoding.Unicode))
                 {
                     var readToEnd = reader.ReadToEnd();
-                    var deserializeObject = JsonConvert.DeserializeObject(readToEnd, JsonSerializerSettings);
+                    var deserializeObject = JsonConvert.DeserializeObject(readToEnd, settings ?? JsonSerializerSettings);
                     if (deserializeObject == null)
                         throw new SerializationException("json string: " + readToEnd);
 
@@ -84,7 +87,7 @@ namespace GridDomain.Scheduling.Integration
                 if (!UseWire) ExceptionDispatchInfo.Capture(ex).Throw();
                 _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}", type, ex);
 
-                foreach (var serializer in oldWireSerializers)
+                foreach (var serializer in OldWireSerializers)
                    try
                    {
                        return serializer.Item2.Deserialize(bytes, type);
@@ -98,7 +101,7 @@ namespace GridDomain.Scheduling.Integration
 
                 _log.Trace("Received an error while deserializing {type} by old wire, switching to new wire.",type);
 
-                foreach (var serializer in wireSerializers)
+                foreach (var serializer in WireSerializers)
                     try
                     {
                         using (var stream = new MemoryStream(bytes))

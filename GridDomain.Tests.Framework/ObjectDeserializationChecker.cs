@@ -1,10 +1,8 @@
-using System.ComponentModel.Design;
 using Akka.Serialization;
 using GridDomain.Node;
 using KellermanSoftware.CompareNetObjects;
-using NUnit.Framework;
 
-namespace GridDomain.Tests
+namespace GridDomain.Tests.Framework
 {
     class ObjectDeserializationChecker
     {

@@ -236,7 +236,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregates_should_be_deserializable.cs" />
+    <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\IPersistentActorTestsInfrastructure.cs" />
@@ -325,6 +325,7 @@
     <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B.cs" />
     <Compile Include="MessageWaiting\Local\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\Local\Message.cs" />
+    <Compile Include="QuartzJobSeserializationTests.cs" />
     <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
