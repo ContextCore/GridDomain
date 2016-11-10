@@ -154,6 +154,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void Serializer_can_serialize_and_deserialize_polymorphic_types()
         {
             var withType = new ExecutionOptions(DateTime.MaxValue, typeof(ScheduledCommandSuccessfullyProcessed));
@@ -167,6 +168,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_a_message_published_Then_saga_receives_it()
         {
             var testCommand = new SuccessCommand(Name);
@@ -208,6 +210,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_scheduler_is_restarted_during_job_execution_Then_on_next_start_job_is_not_fired_again()
         {
             var timeoutCommand = new TimeoutCommand(Name, TimeSpan.FromSeconds(2));
@@ -220,6 +223,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_processing_actor_throws_Then_scheduler_receives_failure_response()
         {
             var testMessage = new FailCommand();
