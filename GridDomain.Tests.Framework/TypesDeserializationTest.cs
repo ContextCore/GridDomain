@@ -9,6 +9,8 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
+using KellermanSoftware.CompareNetObjects;
+using KellermanSoftware.CompareNetObjects.TypeComparers;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
@@ -17,13 +19,14 @@ namespace GridDomain.Tests.Framework
 {
     public abstract class TypesDeserializationTest
     {
-        private readonly ObjectDeserializationChecker _checker = new ObjectDeserializationChecker();
+        protected readonly ObjectDeserializationChecker Checker = new ObjectDeserializationChecker();
+        protected Fixture Fixture;
         private readonly HashSet<Type> _excludes;
 
         protected abstract Assembly[] AllAssemblies { get; }
         protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
         protected Type[] TypesCache { get; }
-
+        
         protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
         {
             var allTypes =
@@ -38,7 +41,7 @@ namespace GridDomain.Tests.Framework
             CheckAll<T>(allTypes.ToArray());
         }
 
-        public TypesDeserializationTest()
+        protected TypesDeserializationTest()
         {
             TypesCache = AllAssemblies.SelectMany(a => a.GetTypes())
                                       .SelectMany( t => t.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).Union(new [] {t}))
@@ -47,6 +50,12 @@ namespace GridDomain.Tests.Framework
                                       .ToArray();
 
             _excludes = new HashSet<Type>(ExcludeTypes);
+
+            Fixture = new Fixture();
+            Fixture.Register<ICommand>(() => new FakeCommand());
+            Fixture.Register<Command>(() => new FakeCommand());
+            Checker.CompareLogic.Config.CustomComparers.Add(new DateTimeDeltaComparer(RootComparerFactory.GetRootComparer()));
+            Checker.CompareLogic.Config.CustomComparers.Add(new DateTimeOffsetDeltaComparer(RootComparerFactory.GetRootComparer()));
         }
 
         class RestoreResult
@@ -62,9 +71,7 @@ namespace GridDomain.Tests.Framework
         }
         protected void CheckAll<T>(params Type[] types)
         {
-            var fixture = new Fixture();
-            fixture.Register<ICommand>(() => new FakeCommand());
-            fixture.Register<Command>(() => new FakeCommand());
+            
 
             var failedTypes = new List<RestoreResult>();
             var okTypes = new List<RestoreResult>();
@@ -99,10 +106,10 @@ namespace GridDomain.Tests.Framework
                             new[] {typeof(ISpecimenBuilder)}).MakeGenericMethod(constructedType);
 
 
-                    var obj = createMethodInfo.Invoke(null, new object[] {fixture});
+                    var obj = createMethodInfo.Invoke(null, new object[] {Fixture});
                     string difference;
 
-                    if (_checker.IsRestorable(obj, out difference))
+                    if (Checker.IsRestorable(obj, out difference))
                         okTypes.Add(new RestoreResult {Difference = difference, Type = constructedType });
                     else
                         okTypes.Add(new RestoreResult {Type = constructedType });
@@ -165,5 +172,55 @@ namespace GridDomain.Tests.Framework
             }
         }
 
+        private class DateTimeDeltaComparer : BaseTypeComparer
+        {
+            private readonly TimeSpan _delta;
+
+            public DateTimeDeltaComparer(RootComparer rootComparer, TimeSpan? delta = null) : base(rootComparer)
+            {
+                _delta = delta ?? TimeSpan.FromSeconds(1);
+            }
+
+            public override bool IsTypeMatch(Type type1, Type type2)
+            {
+                return type1 == typeof(DateTime);
+            }
+
+            public override void CompareType(CompareParms parms)
+            {
+                var st1 = (DateTime)parms.Object1;
+                var st2 = (DateTime)parms.Object2;
+
+                if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta)
+                {
+                    AddDifference(parms);
+                }
+            }
+        }
+        private class DateTimeOffsetDeltaComparer : BaseTypeComparer
+        {
+            private readonly TimeSpan _delta;
+
+            public DateTimeOffsetDeltaComparer(RootComparer rootComparer, TimeSpan? delta = null) : base(rootComparer)
+            {
+                _delta = delta ?? TimeSpan.FromSeconds(1);
+            }
+
+            public override bool IsTypeMatch(Type type1, Type type2)
+            {
+                return type1 == typeof(DateTimeOffset);
+            }
+
+            public override void CompareType(CompareParms parms)
+            {
+                var st1 = (DateTimeOffset)parms.Object1;
+                var st2 = (DateTimeOffset)parms.Object2;
+
+                if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta)
+                {
+                    AddDifference(parms);
+                }
+            }
+        }
     }
 }

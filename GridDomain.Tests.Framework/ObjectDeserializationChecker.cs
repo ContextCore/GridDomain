@@ -4,10 +4,12 @@ using KellermanSoftware.CompareNetObjects;
 
 namespace GridDomain.Tests.Framework
 {
-    class ObjectDeserializationChecker
+    public class ObjectDeserializationChecker
     {
         private readonly Serializer _serializer;
         private readonly CompareLogic _compareLogic;
+
+        public CompareLogic CompareLogic => _compareLogic;
 
         public ObjectDeserializationChecker(Serializer serializer = null, CompareLogic logic = null)
         {
