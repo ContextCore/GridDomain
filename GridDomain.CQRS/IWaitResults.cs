@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GridDomain.Node.AkkaMessaging.Waiting
+namespace GridDomain.CQRS
 {
     public interface IWaitResults
     {

@@ -23,12 +23,15 @@ namespace GridDomain.Scheduling.Integration
         private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
         private static readonly WireJsonSerializer _serializer = new WireJsonSerializer();
+        private readonly IMessageWaiterFactory _executor;
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
                          ActorSystem actorSystem,
-                         IPublisher publisher)
+                         IPublisher publisher,
+                         IMessageWaiterFactory executor)
         {
+            _executor = executor;
             Condition.NotNull(()=> quartzLogger);
             Condition.NotNull(()=> actorSystem);
             Condition.NotNull(()=> publisher);
@@ -51,12 +54,18 @@ namespace GridDomain.Scheduling.Integration
                     var command = GetCommand(jobDataMap);
                     var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap);
-                    var genericProps = CreateGenericProps(options);
-                    var sagaCreator = _actorSystem.ActorOf(genericProps);
-                    var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
-                    var r = result.Wait(options.Timeout);
-                    if(!r) throw new Exception("Scheduling saga was not created");
-                    sagaCreator.Tell(PoisonPill.Instance, ActorRefs.NoSender);
+
+                    if (options.SuccesEventType == null)
+                        throw new Exception("options do not have SuccessEventType for key " + key);
+
+                    //TODO: wait by ID; 
+                   var task = _executor.NewCommandWaiter(options.Timeout)
+                                       .Expect(options.SuccesEventType)
+                                       .Create(options.Timeout)
+                                       .Execute(command);
+
+                    if (!task.Wait(options.Timeout))
+                        throw new ScheduledCommandWasNotConfirmedException(command);
                 }
                 else
                 {
@@ -150,6 +159,16 @@ namespace GridDomain.Scheduling.Integration
                    .UsingJobData(jobDataMap)
                    .RequestRecovery(true)
                    .Build();
+        }
+    }
+
+    public class ScheduledCommandWasNotConfirmedException : Exception
+    {
+        private Command Command { get; }
+
+        public ScheduledCommandWasNotConfirmedException(Command command)
+        {
+            Command = command;
         }
     }
 }

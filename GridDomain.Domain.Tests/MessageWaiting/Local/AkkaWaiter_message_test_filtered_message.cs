@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.TestKit.NUnit3;
 using Akka.Util;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;

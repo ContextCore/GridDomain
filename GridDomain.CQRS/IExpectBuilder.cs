@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.AkkaMessaging.Waiting
+namespace GridDomain.CQRS
 {
     public interface IExpectBuilder<out T>
     {

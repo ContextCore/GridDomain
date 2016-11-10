@@ -12,4 +12,10 @@ namespace GridDomain.CQRS
         [Obsolete("Please use IMessageWaiterFactory.NewCommandWaiter instead")]
         Task<T> Execute<T>(CommandPlan<T> plan);
     }
+
+    public interface IMessageWaiterFactory
+    {
+        IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null);
+        IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true);
+    }
 }

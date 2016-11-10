@@ -64,11 +64,15 @@
     <Compile Include="ICommandExecutor.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICriteria.cs" />
+    <Compile Include="IExpectBuilder.cs" />
+    <Compile Include="IExpectedCommandExecutor.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="IFault.cs" />
     <Compile Include="IMessageProcessFault.cs" />
     <Compile Include="IGenericQuery.cs" />
+    <Compile Include="IMessageWaiter.cs" />
     <Compile Include="IQuery.cs" />
+    <Compile Include="IWaitResults.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ISingleQuery.cs" />
   </ItemGroup>

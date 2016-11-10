@@ -155,6 +155,7 @@ namespace GridDomain.Node
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
             unityContainer.RegisterInstance(_messageRouting);
+            unityContainer.RegisterInstance<IMessageWaiterFactory>(this);
 
             _configuration.Register(unityContainer);
         }

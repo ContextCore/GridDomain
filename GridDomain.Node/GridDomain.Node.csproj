@@ -248,11 +248,6 @@
     <Compile Include="AkkaMessaging\Waiting\CommandExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedCommandExecutor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IExpectBuilder.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IExpectedCommandExecutor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IMessageWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IMessageWaiterFactory.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IWaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\LocalMessagesWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />

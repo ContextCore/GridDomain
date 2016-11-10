@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {

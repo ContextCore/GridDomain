@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
@@ -35,6 +36,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return filter == null ? And(typeof(TMsg), o => o is TMsg) :
                                     And(typeof(TMsg), o => o is TMsg && filter((TMsg)o));
         }
+
         public IExpectBuilder<T> Or<TMsg>(Func<TMsg, bool> filter = null)
         {
             return filter == null ? Or(typeof(TMsg), o => o is TMsg) :

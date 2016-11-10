@@ -54,6 +54,7 @@ namespace GridDomain.Node
                                                                   new DefaultPerfCountersConfiguration());
 
             container.RegisterInstance(actorSystem);
+            
         }
     }
 
