@@ -13,7 +13,7 @@ SELECT [PersistenceId]
       ,[Manifest]
 	  ,CONVERT(NVARCHAR(max), [Payload], 0) Payload
       ,[Tags]
-  FROM [AutoTestAkka].[dbo].[Journal]
+  FROM [dbo].[Journal]
 
 --
 GO

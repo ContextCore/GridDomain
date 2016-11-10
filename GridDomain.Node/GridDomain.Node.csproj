@@ -442,6 +442,5 @@
         <DependencyKind>Direct</DependencyKind>
       </_ProjectReferenceClosure>
     </ItemGroup>
-
   </Target>
 </Project>
