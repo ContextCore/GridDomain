@@ -68,8 +68,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                     }
                     catch (Exception e)
                     {
-                        if(e is ArgumentOutOfRangeException && timeout < stopwatch.Elapsed)
+                        if(e is ArgumentOutOfRangeException && timeout <= stopwatch.Elapsed)
                             throw new TimeoutException();
+
                         throw;
                     }
                    

@@ -63,7 +63,7 @@ namespace GridDomain.Node
                              o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
-            return expectBuilder.Create()
+            return expectBuilder.Create(plan.Timeout)
                                 .Execute(plan.Command)
                                 .ContinueWith(t =>
                                 {
