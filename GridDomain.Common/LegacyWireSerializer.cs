@@ -1,10 +1,8 @@
-extern alias oldwire;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using oldwire::Wire;
 
 namespace GridDomain.Common
 {
