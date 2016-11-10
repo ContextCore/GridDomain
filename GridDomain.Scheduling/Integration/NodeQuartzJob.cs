@@ -52,7 +52,7 @@ namespace GridDomain.Scheduling.Integration
                     //var sagaCreator = _actorSystem.ActorOf(genericProps);
                     //var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
 
-                    var expect = Expect.Message(options.SuccessEventType,options.MessageIdFieldName,options.SuccessSuccessMessageId);
+                    var expect = Expect.Message(options.SuccesEventType,options.MessageIdFieldName,options.SuccessSuccessMessageId);
                     var result = _executor.Execute(new CommandPlan(command,options.Timeout,expect));
                 }
                 else
@@ -114,7 +114,7 @@ namespace GridDomain.Scheduling.Integration
 
         private Props CreateGenericProps(ExecutionOptions options)
         {
-            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccessEventType);
+            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccesEventType);
             return _actorSystem.DI().Props(genericActorType);
         }
 

@@ -112,7 +112,7 @@ namespace GridDomain.Scheduling.Integration
 
         private Props CreateGenericProps(ExecutionOptions options)
         {
-            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccessEventType);
+            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccesEventType);
             return _actorSystem.DI().Props(genericActorType);
         }
 

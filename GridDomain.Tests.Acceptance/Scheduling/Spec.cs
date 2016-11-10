@@ -162,7 +162,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             serializer.Serialize(withType, stream);
             var bytes = stream.ToArray();
             var deserialized = serializer.Deserialize<ExecutionOptions>(new MemoryStream(bytes));
-            Assert.True(deserialized.SuccessEventType == withType.SuccessEventType);
+            Assert.True(deserialized.SuccesEventType == withType.SuccesEventType);
         }
 
 

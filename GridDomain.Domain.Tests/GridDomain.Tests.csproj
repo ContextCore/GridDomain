@@ -325,6 +325,7 @@
     <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B.cs" />
     <Compile Include="MessageWaiting\Local\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\Local\Message.cs" />
+    <Compile Include="QuartzJobDeSeserializationTests.cs" />
     <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />

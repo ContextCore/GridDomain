@@ -15,18 +15,32 @@ namespace GridDomain.Scheduling.Integration
     public class QuartsWireJsonSerializer 
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = DomainEventSerialization.GetDefaultSettings();
-        private static readonly LegacyWireSerializer OldWire = new LegacyWireSerializer();
+        private static readonly LegacyWireSerializer OldWire_Default = new LegacyWireSerializer();
+        private static readonly LegacyWireSerializer OldWire_Tolerance = new LegacyWireSerializer(true,false);
+        private static readonly LegacyWireSerializer OldWire_Not_tolerance_do_not_preserve = new LegacyWireSerializer(false,false);
+        private static readonly LegacyWireSerializer OldWire_not_tolerant_preserve = new LegacyWireSerializer(false,true);
         private static readonly Serializer NewWire_Tolerance_References = new Serializer(new SerializerOptions(true,true));
         private static readonly Serializer NewWire_Tolerance = new Serializer(new SerializerOptions(true,false));
         private static readonly Serializer NewWire_Default = new Serializer(new SerializerOptions(false, false));
+        private static readonly Serializer NewWire_NotTolerante_References = new Serializer(new SerializerOptions(false, true));
 
         private static readonly Tuple<string,Serializer>[] wireSerializers = 
         {
             Tuple.Create(nameof(NewWire_Default),NewWire_Default),
             Tuple.Create(nameof(NewWire_Tolerance), NewWire_Tolerance),
-            Tuple.Create(nameof(NewWire_Tolerance_References), NewWire_Tolerance_References)
+            Tuple.Create(nameof(NewWire_Tolerance_References), NewWire_Tolerance_References),
+            Tuple.Create(nameof(NewWire_NotTolerante_References), NewWire_NotTolerante_References)
         };
-    
+
+        private static readonly Tuple<string, LegacyWireSerializer>[] oldWireSerializers =
+       {
+            Tuple.Create(nameof(OldWire_Default),OldWire_Default),
+            Tuple.Create(nameof(OldWire_Tolerance), OldWire_Tolerance),
+            Tuple.Create(nameof(OldWire_Not_tolerance_do_not_preserve), OldWire_Not_tolerance_do_not_preserve),
+            Tuple.Create(nameof(OldWire_not_tolerant_preserve), OldWire_not_tolerant_preserve)
+        };
+
+
 
         private readonly ISoloLogger _log = LogManager.GetLogger();
         public bool UseWire { get; set; } = true;
@@ -70,32 +84,34 @@ namespace GridDomain.Scheduling.Integration
                 if (!UseWire) ExceptionDispatchInfo.Capture(ex).Throw();
                 _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}", type, ex);
 
-                try
-                {
-                    return OldWire.Deserialize(bytes, type);
-                }
-                catch (Exception e)
-                {
-                    _log.Trace("Received an error while deserializing {type} by old wire, switching to new wire. {Error}",type, e);
+                foreach (var serializer in oldWireSerializers)
+                   try
+                   {
+                       return serializer.Item2.Deserialize(bytes, type);
+                   }
+                   catch (Exception ex1)
+                   {
+                       _log.Trace(
+                           "Received an error while deserializing {type} by legacy wire {wireName}, switching to next options variant. {Error}",
+                           type, serializer.Item1, ex1);
+                   }
 
-                    object obj = null;
-                    foreach (var serializer in wireSerializers)
-                        try
-                        {
-                            using (var stream = new MemoryStream(bytes))
-                                obj = serializer.Item2.Deserialize(stream);
-                        }
-                        catch (Exception ex1)
-                        {
-                            _log.Trace(
-                                "Received an error while deserializing {type} by wire {wireName}, switching to new wire. {Error}",
-                                type, serializer.Item1, ex1);
-                        }
+                _log.Trace("Received an error while deserializing {type} by old wire, switching to new wire.",type);
 
-                    if (obj == null)
-                        throw new SerializationException("Cannot deserialize message with any serializer");
-                    return obj;
-                }
+                foreach (var serializer in wireSerializers)
+                    try
+                    {
+                        using (var stream = new MemoryStream(bytes))
+                            return serializer.Item2.Deserialize(stream);
+                    }
+                    catch (Exception ex1)
+                    {
+                        _log.Trace(
+                            "Received an error while deserializing {type} by new wire {wireName}, switching to next options variant. {Error}",
+                            type, serializer.Item1, ex1);
+                    }
+
+                throw new SerializationException("Cannot deserialize message with any serializer");
             }
         }
     }

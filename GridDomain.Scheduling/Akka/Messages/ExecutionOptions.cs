@@ -5,15 +5,23 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class ExecutionOptions
     {
-        public Type SuccessEventType { get; }
+        public Type SuccesEventType { get; }
         public DateTime RunAt { get; }
         public TimeSpan Timeout { get; }
 
-        public ExecutionOptions(DateTime runAt, Type successEventType, TimeSpan? timeout = null)
+        public ExecutionOptions(DateTime runAt, Type succesEventType, TimeSpan? timeout = null)
         {
             RunAt = runAt;
-            SuccessEventType = successEventType;
+            SuccesEventType = succesEventType;
             Timeout = timeout ?? TimeSpan.FromMinutes(1);
+        }
+
+    }
+
+    public class ExecutionOptions<TSuccessEvent> : ExecutionOptions where TSuccessEvent : DomainEvent
+    {
+        public ExecutionOptions(DateTime runAt, TimeSpan? timeout = null) : base(runAt, typeof(TSuccessEvent), timeout)
+        {
         }
     }
 }
