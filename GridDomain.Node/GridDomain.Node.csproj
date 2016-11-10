@@ -342,6 +342,8 @@
     <Compile Include="GridDomainNode.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageWaiterActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlDomainJournal.cs" />
+    <Compile Include="SqlDomainQueryExecutor.cs" />
     <Compile Include="TransportMessageDumpMap.cs" />
     <Compile Include="TransportMode.cs" />
   </ItemGroup>
