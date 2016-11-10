@@ -22,8 +22,7 @@ namespace GridDomain.Node
                        FROM {Configuration.FullJournalTableName} e
                        WHERE e.{Configuration.PersistenceIdColumnName} = @PersistenceId
                        AND e.{Configuration.SequenceNrColumnName} BETWEEN @FromSequenceNr AND @ToSequenceNr
-                       ORDER BY SequenceNr
-                       ASC;";
+                       ORDER BY SequenceNr ASC;";
 
         }
         protected override string ByPersistenceIdSql { get; }
