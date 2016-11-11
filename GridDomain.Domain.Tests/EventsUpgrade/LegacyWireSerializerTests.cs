@@ -7,8 +7,6 @@ namespace GridDomain.Tests.EventsUpgrade
     public class LegacyWireSerializerTests
     {
 
-
-
         [Test]
         public void LegacySerializer_can_be_created()
         {

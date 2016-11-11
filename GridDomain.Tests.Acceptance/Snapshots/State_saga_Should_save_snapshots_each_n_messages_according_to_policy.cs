@@ -29,8 +29,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-                c => base.CreateConfiguration().Register(c),
-                c => SagaConfiguration.State<SoftwareProgrammingSaga,
+                base.CreateConfiguration(),
+                SagaConfiguration.State<SoftwareProgrammingSaga,
                                              SoftwareProgrammingSagaState,
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>

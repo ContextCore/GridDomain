@@ -17,25 +17,14 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low: SoftwareProgrammingStateSagaTest
+    class State_Saga_Should_Not_save_snapshots_on_message_process_by_default: SoftwareProgrammingStateSagaTest
     {
         private Guid _sagaId;
         private AggregateVersion<SoftwareProgrammingSagaState>[] _snapshots;
 
-        public State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
+        public State_Saga_Should_Not_save_snapshots_on_message_process_by_default():base(false)
         {
 
-        }
-
-        protected override IContainerConfiguration CreateConfiguration()
-        {
-            return new CustomContainerConfiguration(
-            c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
-            c => c.Register(SagaConfiguration.State<SoftwareProgrammingSaga,
-                                         SoftwareProgrammingSagaState,
-                                         SoftwareProgrammingSagaFactory,
-                                         GotTiredEvent>
-                                         (SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveOnTimeoutPolicy())));
         }
 
         [OneTimeSetUp]
@@ -50,8 +39,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             Publisher.Publish(sagaStartEvent);
             waiter.Wait();
-
-            Thread.Sleep(1000);
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(_sagaId,
                                                              sagaStartEvent.PersonId,
@@ -74,30 +61,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 .Load<SoftwareProgrammingSagaState>(sagaStartEvent.SagaId);
         }
 
-
         [Test]
-        public void Snapshot_should_be_saved_one_time()
+        public void Snapshots_should_be_saved_two_times()
         {
-            Assert.AreEqual(1, _snapshots.Length);
-        }
-
-        [Test]
-        public void Restored_saga_state_should_have_correct_ids()
-        {
-            Assert.True(_snapshots.All(s => s.Aggregate.Id == _sagaId));
-        }
-
-
-        [Test]
-        public void Snapshot_should_have_parameters_from_second_command()
-        {
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping, _snapshots.First().Aggregate.MachineState);
-        }
-
-        [Test]
-        public void All_snapshots_should_not_have_uncommited_events()
-        {
-            CollectionAssert.IsEmpty(_snapshots.SelectMany(s => s.Aggregate.GetEvents()));
+            Assert.AreEqual(0, _snapshots.Length);
         }
     }
 }

@@ -85,13 +85,7 @@ namespace GridDomain.Node.Configuration.Composition
                 where TSaga : class, ISagaInstance 
                 where TState : AggregateBase
         {
-            var producer = new SagaProducer<TSaga>(descriptor);
-            var factory = new TFactory();
-            producer.Register<TState>(factory);
-            producer.Register<TStartMessage>(factory);
-
-            var conf = new SagaConfiguration<TSaga, TState>(producer);
-            container.Register(conf);
+            container.Register(SagaConfiguration.State<TSaga, TState, TFactory, TStartMessage>(descriptor));
         }
     }
 }

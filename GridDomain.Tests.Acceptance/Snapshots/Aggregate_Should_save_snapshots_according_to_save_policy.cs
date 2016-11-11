@@ -79,13 +79,13 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Test]
         public void First_snapshot_should_have_parameters_from_first_command()
         {
-            Assert.True(_snapshots.First().Aggregate.Value == _initialParameter.ToString());
+            Assert.AreEqual(_initialParameter.ToString(), _snapshots.First().Aggregate.Value);
         }
 
         [Test]
         public void Second_snapshot_should_have_parameters_from_second_command()
         {
-            Assert.True(_snapshots.Skip(1).First().Aggregate.Value == _changedParameter.ToString());
+            Assert.AreEqual(_changedParameter.ToString(), _snapshots.Skip(1).First().Aggregate.Value);
         }
 
         [Test]

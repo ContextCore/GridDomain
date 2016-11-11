@@ -28,10 +28,10 @@ namespace GridDomain.Node
                                 IQuartzConfig config = null)
         {
             container.Register(new QuartzSchedulerConfiguration(config ?? new PersistedQuartzConfig()));
-            container.Register(SagaConfiguration.State<ScheduledCommandProcessingSaga,
-                                                       ScheduledCommandProcessingSagaState,
-                                                       ScheduledCommandProcessingSagaFactory,
-                                                       ScheduledCommandProcessingStarted>(ScheduledCommandProcessingSaga.SagaDescriptor));
+           //container.Register(SagaConfiguration.State<ScheduledCommandProcessingSaga,
+           //                                           ScheduledCommandProcessingSagaState,
+           //                                           ScheduledCommandProcessingSagaFactory,
+           //                                           ScheduledCommandProcessingStarted>(ScheduledCommandProcessingSaga.SagaDescriptor));
 
             //TODO: replace with config
             IActorTransport transport;

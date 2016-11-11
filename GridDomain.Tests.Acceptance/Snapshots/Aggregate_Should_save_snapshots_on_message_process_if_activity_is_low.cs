@@ -80,7 +80,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Test]
         public void First_snapshot_should_have_parameters_from_second_command()
         {
-            Assert.True(_snapshots.First().Aggregate.Value == _changedParameter.ToString());
+            Assert.AreEqual(_changedParameter.ToString(),_snapshots.First().Aggregate.Value);
         }
 
         [Test]
