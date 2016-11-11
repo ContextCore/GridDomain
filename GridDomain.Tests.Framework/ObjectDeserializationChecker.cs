@@ -5,10 +5,12 @@ using KellermanSoftware.CompareNetObjects;
 
 namespace GridDomain.Tests.Framework
 {
-    class ObjectDeserializationChecker
+    public class ObjectDeserializationChecker
     {
         private readonly WireJsonSerializer _serializer;
         private readonly CompareLogic _compareLogic;
+
+        public CompareLogic CompareLogic => _compareLogic;
 
         public ObjectDeserializationChecker(WireJsonSerializer serializer = null, CompareLogic logic = null)
         {

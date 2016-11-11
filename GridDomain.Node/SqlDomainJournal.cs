@@ -1,37 +1,29 @@
 using Akka.Configuration;
 using Akka.Persistence.Sql.Common.Journal;
 using Akka.Persistence.SqlServer.Journal;
-using Akka.Serialization;
 
-public class SqlDomainJournal : SqlServerJournal
+namespace GridDomain.Node
 {
-    public SqlDomainJournal(Config journalConfig) : base(journalConfig)
+    public class SqlDomainJournal : SqlServerJournal
     {
+        public SqlDomainJournal(Config config) : base(config)
+        {
+            QueryExecutor = new SqlDomainQueryExecutor(new QueryConfiguration(
+                schemaName: config.GetString("schema-name"),
+                journalEventsTableName: config.GetString("table-name"),
+                metaTableName: config.GetString("metadata-table-name"),
+                persistenceIdColumnName: "PersistenceId",
+                sequenceNrColumnName: "SequenceNr",
+                payloadColumnName: "Payload",
+                manifestColumnName: "Manifest",
+                timestampColumnName: "Timestamp",
+                isDeletedColumnName: "IsDeleted",
+                tagsColumnName: "Tags",
+                timeout: config.GetTimeSpan("connection-timeout")),
+                Context.System.Serialization,
+                GetTimestampProvider(config.GetString("timestamp-provider")));
+        }
+
+        public override IJournalQueryExecutor QueryExecutor { get; }
     }
 }
-
-
-    public class SqlDomainQueryExecutor : SqlServerQueryExecutor
-    {
-        public SqlDomainQueryExecutor(QueryConfiguration configuration, Serialization serialization, ITimestampProvider timestampProvider) : base(configuration, serialization, timestampProvider)
-        {
-        var allEventColumnNames = $@"
-                e.{Configuration.PersistenceIdColumnName} as PersistenceId, 
-                e.{Configuration.SequenceNrColumnName} as SequenceNr, 
-                e.{Configuration.TimestampColumnName} as Timestamp, 
-                e.{Configuration.IsDeletedColumnName} as IsDeleted, 
-                e.{Configuration.ManifestColumnName} as Manifest, 
-                e.{Configuration.PayloadColumnName} as Payload";
-
-                ByPersistenceIdSql =
-                    $@"
-                       SELECT {allEventColumnNames}
-                       FROM {Configuration.FullJournalTableName} e
-                       WHERE e.{Configuration.PersistenceIdColumnName} = @PersistenceId
-                       AND e.{Configuration.SequenceNrColumnName} BETWEEN @FromSequenceNr AND @ToSequenceNr
-                       ORDER BY SequenceNr
-                       ASC;";
-
-        }
-        protected override string ByPersistenceIdSql { get;}
-    }

@@ -19,7 +19,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                     
 
                     sql-server {
-                               class = ""Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer""
+                               class = """+typeof(SqlDomainJournal).AssemblyQualifiedShortName() + @"""
                                plugin-dispatcher = ""akka.actor.default-dispatcher""
                                connection-string =  """ + _akka.Persistence.JournalConnectionString + @"""
                                connection-timeout = 30s
