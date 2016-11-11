@@ -39,6 +39,8 @@ namespace GridDomain.EventSourcing
             Tuple.Create(nameof(OldWire_not_tolerant_preserve), OldWire_not_tolerant_preserve)
         };
 
+
+
         public WireJsonSerializer(JsonSerializerSettings settings=null, bool useWire = true)
         {
             JsonSerializerSettings = settings ?? DomainEventSerialization.GetDefaultSettings();
@@ -67,6 +69,8 @@ namespace GridDomain.EventSourcing
         /// <param name="bytes">The array containing the serialized object</param>
         /// <param name="type">The type hint of the object contained in the array</param>
         /// <returns>The object contained in the array</returns>
+        [HandleProcessCorruptedStateExceptions] // sometimes legacy wire deserializer can throw System.AccessViolationException
+
         public object FromBinary(byte[] bytes, Type type, JsonSerializerSettings settings = null)
         {
             try
@@ -87,20 +91,6 @@ namespace GridDomain.EventSourcing
                 if (!UseWire) ExceptionDispatchInfo.Capture(ex).Throw();
                 _log.Trace("Received an error while deserializing {type} by json, switching to legacy wire. {Error}", type, ex);
 
-                foreach (var serializer in OldWireSerializers)
-                   try
-                   {
-                       return serializer.Item2.Deserialize(bytes, type);
-                   }
-                   catch (Exception ex1)
-                   {
-                       _log.Trace(
-                           "Received an error while deserializing {type} by legacy wire {wireName}, switching to next options variant. {Error}",
-                           type, serializer.Item1, ex1);
-                   }
-
-                _log.Trace("Received an error while deserializing {type} by old wire, switching to new wire.",type);
-
                 foreach (var serializer in WireSerializers)
                     try
                     {
@@ -114,8 +104,25 @@ namespace GridDomain.EventSourcing
                             type, serializer.Item1, ex1);
                     }
 
+
+                foreach (var serializer in OldWireSerializers)
+                    try
+                    {
+                        return serializer.Item2.Deserialize(bytes, type);
+                    }
+                    catch (Exception ex1)
+                    {
+                        _log.Trace(
+                            "Received an error while deserializing {type} by legacy wire {wireName}, switching to next options variant. {Error}",
+                            type, serializer.Item1, ex1);
+                    }
+
+                _log.Trace("Received an error while deserializing {type} by old wire, switching to new wire.", type);
+
+
                 throw new SerializationException("Cannot deserialize message with any serializer");
             }
         }
+
     }
 }
