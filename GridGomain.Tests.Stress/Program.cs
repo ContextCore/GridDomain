@@ -29,43 +29,50 @@ namespace GridGomain.Tests.Stress
             var cfg = new CustomContainerConfiguration(
                 c => c.Register(new SampleDomainContainerConfiguration()),
                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
-                c => c.RegisterType<IQuartzConfig,PersistedQuartzConfig>());
+                c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer),actorSystemFactory);
+            var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer), actorSystemFactory);
 
             node.Start(new LocalDbConfiguration());
 
             var timer = new Stopwatch();
             timer.Start();
 
-            var count = 1000;
-            var tasks = Enumerable.Range(0,count).Select(t =>
+            var count = 500000;
+            var step = 100;
+
+
+            for (int i = 0; i < count; i += step)
             {
-                var data = new Fixture();
-                var createAggregateCommand = data.Create<CreateSampleAggregateCommand>();
-                var changeAggregateCommandA = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
-                var changeAggregateCommandB = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
-                var changeAggregateCommandC = new ChangeSampleAggregateCommand(data.Create<int>(), createAggregateCommand.AggregateId);
+                var packTimer = new Stopwatch();
+                packTimer.Start();
+                var tasks = Enumerable.Range(0, step).Select(t =>
+                {
+                    var data = new Fixture();
+                    var createAggregateCommand = data.Create<CreateSampleAggregateCommand>();
+                    var changeAggregateCommandA = new ChangeSampleAggregateCommand(data.Create<int>(),
+                        createAggregateCommand.AggregateId);
+                    var changeAggregateCommandB = new ChangeSampleAggregateCommand(data.Create<int>(),
+                        createAggregateCommand.AggregateId);
+                    var changeAggregateCommandC = new ChangeSampleAggregateCommand(data.Create<int>(),
+                        createAggregateCommand.AggregateId);
 
-                var createExpect  = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, createAggregateCommand.AggregateId);
-                var changeAExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandA.AggregateId);
-                var changeBExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandB.AggregateId);
-                var changeCExpect = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, changeAggregateCommandC.AggregateId);
+                    return node.NewCommandWaiter(TimeSpan.FromSeconds(100))
+                               .Expect<SampleAggregateCreatedEvent>(e => e.SourceId == createAggregateCommand.AggregateId)
+                               .And<SampleAggregateCreatedEvent>   (e => e.SourceId == changeAggregateCommandA.AggregateId)
+                               .And<SampleAggregateCreatedEvent>   (e => e.SourceId == changeAggregateCommandB.AggregateId)
+                               .And<SampleAggregateCreatedEvent>   (e => e.SourceId == changeAggregateCommandC.AggregateId)
+                               .Create()
+                               .Execute(createAggregateCommand);
 
-                // A, B+C in parallel, C
-                var executionPlan = CommandExecutorExtensions.Execute(node, createAggregateCommand, createExpect)
-                    .ContinueWith(t1 => node.Execute(changeAggregateCommandA, changeAExpect))
-                        .ContinueWith(t2 => node.Execute(changeAggregateCommandB, changeBExpect))
-                            .ContinueWith(t3 => node.Execute(changeAggregateCommandC, changeCExpect));
+                }).ToArray();
 
-                return executionPlan;
-
-            }).ToArray();
-
-            Task.WaitAll(tasks);
-
+                Task.WaitAll(tasks);
+                packTimer.Stop();
+                Console.WriteLine($"Executed {step} commands in {packTimer.Elapsed}, Total: {i} in {timer.Elapsed}");
+            }
 
             timer.Stop();
             Console.WriteLine($"Executed {count} batches in {timer.Elapsed}");

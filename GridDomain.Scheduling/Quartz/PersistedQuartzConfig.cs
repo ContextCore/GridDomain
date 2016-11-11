@@ -8,8 +8,7 @@ namespace GridDomain.Scheduling.Quartz
         private const string QuartzConnectionStringName = "Quartz";
 
         public string ConnectionString => ConfigurationManager.ConnectionStrings[QuartzConnectionStringName]?.ConnectionString 
-            ??
-            "Server=tcp:tulyov9rv7.database.windows.net,1433;Database=MembershipScheduler_Copy;User ID=SoloProdSQL-User@tulyov9rv7;Password=Vecrfn0Rhfcysq;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;MultipleActiveResultSets=True;Application Name=Quartz;";
+            ?? "Server=(local); Database = Quartz; Integrated Security = true; MultipleActiveResultSets = True";
         public string StorageType => "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
 
         public NameValueCollection Settings => new NameValueCollection
