@@ -21,7 +21,6 @@ using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
-using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
@@ -53,8 +52,9 @@ namespace GridDomain.Node
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
         bool _stopping = false;
-        private AkkaCommandExecutor _commandExecutor;
+        private ICommandExecutor _commandExecutor;
         public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+        private IMessageWaiterFactory _waiterFactory;
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
         public IObjectsAdapter ObjectAdapteresCatalog { get; private set; }
@@ -115,6 +115,14 @@ namespace GridDomain.Node
 
             ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
 
+
+
+            Transport = Container.Resolve<IActorTransport>();
+            _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+            _commandExecutor = Container.Resolve<ICommandExecutor>();
+            _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
+
+
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
@@ -128,9 +136,6 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-
-            Transport = Container.Resolve<IActorTransport>();
-            _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _stopping = false;
             _log.Debug("Launching GridDomain node {Id}",Id);
 
@@ -145,7 +150,6 @@ namespace GridDomain.Node
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
 
-            _commandExecutor = new AkkaCommandExecutor(System,Transport);
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -163,7 +167,7 @@ namespace GridDomain.Node
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
             unityContainer.RegisterInstance(_messageRouting);
-            unityContainer.RegisterInstance<IMessageWaiterFactory>(this);
+            unityContainer.RegisterInstance<IMessageWaiterFactory>(_waiterFactory);
 
             _configuration.Register(unityContainer);
         }
@@ -197,12 +201,12 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return new AkkaMessageLocalWaiter(System,Transport, defaultTimeout ?? DefaultTimeout);
+            return _waiterFactory.NewWaiter(defaultTimeout);
         }
 
         public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failOnAnyFault = true)
         {
-            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout,failOnAnyFault);
+            return _waiterFactory.NewCommandWaiter(defaultTimeout, failOnAnyFault);
         }
     }
 }

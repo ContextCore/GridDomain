@@ -313,6 +313,7 @@
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
     <Compile Include="DomainEventsJsonSerializer.cs" />
+    <Compile Include="MessageWaiterFactory.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />

@@ -236,7 +236,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SagaCreationTest.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />

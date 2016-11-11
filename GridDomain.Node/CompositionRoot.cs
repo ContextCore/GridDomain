@@ -2,6 +2,7 @@
 using System.Configuration;
 using Akka.Actor;
 using CommonDomain.Persistence;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
@@ -59,7 +60,11 @@ namespace GridDomain.Node
                                                                   new DefaultPerfCountersConfiguration());
 
             container.RegisterInstance(actorSystem);
-            
+
+            var executor = new AkkaCommandExecutor(actorSystem, transport);
+            container.RegisterType<ICommandExecutor, AkkaCommandExecutor>();
+            container.RegisterInstance<IMessageWaiterFactory>(new MessageWaiterFactory(executor,actorSystem,TimeSpan.FromSeconds(15),transport));
+
         }
     }
 
