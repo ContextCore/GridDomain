@@ -6,14 +6,14 @@ using System.Reflection;
 
 namespace GridDomain.Common
 {
-    public class LegacyWireSerializer
+    public class LegacyWireSerializer//: IDisposable 
     {
         private readonly object _serializer;
         private readonly MethodInfo _serializeMethod;
         private readonly MethodInfo _deserializeMethod;
+        private static readonly Assembly _assembly = LoadLegacyWireFromResources();
 
-
-        public Assembly LoadLegacyWireFromResources()
+        private static Assembly LoadLegacyWireFromResources()
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GridDomain.Common.Wire.0.0.6.dll"))
             {
@@ -25,10 +25,8 @@ namespace GridDomain.Common
 
         public LegacyWireSerializer(bool versionTolerance = true, bool preserveReferences = true)
         {
-            var assembly = LoadLegacyWireFromResources();
-
-            var options = CreateByConstructor(assembly, "Wire.SerializerOptions", new object[] { versionTolerance, null, preserveReferences, null});
-            _serializer = CreateByConstructor(assembly, "Wire.Serializer", new [] {options});
+            var options = CreateByConstructor(_assembly, "Wire.SerializerOptions", new object[] { versionTolerance, null, preserveReferences, null});
+            _serializer = CreateByConstructor(_assembly, "Wire.Serializer", new [] {options});
 
             _serializeMethod = _serializer.GetType().GetMethod("Serialize", new [] {typeof(object), typeof(Stream)});
             if(_serializeMethod == null)

@@ -14,16 +14,19 @@ namespace GridDomain.EventSourcing
     public class WireJsonSerializer
     {
         private readonly JsonSerializerSettings JsonSerializerSettings;
-        private static readonly LegacyWireSerializer OldWire_Default = new LegacyWireSerializer();
-        private static readonly LegacyWireSerializer OldWire_Tolerance = new LegacyWireSerializer(true,false);
-        private static readonly LegacyWireSerializer OldWire_Not_tolerance_do_not_preserve = new LegacyWireSerializer(false,false);
-        private static readonly LegacyWireSerializer OldWire_not_tolerant_preserve = new LegacyWireSerializer(false,true);
-        private static readonly Serializer NewWire_Tolerance_References = new Serializer(new SerializerOptions(true,true));
-        private static readonly Serializer NewWire_Tolerance = new Serializer(new SerializerOptions(true,false));
-        private static readonly Serializer NewWire_Default = new Serializer(new SerializerOptions(false, false));
-        private static readonly Serializer NewWire_NotTolerante_References = new Serializer(new SerializerOptions(false, true));
 
-        private static readonly Tuple<string,Serializer>[] WireSerializers = 
+        //old wire tends to leak and does not support IDisposable
+        private static readonly Func<LegacyWireSerializer> OldWire_Default = () => new LegacyWireSerializer();
+        private static readonly Func<LegacyWireSerializer> OldWire_Tolerance = () =>new LegacyWireSerializer(true,false);
+        private static readonly Func<LegacyWireSerializer> OldWire_Not_tolerance_do_not_preserve = () => new LegacyWireSerializer(false,false);
+        private static readonly Func<LegacyWireSerializer> OldWire_not_tolerant_preserve = () =>new LegacyWireSerializer(false,true);
+        //just to be sure new wire will not leak
+        private static readonly Func<Serializer> NewWire_Tolerance_References = ()=>new Serializer(new SerializerOptions(true,true));
+        private static readonly Func<Serializer> NewWire_Tolerance = () => new Serializer(new SerializerOptions(true,false));
+        private static readonly Func<Serializer> NewWire_Default = () => new Serializer(new SerializerOptions(false, false));
+        private static readonly Func<Serializer> NewWire_NotTolerante_References = () => new Serializer(new SerializerOptions(false, true));
+
+        private static readonly Tuple<string,Func<Serializer>>[] WireSerializers = 
         {
             Tuple.Create(nameof(NewWire_Default),NewWire_Default),
             Tuple.Create(nameof(NewWire_Tolerance), NewWire_Tolerance),
@@ -31,7 +34,7 @@ namespace GridDomain.EventSourcing
             Tuple.Create(nameof(NewWire_NotTolerante_References), NewWire_NotTolerante_References)
         };
 
-        private static readonly Tuple<string, LegacyWireSerializer>[] OldWireSerializers =
+        private static readonly Tuple<string, Func<LegacyWireSerializer>>[] OldWireSerializers =
        {
             Tuple.Create(nameof(OldWire_Default),OldWire_Default),
             Tuple.Create(nameof(OldWire_Tolerance), OldWire_Tolerance),
@@ -95,7 +98,7 @@ namespace GridDomain.EventSourcing
                     try
                     {
                         using (var stream = new MemoryStream(bytes))
-                            return serializer.Item2.Deserialize(stream);
+                            return serializer.Item2().Deserialize(stream);
                     }
                     catch (Exception ex1)
                     {
@@ -108,7 +111,7 @@ namespace GridDomain.EventSourcing
                 foreach (var serializer in OldWireSerializers)
                     try
                     {
-                        return serializer.Item2.Deserialize(bytes, type);
+                        return serializer.Item2().Deserialize(bytes, type);
                     }
                     catch (Exception ex1)
                     {
