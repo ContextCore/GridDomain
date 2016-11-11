@@ -4,6 +4,7 @@ using System.Threading;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
@@ -21,6 +22,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private Guid _sagaId;
         private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
 
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return new CustomContainerConfiguration(
+                c => base.CreateConfiguration().Register(c),
+                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,
+                                SoftwareProgrammingSagaData,
+                                SoftwareProgrammingSagaFactory,
+                                GotTiredEvent,
+                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveAfterEachMessagePolicy())));
+        }
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)
         {
 

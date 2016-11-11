@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 SoftwareProgrammingSagaData,
                                 SoftwareProgrammingSagaFactory,
                                 GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new TestSnapshotsSavePolicy())));
+                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveOnTimeoutPolicy())));
         }
 
         [OneTimeSetUp]

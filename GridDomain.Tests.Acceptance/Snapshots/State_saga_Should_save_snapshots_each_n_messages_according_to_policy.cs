@@ -4,10 +4,12 @@ using System.Threading;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
+using GridDomain.Tests.SampleDomain;
 using GridDomain.Tools.Repositories;
 using NUnit.Framework;
 
@@ -23,6 +25,18 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
 
         }
+
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return new CustomContainerConfiguration(
+                c => base.CreateConfiguration().Register(c),
+                c => SagaConfiguration.State<SoftwareProgrammingSaga,
+                                             SoftwareProgrammingSagaState,
+                                             SoftwareProgrammingSagaFactory,
+                                             GotTiredEvent>
+                                             (SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveAfterEachMessagePolicy()));
+        }
+
 
         [OneTimeSetUp]
         public void Given_default_policy()

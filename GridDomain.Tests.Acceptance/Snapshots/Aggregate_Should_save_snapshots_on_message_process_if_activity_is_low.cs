@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
-                c => new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(new TestSnapshotsSavePolicy()).Register(c));
+                c => new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(new SnapshotsSaveOnTimeoutPolicy()).Register(c));
         }
 
         [OneTimeSetUp]

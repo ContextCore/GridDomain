@@ -104,7 +104,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public SagaConfiguration(SagaProducer<TSaga> producer, Func<SnapshotsSavePolicy> snapShotsPolicy = null)
         {
-            _snapshotsPolicyFactory = snapShotsPolicy ?? (() => new DefaultSnapshotsSavePolicy());
+            _snapshotsPolicyFactory = snapShotsPolicy ?? (() => new NoSnapshotsSavePolicy());
             _producer = producer;
         }
         

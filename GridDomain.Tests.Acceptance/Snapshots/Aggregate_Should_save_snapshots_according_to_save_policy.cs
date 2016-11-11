@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading;
+using GridDomain.Common;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
@@ -25,6 +27,14 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             
         }
+
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return new CustomContainerConfiguration(
+                c => base.CreateConfiguration().Register(c),
+                c => new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(new SnapshotsSaveAfterEachMessagePolicy()).Register(c));
+        }
+
 
         [OneTimeSetUp]
         public void Given_default_policy()

@@ -5,11 +5,13 @@ using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tools.Repositories;
+using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
@@ -27,13 +29,22 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
         protected override IContainerConfiguration CreateConfiguration()
         {
-            return new CustomContainerConfiguration(
+
+            //new CustomContainerConfiguration(container => {
+            //    container.RegisterStateSaga<SoftwareProgrammingSaga,
+            //                                SoftwareProgrammingSagaState,
+            //                                SoftwareProgrammingSagaFactory,
+            //                                GotTiredEvent>(SoftwareProgrammingSaga.Descriptor);
+            //    container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
+
+                return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
+                c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
                 c => SagaConfiguration.State<SoftwareProgrammingSaga,
                                              SoftwareProgrammingSagaState,
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>
-                                             (SoftwareProgrammingSaga.Descriptor, () => new TestSnapshotsSavePolicy()));
+                                             (SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveOnTimeoutPolicy()));
         }
 
         [OneTimeSetUp]

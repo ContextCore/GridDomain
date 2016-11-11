@@ -35,7 +35,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public AggregateConfiguration(SnapshotsSavePolicy snapshotsPolicy = null)
         {
-            _snapshotsPolicy = snapshotsPolicy ?? new DefaultSnapshotsSavePolicy();
+            _snapshotsPolicy = snapshotsPolicy ?? new NoSnapshotsSavePolicy();
         }
 
         public void Register(IUnityContainer container)
