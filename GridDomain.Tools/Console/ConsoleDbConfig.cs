@@ -8,6 +8,7 @@ namespace GridDomain.Tools.Console
         public string JournalConnectionString { get; }
         public string MetadataTableName { get; }
         public string JournalTableName { get; }
+        public int JornalConnectionTimeoutSeconds => 30;
         public string SnapshotTableName { get; }
     }
 }
