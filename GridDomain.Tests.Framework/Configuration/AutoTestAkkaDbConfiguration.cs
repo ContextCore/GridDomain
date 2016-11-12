@@ -18,6 +18,7 @@ namespace GridDomain.Tests.Framework.Configuration
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";
+        public int JornalConnectionTimeoutSeconds => 120;
         public string SnapshotTableName => "Snapshots";
     }
 }
