@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -24,13 +25,13 @@ namespace GridDomain.Tests.AsyncAggregates
             
         }
         [Then]
-        public void After_wait_aggregate_should_be_changed()
+        public async Task After_wait_aggregate_should_be_changed()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                 syncCommand.AggregateId);
 
-            GridNode.ExecuteSync(syncCommand, Timeout, expectedMessage);
+            await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

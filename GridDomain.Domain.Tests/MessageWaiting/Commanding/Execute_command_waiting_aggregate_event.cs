@@ -15,7 +15,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
     [TestFixture]
     public class Execute_command_waiting_aggregate_event : SampleDomainCommandExecutionTests
     {
-        protected override bool CreateNodeOnEachTest { get; } = true;
+        //protected override bool CreateNodeOnEachTest { get; } = true;
 
         [Test]
         public void CommandWaiter_Should_wait_until_aggregate_event()

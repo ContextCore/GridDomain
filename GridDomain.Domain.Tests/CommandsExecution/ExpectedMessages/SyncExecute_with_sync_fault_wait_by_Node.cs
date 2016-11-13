@@ -27,8 +27,8 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
-            Assert.Throws<SampleAggregateException>(() => 
-                        GridNode.ExecuteSync(syncCommand,Timeout,expectedMessage));
+            Assert.Throws<SampleAggregateException>(async () => 
+                                     await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage)));
         }
 
     }

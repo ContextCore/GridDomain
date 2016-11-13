@@ -15,7 +15,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
     [TestFixture]
     public class When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
     {
-        protected override bool CreateNodeOnEachTest => true;
+       // protected override bool CreateNodeOnEachTest => true;
 
         public When_SyncExecute_until_projection_fault() : base(true)
         {

@@ -16,23 +16,5 @@ namespace GridDomain.CQRS
         {
             return node.Execute(CommandPlan.New(command, expectedMessage));
         }
-
-        public static T ExecuteSync<T>(this ICommandExecutor node, ICommand command, TimeSpan timeout, ExpectedMessage<T> expectedMessage)
-        {
-            return ExecuteSync(node, CommandPlan.New(command, timeout, expectedMessage));
-        }
-
-        public static T ExecuteSync<T>(this ICommandExecutor node, CommandPlan<T> plan)
-        {
-            try
-            {
-                return node.Execute(plan).Result;
-            }
-            catch (Exception ex)
-            {
-                ExceptionDispatchInfo.Capture(ex.UnwrapSingle()).Throw();
-            }
-            throw new InvalidOperationException();
-        }
     }
 }

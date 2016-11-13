@@ -67,7 +67,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var plan = new CommandPlan<object>(syncCommand,TimeSpan.FromMilliseconds(500),expectedMessage);
 
-            Assert.Throws<TimeoutException>(() => GridNode.ExecuteSync(plan));
+            Assert.Throws<TimeoutException>(async () => await GridNode.Execute(plan));
         }
 
 

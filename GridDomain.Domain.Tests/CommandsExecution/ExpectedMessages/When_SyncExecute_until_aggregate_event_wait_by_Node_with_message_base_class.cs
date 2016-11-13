@@ -24,7 +24,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
                                                           changeExpect,
                                                           createExpect);
 
-                GridNode.ExecuteSync(commandPlan);
+                ((ICommandExecutor) GridNode).Execute<object>(commandPlan);
             });
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -16,7 +17,7 @@ namespace GridDomain.Tests.AsyncAggregates
     {
        
         [Test]
-        public void When_async_method_is_called_other_commands_can_be_executed_before_async_results()
+        public async Task When_async_method_is_called_other_commands_can_be_executed_before_async_results()
         {
             var aggregateId = Guid.NewGuid();
             var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromSeconds(3));
@@ -25,10 +26,10 @@ namespace GridDomain.Tests.AsyncAggregates
            var asyncCommandTask = GridNode.Execute(asyncCommand,
                                                     Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
                                                                                                      asyncCommand.AggregateId));
-            GridNode.ExecuteSync(syncCommand, 
-                                 TimeSpan.FromSeconds(1), 
-                                 Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
-                                                                             syncCommand.AggregateId));
+            await GridNode.Execute(CommandPlan.New(syncCommand, 
+                                                   TimeSpan.FromSeconds(1), 
+                                                   Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
+                                                   syncCommand.AggregateId)));
 
             var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), sampleAggregate.Value);

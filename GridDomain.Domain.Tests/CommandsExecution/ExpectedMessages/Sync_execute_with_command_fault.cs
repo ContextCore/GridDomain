@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
@@ -12,14 +13,14 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
     {
 
         [Then]
-        public void Then_execute_throws_exception_from_aggregate_with_stack_trace()
+        public async Task Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             string stackTraceString = "";
             try
             {
-                GridNode.ExecuteSync(syncCommand, Timeout, expectedMessage);
+                await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage));
             }
             catch (SampleAggregateException ex)
             {

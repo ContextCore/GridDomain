@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
@@ -22,12 +23,10 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         }
 
         [Then]
-        public void Then_SyncExecute_until_aggregate_event_wait_by_Node()
+        public async Task Then_SyncExecute_until_aggregate_event_wait_by_Node()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            GridNode.ExecuteSync(syncCommand,
-                                 TimeSpan.FromDays(1), 
-                                 Expect.Message<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId));
+            await GridNode.Execute(CommandPlan.New(syncCommand, TimeSpan.FromDays(1), Expect.Message<SampleAggregateChangedEvent>(nameof(SampleAggregateChangedEvent.SourceId),syncCommand.AggregateId)));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
