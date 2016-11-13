@@ -57,7 +57,7 @@ namespace GridDomain.Node.Configuration.Akka
             var cfg = new RootConfig(
                 new LogConfig(LogLevel, false),
                 ClusterConfig.SeedNode(Network, otherSeeds),
-                new PersistenceConfig(new PersistenceJournalConfig(this, new DomainEventAdaptersConfig()),
+                new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                       new PersistenceSnapshotConfig(this)));
             return cfg.Build();
         }
@@ -68,7 +68,7 @@ namespace GridDomain.Node.Configuration.Akka
             var cfg = new RootConfig(
                 new LogConfig(LogLevel, false),
                 new StandAloneConfig(Network),
-                new PersistenceConfig(new PersistenceJournalConfig(this, new DomainEventAdaptersConfig()),
+                new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                     new PersistenceSnapshotConfig(this)));
             return cfg.Build();
         }
@@ -91,7 +91,7 @@ namespace GridDomain.Node.Configuration.Akka
             var cfg = new RootConfig(
                 new LogConfig(LogLevel, false),
                 ClusterConfig.NonSeedNode(Network, seeds),
-                new PersistenceConfig(new PersistenceJournalConfig(this, new DomainEventAdaptersConfig()),
+                new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                new PersistenceSnapshotConfig(this)));
             return cfg.Build();
         }
