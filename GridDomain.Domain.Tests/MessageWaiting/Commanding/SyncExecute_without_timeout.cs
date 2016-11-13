@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 using GridDomain.Node;
@@ -47,7 +48,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         }
 
         [Then]
-        public void SyncExecute_throw_exception_according_to_node_default_timeout()
+        public async Task SyncExecute_throw_exception_according_to_node_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000000, Guid.NewGuid());
             GridNode.DefaultTimeout = TimeSpan.FromMilliseconds(500);
@@ -56,7 +57,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
                                  .Create()
                                  .Execute(syncCommand);
 
-            AssertEx.ThrowsInner<TimeoutException>(() => waiter.Wait());
+            await AssertEx.ThrowsInner<TimeoutException>(waiter);
         }
 
         [Then]

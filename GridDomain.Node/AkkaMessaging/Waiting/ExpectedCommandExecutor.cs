@@ -30,7 +30,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 Executor.Execute(command);
             }
 
-            var res = await _waiter.Start(_timeout);
+            var res = await _waiter.Start(_timeout).ConfigureAwait(false);
 
             if (!_failOnFaults) return res;
             var faults = res.All.OfType<IFault>().ToArray();

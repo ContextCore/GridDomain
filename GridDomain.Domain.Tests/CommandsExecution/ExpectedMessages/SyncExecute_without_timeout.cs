@@ -29,22 +29,22 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         }
 
         [Then]
-        public void PlanExecute_throw_exception_after_wait_without_timeout()
+        public async Task PlanExecute_throw_exception_after_wait_without_timeout()
         {
             var syncCommand = new LongOperationCommand(1000,Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(500), expectedMessage);
+            var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(100), expectedMessage);
 
-            AssertEx.ThrowsInner<TimeoutException>(() => GridNode.Execute(plan).Wait());
+            await AssertEx.ThrowsInner<TimeoutException>(GridNode.Execute(plan));
         }
 
         [Then]
-        public void SyncExecute_throw_exception_after_wait_without_timeout()
+        public async Task SyncExecute_throw_exception_after_wait_without_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var plan = CommandPlan.New(syncCommand, TimeSpan.FromSeconds(0.5), expectedMessage);
-            AssertEx.ThrowsInner<TimeoutException>(() => GridNode.Execute(plan).Wait());
+            await AssertEx.ThrowsInner<TimeoutException>(GridNode.Execute(plan));
         }
 
      

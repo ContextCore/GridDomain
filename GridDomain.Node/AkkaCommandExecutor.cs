@@ -63,13 +63,16 @@ namespace GridDomain.Node
                              o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
-            var res = await expectBuilder.Create(plan.Timeout).Execute(plan.Command);
+            var res = await expectBuilder.Create(plan.Timeout)
+                                         .Execute(plan.Command)
+                                         .ConfigureAwait(false);
+
             return res.All.Count > 1 ? res.All.ToArray() : res.All.FirstOrDefault();
         }
 
         public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            var res = await Execute((CommandPlan)plan);
+            var res = await Execute((CommandPlan)plan).ConfigureAwait(false);
             return (T) res;
         }
     }

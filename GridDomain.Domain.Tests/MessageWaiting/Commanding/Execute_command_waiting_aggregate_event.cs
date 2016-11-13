@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Tests.CommandsExecution;
@@ -96,17 +97,17 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
 
 
         [Then]
-        public void CommandWaiter_will_wait_for_all_of_expected_message()
+        public async Task CommandWaiter_will_wait_for_all_of_expected_message()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
-            AssertEx.ThrowsInner<TimeoutException>(() =>
-                GridNode.NewCommandWaiter()
-                        .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                        .And<SampleAggregateCreatedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                        .Create(Timeout)
-                        .Execute(syncCommand)
-                        .Wait());
+            await AssertEx.ThrowsInner<TimeoutException>(
+                                 GridNode.NewCommandWaiter()
+                                        .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                                        .And<SampleAggregateCreatedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                                        .Create(Timeout)
+                                        .Execute(syncCommand)
+                       );
         }
     }
 }

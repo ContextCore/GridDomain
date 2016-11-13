@@ -12,11 +12,12 @@ namespace GridDomain.Common
 
             var timeoutCancellationTokenSource = new CancellationTokenSource();
 
-            var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token));
+            var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token))
+                                          .ConfigureAwait(false);
             if (completedTask == task)
             {
                 timeoutCancellationTokenSource.Cancel();
-                return await task;  // Very important in order to propagate exceptions
+                return await task.ConfigureAwait(false);  // Very important in order to propagate exceptions
             }
             else
             {

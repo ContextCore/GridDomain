@@ -103,7 +103,7 @@ namespace GridDomain.Tests.Framework
 
         public async Task<T> LoadAggregate<T>(string name) where T : AggregateBase
         {
-            var actor = await LoadActorByDI<AggregateActor<T>>(name);
+            var actor = await LoadActorByDI<AggregateActor<T>>(name).ConfigureAwait(false);
             return (T)actor.Aggregate;
         }
 
@@ -114,7 +114,8 @@ namespace GridDomain.Tests.Framework
             var actor = ActorOfAsTestActorRef<T>(props, name);
 
             await actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance)
-                       .TimeoutAfter(Timeout,$"Cannot load actor {typeof(T)}, id = {name}");
+                       .TimeoutAfter(Timeout,$"Cannot load actor {typeof(T)}, id = {name}")
+                       .ConfigureAwait(false);
 
             return actor.UnderlyingActor;
         }
