@@ -139,9 +139,8 @@ namespace GridDomain.Node.Actors
 
         private void ProcessAggregateEvents(ICommand command)
         {
-            var aggregate = (IAggregate) Aggregate;
+            var events = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
-            var events = aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             if (command.SagaId != Guid.Empty)
             {
                 events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
@@ -158,12 +157,13 @@ namespace GridDomain.Node.Actors
 
                 _publisher.Publish(e);
             });
-            aggregate.ClearUncommittedEvents();
+
+            Aggregate.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command);
 
             if(_snapshotsPolicy.ShouldSave(events))
-                SaveSnapshot((IAggregate)Aggregate);
+                SaveSnapshot(Aggregate);
         }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)

@@ -4,8 +4,8 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    [TestFixture]
-    [Ignore("Cluster is not supported for now")]
+   // [TestFixture]
+    //[Ignore("Cluster is not supported for now")]
     internal abstract class ClusterActorSystemTest : ActorSystemTest<ClusterMessage, ClusterActorSystemInfrastructure>
     {
         protected override ClusterActorSystemInfrastructure CreateInfrastructure()

@@ -29,11 +29,18 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             }
         }
 
+        /// <summary>
+        /// Oldest first, order by sequence number ascending
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public SnapshotItem[] Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
-                return context.Snapshots.Where(j => j.PersistenceId == id).ToArray();
+                return context.Snapshots.Where(j => j.PersistenceId == id)
+                              .OrderBy(i => i.SequenceNr)
+                              .ToArray();
             }
         }
 
