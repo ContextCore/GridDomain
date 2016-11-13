@@ -238,7 +238,7 @@
     <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
-    <Compile Include="Actors\DefaultSnapshotsSavePolicy.cs" />
+    <Compile Include="Actors\EachMessageSnapshotsSavePolicy.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\NotifyOnRecoverComplete.cs" />
     <Compile Include="Actors\SnapshotsSavePolicy.cs" />

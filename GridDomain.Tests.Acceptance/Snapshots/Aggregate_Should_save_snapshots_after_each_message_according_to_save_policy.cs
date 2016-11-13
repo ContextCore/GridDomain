@@ -32,8 +32,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-                c => base.CreateConfiguration().Register(c),
-                c => new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(new SnapshotsSaveAfterEachMessagePolicy()).Register(c));
+                base.CreateConfiguration(),
+                new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
+                                                          new SnapshotsSaveAfterEachMessagePolicy())
+                );
         }
 
 

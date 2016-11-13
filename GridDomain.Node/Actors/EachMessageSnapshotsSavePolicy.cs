@@ -2,9 +2,9 @@ using System;
 
 namespace GridDomain.Node.Actors
 {
-    public class DefaultSnapshotsSavePolicy : SnapshotsSavePolicy
+    public class EachMessageSnapshotsSavePolicy : SnapshotsSavePolicy
     {
-        public DefaultSnapshotsSavePolicy():base(TimeSpan.FromSeconds(10),1)
+        public EachMessageSnapshotsSavePolicy():base(TimeSpan.FromSeconds(10),1)
         {
             
         }

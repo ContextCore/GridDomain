@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Tools.Repositories
 
         protected virtual IRepository<DomainEvent> CreateRepository()
         {
-            return new ActorSystemEventRepository(new AutoTestAkkaConfiguration().CreateInMemorySystem());
+            return ActorSystemEventRepository.New(new AutoTestAkkaConfiguration());
         }
     }
 }
