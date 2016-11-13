@@ -23,7 +23,6 @@ namespace GridDomain.Node.Actors
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
         private readonly ISoloLogger _logger = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
-        private readonly TimeSpan _childPingTimeOut = TimeSpan.FromSeconds(2);
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
@@ -60,8 +59,9 @@ namespace GridDomain.Node.Actors
             msg.Match()
                 .With<ClearChilds>(m => Clear())
                 .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
+                .With<Terminated>(t => _logger.Trace("Child terminated: {path}",t.ActorRef.Path))
                 .Default(message =>
-                {
+                { 
                     ChildInfo knownChild;
                     var childId = GetChildActorId(message);
                     var name = GetChildActorName(message);

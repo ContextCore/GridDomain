@@ -20,7 +20,7 @@ namespace GridDomain.Tests.AsyncAggregates
             string stackTraceString = "";
             try
             {
-                GridNode.ExecuteSync<SampleAggregateChangedEvent>(syncCommand, Timeout, expectedMessage);
+                GridNode.ExecuteSync(syncCommand, Timeout, expectedMessage);
             }
             catch (SampleAggregateException ex)
             {

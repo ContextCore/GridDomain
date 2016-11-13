@@ -9,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     class ExpectedCommandExecutor: IExpectedCommandExecutor
     {
         private readonly LocalMessagesWaiter<IExpectedCommandExecutor> _waiter;
-        private TimeSpan _timeout;
+        private readonly TimeSpan _timeout;
         private readonly bool _failOnFaults;
 
         public ICommandExecutor Executor { get; }
@@ -31,18 +31,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             }
 
             var res = await _waiter.Start(_timeout);
-            //              .ContinueWith(t =>
-            //{
-            //    if(t.IsFaulted)
-            //        ExceptionDispatchInfo.Capture(t.Exception).Throw();
 
-                if (!_failOnFaults) return res;
-                var faults = res.All.OfType<IFault>().ToArray();
-                if (faults.Any())
-                    throw new AggregateException(faults.Select(f => f.Exception));
+            if (!_failOnFaults) return res;
+            var faults = res.All.OfType<IFault>().ToArray();
+            if (faults.Any())
+                throw new AggregateException(faults.Select(f => f.Exception));
 
-                return res;
-            //});
+            return res;
         }
     }
 }

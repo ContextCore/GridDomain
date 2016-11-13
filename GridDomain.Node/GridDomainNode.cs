@@ -189,14 +189,14 @@ namespace GridDomain.Node
             _commandExecutor.Execute(commands);
         }
 
-        public Task<object> Execute(CommandPlan plan)
+        public async Task<object> Execute(CommandPlan plan)
         {
-            return _commandExecutor.Execute(plan);
+            return await _commandExecutor.Execute(plan);
         }
 
-        public Task<T> Execute<T>(CommandPlan<T> plan)
+        public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            return _commandExecutor.Execute(plan);
+            return await _commandExecutor.Execute(plan);
         }
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)

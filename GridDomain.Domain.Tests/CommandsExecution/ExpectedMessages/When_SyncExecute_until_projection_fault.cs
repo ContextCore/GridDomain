@@ -15,6 +15,8 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
     [TestFixture]
     public class When_SyncExecute_until_projection_fault : SampleDomainCommandExecutionTests
     {
+        protected override bool CreateNodeOnEachTest => true;
+
         public When_SyncExecute_until_projection_fault() : base(true)
         {
         }
@@ -62,14 +64,14 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
-                syncCommand.AggregateId);
+                                                                                    syncCommand.AggregateId);
 
             AssertEx.ThrowsInner<MessageHandleException>(() =>
                 GridNode.Execute(new CommandPlan(syncCommand, expectedFault, expectedMessage)).Wait());
         }
 
         [Then]
-        public void SyncExecute_with_projection_fault_without_expectation_times_out()
+        public void SyncExecute_with_projection_fault_without_wait_timeout_times_out()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,syncCommand.AggregateId);
@@ -136,9 +138,11 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
                                                                                 syncCommand.AggregateId);
 
+
             AssertEx.ThrowsInner<TimeoutException>(() =>
             {
-                GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage).Wait();
+                GridNode.Execute<AggregateChangedEventNotification>(syncCommand, expectedFault, expectedMessage)
+                        .Wait();
             });
         }
 
@@ -177,11 +181,11 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             }
             catch (AggregateException ex)
             {
-                var exception = ex.InnerException;
+                var exception = ex.UnwrapSingle();
 
                 if (exception is SampleAggregateException) Assert.Pass("Got exception from create message handler");
                 if (exception is MessageHandleException) Assert.Pass("Got exception from change message handler");
-                Assert.Fail("Unknown exception type");
+                Assert.Fail($"Unknown exception type: {exception.GetType()}");
             }
         }
     }

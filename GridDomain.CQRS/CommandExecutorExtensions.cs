@@ -24,10 +24,9 @@ namespace GridDomain.CQRS
 
         public static T ExecuteSync<T>(this ICommandExecutor node, CommandPlan<T> plan)
         {
-            var task = node.Execute(plan);
             try
             {
-              return task.Result;
+                return node.Execute(plan).Result;
             }
             catch (Exception ex)
             {
