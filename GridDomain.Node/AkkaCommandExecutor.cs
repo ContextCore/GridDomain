@@ -72,8 +72,7 @@ namespace GridDomain.Node
 
         public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            var res = await Execute((CommandPlan)plan).ConfigureAwait(false);
-            return (T) res;
+            return (T) await Execute((CommandPlan)plan).ConfigureAwait(false);
         }
     }
 }

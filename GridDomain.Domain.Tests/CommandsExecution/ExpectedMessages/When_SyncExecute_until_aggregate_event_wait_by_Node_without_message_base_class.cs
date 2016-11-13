@@ -24,5 +24,6 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
         }
+
     }
 }

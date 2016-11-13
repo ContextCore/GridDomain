@@ -71,6 +71,7 @@
     <Compile Include="IMessageProcessFault.cs" />
     <Compile Include="IGenericQuery.cs" />
     <Compile Include="IMessageWaiter.cs" />
+    <Compile Include="IMessageWaiterFactory.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IWaitResults.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

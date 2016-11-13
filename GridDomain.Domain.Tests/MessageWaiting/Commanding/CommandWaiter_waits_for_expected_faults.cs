@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -112,44 +113,16 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
 
 
         [Then]
-        public void When_fault_was_received_and_failOnFaults_is_set_results_raised_an_error()
+        public async Task When_fault_was_received_and_failOnFaults_is_set_results_raised_an_error()
         {
             var syncCommand = new AsyncFaultWithOneEventCommand(500, Guid.NewGuid());
-            AssertEx.ThrowsInner<SampleAggregateException>(() =>
+            await AssertEx.ShouldThrow<SampleAggregateException>(
                                  GridNode.NewCommandWaiter(Timeout,true)
                                      .Expect<AggregateChangedEventNotification>()
                                      .Create(Timeout)
                                      .Execute(syncCommand)
-                                     .Wait()
+                                 
                 );
         }
-
-        //[Then]
-        //public void When_one_of_two_aggregate_throws_fault_not_received_expected_messages_are_ignored()
-        //{
-        //    var syncCommand = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
-         
-        //    try
-        //    {
-        //       GridNode.NewCommandWaiter()
-        //               .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-        //               .And<AggregateCreatedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-        //               .Or<IFault<SampleAggregateChangedEvent>>(e => e.Message.SourceId == syncCommand.AggregateId)
-        //               .Or<IFault<SampleAggregateCreatedEvent>>(e => e.Message.SourceId == syncCommand.AggregateId)
-        //               .Create(Timeout)
-        //               .Execute(syncCommand, true)
-        //               .Wait();
-
-        //        Assert.Fail("Wait ended after one of two notifications");
-        //    }
-        //    catch (AggregateException ex)
-        //    {
-        //        var exception = ex.InnerException;
-
-        //        if (exception is SampleAggregateException) Assert.Pass("Got exception from create message handler");
-        //        if (exception is MessageHandleException) Assert.Pass("Got exception from change message handler");
-        //        Assert.Fail("Unknown exception type");
-        //    }
-        //}
     }
 }

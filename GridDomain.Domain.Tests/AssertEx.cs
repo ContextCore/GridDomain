@@ -9,21 +9,7 @@ namespace GridDomain.Tests
 {
     public static class AssertEx
     {
-        public static void ThrowsInner<T>(Action act) where T : Exception
-        {
-            try
-            {
-                act.Invoke();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<T>(ex.UnwrapSingle());
-                return;
-            }
-            Assert.Fail($"{typeof(T).Name} was not raised");
-        }
-
-        public static async Task ThrowsInner<T>(Task task) where T : Exception
+        public static async Task ShouldThrow<T>(this Task task, Predicate<T> predicate = null ) where T : Exception
         {
             try
             {
@@ -31,7 +17,14 @@ namespace GridDomain.Tests
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOf<T>(ex.UnwrapSingle());
+                var exception = ex.UnwrapSingle();
+                Assert.IsInstanceOf<T>(exception);
+                if (predicate == null) return;
+
+                if(predicate((T)exception))
+                    Assert.Pass();
+                else 
+                    Assert.Fail($"{typeof(T).Name} was raised but did not satisfy predicate");
                 return;
             }
             Assert.Fail($"{typeof(T).Name} was not raised");

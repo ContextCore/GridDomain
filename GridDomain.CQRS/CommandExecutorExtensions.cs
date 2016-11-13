@@ -7,14 +7,14 @@ namespace GridDomain.CQRS
 {
     public static class CommandExecutorExtensions
     {
-        public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, params ExpectedMessage[] expectedMessage)
+        public static async Task<T> Execute<T>(this ICommandExecutor node, ICommand command, params ExpectedMessage[] expectedMessage)
         {
-            return node.Execute(new CommandPlan<T>(command, expectedMessage));
+            return await node.Execute(new CommandPlan<T>(command, expectedMessage));
         }
 
-        public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
+        public static async Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
         {
-            return node.Execute(CommandPlan.New(command, expectedMessage));
+            return await node.Execute(CommandPlan.New(command, expectedMessage));
         }
     }
 }
