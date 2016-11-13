@@ -11,6 +11,7 @@ using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

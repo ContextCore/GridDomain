@@ -10,20 +10,21 @@ using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class Aggregate_Should_save_snapshots_according_to_save_policy: SampleDomainCommandExecutionTests
+    class Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy: SampleDomainCommandExecutionTests
     {
         private Guid _aggregateId;
         private AggregateVersion<SampleAggregate>[] _snapshots;
         private int _initialParameter;
         private int _changedParameter;
 
-        public Aggregate_Should_save_snapshots_according_to_save_policy():base(false)
+        public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy():base(false)
         {
             
         }

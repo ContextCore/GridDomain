@@ -40,6 +40,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         public void It_fires_after_node_restart()
         {
             GridNode.Stop();
+            Thread.Sleep(1000);
             GridNode = CreateGridDomainNode(AkkaCfg, new LocalDbConfiguration());
             GridNode.Start(new LocalDbConfiguration());
           // event is not passed to waiter, but raised

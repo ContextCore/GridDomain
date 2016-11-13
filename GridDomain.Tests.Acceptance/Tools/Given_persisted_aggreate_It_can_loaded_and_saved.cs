@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.Tools
 {
     [TestFixture]
-    class Given_persisted_aggreate_It_can_loaded_and_saved
+    class Given_persisted_aggreate_It_can_be_loaded_and_saved
     {
         private SampleAggregate _aggregate;
         private Guid _aggregateId;

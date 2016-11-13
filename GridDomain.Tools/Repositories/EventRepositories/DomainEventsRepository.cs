@@ -1,23 +1,18 @@
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Adapters;
-using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
-using Newtonsoft.Json;
-using Wire;
+using GridDomain.Tools.Repositories.RawDataRepositories;
 
 //using Wire.Extensions;
 
-namespace GridDomain.Tools.Repositories
+namespace GridDomain.Tools.Repositories.EventRepositories
 {
     public class DomainEventsRepository : IRepository<DomainEvent>
     {
         private readonly IRepository<JournalItem> _rawDataRepo;
-        private readonly DomainSerializer _serializer = new DomainSerializer();
+        private readonly WireJsonSerializer _serializer = new WireJsonSerializer();
 
         public void Dispose()
         {

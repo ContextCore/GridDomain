@@ -9,6 +9,7 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.RawDataRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade

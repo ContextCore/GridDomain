@@ -4,6 +4,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Tools.Repositories

@@ -2,7 +2,7 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using GridDomain.Tools.Persistence.SqlPersistence;
 
-namespace GridDomain.Tools.Repositories
+namespace GridDomain.Tools.Repositories.RawDataRepositories
 {
     public class RawSnapshotsRepository : IRepository<SnapshotItem>
     {

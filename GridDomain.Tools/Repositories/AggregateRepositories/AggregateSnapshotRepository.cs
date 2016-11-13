@@ -7,22 +7,11 @@ using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
+using GridDomain.Tools.Repositories.RawDataRepositories;
 using Newtonsoft.Json;
 
-namespace GridDomain.Tools.Repositories
+namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
-    public class AggregateVersion<T> where T : IAggregate
-    {
-        public AggregateVersion(T aggregate, DateTime createdAt)
-        {
-            Aggregate = aggregate;
-            CreatedAt = createdAt;
-        }
-
-        public T Aggregate { get; }
-        public DateTime CreatedAt { get; }
-    }
-
     public class AggregateSnapshotRepository
     {
         private readonly string _writeString;

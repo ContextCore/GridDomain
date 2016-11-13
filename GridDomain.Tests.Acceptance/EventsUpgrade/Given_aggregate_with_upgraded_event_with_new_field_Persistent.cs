@@ -10,6 +10,8 @@ using GridDomain.Tests.EventsUpgrade;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

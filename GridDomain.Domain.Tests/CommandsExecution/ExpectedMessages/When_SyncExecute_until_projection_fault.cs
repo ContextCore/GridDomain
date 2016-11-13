@@ -19,7 +19,6 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         {
         }
 
-        //protected override bool CreateNodeOnEachTest { get; } = true;
 
         public When_SyncExecute_until_projection_fault(bool inMemory = true) : base(inMemory)
         {
@@ -38,6 +37,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
 
 
         [Then]
+
         public void SyncExecute_with_projection_fault_expecting_fault_from_different_sources_delivers_error_to_caller_from_registered_source()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
@@ -127,13 +127,14 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
 
 
         [Then]
+
         public void SyncExecute_with_projection_fault_with_incorrect_typed_fault_times_out()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var expectedFault = Expect.Fault<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId,
                 typeof(string));
             var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,
-                syncCommand.AggregateId);
+                                                                                syncCommand.AggregateId);
 
             AssertEx.ThrowsInner<TimeoutException>(() =>
             {

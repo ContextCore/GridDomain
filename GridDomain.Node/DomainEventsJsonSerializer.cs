@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace GridDomain.Node
 {
 
-    class DomainEventsJsonAkkaSerializer : Serializer
+    internal class DomainEventsJsonAkkaSerializer : Serializer
     {
         private readonly Lazy<WireJsonSerializer> _serializer;
 

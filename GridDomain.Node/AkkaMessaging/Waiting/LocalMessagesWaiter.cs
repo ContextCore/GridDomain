@@ -60,7 +60,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 {
                     try
                     {
-                        var message = await _inbox.ReceiveAsync(timeout - stopwatch.Elapsed);
+                        var message = await _inbox.ReceiveAsync(timeout - stopwatch.Elapsed).ConfigureAwait(false);
                         CheckExecutionError(message);
 
                         if (IsExpected(message)) _allExpectedMessages.Add(message);

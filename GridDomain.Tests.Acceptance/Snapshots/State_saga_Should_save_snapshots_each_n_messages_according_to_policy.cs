@@ -11,6 +11,7 @@ using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots

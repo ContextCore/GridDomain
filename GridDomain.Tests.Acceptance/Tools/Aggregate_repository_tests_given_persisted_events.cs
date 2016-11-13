@@ -9,6 +9,8 @@ using GridDomain.Tests.Tools;
 using GridDomain.Tests.Tools.Repositories;
 using GridDomain.Tools.Persistence;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Tools

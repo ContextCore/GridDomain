@@ -30,7 +30,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 Executor.Execute(command);
             }
 
-            return _waiter.Start(_timeout).ContinueWith(t =>
+            return _waiter.Start(_timeout)
+                          .ContinueWith(t =>
             {
                 if(t.IsFaulted)
                     ExceptionDispatchInfo.Capture(t.Exception).Throw();

@@ -6,9 +6,10 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tools.Persistence;
+using GridDomain.Tools.Repositories.EventRepositories;
+using GridDomain.Tools.Repositories.RawDataRepositories;
 
-namespace GridDomain.Tools.Repositories
+namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
     public class AggregateRepository : IDisposable
     {

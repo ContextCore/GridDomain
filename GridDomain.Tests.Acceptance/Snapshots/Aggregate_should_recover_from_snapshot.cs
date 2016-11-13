@@ -3,6 +3,7 @@ using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots

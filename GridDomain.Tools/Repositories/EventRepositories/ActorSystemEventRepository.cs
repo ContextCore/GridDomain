@@ -1,14 +1,12 @@
 using System;
 using System.Linq;
 using Akka.Actor;
-using Akka.Configuration;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 
-namespace GridDomain.Tools.Repositories
+namespace GridDomain.Tools.Repositories.EventRepositories
 {
-    //Using testKit to easily locate all actor system exeptions 
     public class ActorSystemEventRepository : IRepository<DomainEvent>
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);

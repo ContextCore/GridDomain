@@ -91,6 +91,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()
         {
             var sagaId = Guid.NewGuid();
@@ -102,6 +103,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
+        [Ignore("we dont use sagas for scheduling anymore")]
         public void When_domain_event_for_a_started_saga_is_scheduled_Then_saga_receives_it()
         {
             var sagaId = Guid.NewGuid();

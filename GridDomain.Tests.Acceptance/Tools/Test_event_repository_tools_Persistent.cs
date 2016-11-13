@@ -4,6 +4,7 @@ using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Tools;
 using GridDomain.Tests.Tools.Repositories;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Tools
