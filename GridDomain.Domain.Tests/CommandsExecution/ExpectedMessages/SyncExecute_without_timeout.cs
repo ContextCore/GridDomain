@@ -5,7 +5,6 @@ using GridDomain.CQRS;
 using GridDomain.Logging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.MessageWaiting.Commanding;
 using GridDomain.Tests.SampleDomain.Commands;
@@ -23,7 +22,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
 
         }
 
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
             return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },
                 new InMemoryQuartzConfig());

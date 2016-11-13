@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Persistence;
 using Akka.TestKit.NUnit3;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing.Sagas;
@@ -19,13 +21,13 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Akka.Hocon;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Framework
 {
+
     public abstract class NodeCommandsTest : TestKit
     {
         protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
@@ -74,7 +76,7 @@ namespace GridDomain.Tests.Framework
             Start();
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             LogManager.SetLoggerFactory(new AutoTestLogFactory());
 
@@ -82,8 +84,9 @@ namespace GridDomain.Tests.Framework
             if (ClearDataOnStart)
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 
-            GridNode = CreateGridDomainNode(AkkaConf, autoTestGridDomainConfiguration);
+            GridNode = CreateGridDomainNode(AkkaConf);
             GridNode.Start(autoTestGridDomainConfiguration);
+
         }
 
         /// <summary>
@@ -95,37 +98,41 @@ namespace GridDomain.Tests.Framework
         public virtual T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var name = AggregateActorName.New<T>(id).ToString();
-            return LoadAggregate<T>(name);
+            return LoadAggregate<T>(name).Result;
         }
 
-        public T LoadAggregate<T>(string name) where T : AggregateBase
+        public async Task<T> LoadAggregate<T>(string name) where T : AggregateBase
         {
-            var actor = LoadActorByDI<AggregateActor<T>>(name);
+            var actor = await LoadActorByDI<AggregateActor<T>>(name);
             return (T)actor.Aggregate;
         }
 
-        private T LoadActorByDI<T>(string name) where T : ActorBase
+        private async Task<T> LoadActorByDI<T>(string name) where T : ActorBase
         {
             var props = GridNode.System.DI().Props<T>();
+           
             var actor = ActorOfAsTestActorRef<T>(props, name);
-            actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance).Wait(Timeout);
+
+            await actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance)
+                       .TimeoutAfter(Timeout,$"Cannot load actor {typeof(T)}, id = {name}");
+
             return actor.UnderlyingActor;
         }
 
         public TSagaState LoadSagaState<TSaga, TSagaState>(Guid id) where TSagaState : AggregateBase where TSaga : class, ISagaInstance
         {
             var name = AggregateActorName.New<TSagaState>(id).ToString();
-            var actor = LoadActorByDI<SagaActor<TSaga, TSagaState>>(name);
+            var actor = LoadActorByDI<SagaActor<TSaga, TSagaState>>(name).Result;
             return (TSagaState)actor.Saga.Data;
         }
         public SagaDataAggregate<TSagaState> LoadInstanceSagaState<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
                                                                             where TSaga : Saga<TSagaState>
         {
-            return LoadSagaState<ISagaInstance<TSaga,TSagaState>, SagaDataAggregate<TSagaState>>(id);
+            return  LoadSagaState<ISagaInstance<TSaga,TSagaState>, SagaDataAggregate<TSagaState>>(id);
         }
 
 
-        protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig);
+        protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf);
 
         private ExpectedMessage[] GetFaults(ICommand[] commands)
         {

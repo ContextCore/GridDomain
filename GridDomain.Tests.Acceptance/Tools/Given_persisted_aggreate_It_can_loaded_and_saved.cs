@@ -1,7 +1,10 @@
 using System;
+using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.Tools;
 using GridDomain.Tests.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Tools
@@ -20,12 +23,12 @@ namespace GridDomain.Tests.Acceptance.Tools
             _agregateValue = "initial";
             var aggregate = new SampleAggregate(_aggregateId, _agregateValue);
 
-            using (var repo = TestRepository.NewPersistent())
+            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration())))
             {
                 repo.Save(aggregate);
             }
 
-            using (var repo = TestRepository.NewPersistent())
+            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration())))
             {
                 _aggregate = repo.LoadAggregate<SampleAggregate>(aggregate.Id);
             }

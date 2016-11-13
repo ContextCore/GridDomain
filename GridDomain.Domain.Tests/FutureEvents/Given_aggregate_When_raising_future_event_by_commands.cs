@@ -13,7 +13,7 @@ namespace GridDomain.Tests.FutureEvents
         private TestAggregate _aggregate;
         private DateTime _scheduledTime;
         private TestDomainEvent _producedEvent;
-        private RaiseEventInFutureCommand _testCommand;
+        private ScheduleEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(100);
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.FutureEvents
         public void When_raising_future_event()
         {
             _scheduledTime = DateTime.Now.AddSeconds(1);
-            _testCommand = new RaiseEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
+            _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
             _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
             _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Received.First();

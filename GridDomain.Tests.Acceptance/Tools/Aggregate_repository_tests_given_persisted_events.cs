@@ -50,10 +50,10 @@ namespace GridDomain.Tests.Acceptance.Tools
 
         static readonly object[] EventRepositories =
         {
-            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), TestRepository.NewPersistent()},
+            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))},
             new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), AggregateRepository.New(AkkaWriteDbConnectionString)},
             new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   AggregateRepository.New(AkkaWriteDbConnectionString)},
-            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   TestRepository.NewPersistent()},
+            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))},
         };
     }
 }

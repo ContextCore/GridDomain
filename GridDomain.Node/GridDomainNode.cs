@@ -82,7 +82,6 @@ namespace GridDomain.Node
                                                   //  new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                   );
-            Container = new UnityContainer();
         }
 
         private void OnSystemTermination()
@@ -94,12 +93,14 @@ namespace GridDomain.Node
             _log.Debug("grid node Actor system terminated");
         }
 
-        public IUnityContainer Container { get; }
+        public IUnityContainer Container { get; private set; }
 
         public Guid Id { get; } = Guid.NewGuid();
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
+
+            Container = new UnityContainer();
             Systems = _actorSystemFactory.Invoke();
 
            
@@ -167,7 +168,6 @@ namespace GridDomain.Node
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
             unityContainer.RegisterInstance(_messageRouting);
-           // unityContainer.RegisterInstance<IMessageWaiterFactory>(_waiterFactory);
 
             _configuration.Register(unityContainer);
         }
@@ -177,7 +177,7 @@ namespace GridDomain.Node
         {
             if (_stopping) return;
             _stopping = true;
-
+            Container?.Dispose();
             _quartzScheduler?.Shutdown(true);
             System?.Terminate();
             System?.Dispose();

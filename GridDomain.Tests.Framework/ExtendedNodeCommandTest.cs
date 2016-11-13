@@ -9,7 +9,6 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
@@ -36,7 +35,7 @@ namespace GridDomain.Tests.Framework
 
         }
 
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
             return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => Sys);
         }

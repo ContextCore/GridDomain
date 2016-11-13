@@ -15,17 +15,17 @@ namespace GridDomain.Tests.FutureEvents
     {
         private FutureEventOccuredEvent _eventA;
         private FutureEventOccuredEvent _eventB;
-        private RaiseEventInFutureCommand _commandA;
-        private RaiseEventInFutureCommand _commandB;
+        private ScheduleEventInFutureCommand _commandA;
+        private ScheduleEventInFutureCommand _commandB;
 
         [OneTimeSetUp]
         public void Raising_several_future_events_for_different_aggregates()
         {
-            _commandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
+            _commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
             var expectedMessageA = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandA.AggregateId);
             var planA = CommandPlan.New(_commandA, expectedMessageA);
 
-            _commandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
+            _commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
             var expectedMessageB = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandB.AggregateId);
             var planB = CommandPlan.New(_commandB, expectedMessageB);
 

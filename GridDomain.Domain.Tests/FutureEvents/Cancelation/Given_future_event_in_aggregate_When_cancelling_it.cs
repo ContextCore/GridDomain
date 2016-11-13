@@ -16,7 +16,7 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
     {
         private DateTime _scheduledTime;
         private FutureEventCanceledEvent _futureEventCancelation;
-        private RaiseEventInFutureCommand _testCommand;
+        private ScheduleEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
         private CancelFutureEventCommand _cancelFutureEventCommand;
 
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         public void When_raising_future_event()
         {
             _scheduledTime = DateTime.Now.AddSeconds(200);
-            _testCommand = new RaiseEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
+            _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
             _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
 

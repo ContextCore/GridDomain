@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.Tools
     {
         protected override IRepository<DomainEvent> CreateRepository()
         {
-            return new ActorSystemEventRepository(new AutoTestAkkaConfiguration().CreateSystem());
+            return ActorSystemEventRepository.New(new AutoTestAkkaConfiguration());
         }
     }
 }

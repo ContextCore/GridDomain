@@ -19,8 +19,8 @@ namespace GridDomain.Tests.FutureEvents
         public void FutureDomainEvent_envelops_has_unique_id()
         {
             _aggregateId = Guid.NewGuid();
-            var testCommandA = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
-            var testCommandB = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
+            var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
+            var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
 
             _eventA = GridNode.ExecuteSync(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
             _eventB = GridNode.ExecuteSync(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId));

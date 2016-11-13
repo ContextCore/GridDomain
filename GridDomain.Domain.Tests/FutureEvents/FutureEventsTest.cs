@@ -9,13 +9,18 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
+using NUnit.Framework;
+using Quartz;
 
 namespace GridDomain.Tests.FutureEvents
 {
     public abstract class FutureEventsTest : ExtendedNodeCommandTest
     {
+        protected IScheduler Scheduler;
+
         protected FutureEventsTest(bool inMemory) : base(inMemory)
         {
+
         }
 
         protected override IContainerConfiguration CreateConfiguration()
@@ -30,6 +35,14 @@ namespace GridDomain.Tests.FutureEvents
             return new TestRouteMap();
         }
 
+
+        protected override void Start()
+        {
+            base.Start();
+            Scheduler = GridNode.Container.Resolve<IScheduler>();
+            Scheduler.Clear();
+        }
+
         protected virtual IQuartzConfig CreateQuartzConfig()
         {
             return InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig();
@@ -37,7 +50,7 @@ namespace GridDomain.Tests.FutureEvents
 
         protected TestAggregate RaiseFutureEventInTime(DateTime scheduledTime)
         {
-            var testCommand = new RaiseEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
             ExecuteAndWaitFor<TestDomainEvent>(testCommand);
 

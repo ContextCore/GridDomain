@@ -14,12 +14,19 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
         public ActorSystemEventRepository(ActorSystem config)
         {
+            var ext =DomainEventsJsonSerializationExtensionProvider.Provider.Get(config);
+            if (ext == null)
+                throw new ArgumentNullException(nameof(ext),
+                    $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
+
             _system = config;
         }
 
         public static ActorSystemEventRepository New(AkkaConfiguration conf)
         {
-            return new ActorSystemEventRepository(conf.CreateSystem());
+            var actorSystem = conf.CreateSystem();
+            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(actorSystem);
+            return new ActorSystemEventRepository(actorSystem);
         }
 
 

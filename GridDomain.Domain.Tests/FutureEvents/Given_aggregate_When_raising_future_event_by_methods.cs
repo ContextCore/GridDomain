@@ -12,7 +12,7 @@ namespace GridDomain.Tests.FutureEvents
     {
         private TestAggregate _aggregate;
         private TestDomainEvent _producedEvent;
-        private RaiseEventInFutureCommand _testCommand;
+        private ScheduleEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
         private FutureEventOccuredEvent _futureEventOccuredEvent;
 
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.FutureEvents
 
         public void When_raising_future_event()
         {
-            _testCommand = new RaiseEventInFutureCommand(DateTime.Now, Guid.NewGuid(), "test value");
+            _testCommand = new ScheduleEventInFutureCommand(DateTime.Now, Guid.NewGuid(), "test value");
 
             _aggregate = new TestAggregate(_testCommand.AggregateId);
             _aggregate.ScheduleInFuture(_testCommand.RaiseTime, _testCommand.Value);

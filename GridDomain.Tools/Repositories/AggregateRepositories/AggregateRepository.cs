@@ -15,7 +15,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IRepository<DomainEvent> _eventRepository;
         private readonly EventsAdaptersCatalog _eventsAdaptersCatalog;
-
+         
         public AggregateRepository(IRepository<DomainEvent> eventRepository, EventsAdaptersCatalog eventsAdaptersCatalog = null)
         {
             _eventsAdaptersCatalog = eventsAdaptersCatalog ?? new EventsAdaptersCatalog();
