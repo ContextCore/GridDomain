@@ -115,6 +115,19 @@ namespace GridDomain.Node.Actors
             });
         }
 
+        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
+        {
+            Log.Error("Additional persistence diagnostics on failure {error} {actor} {event}", cause, Self.Path.Name, @event);
+            base.OnPersistFailure(cause, @event, sequenceNr);
+        }
+
+        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
+        {
+            Log.Error("Additional persistence diagnostics on rejected {error} {actor} {event}", cause, Self.Path.Name, @event);
+            base.OnPersistRejected(cause, @event, sequenceNr);
+        }
+
+
         protected virtual void Shutdown()
         {
             //TODO: raise faults for all messages in stash
