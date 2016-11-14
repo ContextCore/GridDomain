@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -29,9 +31,11 @@ namespace GridGomain.Tests.Stress
             var cfg = new CustomContainerConfiguration(
                 c => c.Register(new SampleDomainContainerConfiguration()),
                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
-                c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
+              //  c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
+                c => c.RegisterType<IQuartzConfig, InMemoryQuartzConfig>());
 
-            Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
+          //  Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
+            Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateInMemorySystem()};
 
             var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer), actorSystemFactory);
 
@@ -40,47 +44,69 @@ namespace GridGomain.Tests.Stress
             var timer = new Stopwatch();
             timer.Start();
 
-            var count = 500000;
-            var step = 100;
+            var totalAggregatePacksCount = 50000;
+            var aggregatePackSize = 100;
+            int timeoutedCommads = 0;
+            var random = new Random();
+            int aggregateChangeAmount = 2;
+            var commandsInPack = aggregatePackSize * (aggregateChangeAmount + 1);
 
-
-            for (int i = 0; i < count; i += step)
+            for (int i = 0; i < totalAggregatePacksCount; i += aggregatePackSize)
             {
                 var packTimer = new Stopwatch();
                 packTimer.Start();
-                var tasks = Enumerable.Range(0, step).Select(t =>
+                var tasks = Enumerable.Range(0, aggregatePackSize)
+                                      .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
+                                      .ToArray();
+                try
                 {
-                    var data = new Fixture();
-                    var createAggregateCommand = data.Create<CreateSampleAggregateCommand>();
-                    var changeAggregateCommandA = new ChangeSampleAggregateCommand(data.Create<int>(),
-                        createAggregateCommand.AggregateId);
-                    var changeAggregateCommandB = new ChangeSampleAggregateCommand(data.Create<int>(),
-                        createAggregateCommand.AggregateId);
-                    var changeAggregateCommandC = new ChangeSampleAggregateCommand(data.Create<int>(),
-                        createAggregateCommand.AggregateId);
+                    Task.WhenAll(tasks).Wait();
+                }
+                catch
+                {
+                    timeoutedCommads += tasks.Count(t => t.IsCanceled || t.IsFaulted);
+                }
 
-                    return node.NewCommandWaiter(TimeSpan.FromSeconds(100))
-                               .Expect<SampleAggregateCreatedEvent>(e => e.SourceId == createAggregateCommand.AggregateId)
-                               .And<SampleAggregateCreatedEvent>   (e => e.SourceId == changeAggregateCommandA.AggregateId)
-                               .And<SampleAggregateCreatedEvent>   (e => e.SourceId == changeAggregateCommandB.AggregateId)
-                               .And<SampleAggregateCreatedEvent>   (e => e.SourceId == changeAggregateCommandC.AggregateId)
-                               .Create()
-                               .Execute(createAggregateCommand);
-
-                }).ToArray();
-
-                Task.WaitAll(tasks);
                 packTimer.Stop();
-                Console.WriteLine($"Executed {step} commands in {packTimer.Elapsed}, Total: {i} in {timer.Elapsed}");
+                var speed = (decimal) (commandsInPack / packTimer.Elapsed.TotalSeconds); 
+                //Console.WriteLine($"Executed {aggregatePackSize} commands in {packTimer.Elapsed}, Total: {i} in {timer.Elapsed}, " +
+                Console.WriteLine($"speed :{speed} cmd/sec," +
+                                  $"total errors: {timeoutedCommads}, " +
+                                  $"total commands executed: {i * commandsInPack}," +
+                                  $"approx time remaining: {(totalAggregatePacksCount - i) / speed }");
             }
 
             timer.Stop();
-            Console.WriteLine($"Executed {count} batches in {timer.Elapsed}");
+            Console.WriteLine($"Executed {totalAggregatePacksCount} batches in {timer.Elapsed}");
+            node.Stop();
 
             Console.WriteLine("Sleeping");
             Thread.Sleep(60);
 
-            node.Stop();
+        }
+
+        private static Task<IWaitResults> WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
+        {
+            var commands = new List<ICommand>(changeNumber + 1);
+            var createCmd = new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid());
+
+            var changeCmds = Enumerable.Range(0, changeNumber)
+                                       .Select(n => new ChangeSampleAggregateCommand(random.Next(), createCmd.AggregateId))
+                                       .ToArray();
+
+            commands.Add(createCmd);
+            commands.AddRange(changeCmds);
+
+
+            var expectBuilder = node.NewCommandWaiter()
+                                    .Expect<SampleAggregateCreatedEvent>(e => e.SourceId == createCmd.AggregateId);
+
+            foreach (var cmd in changeCmds)
+                expectBuilder.And<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId && e.Value == cmd.Parameter.ToString());
+
+
+            return expectBuilder.Create()
+                                .Execute(commands.ToArray());
         }
     }
 }
