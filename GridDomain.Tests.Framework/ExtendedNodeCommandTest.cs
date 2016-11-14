@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Framework
         protected static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
-
+        protected IPublisher Publisher => GridNode.Transport;
         protected ExtendedNodeCommandTest(bool inMemory) : 
             base( inMemory ? AkkaCfg.ToStandAloneInMemorySystemConfig() : AkkaCfg.ToStandAloneSystemConfig()
                 , AkkaCfg.Network.SystemName

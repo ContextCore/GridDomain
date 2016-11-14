@@ -34,9 +34,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
-            var waiter = GridNode.NewWaiter()
+            var waiter = GridNode.NewWaiter(TimeSpan.FromSeconds(100))
                                  .Expect<SagaCreatedEvent<SoftwareProgrammingSaga.States>>()
-                                 .Create(TimeSpan.FromSeconds(100));
+                                 .Create();
 
             Publisher.Publish(sagaStartEvent);
             waiter.Wait();

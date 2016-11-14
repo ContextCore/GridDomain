@@ -191,12 +191,12 @@ namespace GridDomain.Node
 
         public async Task<object> Execute(CommandPlan plan)
         {
-            return await _commandExecutor.Execute(plan).ConfigureAwait(false);
+            return await _commandExecutor.Execute(plan);
         }
 
         public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            return await _commandExecutor.Execute(plan).ConfigureAwait(false);
+            return await _commandExecutor.Execute(plan);
         }
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -20,12 +21,12 @@ namespace GridDomain.Tests.AsyncAggregates
         }
 
         [Then]
-        public void After_wait_end_aggregate_event_is_applied()
+        public async Task After_wait_end_aggregate_event_is_applied()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
-            GridNode.ExecuteSync(syncCommand,
-                Timeout,
-                Expect.Message<SampleAggregateChangedEvent>(e=>e.SourceId,syncCommand.AggregateId));
+            await GridNode.Execute(CommandPlan.New(syncCommand, 
+                                                   Timeout, 
+                                                   Expect.Message<SampleAggregateChangedEvent>(e=>e.SourceId,syncCommand.AggregateId)));
 
             var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);

@@ -23,8 +23,6 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
-
-   
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -149,7 +147,7 @@ namespace GridDomain.Node.Actors
             PersistAll(events, e =>
             {
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
-                // how to pass aggregate type in this case? 
+                //how to pass aggregate type in this case? 
                 //direct call to method to not postpone process of event scheduling, 
                 //case it can be interrupted by other messages in stash processing errors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
@@ -157,6 +155,8 @@ namespace GridDomain.Node.Actors
 
                 _publisher.Publish(e);
             });
+
+
 
             Aggregate.ClearUncommittedEvents();
 

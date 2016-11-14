@@ -17,13 +17,30 @@ namespace GridDomain.Common
             if (completedTask == task)
             {
                 timeoutCancellationTokenSource.Cancel();
-                return await task.ConfigureAwait(false);  // Very important in order to propagate exceptions
+                return await task;  // Very important in order to propagate exceptions
             }
             else
             {
                throw new TimeoutException(message ?? "The operation has timed out.");
             }
         }
+        public static async Task TimeoutAfter(this Task task, TimeSpan timeout,
+            string message = null)
+        {
 
+            var timeoutCancellationTokenSource = new CancellationTokenSource();
+
+            var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token))
+                                          .ConfigureAwait(false);
+            if (completedTask == task)
+            {
+                timeoutCancellationTokenSource.Cancel();
+                await task;  // Very important in order to propagate exceptions
+            }
+            else
+            {
+                throw new TimeoutException(message ?? "The operation has timed out.");
+            }
+        }
     }
 }

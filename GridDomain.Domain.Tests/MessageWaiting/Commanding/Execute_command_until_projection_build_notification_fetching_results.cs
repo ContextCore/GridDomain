@@ -25,9 +25,9 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
 
-           _results = GridNode.NewCommandWaiter()
+           _results = GridNode.NewCommandWaiter(Timeout)
                                 .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
-                                .Create(Timeout)
+                                .Create()
                                 .Execute(_syncCommand)
                                 .Result;
 

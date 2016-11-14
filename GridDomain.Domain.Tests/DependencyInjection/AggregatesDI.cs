@@ -31,7 +31,6 @@ namespace GridDomain.Tests.DependencyInjection
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-
             var conf = new CustomContainerConfiguration(c =>
             {
                 c.RegisterType<ITestDependency, TestDependencyImplementation>();

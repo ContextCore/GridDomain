@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -25,8 +26,8 @@ namespace GridDomain.Tests.AsyncAggregates
             var syncCommand = new AlwaysFaultAsyncCommand(Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
-            Assert.Throws<SampleAggregateException>(() => 
-                        GridNode.ExecuteSync(syncCommand,Timeout,expectedMessage));
+            Assert.Throws<SampleAggregateException>(async()
+               => await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage)));
         }
 
         

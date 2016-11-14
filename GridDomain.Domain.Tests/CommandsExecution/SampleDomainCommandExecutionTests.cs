@@ -12,7 +12,7 @@ namespace GridDomain.Tests.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : ExtendedNodeCommandTest
     {
-        protected IPublisher Publisher => GridNode.Transport;
+      
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
         protected override IContainerConfiguration CreateConfiguration()

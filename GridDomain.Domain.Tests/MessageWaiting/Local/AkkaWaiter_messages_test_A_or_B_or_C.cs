@@ -19,7 +19,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
             return Waiter.Expect<Message>(m => m.Id == _messageA.Id)
                       .Or<Message>(m => m.Id == _messageB.Id)
                       .Or<Message>(m => m.Id == _messageC.Id)
-                  .Create(TimeSpan.FromMilliseconds(100));
+                  .Create();
         }
 
         [Test]

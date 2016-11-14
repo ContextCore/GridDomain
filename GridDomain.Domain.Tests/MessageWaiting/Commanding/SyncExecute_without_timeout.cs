@@ -23,7 +23,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         }
 
         [Then]
-        public void CommandWaiter_throws_exception_after_wait_with_obly_default_timeout()
+        public async Task CommandWaiter_throws_exception_after_wait_with_obly_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000,Guid.NewGuid());
             var waiter = GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(100))
@@ -31,11 +31,11 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
                                  .Create()
                                  .Execute(syncCommand);
 
-            AssertEx.ThrowsInner<TimeoutException>(() => waiter.Wait());
+            await AssertEx.ShouldThrow<TimeoutException>(waiter);
         }
 
         [Then]
-        public void SyncExecute_throw_exception_after_wait_without_timeout()
+        public async Task SyncExecute_throw_exception_after_wait_without_timeout()
         {
             var syncCommand = new LongOperationCommand(1000000, Guid.NewGuid());
             var waiter = GridNode.NewCommandWaiter()
@@ -43,8 +43,8 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
                                  .Create()
                                  .Execute(syncCommand);
 
+            await waiter.ShouldThrow<TimeoutException>();
             //default built-in timeout for 10 sec
-            AssertEx.ThrowsInner<TimeoutException>(() => waiter.Wait());
         }
 
         [Then]
@@ -57,18 +57,18 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
                                  .Create()
                                  .Execute(syncCommand);
 
-            await AssertEx.ThrowsInner<TimeoutException>(waiter);
+            await AssertEx.ShouldThrow<TimeoutException>(waiter);
         }
 
         [Then]
         public void CommandWaiter_doesnt_throw_exception_after_wait_with_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            GridNode.NewCommandWaiter()
-                                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                                 .Create(TimeSpan.FromMilliseconds(500))
-                                 .Execute(syncCommand)
-                                 .Wait(100);
+            GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(500))
+                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                    .Create()
+                    .Execute(syncCommand)
+                    .Wait(100);
         }
     }
 }
