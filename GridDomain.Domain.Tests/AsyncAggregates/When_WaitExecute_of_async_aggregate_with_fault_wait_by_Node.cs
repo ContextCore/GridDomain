@@ -18,17 +18,8 @@ namespace GridDomain.Tests.AsyncAggregates
         {
             var syncCommand = new AlwaysFaultAsyncCommand(Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            string stackTraceString = "";
-            try
-            {
-                await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage));
-            }
-            catch (SampleAggregateException ex)
-            {
-                stackTraceString = ex.StackTrace;
-            }
-
-            Assert.True(stackTraceString.Contains(typeof(SampleAggregate).Name));
+            await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage))
+                          .ShouldThrow<SampleAggregateException>(e => e.StackTrace.Contains(typeof(SampleAggregate).Name));
         }
     }
 }
