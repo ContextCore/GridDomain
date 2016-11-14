@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Scheduling.Integration

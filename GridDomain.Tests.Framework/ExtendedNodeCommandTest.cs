@@ -9,7 +9,6 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
@@ -22,7 +21,7 @@ namespace GridDomain.Tests.Framework
         protected static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
-
+        protected IPublisher Publisher => GridNode.Transport;
         protected ExtendedNodeCommandTest(bool inMemory) : 
             base( inMemory ? AkkaCfg.ToStandAloneInMemorySystemConfig() : AkkaCfg.ToStandAloneSystemConfig()
                 , AkkaCfg.Network.SystemName
@@ -36,9 +35,9 @@ namespace GridDomain.Tests.Framework
 
         }
 
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-            return new GridDomainNode(CreateConfiguration(),CreateMap(), () => InMemory ? Sys : akkaConf.CreateSystem());
+            return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => Sys);
         }
 
         protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
@@ -48,9 +47,7 @@ namespace GridDomain.Tests.Framework
                 Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
-
-            Thread.Sleep(500);
+                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o)).Wait(Timeout);
         }
     }
 }

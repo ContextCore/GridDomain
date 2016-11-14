@@ -16,7 +16,7 @@ namespace GridDomain.Tests
     [TestFixture]
     public abstract class CompositionRootTests
     {
-        [TestCase(TransportMode.Cluster)]
+       // [TestCase(TransportMode.Cluster)]
         [TestCase(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
@@ -25,7 +25,7 @@ namespace GridDomain.Tests
         }
 
         
-        [TestCase(TransportMode.Cluster)]
+      //  [TestCase(TransportMode.Cluster)]
         [TestCase(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {

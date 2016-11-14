@@ -11,7 +11,7 @@ using SoftwareProgrammingSaga = GridDomain.Tests.Sagas.StateSagas.SampleSaga.Sof
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    public class When_state_saga_raises_an_exception : SoftwareProgramming_StateSaga_Test
+    public class When_state_saga_raises_an_exception : SoftwareProgrammingStateSagaTest
     {
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
 
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
             //prepare initial saga state
             
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSaga.States>(SoftwareProgrammingSaga.States.MakingCoffe, sagaId);
+            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSaga.States>(SoftwareProgrammingSaga.States.MakingCoffee, sagaId);
             SaveInJournal<SoftwareProgrammingSagaState>(sagaId, sagaDataEvent);
 
             Publisher.Publish(new CoffeMakeFailedEvent(Guid.Empty,personId).CloneWithSaga(sagaId));

@@ -14,13 +14,13 @@ namespace GridDomain.Tests.FutureEvents
         {
             var aggregateId = Guid.NewGuid();
 
-            var testCommand = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId,"test value");
+            var testCommand = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId,"test value");
 
             ExecuteAndWaitFor<TestDomainEvent>(testCommand);
 
             var reraiseTime = DateTime.Now.AddSeconds(1);
 
-            testCommand = new RaiseEventInFutureCommand(reraiseTime, aggregateId, "test value");
+            testCommand = new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value");
 
             ExecuteAndWaitFor<TestDomainEvent>(testCommand);
 

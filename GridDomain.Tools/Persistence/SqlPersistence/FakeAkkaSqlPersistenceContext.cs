@@ -5,13 +5,13 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
     {
         public System.Data.Entity.DbSet<JournalItem> Journal { get; set; }
         public System.Data.Entity.DbSet<Metadata> Metadatas { get; set; }
-        public System.Data.Entity.DbSet<Snapshot> Snapshots { get; set; }
+        public System.Data.Entity.DbSet<SnapshotItem> Snapshots { get; set; }
 
         public FakeAkkaSqlPersistenceContext()
         {
             Journal = new FakeDbSet<JournalItem>("PersistenceId", "SequenceNr");
             Metadatas = new FakeDbSet<Metadata>("PersistenceId", "SequenceNr");
-            Snapshots = new FakeDbSet<Snapshot>("PersistenceId", "SequenceNr");
+            Snapshots = new FakeDbSet<SnapshotItem>("PersistenceId", "SequenceNr");
         }
 
         public int SaveChangesCount { get; private set; }

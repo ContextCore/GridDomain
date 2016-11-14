@@ -24,8 +24,8 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
             _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
             _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
 
-            _futureEventA = _aggregate.GetEvents<FutureEventScheduledEvent>()[0];
-            _futureEvent_out_of_criteria = _aggregate.GetEvents<FutureEventScheduledEvent>()[1];
+            _futureEventA = _aggregate.GetEvents<FutureEventScheduledEvent>().First();
+            _futureEvent_out_of_criteria = _aggregate.GetEvents<FutureEventScheduledEvent>().Skip(1).First();
 
             _aggregate.ClearEvents();
             _aggregate.CancelFutureEvents(testValue);

@@ -2,6 +2,7 @@
 using System.Configuration;
 using Akka.Actor;
 using CommonDomain.Persistence;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
@@ -11,6 +12,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
@@ -26,7 +28,11 @@ namespace GridDomain.Node
                                 TransportMode transportMode,
                                 IQuartzConfig config = null)
         {
-            container.Register(new SchedulerConfiguration(config ?? new PersistedQuartzConfig()));
+            container.Register(new QuartzSchedulerConfiguration(config ?? new PersistedQuartzConfig()));
+           //container.Register(SagaConfiguration.State<ScheduledCommandProcessingSaga,
+           //                                           ScheduledCommandProcessingSagaState,
+           //                                           ScheduledCommandProcessingSagaFactory,
+           //                                           ScheduledCommandProcessingStarted>(ScheduledCommandProcessingSaga.SagaDescriptor));
 
             //TODO: replace with config
             IActorTransport transport;
@@ -54,6 +60,11 @@ namespace GridDomain.Node
                                                                   new DefaultPerfCountersConfiguration());
 
             container.RegisterInstance(actorSystem);
+
+            var executor = new AkkaCommandExecutor(actorSystem, transport);
+            container.RegisterType<ICommandExecutor, AkkaCommandExecutor>();
+            container.RegisterInstance<IMessageWaiterFactory>(new MessageWaiterFactory(executor,actorSystem,TimeSpan.FromSeconds(15),transport));
+
         }
     }
 

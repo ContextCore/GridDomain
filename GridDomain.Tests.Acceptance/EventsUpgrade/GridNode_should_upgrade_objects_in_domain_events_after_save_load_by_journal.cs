@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Test]
         public void GridNode_updates_objects_in_events_by_adapter()
         {
-            DomainEventAdapters.Register(new BookOrderAdapter());
+            GridNode.ObjectAdapteresCatalog.Register(new BookOrderAdapter());
             
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");

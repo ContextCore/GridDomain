@@ -1,12 +1,9 @@
 using System;
-using System.IO;
-using System.Xml.Serialization;
 using Akka.Actor;
 using Akka.Serialization;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Tests.EventsUpgrade.Events;
 using GridDomain.Tests.Framework.Configuration;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.EventsUpgrade
@@ -39,7 +36,7 @@ namespace GridDomain.Tests.EventsUpgrade
             ActorSystem system = ActorSystem.Create("example",new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig());
 
             // Get the Serialization Extension
-            Serialization serialization = system.Serialization;
+            var serialization = system.Serialization;
 
             // Find the Serializer for it
             Serializer serializer = serialization.FindSerializerFor(evt);

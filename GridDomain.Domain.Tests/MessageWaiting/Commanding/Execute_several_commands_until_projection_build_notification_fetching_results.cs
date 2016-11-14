@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
@@ -30,13 +31,13 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             _syncCommandC = new LongOperationCommand(150, Guid.NewGuid());
 
 
-            _results = GridNode.NewCommandWaiter()
-                .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandA.AggregateId)
-                .And<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandB.AggregateId)
-                .And<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandC.AggregateId)
-                .Create(Timeout)
-                .Execute(_syncCommandA, _syncCommandB, _syncCommandC)
-                .Result;
+            _results = GridNode.NewCommandWaiter(Timeout)
+                               .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandA.AggregateId)
+                               .And<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandB.AggregateId)
+                               .And<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandC.AggregateId)
+                               .Create()
+                               .Execute(_syncCommandA, _syncCommandB, _syncCommandC)
+                               .Result;
 
             _changedEventA = _results.Message<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandA.AggregateId);
             _changedEventB = _results.Message<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommandB.AggregateId);

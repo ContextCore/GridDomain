@@ -233,12 +233,16 @@
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\AggregatePersistedNotification.cs" />
+    <Compile Include="Actors\CannotCreateChildException.cs" />
     <Compile Include="Actors\CheckHealth.cs" />
     <Compile Include="Actors\ChildInfo.cs" />
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
+    <Compile Include="Actors\EachMessageSnapshotsSavePolicy.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\NotifyOnRecoverComplete.cs" />
+    <Compile Include="Actors\SnapshotsSavePolicy.cs" />
     <Compile Include="AkkaCommandExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
@@ -248,11 +252,6 @@
     <Compile Include="AkkaMessaging\Waiting\CommandExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\ExpectedCommandExecutor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IExpectBuilder.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IExpectedCommandExecutor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IMessageWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IMessageWaiterFactory.cs" />
-    <Compile Include="AkkaMessaging\Waiting\IWaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\LocalMessagesWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\MessageExpectBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
@@ -262,17 +261,20 @@
     <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
+    <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
-    <Compile Include="DomainEventAdapters.cs" />
+    <Compile Include="IObjectsAdapter.cs" />
+    <Compile Include="DomainEventsJsonSerializationExtension.cs" />
+    <Compile Include="DomainEventsJsonSerializationExtensionProvider.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
     <Compile Include="Actors\SynchronizationProcessingActor.cs" />
-    <Compile Include="Actors\ShutdownRequest.cs" />
+    <Compile Include="Actors\GracefullShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaConfigurationExtensions.cs" />
@@ -312,6 +314,7 @@
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
     <Compile Include="DomainEventsJsonSerializer.cs" />
+    <Compile Include="MessageWaiterFactory.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />
@@ -397,7 +400,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="1.4-1.5_migration.sql" />
     <Content Include="1.6-1.7_migration.sql" />
     <Content Include="Database schema full.sql" />
   </ItemGroup>

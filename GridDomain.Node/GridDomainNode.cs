@@ -21,7 +21,6 @@ using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
-using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
@@ -52,11 +51,18 @@ namespace GridDomain.Node
         private readonly IQuartzConfig _quartzConfig;
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
+        bool _stopping = false;
+        private ICommandExecutor _commandExecutor;
+        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+        private IMessageWaiterFactory _waiterFactory;
+
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
+        public IObjectsAdapter ObjectAdapteresCatalog { get; private set; }
 
         public IActorTransport Transport { get; private set; }
-       // public MessagesListener Listener { get; private set; }
 
-        public ActorSystem System;
+        public ActorSystem System { get; private set; }
+
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
@@ -73,11 +79,9 @@ namespace GridDomain.Node
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting, 
-                                                    new SchedulingRouteMap(),
+                                                  //  new SchedulingRouteMap(),
                                                     new TransportMessageDumpMap()
                                                   );
-
-            Container = new UnityContainer();
         }
 
         private void OnSystemTermination()
@@ -89,23 +93,36 @@ namespace GridDomain.Node
             _log.Debug("grid node Actor system terminated");
         }
 
-        public IUnityContainer Container { get; }
+        public IUnityContainer Container { get; private set; }
 
         public Guid Id { get; } = Guid.NewGuid();
 
         public void Start(IDbConfiguration databaseConfiguration)
         {
+
+            Container = new UnityContainer();
             Systems = _actorSystemFactory.Invoke();
 
            
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
+            System.AddDomainEventsJsonSerialization();
+
+            ObjectAdapteresCatalog = DomainEventsJsonSerializationExtensionProvider.Provider.Get(System);
 
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
             ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
+
+
+
+            Transport = Container.Resolve<IActorTransport>();
+            _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+            _commandExecutor = Container.Resolve<ICommandExecutor>();
+            _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
+
 
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
@@ -120,9 +137,6 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-
-            Transport = Container.Resolve<IActorTransport>();
-            _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _stopping = false;
             _log.Debug("Launching GridDomain node {Id}",Id);
 
@@ -137,7 +151,6 @@ namespace GridDomain.Node
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
 
-            _commandExecutor = new AkkaCommandExecutor(System,Transport);
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer,
@@ -159,20 +172,15 @@ namespace GridDomain.Node
             _configuration.Register(unityContainer);
         }
 
-        bool _stopping = false;
-        private AkkaCommandExecutor _commandExecutor;
-        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
-
-        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
 
         public void Stop()
         {
             if (_stopping) return;
             _stopping = true;
-
-            _quartzScheduler.Shutdown(true);
-            System.Terminate();
-            System.Dispose();
+            Container?.Dispose();
+            _quartzScheduler?.Shutdown(true);
+            System?.Terminate();
+            System?.Dispose();
             _log.Debug("GridDomain node {Id} stopped",Id);
         }
 
@@ -181,24 +189,24 @@ namespace GridDomain.Node
             _commandExecutor.Execute(commands);
         }
 
-        public Task<object> Execute(CommandPlan plan)
+        public async Task<object> Execute(CommandPlan plan)
         {
-            return _commandExecutor.Execute(plan);
+            return await _commandExecutor.Execute(plan);
         }
 
-        public Task<T> Execute<T>(CommandPlan<T> plan)
+        public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            return _commandExecutor.Execute(plan);
+            return await _commandExecutor.Execute(plan);
         }
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return new AkkaMessageLocalWaiter(System,Transport, defaultTimeout ?? DefaultTimeout);
+            return _waiterFactory.NewWaiter(defaultTimeout ?? DefaultTimeout);
         }
 
         public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failOnAnyFault = true)
         {
-            return new AkkaCommandLocalWaiter(_commandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout,failOnAnyFault);
+            return _waiterFactory.NewCommandWaiter(defaultTimeout ?? DefaultTimeout, failOnAnyFault);
         }
     }
 }

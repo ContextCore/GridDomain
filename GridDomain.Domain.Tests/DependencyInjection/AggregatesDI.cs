@@ -8,7 +8,6 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.DependencyInjection.Infrastructure;
 using GridDomain.Tests.Framework;
@@ -30,13 +29,12 @@ namespace GridDomain.Tests.DependencyInjection
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
 
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf, IDbConfiguration dbConfig)
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-
             var conf = new CustomContainerConfiguration(c =>
             {
                 c.RegisterType<ITestDependency, TestDependencyImplementation>();
-                c.RegisterInstance<IUnityContainer>(c);
+               // c.RegisterInstance<IUnityContainer>(c);
                 c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
                 c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
             });

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
@@ -19,7 +20,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
                          .And<Message>(m => m.Id == _messageB.Id)
                          .Or<Message>(m => m.Id == _messageC.Id)
                          .And<Message>(m => m.Id == _messageD.Id)
-                         .Create(TimeSpan.FromMilliseconds(200));
+                         .Create();
         }
 
         [Test]

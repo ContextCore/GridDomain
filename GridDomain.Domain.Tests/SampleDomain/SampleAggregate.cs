@@ -12,6 +12,8 @@ namespace GridDomain.Tests.SampleDomain
 {
     public class SampleAggregate : Aggregate
     {
+        public string Value { get; private set; }
+
         private SampleAggregate(Guid id) : base(id)
         {
             
@@ -89,8 +91,6 @@ namespace GridDomain.Tests.SampleDomain
         {
             Value = e.Value;
         }
-
-        public string Value;
 
         public void RaiseExeption()
         {

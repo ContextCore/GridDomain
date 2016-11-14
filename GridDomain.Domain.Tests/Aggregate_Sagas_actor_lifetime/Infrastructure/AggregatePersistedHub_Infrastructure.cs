@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
         public AggregatePersistedHub_Infrastructure(ActorSystem system)
         {
             ChildId = Guid.NewGuid();
-            ChildCreateMessage = new CreateSampleAggregateCommand(42, ChildId, ChildId);
+            ChildCreateMessage = new CreateSampleAggregateCommand(42, ChildId);
             ChildActivateMessage = new ChangeSampleAggregateCommand(100, ChildId);
             HubProps = system.DI().Props<AggregateHubActor<SampleAggregate>>();
         }

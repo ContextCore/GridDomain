@@ -3,6 +3,8 @@ using System.Collections.Generic;
 namespace GridDomain.EventSourcing.Adapters
 {
     /// <summary>
+    /// IEventAdapter is general interface to convert whole objects from one type to another,
+    /// mostly used with DomainEvent
     /// How to updata and event
     /// 1) Create a copy of event and add existing number in type by convention _V(N) where N is version
     /// for example BalanceAggregateCreatedEvent should be copied as BalanceAggregateCreatedEvent_V1.
@@ -21,7 +23,6 @@ namespace GridDomain.EventSourcing.Adapters
     /// </summary>
     public interface IEventAdapter
     {
-        //EventAdapterDescriptor Descriptor { get; }
         IEnumerable<object> Convert(object evt);
     }
 }

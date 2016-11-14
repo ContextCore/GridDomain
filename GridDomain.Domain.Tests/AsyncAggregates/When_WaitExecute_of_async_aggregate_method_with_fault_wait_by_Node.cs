@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -20,13 +21,13 @@ namespace GridDomain.Tests.AsyncAggregates
         }
        
         [Then]
-        public void Then_execute_throws_exception_from_aggregate()
+        public async Task Then_execute_throws_exception_from_aggregate()
         {
             var syncCommand = new AlwaysFaultAsyncCommand(Guid.NewGuid());
             var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId,syncCommand.AggregateId);
 
-            Assert.Throws<SampleAggregateException>(() => 
-                        GridNode.ExecuteSync(syncCommand,Timeout,expectedMessage));
+            await GridNode.Execute(CommandPlan.New(syncCommand, Timeout, expectedMessage))
+                          .ShouldThrow<SampleAggregateException>();
         }
 
         

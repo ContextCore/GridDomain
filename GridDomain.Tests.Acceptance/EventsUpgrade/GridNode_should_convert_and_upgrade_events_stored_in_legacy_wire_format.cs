@@ -9,6 +9,7 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.RawDataRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
@@ -17,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     class GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format : SampleDomainCommandExecutionTests
     {
         private object[] _loadedEvents;
-        private static readonly RawSqlAkkaPersistenceRepository RawDataRepository = new RawSqlAkkaPersistenceRepository(AkkaCfg.Persistence.JournalConnectionString);
+        private static readonly RawJournalRepository RawDataRepository = new RawJournalRepository(AkkaCfg.Persistence.JournalConnectionString);
         private string _persistenceId;
         protected override bool ClearDataOnStart { get; } = true;
 
@@ -29,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
-            DomainEventAdapters.Register(new BookOrderAdapter());
+            GridNode.EventsAdaptersCatalog.Register(new BookOrderAdapter());
             
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
@@ -54,7 +55,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         public void Then_it_should_be_serialized_to_json()
         {
             var convertedItems = RawDataRepository.Load(_persistenceId);
-            var serializer = new DomainEventsJsonSerializer((ExtendedActorSystem)GridNode.System);
+            var serializer = new WireJsonSerializer();
             var restoredFromJson = convertedItems.Select(i => serializer.FromBinary(i.Payload,Type.GetType(i.Manifest)));
 
             CollectionAssert.AllItemsAreNotNull(restoredFromJson);

@@ -12,6 +12,12 @@ namespace GridDomain.EventSourcing.Sagas
             Descriptor = descriptor;
         }
 
+        public SagaProducer(ISagaDescriptor descriptor, Func<object, TSaga> commonFactory) : this(descriptor)
+        {
+            foreach(var msgType in descriptor.StartMessages)
+                Register(msgType, commonFactory);
+        }
+
         public void Register<TMessage>(ISagaFactory<TSaga, TMessage> factory)
         {
             Register(typeof(TMessage), m => factory.Create((TMessage) m));

@@ -7,7 +7,7 @@ using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSagaFactory:
+    public class SoftwareProgrammingSagaFactory:
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>>,
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>

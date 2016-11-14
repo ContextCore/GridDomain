@@ -157,7 +157,6 @@
     <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />
-    <Compile Include="Persistence\SerializationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDateTimeStrategy.cs" />
     <Compile Include="TestDbTools.cs" />

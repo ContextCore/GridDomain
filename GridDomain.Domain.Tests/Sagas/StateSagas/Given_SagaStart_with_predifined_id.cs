@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
     public class Given_SagaStart_with_predifined_id:
-        SoftwareProgramming_StateSaga_Test
+        SoftwareProgrammingStateSagaTest
     {
         private Guid _sagaId;
         private SoftwareProgrammingSagaState _sagaState;
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Then]
         public void Saga_state_is_correctly_changed()
         {
-            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffe, _sagaState.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffee, _sagaState.MachineState);
 
         }
     }

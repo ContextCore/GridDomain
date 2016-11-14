@@ -1,4 +1,5 @@
 using Akka.Serialization;
+using GridDomain.EventSourcing;
 using GridDomain.Node;
 using KellermanSoftware.CompareNetObjects;
 
@@ -6,14 +7,14 @@ namespace GridDomain.Tests.Framework
 {
     public class ObjectDeserializationChecker
     {
-        private readonly Serializer _serializer;
+        private readonly WireJsonSerializer _serializer;
         private readonly CompareLogic _compareLogic;
 
         public CompareLogic CompareLogic => _compareLogic;
 
-        public ObjectDeserializationChecker(Serializer serializer = null, CompareLogic logic = null)
+        public ObjectDeserializationChecker(WireJsonSerializer serializer = null, CompareLogic logic = null)
         {
-            _serializer = serializer ?? new DomainEventsJsonSerializer(null) {UseWire = false};
+            _serializer = serializer ?? new WireJsonSerializer();
             _compareLogic = logic ?? new CompareLogic {Config = new ComparisonConfig() {ComparePrivateFields = true}};
         }
 

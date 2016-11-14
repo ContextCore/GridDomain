@@ -13,7 +13,7 @@ namespace GridDomain.Tests.EventsUpgrade
         {
             var initialEvent = new Event(new Payload(new SubObject_V1("10", "123")));
 
-            var settings = DomainEventSerialization.GetDefaultSettings();
+            var settings = DomainSerializer.GetDefaultSettings();
             settings.Converters.Add(new SubObjectConverter());
 
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.EventsUpgrade
         {
             var initialEvent = new Event(new Payload(new SubObject_V1("10", "123")));
 
-            var settings = DomainEventSerialization.GetDefaultSettings();
+            var settings = DomainSerializer.GetDefaultSettings();
 
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
             var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         {
             _actorSystem = ActorSystem.Create("test");
             _transport = new AkkaEventBusTransport(_actorSystem);
-            Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(10));
+            Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(1));
             _results = ConfigureWaiter(Waiter);
         }
 
@@ -28,7 +29,6 @@ namespace GridDomain.Tests.MessageWaiting.Local
         [TearDown]
         public void Clear()
         {
-            Waiter.Dispose();
             _actorSystem.Terminate().Wait();
         }
 
@@ -57,7 +57,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
             var e = Assert.Throws<TimeoutException>(() => ExpectMsg(msg));
         }
 
-        public TimeSpan DefaultTimeout { get; protected set; } = TimeSpan.FromMilliseconds(50);
+        public TimeSpan DefaultTimeout { get;} = TimeSpan.FromMilliseconds(50);
 
         protected void ExpectNoMsg()
         {

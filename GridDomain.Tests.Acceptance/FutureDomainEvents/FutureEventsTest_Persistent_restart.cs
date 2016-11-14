@@ -2,12 +2,15 @@ using System;
 using System.Threading;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.FutureEvents;
 using GridDomain.Tests.FutureEvents.Infrastructure;
+using GridDomain.Tools.Repositories.AggregateRepositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -16,7 +19,6 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
     [TestFixture]
     public class FutureEventsTest_Persistent_restart : FutureEventsTest
     {
-        private RaiseEventInFutureCommand _testCommand;
 
         public FutureEventsTest_Persistent_restart(): base(false)
         {
@@ -24,29 +26,37 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
 
-        [OneTimeSetUp]
-        public void Given_aggregate_When_raising_future_event()
+        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-            _testCommand = new RaiseEventInFutureCommand(DateTime.Now.AddSeconds(5), 
-                                                         Guid.NewGuid(), 
-                                                         "test value");
-
-            ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand);
-            //FutureEventScheduledEvent is a trigger for schedule an event to Quartz, lets give it some time to process
-            Thread.Sleep(1000);
+            return new GridDomainNode(CreateConfiguration(), CreateMap(), () => AkkaCfg.CreateSystem());
         }
 
         [Then]
         public void It_fires_after_node_restart()
         {
-            GridNode.Stop();
-            GridNode = CreateGridDomainNode(AkkaCfg, new LocalDbConfiguration());
-            GridNode.Start(new LocalDbConfiguration());
-          // event is not passed to waiter, but raised
-            WaitFor<FutureEventOccuredEvent>();
 
-            var aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
-            Assert.LessOrEqual(aggregate.ProcessedTime - _testCommand.RaiseTime, TimeSpan.FromSeconds(2));
+            var cmd = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(10),
+                                                        Guid.NewGuid(),
+                                                       "test value");
+
+           GridNode.NewCommandWaiter()
+                    .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId)
+                    .Create()
+                    .Execute(cmd)
+                    .Wait(Timeout);
+
+            GridNode.Stop();
+            GridNode.Start(new LocalDbConfiguration());
+
+            var waiter = GridNode.NewWaiter()
+                                 .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
+                                 .Create();
+
+            waiter.Wait(Timeout);
+
+            var repo = new AggregateRepository(new ActorSystemEventRepository(GridNode.System),GridNode.EventsAdaptersCatalog);
+            var aggregate = repo.LoadAggregate<TestAggregate>(cmd.AggregateId);
+            Assert.LessOrEqual(aggregate.ProcessedTime - cmd.RaiseTime, TimeSpan.FromSeconds(2));
         }
     }
 }

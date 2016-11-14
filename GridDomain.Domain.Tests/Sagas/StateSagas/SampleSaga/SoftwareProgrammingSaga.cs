@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         IHandler<CoffeMadeEvent>
     {
 
-        public static ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
+        public static readonly ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
         public SoftwareProgrammingSaga(SoftwareProgrammingSagaState state) : base(state)
         {
             var gotTiredTriggerTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);
@@ -26,9 +26,9 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             RegisterEvent<BadCoffeMachineRememberedEvent>(Triggers.DummyForSagaStateChange);
 
             Machine.Configure(States.Working)
-                   .Permit(Triggers.GoForCoffe, States.MakingCoffe);
+                   .Permit(Triggers.GoForCoffe, States.MakingCoffee);
 
-            Machine.Configure(States.MakingCoffe)
+            Machine.Configure(States.MakingCoffee)
                    .OnEntryFrom(gotTiredTriggerTrigger, e =>
                    {
                        State.RememberPerson(e.PersonId);
@@ -82,7 +82,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         public enum States
         {
             Working,
-            MakingCoffe,
+            MakingCoffee,
             Sleeping
         }
     }

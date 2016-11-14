@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_start_again : ProgrammingSoftwareSagaTest
+    class Given_saga_When_publishing_start_again : SoftwareProgrammingInstanceSagaTest
     {
         private GotTiredEvent _startMessage;
         private CoffeMadeEvent _coffeMadeEvent;
@@ -31,13 +31,11 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 new GotTiredEvent(Guid.NewGuid(),_startMessage.LovelySofaId, Guid.NewGuid())
                     .CloneWithSaga(_startMessage.SagaId);
 
-
-
             GridNode.Transport.Publish(_startMessage);
             GridNode.Transport.Publish(_coffeMadeEvent);
             GridNode.Transport.Publish(_reStartEvent);
 
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
          
             _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
         }
@@ -46,8 +44,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Saga_state_should_contain_all_messages()
         {
-            var messagesSent = new DomainEvent[] {_startMessage, _coffeMadeEvent, _reStartEvent}
-                                    ;
+            var messagesSent = new DomainEvent[] {_startMessage, _coffeMadeEvent, _reStartEvent};
             CollectionAssert.AreEquivalent(messagesSent.Select(m => m.SourceId), 
                 _sagaDataAggregate.ReceivedMessages.Cast<DomainEvent>().Select(m => m.SourceId));
         }

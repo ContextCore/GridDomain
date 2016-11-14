@@ -21,7 +21,7 @@ namespace GridDomain.CQRS
 
         public TimeSpan Timeout { get; }
         public CommandPlan(ICommand command, params ExpectedMessage[] expectedMessage)
-            : this(command, TimeSpan.FromSeconds(10), expectedMessage)
+                     : this(command, TimeSpan.FromSeconds(10), expectedMessage)
         {
         }
 

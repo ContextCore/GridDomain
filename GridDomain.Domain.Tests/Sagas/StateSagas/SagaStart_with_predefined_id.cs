@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Sagas.StateSagas
 {
     [TestFixture]
-    public class SagaStart_with_predefined_id : SoftwareProgramming_StateSaga_Test
+    public class SagaStart_with_predefined_id : SoftwareProgrammingStateSagaTest
     {
         private Guid _sagaId;
         private SoftwareProgrammingSagaState _sagaState;

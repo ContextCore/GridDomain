@@ -20,22 +20,23 @@ namespace GridDomain.Scheduling.Integration
         private const string ExecutionOptionsKey = nameof(ExecutionOptionsKey);
 
         private readonly IQuartzLogger _quartzLogger;
-        private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
-        private static readonly WireJsonSerializer _serializer = new WireJsonSerializer();
+        private static readonly WireJsonSerializer Serializer = new WireJsonSerializer();
+        private readonly IMessageWaiterFactory _executor;
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
                          ActorSystem actorSystem,
-                         IPublisher publisher)
+                         IPublisher publisher,
+                         IMessageWaiterFactory executor)
         {
             Condition.NotNull(()=> quartzLogger);
             Condition.NotNull(()=> actorSystem);
             Condition.NotNull(()=> publisher);
             Condition.NotNull(() => actorSystem.DI());
 
+            _executor = executor;
             _quartzLogger = quartzLogger;
-            _actorSystem = actorSystem;
             _publisher = publisher;
         }
 
@@ -51,12 +52,18 @@ namespace GridDomain.Scheduling.Integration
                     var command = GetCommand(jobDataMap);
                     var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap);
-                    var genericProps = CreateGenericProps(options);
-                    var sagaCreator = _actorSystem.ActorOf(genericProps);
-                    var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
-                    var r = result.Wait(options.Timeout);
-                    if(!r) throw new Exception("Scheduling saga was not created");
-                    sagaCreator.Tell(PoisonPill.Instance, ActorRefs.NoSender);
+
+                    if (options.SuccesEventType == null)
+                        throw new Exception("options do not have SuccessEventType for key " + key);
+
+                    //TODO: wait by ID; 
+                   var task = _executor.NewCommandWaiter(options.Timeout)
+                                       .Expect(options.SuccesEventType)
+                                       .Create()
+                                       .Execute(command);
+
+                    if (!task.Wait(options.Timeout))
+                        throw new ScheduledCommandWasNotConfirmedException(command);
                 }
                 else
                 {
@@ -102,18 +109,12 @@ namespace GridDomain.Scheduling.Integration
 
         private static byte[] Serialize(object source)
         {
-            return _serializer.ToBinary(source);
+            return Serializer.ToBinary(source);
         }
 
         private static T Deserialize<T>(byte[] source)
         {
-            return (T)_serializer.FromBinary(source, typeof(T));
-        }
-
-        private Props CreateGenericProps(ExecutionOptions options)
-        {
-            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccesEventType);
-            return _actorSystem.DI().Props(genericActorType);
+            return (T)Serializer.FromBinary(source, typeof(T));
         }
 
         private static DomainEvent GetEvent(JobDataMap jobDataMap)
@@ -150,6 +151,16 @@ namespace GridDomain.Scheduling.Integration
                    .UsingJobData(jobDataMap)
                    .RequestRecovery(true)
                    .Build();
+        }
+    }
+
+    public class ScheduledCommandWasNotConfirmedException : Exception
+    {
+        private Command Command { get; }
+
+        public ScheduledCommandWasNotConfirmedException(Command command)
+        {
+            Command = command;
         }
     }
 }

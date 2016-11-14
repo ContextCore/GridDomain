@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.FutureEvents.Infrastructure
 {
-    public class RaiseEventInFutureCommand : Command
+    public class ScheduleEventInFutureCommand : Command
     {
-        public RaiseEventInFutureCommand(DateTime raiseTime, Guid aggregateId, string value)
+        public ScheduleEventInFutureCommand(DateTime raiseTime, Guid aggregateId, string value)
         {
             RaiseTime = raiseTime;
             AggregateId = aggregateId;

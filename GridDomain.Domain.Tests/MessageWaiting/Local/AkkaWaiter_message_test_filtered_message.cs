@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.TestKit.NUnit3;
 using Akka.Util;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
@@ -20,7 +21,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         public void Given_waiter_subscribed_for_message_When_publishing_message()
         {
             _transport = new AkkaEventBusTransport(Sys);
-            _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10));
+            _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(2));
             _waiter.Expect<string>(m => m.Like("Msg"));
             results = _waiter.Start(TimeSpan.FromMilliseconds(50));
         }

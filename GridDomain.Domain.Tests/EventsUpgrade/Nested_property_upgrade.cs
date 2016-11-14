@@ -12,7 +12,7 @@ namespace GridDomain.Tests.EventsUpgrade
         {
             var initialEvent = new Event() { Payload = new Payload() {Property = new SubObject_V1() { Name = "10", Value = "123" } }};
 
-            var settings = DomainEventSerialization.GetDefaultSettings();
+            var settings = DomainSerializer.GetDefaultSettings();
             settings.Converters.Add(new SubObjectConverter());
 
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);

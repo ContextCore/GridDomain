@@ -1,6 +1,15 @@
 ﻿-- helper function to convert between DATETIME2 and BIGINT as .NET ticks
 -- taken from: http://stackoverflow.com/questions/7386634/convert-sql-server-datetime-object-to-bigint-net-ticks
 
+create View HumanSnapshots AS 
+SELECT [PersistenceId]
+      ,[SequenceNr]
+      ,[Timestamp]
+      ,[Manifest]
+	  ,CONVERT(NVARCHAR(max), [Snapshot], 0) [Snapshot]
+  FROM [dbo].[Snapshots]
+  GO
+
 ALTER TABLE Journal DROP CONSTRAINT PK_Journal;
 ALTER TABLE Journal ADD Ordering BIGINT IDENTITY(1,1) PRIMARY KEY NOT NULL;
 ALTER TABLE Journal ADD CONSTRAINT QU_Journal UNIQUE (PersistenceID, SequenceNr);

@@ -5,7 +5,7 @@ using NMoneys;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    class SoftwareProgrammingSagaData : ISagaState
+    public class SoftwareProgrammingSagaData : ISagaState
     {
         public Guid PersonId { get; set; }
         public string CurrentStateName { get; set; }

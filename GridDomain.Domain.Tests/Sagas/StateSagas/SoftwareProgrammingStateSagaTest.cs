@@ -13,24 +13,20 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.StateSagas
 {
-    public class SoftwareProgramming_StateSaga_Test : SampleDomainCommandExecutionTests
+    public class SoftwareProgrammingStateSagaTest : SampleDomainCommandExecutionTests
     {
-        public SoftwareProgramming_StateSaga_Test(bool inMemory = true) : base(inMemory)
+        public SoftwareProgrammingStateSagaTest(bool inMemory = true) : base(inMemory)
         {
         }
-        protected IPublisher Publisher { get; private set; }
-
-        [SetUp]
-        public void InitPublisher()
-        {
-            Publisher = GridNode.Container.Resolve<IPublisher>();
-        }
+     
         protected override IContainerConfiguration CreateConfiguration()
         {
             return 
-                
                 new CustomContainerConfiguration(container => {
-                   container.RegisterStateSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory, GotTiredEvent>(SoftwareProgrammingSaga.Descriptor);
+                   container.RegisterStateSaga<SoftwareProgrammingSaga, 
+                                               SoftwareProgrammingSagaState, 
+                                               SoftwareProgrammingSagaFactory, 
+                                               GotTiredEvent>(SoftwareProgrammingSaga.Descriptor);
                    container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
             });
         }

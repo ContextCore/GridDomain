@@ -15,7 +15,6 @@ namespace GridDomain.Scheduling.Akka.Messages
             SuccesEventType = succesEventType;
             Timeout = timeout ?? TimeSpan.FromMinutes(1);
         }
-
     }
 
     public class ExecutionOptions<TSuccessEvent> : ExecutionOptions where TSuccessEvent : DomainEvent

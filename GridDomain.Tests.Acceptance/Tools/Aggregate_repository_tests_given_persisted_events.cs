@@ -9,6 +9,8 @@ using GridDomain.Tests.Tools;
 using GridDomain.Tests.Tools.Repositories;
 using GridDomain.Tools.Persistence;
 using GridDomain.Tools.Repositories;
+using GridDomain.Tools.Repositories.AggregateRepositories;
+using GridDomain.Tools.Repositories.EventRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Tools
@@ -48,10 +50,10 @@ namespace GridDomain.Tests.Acceptance.Tools
 
         static readonly object[] EventRepositories =
         {
-            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), TestRepository.NewPersistent()},
+            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))},
             new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), AggregateRepository.New(AkkaWriteDbConnectionString)},
             new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   AggregateRepository.New(AkkaWriteDbConnectionString)},
-            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   TestRepository.NewPersistent()},
+            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))},
         };
     }
 }

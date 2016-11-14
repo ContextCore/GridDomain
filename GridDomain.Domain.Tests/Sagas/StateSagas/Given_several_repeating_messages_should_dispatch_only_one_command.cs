@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
 
         public void Given_new_saga_with_state()
         {
-            var sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.MakingCoffe);
+            var sagaState = new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.MakingCoffee);
 
             Saga = new SoftwareProgrammingSaga(sagaState);
 

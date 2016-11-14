@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,8 +23,6 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
-
-   
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -37,12 +36,18 @@ namespace GridDomain.Node.Actors
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
         private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
         public readonly Guid Id;
+        private readonly SnapshotsSavePolicy _snapshotsPolicy;
+        public IAggregate Aggregate { get; private set; }
+        public override string PersistenceId { get; }
+
+        private readonly ActorMonitor _monitor;
+        private readonly ISoloLogger _log = LogManager.GetLogger();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-                              AggregateFactory factory,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               TypedMessageActor<Unschedule> unscheduleActorRef,
-                              IPublisher publisher)
+                              IPublisher publisher,
+                              SnapshotsSavePolicy snapshotsSavePolicy)
         {
             _schedulerActorRef = schedulerActorRef;
             _unscheduleActorRef = unscheduleActorRef;
@@ -50,9 +55,10 @@ namespace GridDomain.Node.Actors
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
-            Aggregate = factory.Build<TAggregate>(Id);
+            Aggregate = EventSourcing.Sagas.FutureEvents.Aggregate.Empty<TAggregate>(Id);
             _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
-       
+            _snapshotsPolicy = snapshotsSavePolicy;
+
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
             Command<AsyncEventsReceived>(m =>
@@ -68,7 +74,7 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
 
-            Command<ShutdownRequest>(req =>
+            Command<GracefullShutdownRequest>(req =>
             {
                 _monitor.IncrementMessagesReceived();
                 Shutdown();
@@ -90,7 +96,7 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 try
                 {
-                    Aggregate = _handler.Execute(Aggregate, cmd);
+                    Aggregate = _handler.Execute((TAggregate)Aggregate, cmd);
                 }
                 catch (Exception ex)
                 {
@@ -102,8 +108,16 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(cmd);
             });
 
-            //Recover<SnapshotOffer>(offer => Aggregate = (TAggregate) offer.Snapshot);
-            Recover<DomainEvent>(e => ((IAggregate) Aggregate).ApplyEvent(e));
+            Recover<SnapshotOffer>(offer =>
+            {
+                Aggregate = (TAggregate) offer.Snapshot;
+                Aggregate.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+            });
+            Recover<DomainEvent>(e =>
+            {
+                Aggregate.ApplyEvent(e);
+                _snapshotsPolicy.RefreshActivity(e.CreatedTime);
+            });
             Recover<RecoveryCompleted>(message =>
              {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
@@ -115,7 +129,7 @@ namespace GridDomain.Node.Actors
             
 
         }
-
+        
         protected virtual void Shutdown()
         {
             Context.Stop(Self);
@@ -135,21 +149,17 @@ namespace GridDomain.Node.Actors
 
         private void ProcessAggregateEvents(ICommand command)
         {
+            var events = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
-            var aggregate = (IAggregate) Aggregate;
-
-            var uncommittedEvents = aggregate.GetUncommittedEvents();
-
-            var events = uncommittedEvents.Cast<DomainEvent>();
             if (command.SagaId != Guid.Empty)
             {
-                events = events.Select(e => e.CloneWithSaga(command.SagaId));
+                events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
             }
 
             PersistAll(events, e =>
             {
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
-                // how to pass aggregate type in this case? 
+                //how to pass aggregate type in this case? 
                 //direct call to method to not postpone process of event scheduling, 
                 //case it can be interrupted by other messages in stash processing errors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
@@ -157,11 +167,23 @@ namespace GridDomain.Node.Actors
 
                 _publisher.Publish(e);
             });
-            aggregate.ClearUncommittedEvents();
+
+
+
+            Aggregate.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command);
+
+            if(_snapshotsPolicy.ShouldSave(events))
+                SaveSnapshot(Aggregate);
         }
 
+        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
+        {
+            _log.Error(cause,"Cannot persist {object} ", @event);
+            base.OnPersistFailure(cause, @event, sequenceNr);
+        }
+        
         private void ProcessAsyncMethods(ICommand command)
         {
             var extendedAggregate = Aggregate as Aggregate;
@@ -171,11 +193,11 @@ namespace GridDomain.Node.Actors
             //actor should schedule results to process it
             //command is included to safe access later, after async execution complete
             var cmd = command;
-            foreach (var asyncMethod in extendedAggregate.AsyncUncomittedEvents)
+            foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
                 asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsReceived(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
                                           .PipeTo(Self);
 
-            extendedAggregate.AsyncUncomittedEvents.Clear();
+            extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
         public void Handle(FutureEventScheduledEvent message)
@@ -211,10 +233,6 @@ namespace GridDomain.Node.Actors
             _unscheduleActorRef.Handle(unscheduleMessage);
         }
 
-        public TAggregate Aggregate { get; private set; }
-        public override string PersistenceId { get; }
-
-        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {

@@ -10,16 +10,28 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
     public class Aggregate : AggregateBase
     {
-        public static AggregateFactory _factory = new AggregateFactory();
+        private static readonly AggregateFactory Factory = new AggregateFactory();
         public static T Empty<T>(Guid id) where T : IAggregate
         {
-            return _factory.Build<T>(id);
+            return Factory.Build<T>(id);
         }
 
         #region AsyncMethods
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
         private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
-        public readonly HashSet<AsyncEventsInProgress> AsyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
+        private readonly HashSet<AsyncEventsInProgress> _asyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
+
+        public void ClearAsyncUncomittedEvents()
+        {
+            _asyncUncomittedEvents.Clear();
+        }
+
+        public IReadOnlyCollection<AsyncEventsInProgress> GetAsyncUncomittedEvents()
+        {
+            return _asyncUncomittedEvents;
+        }
+
+        public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } = new Dictionary<Guid, FutureEventScheduledEvent>();
 
         public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
         {
@@ -30,7 +42,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
         protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
         {
             var asyncMethodStarted = new AsyncEventsInProgress(eventProducer, Guid.NewGuid());
-            AsyncUncomittedEvents.Add(asyncMethodStarted);
+            _asyncUncomittedEvents.Add(asyncMethodStarted);
             _asyncEventsResults.Add(asyncMethodStarted.InvocationId, asyncMethodStarted);
         }
 
@@ -56,14 +68,11 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             Register<FutureEventOccuredEvent>(Apply);
             Register<FutureEventCanceledEvent>(Apply);
         }
-
-        private readonly IDictionary<Guid, FutureEventScheduledEvent> _futureEvents = new Dictionary<Guid, FutureEventScheduledEvent>();
-        public IReadOnlyCollection<FutureEventScheduledEvent> FutureEvents => _futureEvents.Values.ToArray();
-
+        
         public void RaiseScheduledEvent(Guid futureEventId)
         {
             FutureEventScheduledEvent e;
-            if (!_futureEvents.TryGetValue(futureEventId, out e))
+            if (!FutureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
             RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
@@ -77,7 +86,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent : DomainEvent
         {
-            var eventsToCancel = this._futureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
+            var eventsToCancel = this.FutureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
 
             var cancelEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id));
             foreach (var e in cancelEvents)
@@ -86,7 +95,7 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         private void Apply(FutureEventScheduledEvent e)
         {
-            _futureEvents[e.Id] = e;
+            FutureEvents[e.Id] = e;
         }
 
         private void Apply(FutureEventOccuredEvent e)
@@ -102,8 +111,8 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
         private void DeleteFutureEvent(Guid futureEventId)
         {
             FutureEventScheduledEvent evt;
-            if (!_futureEvents.TryGetValue(futureEventId, out evt)) return;
-            _futureEvents.Remove(futureEventId);
+            if (!FutureEvents.TryGetValue(futureEventId, out evt)) return;
+            FutureEvents.Remove(futureEventId);
         }
 
         #endregion

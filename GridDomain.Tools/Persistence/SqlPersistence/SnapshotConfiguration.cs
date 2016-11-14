@@ -1,7 +1,7 @@
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
   
-    public class SnapshotConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Snapshot>
+    public class SnapshotConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SnapshotItem>
     {
         public SnapshotConfiguration()
             : this("dbo")
@@ -17,7 +17,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             Property(x => x.SequenceNr).HasColumnName(@"SequenceNr").IsRequired().HasColumnType("bigint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("datetime2");
             Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar").HasMaxLength(500);
-            Property(x => x.Snapshot_).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary");
+            Property(x => x.Snapshot).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary");
         }
     }
 }

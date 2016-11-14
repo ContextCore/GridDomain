@@ -35,7 +35,7 @@ namespace GridDomain.Node
                 _transport.Publish(cmd);
         }
 
-        public Task<object> Execute(CommandPlan plan)
+        public async Task<object> Execute(CommandPlan plan)
         {
             var waiter = new AkkaCommandLocalWaiter(this,_system,_transport,plan.Timeout,true);
             
@@ -63,32 +63,16 @@ namespace GridDomain.Node
                              o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
-            return expectBuilder.Create()
-                                .Execute(plan.Command)
-                                .ContinueWith(t =>
-                                {
-                                    CheckTaskFault(t);
-                                    return t.Result.All.Count > 1 ? t.Result.All.ToArray() : t.Result.All.FirstOrDefault();
-                                });
+            var res = await expectBuilder.Create(plan.Timeout)
+                                         .Execute(plan.Command)
+                                         .ConfigureAwait(false);
+
+            return res.All.Count > 1 ? res.All.ToArray() : res.All.FirstOrDefault();
         }
 
-        private static void CheckTaskFault(Task t)
+        public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            if (t.IsCanceled)
-                throw new TimeoutException();
-
-            if (t.IsFaulted)
-                ExceptionDispatchInfo.Capture(t.Exception.UnwrapSingle()).Throw();
-        }
-
-
-        public Task<T> Execute<T>(CommandPlan<T> plan)
-        {
-            return Execute((CommandPlan)plan).ContinueWith(t =>
-            {
-                CheckTaskFault(t);
-                return (T) t.Result;
-            });
+            return (T) await Execute((CommandPlan)plan).ConfigureAwait(false);
         }
     }
 }

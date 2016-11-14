@@ -22,13 +22,12 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Tools.Console
 {
     [TestFixture]
-    [Ignore("Ignored until fix failure in bulk tests run")]
+    [Ignore("Console is not relevant now")]
     public class GridConsoleTests
     {
         private GridConsole _console;
         private GridDomainNode _node;
 
-        [MTAThread]
         [OneTimeSetUp]
         public void Given_existing_GridNode()
         {
@@ -47,7 +46,6 @@ namespace GridDomain.Tests.Tools.Console
             _console.Connect();
         }
 
-        [MTAThread]
         [OneTimeTearDown]
         public void TurnOffNode()
         {
@@ -67,13 +65,13 @@ namespace GridDomain.Tests.Tools.Console
         }
 
         [Then]
-        public void Console_commands_are_executed()
+        public async Task Console_commands_are_executed()
         {
-            var command = new CreateSampleAggregateCommand(42, Guid.NewGuid(), Guid.NewGuid());
+            var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
 
-            var evt = _console.ExecuteSync(command, TimeSpan.FromSeconds(30), expect);
+            var evt = await _console.Execute(CommandPlan.New(command, TimeSpan.FromSeconds(30), expect));
             Assert.AreEqual(command.Parameter.ToString(), evt.Value);
         }
 

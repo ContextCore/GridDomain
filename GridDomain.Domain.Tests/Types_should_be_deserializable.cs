@@ -78,7 +78,7 @@ namespace GridDomain.Tests
         protected override Assembly[] AllAssemblies { get; } =
             {
                 Assembly.GetAssembly(typeof(GridDomainNode)),
-                Assembly.GetAssembly(typeof(SchedulerConfiguration)),
+                Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
                 Assembly.GetAssembly(typeof(SagaTransitionEvent<>)),
                 Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
                 Assembly.GetAssembly(typeof(SampleAggregate)),

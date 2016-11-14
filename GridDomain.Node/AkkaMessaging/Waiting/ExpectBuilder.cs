@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
@@ -18,23 +19,26 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     /// <returns></returns>
     public abstract class ExpectBuilder<T> : IExpectBuilder<T>
     {
-        protected readonly LocalMessagesWaiter<T> _waiter;
+        protected readonly LocalMessagesWaiter<T> Waiter;
         internal Expression<Func<IEnumerable<object>, bool>> WaitIsOver = c => true;
-        protected TimeSpan DefaultTimeout;
 
-        protected ExpectBuilder(LocalMessagesWaiter<T> waiter, TimeSpan defaultTimeout)
+        protected ExpectBuilder(LocalMessagesWaiter<T> waiter)
         {
-            DefaultTimeout = defaultTimeout;
-            _waiter = waiter;
+            Waiter = waiter;
         }
 
-        public abstract T Create(TimeSpan? timeout = null);
+        public abstract T Create(TimeSpan timeout);
+        public T Create()
+        {
+            return Create(TimeSpan.FromSeconds(10));
+        }
 
         public IExpectBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)
         {
             return filter == null ? And(typeof(TMsg), o => o is TMsg) :
                                     And(typeof(TMsg), o => o is TMsg && filter((TMsg)o));
         }
+
         public IExpectBuilder<T> Or<TMsg>(Func<TMsg, bool> filter = null)
         {
             return filter == null ? Or(typeof(TMsg), o => o is TMsg) :
@@ -44,14 +48,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public IExpectBuilder<T> And(Type type,Func<object,bool> filter)
         {
             WaitIsOver = WaitIsOver.And(c => c.Any(filter));
-            _waiter.Subscribe(type, filter, WaitIsOver.Compile());
+            Waiter.Subscribe(type, filter, WaitIsOver.Compile());
             return this;
         }
 
         public IExpectBuilder<T> Or(Type type, Func<object,bool> filter)
         {
             WaitIsOver = WaitIsOver.Or(c => c.Any(filter));
-            _waiter.Subscribe(type,filter, WaitIsOver.Compile());
+            Waiter.Subscribe(type,filter, WaitIsOver.Compile());
             return this;
         }
     }

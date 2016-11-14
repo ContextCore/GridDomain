@@ -7,33 +7,14 @@ namespace GridDomain.CQRS
 {
     public static class CommandExecutorExtensions
     {
-        public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, params ExpectedMessage[] expectedMessage)
+        public static async Task<T> Execute<T>(this ICommandExecutor node, ICommand command, params ExpectedMessage[] expectedMessage)
         {
-            return node.Execute(new CommandPlan<T>(command, expectedMessage));
+            return await node.Execute(new CommandPlan<T>(command, expectedMessage));
         }
 
-        public static Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
+        public static async Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
         {
-            return node.Execute(CommandPlan.New(command, expectedMessage));
-        }
-
-        public static T ExecuteSync<T>(this ICommandExecutor node, ICommand command, TimeSpan timeout, ExpectedMessage<T> expectedMessage)
-        {
-            return ExecuteSync(node, CommandPlan.New(command, timeout, expectedMessage));
-        }
-
-        public static T ExecuteSync<T>(this ICommandExecutor node, CommandPlan<T> plan)
-        {
-            var task = node.Execute(plan);
-            try
-            {
-              return task.Result;
-            }
-            catch (Exception ex)
-            {
-                ExceptionDispatchInfo.Capture(ex.UnwrapSingle()).Throw();
-            }
-            throw new InvalidOperationException();
+            return await Execute<T>(node, command, new ExpectedMessage[]{expectedMessage});
         }
     }
 }
