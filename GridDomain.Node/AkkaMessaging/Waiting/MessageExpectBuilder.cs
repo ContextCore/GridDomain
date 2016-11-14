@@ -6,13 +6,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class MessageExpectBuilder : ExpectBuilder<Task<IWaitResults>>
     {
-        public MessageExpectBuilder(LocalMessagesWaiter<Task<IWaitResults>> waiter, TimeSpan defaultTimeout) : base(waiter, defaultTimeout)
+        public MessageExpectBuilder(LocalMessagesWaiter<Task<IWaitResults>> waiter, TimeSpan defaultTimeout) : base(waiter)
         {
         }
 
-        public override Task<IWaitResults> Create(TimeSpan? timeout = null)
+        public override Task<IWaitResults> Create(TimeSpan timeout)
         {
-            return _waiter.Start(timeout ?? DefaultTimeout);
+            return Waiter.Start(timeout);
         }
     }
 }

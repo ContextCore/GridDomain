@@ -17,7 +17,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         {
             var task = Waiter.Expect<string>()
                              .And<char>()
-                             .Create(TimeSpan.FromSeconds(100));
+                             .Create();
 
             Publish(_messageA);
             Publish(_messageB);

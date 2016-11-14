@@ -103,7 +103,7 @@ namespace GridDomain.Tests.Framework
 
         public async Task<T> LoadAggregate<T>(string name) where T : AggregateBase
         {
-            var actor = await LoadActorByDI<AggregateActor<T>>(name).ConfigureAwait(false);
+            var actor = await LoadActorByDI<AggregateActor<T>>(name);
             return (T)actor.Aggregate;
         }
 

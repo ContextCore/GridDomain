@@ -67,9 +67,9 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             try
             {
-                GridNode.NewCommandWaiter()
+                GridNode.NewCommandWaiter(Timeout)
                            .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-                         .Create(Timeout)
+                         .Create()
                          .Execute(syncCommand)
                          .Wait();
             }
@@ -84,10 +84,10 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         public void When_expected_optional_fault_does_not_occur_wait_is_successfull()
         {
             var syncCommand = new LongOperationCommand(101, Guid.NewGuid());
-            var res = GridNode.NewCommandWaiter()
+            var res = GridNode.NewCommandWaiter(Timeout)
                                 .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
                                 .Or<IFault>(f => (f.Message as DomainEvent)?.SourceId == syncCommand.AggregateId)
-                              .Create(Timeout)
+                              .Create()
                               .Execute(syncCommand)
                               .Result;
 
@@ -116,13 +116,11 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         public async Task When_fault_was_received_and_failOnFaults_is_set_results_raised_an_error()
         {
             var syncCommand = new AsyncFaultWithOneEventCommand(500, Guid.NewGuid());
-            await AssertEx.ShouldThrow<SampleAggregateException>(
-                                 GridNode.NewCommandWaiter(Timeout,true)
-                                     .Expect<AggregateChangedEventNotification>()
-                                     .Create(Timeout)
-                                     .Execute(syncCommand)
-                                 
-                );
+            await GridNode.NewCommandWaiter(Timeout)
+                          .Expect<AggregateChangedEventNotification>()
+                          .Create()
+                          .Execute(syncCommand)
+                          .ShouldThrow<SampleAggregateException>();
         }
     }
 }

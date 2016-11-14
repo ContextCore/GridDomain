@@ -25,6 +25,9 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         {
         }
 
+
+       // protected override bool CreateNodeOnEachTest { get; } = true;
+
         protected override IMessageRouteMap CreateMap()
         {
             var faultyHandlerMap =
@@ -36,6 +39,18 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             return new CompositeRouteMap(faultyHandlerMap);
         }
 
+
+        [Then]
+        public async Task SWhen_execute_waiting_without_timeout_default_timeout_is_used()
+        {
+            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
+            var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId, syncCommand.AggregateId);
+
+            var plan = new CommandPlan(syncCommand, TimeSpan.FromMilliseconds(50), expectedMessage);
+
+            await GridNode.Execute(plan)
+                          .ShouldThrow<TimeoutException>();
+        }
 
         [Then]
 
@@ -66,17 +81,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
                   .ShouldThrow<MessageHandleException>();
         }
 
-        [Then]
-        public async Task SyncExecute_with_projection_fault_without_wait_timeout_times_out()
-        {
-            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var expectedMessage = Expect.Message<AggregateChangedEventNotification>(e => e.AggregateId,syncCommand.AggregateId);
-
-            var plan = new CommandPlan(syncCommand, TimeSpan.FromMilliseconds(50),expectedMessage);
-
-             await GridNode.Execute(plan)
-                           .ShouldThrow<TimeoutException>();
-        }
+    
 
         [Then]
         public async Task SyncExecute_with_projection_fault_with_expectation_in_plan_deliver_exception_to_caller()

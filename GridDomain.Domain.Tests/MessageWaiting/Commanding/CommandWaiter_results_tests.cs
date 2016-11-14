@@ -30,10 +30,10 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         {
             var cmd = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
 
-            _results = GridNode.NewCommandWaiter()
+            _results = GridNode.NewCommandWaiter(Timeout)
                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                               .Create(Timeout)
+                               .Create()
                                .Execute(cmd).Result;
         }
 

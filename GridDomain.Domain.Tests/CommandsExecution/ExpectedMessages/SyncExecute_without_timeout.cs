@@ -14,6 +14,25 @@ using NUnit.Framework;
 namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
 {
     [TestFixture]
+    public class CommandPlan_Execute_without_timeout : InMemorySampleDomainTests
+    {
+
+        [Then]
+        public async Task PlanExecute_throw_exception_after_wait_without_timeout()
+        {
+            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
+            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
+            var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(100), expectedMessage);
+
+            await GridNode.Execute(plan)
+                          .ShouldThrow<TimeoutException>();
+        }
+
+    }
+
+
+
+    [TestFixture]
     public class SyncExecute_without_timeout : SampleDomainCommandExecutionTests
     {
 
@@ -29,29 +48,6 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         }
 
         [Then]
-        public async Task PlanExecute_throw_exception_after_wait_without_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000,Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(100), expectedMessage);
-
-            await GridNode.Execute(plan)
-                          .ShouldThrow<TimeoutException>();
-        }
-
-        [Then]
-        public async Task SyncExecute_throw_exception_after_wait_without_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = CommandPlan.New(syncCommand, TimeSpan.FromSeconds(0.5), expectedMessage);
-            await GridNode.Execute(plan)
-                          .ShouldThrow<TimeoutException>();
-        }
-
-     
-
-        [Then]
         public async Task PlanExecute_by_result_throws_exception_after_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
@@ -61,20 +57,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             await GridNode.Execute(plan)
                           .ShouldThrow<TimeoutException>();
         }
-
-
-        [Then]
-        public async Task SyncExecute_by_result_throws_exception_after_default_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-            var plan = new CommandPlan<object>(syncCommand,TimeSpan.FromMilliseconds(500),expectedMessage);
-
-            await GridNode.Execute(plan)
-                          .ShouldThrow<TimeoutException>();
-        }
-
-
+        
         [Then]
         public void PlanExecute_doesnt_throw_exception_after_wait_with_timeout()
         {
@@ -84,17 +67,5 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
 
             Assert.False(GridNode.Execute(plan).Wait(100));
         }
-
-        [Then]
-        public void SyncExecute_doesnt_throw_exception_after_wait_with_timeout()
-        {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            var expectedMessage = Expect.Message<SampleAggregateChangedEvent>(e => e.SourceId, syncCommand.AggregateId);
-
-            Assert.False(GridNode.Execute(syncCommand, expectedMessage).Wait(100));
-        }
-
-
-
     }
 }

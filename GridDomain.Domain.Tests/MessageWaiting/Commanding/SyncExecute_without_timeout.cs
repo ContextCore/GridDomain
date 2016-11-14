@@ -64,11 +64,11 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         public void CommandWaiter_doesnt_throw_exception_after_wait_with_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            GridNode.NewCommandWaiter()
-                                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                                 .Create(TimeSpan.FromMilliseconds(500))
-                                 .Execute(syncCommand)
-                                 .Wait(100);
+            GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(500))
+                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                    .Create()
+                    .Execute(syncCommand)
+                    .Wait(100);
         }
     }
 }

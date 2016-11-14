@@ -21,7 +21,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
             return waiter.Expect<string>()
                          .And<char>()
                          .Or<int>()
-                         .Create(TimeSpan.FromMilliseconds(50));
+                         .Create();
         }
 
         [Test]

@@ -13,7 +13,7 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Handle(T msg)
         {
-            Actor.Ask(msg);
+            Actor.Tell(msg);
         }
     }
 }

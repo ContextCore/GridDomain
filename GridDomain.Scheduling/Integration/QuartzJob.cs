@@ -59,7 +59,7 @@ namespace GridDomain.Scheduling.Integration
                     //TODO: wait by ID; 
                    var task = _executor.NewCommandWaiter(options.Timeout)
                                        .Expect(options.SuccesEventType)
-                                       .Create(options.Timeout)
+                                       .Create()
                                        .Execute(command);
 
                     if (!task.Wait(options.Timeout))

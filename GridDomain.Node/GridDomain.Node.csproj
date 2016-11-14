@@ -233,6 +233,7 @@
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\AggregatePersistedNotification.cs" />
     <Compile Include="Actors\CannotCreateChildException.cs" />
     <Compile Include="Actors\CheckHealth.cs" />
     <Compile Include="Actors\ChildInfo.cs" />

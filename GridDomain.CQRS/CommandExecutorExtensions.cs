@@ -14,7 +14,7 @@ namespace GridDomain.CQRS
 
         public static async Task<T> Execute<T>(this ICommandExecutor node, ICommand command, ExpectedMessage<T> expectedMessage)
         {
-            return await node.Execute(CommandPlan.New(command, expectedMessage));
+            return await Execute<T>(node, command, new ExpectedMessage[]{expectedMessage});
         }
     }
 }
