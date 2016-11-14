@@ -44,7 +44,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             GridNode.Execute(cmd);
             var res = await waiter;
             
-            Assert.AreEqual(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>());
+            Assert.AreEqual(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);
         }
 
         [Then]
