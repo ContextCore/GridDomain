@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace GridGomain.Tests.Stress
 {
     public class Program
     {
+        [HandleProcessCorruptedStateExceptions]
         public static void Main(params string[] args)
         {
             var unityContainer = new UnityContainer();
