@@ -35,8 +35,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridGomain.Tests.Stress", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tools", "GridDomain.Tools\GridDomain.Tools.csproj", "{52D64E51-E1D5-45F6-8C2A-E436C0A03ED3}"
 EndProject
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "NuGet", "NuGet\NuGet.nuproj", "{F7E9678C-48C4-4DD8-8257-16D54706EF28}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutoTesting|Any CPU = AutoTesting|Any CPU
@@ -305,22 +303,6 @@ Global
 		{52D64E51-E1D5-45F6-8C2A-E436C0A03ED3}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{52D64E51-E1D5-45F6-8C2A-E436C0A03ED3}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52D64E51-E1D5-45F6-8C2A-E436C0A03ED3}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.AutoTesting|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.AutoTesting|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Dev|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Production|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Production|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Sandbox|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Sandbox|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.Staging|Any CPU.Build.0 = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.StagingDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E9678C-48C4-4DD8-8257-16D54706EF28}.StagingDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

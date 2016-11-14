@@ -37,10 +37,10 @@ namespace GridDomain.Tests.MessageWaiting.Local
         [Test]
         public void Multiply_waites_completes_after_message_was_received()
         {
-            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(50))
-                        && _results.Wait(TimeSpan.FromMilliseconds(50))
-                        && _results.Wait(TimeSpan.FromMilliseconds(50))
-                        && _results.Wait(TimeSpan.FromMilliseconds(50)));
+            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(100))
+                     && _results.Wait(TimeSpan.FromMilliseconds(100))
+                     && _results.Wait(TimeSpan.FromMilliseconds(100))
+                     && _results.Wait(TimeSpan.FromMilliseconds(100)));
         }
 
         [Test]

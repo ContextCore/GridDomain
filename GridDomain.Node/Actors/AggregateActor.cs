@@ -177,12 +177,6 @@ namespace GridDomain.Node.Actors
             if(_snapshotsPolicy.ShouldSave(events))
                 SaveSnapshot(Aggregate);
         }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            _log.Error(cause,"Cannot persist {object} ", @event);
-            base.OnPersistFailure(cause, @event, sequenceNr);
-        }
         
         private void ProcessAsyncMethods(ICommand command)
         {
