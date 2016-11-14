@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
@@ -39,15 +40,12 @@ namespace GridDomain.Tests.Tools.Repositories
                 new Message2(Guid.NewGuid()) {Id = 2}
             };
 
-            using (var repo = CreateRepository())
-            {
-                var persistId = "testId";
+           var persistId = "testId";
+            var saveTime = BusinessDateTime.UtcNow;
+           CreateRepository().Save(persistId, events);
 
-                repo.Save(persistId, events);
-
-                var eventsLoaded = repo.Load(persistId).Cast<Message>();
-                CollectionAssert.AreEquivalent(events.Cast<Message>().Select(e => e.Id),eventsLoaded.Select(e=> e.Id));
-            }
+           var eventsLoaded = CreateRepository().Load(persistId).Where(e => e.CreatedTime >= saveTime).Cast<Message>();
+           CollectionAssert.AreEquivalent(events.Cast<Message>().Select(e => e.Id),eventsLoaded.Select(e=> e.Id));
         }
 
         protected virtual IRepository<DomainEvent> CreateRepository()
