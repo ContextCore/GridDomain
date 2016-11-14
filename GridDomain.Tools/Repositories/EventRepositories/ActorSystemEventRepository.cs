@@ -14,7 +14,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
         public ActorSystemEventRepository(ActorSystem config)
         {
-            var ext =DomainEventsJsonSerializationExtensionProvider.Provider.Get(config);
+            var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(config);
             if (ext == null)
                 throw new ArgumentNullException(nameof(ext),
                     $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
