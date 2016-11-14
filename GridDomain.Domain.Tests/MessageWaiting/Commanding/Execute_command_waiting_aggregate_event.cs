@@ -52,14 +52,14 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            GridNode.NewCommandWaiter(Timeout)
-                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                      .Create()
-                      .Execute(cmd)
-                      .Wait();
+            var msg = GridNode.NewCommandWaiter(Timeout)
+                            .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                            .Create()
+                            .Execute(cmd)
+                            .Result
+                            .Message<SampleAggregateChangedEvent>();
 
-            var aggregate = LoadAggregate<SampleAggregate>(cmd.AggregateId);
-            Assert.AreEqual(cmd.Parameter.ToString(), aggregate.Value);
+            Assert.AreEqual(cmd.Parameter.ToString(), msg.Value);
         }
 
         [Then]
