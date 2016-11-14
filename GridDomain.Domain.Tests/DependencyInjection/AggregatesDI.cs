@@ -34,7 +34,7 @@ namespace GridDomain.Tests.DependencyInjection
             var conf = new CustomContainerConfiguration(c =>
             {
                 c.RegisterType<ITestDependency, TestDependencyImplementation>();
-                c.RegisterInstance<IUnityContainer>(c);
+               // c.RegisterInstance<IUnityContainer>(c);
                 c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
                 c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
             });
