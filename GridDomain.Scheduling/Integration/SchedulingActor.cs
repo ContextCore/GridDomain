@@ -33,7 +33,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                _logger.Error(e,"Error while Unscheduled job {Task}, error: {Error}", msg.Key);
+                _logger.Error(e,"Error while Unscheduled job {Task}", msg.Key);
                 Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
             }
         }
@@ -68,7 +68,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (JobPersistenceException e)
             {
-                _logger.Error(e,"Error while scheduled job {Task}, error {Error}", key);
+                _logger.Error(e,"Error while scheduled job {Task}", key);
                 if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException))
                 {
                     Sender.Tell(new AlreadyScheduled(key));
@@ -76,7 +76,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                _logger.Error(e,"Error while scheduled job {Task}, error {Error}", key);
+                _logger.Error(e,"Error while scheduled job {Task}", key);
                 Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
             }
         }

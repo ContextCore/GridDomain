@@ -34,7 +34,7 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Publish<T>(T msg)
         {
-            _log.Trace("Publishing {Message} to transport", msg);
+            _log.Trace("Publishing {@Message} to transport", msg);
             _bus.Publish(msg);
         }
 

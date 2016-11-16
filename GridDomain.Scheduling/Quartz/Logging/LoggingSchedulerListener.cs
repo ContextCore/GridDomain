@@ -74,7 +74,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulerError(string msg, SchedulerException cause)
         {
-            _log.Error(cause, "Scheduler error {message}",msg);
+            _log.Error(cause, "Scheduler error {@message}",msg);
         }
 
         public void SchedulerInStandbyMode()
