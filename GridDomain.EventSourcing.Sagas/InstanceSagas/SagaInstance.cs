@@ -79,7 +79,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Machine.OnMessageReceived += (sender, context) =>
             {
                 var msg = context.Message;
-                Log.Warn("Not initialized saga {Type} received a message {Msg}", GetType().Name, msg);
+                Log.Warn("Not initialized saga {Type} received a message {@Msg}", GetType().Name, msg);
             };
             return false;
         }

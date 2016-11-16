@@ -27,7 +27,7 @@ namespace GridDomain.Node.Actors
         public virtual void Handle(TMessage msg)
         {
             _monitor.IncrementMessagesReceived();
-            _log.Trace("Handler actor got message: {Message}", msg.ToPropsString());
+            _log.Trace("Handler actor got message: {@Message}", msg);
 
             try
             {
@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors
             }
             catch (Exception e)
             {
-                _log.Error(e);
+                _log.Error(e, "Handler actor raised an error on message process: {@Message}", msg);
                 _publisher.Publish(Fault.New(msg, e, GetSagaId(msg), typeof(THandler)));
             }
         }

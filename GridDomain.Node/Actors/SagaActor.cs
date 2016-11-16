@@ -154,7 +154,7 @@ namespace GridDomain.Node.Actors
             {
                 var processorType = _producer.Descriptor.StateMachineType;
 
-                _log.Error(ex,"Saga {saga} {id} raised an error on {message}", processorType, Id, message);
+                _log.Error(ex,"Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
                 var fault = Fault.NewGeneric(message, ex, processorType, Id);
                 _publisher.Publish(fault);
             }
