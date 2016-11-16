@@ -39,7 +39,7 @@ namespace GridDomain.Tests.EventsUpgrade
             ActorSystem system = ActorSystem.Create("example",new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig());
 
             // Get the Serialization Extension
-            Serialization serialization = system.Serialization;
+            Akka.Serialization.Serialization serialization = system.Serialization;
 
             // Find the Serializer for it
             Serializer serializer = serialization.FindSerializerFor(evt);
