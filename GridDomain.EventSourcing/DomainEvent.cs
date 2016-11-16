@@ -17,9 +17,10 @@ namespace GridDomain.EventSourcing
         }
 
         //Source of the event - aggregate that created it
-        public Guid SourceId { get;}
-        public Guid SagaId { get; protected set; }
-        public DateTime CreatedTime { get; }
+        // private setter for serializers
+        public Guid SourceId { get; private set; }
+        public Guid SagaId { get; private set; }
+        public DateTime CreatedTime { get; private set; }
 
         public DomainEvent CloneWithSaga(Guid sagaId)
         {
@@ -27,16 +28,5 @@ namespace GridDomain.EventSourcing
             evt.SagaId = sagaId;
             return evt;
         }
-
-        //relying on external serializer to pass all SerializationInfo already filled as a parameter
-        //[SecurityPermission(SecurityAction.LinkDemand,Flags = SecurityPermissionFlag.SerializationFormatter)]
-        //void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        //{
-        //if (info == null)
-        //throw new System.ArgumentNullException(nameof(info));
-        //var versionedTypeName = VersionedTypeName.Parse(info.FullTypeName,this.Version);
-        //info.FullTypeName = versionedTypeName.ToString();
-
-        //}
     }
 }
