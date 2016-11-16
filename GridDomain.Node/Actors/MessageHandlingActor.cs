@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors
             }
             catch (Exception e)
             {
-                _log.Error(e);
+                _log.Error(e, "Handler actor raised an error on message process: {@Message}", msg);
                 _publisher.Publish(Fault.New(msg, e, GetSagaId(msg), typeof(THandler)));
             }
         }
