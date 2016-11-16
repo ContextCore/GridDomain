@@ -114,7 +114,7 @@ namespace GridDomain.Node
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            ConfigureContainer(Container, databaseConfiguration, _quartzConfig, System);
+            ConfigureContainer(Container, _quartzConfig, System);
 
 
 
@@ -153,13 +153,11 @@ namespace GridDomain.Node
 
         }
 
-        private void ConfigureContainer(IUnityContainer unityContainer,
-                                        IDbConfiguration databaseConfiguration, 
+        private void ConfigureContainer(IUnityContainer unityContainer, 
                                         IQuartzConfig quartzConfig, 
                                         ActorSystem actorSystem)
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
-                                                                       databaseConfiguration,
                                                                        _transportMode,
                                                                        quartzConfig));
 
