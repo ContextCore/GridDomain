@@ -3,6 +3,7 @@ using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tools.Repositories;
 using Newtonsoft.Json;
 using NUnit.Framework;
