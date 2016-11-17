@@ -67,15 +67,15 @@ namespace GridDomain.Tests.Tools.Console
         }
 
         [Then]
-        public void Console_commands_are_executed_by_remote_node()
+        public async Task Console_commands_are_executed_by_remote_node()
         {
             var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
-            var evt =  _connector.NewCommandWaiter(TimeSpan.FromDays(1))
-                                    .Expect<SampleAggregateCreatedEvent>()
-                                    .Create()
-                                    .Execute(command)
-                                    .Result;
+            var evt =  await _connector.NewCommandWaiter(TimeSpan.FromDays(1))
+                                       .Expect<SampleAggregateCreatedEvent>()
+                                       .Create()
+                                       .Execute(command);
+                                   
 
             Assert.AreEqual(command.Parameter.ToString(), evt.Message<SampleAggregateCreatedEvent>().Value);
         }

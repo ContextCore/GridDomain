@@ -9,7 +9,6 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
         private readonly IActorTransport _local;
         private readonly IActorRef _remoteSubscriber;
         private readonly TimeSpan _timeout;
-
         public RemoteAkkaEventBusTransport(IActorTransport local,  IActorRef remoteSubscriber, TimeSpan timeout)
         {
             _timeout = timeout;
@@ -33,13 +32,13 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
              Subscribe(typeof(TMessage),actor);
         }
 
-        public void  Unsubscribe(IActorRef actor, Type topic)
+        public void Unsubscribe(IActorRef actor, Type topic)
         {
             _local.Unsubscribe(actor,topic);
             _remoteSubscriber.Ask<UnsubscribeAck>(new Unsubscribe(actor, topic),_timeout).Wait();
         }
 
-        public  void  Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter = null)
+        public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter = null)
         {
             _local.Subscribe(messageType, actor, subscribeNotificationWaiter);
             _remoteSubscriber.Ask<SubscribeAck>(new Subscribe(actor, messageType,subscribeNotificationWaiter)).Wait();
