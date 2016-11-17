@@ -22,13 +22,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public async Task<IWaitResults> Execute<T>(params T[] commands) where T : ICommand
         {
+            var task = _waiter.Start();
             foreach (var command in commands)
             {
                 _waiter.ExpectBuilder.Or<IFault<T>>(f => f.Message.Id == command.Id);
                 Executor.Execute(command);
             }
 
-            var res = await _waiter.Start();
+            var res = await task;
 
             if (!_failOnFaults) return res;
             var faults = res.All.OfType<IFault>().ToArray();

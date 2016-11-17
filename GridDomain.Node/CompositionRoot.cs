@@ -20,7 +20,7 @@ namespace GridDomain.Node
 {
    // [Obsolete("Use GridNodeConainerConfiguration instead")]
     //TODO: refactor to good config via IContainerConfiguration
-    public static class CompositionRoot
+    internal static class CompositionRoot
     {
     //TODO: refactor to good config via IContainerConfiguration
         public static void Init(IUnityContainer container,
@@ -29,17 +29,13 @@ namespace GridDomain.Node
                                 IQuartzConfig config = null)
         {
             container.Register(new QuartzSchedulerConfiguration(config ?? new PersistedQuartzConfig()));
-           //container.Register(SagaConfiguration.State<ScheduledCommandProcessingSaga,
-           //                                           ScheduledCommandProcessingSagaState,
-           //                                           ScheduledCommandProcessingSagaFactory,
-           //                                           ScheduledCommandProcessingStarted>(ScheduledCommandProcessingSaga.SagaDescriptor));
-
+       
             //TODO: replace with config
             IActorTransport transport;
             switch (transportMode)
             {
                 case TransportMode.Standalone:
-                    transport = new AkkaEventBusTransport(actorSystem);
+                    transport = new LocalAkkaEventBusTransport(actorSystem);
                 break;
                 case TransportMode.Cluster:
                     transport = new DistributedPubSubTransport(actorSystem);

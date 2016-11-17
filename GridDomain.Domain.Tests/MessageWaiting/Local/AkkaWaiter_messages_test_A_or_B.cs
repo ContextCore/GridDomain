@@ -16,13 +16,13 @@ namespace GridDomain.Tests.MessageWaiting.Local
         private string _testmsgString = "testMsg";
         private bool _testmsgBool = true;
 
-        private AkkaEventBusTransport _transport;
+        private LocalAkkaEventBusTransport _transport;
         private Task<IWaitResults> _received;
 
         [SetUp]
         public void Given_waiter_subscribed_for_one_of_two_messages()
         {
-            _transport = new AkkaEventBusTransport(Sys);
+            _transport = new LocalAkkaEventBusTransport(Sys);
             _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10));
             _waiter.Expect<string>()
                    .Or<bool>();

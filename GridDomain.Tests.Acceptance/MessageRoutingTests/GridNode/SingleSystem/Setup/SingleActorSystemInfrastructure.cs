@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
     public class SingleActorSystemInfrastructure : ActorSystemInfrastruture
     {
         private ActorSystem _actorSystem;
-        private AkkaEventBusTransport _transport;
+        private LocalAkkaEventBusTransport _transport;
 
         public SingleActorSystemInfrastructure(AkkaConfiguration conf) : base(conf)
         {
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
         protected override ActorSystem CreateSystem(AkkaConfiguration conf)
         {
             _actorSystem = AkkaConfig.CreateSystem();
-            _transport = new AkkaEventBusTransport(_actorSystem);
+            _transport = new LocalAkkaEventBusTransport(_actorSystem);
             return _actorSystem;
         }
 

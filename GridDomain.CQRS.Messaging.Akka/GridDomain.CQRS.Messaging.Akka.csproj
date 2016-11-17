@@ -100,12 +100,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSubscriberExtensions.cs" />
-    <Compile Include="AkkaEventBusTransport.cs" />
+    <Compile Include="LocalAkkaEventBusTransport.cs" />
     <Compile Include="CannotGetDistributedPubSubException.cs" />
     <Compile Include="DistributedPubSubTransport.cs" />
     <Compile Include="IActorSubscriber.cs" />
     <Compile Include="IActorTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Remote\EventBusForwarder.cs" />
+    <Compile Include="Remote\Publish.cs" />
+    <Compile Include="Remote\RemoteAkkaEventBusTransport.cs" />
+    <Compile Include="Remote\Subscribe.cs" />
+    <Compile Include="Remote\UnSubscribe.cs" />
     <Compile Include="TypedMessageActor.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -134,27 +139,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="_NuProjGetProjectClosure"
-          DependsOnTargets="ResolveProjectReferences"
-          Inputs="%(_MSBuildProjectReferenceExistent.Identity)"
-          Outputs="fake"
-          Returns="@(_ProjectReferenceClosure)">
-
+  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
     <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
-             Targets="_NuProjGetProjectClosure"
-             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-             ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs"
-              ItemName="_ProjectReferenceClosureWithDuplicates" />
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
+      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
     </MSBuild>
-
     <!-- Remove duplicates from closure -->
     <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered"
-              ItemName="_ProjectReferenceClosureWithoutMetadata"/>
+      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
     </RemoveDuplicates>
-
     <ItemGroup>
       <!-- Remove references that are also direct references -->
       <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
@@ -169,6 +162,5 @@
         <DependencyKind>Direct</DependencyKind>
       </_ProjectReferenceClosure>
     </ItemGroup>
-
   </Target>
 </Project>

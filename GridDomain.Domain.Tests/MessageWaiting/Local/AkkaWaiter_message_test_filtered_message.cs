@@ -14,13 +14,13 @@ namespace GridDomain.Tests.MessageWaiting.Local
     public class AkkaWaiter_message_test_filtered_message : TestKit
     {
         private AkkaMessageLocalWaiter _waiter;
-        private AkkaEventBusTransport _transport;
+        private LocalAkkaEventBusTransport _transport;
         private Task<IWaitResults> results;
 
         [SetUp]
         public void Given_waiter_subscribed_for_message_When_publishing_message()
         {
-            _transport = new AkkaEventBusTransport(Sys);
+            _transport = new LocalAkkaEventBusTransport(Sys);
             _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(2));
             _waiter.Expect<string>(m => m.Like("Msg"));
             results = _waiter.Start(TimeSpan.FromMilliseconds(50));

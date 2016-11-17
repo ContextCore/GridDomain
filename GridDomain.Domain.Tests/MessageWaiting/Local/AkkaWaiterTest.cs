@@ -11,7 +11,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
 
     public abstract class AkkaWaiterTest
     {
-        private AkkaEventBusTransport _transport;
+        private LocalAkkaEventBusTransport _transport;
         private ActorSystem _actorSystem;
         private Task<IWaitResults> _results;
 
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         public void Configure()
         {
             _actorSystem = ActorSystem.Create("test");
-            _transport = new AkkaEventBusTransport(_actorSystem);
+            _transport = new LocalAkkaEventBusTransport(_actorSystem);
             Waiter = new AkkaMessageLocalWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(1));
             _results = ConfigureWaiter(Waiter);
         }
