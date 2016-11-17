@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneWithSaga(Guid.NewGuid());
 
-            var transport = new AkkaEventBusTransport(Sys);
+            var transport = new LocalAkkaEventBusTransport(Sys);
             transport.Subscribe<Fault<GoSleepCommand>>(TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() => 
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var message = new SampleAggregateChangedEvent(payload,Guid.NewGuid(),DateTime.Now,Guid.NewGuid());
 
-            var transport = new AkkaEventBusTransport(Sys);
+            var transport = new LocalAkkaEventBusTransport(Sys);
             transport.Subscribe<Fault<SampleAggregateChangedEvent>>(TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() =>

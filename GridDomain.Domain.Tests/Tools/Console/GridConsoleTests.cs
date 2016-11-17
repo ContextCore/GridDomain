@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Tools.Console
 {
     [TestFixture]
-    [Ignore("Console is not relevant now")]
+   // [Ignore("Console is not relevant now")]
     public class GridConsoleTests
     {
         private GridConsole _console;
@@ -61,18 +61,20 @@ namespace GridDomain.Tests.Tools.Console
         [Then]
         public void NodeController_is_located()
         {
-            Assert.NotNull(_console.NodeController);
+            Assert.NotNull(_console.EventBusForwarder);
         }
 
         [Then]
-        public async Task Console_commands_are_executed()
+        public async Task Console_commands_are_executed_by_remote_node()
         {
             var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
-            var expect = Expect.Message<SampleAggregateCreatedEvent>(e => e.SourceId, command.AggregateId);
+            var evt = await _console.NewCommandWaiter()
+                                    .Expect<SampleAggregateCreatedEvent>()
+                                    .Create()
+                                    .Execute(command);
 
-            var evt = await _console.Execute(CommandPlan.New(command, TimeSpan.FromSeconds(30), expect));
-            Assert.AreEqual(command.Parameter.ToString(), evt.Value);
+            Assert.AreEqual(command.Parameter.ToString(), evt.Message<SampleAggregateCreatedEvent>().Value);
         }
 
     }

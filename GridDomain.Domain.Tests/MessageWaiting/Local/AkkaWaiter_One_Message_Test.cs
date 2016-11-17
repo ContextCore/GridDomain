@@ -19,7 +19,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         public void Given_waiter_subscribed_for_message_When_publishing_message()
         {
             var actorSystem = ActorSystem.Create("test");
-            var transport = new AkkaEventBusTransport(actorSystem);
+            var transport = new LocalAkkaEventBusTransport(actorSystem);
             _waiter = new AkkaMessageLocalWaiter(actorSystem, transport, TimeSpan.FromSeconds(10));
             _waiter.Expect<string>();
             _results = _waiter.Start(TimeSpan.FromSeconds(1));

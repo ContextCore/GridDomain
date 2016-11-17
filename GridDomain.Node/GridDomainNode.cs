@@ -15,6 +15,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
@@ -62,7 +63,7 @@ namespace GridDomain.Node
         public IActorTransport Transport { get; private set; }
 
         public ActorSystem System { get; private set; }
-
+        public IActorRef EventBusForwarder { get; private set; }
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
@@ -123,7 +124,7 @@ namespace GridDomain.Node
             _commandExecutor = Container.Resolve<ICommandExecutor>();
             _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
 
-
+            EventBusForwarder = System.ActorOf(Props.Create(() => new EventBusForwarder(Transport)),nameof(EventBusForwarder));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 

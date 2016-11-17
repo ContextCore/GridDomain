@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using GridDomain.Logging;
@@ -53,6 +52,13 @@ namespace GridDomain.CQRS.Messaging.Akka
         {
             var topic = typeof(T).FullName;
             _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(),topic);
+            _transport.Tell(new Publish(topic, msg));
+        }
+
+        public void Publish(object msg)
+        {
+            var topic = msg.GetType().FullName;
+            _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(), topic);
             _transport.Tell(new Publish(topic, msg));
         }
     }

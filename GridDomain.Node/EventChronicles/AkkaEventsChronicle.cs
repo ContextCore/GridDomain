@@ -21,7 +21,7 @@ namespace GridDomain.Node.EventChronicles
     public class AkkaEventsChronicle : IEventsChronicle
     {
         private readonly ActorSystem _system;
-        private readonly AkkaEventBusTransport _transport;
+        private readonly LocalAkkaEventBusTransport _transport;
         public IMessagesRouter Router { get; }
 
         public AkkaEventsChronicle(AkkaConfiguration akkaConf)
@@ -30,10 +30,10 @@ namespace GridDomain.Node.EventChronicles
 
             _system.AddDependencyResolver(new UnityDependencyResolver(new UnityContainer(), _system));
 
-            _transport = new AkkaEventBusTransport(_system);
+            _transport = new LocalAkkaEventBusTransport(_system);
 
             var routingActor =
-                _system.ActorOf(Props.Create(() => new LocalSystemRoutingActor(new DefaultHandlerActorTypeFactory(),new AkkaEventBusTransport(_system))));
+                _system.ActorOf(Props.Create(() => new LocalSystemRoutingActor(new DefaultHandlerActorTypeFactory(),new LocalAkkaEventBusTransport(_system))));
 
             var actorLocator = new DefaultAggregateActorLocator();
 

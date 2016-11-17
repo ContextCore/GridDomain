@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -14,13 +15,15 @@ namespace GridDomain.Tools.Console
     /// GridConsole is used to manually issue commands to an existing grid node. 
     /// It can be used for manual domain state fixes, bebugging, support. 
     /// </summary>
-    public class GridConsole : ICommandExecutor, IDisposable
+    public class GridConsole : IGridDomainNode, IDisposable
     {
         private readonly ActorSystem _consoleSystem;
-        public IActorRef NodeController;
+        public IActorRef EventBusForwarder;
         private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(5);
         private AkkaCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
+        private MessageWaiterFactory _gridDomainNodeImplementation;
+        
 
         public GridConsole(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
         {
@@ -38,16 +41,18 @@ namespace GridDomain.Tools.Console
 
         public ActorSelection GetSelection(string relativePath)
         {
-            var controllerActorPath = $"{_serverAddress.ToRootSelectionPath()}/{relativePath}";
+            var actorPath = $"{_serverAddress.ToRootSelectionPath()}/{relativePath}";
 
-             return _consoleSystem.ActorSelection(controllerActorPath);
+            return _consoleSystem.ActorSelection(actorPath);
         }
 
         public void Connect()
         {
-            NodeController = GetActor(GetSelection(nameof(GridNodeController)));
+            EventBusForwarder = GetActor(GetSelection(nameof(EventBusForwarder)));
 
-            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, new AkkaEventBusTransport(_consoleSystem));
+            var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),EventBusForwarder);
+            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
+            _gridDomainNodeImplementation = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
         }
       
         public void Dispose()
@@ -70,5 +75,14 @@ namespace GridDomain.Tools.Console
             return _commandExecutor.Execute(plan);
         }
 
+        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return _gridDomainNodeImplementation.NewWaiter(defaultTimeout);
+        }
+
+        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true)
+        {
+            return _gridDomainNodeImplementation.NewCommandWaiter(defaultTimeout, failAnyFault);
+        }
     }
 }

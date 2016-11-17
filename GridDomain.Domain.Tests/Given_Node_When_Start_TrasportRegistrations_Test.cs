@@ -11,7 +11,7 @@ namespace GridDomain.Tests
         [Then]
         public void Transport_contains_all_registrations()
         {
-            var transport = (AkkaEventBusTransport) GridNode.Transport;
+            var transport = (LocalAkkaEventBusTransport) GridNode.Transport;
             Thread.Sleep(1000);
             CollectionAssert.IsNotEmpty(transport.Subscribers);
         }

@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
+using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
 using GridDomain.Logging;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
-    public class AkkaEventBusTransport : IActorTransport
+    public class LocalAkkaEventBusTransport : IActorTransport
     {
         private readonly EventStream _bus;
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
         private readonly ISoloLogger _log = LogManager.GetLogger();
 
-        public AkkaEventBusTransport(ActorSystem system)
+        public LocalAkkaEventBusTransport(ActorSystem system)
         {
             _bus = system.EventStream;
         }
@@ -37,6 +38,13 @@ namespace GridDomain.CQRS.Messaging.Akka
             _log.Trace("Publishing {@Message} to transport", msg);
             _bus.Publish(msg);
         }
+
+        public void Publish(object msg)
+        {
+            _log.Trace("Publishing {@Message} to transport", msg);
+            _bus.Publish(msg);
+        }
+    
 
         public void Subscribe(Type messageType, IActorRef actor)
         {
