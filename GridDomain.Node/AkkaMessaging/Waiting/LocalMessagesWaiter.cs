@@ -59,7 +59,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 foreach(var type in _messageTypesToSubscribe)
                 _subscriber.Subscribe(type, inbox.Receiver);
 
-                await WaitForMessages(inbox).TimeoutAfter(timeout ?? _defaultTimeout);
+                var finalTimeout = timeout ?? _defaultTimeout;
+
+                await WaitForMessages(inbox, finalTimeout)
+                               .TimeoutAfter(finalTimeout);
 
                 foreach (var type in _messageTypesToSubscribe)
                     _subscriber.Unsubscribe(inbox.Receiver,type);
@@ -68,11 +71,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             }
         }
 
-        private async Task WaitForMessages(Inbox inbox)
+        private async Task WaitForMessages(Inbox inbox, TimeSpan timeoutPerMessage)
         {
             while (!IsAllExpectedMessagedReceived())
             {
-                var message = await inbox.ReceiveAsync().ConfigureAwait(false);
+                var message = await inbox.ReceiveAsync(timeoutPerMessage).ConfigureAwait(false);
                 CheckExecutionError(message);
 
                 if (IsExpected(message)) _allExpectedMessages.Add(message);

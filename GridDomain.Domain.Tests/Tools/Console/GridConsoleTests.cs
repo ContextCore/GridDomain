@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Tools.Console
    // [Ignore("Console is not relevant now")]
     public class GridConsoleTests
     {
-        private GridConsole _console;
+        private GridNodeConnector _connector;
         private GridDomainNode _node;
 
         [OneTimeSetUp]
@@ -42,8 +42,10 @@ namespace GridDomain.Tests.Tools.Console
                                        () => serverConfig.CreateInMemorySystem());
 
             _node.Start(new LocalDbConfiguration());
-            _console = new GridConsole(serverConfig.Network);
-            _console.Connect();
+
+
+            _connector = new GridNodeConnector(serverConfig.Network);
+            _connector.Connect();
         }
 
         [OneTimeTearDown]
@@ -55,24 +57,25 @@ namespace GridDomain.Tests.Tools.Console
         [Then]
         public void Can_manual_reconnect_several_times()
         {
-            _console.Connect();
+            _connector.Connect();
         }
 
         [Then]
         public void NodeController_is_located()
         {
-            Assert.NotNull(_console.EventBusForwarder);
+            Assert.NotNull(_connector.EventBusForwarder);
         }
 
         [Then]
-        public async Task Console_commands_are_executed_by_remote_node()
+        public void Console_commands_are_executed_by_remote_node()
         {
             var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
-            var evt = await _console.NewCommandWaiter()
+            var evt =  _connector.NewCommandWaiter(TimeSpan.FromDays(1))
                                     .Expect<SampleAggregateCreatedEvent>()
                                     .Create()
-                                    .Execute(command);
+                                    .Execute(command)
+                                    .Result;
 
             Assert.AreEqual(command.Parameter.ToString(), evt.Message<SampleAggregateCreatedEvent>().Value);
         }

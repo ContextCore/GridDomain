@@ -12,10 +12,9 @@ using GridDomain.Node.Configuration.Akka;
 namespace GridDomain.Tools.Console
 {
     /// <summary>
-    /// GridConsole is used to manually issue commands to an existing grid node. 
-    /// It can be used for manual domain state fixes, bebugging, support. 
+    /// GridNodeConnector is used to connect to remote node and delegate commands execution
     /// </summary>
-    public class GridConsole : IGridDomainNode, IDisposable
+    public class GridNodeConnector : IGridDomainNode, IDisposable
     {
         private readonly ActorSystem _consoleSystem;
         public IActorRef EventBusForwarder;
@@ -25,13 +24,14 @@ namespace GridDomain.Tools.Console
         private MessageWaiterFactory _gridDomainNodeImplementation;
         
 
-        public GridConsole(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
+        public GridNodeConnector(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
         {
             _serverAddress = serverAddress;
 
             var conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
 
             _consoleSystem = conf.CreateInMemorySystem();
+            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
         }
 
         public IActorRef GetActor(ActorSelection selection)
@@ -50,7 +50,11 @@ namespace GridDomain.Tools.Console
         {
             EventBusForwarder = GetActor(GetSelection(nameof(EventBusForwarder)));
 
-            var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),EventBusForwarder);
+            var transportBridge = new RemoteAkkaEventBusTransport(
+                                                new LocalAkkaEventBusTransport(_consoleSystem),
+                                                EventBusForwarder,
+                                                TimeSpan.FromSeconds(5));
+
             _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
             _gridDomainNodeImplementation = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
         }

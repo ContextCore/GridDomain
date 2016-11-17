@@ -3,15 +3,21 @@ using Akka.Actor;
 
 namespace GridDomain.CQRS.Messaging.Akka.Remote
 {
-    public class UnSubscribe
+    public class Unsubscribe
     {
         public Type Topic { get; }
         public IActorRef Actor { get; }
 
-        public UnSubscribe(IActorRef actor, Type topic)
+        public Unsubscribe(IActorRef actor, Type topic)
         {
             Topic = topic;
             Actor = actor;
         }
+    }
+
+    public class UnsubscribeAck
+    {
+        public static UnsubscribeAck Instance = new UnsubscribeAck();
+        private UnsubscribeAck() { }
     }
 }
