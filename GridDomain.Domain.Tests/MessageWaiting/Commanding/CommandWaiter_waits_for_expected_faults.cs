@@ -96,17 +96,16 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         }
 
         [Then]
-        public void When_aggregate_throws_fault_it_is_handled_without_implicit_registration()
+        public async Task When_aggregate_throws_fault_it_is_handled_without_implicit_registration()
         {
             //will throw exception in aggregate and in message handler
             var syncCommand = new AsyncFaultWithOneEventCommand(50, Guid.NewGuid());
 
-             var res = GridNode.NewCommandWaiter(Timeout,false)
-                               .Expect<AggregateChangedEventNotification>()
-                               .Or<IFault<SampleAggregateChangedEvent>>()
-                               .Create()
-                               .Execute(syncCommand)
-                               .Result;
+            var res = await GridNode.NewCommandWaiter(Timeout, false)
+                                    .Expect<AggregateChangedEventNotification>()
+                                    .Or<IFault<SampleAggregateChangedEvent>>()
+                                    .Create()
+                                    .Execute(syncCommand);
 
             Assert.NotNull(res.Message<IFault<AsyncFaultWithOneEventCommand>>());
         }
