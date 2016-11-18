@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Core;
+using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -101,9 +103,11 @@ namespace GridDomain.Node.Configuration.Composition
     {
         private readonly SagaProducer<TSaga> _producer;
         private readonly Func<SnapshotsSavePolicy> _snapshotsPolicyFactory;
+        private readonly IConstructAggregates _factory;
 
-        public SagaConfiguration(SagaProducer<TSaga> producer, Func<SnapshotsSavePolicy> snapShotsPolicy = null)
+        public SagaConfiguration(SagaProducer<TSaga> producer, Func<SnapshotsSavePolicy> snapShotsPolicy = null, IConstructAggregates factory = null)
         {
+            _factory = factory ??  new AggregateFactory();
             _snapshotsPolicyFactory = snapShotsPolicy ?? (() => new NoSnapshotsSavePolicy());
             _producer = producer;
         }
@@ -119,7 +123,8 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<SagaActor<TSaga, TState>>(
                 new InjectionConstructor(new ResolvedParameter<ISagaProducer<TSaga>>(),
                                          new ResolvedParameter<IPublisher>(), 
-                                         new ResolvedParameter<SnapshotsSavePolicy>(snapshotsPolicyRegistrationName)));
+                                         new ResolvedParameter<SnapshotsSavePolicy>(snapshotsPolicyRegistrationName),
+                                         _factory));
         }
 
 

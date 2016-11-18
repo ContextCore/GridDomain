@@ -103,9 +103,9 @@
     <Compile Include="Repositories\RawDataRepositories\RawJournalRepository.cs" />
     <Compile Include="Persistence\WireHexDeserializer.cs" />
     <Compile Include="Repositories\EventRepositories\ActorSystemEventRepository.cs" />
-    <Compile Include="Console\ConsoleAkkaConfiguretion.cs" />
-    <Compile Include="Console\ConsoleDbConfig.cs" />
-    <Compile Include="Console\GridNodeConnector.cs" />
+    <Compile Include="Connector\ConsoleAkkaConfiguretion.cs" />
+    <Compile Include="Connector\ConsoleDbConfig.cs" />
+    <Compile Include="Connector\GridNodeConnector.cs" />
     <Compile Include="Repositories\EventsRepositoryActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AggregateRepositories\AggregateRepository.cs" />

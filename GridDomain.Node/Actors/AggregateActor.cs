@@ -11,6 +11,7 @@ using Akka.Monitoring.Impl;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
+using CommonDomain.Persistence;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -42,20 +43,23 @@ namespace GridDomain.Node.Actors
 
         private readonly ActorMonitor _monitor;
         private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly IConstructAggregates _aggregateConstructor;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               TypedMessageActor<Unschedule> unscheduleActorRef,
                               IPublisher publisher,
-                              SnapshotsSavePolicy snapshotsSavePolicy)
+                              SnapshotsSavePolicy snapshotsSavePolicy,
+                              IConstructAggregates aggregateConstructor)
         {
+            _aggregateConstructor = aggregateConstructor;
             _schedulerActorRef = schedulerActorRef;
             _unscheduleActorRef = unscheduleActorRef;
             _handler = handler;
             _publisher = publisher;
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
-            Aggregate = EventSourcing.Sagas.FutureEvents.Aggregate.Empty<TAggregate>(Id);
+            Aggregate = aggregateConstructor.Build(typeof(TAggregate), Id, null);
             _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
             _snapshotsPolicy = snapshotsSavePolicy;
 
@@ -94,6 +98,7 @@ namespace GridDomain.Node.Actors
             Command<ICommand>(cmd =>
             {
                 _monitor.IncrementMessagesReceived();
+                _log.Trace("{Aggregate} received a {@command}", Aggregate.Id, cmd);
                 try
                 {
                     Aggregate = _handler.Execute((TAggregate)Aggregate, cmd);
@@ -101,7 +106,7 @@ namespace GridDomain.Node.Actors
                 catch (Exception ex)
                 {
                     _publisher.Publish(Fault.NewGeneric(cmd, ex, typeof(TAggregate),cmd.SagaId));
-                    Log.Error(ex,"{Aggregate} raised an expection {Exception} while executing {Command}",Aggregate,ex,cmd);
+                    Log.Error(ex,"{Aggregate} raised an expection {@Exception} while executing {@Command}",Aggregate.Id,ex,cmd);
                     return;
                 }
 
@@ -110,8 +115,7 @@ namespace GridDomain.Node.Actors
 
             Recover<SnapshotOffer>(offer =>
             {
-                Aggregate = (TAggregate) offer.Snapshot;
-                Aggregate.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+                Aggregate = _aggregateConstructor.Build(typeof(TAggregate), Id, (IMemento)offer.Snapshot);
             });
             Recover<DomainEvent>(e =>
             {
@@ -175,7 +179,7 @@ namespace GridDomain.Node.Actors
             ProcessAsyncMethods(command);
 
             if(_snapshotsPolicy.ShouldSave(events))
-                SaveSnapshot(Aggregate);
+                SaveSnapshot(Aggregate.GetSnapshot());
         }
         
         private void ProcessAsyncMethods(ICommand command)

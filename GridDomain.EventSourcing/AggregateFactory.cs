@@ -14,6 +14,16 @@ namespace GridDomain.EventSourcing
     {
         public IAggregate Build(Type type, Guid id, IMemento snapshot)
         {
+            return snapshot == null ? Build(type, id) : BuildFromSnapshot(type, id, snapshot);
+        }
+
+        protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        {
+            return Build(type, id);    
+        }
+
+        public IAggregate Build(Type type, Guid id)
+        {
             var constructor = type.GetConstructor(
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Guid)}, null);
 

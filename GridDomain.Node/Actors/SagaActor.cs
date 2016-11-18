@@ -10,6 +10,7 @@ using Akka.Persistence;
 using Automatonymous;
 using CommonDomain;
 using CommonDomain.Core;
+using CommonDomain.Persistence;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -39,7 +40,7 @@ namespace GridDomain.Node.Actors
         private readonly ISoloLogger _log = LogManager.GetLogger();
         public readonly Guid Id;
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
-        private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
+     //   private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
         private readonly SnapshotsSavePolicy _snapshotsPolicy;
@@ -59,8 +60,10 @@ namespace GridDomain.Node.Actors
 
         public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher,
-                         SnapshotsSavePolicy snapshotsSavePolicy)
+                         SnapshotsSavePolicy snapshotsSavePolicy,
+                         IConstructAggregates aggregatesConstructor)
         {
+            _aggregatesConstructor = aggregatesConstructor;
             _producer = producer;
             _publisher = publisher;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
@@ -68,7 +71,7 @@ namespace GridDomain.Node.Actors
             _snapshotsPolicy = snapshotsSavePolicy;
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
-            _sagaData = _aggregateFactory.Build<TSagaState>(Id);
+            _sagaData = aggregatesConstructor.Build(typeof(TSagaState), Id, null);
 
             Command<GracefullShutdownRequest>(req =>
             {
@@ -106,8 +109,7 @@ namespace GridDomain.Node.Actors
             //recover messages will be provided only to right saga by using peristenceId
             Recover<SnapshotOffer>(offer =>
             {
-                _sagaData = (IAggregate) offer.Snapshot;
-                _sagaData.ClearUncommittedEvents(); // for cases when serializers calls aggregate public constructor producing events
+                _sagaData = _aggregatesConstructor.Build(typeof(TSagaState),Id,(IMemento)offer.Snapshot);
             });
             Recover<DomainEvent>(e =>
             {
@@ -164,7 +166,7 @@ namespace GridDomain.Node.Actors
             ProcessSagaCommands();
 
             if(_snapshotsPolicy.ShouldSave(stateChange))
-                SaveSnapshot(Saga.Data);
+                SaveSnapshot(Saga.Data.GetSnapshot());
         }
         
 
@@ -186,6 +188,7 @@ namespace GridDomain.Node.Actors
 
         private readonly ActorMonitor _monitor = new ActorMonitor(Context, typeof(TSaga).Name);
         private readonly Dictionary<Type, string> _sagaIdFields;
+        private readonly IConstructAggregates _aggregatesConstructor;
 
         protected override void PreStart()
         {
