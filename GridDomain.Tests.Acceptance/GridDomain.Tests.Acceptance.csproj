@@ -234,6 +234,8 @@
   <ItemGroup>
     <Compile Include="Chronicles\EventsReplayInfoHolder.cs" />
     <Compile Include="Chronicles\Given_persisted_events_replay.cs" />
+    <Compile Include="GridConsole\GridConsoleTests.cs" />
+    <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_load_events_stored_in_legacy_wire_format.cs" />
     <Compile Include="EventsUpgrade\GridNode_upgrade_events_by_json_adapters_when_loading_aggregate.cs" />

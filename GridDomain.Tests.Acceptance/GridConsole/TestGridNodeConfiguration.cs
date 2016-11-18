@@ -1,7 +1,7 @@
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Framework.Configuration;
 
-namespace GridDomain.Tests.Tools.Console
+namespace GridDomain.Tests.Acceptance.GridConsole
 {
     class TestGridNodeConfiguration : AkkaConfiguration
     {

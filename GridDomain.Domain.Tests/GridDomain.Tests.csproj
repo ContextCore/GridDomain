@@ -489,8 +489,6 @@
     <Compile Include="Serialization\State_sagas_should_be_serialize_and_deserialize.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="ThenAttribute.cs" />
-    <Compile Include="Tools\Console\GridConsoleTests.cs" />
-    <Compile Include="Tools\Console\TestGridNodeConfiguration.cs" />
     <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
     <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
   </ItemGroup>
