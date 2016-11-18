@@ -11,6 +11,7 @@ using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
 using Akka.Serialization;
+using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -59,7 +60,7 @@ namespace GridDomain.Node
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
         public IObjectsAdapter ObjectAdapteresCatalog { get; private set; }
-
+        public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
         public IActorTransport Transport { get; private set; }
 
         public ActorSystem System { get; private set; }
@@ -128,6 +129,19 @@ namespace GridDomain.Node
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
+            var factories = Container.ResolveAll(typeof(IConstructAggregates))
+                                     .Select(o => new { Type = o.GetType(), Obj = (IConstructAggregates)o})
+                                     .Where(o => o.Type.IsGenericType && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
+                                     .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
+                                     .ToArray();
+
+            foreach (var factory in factories)
+            {
+                AggregateFromSnapshotsFactory.Register(factory.AggregateType, m => factory.Constructor.Build(factory.GetType(), Guid.Empty,m));
+            }
+
+
+
             if (appInsightsConfig.IsEnabled)
             {
                 var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
@@ -148,7 +162,7 @@ namespace GridDomain.Node
             {
                 RoutingActorType = RoutingActorType[_transportMode]
             })
-                .Wait(TimeSpan.FromSeconds(2));
+            .Wait(TimeSpan.FromSeconds(2));
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
 

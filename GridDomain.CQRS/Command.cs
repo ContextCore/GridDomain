@@ -28,8 +28,8 @@ namespace GridDomain.CQRS
         {
         }
 
-        public DateTime Time { get; }
-        public Guid Id { get; }
+        public DateTime Time { get; private set; }
+        public Guid Id { get; private set;}
         public Guid SagaId { get; private set; }
 
         public Command CloneWithSaga(Guid sagaId)

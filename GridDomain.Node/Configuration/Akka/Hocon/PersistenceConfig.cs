@@ -6,18 +6,12 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         private readonly IAkkaConfig _journalConfig;
         private readonly IAkkaConfig _snapshotsConfig;
 
-       // public PersistenceConfig(AkkaConfiguration akka)
-       // {
-       //     _akka = akka;
-       // }
-
         public PersistenceConfig(IAkkaConfig journalConfig, IAkkaConfig snapshotsConfig)
         {
             _snapshotsConfig = snapshotsConfig;
             _journalConfig = journalConfig;
         }
 
-        //new PersistenceJournalConfig(_akka,new DomainEventAdaptersConfig()).Build() + 
         public string Build()
         {
             var akkaPersistenceConfig =

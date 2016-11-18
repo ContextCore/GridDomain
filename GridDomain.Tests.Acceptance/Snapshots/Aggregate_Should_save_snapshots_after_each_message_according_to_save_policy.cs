@@ -34,10 +34,13 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             return new CustomContainerConfiguration(
                 base.CreateConfiguration(),
                 new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                                                          new SnapshotsSaveAfterEachMessagePolicy())
+                                                          () => new SnapshotsSaveAfterEachMessagePolicy(),
+                                                          SampleAggregate.FromSnapshot
+                                                          )
                 );
         }
 
+        protected override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(10);
 
         [OneTimeSetUp]
         public void Given_default_policy()
@@ -64,7 +67,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                     .Wait();
             Thread.Sleep(100); 
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString).Load<SampleAggregate>(_aggregateId);
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);
         }
 
         [Test]

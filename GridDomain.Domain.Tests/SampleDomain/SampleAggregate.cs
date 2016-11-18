@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
@@ -12,6 +13,36 @@ namespace GridDomain.Tests.SampleDomain
 {
     public class SampleAggregate : Aggregate
     {
+        private class Snapshot : IMemento
+        {
+            public Snapshot(Guid id, int version, string value)
+            {
+                Id = id;
+                Version = version;
+                Value = value;
+            }
+
+            public Guid Id { get; set; }
+            public int Version { get; set; }
+            public string Value { get; set; }
+        }
+
+        public static SampleAggregate FromSnapshot(IMemento memento)
+        {
+            var snapshot = memento as Snapshot;
+            if(snapshot == null)
+                throw new InvalidOperationException("Sample aggregate can be restored only from memento with type " + typeof(Snapshot).Name );
+
+            var aggregate = new SampleAggregate(snapshot.Id, snapshot.Value) {Version = snapshot.Version};
+            (aggregate as IAggregate).ClearUncommittedEvents();
+            return aggregate;
+        }
+
+        protected override IMemento GetSnapshot()
+        {
+            return new Snapshot(this.Id, this.Version, Value);
+        }
+
         public string Value { get; private set; }
 
         private SampleAggregate(Guid id) : base(id)

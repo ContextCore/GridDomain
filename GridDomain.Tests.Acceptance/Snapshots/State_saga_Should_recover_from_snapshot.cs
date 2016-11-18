@@ -1,7 +1,10 @@
 using System;
+using GridDomain.Common;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tests.SampleDomain;
@@ -18,9 +21,22 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private SoftwareProgrammingSagaState _sagaState;
         private SoftwareProgrammingSagaState _restoredState;
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(100);
 
         public State_saga_Should_recover_from_snapshot(): base(false) { }
+
+
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return new CustomContainerConfiguration(
+                base.CreateConfiguration(),
+                SagaConfiguration.State<SoftwareProgrammingSaga,
+                                             SoftwareProgrammingSagaState,
+                                             SoftwareProgrammingSagaFactory,
+                                             GotTiredEvent>
+                                             (SoftwareProgrammingSaga.Descriptor,
+                                              () => new SnapshotsSaveAfterEachMessagePolicy(),
+                                              SoftwareProgrammingSagaState.FromSnapshot));
+        }
 
         [OneTimeSetUp]
         public void Test()
@@ -30,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaState.RememberBadCoffeMachine(Guid.NewGuid());
             _sagaState.ClearEvents();
 
-            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString);
+            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory);
             repo.Add(_sagaState);
 
             _restoredState = LoadSagaState<SoftwareProgrammingSaga,SoftwareProgrammingSagaState>(_sagaState.Id);

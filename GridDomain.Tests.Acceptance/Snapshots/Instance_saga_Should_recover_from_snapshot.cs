@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaState.RememberEvent(saga.CoffeReady, state, new object());
             _sagaState.ClearEvents();
 
-            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString);
+            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory);
             repo.Add(_sagaState);
 
             _restoredState = LoadInstanceSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaState.Id);

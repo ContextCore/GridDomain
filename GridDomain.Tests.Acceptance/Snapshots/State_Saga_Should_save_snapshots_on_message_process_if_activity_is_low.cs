@@ -28,17 +28,19 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
         }
 
+
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-            c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
-            c => c.Register(SagaConfiguration.State<SoftwareProgrammingSaga,
-                                         SoftwareProgrammingSagaState,
-                                         SoftwareProgrammingSagaFactory,
-                                         GotTiredEvent>
-                                         (SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveOnTimeoutPolicy())));
+                base.CreateConfiguration(),
+                SagaConfiguration.State<SoftwareProgrammingSaga,
+                                             SoftwareProgrammingSagaState,
+                                             SoftwareProgrammingSagaFactory,
+                                             GotTiredEvent>
+                                             (SoftwareProgrammingSaga.Descriptor,
+                                              () => new SnapshotsSaveOnTimeoutPolicy(),
+                                              SoftwareProgrammingSagaState.FromSnapshot));
         }
-
         [OneTimeSetUp]
         public void Given_default_policy()
         {
@@ -71,7 +73,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //saving snapshot
             Thread.Sleep(200);
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString)
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory)
                                 .Load<SoftwareProgrammingSagaState>(sagaStartEvent.SagaId);
         }
 

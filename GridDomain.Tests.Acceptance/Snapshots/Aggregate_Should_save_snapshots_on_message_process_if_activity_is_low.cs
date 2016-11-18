@@ -22,8 +22,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private int _initialParameter;
         private int _changedParameter;
 
- 
-
         public Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
         {
 
@@ -32,8 +30,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-                c => base.CreateConfiguration().Register(c),
-                c => new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(new SnapshotsSaveOnTimeoutPolicy()).Register(c));
+                base.CreateConfiguration(),
+                new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(() => new SnapshotsSaveOnTimeoutPolicy(),
+                                                                                           SampleAggregate.FromSnapshot));
         }
 
         [OneTimeSetUp]
@@ -63,7 +62,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                     .Wait();
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString).Load<SampleAggregate>(_aggregateId);
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);
         }
 
         [Test]

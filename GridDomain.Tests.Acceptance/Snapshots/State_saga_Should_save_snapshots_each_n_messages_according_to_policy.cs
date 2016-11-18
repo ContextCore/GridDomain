@@ -35,7 +35,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                              SoftwareProgrammingSagaState,
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>
-                                             (SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveAfterEachMessagePolicy()));
+                                             (SoftwareProgrammingSaga.Descriptor,
+                                              () => new SnapshotsSaveAfterEachMessagePolicy(),
+                                              SoftwareProgrammingSagaState.FromSnapshot));
         }
 
 
@@ -69,7 +71,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //saving snapshot
             Thread.Sleep(200);
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString)
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory)
                                 .Load<SoftwareProgrammingSagaState>(sagaStartEvent.SagaId);
         }
 

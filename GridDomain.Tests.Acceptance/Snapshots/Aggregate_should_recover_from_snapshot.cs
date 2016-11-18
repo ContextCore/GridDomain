@@ -1,4 +1,6 @@
 ﻿using System;
+using GridDomain.Common;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
@@ -15,6 +17,20 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private SampleAggregate _restoredAggregate;
         public Aggregate_should_recover_from_snapshot(): base(false) {}
 
+  //     protected override TimeSpan Timeout => TimeSpan.FromSeconds(1000);
+
+        protected override IContainerConfiguration CreateConfiguration()
+        {
+            return new CustomContainerConfiguration(
+                base.CreateConfiguration(),
+                new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
+                                                          () => new SnapshotsSaveAfterEachMessagePolicy(),
+                                                          SampleAggregate.FromSnapshot
+                                                          )
+                );
+        }
+
+
         [OneTimeSetUp]
         public void Test()
         {
@@ -22,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _aggregate.ChangeState(10);
             _aggregate.ClearEvents();
 
-            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString);
+            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory);
             repo.Add(_aggregate);
 
             _restoredAggregate = LoadAggregate<SampleAggregate>(_aggregate.Id);
@@ -35,7 +51,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void State_restored_from_sanapshot_should_not_have_uncommited_events()
+        public void State_restored_from_snapshot_should_not_have_uncommited_events()
         {
             CollectionAssert.IsEmpty(_restoredAggregate.GetEvents());
         }

@@ -23,7 +23,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                       class = ""Akka.Persistence.SqlServer.Snapshot.SqlServerSnapshotStore, Akka.Persistence.SqlServer""
                                       plugin-dispatcher = ""akka.actor.default-dispatcher""
                                       connection-string = """ + akkaConf.Persistence.SnapshotConnectionString + @"""
-                                      connection-timeout = 30s
+                                      connection-timeout = """ + akkaConf.Persistence.SnapshotsConnectionTimeoutSeconds + @"""s
                                       schema-name = dbo
                                       table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
                                       auto-initialize = on

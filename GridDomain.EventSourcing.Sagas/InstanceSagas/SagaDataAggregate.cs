@@ -1,12 +1,43 @@
 using System;
 using System.Collections.Generic;
 using Automatonymous;
+using CommonDomain;
 using CommonDomain.Core;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class SagaDataAggregate<TSagaData> : AggregateBase
     {
+        private class Snapshot : IMemento
+        {
+            public Snapshot(Guid id, int version, TSagaData data)
+            {
+                Id = id;
+                Data = data;
+                Version = version;
+            }
+
+            public Guid Id { get;  set; }
+            public int Version { get; set; }
+            public TSagaData Data {get; private set; }
+        }
+        protected override IMemento GetSnapshot()
+        {
+
+            return new Snapshot(Id,Version,Data);
+        }
+
+        public static SagaDataAggregate<TSagaData> FromSnapshot(IMemento m)
+        {
+            Snapshot s = m as Snapshot;
+            if (s == null)
+                throw new WrongSnapshotTypeReceivedException(m.GetType(), typeof(Snapshot));
+            var sagaDataAggregate = new SagaDataAggregate<TSagaData>(s.Id, s.Data) {Version = s.Version};
+            ((IAggregate)sagaDataAggregate).ClearUncommittedEvents();
+            return sagaDataAggregate;    
+        }
+
         public TSagaData Data { get; private set; }
         //for debugging purposes
         public IList<object> ReceivedMessages { get; } = new List<object>();
@@ -42,8 +73,23 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public void Apply(SagaMessageReceivedEvent<TSagaData> e)
         {
             Data = e.SagaData;
+
+            if (ReceivedMessages.Count > 10)
+                ReceivedMessages.Clear();
             ReceivedMessages.Add(e.Message);
         }
 
+    }
+
+    public class WrongSnapshotTypeReceivedException : Exception
+    {
+        public Type Received { get; set; }
+        public Type Expected { get; set; }
+
+        public WrongSnapshotTypeReceivedException(Type received, Type expected)
+        {
+            Received = received;
+            Expected = expected;
+        }
     }
 }

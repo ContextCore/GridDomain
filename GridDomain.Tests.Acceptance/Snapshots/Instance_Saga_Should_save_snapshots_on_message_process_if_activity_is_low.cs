@@ -29,12 +29,15 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-                c => base.CreateConfiguration().Register(c),
-                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,
-                                SoftwareProgrammingSagaData,
-                                SoftwareProgrammingSagaFactory,
-                                GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveOnTimeoutPolicy())));
+                base.CreateConfiguration(),
+                SagaConfiguration.Instance<SoftwareProgrammingSaga,
+                                           SoftwareProgrammingSagaData,
+                                           SoftwareProgrammingSagaFactory,
+                                           GotTiredEvent,
+                                           SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, 
+                                                           () => new SnapshotsSaveOnTimeoutPolicy()
+
+                                           ));
         }
 
         [OneTimeSetUp]
@@ -69,7 +72,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //saving snapshot
             Thread.Sleep(200);
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString)
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory)
                                 .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
         }
 

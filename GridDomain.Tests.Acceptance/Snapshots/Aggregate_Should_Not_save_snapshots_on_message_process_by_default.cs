@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using GridDomain.Node;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
@@ -46,13 +47,13 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             };
 
             GridNode.NewCommandWaiter(Timeout)
-                .Expect<SampleAggregateChangedEvent>()
-                .Create()
-                .Execute(changeCmds)
-                .Wait();
+                    .Expect<SampleAggregateChangedEvent>()
+                    .Create()
+                    .Execute(changeCmds)
+                    .Wait();
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString).Load<SampleAggregate>(_aggregateId);
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);
         }
 
         [Test]

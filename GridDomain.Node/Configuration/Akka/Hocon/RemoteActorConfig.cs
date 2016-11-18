@@ -44,8 +44,8 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              }
              
              serialization-bindings {
-                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @"""   = json
-                                   """ + typeof(IAggregate).AssemblyQualifiedShortName() + @"""    = json
+                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
+                                   """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = json
                                   # for local snapshots storage
                                    ""Akka.Persistence.Serialization.Snapshot, Akka.Persistence"" = json
                                    ""System.Object"" = wire
