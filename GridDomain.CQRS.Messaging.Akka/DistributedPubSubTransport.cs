@@ -55,11 +55,15 @@ namespace GridDomain.CQRS.Messaging.Akka
             _transport.Tell(new Publish(topic, msg));
         }
 
-        public void Publish(object msg)
+        public void Publish(params object[] msgs)
         {
-            var topic = msg.GetType().FullName;
-            _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(), topic);
-            _transport.Tell(new Publish(topic, msg));
+            foreach (var msg in msgs)
+            {
+                var topic = msg.GetType().FullName;
+                _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}",
+                    msg.ToPropsString(), topic);
+                _transport.Tell(new Publish(topic, msg));
+            }
         }
     }
 }

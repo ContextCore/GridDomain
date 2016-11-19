@@ -39,10 +39,10 @@ namespace GridDomain.CQRS.Messaging.Akka
             _bus.Publish(msg);
         }
 
-        public void Publish(object msg)
+        public void Publish(params object[] messages)
         {
-            _log.Trace("Publishing {@Message} to transport", msg);
-            _bus.Publish(msg);
+            foreach (var msg in messages)
+                Publish<object>(msg);
         }
     
 

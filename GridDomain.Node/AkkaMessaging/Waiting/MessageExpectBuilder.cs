@@ -10,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
         }
 
-        public override Task<IWaitResults> Create(TimeSpan timeout)
+        public override Task<IWaitResults> Create(TimeSpan? timeout)
         {
             return Waiter.Start(timeout);
         }

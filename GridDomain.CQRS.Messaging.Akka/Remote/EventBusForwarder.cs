@@ -1,3 +1,4 @@
+using System.Linq;
 using Akka.Actor;
 
 namespace GridDomain.CQRS.Messaging.Akka.Remote
@@ -13,6 +14,12 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
             {
                 _localTransport.Publish(p.Msg);
                 Sender.Tell(PublishAck.Instance);
+            });
+            Receive<PublishMany>(p =>
+            {
+                var messages = p.Messages.Select(m => m.Msg).ToArray();
+                _localTransport.Publish(messages);
+                Sender.Tell(PublishManyAck.Instance);
             });
             Receive<Subscribe>(s =>
             {

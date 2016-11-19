@@ -27,10 +27,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             Waiter = waiter;
         }
 
-        public abstract T Create(TimeSpan timeout);
+        public abstract T Create(TimeSpan? timeout);
         public T Create()
         {
-            return Create(TimeSpan.FromSeconds(10));
+            return Create(null);
         }
 
         public IExpectBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)

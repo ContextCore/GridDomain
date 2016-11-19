@@ -241,7 +241,7 @@
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\EachMessageSnapshotsSavePolicy.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
-    <Compile Include="Actors\NotifyOnRecoverComplete.cs" />
+    <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
     <Compile Include="Actors\SnapshotsSavePolicy.cs" />
     <Compile Include="AkkaCommandExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />

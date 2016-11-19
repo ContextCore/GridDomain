@@ -8,6 +8,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Persistence;
 using Akka.TestKit.NUnit3;
+using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -54,6 +55,38 @@ namespace GridDomain.Tests.Framework
             GridNode?.Stop();
             Sys?.Terminate();
         }
+
+        protected IActorRef LookupAggregateActor<T>(Guid id) where T: IAggregate
+        {
+           var name = AggregateActorName.New<T>(id).Name;
+           return GridNode.System.ActorSelection($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/*/{name}")
+                                 .ResolveOne(Timeout)
+                                 .Result;
+        }
+        protected IActorRef LookupInstanceSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
+        {
+            var sagaName = AggregateActorName.New<SagaDataAggregate<TData>>(id).Name;
+            var sagaType = typeof(ISagaInstance<TSaga,TData>).BeautyName();
+
+            return GetSagaActor(sagaType, sagaName);
+        }
+
+        private IActorRef GetSagaActor(string sagaType, string sagaName) 
+        {
+            return GridNode.System.ActorSelection($"akka://LocalSystem/user/SagaHub_{sagaType}/*/{sagaName}")
+                                  .ResolveOne(Timeout)
+                                  .Result;
+        }
+
+        protected IActorRef LookupStateSagaActor<TSaga, TData>(Guid id) where TData : IAggregate
+                                                                        where TSaga: ISagaInstance
+        {
+            var sagaName = AggregateActorName.New<TData>(id).Name;
+            var sagaType = typeof(TSaga).BeautyName();
+
+            return GetSagaActor(sagaType, sagaName);
+        }
+
 
         protected override void AfterAll()
         {
@@ -113,7 +146,7 @@ namespace GridDomain.Tests.Framework
            
             var actor = ActorOfAsTestActorRef<T>(props, name);
 
-            await actor.Ask<RecoveryCompleted>(NotifyOnRecoverComplete.Instance)
+            await actor.Ask<RecoveryCompleted>(NotifyOnPersistenceEvents.Instance)
                        .TimeoutAfter(Timeout,$"Cannot load actor {typeof(T)}, id = {name}")
                        .ConfigureAwait(false);
 

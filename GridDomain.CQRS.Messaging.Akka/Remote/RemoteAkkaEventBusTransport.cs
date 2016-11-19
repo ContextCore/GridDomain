@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 
@@ -21,10 +22,13 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
             Publish((object)msg);
         }
 
-        public void Publish(object msg)
+        public void Publish(params object[] messages)
         {
-            _local.Publish(msg);
-            _remoteSubscriber.Ask<PublishAck>(new Publish(msg,msg.GetType()), _timeout).Wait();
+            _local.Publish(messages);
+
+            var remotePublish = new PublishMany(messages.Select(m => new Publish(m, m.GetType())).ToArray());
+
+            _remoteSubscriber.Ask<PublishManyAck>(remotePublish, _timeout).Wait();
         }
 
         public void Subscribe<TMessage>(IActorRef actor)

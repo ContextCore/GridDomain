@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors
         private readonly IPublisher _publisher;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
-        private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
+        private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
         public readonly Guid Id;
         private readonly SnapshotsSavePolicy _snapshotsPolicy;
         public IAggregate Aggregate { get; private set; }
@@ -83,18 +83,24 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 Shutdown();
             });
-
+            
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
+            Command<SaveSnapshotSuccess>(s =>
+            {
+                NotifyWatchers(s);
+                _snapshotsPolicy.SnapshotWasSaved(s.Metadata);
+            });
 
-            Command<NotifyOnRecoverComplete>(c =>
+            Command<NotifyOnPersistenceEvents>(c =>
             {
                 var waiter = c.Waiter ?? Sender;
                 if (IsRecoveryFinished)
                 {
                     waiter.Tell(RecoveryCompleted.Instance);
                 }
-                else _recoverWaiters.Add(waiter);
+                else _persistenceWaiters.Add(waiter);
             });
+           
             Command<ICommand>(cmd =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -116,27 +122,48 @@ namespace GridDomain.Node.Actors
             Recover<SnapshotOffer>(offer =>
             {
                 Aggregate = _aggregateConstructor.Build(typeof(TAggregate), Id, (IMemento)offer.Snapshot);
+                _snapshotsPolicy.SnapshotWasApplied(offer.Metadata);
             });
             Recover<DomainEvent>(e =>
             {
                 Aggregate.ApplyEvent(e);
                 _snapshotsPolicy.RefreshActivity(e.CreatedTime);
             });
-            Recover<RecoveryCompleted>(message =>
+            Recover<RecoveryCompleted>(c =>
              {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                //notify all 
-                foreach(var waiter in _recoverWaiters)
-                     waiter.Tell(RecoveryCompleted.Instance);
-                _recoverWaiters.Clear();
+                 //notify all 
+                 NotifyWatchers(c);
+               // _persistenceWaiters.Clear();
             });
             
 
         }
-        
+
+        private void NotifyWatchers(object msg)
+        {
+            foreach (var watcher in _persistenceWaiters)
+                watcher.Tell(msg);
+        }
+
         protected virtual void Shutdown()
         {
-            Context.Stop(Self);
+            DeleteSnapshots(_snapshotsPolicy.SnapshotsToDelete());
+            Become(Terminating);
+        }
+
+        void Terminating()
+        {
+            Command<DeleteSnapshotsSuccess>(s =>
+            {
+                NotifyWatchers(s);
+                Context.Stop(Self);
+            });
+            Command<DeleteSnapshotsFailure>(s =>
+            {
+                NotifyWatchers(s);
+                Context.Stop(Self);
+            });
         }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)

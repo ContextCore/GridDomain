@@ -42,8 +42,10 @@ namespace GridDomain.Node.Actors
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
      //   private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
-        private readonly List<IActorRef> _recoverWaiters = new List<IActorRef>();
+        private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
         private readonly SnapshotsSavePolicy _snapshotsPolicy;
+      //  private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
+
 
 
 
@@ -81,14 +83,14 @@ namespace GridDomain.Node.Actors
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload), Self));
 
-            Command<NotifyOnRecoverComplete>(c =>
+            Command<NotifyOnPersistenceEvents>(c =>
             {
                 var waiter = c.Waiter ?? Sender;
                 if (IsRecoveryFinished)
                 {
                     waiter.Tell(RecoveryCompleted.Instance,Self);
                 }
-                else _recoverWaiters.Add(waiter);
+                else _persistenceWaiters.Add(waiter);
             });
 
             Command<DomainEvent>(msg =>
@@ -119,12 +121,30 @@ namespace GridDomain.Node.Actors
             Recover<RecoveryCompleted>(message =>
             {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                //notify all 
-                foreach (var waiter in _recoverWaiters)
-                    waiter.Tell(RecoveryCompleted.Instance,Self);
-                _recoverWaiters.Clear();
+                NotifyWatchers(message);
+                //_persistenceWaiters.Clear();
             });
             
+        }
+
+        void Terminating()
+        {
+            Command<DeleteSnapshotsSuccess>(s =>
+            {
+                NotifyWatchers(s);
+                Context.Stop(Self);
+            });
+            Command<DeleteSnapshotsFailure>(s =>
+            {
+                NotifyWatchers(s);
+                Context.Stop(Self);
+            });
+        }
+
+        private void NotifyWatchers(object msg)
+        {
+            foreach (var watcher in _persistenceWaiters)
+                watcher.Tell(msg);
         }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
@@ -143,7 +163,8 @@ namespace GridDomain.Node.Actors
         protected virtual void Shutdown()
         {
             //TODO: raise faults for all messages in stash
-            Context.Stop(Self);
+            DeleteSnapshots(_snapshotsPolicy.SnapshotsToDelete());
+            Become(Terminating);
         }
 
         private void ProcessSaga(object message)

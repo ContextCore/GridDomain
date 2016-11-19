@@ -1,30 +1,28 @@
 using System;
 using System.Linq;
-using System.Threading;
+using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
-using GridDomain.Tests.SampleDomain;
-using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     [TestFixture]
-    class State_saga_Should_save_snapshots_each_n_messages_according_to_policy : SoftwareProgrammingStateSagaTest
+    class State_Saga_Should_delete_snapshots_according_to_policy_on_shutdown: SoftwareProgrammingStateSagaTest
     {
         private Guid _sagaId;
         private AggregateVersion<SoftwareProgrammingSagaState>[] _snapshots;
 
-        public State_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)
+        public State_Saga_Should_delete_snapshots_according_to_policy_on_shutdown():base(false)
         {
-
+            
         }
 
         protected override IContainerConfiguration CreateConfiguration()
@@ -36,16 +34,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>
                                              (SoftwareProgrammingSaga.Descriptor,
-                                              () => new SnapshotsSaveAfterEachMessagePolicy(),
+                                              () => new SnapshotsSaveAfterEachMessagePolicy(2),
                                               SoftwareProgrammingSagaState.FromSnapshot));
         }
 
 
         [OneTimeSetUp]
-        public void Given_default_policy()
+        public void Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
             _sagaId = Guid.NewGuid();
-            var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(),_sagaId);
+            var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
             var waiter = GridNode.NewWaiter()
                                  .Expect<SagaCreatedEvent<SoftwareProgrammingSaga.States>>()
@@ -54,49 +52,54 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Publisher.Publish(sagaStartEvent);
             waiter.Wait();
 
-            var sagaContinueEvent = new CoffeMakeFailedEvent(_sagaId, 
+            var sagaActorRef = LookupStateSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
+
+            sagaActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
+
+
+            var sagaContinueEventA = new CoffeMakeFailedEvent(_sagaId,
                                                              sagaStartEvent.PersonId,
                                                              BusinessDateTime.UtcNow,
                                                             _sagaId);
 
-            var waiterB = GridNode.NewWaiter()
-                                  .Expect<SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>>()
-                                  .Create();
+            var sagaContinueEventB = new SleptWellEvent(_sagaId,
+                                                        sagaStartEvent.LovelySofaId,
+                                                        _sagaId);
 
-            Publisher.Publish(sagaContinueEvent);
+            Publisher.Publish(sagaContinueEventA, sagaContinueEventB);
 
-            waiterB.Wait();
+            Watch(sagaActorRef);
+            sagaActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
 
-   
-            //saving snapshot
-            Thread.Sleep(200);
+            FishForMessage<Terminated>(m => true);
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory)
-                                .Load<SoftwareProgrammingSagaState>(sagaStartEvent.SagaId);
+            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, 
+                                                         GridNode.AggregateFromSnapshotsFactory)
+                                                         .Load<SoftwareProgrammingSagaState>(_sagaId);
         }
 
         [Test]
-        public void Snapshots_should_be_saved_two_times()
+        public void Only_2_Snapshots_should_left()
         {
             Assert.AreEqual(2, _snapshots.Length);
         }
 
         [Test]
-        public void Restored_saga_state_should_have_correct_ids()
+        public void Restored_aggregates_should_have_same_ids()
         {
-            Assert.True(_snapshots.All(s => s.Aggregate.Id == _sagaId));
+           Assert.True(_snapshots.All(s => s.Aggregate.Id == _sagaId));
         }
 
         [Test]
-        public void First_snapshot_should_have_state_from_first_event()
+        public void Last_Snapshots_should_have_coding_state_from_last_event()
         {
-            Assert.AreEqual(SoftwareProgrammingSaga.States.MakingCoffee,_snapshots.First().Aggregate.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Working,_snapshots.Last().Aggregate.MachineState);
         }
 
         [Test]
-        public void Second_snapshot_should_have_parameters_from_second_command()
+        public void First_Snapshots_should_have_coding_state_from_last_event()
         {
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping,_snapshots.Skip(1).First().Aggregate.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Sleeping, _snapshots.First().Aggregate.MachineState);
         }
 
         [Test]

@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     class SnapshotsSaveAfterEachMessagePolicy : SnapshotsSavePolicy
     {
-        public SnapshotsSaveAfterEachMessagePolicy() : base(TimeSpan.FromSeconds(1000), 1)
+        public SnapshotsSaveAfterEachMessagePolicy(int snapshotsToKeep = 5) : base(TimeSpan.FromSeconds(1000), 1, snapshotsToKeep)
         {
 
         }
