@@ -9,8 +9,6 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
-using KellermanSoftware.CompareNetObjects;
-using KellermanSoftware.CompareNetObjects.TypeComparers;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
@@ -19,7 +17,7 @@ namespace GridDomain.Tests.Framework
 {
     public abstract class TypesDeserializationTest
     {
-        protected readonly ObjectDeserializationChecker Checker = new ObjectDeserializationChecker();
+        protected ObjectDeserializationChecker Checker = new ObjectDeserializationChecker();
         protected Fixture Fixture;
         private readonly HashSet<Type> _excludes;
 
@@ -52,10 +50,6 @@ namespace GridDomain.Tests.Framework
             _excludes = new HashSet<Type>(ExcludeTypes);
 
             Fixture = new Fixture();
-            Fixture.Register<ICommand>(() => new FakeCommand());
-            Fixture.Register<Command>(() => new FakeCommand());
-            Checker.CompareLogic.Config.CustomComparers.Add(new DateTimeDeltaComparer(RootComparerFactory.GetRootComparer()));
-            Checker.CompareLogic.Config.CustomComparers.Add(new DateTimeOffsetDeltaComparer(RootComparerFactory.GetRootComparer()));
         }
 
         class RestoreResult
@@ -65,14 +59,8 @@ namespace GridDomain.Tests.Framework
             public Type Type;
         }
 
-        class FakeCommand : Command
-        {
-            
-        }
         protected void CheckAll<T>(params Type[] types)
         {
-            
-
             var failedTypes = new List<RestoreResult>();
             var okTypes = new List<RestoreResult>();
             
@@ -81,25 +69,6 @@ namespace GridDomain.Tests.Framework
                 try
                 {
                     var constructedType = type;
-                    //if (type.IsGenericType && type.ContainsGenericParameters)
-                    //{
-                    //    var genericTypeParameters = new List<Type>();
-                    //    foreach (var parameterType in type.GetGenericArguments())
-                    //    {
-                    //        var typeConstraints = parameterType.GetGenericParameterConstraints();
-                    //        var parameterTypeValue =
-                    //            TypesCache.FirstOrDefault(t => t.IsClass 
-                    //                                       && !t.IsAbstract 
-                    //                                       && !t.ContainsGenericParameters 
-                    //                                       &&  typeConstraints.All(c => c.IsAssignableFrom(t)));
-                    //
-                    //        if (parameterTypeValue == null)
-                    //            throw new CannotCreateGenericType(type, typeConstraints);
-                    //
-                    //        genericTypeParameters.Add(parameterTypeValue);
-                    //    }
-                    //    constructedType = type.MakeGenericType(genericTypeParameters.ToArray());
-                    //}
 
                     var createMethodInfo =
                         typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
@@ -169,57 +138,6 @@ namespace GridDomain.Tests.Framework
             foreach (var res in failedTypes)
             {
                 sb.AppendLine(res.Type.Name);
-            }
-        }
-
-        private class DateTimeDeltaComparer : BaseTypeComparer
-        {
-            private readonly TimeSpan _delta;
-
-            public DateTimeDeltaComparer(RootComparer rootComparer, TimeSpan? delta = null) : base(rootComparer)
-            {
-                _delta = delta ?? TimeSpan.FromSeconds(1);
-            }
-
-            public override bool IsTypeMatch(Type type1, Type type2)
-            {
-                return type1 == typeof(DateTime);
-            }
-
-            public override void CompareType(CompareParms parms)
-            {
-                var st1 = (DateTime)parms.Object1;
-                var st2 = (DateTime)parms.Object2;
-
-                if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta)
-                {
-                    AddDifference(parms);
-                }
-            }
-        }
-        private class DateTimeOffsetDeltaComparer : BaseTypeComparer
-        {
-            private readonly TimeSpan _delta;
-
-            public DateTimeOffsetDeltaComparer(RootComparer rootComparer, TimeSpan? delta = null) : base(rootComparer)
-            {
-                _delta = delta ?? TimeSpan.FromSeconds(1);
-            }
-
-            public override bool IsTypeMatch(Type type1, Type type2)
-            {
-                return type1 == typeof(DateTimeOffset);
-            }
-
-            public override void CompareType(CompareParms parms)
-            {
-                var st1 = (DateTimeOffset)parms.Object1;
-                var st2 = (DateTimeOffset)parms.Object2;
-
-                if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta)
-                {
-                    AddDifference(parms);
-                }
             }
         }
     }
