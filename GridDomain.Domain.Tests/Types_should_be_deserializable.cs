@@ -13,7 +13,9 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.SampleDomain;
+using Moq;
 using NUnit.Framework;
+using Ploeh.AutoFixture;
 using SoftwareProgrammingSaga = GridDomain.Tests.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga;
 
 namespace GridDomain.Tests
@@ -34,6 +36,16 @@ namespace GridDomain.Tests
             }
         }
 
+        public Types_should_be_deserializable()
+        {
+            Fixture.Register<ICommand>(() => new FakeCommand());
+            Fixture.Register<Command>(() => new FakeCommand());
+        }
+
+        class FakeCommand : Command
+        {
+            
+        }
         [Test]
         public void Generic_domain_classes_should_be_deserializable()
         {
