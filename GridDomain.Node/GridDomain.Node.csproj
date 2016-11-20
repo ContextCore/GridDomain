@@ -242,6 +242,7 @@
     <Compile Include="Actors\EachMessageSnapshotsSavePolicy.cs" />
     <Compile Include="Actors\EventSourcedActor.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
+    <Compile Include="Actors\ISnapshotsSavePolicy.cs" />
     <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
     <Compile Include="Actors\SnapshotsSavePolicy.cs" />
     <Compile Include="AkkaCommandExecutor.cs" />

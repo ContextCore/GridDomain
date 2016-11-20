@@ -52,7 +52,7 @@ namespace GridDomain.Node.Actors
 
         public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher,
-                         SnapshotsSavePolicy snapshotsSavePolicy,
+                         ISnapshotsSavePolicy snapshotsSavePolicy,
                          IConstructAggregates aggregatesConstructor)
                             :base(aggregatesConstructor,
                                   snapshotsSavePolicy,
@@ -88,6 +88,7 @@ namespace GridDomain.Node.Actors
             try
             {
                 Saga.Transit(message);
+               // SnapshotsPolicy.RefreshActivity();
             }
             catch (Exception ex)
             {
@@ -104,9 +105,6 @@ namespace GridDomain.Node.Actors
 
             TrySaveSnapshot(stateChange);
         }
-
-  
-
 
         private void ProcessSagaCommands()
         {

@@ -19,12 +19,12 @@ namespace GridDomain.Node.Configuration.Composition
         AggregateConfiguration<TAggregate, TCommandAggregateLocator, TCommandAggregateLocator> 
         where TAggregate : AggregateBase where TCommandAggregateLocator : ICommandAggregateLocator<TAggregate>, IAggregateCommandsHandler<TAggregate>
     {
-        public AggregateConfiguration(Func<SnapshotsSavePolicy> snapshotsPolicy, IConstructAggregates snapshotsFactory) : base(snapshotsPolicy,snapshotsFactory)
+        public AggregateConfiguration(Func<ISnapshotsSavePolicy> snapshotsPolicy, IConstructAggregates snapshotsFactory) : base(snapshotsPolicy,snapshotsFactory)
         {
             
         }
 
-        public AggregateConfiguration(Func<SnapshotsSavePolicy> snapshotsPolicy, Func<IMemento,TAggregate> snapshotsFactory) : base(snapshotsPolicy, 
+        public AggregateConfiguration(Func<ISnapshotsSavePolicy> snapshotsPolicy, Func<IMemento,TAggregate> snapshotsFactory) : base(snapshotsPolicy, 
                                                                                                                             new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory))
         {
 
@@ -43,10 +43,10 @@ namespace GridDomain.Node.Configuration.Composition
                      where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
                      where TAggregate : AggregateBase
     {
-        private readonly Func<SnapshotsSavePolicy> _snapshotsPolicyFactory;
+        private readonly Func<ISnapshotsSavePolicy> _snapshotsPolicyFactory;
         private readonly IConstructAggregates _factory;
 
-        public AggregateConfiguration(Func<SnapshotsSavePolicy> snapshotsPolicy = null, IConstructAggregates snapshotsFactory = null)
+        public AggregateConfiguration(Func<ISnapshotsSavePolicy> snapshotsPolicy = null, IConstructAggregates snapshotsFactory = null)
         {
             _factory = snapshotsFactory ?? new AggregateFactory();
             _snapshotsPolicyFactory = snapshotsPolicy ?? (() => new NoSnapshotsSavePolicy());
@@ -60,7 +60,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
 
             var snapshotsPolicyRegistrationName = typeof(TAggregate).Name;
-            container.RegisterType<SnapshotsSavePolicy>(snapshotsPolicyRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
+            container.RegisterType<ISnapshotsSavePolicy>(snapshotsPolicyRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
 
             container.RegisterType<AggregateActor<TAggregate>>(
                                     new InjectionConstructor(
@@ -68,7 +68,7 @@ namespace GridDomain.Node.Configuration.Composition
                                         new ResolvedParameter<TypedMessageActor<ScheduleCommand>>(),
                                         new ResolvedParameter<TypedMessageActor<Unschedule>>(),
                                         new ResolvedParameter<IPublisher>(),
-                                        new ResolvedParameter<SnapshotsSavePolicy>(snapshotsPolicyRegistrationName),
+                                        new ResolvedParameter<ISnapshotsSavePolicy>(snapshotsPolicyRegistrationName),
                                         _factory
                                         ));
 

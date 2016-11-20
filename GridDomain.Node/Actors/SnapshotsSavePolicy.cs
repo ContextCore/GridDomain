@@ -6,7 +6,8 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Actors
 {
-    public class SnapshotsSavePolicy
+
+    public class SnapshotsSavePolicy : ISnapshotsSavePolicy
     {
         private int _messagesProduced;
         private long _lastSnapshotNumber;

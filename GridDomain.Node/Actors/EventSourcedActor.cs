@@ -15,7 +15,7 @@ namespace GridDomain.Node.Actors
     {
         private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
         protected Guid Id { get; }
-        protected readonly SnapshotsSavePolicy SnapshotsPolicy;
+        protected readonly ISnapshotsSavePolicy SnapshotsPolicy;
         protected readonly ActorMonitor Monitor;
         protected readonly ISoloLogger _log = LogManager.GetLogger();
         protected readonly IPublisher Publisher;
@@ -24,7 +24,7 @@ namespace GridDomain.Node.Actors
         public IAggregate State { get; protected set; }
 
         public EventSourcedActor(IConstructAggregates aggregateConstructor,
-                                 SnapshotsSavePolicy policy,
+                                 ISnapshotsSavePolicy policy,
                                  IPublisher publisher)
         {
             PersistenceId = Self.Path.Name;
@@ -59,7 +59,6 @@ namespace GridDomain.Node.Actors
                 }
                 else _persistenceWaiters.Add(waiter);
             });
-
 
             Recover<DomainEvent>(e =>
             {
@@ -96,16 +95,14 @@ namespace GridDomain.Node.Actors
 
         private void Terminating()
         {
-            Command<DeleteSnapshotsSuccess>(s =>
-            {
-                NotifyWatchers(s);
-                Context.Stop(Self);
-            });
-            Command<DeleteSnapshotsFailure>(s =>
-            {
-                NotifyWatchers(s);
-                Context.Stop(Self);
-            });
+            Command<DeleteSnapshotsSuccess>(s => StopNow(s));
+            Command<DeleteSnapshotsFailure>(s => StopNow(s));
+        }
+
+        private void StopNow(object s)
+        {
+            NotifyWatchers(s);
+            Context.Stop(Self);
         }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
