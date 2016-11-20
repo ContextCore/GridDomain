@@ -69,7 +69,6 @@ namespace GridDomain.Tests.Acceptance.GridConsole
                                        .Create()
                                        .Execute(command);
                                    
-
             Assert.AreEqual(command.Parameter.ToString(), evt.Message<SampleAggregateCreatedEvent>().Value);
         }
 

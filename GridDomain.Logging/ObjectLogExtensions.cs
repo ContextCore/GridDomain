@@ -7,14 +7,15 @@ namespace GridDomain.Logging
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All
+            TypeNameHandling = TypeNameHandling.All,
+
         };
 
         public static string ToPropsString(this object o)
         {
             return JsonConvert.SerializeObject(o,
-                Formatting.Indented,
-                JsonSerializerSettings);
+                                               Formatting.Indented,
+                                               JsonSerializerSettings);
         }
     }
 }

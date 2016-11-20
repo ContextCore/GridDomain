@@ -38,8 +38,9 @@ namespace GridDomain.Node.Actors
             Command<GracefullShutdownRequest>(req =>
             {
                 Monitor.IncrementMessagesReceived();
-                DeleteSnapshots(SnapshotsPolicy.SnapshotsToDelete());
+                DeleteSnapshots(SnapshotsPolicy.GetSnapshotsToDelete());
                 Become(Terminating);
+             //   StopNow(new DeleteSnapshotsSuccess(SnapshotSelectionCriteria.None));
             });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
@@ -47,7 +48,7 @@ namespace GridDomain.Node.Actors
             Command<SaveSnapshotSuccess>(s =>
             {
                 NotifyWatchers(s);
-                SnapshotsPolicy.SnapshotWasSaved(s.Metadata);
+                SnapshotsPolicy.MarkSnapshotSaved(s.Metadata);
             });
 
             Command<NotifyOnPersistenceEvents>(c =>
@@ -63,12 +64,12 @@ namespace GridDomain.Node.Actors
             Recover<DomainEvent>(e =>
             {
                 State.ApplyEvent(e);
-                SnapshotsPolicy.RefreshActivity(e.CreatedTime);
+                SnapshotsPolicy.MarkActivity(e.CreatedTime);
             });
 
             Recover<SnapshotOffer>(offer =>
             {
-                SnapshotsPolicy.SnapshotWasApplied(offer.Metadata);
+                SnapshotsPolicy.MarkSnapshotApplied(offer.Metadata);
                 State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
             });
 

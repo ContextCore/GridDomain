@@ -6,8 +6,10 @@ using Akka.Actor;
 using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.CommandsExecution;
@@ -29,6 +31,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         private Guid _sagaId;
         private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
+        private readonly SnapshotsSaveAfterEachMessagePolicy _snapshotsSavePolicy = 
+                                   new SnapshotsSaveAfterEachMessagePolicy(4);
+            
 
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown():base(false)
         {
@@ -43,7 +48,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 SoftwareProgrammingSagaData,
                                 SoftwareProgrammingSagaFactory,
                                 GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveAfterEachMessagePolicy(2))));
+                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor,
+                                () => _snapshotsSavePolicy)));
         }
 
         [OneTimeSetUp]
@@ -52,7 +58,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
-            var wait = GridNode.NewWaiter(TimeSpan.FromDays(1))
+            var wait = GridNode.NewWaiter()
                                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                .Create();
 
@@ -64,7 +70,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             sagaActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
 
-
             var sagaContinueEventA = new CoffeMakeFailedEvent(_sagaId,
                                                              sagaStartEvent.PersonId,
                                                              BusinessDateTime.UtcNow,
@@ -74,16 +79,25 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                         sagaStartEvent.LovelySofaId,
                                                         _sagaId);
 
+            var waiter = GridNode.NewWaiter()
+                                 .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(e => (e.Message as CoffeMakeFailedEvent)?.SourceId == _sagaId)
+                                 .And<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(e => (e.Message as SleptWellEvent)?.SourceId == _sagaId)
+                                 .Create();
+
             Publisher.Publish(sagaContinueEventA, sagaContinueEventB);
+
+            waiter.Wait();
 
             Watch(sagaActorRef);
             sagaActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
 
             FishForMessage<Terminated>(m => true,TimeSpan.FromDays(1));
-
+            Thread.Sleep(1000);
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, 
                                                          GridNode.AggregateFromSnapshotsFactory)
                                                          .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
+
+            Console.WriteLine(_snapshotsSavePolicy.ToPropsString());
         }
 
         [Test]
