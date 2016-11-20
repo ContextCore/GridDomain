@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
-            var wait = GridNode.NewWaiter()
+            var wait = GridNode.NewWaiter(TimeSpan.FromDays(1))
                                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                .Create();
 
@@ -79,7 +79,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Watch(sagaActorRef);
             sagaActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
 
-            FishForMessage<Terminated>(m => true);
+            FishForMessage<Terminated>(m => true,TimeSpan.FromDays(1));
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, 
                                                          GridNode.AggregateFromSnapshotsFactory)
@@ -105,7 +105,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void First_Snapshots_should_have_coding_state_from_last_event()
+        public void First_Snapshots_should_have_coding_state_from_first_event()
         {
             Assert.AreEqual(nameof(SoftwareProgrammingSaga.Sleeping), _snapshots.First().Aggregate.Data.CurrentStateName);
         }

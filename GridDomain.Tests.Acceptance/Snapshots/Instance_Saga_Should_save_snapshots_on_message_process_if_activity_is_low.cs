@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
-            var waiter = GridNode.NewWaiter(TimeSpan.FromSeconds(100))
+            var waiter = GridNode.NewWaiter(TimeSpan.FromDays(1))
                                  .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                  .Create();
 
@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                              BusinessDateTime.UtcNow,
                                                             _sagaId);
 
-            var waiterB = GridNode.NewWaiter(Timeout)
+            var waiterB = GridNode.NewWaiter(TimeSpan.FromDays(1))
                                   .Expect<SagaTransitionEvent<SoftwareProgrammingSagaData>>()
                                   .Create();
 

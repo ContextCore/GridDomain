@@ -19,18 +19,18 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
         {
-            var saga = new SoftwareProgrammingSaga();
             var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SagaId,
-                                                                          new SoftwareProgrammingSagaData(saga.Coding.Name));
-            return SagaInstance.New(saga, data);
+                                                                          new SoftwareProgrammingSagaData(
+                                                                              nameof(SoftwareProgrammingSaga.Coding)));
+            return Create(data);
         }
 
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
-            var saga = new SoftwareProgrammingSaga();
             var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SagaId,
-                                                                          new SoftwareProgrammingSagaData(saga.Sleeping.Name));
-            return SagaInstance.New(saga, data);
+                                                                          new SoftwareProgrammingSagaData(
+                                                                              nameof(SoftwareProgrammingSaga.Coding)));
+            return Create(data);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         }
 
         [Then]
-        public void NodeController_is_located()
+        public void EventBusForwarder_is_located()
         {
             Assert.NotNull(_connector.EventBusForwarder);
         }

@@ -13,33 +13,33 @@ namespace GridDomain.Node.Actors
 {
     public class EventSourcedActor<T> : ReceivePersistentActor where T: IAggregate
     {
-        protected readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
-        public Guid Id { get; }
-        protected readonly SnapshotsSavePolicy _snapshotsPolicy;
-        protected readonly ActorMonitor _monitor;
+        private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
+        protected Guid Id { get; }
+        protected readonly SnapshotsSavePolicy SnapshotsPolicy;
+        protected readonly ActorMonitor Monitor;
         protected readonly ISoloLogger _log = LogManager.GetLogger();
-        protected readonly IPublisher _publisher;
-        protected readonly IConstructAggregates _aggregateConstructor;
+        protected readonly IPublisher Publisher;
+        private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }
         public IAggregate State { get; protected set; }
-
 
         public EventSourcedActor(IConstructAggregates aggregateConstructor,
                                  SnapshotsSavePolicy policy,
                                  IPublisher publisher)
         {
             PersistenceId = Self.Path.Name;
-            _snapshotsPolicy = policy;
+            SnapshotsPolicy = policy;
             _aggregateConstructor = aggregateConstructor;
-            _publisher = publisher;
+            Publisher = publisher;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = aggregateConstructor.Build(typeof(T), Id, null);
-            _monitor = new ActorMonitor(Context, typeof(T).Name);
+            Monitor = new ActorMonitor(Context, typeof(T).Name);
 
             Command<GracefullShutdownRequest>(req =>
             {
-                _monitor.IncrementMessagesReceived();
-                Shutdown();
+                Monitor.IncrementMessagesReceived();
+                DeleteSnapshots(SnapshotsPolicy.SnapshotsToDelete());
+                Become(Terminating);
             });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
@@ -47,7 +47,7 @@ namespace GridDomain.Node.Actors
             Command<SaveSnapshotSuccess>(s =>
             {
                 NotifyWatchers(s);
-                _snapshotsPolicy.SnapshotWasSaved(s.Metadata);
+                SnapshotsPolicy.SnapshotWasSaved(s.Metadata);
             });
 
             Command<NotifyOnPersistenceEvents>(c =>
@@ -64,11 +64,12 @@ namespace GridDomain.Node.Actors
             Recover<DomainEvent>(e =>
             {
                 State.ApplyEvent(e);
-                _snapshotsPolicy.RefreshActivity(e.CreatedTime);
+                SnapshotsPolicy.RefreshActivity(e.CreatedTime);
             });
 
             Recover<SnapshotOffer>(offer =>
             {
+                SnapshotsPolicy.SnapshotWasApplied(offer.Metadata);
                 State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
             });
 
@@ -76,20 +77,21 @@ namespace GridDomain.Node.Actors
             {
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                 NotifyWatchers(message);
-                //_persistenceWaiters.Clear();
             });
         }
 
-        protected void NotifyWatchers(object msg)
+        protected bool TrySaveSnapshot(object[] stateChange)
+        {
+            var shouldSave = SnapshotsPolicy.ShouldSave(stateChange);
+            if (shouldSave)
+                SaveSnapshot(State.GetSnapshot());
+            return shouldSave;
+        }
+
+        private void NotifyWatchers(object msg)
         {
             foreach (var watcher in _persistenceWaiters)
                 watcher.Tell(msg);
-        }
-
-        protected virtual void Shutdown()
-        {
-            DeleteSnapshots(_snapshotsPolicy.SnapshotsToDelete());
-            Become(Terminating);
         }
 
         private void Terminating()
@@ -120,17 +122,17 @@ namespace GridDomain.Node.Actors
 
         protected override void PreStart()
         {
-            _monitor.IncrementActorStarted();
+            Monitor.IncrementActorStarted();
         }
 
         protected override void PostStop()
         {
-            _monitor.IncrementActorStopped();
+            Monitor.IncrementActorStopped();
         }
 
         protected override void PreRestart(Exception reason, object message)
         {
-            _monitor.IncrementActorRestarted();
+            Monitor.IncrementActorRestarted();
         }
     }
 }

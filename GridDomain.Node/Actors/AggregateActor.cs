@@ -49,10 +49,10 @@ namespace GridDomain.Node.Actors
             //need process it in usual way
             Command<AsyncEventsReceived>(m =>
             {
-                _monitor.IncrementMessagesReceived();
+                Monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
-                   _publisher.Publish(Fault.NewGeneric(m.Command, m.Exception, typeof(TAggregate),m.Command.SagaId));
+                   Publisher.Publish(Fault.NewGeneric(m.Command, m.Exception, typeof(TAggregate),m.Command.SagaId));
                     return;
                 }
 
@@ -62,7 +62,7 @@ namespace GridDomain.Node.Actors
            
             Command<ICommand>(cmd =>
             {
-                _monitor.IncrementMessagesReceived();
+                Monitor.IncrementMessagesReceived();
                 _log.Trace("{Aggregate} received a {@command}", State.Id, cmd);
                 try
                 {
@@ -70,7 +70,7 @@ namespace GridDomain.Node.Actors
                 }
                 catch (Exception ex)
                 {
-                    _publisher.Publish(Fault.NewGeneric(cmd, ex, typeof(TAggregate),cmd.SagaId));
+                    Publisher.Publish(Fault.NewGeneric(cmd, ex, typeof(TAggregate),cmd.SagaId));
                     Log.Error(ex,"{Aggregate} raised an expection {@Exception} while executing {@Command}",State.Id,ex,cmd);
                     return;
                 }
@@ -97,16 +97,14 @@ namespace GridDomain.Node.Actors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
                          .With<FutureEventCanceledEvent>(Handle);
 
-                _publisher.Publish(e);
+                Publisher.Publish(e);
             });
-
-
 
             State.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command);
 
-            if(_snapshotsPolicy.ShouldSave(events))
+            if(SnapshotsPolicy.ShouldSave(events))
                 SaveSnapshot(State.GetSnapshot());
         }
         

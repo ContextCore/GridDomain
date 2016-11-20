@@ -35,8 +35,7 @@ namespace GridDomain.Node.Actors
     {
         private readonly ISagaProducer<TSaga> _producer;
         private TSaga _saga;
-        private IAggregate _sagaData => State;
-        public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
+        public TSaga Saga => _saga ?? (_saga = _producer.Create(State));
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly Dictionary<Type, string> _sagaIdFields;
 
@@ -54,8 +53,10 @@ namespace GridDomain.Node.Actors
         public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher,
                          SnapshotsSavePolicy snapshotsSavePolicy,
-                         IConstructAggregates aggregatesConstructor):base(aggregatesConstructor,snapshotsSavePolicy,
-                             publisher)
+                         IConstructAggregates aggregatesConstructor)
+                            :base(aggregatesConstructor,
+                                  snapshotsSavePolicy,
+                                  publisher)
         {
             _producer = producer;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
@@ -64,16 +65,21 @@ namespace GridDomain.Node.Actors
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Command<DomainEvent>(msg =>
             {
-                _monitor.IncrementMessagesReceived();
+                Monitor.IncrementMessagesReceived();
                 if (_sagaStartMessageTypes.Contains(msg.GetType()))
+                {
                     _saga = _producer.Create(msg);
+                    State = _saga.Data;
+                }
+
                 ProcessSaga(msg);
             }, e => GetSagaId(e) == Id);
 
             Command<IFault>(fault =>
             {
-                _monitor.IncrementMessagesReceived();
+                Monitor.IncrementMessagesReceived();
                 ProcessSaga(fault);
+
             }, fault => fault.SagaId == Id);
 
         }
@@ -89,31 +95,32 @@ namespace GridDomain.Node.Actors
 
                 _log.Error(ex,"Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
                 var fault = Fault.NewGeneric(message, ex, processorType, Id);
-                _publisher.Publish(fault);
+                Publisher.Publish(fault);
             }
 
             var stateChange = ProcessSagaStateChange();
 
             ProcessSagaCommands();
 
-            if(_snapshotsPolicy.ShouldSave(stateChange))
-                SaveSnapshot(Saga.Data.GetSnapshot());
+            TrySaveSnapshot(stateChange);
         }
-        
+
+  
+
 
         private void ProcessSagaCommands()
         {
             foreach (var msg in Saga.CommandsToDispatch)
-                 _publisher.Publish(msg);
+                 Publisher.Publish(msg);
 
             Saga.ClearCommandsToDispatch();
         }
 
         private object[] ProcessSagaStateChange()
         {
-            var stateChangeEvents = Saga.Data.GetUncommittedEvents().Cast<object>().ToArray();
-            PersistAll(stateChangeEvents, e => _publisher.Publish(e));
-            Saga.Data.ClearUncommittedEvents();
+            var stateChangeEvents = State.GetUncommittedEvents().Cast<object>().ToArray();
+            PersistAll(stateChangeEvents, e => Publisher.Publish(e));
+            State.ClearUncommittedEvents();
             return stateChangeEvents;
         }
 
