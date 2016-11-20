@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,8 +7,6 @@ using Akka;
 using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
-using Akka.Persistence;
-using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.CQRS;
@@ -19,7 +16,6 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Logging;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
@@ -29,39 +25,25 @@ namespace GridDomain.Node.Actors
     ///     Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TAggregate"></typeparam>
-    public class AggregateActor<TAggregate> : ReceivePersistentActor where TAggregate : AggregateBase
+    public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : AggregateBase
     {
-        private readonly IAggregateCommandsHandler<TAggregate> _handler;
-        private readonly IPublisher _publisher;
+        protected readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
-        private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
-        public readonly Guid Id;
-        private readonly SnapshotsSavePolicy _snapshotsPolicy;
-        public IAggregate Aggregate { get; private set; }
-        public override string PersistenceId { get; }
-
-        private readonly ActorMonitor _monitor;
-        private readonly ISoloLogger _log = LogManager.GetLogger();
-        private readonly IConstructAggregates _aggregateConstructor;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               TypedMessageActor<Unschedule> unscheduleActorRef,
                               IPublisher publisher,
                               SnapshotsSavePolicy snapshotsSavePolicy,
-                              IConstructAggregates aggregateConstructor)
+                              IConstructAggregates aggregateConstructor) : base(
+                                  aggregateConstructor,
+                                  snapshotsSavePolicy,
+                                  publisher)
         {
-            _aggregateConstructor = aggregateConstructor;
             _schedulerActorRef = schedulerActorRef;
             _unscheduleActorRef = unscheduleActorRef;
             _handler = handler;
-            _publisher = publisher;
-            PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<TAggregate>(Self.Path.Name).Id;
-            Aggregate = aggregateConstructor.Build(typeof(TAggregate), Id, null);
-            _monitor = new ActorMonitor(Context,typeof(TAggregate).Name);
-            _snapshotsPolicy = snapshotsSavePolicy;
 
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
@@ -74,113 +56,32 @@ namespace GridDomain.Node.Actors
                     return;
                 }
 
-                (Aggregate as Aggregate).FinishAsyncExecution(m.InvocationId);
+                (State as Aggregate).FinishAsyncExecution(m.InvocationId);
                 ProcessAggregateEvents(m.Command);
-            });
-
-            Command<GracefullShutdownRequest>(req =>
-            {
-                _monitor.IncrementMessagesReceived();
-                Shutdown();
-            });
-            
-            Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
-            Command<SaveSnapshotSuccess>(s =>
-            {
-                NotifyWatchers(s);
-                _snapshotsPolicy.SnapshotWasSaved(s.Metadata);
-            });
-
-            Command<NotifyOnPersistenceEvents>(c =>
-            {
-                var waiter = c.Waiter ?? Sender;
-                if (IsRecoveryFinished)
-                {
-                    waiter.Tell(RecoveryCompleted.Instance);
-                }
-                else _persistenceWaiters.Add(waiter);
             });
            
             Command<ICommand>(cmd =>
             {
                 _monitor.IncrementMessagesReceived();
-                _log.Trace("{Aggregate} received a {@command}", Aggregate.Id, cmd);
+                _log.Trace("{Aggregate} received a {@command}", State.Id, cmd);
                 try
                 {
-                    Aggregate = _handler.Execute((TAggregate)Aggregate, cmd);
+                    State = _handler.Execute((TAggregate)State, cmd);
                 }
                 catch (Exception ex)
                 {
                     _publisher.Publish(Fault.NewGeneric(cmd, ex, typeof(TAggregate),cmd.SagaId));
-                    Log.Error(ex,"{Aggregate} raised an expection {@Exception} while executing {@Command}",Aggregate.Id,ex,cmd);
+                    Log.Error(ex,"{Aggregate} raised an expection {@Exception} while executing {@Command}",State.Id,ex,cmd);
                     return;
                 }
 
                 ProcessAggregateEvents(cmd);
             });
-
-            Recover<SnapshotOffer>(offer =>
-            {
-                Aggregate = _aggregateConstructor.Build(typeof(TAggregate), Id, (IMemento)offer.Snapshot);
-                _snapshotsPolicy.SnapshotWasApplied(offer.Metadata);
-            });
-            Recover<DomainEvent>(e =>
-            {
-                Aggregate.ApplyEvent(e);
-                _snapshotsPolicy.RefreshActivity(e.CreatedTime);
-            });
-            Recover<RecoveryCompleted>(c =>
-             {
-                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                 //notify all 
-                 NotifyWatchers(c);
-               // _persistenceWaiters.Clear();
-            });
-            
-
-        }
-
-        private void NotifyWatchers(object msg)
-        {
-            foreach (var watcher in _persistenceWaiters)
-                watcher.Tell(msg);
-        }
-
-        protected virtual void Shutdown()
-        {
-            DeleteSnapshots(_snapshotsPolicy.SnapshotsToDelete());
-            Become(Terminating);
-        }
-
-        void Terminating()
-        {
-            Command<DeleteSnapshotsSuccess>(s =>
-            {
-                NotifyWatchers(s);
-                Context.Stop(Self);
-            });
-            Command<DeleteSnapshotsFailure>(s =>
-            {
-                NotifyWatchers(s);
-                Context.Stop(Self);
-            });
-        }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            Log.Error("Additional persistence diagnostics on fauilure {error} {actor} {event}", cause, Self.Path.Name, @event);
-            base.OnPersistFailure(cause, @event, sequenceNr);
-        }
-
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            Log.Error("Additional persistence diagnostics on rejected {error} {actor} {event}", cause, Self.Path.Name, @event);
-            base.OnPersistRejected(cause, @event, sequenceNr);
         }
 
         private void ProcessAggregateEvents(ICommand command)
         {
-            var events = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
             if (command.SagaId != Guid.Empty)
             {
@@ -201,17 +102,17 @@ namespace GridDomain.Node.Actors
 
 
 
-            Aggregate.ClearUncommittedEvents();
+            State.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command);
 
             if(_snapshotsPolicy.ShouldSave(events))
-                SaveSnapshot(Aggregate.GetSnapshot());
+                SaveSnapshot(State.GetSnapshot());
         }
         
         private void ProcessAsyncMethods(ICommand command)
         {
-            var extendedAggregate = Aggregate as Aggregate;
+            var extendedAggregate = State as Aggregate;
             if (extendedAggregate == null) return;
 
             //When aggregate notifies external world about async method execution start,
@@ -256,21 +157,6 @@ namespace GridDomain.Node.Actors
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
             _unscheduleActorRef.Handle(unscheduleMessage);
-        }
-
-
-        protected override void PreStart()
-        {
-            _monitor.IncrementActorStarted();
-        }
-
-        protected override void PostStop()
-        {
-            _monitor.IncrementActorStopped();
-        }
-        protected override void PreRestart(Exception reason, object message)
-        {
-            _monitor.IncrementActorRestarted();
         }
     }
 }

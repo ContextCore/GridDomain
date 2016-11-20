@@ -30,24 +30,15 @@ namespace GridDomain.Node.Actors
     /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TSagaState"></typeparam>
     public class SagaActor<TSaga, TSagaState> :
-        ReceivePersistentActor where TSaga : class,ISagaInstance 
+         EventSourcedActor<TSagaState> where TSaga : class,ISagaInstance 
         where TSagaState : AggregateBase
     {
         private readonly ISagaProducer<TSaga> _producer;
-        private readonly IPublisher _publisher;
         private TSaga _saga;
-        private IAggregate _sagaData;
-        private readonly ISoloLogger _log = LogManager.GetLogger();
-        public readonly Guid Id;
+        private IAggregate _sagaData => State;
         public TSaga Saga => _saga ?? (_saga = _producer.Create(_sagaData));
-     //   private readonly AggregateFactory _aggregateFactory = new AggregateFactory();
         private readonly HashSet<Type> _sagaStartMessageTypes;
-        private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
-        private readonly SnapshotsSavePolicy _snapshotsPolicy;
-      //  private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
-
-
-
+        private readonly Dictionary<Type, string> _sagaIdFields;
 
         private Guid GetSagaId(DomainEvent msg)
         {
@@ -63,36 +54,14 @@ namespace GridDomain.Node.Actors
         public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher,
                          SnapshotsSavePolicy snapshotsSavePolicy,
-                         IConstructAggregates aggregatesConstructor)
+                         IConstructAggregates aggregatesConstructor):base(aggregatesConstructor,snapshotsSavePolicy,
+                             publisher)
         {
-            _aggregatesConstructor = aggregatesConstructor;
             _producer = producer;
-            _publisher = publisher;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
-            _snapshotsPolicy = snapshotsSavePolicy;
+
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
-            Id = AggregateActorName.Parse<TSagaState>(PersistenceId).Id;
-            _sagaData = aggregatesConstructor.Build(typeof(TSagaState), Id, null);
-
-            Command<GracefullShutdownRequest>(req =>
-            {
-                _monitor.IncrementMessagesReceived();
-                Shutdown();
-            });
-
-            Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload), Self));
-
-            Command<NotifyOnPersistenceEvents>(c =>
-            {
-                var waiter = c.Waiter ?? Sender;
-                if (IsRecoveryFinished)
-                {
-                    waiter.Tell(RecoveryCompleted.Instance,Self);
-                }
-                else _persistenceWaiters.Add(waiter);
-            });
-
             Command<DomainEvent>(msg =>
             {
                 _monitor.IncrementMessagesReceived();
@@ -107,66 +76,7 @@ namespace GridDomain.Node.Actors
                 ProcessSaga(fault);
             }, fault => fault.SagaId == Id);
 
-
-            //recover messages will be provided only to right saga by using peristenceId
-            Recover<SnapshotOffer>(offer =>
-            {
-                _sagaData = _aggregatesConstructor.Build(typeof(TSagaState),Id,(IMemento)offer.Snapshot);
-            });
-            Recover<DomainEvent>(e =>
-            {
-                _sagaData.ApplyEvent(e);
-                _snapshotsPolicy.RefreshActivity(e.CreatedTime);
-            });
-            Recover<RecoveryCompleted>(message =>
-            {
-                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                NotifyWatchers(message);
-                //_persistenceWaiters.Clear();
-            });
-            
         }
-
-        void Terminating()
-        {
-            Command<DeleteSnapshotsSuccess>(s =>
-            {
-                NotifyWatchers(s);
-                Context.Stop(Self);
-            });
-            Command<DeleteSnapshotsFailure>(s =>
-            {
-                NotifyWatchers(s);
-                Context.Stop(Self);
-            });
-        }
-
-        private void NotifyWatchers(object msg)
-        {
-            foreach (var watcher in _persistenceWaiters)
-                watcher.Tell(msg);
-        }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            Log.Error("Additional persistence diagnostics on failure {error} {actor} {event}", cause, Self.Path.Name, @event);
-            base.OnPersistFailure(cause, @event, sequenceNr);
-        }
-
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            Log.Error("Additional persistence diagnostics on rejected {error} {actor} {event}", cause, Self.Path.Name, @event);
-            base.OnPersistRejected(cause, @event, sequenceNr);
-        }
-
-
-        protected virtual void Shutdown()
-        {
-            //TODO: raise faults for all messages in stash
-            DeleteSnapshots(_snapshotsPolicy.SnapshotsToDelete());
-            Become(Terminating);
-        }
-
         private void ProcessSaga(object message)
         {
             try
@@ -207,24 +117,5 @@ namespace GridDomain.Node.Actors
             return stateChangeEvents;
         }
 
-        private readonly ActorMonitor _monitor = new ActorMonitor(Context, typeof(TSaga).Name);
-        private readonly Dictionary<Type, string> _sagaIdFields;
-        private readonly IConstructAggregates _aggregatesConstructor;
-
-        protected override void PreStart()
-        {
-            _monitor.IncrementActorStarted();
-        }
-
-        protected override void PostStop()
-        {
-            _monitor.IncrementActorStopped();
-        }
-        protected override void PreRestart(Exception reason, object message)
-        {
-            _monitor.IncrementActorRestarted();
-        }
-
-        public override string PersistenceId => Self.Path.Name;
     }
 }

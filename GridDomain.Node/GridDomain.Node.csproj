@@ -240,6 +240,7 @@
     <Compile Include="Actors\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\EachMessageSnapshotsSavePolicy.cs" />
+    <Compile Include="Actors\EventSourcedActor.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
     <Compile Include="Actors\SnapshotsSavePolicy.cs" />
