@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.GridConsole
 {
     [TestFixture]
-   // [Ignore("Console is not relevant now")]
     public class GridConsoleTests
     {
         private GridNodeConnector _connector;

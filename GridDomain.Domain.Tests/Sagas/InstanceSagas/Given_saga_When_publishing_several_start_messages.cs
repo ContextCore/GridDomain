@@ -1,4 +1,8 @@
 using System;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
@@ -27,24 +31,22 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
         }
 
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            base.When_publishing_start_message();
-        }
-
         [Then]
         public void Saga_reinitialized_from_last_start_message()
         {
             Assert.AreEqual(secondMessage.SofaId, SagaData.Data.SofaId);
         }
 
-
         [Then]
         public void Saga_has_correct_state()
         {
             var saga = new SoftwareProgrammingSaga();
             Assert.AreEqual(saga.Coding.Name, SagaData.Data.CurrentStateName);
+        }
+
+        protected override IExpectBuilder<AnyMessagePublisher> ConfigureWait(IMessageWaiter<AnyMessagePublisher> waiter)
+        {
+            return waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
         }
     }
 }

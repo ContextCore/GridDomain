@@ -45,8 +45,10 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     var soloLogger = LogManager.GetLogger();
                     soloLogger.Trace("Hello trace string");
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
-                })
-                .TransitionTo(MakingCoffee));
+                }).TransitionTo(MakingCoffee),
+
+                When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
+                               .TransitionTo(Coding));
 
             During(MakingCoffee, 
                 When(CoffeNotAvailable)

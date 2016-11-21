@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Framework.Configuration
         public string SystemName => "LocalSystem";
         public string Host => "127.0.0.1";
         public string PublicHost => Host;
-        public int PortNumber => 8090;
+        public int PortNumber => 0;
         public bool EnforceIpVersion => true;
     }
 }

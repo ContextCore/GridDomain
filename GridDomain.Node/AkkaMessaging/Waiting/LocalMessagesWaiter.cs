@@ -23,7 +23,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private Func<IEnumerable<object>,bool> _stopCondition;
 
         private readonly TimeSpan _defaultTimeout;
-        internal abstract ExpectBuilder<T> ExpectBuilder { get; }
+        public abstract ExpectBuilder<T> ExpectBuilder { get; }
         private readonly List<Type> _messageTypesToSubscribe = new List<Type>();
         private readonly ActorSystem _system;
 

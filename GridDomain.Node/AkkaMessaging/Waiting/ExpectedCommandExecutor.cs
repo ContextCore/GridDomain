@@ -13,7 +13,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public ICommandExecutor Executor { get; }
 
-        public ExpectedCommandExecutor(ICommandExecutor executor, LocalMessagesWaiter<IExpectedCommandExecutor> waiter, bool failOnFaults)
+        public ExpectedCommandExecutor(ICommandExecutor executor, 
+                                       LocalMessagesWaiter<IExpectedCommandExecutor> waiter,
+                                       bool failOnFaults)
         {
             _failOnFaults = failOnFaults;
             Executor = executor;

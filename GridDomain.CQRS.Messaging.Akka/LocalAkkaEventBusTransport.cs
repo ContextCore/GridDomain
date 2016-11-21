@@ -33,18 +33,14 @@ namespace GridDomain.CQRS.Messaging.Akka
             Subscribe(messageType, actor);
         }
 
-        public void Publish<T>(T msg)
-        {
-            _log.Trace("Publishing {@Message} to transport", msg);
-            _bus.Publish(msg);
-        }
-
         public void Publish(params object[] messages)
         {
             foreach (var msg in messages)
-                Publish<object>(msg);
+            {
+                _log.Trace("Publishing {@Message} to transport", msg);
+                _bus.Publish(msg);
+            }
         }
-    
 
         public void Subscribe(Type messageType, IActorRef actor)
         {

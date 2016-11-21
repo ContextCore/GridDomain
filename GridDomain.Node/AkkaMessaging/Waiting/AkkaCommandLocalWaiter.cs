@@ -13,6 +13,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             ExpectBuilder = new CommandExpectBuilder(executor, this, defaultTimeout, failOnAnyFault);
         }
 
-        internal override ExpectBuilder<IExpectedCommandExecutor> ExpectBuilder { get; } 
+        public override ExpectBuilder<IExpectedCommandExecutor> ExpectBuilder { get; } 
     }
 }

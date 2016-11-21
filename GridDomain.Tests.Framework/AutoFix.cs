@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace GridDomain.Tests.Framework
 {
+
+
     public static class AutoFix
     {
         private static readonly Random Rnd = new Random();

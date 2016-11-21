@@ -2,7 +2,6 @@
 {
     public interface IPublisher
     {
-        void Publish<T>(T msg);
         void Publish(params object[] msg);
     }
 }

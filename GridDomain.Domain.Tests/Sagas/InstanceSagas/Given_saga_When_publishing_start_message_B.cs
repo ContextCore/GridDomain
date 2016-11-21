@@ -1,37 +1,41 @@
 using System;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     [TestFixture]
-    class Given_saga_When_publishing_start_message_B : Given_saga_When_publishing_start_messages
+    class Given_saga_When_publishing_start_message_B : SoftwareProgrammingInstanceSagaTest
     {
         private static readonly SleptWellEvent StartMessage = new SleptWellEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid(), null);
-
-        public Given_saga_When_publishing_start_message_B() : base(StartMessage.SagaId, StartMessage)
-        {
-
-
-        }
+        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaData;
 
         [OneTimeSetUp]
-        public void Setup()
+        public void When_publishing_start_message()
         {
-            base.When_publishing_start_message();
+            GridNode.NewDebugWaiter()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .Publish(StartMessage)
+                    .Wait();
+
+            _sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(StartMessage.SagaId);
         }
 
         [Then]
         public void Saga_has_correct_data()
         {
-            Assert.AreEqual(StartMessage.SofaId, SagaData.Data.SofaId);
+            Assert.AreEqual(StartMessage.SofaId, _sagaData.Data.SofaId);
         }
 
         [Then]
         public void Saga_has_correct_state()
         {
-            var saga = new SoftwareProgrammingSaga();
-            Assert.AreEqual(saga.Coding.Name, SagaData.Data.CurrentStateName);
+            Assert.AreEqual(nameof(SoftwareProgrammingSaga.Coding), _sagaData.Data.CurrentStateName);
         }
     }
 }

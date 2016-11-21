@@ -1,4 +1,9 @@
 using System;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
@@ -17,13 +22,6 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             
         }
 
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            When_publishing_start_message();
-        }
-
-
         [Then]
         public void Saga_data_is_not_null()
         {
@@ -35,6 +33,11 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         public void Saga_has_correct_id()
         {
             Assert.AreEqual(_sagaId, SagaData.Id);
+        }
+
+        protected override IExpectBuilder<AnyMessagePublisher> ConfigureWait(IMessageWaiter<AnyMessagePublisher> waiter)
+        {
+            return waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
         }
     }
 }

@@ -144,6 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateDebugExtensions.cs" />
+    <Compile Include="AnyMessageExpectBuilder.cs" />
+    <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="AutoFix.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="AutoTestLogFactory.cs" />
@@ -156,6 +158,8 @@
     <Compile Include="CountEventWaiter.cs" />
     <Compile Include="DateTimeDeltaComparer.cs" />
     <Compile Include="DateTimeOffsetDeltaComparer.cs" />
+    <Compile Include="DebugLocalWaiter.cs" />
+    <Compile Include="DebugMessageWaiterFactory.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />

@@ -17,11 +17,6 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
             _local = local;
         }
 
-        public void Publish<T>(T msg)
-        {
-            Publish((object)msg);
-        }
-
         public void Publish(params object[] messages)
         {
             _local.Publish(messages);

@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 );
         }
 
-        public SoftwareProgrammingInstanceSagaTest(bool inMemory = true) : base(inMemory)
+        protected SoftwareProgrammingInstanceSagaTest(bool inMemory = true) : base(inMemory)
         {
         }
     }
