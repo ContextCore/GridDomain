@@ -3,6 +3,8 @@ using System.Linq;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
@@ -45,16 +47,17 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
 
-            var waiter = GridNode.NewWaiter()
+            var w = GridNode.NewWaiter()
                                  .Expect<SagaCreatedEvent<SoftwareProgrammingSaga.States>>()
                                  .Create();
 
             Publisher.Publish(sagaStartEvent);
-            waiter.Wait();
+            w.Wait();
 
             var sagaActorRef = LookupStateSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
-
+            Watch(sagaActorRef);
             sagaActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
+
 
 
             var sagaContinueEventA = new CoffeMakeFailedEvent(_sagaId,
@@ -66,9 +69,15 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                         sagaStartEvent.LovelySofaId,
                                                         _sagaId);
 
+            var waiter = GridNode.NewWaiter()
+                                 .Expect<SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>>(e => e.State == SoftwareProgrammingSaga.States.Coding)
+                                 .And<SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>>(e => e.State == SoftwareProgrammingSaga.States.Sleeping)
+                                 .Create();
+
             Publisher.Publish(sagaContinueEventA, sagaContinueEventB);
 
-            Watch(sagaActorRef);
+            waiter.Wait();
+
             sagaActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
 
             FishForMessage<Terminated>(m => true);
@@ -93,7 +102,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Test]
         public void Last_Snapshots_should_have_coding_state_from_last_event()
         {
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Working,_snapshots.Last().Aggregate.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Coding, _snapshots.Last().Aggregate.MachineState);
         }
 
         [Test]

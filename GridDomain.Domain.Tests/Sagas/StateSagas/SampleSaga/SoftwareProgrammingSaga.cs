@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
         IHandler<CoffeMadeEvent>
     {
 
-        public static readonly ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Working));
+        public static readonly ISagaDescriptor Descriptor = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.Empty,States.Coding));
         public SoftwareProgrammingSaga(SoftwareProgrammingSagaState state) : base(state)
         {
             var gotTiredTriggerTrigger = RegisterEvent<GotTiredEvent>(Triggers.GoForCoffe);
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
             //TODO: refactor this ugly hack! 
             RegisterEvent<BadCoffeMachineRememberedEvent>(Triggers.DummyForSagaStateChange);
 
-            Machine.Configure(States.Working)
+            Machine.Configure(States.Coding)
                    .Permit(Triggers.GoForCoffe, States.MakingCoffee);
 
             Machine.Configure(States.MakingCoffee)
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                        State.RememberPerson(e.PersonId);
                        Dispatch(new MakeCoffeCommand(e.PersonId, State.CoffeMachineId));
                    })
-                   .Permit(Triggers.FeelWell, States.Working)
+                   .Permit(Triggers.FeelWell, States.Coding)
                    .Permit(Triggers.GoToSleep, States.Sleeping);
 
             Machine.Configure(States.Sleeping)
@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
                            State.RememberBadCoffeMachine(e.CoffeMachineId);
                            Dispatch(new GoToWorkCommand(e.ForPersonId));
                        })
-                   .Permit(Triggers.SleepAnough, States.Working);
+                   .Permit(Triggers.SleepAnough, States.Coding);
         }
 
         public void Handle(GotTiredEvent e)
@@ -81,7 +81,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
 
         public enum States
         {
-            Working,
+            Coding,
             MakingCoffee,
             Sleeping
         }

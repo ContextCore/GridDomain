@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
             var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffee);
 
             When_execute_valid_transaction(given.SagaMachine, new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Working, given.SagaMachine.State.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Coding, given.SagaMachine.State.MachineState);
         }
 
         [Then]
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
 
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
             given.SagaMachine.Transit(msg);
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Working, given.SagaMachine.State.MachineState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Coding, given.SagaMachine.State.MachineState);
         }
 
         [Then]
@@ -64,7 +64,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         [Then]
         public void Commands_are_produced()
         {
-            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.Working);
+            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.Coding);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
             When_execute_valid_transaction(given.SagaInstance, subscriptionExpiredEvent);
@@ -75,7 +75,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.Transitions
         [Then]
         public void SagaData_is_changed_after_transition_by_event_data()
         {
-            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.Working);
+            var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.Coding);
             given.SagaDataAggregate.ClearEvents();
 
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());

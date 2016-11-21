@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
         [Test]
         public void GetGraph()
         {
-            var saga = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.Working));
+            var saga = new SoftwareProgrammingSaga(new SoftwareProgrammingSagaState(Guid.NewGuid(),SoftwareProgrammingSaga.States.Coding));
             Console.WriteLine(saga.Machine.ToDotGraph());
         }
     }

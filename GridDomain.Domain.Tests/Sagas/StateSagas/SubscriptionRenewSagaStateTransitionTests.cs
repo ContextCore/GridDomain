@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Sagas.StateSagas
             Given_new_saga_with_state(SoftwareProgrammingSaga.States.MakingCoffee);
             SagaInstance.Handle(new CoffeMadeEvent(Guid.NewGuid(),Guid.NewGuid()));
 
-            Assert.AreEqual(SoftwareProgrammingSaga.States.Working, SagaInstance.DomainState);
+            Assert.AreEqual(SoftwareProgrammingSaga.States.Coding, SagaInstance.DomainState);
         }
     }
 }
