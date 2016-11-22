@@ -26,17 +26,16 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
            secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId);
 
-           waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                 .Create()
-                 .Publish(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId),
-                          secondStartMessage)
-                 .Wait();
+            
+            var wait = waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                             .Create()
+                             .Publish(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId));
 
-           LookupInstanceSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaId)
-                                                       .Tell(NotifyOnPersistenceEvents.Instance);
+            LookupInstanceSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaId)
+                                                        .Tell(NotifyOnPersistenceEvents.Instance);
 
-           int count = 2;
-           FishForMessage<Persisted>(m => ++count >=2);
+            Publisher.Publish(secondStartMessage);
+            FishForMessage<Persisted>(m => true );
 
            SagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(SagaId);
         }

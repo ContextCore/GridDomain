@@ -54,10 +54,9 @@ namespace GridDomain.Node.Actors
             {
                 var waiter = c.Waiter ?? Sender;
                 if (IsRecoveryFinished)
-                {
                     waiter.Tell(RecoveryCompleted.Instance);
-                }
-                else _persistenceWaiters.Add(waiter);
+
+                 _persistenceWaiters.Add(waiter);
             });
 
             Recover<DomainEvent>(e =>
