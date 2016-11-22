@@ -88,7 +88,6 @@ namespace GridDomain.Node.Actors
             try
             {
                 Saga.Transit(message);
-               // SnapshotsPolicy.RefreshActivity();
             }
             catch (Exception ex)
             {
@@ -117,7 +116,11 @@ namespace GridDomain.Node.Actors
         private object[] ProcessSagaStateChange()
         {
             var stateChangeEvents = State.GetUncommittedEvents().Cast<object>().ToArray();
-            PersistAll(stateChangeEvents, e => Publisher.Publish(e));
+            PersistAll(stateChangeEvents, 
+                e => {
+                         Publisher.Publish(e);
+                         NotifyWatchers(new Persisted(e));
+                });
             State.ClearUncommittedEvents();
             return stateChangeEvents;
         }

@@ -98,6 +98,8 @@ namespace GridDomain.Node.Actors
                          .With<FutureEventCanceledEvent>(Handle);
 
                 Publisher.Publish(e);
+
+                NotifyWatchers(new Persisted(e));
             });
 
             State.ClearUncommittedEvents();

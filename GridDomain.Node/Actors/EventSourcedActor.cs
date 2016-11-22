@@ -40,7 +40,6 @@ namespace GridDomain.Node.Actors
                 Monitor.IncrementMessagesReceived();
                 DeleteSnapshots(SnapshotsPolicy.GetSnapshotsToDelete());
                 Become(Terminating);
-             //   StopNow(new DeleteSnapshotsSuccess(SnapshotSelectionCriteria.None));
             });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
@@ -88,7 +87,7 @@ namespace GridDomain.Node.Actors
             return shouldSave;
         }
 
-        private void NotifyWatchers(object msg)
+        protected void NotifyWatchers(object msg)
         {
             foreach (var watcher in _persistenceWaiters)
                 watcher.Tell(msg);

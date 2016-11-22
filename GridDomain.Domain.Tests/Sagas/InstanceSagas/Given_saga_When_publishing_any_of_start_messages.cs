@@ -9,35 +9,34 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-
-
     [TestFixture]
-    class Given_saga_When_publishing_any_of_start_messages : Given_saga_When_publishing_start_messages
+    class Given_saga_When_publishing_any_of_start_messages : SoftwareProgrammingInstanceSagaTest
     {
-        private static Guid SagaId = Guid.NewGuid();
+        private static readonly Guid SagaId = Guid.NewGuid();
+        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaData;
 
-        public Given_saga_When_publishing_any_of_start_messages():
-            base(SagaId, new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId))
+        [OneTimeSetUp]
+        public void When_publishing_start_message()
         {
-            
+            GridNode.NewDebugWaiter(Timeout)
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .Publish(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId))
+                    .Wait();
+
+            _sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(SagaId);
         }
 
         [Then]
         public void Saga_data_is_not_null()
         {
-            Assert.NotNull(SagaData.Data);
+            Assert.NotNull(_sagaData.Data);
         }
-
 
         [Then]
         public void Saga_has_correct_id()
         {
-            Assert.AreEqual(_sagaId, SagaData.Id);
-        }
-
-        protected override IExpectBuilder<AnyMessagePublisher> ConfigureWait(IMessageWaiter<AnyMessagePublisher> waiter)
-        {
-            return waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
+            Assert.AreEqual(SagaId, _sagaData.Id);
         }
     }
 }

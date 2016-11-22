@@ -2,15 +2,13 @@ using System;
 
 namespace GridDomain.Node.Actors
 {
-    public class AggregatePersistedNotification
+    public class Persisted
     {
-        public AggregatePersistedNotification(Guid id, Guid commandId)
-        {
-            Id = id;
-            CommandId = commandId;
-        }
+        public object Event { get;}
 
-        public Guid CommandId { get; }
-        public Guid Id { get; }
+        public Persisted(object @event)
+        {
+            Event = @event;
+        }
     }
 }
