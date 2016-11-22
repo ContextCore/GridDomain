@@ -8,7 +8,7 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
-    public class Aggregate : AggregateBase
+    public class Aggregate : AggregateBase, IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
         public static T Empty<T>(Guid id) where T : IAggregate
@@ -117,5 +117,22 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
 
         #endregion
 
+        // Only for simple implementation 
+        Guid IMemento.Id
+        {
+            get { return Id; }
+            set { Id = value; }
+        }
+
+        int IMemento.Version
+        {
+            get { return Version; }
+            set { Version = value; }
+        }
+
+        protected override IMemento GetSnapshot()
+        {
+            return this;
+        }
     }
 }

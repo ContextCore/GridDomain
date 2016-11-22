@@ -236,6 +236,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />

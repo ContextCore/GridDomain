@@ -17,9 +17,14 @@ namespace GridDomain.EventSourcing
             return snapshot == null ? Build(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
 
+        //default convention: Aggregate is implementing IMemento itself
         protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {
-            return Build(type, id);    
+            var aggregate = snapshot as IAggregate;
+            if (aggregate == null)
+                throw new InvalidDefaultMementoException(type, id, snapshot);
+            aggregate.ClearUncommittedEvents();
+            return aggregate;
         }
 
         public IAggregate Build(Type type, Guid id)
