@@ -103,6 +103,26 @@ namespace GridDomain.Tests.Metadata
     }
 
     [TestFixture]
+    class Metadata_from_aggregate_command_passed_to_produced_fault : SampleDomainCommandExecutionTests
+    {
+        [Test]
+        public void Test()
+        {
+           throw new NotImplementedException();
+        }
+    }
+
+    [TestFixture]
+    class Metadata_from_message_handler_event_passed_to_produced_fault : SampleDomainCommandExecutionTests
+    {
+        [Test]
+        public void Test()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [TestFixture]
     class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest
     {
 

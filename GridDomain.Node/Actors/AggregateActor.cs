@@ -9,6 +9,7 @@ using Akka.Monitoring;
 using Akka.Monitoring.Impl;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -60,6 +61,7 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
            
+            Command<IMessageMetadataEnvelop<ICommand>>();
             Command<ICommand>(cmd =>
             {
                 Monitor.IncrementMessagesReceived();
