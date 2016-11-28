@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using GridDomain.Common;
@@ -7,6 +7,8 @@ using GridDomain.EventSourcing.VersionedTypeSerialization;
 
 namespace GridDomain.EventSourcing
 {
+  
+
     public class DomainEvent : ISourcedEvent
     {
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))

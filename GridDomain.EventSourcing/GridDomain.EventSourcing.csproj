@@ -65,8 +65,15 @@
     <Compile Include="Adapters\IDomainEventAdapter.cs" />
     <Compile Include="Adapters\IEventAdapter.cs" />
     <Compile Include="Adapters\VersionedTypeSerializationBinder.cs" />
+    <Compile Include="DomainEventEnvelop.cs" />
+    <Compile Include="IDomainEventEnvelop.cs" />
+    <Compile Include="IMessageEnvelop.cs" />
+    <Compile Include="IMetadata.cs" />
     <Compile Include="InvalidDefaultMementoException.cs" />
     <Compile Include="ISourcedEvent.cs" />
+    <Compile Include="Metadata.cs" />
+    <Compile Include="ProcessEntry.cs" />
+    <Compile Include="ProcessHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Adapters\ObjectAdapter.cs" />
     <Compile Include="Adapters\TypeNameNotFoundException.cs" />
