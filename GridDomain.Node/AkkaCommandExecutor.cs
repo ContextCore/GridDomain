@@ -74,5 +74,10 @@ namespace GridDomain.Node
         {
             return (T) await Execute((CommandPlan)plan).ConfigureAwait(false);
         }
+
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+                _transport.Publish(command, metadata);
+        }
     }
 }

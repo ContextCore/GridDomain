@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
@@ -77,6 +78,11 @@ namespace GridDomain.Tools.Console
         public Task<T> Execute<T>(CommandPlan<T> plan)
         {
             return _commandExecutor.Execute(plan);
+        }
+
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+            _commandExecutor.Execute(command, metadata);
         }
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)

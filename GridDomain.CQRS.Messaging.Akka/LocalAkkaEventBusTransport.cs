@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
+using GridDomain.Common;
 using GridDomain.Logging;
 
 namespace GridDomain.CQRS.Messaging.Akka
@@ -33,13 +34,15 @@ namespace GridDomain.CQRS.Messaging.Akka
             Subscribe(messageType, actor);
         }
 
-        public void Publish(params object[] messages)
+        public void Publish(object msg)
         {
-            foreach (var msg in messages)
-            {
-                _log.Trace("Publishing {@Message} to transport", msg);
-                _bus.Publish(msg);
-            }
+            _log.Trace("Publishing {@Message} to transport", msg);
+            _bus.Publish(msg);
+        }
+
+        public void Publish(object msg, IMessageMetadata metadata)
+        {
+            _bus.Publish(MessageMetadataEnvelop.NewGeneric(msg,metadata));
         }
 
         public void Subscribe(Type messageType, IActorRef actor)

@@ -84,7 +84,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                  .And<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(e => (e.Message as SleptWellEvent)?.SourceId == _sagaId)
                                  .Create();
 
-            Publisher.Publish(sagaContinueEventA, sagaContinueEventB);
+            Publisher.Publish(sagaContinueEventA);
+            Publisher.Publish(sagaContinueEventB);
 
             waiter.Wait();
 

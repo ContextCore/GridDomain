@@ -74,7 +74,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                  .And<SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>>(e => e.State == SoftwareProgrammingSaga.States.Sleeping)
                                  .Create();
 
-            Publisher.Publish(sagaContinueEventA, sagaContinueEventB);
+            Publisher.Publish(sagaContinueEventA);
+            Publisher.Publish(sagaContinueEventB);
 
             waiter.Wait();
 

@@ -8,6 +8,13 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
+
+    public static class ProcessReasons
+    {
+        public const string AggregateCommandExecution = nameof(AggregateCommandExecution);
+    }
+
+
     public class Aggregate : AggregateBase, IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();

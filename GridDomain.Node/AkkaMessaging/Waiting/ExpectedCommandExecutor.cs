@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
@@ -32,6 +33,26 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             foreach (var command in commands)
                 Executor.Execute(command);
+
+            var res = await task;
+
+            if (!_failOnFaults) return res;
+            var faults = res.All.OfType<IFault>().ToArray();
+            if (faults.Any())
+                throw new AggregateException(faults.Select(f => f.Exception));
+
+            return res;
+        }
+
+        public async Task<IWaitResults> Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+
+             _waiter.ExpectBuilder.Or<IFault<T>>(f => f.Message.Id == command.Id);
+             _waiter.ExpectBuilder.Or<IFault<IMessageMetadataEnvelop<T>>>(f => f.Message.Message.Id == command.Id);
+
+            var task = _waiter.Start();
+
+            Executor.Execute(command, metadata);
 
             var res = await task;
 

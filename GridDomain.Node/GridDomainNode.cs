@@ -212,6 +212,11 @@ namespace GridDomain.Node
             return await _commandExecutor.Execute(plan);
         }
 
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+            _commandExecutor.Execute(command, metadata);
+        }
+
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout ?? DefaultTimeout);
