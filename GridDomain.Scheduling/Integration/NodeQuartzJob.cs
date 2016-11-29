@@ -23,11 +23,11 @@ namespace GridDomain.Scheduling.Integration
         private readonly IQuartzLogger _quartzLogger;
         private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
-        private readonly ICommandExecutor _executor;
+        private readonly IMessageWaiterFactory _executor;
 
 
         public NodeQuartzJob(IQuartzLogger quartzLogger,
-            ICommandExecutor executor)
+                            IMessageWaiterFactory executor)
         {
             _executor = executor;
             Condition.NotNull(() => quartzLogger);
@@ -49,11 +49,21 @@ namespace GridDomain.Scheduling.Integration
                     var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap);
 
-                    //var sagaCreator = _actorSystem.ActorOf(genericProps);
-                    //var result = sagaCreator.Ask(new StartSchedulerSaga(command, key), options.Timeout);
 
-                    var expect = Expect.Message(options.SuccesEventType,options.MessageIdFieldName,options.SuccessSuccessMessageId);
-                    var result = _executor.Execute(new CommandPlan(command,options.Timeout,expect));
+                    var expect = Expect.Message(options.SuccesEventType,options.MessageIdFieldName,
+                        options.SuccessSuccessMessageId);
+
+                    Predicate<object> isExpected = o => (Guid) o.GetType()
+                                                               .GetProperty(options.MessageIdFieldName)
+                                                               ?.GetValue(o) == options.SuccessSuccessMessageId;
+
+                    var success = _executor.NewCommandWaiter()
+                                           .Expect(options.SuccesEventType, o => isExpected(o))
+                                           .Create()
+                                           .Execute(command)
+                                           .Wait(options.Timeout);
+                    if (!success) 
+                        throw new JobTimeoutException(command, options);
                 }
                 else
                 {
@@ -112,12 +122,6 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        private Props CreateGenericProps(ExecutionOptions options)
-        {
-            var genericActorType = typeof(ScheduledSagaCreator<>).MakeGenericType(options.SuccesEventType);
-            return _actorSystem.DI().Props(genericActorType);
-        }
-
         private static DomainEvent GetEvent(JobDataMap jobDataMap)
         {
             var bytes = jobDataMap[EventKey] as byte[];
@@ -152,6 +156,18 @@ namespace GridDomain.Scheduling.Integration
                 .UsingJobData(jobDataMap)
                 .RequestRecovery(true)
                 .Build();
+        }
+    }
+
+    public class JobTimeoutException : Exception
+    {
+        public Command Command { get; }
+        public ExtendedExecutionOptions Options { get;}
+
+        public JobTimeoutException(Command command, ExtendedExecutionOptions options)
+        {
+            Command = command;
+            Options = options;
         }
     }
 }
