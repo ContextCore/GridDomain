@@ -51,11 +51,11 @@ namespace GridDomain.Scheduling.Integration
 
 
                     var expect = Expect.Message(options.SuccesEventType,options.MessageIdFieldName,
-                        options.SuccessSuccessMessageId);
+                        options.SuccessMessageId);
 
                     Predicate<object> isExpected = o => (Guid) o.GetType()
                                                                .GetProperty(options.MessageIdFieldName)
-                                                               ?.GetValue(o) == options.SuccessSuccessMessageId;
+                                                               ?.GetValue(o) == options.SuccessMessageId;
 
                     var success = _executor.NewCommandWaiter()
                                            .Expect(options.SuccesEventType, o => isExpected(o))

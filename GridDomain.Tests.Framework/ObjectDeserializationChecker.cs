@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Framework
         public ObjectDeserializationChecker(WireJsonSerializer serializer = null, CompareLogic logic = null)
         {
             _serializer = serializer ?? new WireJsonSerializer();
-            _compareLogic = logic ?? new CompareLogic {Config = new ComparisonConfig() {ComparePrivateFields = true}};
+            _compareLogic = logic ?? new CompareLogic {Config = new ComparisonConfig()};
         }
 
         public bool IsRestorable(object original, out string difference)

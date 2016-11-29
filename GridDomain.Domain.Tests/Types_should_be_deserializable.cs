@@ -52,19 +52,20 @@ namespace GridDomain.Tests
             CheckAll<object>(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>),
                              typeof(SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
                              typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>),
-                             typeof(SagaMessageReceivedEvent<object>),
                              typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>),
-                             typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>)
+                             typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
+                             typeof(SagaMessageReceivedEvent<SoftwareProgrammingSagaData>)
                             );
         }
+        
+        
 
         [Test]
         public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
         {
             CheckAll<object>(typeof(ExecutionOptions),
-                              typeof(ExtendedExecutionOptions),
-                              typeof(ScheduleKey)
-                          );
+                             typeof(ExtendedExecutionOptions),
+                             typeof(ScheduleKey));
         }
 
 
