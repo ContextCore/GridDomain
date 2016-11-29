@@ -118,8 +118,6 @@ namespace GridDomain.Node
 
             ConfigureContainer(Container, _quartzConfig, System);
 
-
-
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();

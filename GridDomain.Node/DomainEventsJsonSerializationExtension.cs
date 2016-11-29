@@ -31,6 +31,7 @@ namespace GridDomain.Node
         private readonly List<JsonConverter> _converters = new List<JsonConverter>();
 
         public IReadOnlyCollection<JsonConverter> Converters => _converters;
+        public JsonSerializerSettings Settings { get; set; }
 
         void IObjectsAdapter.Register(JsonConverter converter)
         {

@@ -13,7 +13,7 @@ namespace GridDomain.EventSourcing
 {
     public class WireJsonSerializer
     {
-        private readonly JsonSerializerSettings JsonSerializerSettings;
+        public JsonSerializerSettings JsonSerializerSettings { get; }
 
         //old wire tends to leak and does not support IDisposable
         private static readonly Func<LegacyWireSerializer> OldWire_Default = () => new LegacyWireSerializer();

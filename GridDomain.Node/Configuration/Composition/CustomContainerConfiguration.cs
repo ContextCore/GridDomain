@@ -25,5 +25,10 @@ namespace GridDomain.Node.Configuration.Composition
             foreach(var reg in _registrations)
                 reg.Invoke(container);
         }
+
+        public static CustomContainerConfiguration Empty()
+        {
+            return new CustomContainerConfiguration(c => { });
+        }
     }
 }

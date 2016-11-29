@@ -18,13 +18,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                 Version = version;
             }
 
-            public Guid Id { get;  set; }
+            public Guid Id { get; set; }
             public int Version { get; set; }
-            public TSagaData Data {get; private set; }
+            public TSagaData Data {get; }
         }
         protected override IMemento GetSnapshot()
         {
-
             return new Snapshot(Id,Version,Data);
         }
 
@@ -83,8 +82,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
     public class WrongSnapshotTypeReceivedException : Exception
     {
-        public Type Received { get; set; }
-        public Type Expected { get; set; }
+        public Type Received { get; }
+        public Type Expected { get;}
 
         public WrongSnapshotTypeReceivedException(Type received, Type expected)
         {
