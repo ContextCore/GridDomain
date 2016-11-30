@@ -53,9 +53,13 @@ namespace GridDomain.Tests
                              typeof(SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
                              typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>),
                              typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>),
-                             typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
-                             typeof(SagaMessageReceivedEvent<SoftwareProgrammingSagaData>)
+                             typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>)
                             );
+        }
+        [Test]
+        public void Saga_events_classes_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>));
         }
         
         
