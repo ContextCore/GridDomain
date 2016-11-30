@@ -62,8 +62,6 @@ namespace GridDomain.Tests
             CheckAll<object>(typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>));
         }
         
-        
-
         [Test]
         public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
         {
@@ -71,8 +69,6 @@ namespace GridDomain.Tests
                              typeof(ExtendedExecutionOptions),
                              typeof(ScheduleKey));
         }
-
-
 
         [Test]
         public void Aggregates_from_all_assemblies_should_be_deserializable()

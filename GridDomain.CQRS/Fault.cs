@@ -7,19 +7,19 @@ namespace GridDomain.CQRS
     {
         public new T Message { get; }
 
-        public Fault(T msg, Exception ex, Type processorType, Guid sagaId, DateTime occuredTime)
-            : base(msg, ex, processorType, sagaId, occuredTime)
+        public Fault(T message, Exception exception, Type processorType, Guid sagaId, DateTime occuredTime)
+            : base(message, exception, processorType, sagaId, occuredTime)
         {
-            Message = msg;
+            Message = message;
         }
     }
 
     public class Fault: IFault
     {
-        public Fault(object message, Exception ex, Type processor, Guid sagaId, DateTime occuredTime)
+        public Fault(object message, Exception exception, Type processor, Guid sagaId, DateTime occuredTime)
         {
             Message = message;
-            Exception = ex;
+            Exception = exception;
             OccuredTime = occuredTime;
             SagaId = sagaId;
             Processor = processor;
@@ -31,12 +31,12 @@ namespace GridDomain.CQRS
         public object Message { get; }
         public Type Processor { get; }
 
-        public static object NewGeneric(object msg, Exception ex, Type processorType, Guid sagaId)
+        public static object NewGeneric(object msg, Exception exception, Type processorType, Guid sagaId)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(Fault).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
-            return method.Invoke(null, new [] { msg, ex, sagaId, processorType});
+            return method.Invoke(null, new [] { msg, exception, sagaId, processorType});
         }
 
         public static Fault<T> New<T>(T msg, Exception ex, Guid sagaId, Type processorType = null)

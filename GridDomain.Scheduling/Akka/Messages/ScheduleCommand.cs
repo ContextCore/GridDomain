@@ -6,9 +6,9 @@ namespace GridDomain.Scheduling.Akka.Messages
     {
         public Command Command { get; }
         public ScheduleKey Key { get; }
-        public ExecutionOptions Options { get; }
+        public ExtendedExecutionOptions Options { get; }
 
-        public ScheduleCommand(Command command, ScheduleKey key, ExecutionOptions options)
+        public ScheduleCommand(Command command, ScheduleKey key, ExtendedExecutionOptions options)
         {
             Command = command;
             Key = key;
