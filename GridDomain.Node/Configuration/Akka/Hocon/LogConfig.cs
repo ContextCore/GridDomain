@@ -25,12 +25,12 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 actor.debug {"+
 #if DEBUG
                     @"receive = on
-                      autoreceive = on
-                      lifecycle = on
                       event-stream = on "
                       +
 #endif
-                             @"
+                     @"
+                      autoreceive = on
+                      lifecycle = on
                       unhandled = on
                 }";
 
