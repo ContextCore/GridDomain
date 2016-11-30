@@ -49,7 +49,7 @@ namespace GridDomain.Scheduling.Integration
                 {
                     var command = GetCommand(jobDataMap);
                     var key = GetScheduleKey(jobDataMap);
-                    var options = GetExecutionOptions(jobDataMap);
+                    var options = GetExecutionOptions(jobDataMap, context.JobDetail.Key.Name);
                     if (options.SuccesEventType == null)
                         throw new Exception("options do not have SuccessEventType for key " + key);
 
@@ -70,6 +70,8 @@ namespace GridDomain.Scheduling.Integration
                                           
                     if (!task.Wait(options.Timeout))
                         throw new ScheduledCommandWasNotConfirmedException(command);
+
+                    _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
                 }
                 else
                 {
@@ -140,22 +142,29 @@ namespace GridDomain.Scheduling.Integration
             return Deserialize<ScheduleKey>(bytes, _serializer);
         }
 
-        private ExecutionOptions GetExecutionOptions(JobDataMap jobDatMap)
+        private ExecutionOptions GetExecutionOptions(JobDataMap jobDatMap, string jobName)
         {
             var bytes = jobDatMap[ExecutionOptionsKey] as byte[];
-            return Deserialize<ExecutionOptions>(bytes, _serializer);
+            try
+            {
+                return Deserialize<ExtendedExecutionOptions>(bytes);
+            }
+            catch (Exception ex)
+            {
+                _quartzLogger.LogFailure(jobName, ex);
+                return Deserialize<ExecutionOptions>(bytes);
+            }
         }
 
         public static IJobDetail CreateJob(ScheduleKey key, JobDataMap jobDataMap)
         {
             var jobKey = new JobKey(key.Name, key.Group);
-            return JobBuilder
-                   .Create<QuartzJob>()
-                   .WithIdentity(jobKey)
-                   .WithDescription(key.Description)
-                   .UsingJobData(jobDataMap)
-                   .RequestRecovery(true)
-                   .Build();
+            return JobBuilder.Create<QuartzJob>()
+                             .WithIdentity(jobKey)
+                             .WithDescription(key.Description)
+                             .UsingJobData(jobDataMap)
+                             .RequestRecovery(true)
+                             .Build();
         }
     }
 
