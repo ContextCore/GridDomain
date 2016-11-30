@@ -193,9 +193,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                                                 typeof(ScheduledCommandSuccessfullyProcessed),
                                                 id ?? Guid.Empty,
                                                 checkField,
-                                                timeout ?? Timeout,
-                                                retryCount,
-                                                repeatInterval);
+                                                timeout ?? Timeout);
         }
 
         
