@@ -8,6 +8,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz.Logging;
 using Quartz;
+using Quartz.Impl.Triggers;
 using Wire;
 
 namespace GridDomain.Scheduling.Integration
@@ -26,14 +27,11 @@ namespace GridDomain.Scheduling.Integration
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
-                         ActorSystem actorSystem,
                          IPublisher publisher,
                          IMessageWaiterFactory executor)
         {
             Condition.NotNull(()=> quartzLogger);
-            Condition.NotNull(()=> actorSystem);
             Condition.NotNull(()=> publisher);
-            Condition.NotNull(() => actorSystem.DI());
 
             _executor = executor;
             _quartzLogger = quartzLogger;
@@ -44,6 +42,7 @@ namespace GridDomain.Scheduling.Integration
         {
             try
             {
+                ExtendedExecutionOptions extendedOptions;
                 var jobDataMap = context.JobDetail.JobDataMap;
                 if (jobDataMap.ContainsKey(CommandKey))
                 {
@@ -55,35 +54,38 @@ namespace GridDomain.Scheduling.Integration
 
                     Predicate<object> isExpected = (o => true);
                     //we should work with legacy jobs having only ExecutionOptions, not ExtendedExecutionOptions 
-                    var extendedOptions = options as ExtendedExecutionOptions;
+                    extendedOptions = options as ExtendedExecutionOptions;
 
                     if (!string.IsNullOrEmpty(extendedOptions?.MessageIdFieldName))
                     {
-                        isExpected = o => (Guid)o.GetType()
-                                                 .GetProperty(extendedOptions.MessageIdFieldName)
-                                                 ?.GetValue(o) == extendedOptions.SuccessMessageId;
+                        isExpected = o => (Guid) o.GetType()
+                            .GetProperty(extendedOptions.MessageIdFieldName)
+                            ?.GetValue(o) == extendedOptions.SuccessMessageId;
                     }
 
                     var task = _executor.NewCommandWaiter()
                                         .Expect(options.SuccesEventType, o => isExpected(o))
                                         .Create()
                                         .Execute(command);
-                                          
+
                     if (!task.Wait(options.Timeout))
                         throw new ScheduledCommandWasNotConfirmedException(command);
 
                     _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
+                    _publisher.Publish(new JobSucceeded(context.JobDetail.Key.Name, context.JobDetail.Key.Group));
                 }
                 else
                 {
                     var messageToFire = GetEvent(jobDataMap);
                     _publisher.Publish(messageToFire);
+                    _publisher.Publish(new JobSucceeded(context.JobDetail.Key.Name, context.JobDetail.Key.Group));
                 }
             }
             catch (Exception e)
             {
                 _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
-                throw new JobExecutionException(e);
+                _publisher.Publish(new JobFailed(context.JobDetail.Key.Name, context.JobDetail.Key.Group, e));
+                throw new JobExecutionException(e, false);
             }
         }
 

@@ -40,31 +40,28 @@ namespace GridDomain.Scheduling.Integration
 
         private void Schedule(ScheduleCommand message)
         {
-            Schedule(() => QuartzJob.Create(message.Key, 
-                                            message.Command, 
-                                            message.Options), 
-                                            message.Options.RunAt, 
-                                            message.Key);
+            Schedule(() => QuartzJob.Create(message.Key, message.Command, message.Options),
+                           message.Options.RunAt, 
+                           message.Key);
         }
 
         private void Schedule(ScheduleMessage message)
         {
-            Schedule(() => QuartzJob.Create(message.Key, 
-                                            message.Event), message.RunAt, message.Key);
+            Schedule(() => QuartzJob.Create(message.Key, message.Event), 
+                           message.RunAt,
+                           message.Key);
         }
 
-        private void Schedule(Func<IJobDetail> jobFactory, DateTime runAt, ScheduleKey key, int repeatCount = 5, TimeSpan? repeatInterval = null)
+        private void Schedule(Func<IJobDetail> jobFactory, DateTime runAt, ScheduleKey key)
         {
             try
             {
-                repeatInterval = repeatInterval ?? TimeSpan.FromMinutes(20);
-
                 _logger.Debug("Scheduling job {Task}", key);
                 var job = jobFactory();
                 var trigger = TriggerBuilder.Create()
                                             .WithIdentity(job.Key.Name, job.Key.Group)
-                                            .WithSimpleSchedule(x => x.WithInterval(repeatInterval.Value)
-                                                                      .WithRepeatCount(repeatCount))
+                                            .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow()
+                                                                      .WithRepeatCount(0))
                                             .StartAt(runAt)
                                             .Build();
 

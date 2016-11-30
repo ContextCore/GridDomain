@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using GridDomain.Scheduling.Quartz.Logging;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using Quartz.Spi;
 using Quartz.Util;
 
@@ -21,9 +22,11 @@ namespace GridDomain.Scheduling.Quartz
             IQuartzConfig config,
             ILoggingSchedulerListener loggingSchedulerListener,
             ILoggingJobListener loggingJobListener,
-            IJobFactory jobFactory
+            IJobFactory jobFactory,
+            IRetrySettings retrySettings
             )
         {
+            _retrySettings = retrySettings;
             _config = config;
             _loggingSchedulerListener = loggingSchedulerListener;
             _loggingJobListener = loggingJobListener;
@@ -66,6 +69,12 @@ namespace GridDomain.Scheduling.Quartz
             scheduler.JobFactory = _jobFactory;
             scheduler.ListenerManager.AddSchedulerListener(_loggingSchedulerListener);
             scheduler.ListenerManager.AddJobListener(_loggingJobListener);
+
+            IRetryStrategy sut = new ExponentialBackoffRetryStrategy(_retrySettings);
+            IJobListener retryListener = new RetryJobListener(sut);
+            scheduler.ListenerManager.AddJobListener(retryListener, GroupMatcher<JobKey>.AnyGroup());
+
+
             try
             {
                 scheduler.Start();
@@ -82,6 +91,8 @@ namespace GridDomain.Scheduling.Quartz
             return scheduler;
         }
         bool _disposing = false;
+        private readonly IRetrySettings _retrySettings;
+
         public void Dispose()
         {
             if (!_disposing)

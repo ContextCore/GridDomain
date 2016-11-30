@@ -174,13 +174,14 @@ namespace GridDomain.Node
                                                                        _transportMode,
                                                                        quartzConfig));
 
+            _configuration.Register(unityContainer);
+
             var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
             unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
             unityContainer.RegisterInstance(_messageRouting);
 
-            _configuration.Register(unityContainer);
         }
 
 

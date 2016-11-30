@@ -283,6 +283,7 @@
     <Compile Include="Scheduling\LogTests.cs" />
     <Compile Include="Scheduling\Spec.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />
+    <Compile Include="Scheduling\TestHelpers\PlanFailuresCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\TestEvent.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSaga.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaFactory.cs" />
