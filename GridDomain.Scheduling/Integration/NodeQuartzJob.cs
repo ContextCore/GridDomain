@@ -24,10 +24,11 @@ namespace GridDomain.Scheduling.Integration
         private readonly ActorSystem _actorSystem;
         private readonly IPublisher _publisher;
         private readonly IMessageWaiterFactory _executor;
+        private readonly WireJsonSerializer _wireJsonSerializer = new WireJsonSerializer();
 
 
         public NodeQuartzJob(IQuartzLogger quartzLogger,
-                            IMessageWaiterFactory executor)
+                             IMessageWaiterFactory executor)
         {
             _executor = executor;
             Condition.NotNull(() => quartzLogger);
@@ -46,12 +47,8 @@ namespace GridDomain.Scheduling.Integration
                 if (jobDataMap.ContainsKey(CommandKey))
                 {
                     var command = GetCommand(jobDataMap);
-                    var key = GetScheduleKey(jobDataMap);
+                  //  var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap);
-
-
-                    var expect = Expect.Message(options.SuccesEventType,options.MessageIdFieldName,
-                        options.SuccessMessageId);
 
                     Predicate<object> isExpected = o => (Guid) o.GetType()
                                                                .GetProperty(options.MessageIdFieldName)
@@ -79,68 +76,35 @@ namespace GridDomain.Scheduling.Integration
             }
         }
 
-        public static IJobDetail Create(ScheduleKey key, Command command, ExecutionOptions executionOptions)
+        private byte[] Serialize(object source)
         {
-            var serializedCommand = Serialize(command);
-            var serializedKey = Serialize(key);
-            var serializedOptions = Serialize(executionOptions);
-
-            var jobDataMap = new JobDataMap
-            {
-                { CommandKey, serializedCommand },
-                { ScheduleKey, serializedKey },
-                { ExecutionOptionsKey, serializedOptions }
-            };
-            return CreateJob(key, jobDataMap);
+            return _wireJsonSerializer.ToBinary(source);
         }
 
-        public static IJobDetail Create(ScheduleKey key, DomainEvent eventToSchedule)
+        private T Deserialize<T>(byte[] source)
         {
-            var serializedEvent = Serialize(eventToSchedule);
-            var serializedKey = Serialize(key); var jobDataMap = new JobDataMap
-            {
-                { EventKey, serializedEvent },
-                { ScheduleKey, serializedKey }
-            };
-            return CreateJob(key, jobDataMap);
+            return (T)_wireJsonSerializer.FromBinary(source,typeof(T));
         }
 
-        private static byte[] Serialize(object source)
-        {
-            using (var stream = new MemoryStream())
-            {
-                new Serializer().Serialize(source, stream);
-                return stream.ToArray();
-            }
-        }
-
-        private static T Deserialize<T>(byte[] source)
-        {
-            using (var stream = new MemoryStream(source))
-            {
-                return new Serializer().Deserialize<T>(stream);
-            }
-        }
-
-        private static DomainEvent GetEvent(JobDataMap jobDataMap)
+        private DomainEvent GetEvent(JobDataMap jobDataMap)
         {
             var bytes = jobDataMap[EventKey] as byte[];
             return Deserialize<DomainEvent>(bytes);
         }
 
-        private static Command GetCommand(JobDataMap jobDatMap)
+        private Command GetCommand(JobDataMap jobDatMap)
         {
             var bytes = jobDatMap[CommandKey] as byte[];
             return Deserialize<Command>(bytes);
         }
 
-        private static ScheduleKey GetScheduleKey(JobDataMap jobDatMap)
+        private ScheduleKey GetScheduleKey(JobDataMap jobDatMap)
         {
             var bytes = jobDatMap[ScheduleKey] as byte[];
             return Deserialize<ScheduleKey>(bytes);
         }
 
-        private static ExtendedExecutionOptions GetExecutionOptions(JobDataMap jobDatMap)
+        private ExtendedExecutionOptions GetExecutionOptions(JobDataMap jobDatMap)
         {
             var bytes = jobDatMap[ExecutionOptionsKey] as byte[];
             return Deserialize<ExtendedExecutionOptions>(bytes);
@@ -150,12 +114,12 @@ namespace GridDomain.Scheduling.Integration
         {
             var jobKey = new JobKey(key.Name, key.Group);
             return JobBuilder
-                .Create<QuartzJob>()
-                .WithIdentity(jobKey)
-                .WithDescription(key.Description)
-                .UsingJobData(jobDataMap)
-                .RequestRecovery(true)
-                .Build();
+                        .Create<QuartzJob>()
+                        .WithIdentity(jobKey)
+                        .WithDescription(key.Description)
+                        .UsingJobData(jobDataMap)
+                        .RequestRecovery(true)
+                        .Build();
         }
     }
 
