@@ -62,7 +62,6 @@
     <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
     <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
     <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
-    <Compile Include="FutureEvents\ProcessReasons.cs" />
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
