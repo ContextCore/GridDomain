@@ -14,10 +14,10 @@ namespace GridDomain.Scheduling.Integration
 {
     public class QuartzJob : IJob
     {
-        private const string CommandKey = nameof(CommandKey);
-        private const string EventKey = nameof(EventKey);
-        private const string ScheduleKey = nameof(ScheduleKey);
-        private const string ExecutionOptionsKey = nameof(ExecutionOptionsKey);
+        public const string CommandKey = nameof(CommandKey);
+        public const string EventKey = nameof(EventKey);
+        public const string ScheduleKey = nameof(ScheduleKey);
+        public const string ExecutionOptionsKey = nameof(ExecutionOptionsKey);
 
         private readonly IQuartzLogger _quartzLogger;
         private readonly IPublisher _publisher;
@@ -56,7 +56,8 @@ namespace GridDomain.Scheduling.Integration
                     Predicate<object> isExpected = (o => true);
                     //we should work with legacy jobs having only ExecutionOptions, not ExtendedExecutionOptions 
                     var extendedOptions = options as ExtendedExecutionOptions;
-                    if (extendedOptions != null)
+
+                    if (!string.IsNullOrEmpty(extendedOptions?.MessageIdFieldName))
                     {
                         isExpected = o => (Guid)o.GetType()
                                                  .GetProperty(extendedOptions.MessageIdFieldName)

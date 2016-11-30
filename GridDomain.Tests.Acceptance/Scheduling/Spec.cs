@@ -4,25 +4,32 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.SampleDomain.Commands;
+using GridDomain.Tests.SampleDomain.Events;
 using Microsoft.Practices.Unity;
 using Moq;
 using NMoneys;
 using NUnit.Framework;
+using Quartz;
+using Quartz.Impl.Matchers;
 using Wire;
 using IScheduler = Quartz.IScheduler;
 
@@ -41,7 +48,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
 
         }
-
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new SchedulerContainerConfiguration();
@@ -158,7 +164,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
         public void Serializer_can_serialize_and_deserialize_polymorphic_types()
         {
             var withType = new ExecutionOptions(DateTime.MaxValue, typeof(ScheduledCommandSuccessfullyProcessed));
@@ -180,11 +185,16 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             WaitFor<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>();
         }
 
-        private ExecutionOptions CreateOptions(double seconds)
+        private ExtendedExecutionOptions CreateOptions(double seconds)
         {
-            return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),typeof(ScheduledCommandSuccessfullyProcessed), Timeout);
+            return new ExtendedExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
+                                                typeof(ScheduledCommandSuccessfullyProcessed),
+                                                Guid.Empty,
+                                                null,
+                                                Timeout);
         }
 
+        
         [Test]
         public void When_system_resolves_scheduler_Then_single_instance_is_returned_in_all_cases()
         {
@@ -201,6 +211,105 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             sched1.Shutdown(false);
             var sched2 = _container.Resolve<IScheduler>();
             Assert.True(sched1 != sched2);
+        }
+
+        private byte[] SerializeAsLegacy(object obj)
+        {
+            var serializer = new Serializer();
+            using (var stream = new MemoryStream())
+            {
+                serializer.Serialize(obj,stream);
+                return stream.ToArray();
+            }
+        }
+
+
+        class CallbackJobListener : IJobListener
+        {
+            public TaskCompletionSource<Tuple<IJobExecutionContext, JobExecutionException>> TaskFinish
+                 = new TaskCompletionSource<Tuple<IJobExecutionContext, JobExecutionException>>();
+
+
+         
+
+            public void JobToBeExecuted(IJobExecutionContext context)
+            {
+            }
+
+            public void JobExecutionVetoed(IJobExecutionContext context)
+            {
+            }
+
+            public void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
+            {
+                TaskFinish.SetResult(new Tuple<IJobExecutionContext, JobExecutionException>(context,jobException));
+            }
+            
+            public string Name { get; } = "Callback Listener";
+        }
+
+        [Test]
+        public void Legacy_wire_data_can_run_with_latest_job_code()
+        {
+            ScheduleKey key = new ScheduleKey(Guid.NewGuid(), Name, Group);
+            Command command = new SuccessCommand("1232");
+            ExecutionOptions executionOptions = new ExecutionOptions(DateTime.Now.AddSeconds(1),typeof(ScheduledCommandSuccessfullyProcessed));
+
+            var serializedCommand = SerializeAsLegacy(command);
+            var serializedKey = SerializeAsLegacy(key);
+            var serializedOptions = SerializeAsLegacy(executionOptions);
+
+            var jobDataMap = new JobDataMap
+            {
+                { QuartzJob.CommandKey, serializedCommand },
+                { QuartzJob.ScheduleKey, serializedKey },
+                { QuartzJob.ExecutionOptionsKey, serializedOptions }
+            };
+
+            var legacyJob = QuartzJob.CreateJob(key, jobDataMap);
+
+            var listener = new CallbackJobListener();
+            _quartzScheduler.ListenerManager.AddJobListener(listener, KeyMatcher<JobKey>.KeyEquals(legacyJob.Key));
+            var task = listener.TaskFinish.Task;
+
+
+            var trigger = TriggerBuilder.Create()
+                                        .WithIdentity(legacyJob.Key.Name, legacyJob.Key.Group)
+                                        .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow()
+                                                                  .WithRepeatCount(0))
+                                        .StartAt(DateTimeOffset.Now.AddMilliseconds(200))
+                                        .Build();
+
+            _quartzScheduler.ScheduleJob(legacyJob, trigger);
+
+            if (!task.Wait(TimeSpan.FromSeconds(10000)))
+              Assert.Fail("Job execution timed out");
+
+            if (task.Result.Item2 != null)
+                Assert.Fail("Job threw an exception", task.Result.Item2);
+        }
+
+        [Test]
+        public void When_job_fails_it_retries_several_times()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void If_job_failes_fatal_it_remains_in_db()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Job_completes_on_expected_message_by_id()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void Job_not_completes_on_expected_message_type_with_different_id()
+        {
+            throw new NotImplementedException();
         }
 
         [Test]

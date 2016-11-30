@@ -17,6 +17,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Scheduling.Akka.Messages;
+using Helios.Util;
 
 namespace GridDomain.Node.Actors
 {
@@ -139,7 +140,11 @@ namespace GridDomain.Node.Actors
 
             var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid()),
                                                     scheduleKey,
-                                                    new ExecutionOptions(message.RaiseTime, message.Event.GetType()));
+                                                    new ExtendedExecutionOptions(message.RaiseTime,
+                                                    message.Event.GetType(),
+                                                    message.Event.SourceId,
+                                                    nameof(DomainEvent.SourceId),
+                                                    null));
 
             _schedulerActorRef.Handle(scheduleEvent);
         }
