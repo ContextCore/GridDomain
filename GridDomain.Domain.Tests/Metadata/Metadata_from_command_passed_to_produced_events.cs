@@ -27,13 +27,13 @@ namespace GridDomain.Tests.Metadata
         public void When_execute_aggregate_command_with_metadata()
         {
             _command = new CreateSampleAggregateCommand(1,Guid.NewGuid());
-            _commandMetadata = new MessageMetadata(_command.Id, Guid.NewGuid());
+            _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
             var res = GridNode.NewCommandWaiter()
-                           .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
-                           .Create()
-                           .Execute(_command, _commandMetadata)
-                           .Result;
+                              .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
+                              .Create()
+                              .Execute(_command, _commandMetadata)
+                              .Result;
 
             _answer = res.Message<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>();
         }
@@ -125,7 +125,30 @@ namespace GridDomain.Tests.Metadata
     [TestFixture]
     class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest
     {
-
+        [Test]
+        public void Test()
+        {
+            throw new NotImplementedException();
+        }
     }
-  
+
+    [TestFixture]
+    class Metadata_from_scheduled_event_passed_publisher : SoftwareProgrammingInstanceSagaTest
+    {
+        [Test]
+        public void Test()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [TestFixture]
+    class Metadata_from_scheduled_command_passed_publisher : SoftwareProgrammingInstanceSagaTest
+    {
+        [Test]
+        public void Test()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

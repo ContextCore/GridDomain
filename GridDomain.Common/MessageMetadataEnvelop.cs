@@ -1,6 +1,8 @@
+using System;
+
 namespace GridDomain.Common
 {
-    public class MessageMetadataEnvelop : IMessageWithMetadata
+    public class MessageMetadataEnvelop : IMessageMetadataEnvelop
     {
         public MessageMetadataEnvelop(object message,  IMessageMetadata metadata)
         {
@@ -15,6 +17,7 @@ namespace GridDomain.Common
         {
             return new MessageMetadataEnvelop<T>(msg, metadata);
         }
+
         public static MessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata )
         {
             var msgType = msg.GetType();
@@ -23,6 +26,10 @@ namespace GridDomain.Common
             return (MessageMetadataEnvelop) method.Invoke(null, new[] { msg, metadata});
         }
 
+        public static Type TypeFor(object msg)
+        {
+            return typeof(IMessageMetadataEnvelop<>).MakeGenericType(msg.GetType());
+        }
     }
 
     public class MessageMetadataEnvelop<T> : MessageMetadataEnvelop, IMessageMetadataEnvelop<T>

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Automatonymous;
 using CommonDomain;
+using GridDomain.CQRS;
 using GridDomain.Logging;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
@@ -31,8 +32,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private static readonly ISoloLogger Log = LogManager.GetLogger();
         
-        private List<object> _commandsToDispatch = new List<object>();
-        public IReadOnlyCollection<object> CommandsToDispatch => _commandsToDispatch;
+        private List<ICommand> _commandsToDispatch = new List<ICommand>();
+        public IReadOnlyCollection<ICommand> CommandsToDispatch => _commandsToDispatch;
         public void ClearCommandsToDispatch()
         {
             Machine.ClearCommands();
@@ -121,7 +122,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             Machine.RaiseByMessage(_dataAggregate.Data, message);
             _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id))
-                                                            .Cast<object>()
+                                                            .Cast<ICommand>()
                                                             .ToList();
         }
     }

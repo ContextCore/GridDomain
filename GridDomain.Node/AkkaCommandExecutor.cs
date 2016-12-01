@@ -32,7 +32,13 @@ namespace GridDomain.Node
         public void Execute(params ICommand[] commands)
         {
             foreach (var cmd in commands)
-                _transport.Publish(cmd);
+            {
+                var metadata = MessageMetadata.Empty()
+                                              .CreateChild(cmd.Id, new ProcessEntry(nameof(AkkaCommandExecutor),
+                                                                                    "publishing command to transport",
+                                                                                    "command is executing"));
+                Execute(cmd, metadata);
+            }
         }
 
         public async Task<object> Execute(CommandPlan plan)
@@ -77,7 +83,7 @@ namespace GridDomain.Node
 
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
-                _transport.Publish(command, metadata);
+               _transport.Publish(command, metadata);
         }
     }
 }

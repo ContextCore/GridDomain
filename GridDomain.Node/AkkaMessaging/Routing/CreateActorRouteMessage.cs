@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
@@ -28,13 +29,25 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                 throw new DublicateRoutesException(dublicateRoutes.Select(r => r.Key.FullName));
         }
 
-        public static CreateActorRouteMessage ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
+
+        public static CreateActorRouteMessage ForAggregate(string name, IAggregateCommandsHandlerDesriptor descriptor)
+        {
+            var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
+                (
+                     MessageMetadataEnvelop.TypeFor(c.Command),
+                     c.Property
+                )).ToArray();
+
+            return ForAggregate(descriptor.AggregateType, name, messageRoutes);
+        }
+
+        public static CreateActorRouteMessage ForAggregate<TAggregate>(string name, MessageRoute[] routes) where TAggregate : AggregateBase
         {
             return ForAggregate(typeof(TAggregate), name, routes);
         }
-        public static CreateActorRouteMessage ForAggregate(Type aggregateType, string name, params MessageRoute[] routes)
+        public static CreateActorRouteMessage ForAggregate(Type aggregateType, string name, MessageRoute[] routes)
         {
-           return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), name, routes);
+            return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), name, routes);
         }
 
         public static CreateActorRouteMessage ForSaga<TSaga, TSagaState>(string name, params MessageRoute[] routes) 
@@ -49,7 +62,9 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             name = name ??  $"SagaHub_{descriptor.SagaType.BeautyName()}";
 
             var messageRoutes = descriptor.AcceptMessages
-                .Select(messageBinder => new MessageRoute(messageBinder.MessageType, messageBinder.CorrelationField))
+                .Select(messageBinder => new MessageRoute(
+                        MessageMetadataEnvelop.TypeFor(messageBinder.MessageType), 
+                        messageBinder.CorrelationField))
                 .ToArray();
 
             var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 

@@ -33,7 +33,6 @@ namespace GridDomain.Node.Actors
             _recycleConfiguration = recycleConfiguration;
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
         }
-
         
         private void Clear()
         {
@@ -66,17 +65,20 @@ namespace GridDomain.Node.Actors
                .With<ClearChilds>(m => Clear())
                .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
                .With<Terminated>(t => _logger.Trace("Child terminated: {path}",t.ActorRef.Path))
-               .Default(message =>
+               .With<IMessageMetadataEnvelop>(messageWitMetadata =>
                 { 
                     ChildInfo knownChild;
-                    var childId = GetChildActorId(message);
-                    var name = GetChildActorName(message);
+
+                    messageWitMetadata.Metadata.History.Add(new ProcessEntry(Self.Path.Name,"Forwarding to child","All messages should be forwarded"));
+
+                    var childId = GetChildActorId(messageWitMetadata.Message);
+                    var name = GetChildActorName(messageWitMetadata.Message);
 
                     if (!Children.TryGetValue(childId, out knownChild))
                     {
                         //TODO: Implement reuse logic via selection
                         _logger.Trace("Creating child {childId} to process message {@message}", childId, msg);
-                        var childActorType = GetChildActorType(message);
+                        var childActorType = GetChildActorType(messageWitMetadata.Message);
 
                         //TODO: think how to recover child create failure
                         var diActorContextAdapter = Context.DI();
@@ -91,7 +93,7 @@ namespace GridDomain.Node.Actors
 
                     knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
                     knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
-                    knownChild.Ref.Tell(message);
+                    knownChild.Ref.Tell(messageWitMetadata);
 
                     _logger.Trace("Message {@msg} sent to child {id}", msg, childId);
                 });

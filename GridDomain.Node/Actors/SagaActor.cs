@@ -11,6 +11,7 @@ using Automatonymous;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -63,8 +64,9 @@ namespace GridDomain.Node.Actors
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
-            Command<DomainEvent>(msg =>
+            Command<IMessageMetadataEnvelop<DomainEvent>>(m =>
             {
+                var msg = m.Message;
                 Monitor.IncrementMessagesReceived();
                 if (_sagaStartMessageTypes.Contains(msg.GetType()))
                 {
@@ -72,18 +74,20 @@ namespace GridDomain.Node.Actors
                     State = _saga.Data;
                 }
 
-                ProcessSaga(msg);
-            }, e => GetSagaId(e) == Id);
+                ProcessSaga(msg, m.Metadata);
 
-            Command<IFault>(fault =>
+            }, e => GetSagaId(e.Message) == Id);
+
+            Command<IMessageMetadataEnvelop<IFault>>(m =>
             {
+                var fault = m.Message;
                 Monitor.IncrementMessagesReceived();
-                ProcessSaga(fault);
+                ProcessSaga(fault, m.Metadata);
 
-            }, fault => fault.SagaId == Id);
+            }, fault => fault.Message.SagaId == Id);
 
         }
-        private void ProcessSaga(object message)
+        private void ProcessSaga(object message, IMessageMetadata messageMetadata)
         {
             try
             {
@@ -95,31 +99,48 @@ namespace GridDomain.Node.Actors
 
                 _log.Error(ex,"Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
                 var fault = Fault.NewGeneric(message, ex, processorType, Id);
-                Publisher.Publish(fault);
+
+                var metadata = messageMetadata.CreateChild(fault.SagaId,
+                                                           new ProcessEntry(Self.Path.Name, "created fault for saga transit", "saga transit cased and error"));
+
+                Publisher.Publish(fault, metadata);
             }
 
-            var stateChange = ProcessSagaStateChange();
+            var stateChange = ProcessSagaStateChange(messageMetadata);
 
-            ProcessSagaCommands();
+            ProcessSagaCommands(messageMetadata);
 
             TrySaveSnapshot(stateChange);
         }
 
-        private void ProcessSagaCommands()
+        private void ProcessSagaCommands(IMessageMetadata messageMetadata)
         {
-            foreach (var msg in Saga.CommandsToDispatch)
-                 Publisher.Publish(msg);
+            foreach (var cmd in Saga.CommandsToDispatch)
+            {
+                var metadata = messageMetadata.CreateChild(cmd.Id,
+                                                           new ProcessEntry(Self.Path.Name, 
+                                                                            "publishing command", 
+                                                                            "saga produced a command"));
+
+                Publisher.Publish(cmd, metadata);
+            }
 
             Saga.ClearCommandsToDispatch();
         }
 
-        private object[] ProcessSagaStateChange()
+        private object[] ProcessSagaStateChange(IMessageMetadata mutatorMessageMetadata)
         {
-            var stateChangeEvents = State.GetUncommittedEvents().Cast<object>().ToArray();
+            var stateChangeEvents = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             PersistAll(stateChangeEvents, 
-                e => {
-                         Publisher.Publish(e);
-                         NotifyWatchers(new Persisted(e));
+                e =>
+                {
+                    var metadata = mutatorMessageMetadata.CreateChild(e.SourceId, 
+                                                                      new ProcessEntry(Self.Path.Name,
+                                                                                       "Saga state event published",
+                                                                                       "Saga changed state"));
+                    
+                    Publisher.Publish(e, metadata);
+                    NotifyWatchers(new Persisted(e));
                 });
             State.ClearUncommittedEvents();
             return stateChangeEvents;

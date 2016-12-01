@@ -79,6 +79,7 @@
     <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="MessageMetadata.cs" />
     <Compile Include="MessageMetadataEnvelop.cs" />
+    <Compile Include="MessageMetadataExtensions.cs" />
     <Compile Include="ProcessEntry.cs" />
     <Compile Include="ProcessHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

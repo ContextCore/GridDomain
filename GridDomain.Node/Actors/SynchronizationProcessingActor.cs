@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -35,17 +36,50 @@ namespace GridDomain.Node.Actors
             }
             catch (MessageProcessException ex)
             {
-                _log.Error(ex);
-                _publisher.Publish(Fault.NewGeneric(message,ex.InnerException,ex.Type,GetSagaId(message)));
+                _log.Error(ex, "Handler actor raised an error on message process: {@Message}", message);
+                var fault = Fault.NewGeneric(message, ex.InnerException, ex.Type, GetSagaId(message));
+
+                var withMetadata = message as IMessageMetadataEnvelop;
+                if (withMetadata == null)
+                {
+                    _publisher.Publish(fault);
+                }
+                else
+                {
+                
+                   var metadata = withMetadata.Metadata.CreateChild(Guid.Empty,
+                                                      new ProcessEntry(Self.Path.Name,
+                                                                       "publishing fault",
+                                                                       "message process casued an error"));
+
+                   _publisher.Publish(fault, metadata);
+                }
             }
         }
 
         //TODO: add custom saga id mapping
         private Guid GetSagaId(object msg)
         {
-            ISourcedEvent e = msg as ISourcedEvent;
-            if (e != null) return e.SagaId;
-            return Guid.Empty;
+            Guid? sagaId = null;
+
+            msg.Match()
+                .With<ISourcedEvent>(e => sagaId = e.SagaId)
+                .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
+
+            if (sagaId.HasValue)
+                return sagaId.Value;
+
+            throw new CannotGetSagaFromMessage(msg);
+        }
+    }
+
+    internal class CannotGetSagaFromMessage : Exception
+    {
+        public object Msg { get;}
+
+        public CannotGetSagaFromMessage(object msg)
+        {
+            Msg = msg;
         }
     }
 }

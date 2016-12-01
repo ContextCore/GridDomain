@@ -49,22 +49,24 @@ namespace GridDomain.Node.Actors
 
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
-            Command<AsyncEventsReceived>(m =>
+            Command<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
             {
+                var m = d.Message;
                 Monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
-                   Publisher.Publish(Fault.NewGeneric(m.Command, m.Exception, typeof(TAggregate),m.Command.SagaId));
+                    ProcessFault(m.Command, m.Exception, d.Metadata);
                     return;
                 }
 
                 (State as Aggregate).FinishAsyncExecution(m.InvocationId);
-                ProcessAggregateEvents(m.Command);
+                ProcessAggregateEvents(m.Command, d.Metadata);
             });
-           
-            Command<IMessageMetadataEnvelop<ICommand>>();
-            Command<ICommand>(cmd =>
+
+
+            Command<IMessageMetadataEnvelop<ICommand>>(m =>
             {
+                var cmd = m.Message;
                 Monitor.IncrementMessagesReceived();
                 _log.Trace("{Aggregate} received a {@command}", State.Id, cmd);
                 try
@@ -73,23 +75,31 @@ namespace GridDomain.Node.Actors
                 }
                 catch (Exception ex)
                 {
-                    Publisher.Publish(Fault.NewGeneric(cmd, ex, typeof(TAggregate),cmd.SagaId));
-                    Log.Error(ex,"{Aggregate} raised an expection {@Exception} while executing {@Command}",State.Id,ex,cmd);
+                    ProcessFault(cmd, ex, m.Metadata);
                     return;
                 }
 
-                ProcessAggregateEvents(cmd);
+                ProcessAggregateEvents(cmd, m.Metadata);
             });
         }
 
-        private void ProcessAggregateEvents(ICommand command)
+        private void ProcessFault(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
         {
-            var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            var fault = Fault.NewGeneric(cmd, ex, typeof(TAggregate), cmd.SagaId);
 
-            if (command.SagaId != Guid.Empty)
-            {
-                events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
-            }
+            var metadata = messageMetadata.CreateChild(cmd.Id,
+                new ProcessEntry(Self.Path.Name,
+                    "created fault",
+                    "command raised an error"));
+
+            Publisher.Publish(fault, metadata);
+            Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
+            return;
+        }
+
+        private void ProcessAggregateEvents(ICommand command, IMessageMetadata metadata)
+        {
+            var events = ExecuteCommand(command);
 
             PersistAll(events, e =>
             {
@@ -100,20 +110,36 @@ namespace GridDomain.Node.Actors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
                          .With<FutureEventCanceledEvent>(Handle);
 
-                Publisher.Publish(e);
+                var eventMetadata = metadata.CreateChild(command.Id,
+                                                         new ProcessEntry(Self.Path.Name,
+                                                             "Publishing event",
+                                                             "Command execution created an event"));
+
+                Publisher.Publish(e, eventMetadata);
 
                 NotifyWatchers(new Persisted(e));
             });
 
             State.ClearUncommittedEvents();
 
-            ProcessAsyncMethods(command);
+            ProcessAsyncMethods(command, metadata);
 
             if(SnapshotsPolicy.ShouldSave(events))
                 SaveSnapshot(State.GetSnapshot());
         }
-        
-        private void ProcessAsyncMethods(ICommand command)
+
+        private DomainEvent[] ExecuteCommand(ICommand command)
+        {
+            var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+
+            if (command.SagaId != Guid.Empty)
+            {
+                events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
+            }
+            return events;
+        }
+
+        private void ProcessAsyncMethods(ICommand command, IMessageMetadata metadata)
         {
             var extendedAggregate = State as Aggregate;
             if (extendedAggregate == null) return;
@@ -123,8 +149,20 @@ namespace GridDomain.Node.Actors
             //command is included to safe access later, after async execution complete
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
-                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsReceived(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
-                                          .PipeTo(Self);
+            {
+
+                asyncMethod.ResultProducer.ContinueWith(
+                    t =>
+                    {
+                        var asyncEventsReceived = new AsyncEventsReceived(t.IsFaulted ? null : t.Result, 
+                                                                          cmd, 
+                                                                          asyncMethod.InvocationId,
+                                                                          t.Exception);
+
+                        return new MessageMetadataEnvelop<AsyncEventsReceived>(asyncEventsReceived, metadata);
+                    })
+                    .PipeTo(Self);
+            }
 
             extendedAggregate.ClearAsyncUncomittedEvents();
         }

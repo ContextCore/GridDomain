@@ -4,6 +4,7 @@ using System.Linq;
 using Akka;
 using Akka.Actor;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -62,20 +63,34 @@ namespace GridDomain.Node.Actors
 
         protected override void OnReceive(object message)
         {
-            var msgType = message.GetType();
 
-            DomainEvent domainEvent = message as DomainEvent;
+            var metadataMessage = message as IMessageMetadataEnvelop;
+
+            DomainEvent domainEvent = metadataMessage?.Message as DomainEvent;
+
+            if(domainEvent == null)
+                throw new InvalidOperationException($"Expected {nameof(DomainEvent)} but got {message}");
+
+            var msgType = domainEvent.GetType();
+
             string routeField;
             _acceptMessagesSagaIds.TryGetValue(msgType, out routeField);
 
-            if (domainEvent != null &&
-                routeField == nameof(DomainEvent.SagaId) &&
+            if (routeField == nameof(DomainEvent.SagaId) &&
                 domainEvent.SagaId == Guid.Empty &&
                 _sagaStartMessages.Contains(msgType))
             {
                 //send message back to publisher to reroute to some hub according to SagaId
                 //if message has custom mapping, no action is required
-                _publisher.Publish(domainEvent.CloneWithSaga(Guid.NewGuid()));
+                var newSagaId = Guid.NewGuid();
+                var metadata = metadataMessage.Metadata.CreateChild(newSagaId,
+                    new ProcessEntry(Self.Path.Name, 
+                                    "reroute saga message to different hub",
+                                    "message is saga starting message but its saga id is empty"));
+
+                var sagaStartMessage = domainEvent.CloneWithSaga(newSagaId);
+
+                _publisher.Publish(sagaStartMessage, metadata);
                 return;
             }
             

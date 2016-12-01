@@ -19,6 +19,7 @@ namespace GridDomain.Scheduling.Integration
         public const string EventKey = nameof(EventKey);
         public const string ScheduleKey = nameof(ScheduleKey);
         public const string ExecutionOptionsKey = nameof(ExecutionOptionsKey);
+        public const string MetadataKey = nameof(MetadataKey);
 
         private readonly IQuartzLogger _quartzLogger;
         private readonly IPublisher _publisher;
@@ -40,13 +41,18 @@ namespace GridDomain.Scheduling.Integration
 
         public void Execute(IJobExecutionContext context)
         {
+            var jobDataMap = context.JobDetail.JobDataMap;
+            var metadata = SafeGetMetadata(jobDataMap);
+
             try
             {
                 ExtendedExecutionOptions extendedOptions;
-                var jobDataMap = context.JobDetail.JobDataMap;
+                var jobSucceeded = new JobSucceeded(context.JobDetail.Key.Name, context.JobDetail.Key.Group);
+
                 if (jobDataMap.ContainsKey(CommandKey))
                 {
                     var command = GetCommand(jobDataMap);
+                    
                     var key = GetScheduleKey(jobDataMap);
                     var options = GetExecutionOptions(jobDataMap, context.JobDetail.Key.Name);
                     if (options.SuccesEventType == null)
@@ -63,56 +69,88 @@ namespace GridDomain.Scheduling.Integration
                             ?.GetValue(o) == extendedOptions.SuccessMessageId;
                     }
 
+                    var commandMetadata = metadata.CreateChild(command.Id, 
+                                                               new ProcessEntry(nameof(QuartzJob),
+                                                                                "passing command to executor",
+                                                                                "command raise time came"));
+
                     var task = _executor.NewCommandWaiter()
                                         .Expect(options.SuccesEventType, o => isExpected(o))
                                         .Create()
-                                        .Execute(command);
+                                        .Execute(command, commandMetadata);
 
                     if (!task.Wait(options.Timeout))
                         throw new ScheduledCommandWasNotConfirmedException(command);
 
                     _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
-                    _publisher.Publish(new JobSucceeded(context.JobDetail.Key.Name, context.JobDetail.Key.Group));
+
+                    _publisher.Publish(jobSucceeded,metadata);
                 }
                 else
                 {
                     var messageToFire = GetEvent(jobDataMap);
-                    _publisher.Publish(messageToFire);
-                    _publisher.Publish(new JobSucceeded(context.JobDetail.Key.Name, context.JobDetail.Key.Group));
+                    var eventMetadata =  metadata.CreateChild(messageToFire.SourceId, 
+                                                               new ProcessEntry(nameof(QuartzJob),
+                                                                                "publishing event",
+                                                                                "event raise time came"));
+                    _publisher.Publish(messageToFire, eventMetadata);
+                    _publisher.Publish(jobSucceeded, eventMetadata);
                 }
             }
             catch (Exception e)
             {
                 _quartzLogger.LogFailure(context.JobDetail.Key.Name, e);
-                _publisher.Publish(new JobFailed(context.JobDetail.Key.Name, context.JobDetail.Key.Group, e));
+                var jobFailed = new JobFailed(context.JobDetail.Key.Name, context.JobDetail.Key.Group, e);
+                var eventMetadata = metadata.CreateChild(Guid.Empty,
+                                                         new ProcessEntry(nameof(QuartzJob),
+                                                                                "publishing job faulire",
+                                                                                "job raise time came"));
+                _publisher.Publish(jobFailed, eventMetadata);
                 throw new JobExecutionException(e, false);
             }
         }
 
-        public static IJobDetail Create(ScheduleKey key, Command command, ExecutionOptions executionOptions)
+        private IMessageMetadata SafeGetMetadata(JobDataMap jobDataMap)
+        {
+            var bytes = jobDataMap[MetadataKey] as byte[];
+            try
+            {
+                return Deserialize<IMessageMetadata>(bytes, _serializer);
+            }
+            catch (Exception ex)
+            {
+                return MessageMetadata.Empty();
+            }
+        }
+
+        public static IJobDetail Create(ScheduleKey key, Command command, IMessageMetadata metadata, ExecutionOptions executionOptions)
         {
             var serializedCommand = Serialize(command);
             var serializedKey = Serialize(key);
             var serializedOptions = Serialize(executionOptions);
+            var serializedMetadata = Serialize(metadata);
 
             var jobDataMap = new JobDataMap
             {
                 { CommandKey, serializedCommand },
                 { ScheduleKey, serializedKey },
-                { ExecutionOptionsKey, serializedOptions }
+                { ExecutionOptionsKey, serializedOptions },
+                { MetadataKey, serializedMetadata }
             };
             return CreateJob(key, jobDataMap);
         }
 
-        public static IJobDetail Create(ScheduleKey key, DomainEvent eventToSchedule)
+        public static IJobDetail Create(ScheduleKey key, DomainEvent eventToSchedule, IMessageMetadata metadata)
         {
             var serializedEvent = Serialize(eventToSchedule);
             var serializedKey = Serialize(key);
+            var serializedMetadata = Serialize(metadata);
 
             var jobDataMap = new JobDataMap
             {
                 { EventKey, serializedEvent },
-                { ScheduleKey, serializedKey }
+                { ScheduleKey, serializedKey },
+                { MetadataKey, serializedMetadata }
             };
             return CreateJob(key, jobDataMap);
         }

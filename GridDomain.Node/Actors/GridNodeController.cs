@@ -4,7 +4,6 @@ using Akka.DI.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node.Actors
@@ -28,7 +27,7 @@ namespace GridDomain.Node.Actors
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
-            var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
+            var actorMessagesRouter = new ActorMessagesRouter(routingActor);
             _messageRouting.Register(actorMessagesRouter);
 
             //TODO: replace with message from router

@@ -1,6 +1,6 @@
 namespace GridDomain.Common
 {
-    public interface IMessageWithMetadata
+    public interface IMessageMetadataEnvelop
     {
         object Message { get; }
         /// <summary>
@@ -12,7 +12,7 @@ namespace GridDomain.Common
     }
 
 
-    public interface IMessageMetadataEnvelop<out T> : IMessageWithMetadata
+    public interface IMessageMetadataEnvelop<out T> : IMessageMetadataEnvelop
     {
         new T Message { get; }
     }

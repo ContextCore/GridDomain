@@ -37,7 +37,7 @@ namespace GridDomain.Node.EventChronicles
 
             var actorLocator = new DefaultAggregateActorLocator();
 
-            Router = new ActorMessagesRouter(routingActor,actorLocator);
+            Router = new ActorMessagesRouter(routingActor);
         }
 
         public void Replay<TAggregate>(Guid aggregateId, Predicate<object> eventFilter = null) where TAggregate : AggregateBase

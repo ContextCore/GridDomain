@@ -5,16 +5,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 {
     public class AkkaRouteBuilder<T> : IRouteBuilder<T>
     {
-        private readonly IAggregateActorLocator _actorLocator;
-        private readonly IHandler<CreateActorRouteMessage> _routingActorRegistrator;
         private readonly IHandler<CreateHandlerRouteMessage> _routingRegistrator;
 
-        public AkkaRouteBuilder(IHandler<CreateHandlerRouteMessage> routingRegistrator,
-            IHandler<CreateActorRouteMessage> routingActorRegistrator,
-            IAggregateActorLocator actorLocator)
+        public AkkaRouteBuilder(IHandler<CreateHandlerRouteMessage> routingRegistrator)
         {
-            _actorLocator = actorLocator;
-            _routingActorRegistrator = routingActorRegistrator;
             _routingRegistrator = routingRegistrator;
         }
 

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using CommonDomain;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
     public interface ISagaInstance
     {
-        IReadOnlyCollection<object> CommandsToDispatch { get; }
+        IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
         void ClearCommandsToDispatch();
         IAggregate Data { get; }
         void Transit(object message);

@@ -12,9 +12,9 @@ namespace GridDomain.Common
             ((List<ProcessEntry>)Steps).Add(entry);
         }
 
-        public ProcessHistory(ProcessHistory existed = null)
+        public ProcessHistory(params ProcessEntry[] existed)
         {
-            Steps = existed?.Steps.ToList() ?? new List<ProcessEntry>();
+            Steps = new List<ProcessEntry>(existed);
         }
     }
 }
