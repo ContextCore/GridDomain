@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using GridDomain.Common;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
@@ -33,22 +34,35 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return Create(null);
         }
 
-        public IExpectBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)
+        private bool MessageHasCorrectType<TMsg>(object message)
         {
-            return filter == null ? And(typeof(TMsg), o => o is TMsg) :
-                                    And(typeof(TMsg), o => o is TMsg && filter((TMsg)o));
+            return message is TMsg || message is IMessageMetadataEnvelop<TMsg>;
+        }
+        private bool MessagePassFilter<TMsg>(object message, Predicate<TMsg> filter)
+        {
+            return (message is TMsg && filter((TMsg)message))
+                || (message is IMessageMetadataEnvelop<TMsg> && filter(((IMessageMetadataEnvelop<TMsg>)message).Message));
         }
 
-        public IExpectBuilder<T> Or<TMsg>(Func<TMsg, bool> filter = null)
+
+        public IExpectBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)
         {
-            return filter == null ? Or(typeof(TMsg), o => o is TMsg) :
-                                    Or(typeof(TMsg), o => o is TMsg && filter((TMsg)o));
+
+            return filter == null ? And(typeof(TMsg), MessageHasCorrectType<TMsg>) :
+                                    And(typeof(TMsg), o => MessagePassFilter(o, filter));
+        }
+
+        public IExpectBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return filter == null ? Or(typeof(TMsg), MessageHasCorrectType<TMsg>) :
+                                    Or(typeof(TMsg), o => MessagePassFilter(o, filter));
         }
 
         public IExpectBuilder<T> And(Type type,Func<object,bool> filter)
         {
             WaitIsOver = WaitIsOver.And(c => c.Any(filter));
             Waiter.Subscribe(type, filter, WaitIsOver.Compile());
+            Waiter.Subscribe(MessageMetadataEnvelop.TypeFor(type), filter, WaitIsOver.Compile());
             return this;
         }
 

@@ -8,7 +8,6 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
-using GridDomain.Tests.Sagas.InstanceSagas;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
@@ -100,55 +99,5 @@ namespace GridDomain.Tests.Metadata
             Assert.AreEqual(ProcessReasons.AggregateCommandExecution,step.What);
         }
 
-    }
-
-    [TestFixture]
-    class Metadata_from_aggregate_command_passed_to_produced_fault : SampleDomainCommandExecutionTests
-    {
-        [Test]
-        public void Test()
-        {
-           throw new NotImplementedException();
-        }
-    }
-
-    [TestFixture]
-    class Metadata_from_message_handler_event_passed_to_produced_fault : SampleDomainCommandExecutionTests
-    {
-        [Test]
-        public void Test()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    [TestFixture]
-    class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest
-    {
-        [Test]
-        public void Test()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    [TestFixture]
-    class Metadata_from_scheduled_event_passed_publisher : SoftwareProgrammingInstanceSagaTest
-    {
-        [Test]
-        public void Test()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    [TestFixture]
-    class Metadata_from_scheduled_command_passed_publisher : SoftwareProgrammingInstanceSagaTest
-    {
-        [Test]
-        public void Test()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
