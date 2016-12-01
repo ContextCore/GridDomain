@@ -9,6 +9,7 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools;
 using GridDomain.Tools.Repositories;
@@ -37,8 +38,9 @@ namespace GridDomain.Tests.Framework
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
-            return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => Sys);
-        }
+            return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => new [] {Sys}, 
+                (InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig()));
+        } 
 
         protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
         {

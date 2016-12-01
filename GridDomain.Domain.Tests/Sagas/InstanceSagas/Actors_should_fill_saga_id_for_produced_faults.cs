@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                                   new TypedMessageActor<ScheduleCommand>(TestActor), 
                                                   new TypedMessageActor<Unschedule>(TestActor),
                                                   transport,
-                                                  new SnapshotsSavePolicy(TimeSpan.FromSeconds(1),1,5),
+                                                  new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
                                                   new AggregateFactory())),
 
                 AggregateActorName.New<HomeAggregate>(command.Id).Name);

@@ -140,18 +140,15 @@
     <Compile Include="Akka\Messages\ExtendedExecutionOptions.cs" />
     <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
-    <Compile Include="Integration\NodeQuartzJob.cs" />
-    <Compile Include="Integration\SheduledCommandPlan.cs" />
+    <Compile Include="Integration\JobFailed.cs" />
+    <Compile Include="Integration\JobSucceeded.cs" />
+    <Compile Include="Quartz\Retry\ExponentialBackoffRetryStrategy.cs" />
+    <Compile Include="Quartz\Retry\InMemoryRetrySettings.cs" />
+    <Compile Include="Quartz\Retry\IRetrySettings.cs" />
+    <Compile Include="Quartz\Retry\IRetryStrategy.cs" />
+    <Compile Include="Quartz\Retry\RetryJobListener.cs" />
     <Compile Include="SchedulerConfiguration.cs" />
-    <Compile Include="Integration\CompleteJob.cs" />
-    <Compile Include="Integration\StartSchedulerSaga.cs" />
-    <Compile Include="Integration\SagaReceivedCommandEvent.cs" />
-    <Compile Include="Integration\ScheduledSagaCreator.cs" />
-    <Compile Include="Integration\ScheduledCommandProcessingSaga.cs" />
-    <Compile Include="Integration\ScheduledCommandProcessingSagaFactory.cs" />
-    <Compile Include="Integration\ScheduledCommandProcessingSagaState.cs" />
-    <Compile Include="Integration\ScheduledCommandProcessingStarted.cs" />
-    <Compile Include="Integration\SchedulingRouteMap.cs" />
+    <Compile Include="Integration\JobCompleted.cs" />
     <Compile Include="Quartz\InMemoryQuartzConfig.cs" />
     <Compile Include="Quartz\JobFactory.cs" />
     <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />
@@ -218,9 +215,7 @@
       <Name>GridDomain.Logging</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Integration\CommandWaitSaga\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="CreateDatabase.sql" />
   </ItemGroup>
@@ -232,27 +227,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="_NuProjGetProjectClosure"
-          DependsOnTargets="ResolveProjectReferences"
-          Inputs="%(_MSBuildProjectReferenceExistent.Identity)"
-          Outputs="fake"
-          Returns="@(_ProjectReferenceClosure)">
-
+  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
     <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
-             Targets="_NuProjGetProjectClosure"
-             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-             ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs"
-              ItemName="_ProjectReferenceClosureWithDuplicates" />
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
+      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
     </MSBuild>
-
     <!-- Remove duplicates from closure -->
     <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered"
-              ItemName="_ProjectReferenceClosureWithoutMetadata"/>
+      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
     </RemoveDuplicates>
-
     <ItemGroup>
       <!-- Remove references that are also direct references -->
       <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
@@ -267,6 +250,5 @@
         <DependencyKind>Direct</DependencyKind>
       </_ProjectReferenceClosure>
     </ItemGroup>
-
   </Target>
 </Project>

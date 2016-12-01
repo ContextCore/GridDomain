@@ -15,7 +15,7 @@ namespace GridDomain.Node.Actors
     {
         private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
         protected Guid Id { get; }
-        protected readonly ISnapshotsSavePolicy SnapshotsPolicy;
+        protected readonly ISnapshotsPersistencePolicy SnapshotsPolicy;
         protected readonly ActorMonitor Monitor;
         protected readonly ISoloLogger _log = LogManager.GetLogger();
         protected readonly IPublisher Publisher;
@@ -24,7 +24,7 @@ namespace GridDomain.Node.Actors
         public IAggregate State { get; protected set; }
 
         public EventSourcedActor(IConstructAggregates aggregateConstructor,
-                                 ISnapshotsSavePolicy policy,
+                                 ISnapshotsPersistencePolicy policy,
                                  IPublisher publisher)
         {
             PersistenceId = Self.Path.Name;
@@ -69,6 +69,7 @@ namespace GridDomain.Node.Actors
             {
                 SnapshotsPolicy.MarkSnapshotApplied(offer.Metadata);
                 State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
+                DeleteSnapshots(SnapshotsPolicy.GetSnapshotsToDelete());
             });
 
             Recover<RecoveryCompleted>(message =>

@@ -69,7 +69,7 @@ namespace GridDomain.Node.Configuration.Composition
         [Obsolete("Use create configuration via SagaConfiguration.Instance and register in container instead")]
 
 
-        public static void RegisterSaga<TSaga, TData>(this IUnityContainer container,  Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor, Func<ISnapshotsSavePolicy> snapShotsPolicy = null)
+        public static void RegisterSaga<TSaga, TData>(this IUnityContainer container,  Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null)
                  where TSaga : Saga<TData>
                  where TData : class, ISagaState
         {

@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             return new CustomContainerConfiguration(
                 base.CreateConfiguration(),
                 new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                                                          () => new SnapshotsSaveAfterEachMessagePolicy(2),
+                                                          () => new SnapshotsPersistenceAfterEachMessagePolicy(2),
                                                           SampleAggregate.FromSnapshot
                                                           )
                 );

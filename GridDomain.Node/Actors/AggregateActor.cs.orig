@@ -9,7 +9,6 @@ using Akka.Monitoring;
 using Akka.Monitoring.Impl;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
-using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -37,10 +36,10 @@ namespace GridDomain.Node.Actors
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               TypedMessageActor<Unschedule> unscheduleActorRef,
                               IPublisher publisher,
-                              ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
+                              ISnapshotsSavePolicy snapshotsSavePolicy,
                               IConstructAggregates aggregateConstructor) : base(
                                   aggregateConstructor,
-                                  snapshotsPersistencePolicy,
+                                  snapshotsSavePolicy,
                                   publisher)
         {
             _schedulerActorRef = schedulerActorRef;
@@ -62,7 +61,6 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command);
             });
            
-            Command<IMessageMetadataEnvelop<ICommand>>();
             Command<ICommand>(cmd =>
             {
                 Monitor.IncrementMessagesReceived();
@@ -142,10 +140,19 @@ namespace GridDomain.Node.Actors
 
             var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid()),
                                                     scheduleKey,
+<<<<<<< HEAD
                                                     new ExtendedExecutionOptions(message.RaiseTime, 
                                                                                  message.Event.GetType(), 
                                                                                  message.Event.SourceId,
                                                                                  nameof(DomainEvent.SourceId)));
+=======
+                                                    new ExtendedExecutionOptions(message.RaiseTime,
+                                                    message.Event.GetType(),
+                                                    message.Event.SourceId,
+                                                    nameof(DomainEvent.SourceId),
+                                                    null));
+
+>>>>>>> Improved_scheduler
             _schedulerActorRef.Handle(scheduleEvent);
         }
 

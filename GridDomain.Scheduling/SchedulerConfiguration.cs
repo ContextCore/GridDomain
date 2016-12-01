@@ -24,6 +24,7 @@ namespace GridDomain.Scheduling
 
         public void Register(IUnityContainer container)
         {
+            container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings());
             container.RegisterType<ISchedulerFactory, SchedulerFactory>();
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
 

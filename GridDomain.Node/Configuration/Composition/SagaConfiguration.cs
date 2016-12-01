@@ -19,14 +19,14 @@ namespace GridDomain.Node.Configuration.Composition
     public class SagaConfiguration
     {
         public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData>
-            (SagaProducer<ISagaInstance<TSaga, TData>> producer, Func<ISnapshotsSavePolicy> snapShotsPolicy = null) where TData : ISagaState
+            (SagaProducer<ISagaInstance<TSaga, TData>> producer, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null) where TData : ISagaState
         {
             return new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer,snapShotsPolicy);
         }
 
 
 
-        public static SagaConfiguration<ISagaInstance<TSaga,TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessage>(ISagaDescriptor descriptor, Func<ISnapshotsSavePolicy> snapShotsPolicy = null)
+        public static SagaConfiguration<ISagaInstance<TSaga,TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessage>(ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null)
          where TSaga : Saga<TData>
          where TData : class, ISagaState
          where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
@@ -35,7 +35,7 @@ namespace GridDomain.Node.Configuration.Composition
             return State<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TFactory, TStartMessage>(descriptor,snapShotsPolicy);
         }
 
-        public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessageA, TStartMessageB, TStartMessageC>(ISagaDescriptor descriptor, Func<ISnapshotsSavePolicy> snapShotsPolicy = null)
+        public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessageA, TStartMessageB, TStartMessageC>(ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null)
                where TSaga : Saga<TData>
                where TData : class, ISagaState
                where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
@@ -56,7 +56,7 @@ namespace GridDomain.Node.Configuration.Composition
         }
 
         public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessageA, TStartMessageB>
-            (ISagaDescriptor descriptor, Func<ISnapshotsSavePolicy> snapShotsPolicy = null, Func<IMemento, SagaDataAggregate<TData>> stateConstructor = null)
+            (ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null, Func<IMemento, SagaDataAggregate<TData>> stateConstructor = null)
                where TSaga : Saga<TData>
                where TData : class, ISagaState
                where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
@@ -76,7 +76,7 @@ namespace GridDomain.Node.Configuration.Composition
         }
 
 
-        public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData>(Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor, Func<ISnapshotsSavePolicy> snapShotsPolicy = null)
+        public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData>(Func<object, ISagaInstance<TSaga, TData>> factory, ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null)
                  where TSaga : Saga<TData>
                  where TData : class, ISagaState
         {
@@ -87,7 +87,7 @@ namespace GridDomain.Node.Configuration.Composition
         }
 
         public static SagaConfiguration<TSaga, TState> State<TSaga, TState, TFactory, TStartMessage>(ISagaDescriptor descriptor,
-                                                                                                     Func<ISnapshotsSavePolicy> snapShotsPolicy = null,
+                                                                                                     Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null,
                                                                                                      Func<IMemento,TState> snapshotsConstructor = null )
                 where TFactory : ISagaFactory<TSaga, TState>,
                                  ISagaFactory<TSaga, TStartMessage>,
@@ -109,18 +109,18 @@ namespace GridDomain.Node.Configuration.Composition
     public class SagaConfiguration<TSaga,TState> : IContainerConfiguration where TSaga : class, ISagaInstance where TState : AggregateBase
     {
         private readonly SagaProducer<TSaga> _producer;
-        private readonly Func<ISnapshotsSavePolicy> _snapshotsPolicyFactory;
+        private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
         private readonly IConstructAggregates _factory;
 
-        public SagaConfiguration(SagaProducer<TSaga> producer, Func<ISnapshotsSavePolicy> snapShotsPolicy, Func<IMemento, TState> stateProducer)
+        public SagaConfiguration(SagaProducer<TSaga> producer, Func<ISnapshotsPersistencePolicy> snapShotsPolicy, Func<IMemento, TState> stateProducer)
             :this(producer,snapShotsPolicy,new AggregateSnapshottingFactory<TState>(stateProducer))
         {
         }
 
-        public SagaConfiguration(SagaProducer<TSaga> producer, Func<ISnapshotsSavePolicy> snapShotsPolicy = null, IConstructAggregates factory = null)
+        public SagaConfiguration(SagaProducer<TSaga> producer, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null, IConstructAggregates factory = null)
         {
             _factory = factory ??  new AggregateFactory();
-            _snapshotsPolicyFactory = snapShotsPolicy ?? (() => new NoSnapshotsSavePolicy());
+            _snapshotsPolicyFactory = snapShotsPolicy ?? (() => new NoSnapshotsPersistencePolicy());
             _producer = producer;
         }
         
@@ -131,11 +131,11 @@ namespace GridDomain.Node.Configuration.Composition
 
             var snapshotsPolicyRegistrationName = typeof(TSaga).Name;
 
-            container.RegisterType<ISnapshotsSavePolicy>(snapshotsPolicyRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
+            container.RegisterType<ISnapshotsPersistencePolicy>(snapshotsPolicyRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
             container.RegisterType<SagaActor<TSaga, TState>>(
                 new InjectionConstructor(new ResolvedParameter<ISagaProducer<TSaga>>(),
                                          new ResolvedParameter<IPublisher>(), 
-                                         new ResolvedParameter<ISnapshotsSavePolicy>(snapshotsPolicyRegistrationName),
+                                         new ResolvedParameter<ISnapshotsPersistencePolicy>(snapshotsPolicyRegistrationName),
                                          _factory));
 
             container.RegisterInstance(snapshotsPolicyRegistrationName, _factory);

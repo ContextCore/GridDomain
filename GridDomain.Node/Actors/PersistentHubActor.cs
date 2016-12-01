@@ -37,9 +37,11 @@ namespace GridDomain.Node.Actors
         
         private void Clear()
         {
+            _logger.Trace("Start clear childs process");
            var now = BusinessDateTime.UtcNow;
            var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt)
-                                           .Select(ch => ch.Key).ToArray();
+                                           .Select(ch => ch.Key)
+                                           .ToArray();
 
            foreach (var childId in childsToTerminate)
            {
@@ -47,6 +49,8 @@ namespace GridDomain.Node.Actors
                Children[childId].Ref.Tell(GracefullShutdownRequest.Instance);
                Children.Remove(childId);
            }
+
+           _logger.Trace("Clear childs process finished, removes {childsToTerminate} childs", childsToTerminate.Length);
         }
 
         public class ClearChilds
@@ -56,11 +60,13 @@ namespace GridDomain.Node.Actors
         protected override void OnReceive(object msg)
         {
             _monitor.IncrementMessagesReceived();
+            _logger.Trace("{Name} received {@message}", this.GetType().Name, msg);
+
             msg.Match()
-                .With<ClearChilds>(m => Clear())
-                .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
-                .With<Terminated>(t => _logger.Trace("Child terminated: {path}",t.ActorRef.Path))
-                .Default(message =>
+               .With<ClearChilds>(m => Clear())
+               .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
+               .With<Terminated>(t => _logger.Trace("Child terminated: {path}",t.ActorRef.Path))
+               .Default(message =>
                 { 
                     ChildInfo knownChild;
                     var childId = GetChildActorId(message);
@@ -69,7 +75,7 @@ namespace GridDomain.Node.Actors
                     if (!Children.TryGetValue(childId, out knownChild))
                     {
                         //TODO: Implement reuse logic via selection
-
+                        _logger.Trace("Creating child {childId} to process message {@message}", childId, msg);
                         var childActorType = GetChildActorType(message);
 
                         //TODO: think how to recover child create failure
@@ -79,11 +85,15 @@ namespace GridDomain.Node.Actors
                         Context.Watch(childActorRef);
                         knownChild = new ChildInfo(childActorRef);
                         Children[childId] = knownChild;
+
+                        _logger.Trace("Created new child {child} {id} from message {@message}", childActorType, childId, msg);
                     }
 
                     knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
                     knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                     knownChild.Ref.Tell(message);
+
+                    _logger.Trace("Message {@msg} sent to child {id}", msg, childId);
                 });
         }
 

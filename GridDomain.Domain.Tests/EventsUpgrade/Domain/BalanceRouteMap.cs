@@ -7,9 +7,6 @@ namespace GridDomain.Tests.EventsUpgrade.Domain
 {
     public class BalanceRouteMap : IMessageRouteMap
     {
-        public BalanceRouteMap()
-        {
-        }
 
         public void Register(IMessagesRouter router)
         {

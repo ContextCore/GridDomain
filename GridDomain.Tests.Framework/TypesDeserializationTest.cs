@@ -79,9 +79,10 @@ namespace GridDomain.Tests.Framework
                     string difference;
 
                     if (Checker.IsRestorable(obj, out difference))
-                        okTypes.Add(new RestoreResult {Difference = difference, Type = constructedType });
+                        okTypes.Add(new RestoreResult { Type = constructedType });
                     else
-                        okTypes.Add(new RestoreResult {Type = constructedType });
+                        failedTypes.Add(new RestoreResult { Difference = difference, Type = constructedType });
+
                 }
                 catch (Exception ex)
                 {

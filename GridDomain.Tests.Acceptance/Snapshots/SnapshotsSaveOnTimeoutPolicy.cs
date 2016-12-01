@@ -3,9 +3,9 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    class SnapshotsSaveOnTimeoutPolicy : SnapshotsSavePolicy
+    class SnapshotsPersistenceOnTimeoutPolicy : SnapshotsPersistencePolicy
     {
-        public SnapshotsSaveOnTimeoutPolicy() : base(TimeSpan.FromSeconds(1), 100)
+        public SnapshotsPersistenceOnTimeoutPolicy() : base(TimeSpan.FromSeconds(1), 100)
         {
 
         }

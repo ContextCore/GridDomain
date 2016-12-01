@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using CommonDomain.Core;
+using GridDomain.EventSourcing.Sagas.FutureEvents;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
 
@@ -21,7 +22,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public AggregateCommandsHandler(IUnityContainer unityContainer = null) 
         {
             _unityContainer = unityContainer;
-
         }
 
         public TAggregate Execute(TAggregate aggregate, ICommand command)
