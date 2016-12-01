@@ -22,7 +22,8 @@ namespace GridDomain.Node.Actors
         {
             if (message is ICommand)
             {
-                return AggregateActorName.New<TAggregate>(_locator.GetAggregateId(message as ICommand)).ToString();
+                return AggregateActorName.New<TAggregate>(_locator.GetAggregateId(message as ICommand))
+                                         .ToString();
             }
             return null;
         }
