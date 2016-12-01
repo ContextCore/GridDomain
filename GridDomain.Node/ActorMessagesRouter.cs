@@ -35,7 +35,7 @@ namespace GridDomain.Node
         {
             var descriptor = new AggregateCommandsHandlerDesriptor<TAggregate>();
             foreach(var info in new TCommandHandler().RegisteredCommands)
-                descriptor.RegisterCommand(info.Command,info.Property);
+                descriptor.RegisterCommand(info.CommandType,info.Property);
             RegisterAggregate(descriptor);
         }
 

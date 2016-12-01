@@ -34,27 +34,12 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
             var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
                 (
-                     MessageMetadataEnvelop.TypeFor(c.Command),
+                     MessageMetadataEnvelop.GenericForType(c.CommandType),
                      c.Property
                 )).ToArray();
 
-            return ForAggregate(descriptor.AggregateType, name, messageRoutes);
-        }
-
-        public static CreateActorRouteMessage ForAggregate<TAggregate>(string name, MessageRoute[] routes) where TAggregate : AggregateBase
-        {
-            return ForAggregate(typeof(TAggregate), name, routes);
-        }
-        public static CreateActorRouteMessage ForAggregate(Type aggregateType, string name, MessageRoute[] routes)
-        {
-            return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), name, routes);
-        }
-
-        public static CreateActorRouteMessage ForSaga<TSaga, TSagaState>(string name, params MessageRoute[] routes) 
-            where TSaga : class, ISagaInstance 
-            where TSagaState : AggregateBase 
-        {
-            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState>), name, routes);
+            var hubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
+            return new CreateActorRouteMessage(hubType, name, messageRoutes);
         }
 
         public static CreateActorRouteMessage ForSaga(ISagaDescriptor descriptor, string name = null)
@@ -63,14 +48,14 @@ namespace GridDomain.Node.AkkaMessaging.Routing
 
             var messageRoutes = descriptor.AcceptMessages
                 .Select(messageBinder => new MessageRoute(
-                        MessageMetadataEnvelop.TypeFor(messageBinder.MessageType), 
+                        MessageMetadataEnvelop.GenericForType(messageBinder.MessageType), 
                         messageBinder.CorrelationField))
                 .ToArray();
 
-            var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
+            var hubType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
                                                                     descriptor.StateType);
 
-            return new CreateActorRouteMessage(actorType, name, messageRoutes);
+            return new CreateActorRouteMessage(hubType, name, messageRoutes);
         }
 
         public MessageRoute[] Routes { get; }

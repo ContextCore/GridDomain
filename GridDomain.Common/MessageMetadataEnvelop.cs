@@ -18,17 +18,21 @@ namespace GridDomain.Common
             return new MessageMetadataEnvelop<T>(msg, metadata);
         }
 
-        public static MessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata )
+        public static IMessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata )
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(MessageMetadataEnvelop).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
-            return (MessageMetadataEnvelop) method.Invoke(null, new[] { msg, metadata});
+            return (IMessageMetadataEnvelop) method.Invoke(null, new[] { msg, metadata});
         }
 
-        public static Type TypeFor(object msg)
+        public static Type GenericForMessage(object msg)
         {
-            return typeof(IMessageMetadataEnvelop<>).MakeGenericType(msg.GetType());
+            return GenericForType(msg.GetType());
+        }
+        public static Type GenericForType(Type type)
+        {
+            return typeof(IMessageMetadataEnvelop<>).MakeGenericType(type);
         }
     }
 

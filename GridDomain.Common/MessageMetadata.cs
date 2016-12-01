@@ -4,13 +4,21 @@ namespace GridDomain.Common
 {
     public class MessageMetadata : IMessageMetadata
     {
-        public MessageMetadata(Guid messageId, DateTime created, Guid? correlationId = null, Guid? casuationId = null, ProcessEntry[] history = null)
+
+
+        public Guid MessageId { get; }
+        public Guid CasuationId { get; }
+        public Guid CorrelationId { get; }
+        public DateTime Created { get; }
+        public ProcessHistory History { get; }
+
+        public MessageMetadata(Guid messageId, DateTime created, Guid? correlationId = null, Guid? casuationId = null, ProcessHistory  history = null)
         {
             MessageId = messageId;
             Created = created;
             CasuationId = casuationId ?? Guid.Empty;
             CorrelationId = correlationId ?? Guid.Empty;
-            History = new ProcessHistory(history);
+            History = history ?? new ProcessHistory(null);
         }
 
         public static MessageMetadata CreateFrom(Guid messageId, 
@@ -21,14 +29,9 @@ namespace GridDomain.Common
                                        BusinessDateTime.UtcNow, 
                                        existedMessage.CorrelationId, 
                                        existedMessage.MessageId,
-                                       process);
+                                       new ProcessHistory(process));
         }
 
-        public Guid MessageId { get; }
-        public Guid CasuationId { get; }
-        public Guid CorrelationId { get; }
-        public DateTime Created { get; }
-        public ProcessHistory History { get;}
 
         public static MessageMetadata Empty()
         {

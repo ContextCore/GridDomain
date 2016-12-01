@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
@@ -52,7 +54,7 @@ namespace GridDomain.Tests.Metadata
         [Test]
         public void Result_message_has_expected_type()
         {
-            Assert.AreEqual(typeof(SampleAggregateCreatedEvent),_answer.Message);
+            Assert.IsInstanceOf<SampleAggregateCreatedEvent>(_answer.Message);
         }
 
         [Test]
@@ -65,11 +67,6 @@ namespace GridDomain.Tests.Metadata
         public void Result_message_has_expected_value()
         {
             Assert.AreEqual(_command.Parameter.ToString(), _answer.Message.Value);
-        }
-        [Test]
-        public void Result_metadata_has_message_id_same_as_produced_event_id()
-        {
-            Assert.AreEqual(_answer.Message.SourceId, _answer.Metadata.MessageId);
         }
 
         [Test]
@@ -95,8 +92,10 @@ namespace GridDomain.Tests.Metadata
         public void Result_metadata_has_processed_correct_filled_history_step()
         {
             var step = _answer.Metadata.History.Steps.First();
-            Assert.AreEqual(typeof(SampleAggregate).Name,step.Who);
-            Assert.AreEqual(ProcessReasons.AggregateCommandExecution,step.What);
+
+            Assert.AreEqual(AggregateActorName.New<SampleAggregate>(_command.AggregateId).Name,step.Who);
+            Assert.AreEqual(AggregateActor<SampleAggregate>.CommandExecutionCreatedAnEvent,step.Why);
+            Assert.AreEqual(AggregateActor<SampleAggregate>.PublishingEvent,step.What);
         }
 
     }

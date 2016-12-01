@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using CommonDomain;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -61,7 +62,13 @@ namespace GridDomain.Tests
         {
             CheckAll<object>(typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>));
         }
-        
+
+        [Test]
+        public void MessageMetadata_classes_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(MessageMetadata));
+        }
+
         [Test]
         public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
         {

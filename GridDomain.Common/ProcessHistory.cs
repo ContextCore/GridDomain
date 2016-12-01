@@ -5,16 +5,18 @@ namespace GridDomain.Common
 {
     public class ProcessHistory
     {
-        public IReadOnlyCollection<ProcessEntry> Steps { get; } 
+        private readonly List<ProcessEntry> _steps;
+
+        public IReadOnlyCollection<ProcessEntry> Steps => _steps;
 
         public void Add(ProcessEntry entry)
         {
-            ((List<ProcessEntry>)Steps).Add(entry);
+            _steps.Add(entry);
         }
 
-        public ProcessHistory(params ProcessEntry[] existed)
+        public ProcessHistory(IEnumerable<ProcessEntry> steps)
         {
-            Steps = new List<ProcessEntry>(existed);
+            _steps = (steps ?? Enumerable.Empty<ProcessEntry>()).ToList();
         }
     }
 }

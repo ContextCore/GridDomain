@@ -4,12 +4,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateLookupInfo
     {
-        public Type Command { get; }
+        public Type CommandType { get; }
         public string Property { get; }
 
         public AggregateLookupInfo(Type command, string property)
         {
-            Command = command;
+            CommandType = command;
             Property = property;
         }
     }

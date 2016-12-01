@@ -62,7 +62,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             WaitIsOver = WaitIsOver.And(c => c.Any(filter));
             Waiter.Subscribe(type, filter, WaitIsOver.Compile());
-            Waiter.Subscribe(MessageMetadataEnvelop.TypeFor(type), filter, WaitIsOver.Compile());
+            Waiter.Subscribe(MessageMetadataEnvelop.GenericForType(type), filter, WaitIsOver.Compile());
             return this;
         }
 

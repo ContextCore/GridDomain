@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Routing;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -44,43 +46,59 @@ namespace GridDomain.Node.Actors
             Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 
+        private static IEnumerable<Type> GetInterfacesAndBaseTypes(Type type)
+        {
+            yield return type;
+
+            foreach (var interfaceType in type.GetInterfaces())
+                yield return interfaceType;
+
+            while ((type = type.BaseType) != null)
+                yield return type;
+        }
         protected virtual Pool CreateActorRouter(CreateActorRouteMessage msg)
         {
-            var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
+            var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
 
             if(routesMap.All(r => r.Value == null))
                 return new RandomPool(Environment.ProcessorCount);
 
             var pool =
                 new ConsistentHashingPool(Environment.ProcessorCount)
-                    .WithHashMapping(m =>
+                    .WithHashMapping(message =>
                     {
-                        var type = m.GetType();
+                        var idContainer= (message as IMessageMetadataEnvelop)?.Message ?? message;
+
                         string prop = null;
-
-                        if(routesMap.TryGetValue(type.FullName,out prop))
-                            return type.GetProperty(prop).GetValue(m);
-
-                        //TODO: refactor. Need to pass events to schedulingSaga
-                        if (typeof(IFault).IsAssignableFrom(type))
+                        if (GetInterfacesAndBaseTypes(message.GetType())
+                                                    .Any(type => routesMap.TryGetValue(type, out prop)))
                         {
-                            prop = routesMap[typeof(IFault).FullName];
-                            return typeof(IFault).GetProperty(prop).GetValue(m);
+                            var value = idContainer.GetType()
+                                                   .GetProperty(prop)
+                                                   .GetValue(idContainer);
+                            return value;
                         }
 
-                        if (typeof(DomainEvent).IsAssignableFrom(type))
-                        {
-                            prop = routesMap[typeof(DomainEvent).FullName];
-                            return typeof(DomainEvent).GetProperty(prop).GetValue(m);
-                        }
+                        ////TODO: refactor. Need to pass events to schedulingSaga
+                        //if (typeof(IFault).IsAssignableFrom(type))
+                        //{
+                        //    prop = routesMap[typeof(IFault).FullName];
+                        //    return typeof(IFault).GetProperty(prop).GetValue(m);
+                        //}
+                        //
+                        //if (typeof(DomainEvent).IsAssignableFrom(type))
+                        //{
+                        //    prop = routesMap[typeof(DomainEvent).FullName];
+                        //    return typeof(DomainEvent).GetProperty(prop).GetValue(m);
+                        //}
+                        //
+                        //if (typeof(ICommand).IsAssignableFrom(type))
+                        //{
+                        //    prop = routesMap[typeof(DomainEvent).FullName];
+                        //    return typeof(DomainEvent).GetProperty(prop).GetValue(m);
+                        //}
 
-                        if (typeof(ICommand).IsAssignableFrom(type))
-                        {
-                            prop = routesMap[typeof(DomainEvent).FullName];
-                            return typeof(DomainEvent).GetProperty(prop).GetValue(m);
-                        }
-
-                        throw new ArgumentException();
+                        throw new ArgumentException($"Cannot find route for {message.GetType()}");
                     });
 
             return pool;

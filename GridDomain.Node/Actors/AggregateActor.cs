@@ -29,9 +29,15 @@ namespace GridDomain.Node.Actors
     /// <typeparam name="TAggregate"></typeparam>
     public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : AggregateBase
     {
-        protected readonly IAggregateCommandsHandler<TAggregate> _handler;
+        private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
+
+        public const string CreatedFault = "created fault";
+        public const string CommandRaisedAnError = "command raised an error";
+        public const string PublishingEvent = "Publishing event";
+        public const string CommandExecutionCreatedAnEvent = "Command execution created an event";
+
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
@@ -87,15 +93,17 @@ namespace GridDomain.Node.Actors
         {
             var fault = Fault.NewGeneric(cmd, ex, typeof(TAggregate), cmd.SagaId);
 
+            
             var metadata = messageMetadata.CreateChild(cmd.Id,
                 new ProcessEntry(Self.Path.Name,
-                    "created fault",
-                    "command raised an error"));
+                                 CreatedFault,
+                                 CommandRaisedAnError));
 
             Publisher.Publish(fault, metadata);
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
             return;
         }
+
 
         private void ProcessAggregateEvents(ICommand command, IMessageMetadata metadata)
         {
@@ -110,10 +118,11 @@ namespace GridDomain.Node.Actors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
                          .With<FutureEventCanceledEvent>(Handle);
 
+                
                 var eventMetadata = metadata.CreateChild(command.Id,
                                                          new ProcessEntry(Self.Path.Name,
-                                                             "Publishing event",
-                                                             "Command execution created an event"));
+                                                                          PublishingEvent,
+                                                                          CommandExecutionCreatedAnEvent));
 
                 Publisher.Publish(e, eventMetadata);
 
