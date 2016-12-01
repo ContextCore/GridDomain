@@ -2,17 +2,17 @@ using System;
 
 namespace GridDomain.Node.Actors
 {
-    public class EachMessageSnapshotsSavePolicy : SnapshotsSavePolicy
+    public class EachMessageSnapshotsPersistencePolicy : SnapshotsPersistencePolicy
     {
-        public EachMessageSnapshotsSavePolicy():base(TimeSpan.FromSeconds(10),1)
+        public EachMessageSnapshotsPersistencePolicy():base(TimeSpan.FromSeconds(10),1)
         {
             
         }
     }
 
-    public class NoSnapshotsSavePolicy : SnapshotsSavePolicy
+    public class NoSnapshotsPersistencePolicy : SnapshotsPersistencePolicy
     {
-        public NoSnapshotsSavePolicy() : base(TimeSpan.FromDays(1000), int.MaxValue)
+        public NoSnapshotsPersistencePolicy() : base(TimeSpan.FromDays(1000), int.MaxValue)
         {
 
         }

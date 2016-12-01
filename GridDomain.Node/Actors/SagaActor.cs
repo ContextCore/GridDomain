@@ -52,10 +52,10 @@ namespace GridDomain.Node.Actors
 
         public SagaActor(ISagaProducer<TSaga> producer,
                          IPublisher publisher,
-                         ISnapshotsSavePolicy snapshotsSavePolicy,
+                         ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                          IConstructAggregates aggregatesConstructor)
                             :base(aggregatesConstructor,
-                                  snapshotsSavePolicy,
+                                  snapshotsPersistencePolicy,
                                   publisher)
         {
             _producer = producer;

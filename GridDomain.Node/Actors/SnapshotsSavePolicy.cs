@@ -7,7 +7,7 @@ using GridDomain.EventSourcing;
 namespace GridDomain.Node.Actors
 {
 
-    public class SnapshotsSavePolicy : ISnapshotsSavePolicy
+    public class SnapshotsPersistencePolicy : ISnapshotsPersistencePolicy
     {
         private int _messagesProduced;
         private long _lastSequenceNumber;
@@ -16,7 +16,7 @@ namespace GridDomain.Node.Actors
         private readonly TimeSpan _sleepTime;
         private readonly int _saveOnEach;
 
-        public SnapshotsSavePolicy(TimeSpan sleepTime, int saveOnEach, int eventsToKeep = 10)
+        public SnapshotsPersistencePolicy(TimeSpan sleepTime, int saveOnEach, int eventsToKeep = 10)
         {
             _saveOnEach = saveOnEach;
             _sleepTime = sleepTime;

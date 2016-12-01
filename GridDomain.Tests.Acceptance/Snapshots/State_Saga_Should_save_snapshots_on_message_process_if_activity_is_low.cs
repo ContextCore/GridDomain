@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>
                                              (SoftwareProgrammingSaga.Descriptor,
-                                              () => new SnapshotsSaveOnTimeoutPolicy(),
+                                              () => new SnapshotsPersistenceOnTimeoutPolicy(),
                                               SoftwareProgrammingSagaState.FromSnapshot));
         }
         [OneTimeSetUp]

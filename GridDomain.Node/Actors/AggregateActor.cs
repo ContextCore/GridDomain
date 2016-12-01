@@ -36,10 +36,10 @@ namespace GridDomain.Node.Actors
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
                               TypedMessageActor<Unschedule> unscheduleActorRef,
                               IPublisher publisher,
-                              ISnapshotsSavePolicy snapshotsSavePolicy,
+                              ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor) : base(
                                   aggregateConstructor,
-                                  snapshotsSavePolicy,
+                                  snapshotsPersistencePolicy,
                                   publisher)
         {
             _schedulerActorRef = schedulerActorRef;

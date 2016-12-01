@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 SoftwareProgrammingSagaData,
                                 SoftwareProgrammingSagaFactory,
                                 GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsSaveAfterEachMessagePolicy())));
+                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsPersistenceAfterEachMessagePolicy())));
         }
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)
         {

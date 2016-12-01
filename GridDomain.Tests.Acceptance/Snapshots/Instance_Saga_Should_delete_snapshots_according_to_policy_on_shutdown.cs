@@ -31,8 +31,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         private Guid _sagaId;
         private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
-        private readonly SnapshotsSaveAfterEachMessagePolicy _snapshotsSavePolicy = 
-                                   new SnapshotsSaveAfterEachMessagePolicy(4);
+        private readonly SnapshotsPersistenceAfterEachMessagePolicy _snapshotsPersistencePolicy = 
+                                   new SnapshotsPersistenceAfterEachMessagePolicy(4);
             
 
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown():base(false)
@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 SoftwareProgrammingSagaFactory,
                                 GotTiredEvent,
                                 SleptWellEvent>(SoftwareProgrammingSaga.Descriptor,
-                                () => _snapshotsSavePolicy)));
+                                () => _snapshotsPersistencePolicy)));
         }
 
         [OneTimeSetUp]
@@ -97,7 +97,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                          GridNode.AggregateFromSnapshotsFactory)
                                                          .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
 
-            Console.WriteLine(_snapshotsSavePolicy.ToPropsString());
+            Console.WriteLine(_snapshotsPersistencePolicy.ToPropsString());
         }
 
         [Test]
