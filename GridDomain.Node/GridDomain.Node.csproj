@@ -301,7 +301,6 @@
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaMessaging\TypeNameExtensions.cs" />
     <Compile Include="AkkaMessaging\Waiting\AllMessageWaiterActor.cs" />
-    <Compile Include="AkkaMessaging\Waiting\CommandWaiterActor.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />
     <Compile Include="Configuration\Akka\Hocon\DomainEventAdaptersConfig.cs" />

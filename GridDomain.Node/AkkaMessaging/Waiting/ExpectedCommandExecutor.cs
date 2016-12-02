@@ -22,11 +22,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _waiter = waiter;
         }
 
-        public async Task<IWaitResults> Execute<T>(params T[] commands) where T : ICommand
+        public async Task<IWaitResults> Execute(params ICommand[] commands)
         {
 
             foreach (var command in commands)
-                _waiter.ExpectBuilder.Or<IFault<T>>(f => f.Message.Id == command.Id);
+                _waiter.ExpectBuilder.Or(Fault.TypeFor(command),f => ((IFault<ICommand>)f).Message.Id == command.Id);
 
             var task = _waiter.Start();
 

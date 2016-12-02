@@ -39,9 +39,10 @@ namespace GridDomain.CQRS.Messaging.Akka
             foreach (var msg in messages)
             {
 
-                var subscribers = Subscribers.Where(s => s.Key.IsInstanceOfType(msg))
-                    .SelectMany(s => s.Value)
-                    .Select(p => p.Path.Name);
+                var subscribers = 
+                    Subscribers.Where(s => s.Key.IsInstanceOfType(msg))
+                               .SelectMany(s => s.Value)
+                               .Select(p => p.Path.ToString());
 
                 _log.Trace("Publishing {@Message} to transport, possible receivers {@receivers}",
                     msg, String.Join(";",subscribers));

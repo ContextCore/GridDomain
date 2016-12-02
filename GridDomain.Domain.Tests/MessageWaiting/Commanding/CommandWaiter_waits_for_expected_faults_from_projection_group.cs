@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.MessageWaiting.Commanding
 {
     [TestFixture]
-    public class CommandWaiter_waits_for_expected_faults_from_projection_group : CommandWaiter_waits_for_expected_faults
+    public class CommandWaiterWaitsForFaultsFromProjectionGroup : CommandWaiter_waits_for_faults
     {
 
 

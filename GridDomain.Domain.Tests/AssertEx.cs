@@ -19,13 +19,13 @@ namespace GridDomain.Tests
             {
                 var exception = ex.UnwrapSingle();
                 Assert.IsInstanceOf<T>(exception);
-                if (predicate == null) return;
-
-                if(predicate((T)exception))
+                if (predicate == null)
                     Assert.Pass();
-                else 
-                    Assert.Fail($"{typeof(T).Name} was raised but did not satisfy predicate");
-                return;
+
+                if (predicate != null && predicate((T)exception))
+                    Assert.Pass();
+                 
+                Assert.Fail($"{typeof(T).Name} was raised but did not satisfy predicate");
             }
             Assert.Fail($"{typeof(T).Name} was not raised");
         }

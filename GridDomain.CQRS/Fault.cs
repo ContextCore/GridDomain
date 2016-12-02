@@ -39,6 +39,10 @@ namespace GridDomain.CQRS
             return method.Invoke(null, new [] { msg, exception, sagaId, processorType});
         }
 
+        public static Type TypeFor(object msg)
+        {
+            return typeof(IFault<>).MakeGenericType(msg.GetType());
+        }
         public static Fault<T> New<T>(T msg, Exception ex, Guid sagaId, Type processorType = null)
         {
             return new Fault<T>(msg, ex, processorType, sagaId, BusinessDateTime.UtcNow);

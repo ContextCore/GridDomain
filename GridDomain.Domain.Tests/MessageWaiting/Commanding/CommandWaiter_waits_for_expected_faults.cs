@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Akka.TestKit;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -17,7 +18,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.MessageWaiting.Commanding
 {
     [TestFixture]
-    public class CommandWaiter_waits_for_expected_faults : SampleDomainCommandExecutionTests
+    public class CommandWaiter_waits_for_faults : SampleDomainCommandExecutionTests
     {
         protected override IMessageRouteMap CreateMap()
         {
@@ -93,6 +94,18 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
 
             var evt = res.Message<AggregateChangedEventNotification>();
             Assert.AreEqual(syncCommand.AggregateId, evt.AggregateId);
+        }
+
+        [Then]
+        public async Task When_fault_is_produced_when_publish_command_with_base_type()
+        {
+            var syncCommand = new AsyncFaultWithOneEventCommand(101, Guid.NewGuid());
+            await  GridNode.NewCommandWaiter()
+                           .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
+                           .Create()
+                           .Execute((ICommand)syncCommand)
+                           .ShouldThrow<SampleAggregateException>();
+
         }
 
         [Then]
