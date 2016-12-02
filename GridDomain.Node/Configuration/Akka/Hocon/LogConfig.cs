@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class LogConfig : IAkkaConfig
@@ -5,10 +7,22 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         private readonly bool _includeConfig;
         private readonly string _logLevel;
 
-        public LogConfig(string logLevel, bool includeConfig = true)
+        private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
         {
+            {LogVerbosity.Info, "INFO"},
+            {LogVerbosity.Error, "ERROR"},
+            {LogVerbosity.Trace, "DEBUG"},
+            {LogVerbosity.Warning, "WARNING"}
+        };
+
+        private readonly LogVerbosity _verbosity;
+
+
+        public LogConfig(LogVerbosity verbosity, bool includeConfig = true)
+        {
+            _verbosity = verbosity;
             _includeConfig = includeConfig;
-            _logLevel = logLevel;
+            _logLevel = _akkaLogLevels[verbosity];
         }
 
         public string Build()
@@ -29,8 +43,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                       +
 #endif
                      @"
-                      autoreceive = on
-                      lifecycle = on
+                     "+AdditionalLogs(_verbosity)+@" 
                       unhandled = on
                 }";
 
@@ -39,6 +52,14 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 log-config-on-start = on";
 
             return logConfig;
+        }
+
+        private object AdditionalLogs(LogVerbosity verbosity)
+        {
+            return verbosity == LogVerbosity.Trace
+                ? @"autoreceive = on
+                    lifecycle = on"
+                : "";
         }
     }
 }

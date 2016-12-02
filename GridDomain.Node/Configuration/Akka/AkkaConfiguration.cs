@@ -3,37 +3,25 @@ using GridDomain.Node.Configuration.Akka.Hocon;
 
 namespace GridDomain.Node.Configuration.Akka
 {
+    public enum LogVerbosity
+    {
+        Warning,
+        Error,
+        Info,
+        Trace
+    }
     public class AkkaConfiguration
     {
-        public enum LogVerbosity
-        {
-            Warning,
-            Error,
-            Info,
-            Trace
-        }
-
-        private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
-        {
-            {LogVerbosity.Info, "INFO"},
-            {LogVerbosity.Error, "ERROR"},
-            {LogVerbosity.Trace, "DEBUG"},
-            {LogVerbosity.Warning, "WARNING"}
-        };
-
-        private readonly LogVerbosity _logLevel;
+        private readonly LogVerbosity _logVerbosity;
 
         public AkkaConfiguration(IAkkaNetworkAddress networkConf,
             IAkkaDbConfiguration dbConf,
-            LogVerbosity logLevel = LogVerbosity.Warning)
+            LogVerbosity logVerbosity = LogVerbosity.Warning)
         {
             Network = networkConf;
             Persistence = dbConf;
-            _logLevel = logLevel;
-            LogLevel = _akkaLogLevels[logLevel];
+            _logVerbosity = logVerbosity;
         }
-
-        public string LogLevel { get; }
 
         public IAkkaNetworkAddress Network { get; }
         public IAkkaDbConfiguration Persistence { get; }
@@ -49,13 +37,13 @@ namespace GridDomain.Node.Configuration.Akka
                 Network.Host,
                 newPort ?? Network.PortNumber);
 
-            return new AkkaConfiguration(network, Persistence, _logLevel);
+            return new AkkaConfiguration(network, Persistence, _logVerbosity);
         }
 
         public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
         {
             var cfg = new RootConfig(
-                new LogConfig(LogLevel, false),
+                new LogConfig(_logVerbosity,false),
                 ClusterConfig.SeedNode(Network, otherSeeds),
                 new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                       new PersistenceSnapshotConfig(this)));
@@ -66,7 +54,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(LogLevel, false),
+                new LogConfig(_logVerbosity,false),
                 new StandAloneConfig(Network),
                 new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                     new PersistenceSnapshotConfig(this)));
@@ -76,7 +64,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToStandAloneInMemorySystemConfig()
         {
             var cfg = new RootConfig(
-                new LogConfig(LogLevel, false),
+                new LogConfig(_logVerbosity,false),
                 new StandAloneConfig(Network),
                 new PersistenceConfig(new InMemoryJournalConfig(
                                                     new DomainEventAdaptersConfig()),
@@ -89,7 +77,7 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
             var cfg = new RootConfig(
-                new LogConfig(LogLevel, false),
+                new LogConfig(_logVerbosity,false),
                 ClusterConfig.NonSeedNode(Network, seeds),
                 new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                new PersistenceSnapshotConfig(this)));
