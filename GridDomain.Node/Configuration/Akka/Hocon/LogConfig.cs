@@ -57,8 +57,9 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         private object AdditionalLogs(LogVerbosity verbosity)
         {
             return verbosity == LogVerbosity.Trace
-                ? @"autoreceive = on
-                    lifecycle = on"
+                ? @"#autoreceive = on
+                    #lifecycle = on
+                    event-stream = on "
                 : "";
         }
     }

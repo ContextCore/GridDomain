@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
@@ -37,7 +38,14 @@ namespace GridDomain.CQRS.Messaging.Akka
         {
             foreach (var msg in messages)
             {
-                _log.Trace("Publishing {@Message} to transport", msg);
+
+                var subscribers = Subscribers.Where(s => s.Key.IsInstanceOfType(msg))
+                    .SelectMany(s => s.Value)
+                    .Select(p => p.Path.Name);
+
+                _log.Trace("Publishing {@Message} to transport, possible receivers {@receivers}",
+                    msg, String.Join(";",subscribers));
+
                 _bus.Publish(msg);
             }
         }
