@@ -5,7 +5,6 @@
         private static LoggerFactory _loggerFactory = new DefaultLoggerFactory();
         public static void SetLoggerFactory(LoggerFactory loggerFactory)
         {
-           // var a = typeof(Elasticsearch.Net.ElasticsearchDynamicValue);
             _loggerFactory = loggerFactory;
         }
 

@@ -50,7 +50,7 @@ namespace GridDomain.Node.Actors
                Children.Remove(childId);
            }
 
-           _logger.Trace("Clear childs process finished, removes {childsToTerminate} childs", childsToTerminate.Length);
+           _logger.Trace("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
         }
 
         public class ClearChilds

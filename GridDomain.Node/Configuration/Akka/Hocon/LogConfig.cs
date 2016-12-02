@@ -32,18 +32,17 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 @"
                 stdout-loglevel = " + _logLevel + @"
                 loglevel=" + _logLevel;
-
             logConfig += @"
                 loggers=["""+typeof(SerilogExtendedLogger).AssemblyQualifiedShortName() + @"""]
 
                 actor.debug {"+
 #if DEBUG
                     @"receive = on
-                      event-stream = on "
+                      "
                       +
 #endif
                      @"
-                     "+AdditionalLogs(_verbosity)+@" 
+                     "+AdditionalLogs(_verbosity)+ @" 
                       unhandled = on
                 }";
 
@@ -57,9 +56,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         private object AdditionalLogs(LogVerbosity verbosity)
         {
             return verbosity == LogVerbosity.Trace
-                ? @"#autoreceive = on
+                ? @"autoreceive = on
                     #lifecycle = on
-                    event-stream = on "
+                    event-stream = on
+                    router-misconfiguration = on"
                 : "";
         }
     }
