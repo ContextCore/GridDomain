@@ -36,7 +36,7 @@ namespace GridDomain.Node.Actors
 
             foreach (var msgRoute in msg.Routes)
             {
-                _log.Debug("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
+                _log.Info("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
             }
         }
