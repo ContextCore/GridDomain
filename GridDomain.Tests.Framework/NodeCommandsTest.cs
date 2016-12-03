@@ -59,10 +59,20 @@ namespace GridDomain.Tests.Framework
         protected IActorRef LookupAggregateActor<T>(Guid id) where T: IAggregate
         {
            var name = AggregateActorName.New<T>(id).Name;
-           return GridNode.System.ActorSelection($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/{name}")
-                                 .ResolveOne(Timeout)
-                                 .Result;
+           return ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/*/{name}");
         }
+        protected IActorRef LookupAggregateHubActor<T>(string pooled) where T: IAggregate
+        {
+           return ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/{pooled}");
+        }
+
+        private IActorRef ResolveActor(string actorPath)
+        {
+            return GridNode.System.ActorSelection(actorPath)
+                                  .ResolveOne(Timeout)
+                                  .Result;
+        }
+
         protected IActorRef LookupInstanceSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
         {
             var sagaName = AggregateActorName.New<SagaDataAggregate<TData>>(id).Name;
@@ -71,11 +81,9 @@ namespace GridDomain.Tests.Framework
             return GetSagaActor(sagaType, sagaName);
         }
 
-        private IActorRef GetSagaActor(string sagaType, string sagaName) 
+        private IActorRef GetSagaActor(string sagaType, string sagaName)
         {
-            return GridNode.System.ActorSelection($"akka://LocalSystem/user/SagaHub_{sagaType}/{sagaName}")
-                                  .ResolveOne(Timeout)
-                                  .Result;
+            return ResolveActor($"akka://LocalSystem/user/SagaHub_{sagaType}/*/{sagaName}");
         }
 
         protected IActorRef LookupStateSagaActor<TSaga, TData>(Guid id) where TData : IAggregate

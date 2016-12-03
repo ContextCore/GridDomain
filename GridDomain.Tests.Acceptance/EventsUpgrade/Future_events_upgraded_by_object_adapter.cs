@@ -24,17 +24,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         }
     }
 
-    internal class PersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
-    {
-        public PersistentChildsRecycleConfiguration(TimeSpan childClearPeriod, TimeSpan childMaxInactiveTime)
-        {
-            ChildClearPeriod = childClearPeriod;
-            ChildMaxInactiveTime = childMaxInactiveTime;
-        }
-
-        public TimeSpan ChildClearPeriod { get; }
-        public TimeSpan ChildMaxInactiveTime { get; }
-    }
+    
 
     [TestFixture]
     public class Future_events_upgraded_by_object_adapter : ExtendedNodeCommandTest

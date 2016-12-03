@@ -42,7 +42,6 @@ namespace GridDomain.Node.Actors
            var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt)
                                            .Select(ch => ch.Key)
                                            .ToArray();
-
            foreach (var childId in childsToTerminate)
            {
                 //TODO: wait for child termination
@@ -100,53 +99,17 @@ namespace GridDomain.Node.Actors
                     Logger.Trace("Message {@msg} sent to child {id}", msg, childId);
                 });
         }
-
         protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
             Logger.Trace("{ActorHub} is going to start", Self.Path);
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
         }
-        
+
         protected override void PostStop()
         {
-            Logger.Trace("{ActorHub} was stopped", Self.Path);
             _monitor.IncrementActorStopped();
-        }
-        protected override void PreRestart(Exception reason, object message)
-        {
-            Logger.Trace("{ActorHub} is about to restart due to {@reason} received {@message}", Self.Path, reason, message);
-            _monitor.IncrementActorRestarted();
-        }
-
-        protected override bool AroundReceive(Receive receive, object message)
-        {
-            Logger.Trace("{ActorHub} is about to received {@message}", Self.Path, message);
-            return base.AroundReceive(receive, message);
-        }
-
-        public override void AroundPostStop()
-        {
-            Logger.Trace("{ActorHub} is about to stop {@message}", Self.Path);
-            base.AroundPostStop();
-        }
-
-        protected override void PostRestart(Exception reason)
-        {
-            Logger.Trace("{ActorHub} was restarted due to {@error}", Self.Path, reason);
-            base.PostRestart(reason);
-        }
-
-
-        protected override void Unhandled(object message)
-        {
-            Logger.Trace("{ActorHub} leave unhandled {@message}", Self.Path, message);
-            base.Unhandled(message);
-        }
-
-        protected override SupervisorStrategy SupervisorStrategy()
-        {
-            return base.SupervisorStrategy();
+            Logger.Trace("{ActorHub} was stopped", Self.Path);
         }
     }
 
