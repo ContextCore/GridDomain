@@ -157,6 +157,9 @@ namespace GridDomain.Tests.LooseCommandOnPoolResize
             ExpectMsg<Terminated>(t => t.ActorRef.Path == aggregate.Path, Timeout);
             ExpectNoMsg(TimeSpan.FromSeconds(5));
 
+            //wait until next clear childs message
+            Thread.Sleep(6);
+
             //hubs does not close after child terminates
             char pooledLetter = 'a';
             for (int n = 0; n < Environment.ProcessorCount; n++)
