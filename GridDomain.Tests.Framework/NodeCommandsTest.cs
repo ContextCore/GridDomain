@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Framework
         protected IActorRef LookupAggregateActor<T>(Guid id) where T: IAggregate
         {
            var name = AggregateActorName.New<T>(id).Name;
-           return GridNode.System.ActorSelection($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/*/{name}")
+           return GridNode.System.ActorSelection($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/{name}")
                                  .ResolveOne(Timeout)
                                  .Result;
         }
@@ -73,7 +73,7 @@ namespace GridDomain.Tests.Framework
 
         private IActorRef GetSagaActor(string sagaType, string sagaName) 
         {
-            return GridNode.System.ActorSelection($"akka://LocalSystem/user/SagaHub_{sagaType}/*/{sagaName}")
+            return GridNode.System.ActorSelection($"akka://LocalSystem/user/SagaHub_{sagaType}/{sagaName}")
                                   .ResolveOne(Timeout)
                                   .Result;
         }

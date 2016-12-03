@@ -237,6 +237,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventsUpgrade\Domain\Commands\ChangeBalanceInFuture.cs" />
+    <Compile Include="LooseCommandOnPoolResize\Only_part_of_pooled_actors_receive_messages_from_EventStream.cs" />
+    <Compile Include="LooseCommandOnPoolResize\Parent_dies_on_child_stop.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
@@ -563,9 +565,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LooseCommandOnPoolResize\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

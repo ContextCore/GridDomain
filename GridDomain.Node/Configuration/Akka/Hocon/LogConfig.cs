@@ -58,7 +58,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             return verbosity == LogVerbosity.Trace
                 ? @"autoreceive = on
                     #lifecycle = on
-                    event-stream = on
+                    #event-stream = on
                     router-misconfiguration = on"
                 : "";
         }

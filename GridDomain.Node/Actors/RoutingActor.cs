@@ -70,7 +70,7 @@ namespace GridDomain.Node.Actors
             var pool = new ConsistentHashingPool(Environment.ProcessorCount,
                        m =>
                        {
-                           LogManager.GetLogger().Trace("starting lookeup for {msg}", msg);
+                           LogManager.GetLogger().Debug("starting lookeup for {msg}", msg);
 
                            var type = m.GetType();
                            string prop = null;
@@ -80,7 +80,7 @@ namespace GridDomain.Node.Actors
 
                            var value = type.GetProperty(prop).GetValue(m);
 
-                           LogManager.GetLogger().Trace("routed message {msg} by property {property} with value {value}", m, prop, value);
+                           LogManager.GetLogger().Debug("routed message {msg} by property {property} with value {value}", m, prop, value);
                            return value;
                        });
 

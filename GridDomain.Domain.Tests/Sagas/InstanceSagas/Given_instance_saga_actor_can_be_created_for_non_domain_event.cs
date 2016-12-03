@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                 AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
             var sagaHubName = typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>).BeautyName();
 
-            string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/*/{sagaActorName}";
+            string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/{sagaActorName}";
 
             var sagaActor = GridNode.System.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(1)).Result;
             Assert.NotNull(sagaActor);
