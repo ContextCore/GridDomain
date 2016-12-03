@@ -67,20 +67,24 @@ namespace GridDomain.Node.Actors
             }
 
 
-            var pool =
-                new ConsistentHashingPool(Environment.ProcessorCount)
-                    .WithHashMapping(m =>
-                    {
-                        var type = m.GetType();
-                        string prop = null;
+            var pool = new ConsistentHashingPool(Environment.ProcessorCount,
+                       m =>
+                       {
+                           var type = m.GetType();
+                           string prop = null;
 
-                        if (!routesMap.TryGetValue(type.FullName, out prop))
-                             throw new ArgumentException();
+                           if (!routesMap.TryGetValue(type.FullName, out prop))
+                                throw new ArgumentException();
 
-                        var value = type.GetProperty(prop).GetValue(m);
-                        Log.Trace("routed message {msg} by property {property} with value {value}", m, prop, value);
-                        return value;
-                    });
+                           var value = type.GetProperty(prop).GetValue(m);
+
+                           LogManager.GetLogger().Trace("routed message {msg} by property {property} with value {value}", m, prop, value);
+                           return value;
+                       });
+
+            if(pool.Resizer != null)
+                throw new InvalidOperationException("Pools with resizer are not supported for now");
+          
             Log.Debug("Created consistent hash pool router to pass messages to {actor} ", msg.ActorName);
             return pool;
         }
