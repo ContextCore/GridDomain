@@ -44,7 +44,7 @@ namespace GridDomain.Node.Actors
 
         public void Handle(Terminated terminated)
         {
-            Log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef);    
+            Log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef.Path);    
         }
 
         public void Handle(CreateHandlerRouteMessage msg)
@@ -70,6 +70,8 @@ namespace GridDomain.Node.Actors
             var pool = new ConsistentHashingPool(Environment.ProcessorCount,
                        m =>
                        {
+                           LogManager.GetLogger().Trace("starting lookeup for {msg}", msg);
+
                            var type = m.GetType();
                            string prop = null;
 

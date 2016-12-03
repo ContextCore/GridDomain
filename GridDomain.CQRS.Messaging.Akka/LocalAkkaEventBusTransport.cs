@@ -54,7 +54,9 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Subscribe(Type messageType, IActorRef actor)
         {
-            _bus.Subscribe(actor, messageType);
+            if (!_bus.Subscribe(actor, messageType))
+                return; //already subscribed
+              
 
             List<IActorRef> subscribers;
             if (!Subscribers.TryGetValue(messageType, out subscribers))
@@ -63,7 +65,18 @@ namespace GridDomain.CQRS.Messaging.Akka
                 Subscribers[messageType] = subscribers;
             }
             subscribers.Add(actor);
+        }
+    }
 
+    public class UnsuccessfullSubscribeException : Exception
+    {
+        public Type MessageType { get; }
+        public IActorRef Actor { get;}
+
+        public UnsuccessfullSubscribeException(Type messageType, IActorRef actor)
+        {
+            MessageType = messageType;
+            Actor = actor;
         }
     }
 }
