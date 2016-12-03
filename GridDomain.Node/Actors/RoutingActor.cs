@@ -74,7 +74,7 @@ namespace GridDomain.Node.Actors
                            string prop = null;
 
                            if (!routesMap.TryGetValue(type.FullName, out prop))
-                                throw new ArgumentException();
+                                throw new CannotFindRouteException(m);
 
                            var value = type.GetProperty(prop).GetValue(m);
 
@@ -82,9 +82,13 @@ namespace GridDomain.Node.Actors
                            return value;
                        });
 
-            if(pool.Resizer != null)
-                throw new InvalidOperationException("Pools with resizer are not supported for now");
-          
+            if (pool.Resizer != null)
+            {
+                var invalidOperationException = new InvalidOperationException("Pools with resizer are not supported for now");
+                Log.Error(invalidOperationException);
+                throw invalidOperationException;
+            }
+
             Log.Debug("Created consistent hash pool router to pass messages to {actor} ", msg.ActorName);
             return pool;
         }
@@ -112,6 +116,16 @@ namespace GridDomain.Node.Actors
         protected override void PreRestart(Exception reason, object message)
         {
             _monitor.IncrementActorRestarted();
+        }
+    }
+
+    public class CannotFindRouteException : Exception
+    {
+        public object Msg { get; }
+
+        public CannotFindRouteException(object msg)
+        {
+            Msg = msg;
         }
     }
 }

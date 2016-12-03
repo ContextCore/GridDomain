@@ -21,7 +21,7 @@ namespace GridDomain.Node.Actors
         //TODO: replace with more efficient implementation
         internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
-        private readonly ISoloLogger _logger = LogManager.GetLogger();
+        protected readonly ISoloLogger Logger = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
 
         protected abstract string GetChildActorName(object message);
@@ -37,7 +37,7 @@ namespace GridDomain.Node.Actors
         
         private void Clear()
         {
-            _logger.Trace("Start clear childs process");
+            Logger.Trace("Start clear childs process");
            var now = BusinessDateTime.UtcNow;
            var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt)
                                            .Select(ch => ch.Key)
@@ -50,7 +50,7 @@ namespace GridDomain.Node.Actors
                Children.Remove(childId);
            }
 
-           _logger.Trace("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
+           Logger.Trace("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
         }
 
         public class ClearChilds
@@ -60,22 +60,25 @@ namespace GridDomain.Node.Actors
         protected override void OnReceive(object msg)
         {
             _monitor.IncrementMessagesReceived();
-            _logger.Trace("{Name} received {@message}", this.GetType().Name, msg);
+            Logger.Trace("{ActorHub} received {@message}", Self.Path, msg);
 
             msg.Match()
                .With<ClearChilds>(m => Clear())
                .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
-               .With<Terminated>(t => _logger.Trace("Child terminated: {path}",t.ActorRef.Path))
+               .With<Terminated>(t => Logger.Trace("Child terminated: {path}",t.ActorRef.Path))
                .Default(message =>
                 { 
                     ChildInfo knownChild;
                     var childId = GetChildActorId(message);
+                    if (childId == Guid.Empty)
+                        throw new InvalidChildIdException(message);
+
                     var name = GetChildActorName(message);
 
                     if (!Children.TryGetValue(childId, out knownChild))
                     {
                         //TODO: Implement reuse logic via selection
-                        _logger.Trace("Creating child {childId} to process message {@message}", childId, msg);
+                        Logger.Trace("Creating child {childId} to process message {@message}", childId, msg);
                         var childActorType = GetChildActorType(message);
 
                         //TODO: think how to recover child create failure
@@ -86,40 +89,16 @@ namespace GridDomain.Node.Actors
                         knownChild = new ChildInfo(childActorRef);
                         Children[childId] = knownChild;
 
-                        _logger.Trace("Created new child {child} {id} from message {@message}", childActorType, childId, msg);
+                        Logger.Trace("Created new child {child} {id} from message {@message}", childActorType, childId, msg);
                     }
 
                     knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
                     knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                     knownChild.Ref.Tell(message);
 
-                    _logger.Trace("Message {@msg} sent to child {id}", msg, childId);
+                    Logger.Trace("Message {@msg} sent to child {id}", msg, childId);
                 });
         }
-
-       // protected override void Unhandled(object message)
-       // {
-       //     base.Unhandled(message);
-       // }
-
-       // protected override SupervisorStrategy SupervisorStrategy()
-       // {
-       //     return new OneForOneStrategy( //or AllForOneStrategy
-       //         10,
-       //         TimeSpan.FromSeconds(3),
-       //         x =>
-       //         {
-       //             //Maybe we consider ArithmeticException to not be application critical
-       //             //so we just ignore the error and keep going.
-       //             if (x is ArithmeticException) return Directive.Resume;
-       //
-       //             //Error that we cannot recover from, stop the failing actor
-       //             if (x is NotSupportedException) return Directive.Stop;
-       //
-       //             //In all other cases, just restart the failing actor
-       //             return Directive.Restart;
-       //         });
-       // }
 
         protected override void PreStart()
         {
@@ -134,6 +113,16 @@ namespace GridDomain.Node.Actors
         protected override void PreRestart(Exception reason, object message)
         {
             _monitor.IncrementActorRestarted();
+        }
+    }
+
+    public class InvalidChildIdException : Exception
+    {
+        public object Message { get; }
+
+        public InvalidChildIdException(object message):base("Child id should not be empty")
+        {
+            Message = message;
         }
     }
 }
