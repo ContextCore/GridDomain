@@ -14,12 +14,11 @@ namespace GridDomain.CQRS.Messaging.Akka
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
         private readonly ISoloLogger _log = LogManager.GetLogger();
 
-        public LocalAkkaEventBusTransport(ActorSystem system, LogLevel? level = null)
+        public LocalAkkaEventBusTransport(ActorSystem system)
         {
             _bus = system.EventStream;
+            //TODO: remove
             _bus.SetLogLevel(LogLevel.DebugLevel);
-          //  if(level.HasValue)
-          //      _bus.SetLogLevel(level.Value);
         }
 
         public void Subscribe<TMessage>(IActorRef actor)

@@ -127,12 +127,6 @@ namespace GridDomain.Node.Actors
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
         }
 
-        public override void AroundPostStop()
-        {
-            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
-            base.AroundPostStop();
-        }
-
         protected override void PostStop()
         {
             _monitor.IncrementActorStopped();
