@@ -14,9 +14,12 @@ namespace GridDomain.CQRS.Messaging.Akka
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
         private readonly ISoloLogger _log = LogManager.GetLogger();
 
-        public LocalAkkaEventBusTransport(ActorSystem system)
+        public LocalAkkaEventBusTransport(ActorSystem system, LogLevel? level = null)
         {
             _bus = system.EventStream;
+            _bus.SetLogLevel(LogLevel.DebugLevel);
+          //  if(level.HasValue)
+          //      _bus.SetLogLevel(level.Value);
         }
 
         public void Subscribe<TMessage>(IActorRef actor)
@@ -38,7 +41,6 @@ namespace GridDomain.CQRS.Messaging.Akka
         {
             foreach (var msg in messages)
             {
-
                 var subscribers = 
                     Subscribers.Where(s => s.Key.IsInstanceOfType(msg))
                                .SelectMany(s => s.Value)
@@ -53,6 +55,8 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Subscribe(Type messageType, IActorRef actor)
         {
+            _bus.Subscribe(actor, messageType);
+
             List<IActorRef> subscribers;
             if (!Subscribers.TryGetValue(messageType, out subscribers))
             {
@@ -61,7 +65,6 @@ namespace GridDomain.CQRS.Messaging.Akka
             }
             subscribers.Add(actor);
 
-            _bus.Subscribe(actor, messageType);
         }
     }
 }

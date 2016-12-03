@@ -97,34 +97,40 @@ namespace GridDomain.Node.Actors
                 });
         }
 
-        protected override void Unhandled(object message)
-        {
-            base.Unhandled(message);
-        }
+       // protected override void Unhandled(object message)
+       // {
+       //     base.Unhandled(message);
+       // }
 
-        protected override SupervisorStrategy SupervisorStrategy()
-        {
-            return new OneForOneStrategy( //or AllForOneStrategy
-                10,
-                TimeSpan.FromSeconds(3),
-                x =>
-                {
-                //Maybe we consider ArithmeticException to not be application critical
-                //so we just ignore the error and keep going.
-                if (x is ArithmeticException) return Directive.Resume;
-
-                //Error that we cannot recover from, stop the failing actor
-                if (x is NotSupportedException) return Directive.Stop;
-
-                //In all other cases, just restart the failing actor
-                return Directive.Restart;
-                });
-        }
+       // protected override SupervisorStrategy SupervisorStrategy()
+       // {
+       //     return new OneForOneStrategy( //or AllForOneStrategy
+       //         10,
+       //         TimeSpan.FromSeconds(3),
+       //         x =>
+       //         {
+       //             //Maybe we consider ArithmeticException to not be application critical
+       //             //so we just ignore the error and keep going.
+       //             if (x is ArithmeticException) return Directive.Resume;
+       //
+       //             //Error that we cannot recover from, stop the failing actor
+       //             if (x is NotSupportedException) return Directive.Stop;
+       //
+       //             //In all other cases, just restart the failing actor
+       //             return Directive.Restart;
+       //         });
+       // }
 
         protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+        }
+
+        public override void AroundPostStop()
+        {
+            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+            base.AroundPostStop();
         }
 
         protected override void PostStop()

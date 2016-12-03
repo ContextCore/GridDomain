@@ -17,8 +17,9 @@ namespace GridDomain.Node.Actors
                                                      IHandler<CreateActorRouteMessage>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
-        protected readonly ISoloLogger _log = LogManager.GetLogger();
+        protected readonly ISoloLogger Log = LogManager.GetLogger();
         private readonly IActorSubscriber _subscriber;
+        private readonly ActorMonitor _monitor;
 
         protected RoutingActor(IHandlerActorTypeFactory actorTypeFactory,
                                IActorSubscriber subscriber)
@@ -36,14 +37,14 @@ namespace GridDomain.Node.Actors
 
             foreach (var msgRoute in msg.Routes)
             {
-                _log.Info("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
+                Log.Info("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
             }
         }
 
         public void Handle(Terminated terminated)
         {
-            _log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef);    
+            Log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef);    
         }
 
         public void Handle(CreateHandlerRouteMessage msg)
@@ -58,8 +59,13 @@ namespace GridDomain.Node.Actors
         {
             var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
 
-            if(routesMap.All(r => r.Value == null))
+            if (routesMap.All(r => r.Value == null))
+            {
+                Log.Debug("Created random pool router to pass messages to {actor} ", msg.ActorName);
+
                 return new RandomPool(Environment.ProcessorCount);
+            }
+
 
             var pool =
                 new ConsistentHashingPool(Environment.ProcessorCount)
@@ -68,31 +74,14 @@ namespace GridDomain.Node.Actors
                         var type = m.GetType();
                         string prop = null;
 
-                        if(routesMap.TryGetValue(type.FullName,out prop))
-                            return type.GetProperty(prop).GetValue(m);
+                        if (!routesMap.TryGetValue(type.FullName, out prop))
+                             throw new ArgumentException();
 
-                        //TODO: refactor. Need to pass events to schedulingSaga
-                        if (typeof(IFault).IsAssignableFrom(type))
-                        {
-                            prop = routesMap[typeof(IFault).FullName];
-                            return typeof(IFault).GetProperty(prop).GetValue(m);
-                        }
-
-                        if (typeof(DomainEvent).IsAssignableFrom(type))
-                        {
-                            prop = routesMap[typeof(DomainEvent).FullName];
-                            return typeof(DomainEvent).GetProperty(prop).GetValue(m);
-                        }
-
-                        if (typeof(ICommand).IsAssignableFrom(type))
-                        {
-                            prop = routesMap[typeof(DomainEvent).FullName];
-                            return typeof(DomainEvent).GetProperty(prop).GetValue(m);
-                        }
-
-                        throw new ArgumentException();
+                        var value = type.GetProperty(prop).GetValue(m);
+                        Log.Trace("routed message {msg} by property {property} with value {value}", m, prop, value);
+                        return value;
                     });
-
+            Log.Debug("Created consistent hash pool router to pass messages to {actor} ", msg.ActorName);
             return pool;
         }
 
@@ -106,8 +95,6 @@ namespace GridDomain.Node.Actors
             var handleActor = Context.System.ActorOf(handleActorProps, actorName);
             return handleActor;
         }
-
-        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
