@@ -237,8 +237,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventsUpgrade\Domain\Commands\ChangeBalanceInFuture.cs" />
+    <Compile Include="LooseCommandOnPoolResize\Aggregate_Hub_dies_after_clear_children.cs" />
     <Compile Include="LooseCommandOnPoolResize\Only_part_of_pooled_actors_receive_messages_from_EventStream.cs" />
     <Compile Include="LooseCommandOnPoolResize\Parent_dies_on_child_stop.cs" />
+    <Compile Include="LooseCommandOnPoolResize\Spawn.cs" />
+    <Compile Include="LooseCommandOnPoolResize\Stop.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />

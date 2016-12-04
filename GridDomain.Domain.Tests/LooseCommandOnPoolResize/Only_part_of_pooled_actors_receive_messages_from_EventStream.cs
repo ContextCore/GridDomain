@@ -11,26 +11,6 @@ using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.LooseCommandOnPoolResize
 {
-    internal class Spawn
-    {
-        public Spawn(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; }
-    }
-
-    internal class Stop
-    {
-        public Stop(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; }
-    }
-
     [TestFixture]
     [Ignore("not actual")]
     class Only_part_of_pooled_actors_receive_messages_from_EventStream : TestKit
