@@ -26,10 +26,11 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
            secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId);
 
-            
-            var wait = waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                             .Create()
-                             .Publish(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId));
+
+            waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                  .Create()
+                  .Publish(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId))
+                  .Wait();
 
             LookupInstanceSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaId)
                                                         .Tell(NotifyOnPersistenceEvents.Instance);
