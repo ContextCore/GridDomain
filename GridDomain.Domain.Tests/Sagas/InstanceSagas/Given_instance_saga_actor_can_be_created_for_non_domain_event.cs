@@ -23,13 +23,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
             Thread.Sleep(100);
 
-            var sagaActorName =
-                AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
-            var sagaHubName = typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>).BeautyName();
-
-            string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/{sagaActorName}";
-
-            var sagaActor = GridNode.System.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(1)).Result;
+            var sagaActor =
+                LookupInstanceSagaActor<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);
         }
     }

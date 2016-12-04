@@ -32,6 +32,7 @@ namespace GridDomain.Tests.LooseCommandOnPoolResize
     }
 
     [TestFixture]
+    [Ignore("not actual")]
     class Only_part_of_pooled_actors_receive_messages_from_EventStream : TestKit
     {
         class Worker : ReceiveActor

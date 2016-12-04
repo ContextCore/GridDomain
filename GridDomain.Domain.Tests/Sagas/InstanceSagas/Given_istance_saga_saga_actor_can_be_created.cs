@@ -42,13 +42,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
             var publisher = GridNode.Container.Resolve<IPublisher>();
             publisher.Publish(msg);
-            var sagaActorName =
-                AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
-            var sagaHubName = typeof(ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>).BeautyName();
             WaitFor<MakeCoffeCommand>();
-            string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/{sagaActorName}";
-
-            var sagaActor = GridNode.System.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(1)).Result;
+            var sagaActor = LookupInstanceSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);
         }
 
