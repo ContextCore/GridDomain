@@ -18,7 +18,9 @@ using NUnit.Framework;
 namespace GridDomain.Tests.LooseCommandOnPoolResize
 {
     [TestFixture]
-    class Parent_dies_on_child_stop: TestKit
+    [Ignore("not actual")]
+
+    class Parent_dies_on_child_stop : TestKit
     {
         class Parent : ReceiveActor
         {

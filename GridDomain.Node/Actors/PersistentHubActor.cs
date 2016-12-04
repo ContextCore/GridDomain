@@ -65,7 +65,7 @@ namespace GridDomain.Node.Actors
             msg.Match()
                .With<ClearChilds>(m => Clear())
                .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
-               .With<Terminated>(t => Logger.Trace("Child terminated: {path}",t.ActorRef.Path))
+             //  .With<Terminated>(t => Logger.Trace("Child terminated: {path}",t.ActorRef.Path))
                .Default(message =>
                 { 
                     ChildInfo knownChild;
@@ -85,7 +85,7 @@ namespace GridDomain.Node.Actors
                         var diActorContextAdapter = Context.DI();
                         var props = diActorContextAdapter.Props(childActorType);
                         var childActorRef = Context.ActorOf(props, name);
-                        Context.Watch(childActorRef);
+                        //Context.Watch(childActorRef);
                         knownChild = new ChildInfo(childActorRef);
                         Children[childId] = knownChild;
 
