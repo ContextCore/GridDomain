@@ -17,8 +17,6 @@ namespace GridDomain.CQRS.Messaging.Akka
         public LocalAkkaEventBusTransport(ActorSystem system)
         {
             _bus = system.EventStream;
-            //TODO: remove
-            _bus.SetLogLevel(LogLevel.DebugLevel);
         }
 
         public void Subscribe<TMessage>(IActorRef actor)
@@ -40,14 +38,7 @@ namespace GridDomain.CQRS.Messaging.Akka
         {
             foreach (var msg in messages)
             {
-                var subscribers = 
-                    Subscribers.Where(s => s.Key.IsInstanceOfType(msg))
-                               .SelectMany(s => s.Value)
-                               .Select(p => p.Path.ToString());
-
-                _log.Trace("Publishing {@Message} to transport, possible receivers {@receivers}",
-                    msg, String.Join(";",subscribers));
-
+                _log.Trace("Publishing {@Message} to transport");
                 _bus.Publish(msg);
             }
         }

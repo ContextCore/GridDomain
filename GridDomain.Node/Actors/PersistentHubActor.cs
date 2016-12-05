@@ -37,7 +37,6 @@ namespace GridDomain.Node.Actors
         
         private void Clear()
         {
-            Logger.Trace("Start clear childs process");
            var now = BusinessDateTime.UtcNow;
            var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt)
                                            .Select(ch => ch.Key)
