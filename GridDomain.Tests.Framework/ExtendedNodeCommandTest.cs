@@ -19,12 +19,12 @@ namespace GridDomain.Tests.Framework
     public abstract class ExtendedNodeCommandTest : NodeCommandsTest
     {
         protected virtual bool InMemory { get; } = true;
-        protected static readonly AutoTestAkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
+        protected static readonly AkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
         protected abstract IContainerConfiguration CreateConfiguration();
         protected abstract IMessageRouteMap CreateMap();
         protected IPublisher Publisher => GridNode.Transport;
-        protected ExtendedNodeCommandTest(bool inMemory) : 
-            base( inMemory ? AkkaCfg.ToStandAloneInMemorySystemConfig() : AkkaCfg.ToStandAloneSystemConfig()
+        protected ExtendedNodeCommandTest(bool inMemory, AkkaConfiguration cfg = null) : 
+            base( inMemory ? (cfg ?? AkkaCfg).ToStandAloneInMemorySystemConfig() : (cfg ?? AkkaCfg).ToStandAloneSystemConfig()
                 , AkkaCfg.Network.SystemName
                 , !inMemory)
         {
