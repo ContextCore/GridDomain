@@ -33,7 +33,7 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementMessagesReceived();
             var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
-            Context.Watch(handleActor);
+            //Context.Watch(handleActor);
 
             foreach (var msgRoute in msg.Routes)
             {
@@ -42,10 +42,10 @@ namespace GridDomain.Node.Actors
             }
         }
 
-        public void Handle(Terminated terminated)
-        {
-            Log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef.Path);    
-        }
+      //  public void Handle(Terminated terminated)
+      //  {
+      //      Log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef.Path);    
+      //  }
 
         public void Handle(CreateHandlerRouteMessage msg)
         {
