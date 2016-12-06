@@ -9,8 +9,7 @@ namespace GridDomain.EventSourcing.Adapters
 
         IEnumerable<object> IEventAdapter.Convert(object evt)
         {
-            IEnumerable<TTo> updatedEvents = ConvertEvent((TFrom)evt);
-            return updatedEvents.Cast<object>();
+            return ConvertEvent((TFrom) evt);
         }
     }
 }
