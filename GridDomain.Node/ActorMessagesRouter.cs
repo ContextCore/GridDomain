@@ -68,6 +68,7 @@ namespace GridDomain.Node
         {
             var createActorRoute = new CreateActorRouteMessage(typeof(SynchronizationProcessingActor<T>),
                                                                typeof(T).Name,
+                                                               PoolKind.ConsistentHash,
                                                                @group.AcceptMessages.ToArray());
             _routingActorTypedMessageActor.Handle(createActorRoute);
         }

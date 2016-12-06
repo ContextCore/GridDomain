@@ -64,42 +64,31 @@ namespace GridDomain.Node.Actors
             msg.Match()
                .With<ClearChilds>(m => Clear())
                .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
-               //TODO: investigate why we have hub down after it
-               //  .With<Terminated>(t => Logger.Trace("Child terminated: {path}",t.ActorRef.Path))
                .Default(message =>
                 { 
                     ChildInfo knownChild;
                     var childId = GetChildActorId(message);
 
-                    //TODO: investigate why we have too much business test failing with it. 
-                    //if (childId == Guid.Empty)
-                    //    throw new InvalidChildIdException(message);
-
+                    bool childWasCreated = false;
                     var name = GetChildActorName(message);
-
                     if (!Children.TryGetValue(childId, out knownChild))
                     {
-                        //TODO: Implement reuse logic via selection
-                        Logger.Trace("Creating child {childId} to process message {@message}", childId, msg);
+                        childWasCreated = true;
                         var childActorType = GetChildActorType(message);
-
-                        //TODO: think how to recover child create failure
-                        var diActorContextAdapter = Context.DI();
-                        var props = diActorContextAdapter.Props(childActorType);
+                        var props = Context.DI().Props(childActorType);
                         var childActorRef = Context.ActorOf(props, name);
-                        //TODO: investigate why we have too much business test failing with it. 
-                        //Context.Watch(childActorRef);
                         knownChild = new ChildInfo(childActorRef);
                         Children[childId] = knownChild;
-
-                        Logger.Trace("Created new child {child} {id} from message {@message}", childActorType, childId, msg);
                     }
 
                     knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
                     knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                     knownChild.Ref.Tell(message);
 
-                    Logger.Trace("Message {@msg} sent to child {id}", msg, childId);
+                    Logger.Trace("Message {@msg} sent to {isknown} child {id}",
+                                  msg,
+                                  childWasCreated ? "known" : "unknown",
+                                  childId);
                 });
         }
         protected override void PreStart()

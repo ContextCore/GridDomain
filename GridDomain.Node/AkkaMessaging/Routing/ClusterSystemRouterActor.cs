@@ -19,10 +19,10 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         {
         }
 
-        protected override Pool CreateActorRouter(CreateActorRouteMessage msg)
+        protected override RouterConfig CreateActorRouter(CreateActorRouteMessage msg)
         {
-            var router = new ClusterRouterPool(base.CreateActorRouter(msg), new ClusterRouterPoolSettings(10,10, true));
-            return router;
+            //var router = new ClusterRouterPool(base.CreateActorRouter(msg), new ClusterRouterPoolSettings(10,10, true));
+            return NoRouter.Instance;
         }
 
         public void Handle(SubscribeToRouteEstanblish msg)

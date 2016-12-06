@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace GridDomain.Scheduling.Quartz
 {
@@ -6,5 +7,7 @@ namespace GridDomain.Scheduling.Quartz
     {
         int MaxRetries { get; }
         TimeSpan BackoffBaseInterval { get; }
+
+        IReadOnlyCollection<Type> ExceptionsToStop { get; }
     }
 }

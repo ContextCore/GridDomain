@@ -74,7 +74,9 @@ namespace GridDomain.Node.Actors
                 //send message back to publisher to reroute to some hub according to SagaId
                 //if message has custom mapping, no action is required
                 var republishingEvent = domainEvent.CloneWithSaga(Guid.NewGuid());
-                Logger.Trace("Republishing message {@message} with new sagaId", republishingEvent);
+                Logger.Trace("Republishing message {@message} with new sagaId as " +
+                             "original message saga id field {field} is epmty", 
+                             republishingEvent, routeField);
                 _publisher.Publish(republishingEvent);
             }
             else

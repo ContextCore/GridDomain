@@ -14,6 +14,7 @@ namespace GridDomain.Scheduling.Quartz
         public bool ShouldRetry(IJobExecutionContext context)
         {
             int retries = GetAlreadyPerformedRetries(context);
+         //   int lastException = GetLastException(context);
             return retries < this._settings.MaxRetries;
         }
         public ITrigger GetTrigger(IJobExecutionContext context)
@@ -23,11 +24,11 @@ namespace GridDomain.Scheduling.Quartz
             TimeSpan backoff = new TimeSpan(this._settings.BackoffBaseInterval.Ticks * factor);
 
             ITrigger trigger = TriggerBuilder.Create()
-                .StartAt(DateTimeOffset.UtcNow + backoff)
-                .WithSimpleSchedule(x => x.WithRepeatCount(0))
-                .WithIdentity(context.Trigger.Key)
-                .ForJob(context.JobDetail)
-                .Build();
+                                             .StartAt(DateTimeOffset.UtcNow + backoff)
+                                             .WithSimpleSchedule(x => x.WithRepeatCount(0))
+                                             .WithIdentity(context.Trigger.Key)
+                                             .ForJob(context.JobDetail)
+                                             .Build();
 
             context.JobDetail.JobDataMap[Retries] = ++retries;
             return trigger;

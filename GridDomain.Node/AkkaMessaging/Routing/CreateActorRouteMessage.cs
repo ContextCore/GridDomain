@@ -9,14 +9,32 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
+
+    public enum PoolKind
+    {
+        ConsistentHash,
+        Random,
+        None
+    }
+
     public class CreateActorRouteMessage
     {
-        public CreateActorRouteMessage(Type actorType, string actorName, params MessageRoute[] routes)
+
+        public MessageRoute[] Routes { get; }
+
+        public Type ActorType { get; }
+
+        public string ActorName { get; }
+
+        public PoolKind PoolKind { get; }
+
+        public CreateActorRouteMessage(Type actorType, string actorName, PoolKind poolType, params MessageRoute[] routes)
         {
             CheckForUniqueRoutes(routes);
             Routes = routes;
             ActorType = actorType;
             ActorName = actorName;
+            PoolKind = poolType;
         }
 
         private void CheckForUniqueRoutes(MessageRoute[] routes)
@@ -34,14 +52,17 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         }
         public static CreateActorRouteMessage ForAggregate(Type aggregateType, string name, params MessageRoute[] routes)
         {
-           return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), name, routes);
+           return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), 
+                                              name,
+                                              PoolKind.None,
+                                              routes);
         }
 
         public static CreateActorRouteMessage ForSaga<TSaga, TSagaState>(string name, params MessageRoute[] routes) 
             where TSaga : class, ISagaInstance 
             where TSagaState : AggregateBase 
         {
-            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState>), name, routes);
+            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState>), name, PoolKind.None, routes);
         }
 
         public static CreateActorRouteMessage ForSaga(ISagaDescriptor descriptor, string name = null)
@@ -55,13 +76,7 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
                                                                     descriptor.StateType);
 
-            return new CreateActorRouteMessage(actorType, name, messageRoutes);
+            return new CreateActorRouteMessage(actorType, name, PoolKind.None,messageRoutes);
         }
-
-        public MessageRoute[] Routes { get; }
-
-        public Type ActorType { get; }
-
-        public string ActorName { get; }
     }
 }

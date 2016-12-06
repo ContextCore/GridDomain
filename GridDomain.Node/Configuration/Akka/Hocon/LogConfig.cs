@@ -38,6 +38,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 actor.debug {"+
 #if DEBUG
                     @"receive = on
+                      event-stream = on
                       "
                       +
 #endif
@@ -45,7 +46,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                      "+AdditionalLogs(_verbosity)+ @" 
                       unhandled = on
                 }";
-
+            
             if (_includeConfig)
                     logConfig += @"
                 log-config-on-start = on";
@@ -58,7 +59,6 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             return verbosity == LogVerbosity.Trace
                 ? @"autoreceive = on
                     lifecycle = on
-                    #event-stream = on
                     router-misconfiguration = on"
                 : "";
         }

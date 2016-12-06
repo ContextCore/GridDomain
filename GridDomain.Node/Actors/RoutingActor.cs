@@ -52,49 +52,51 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementMessagesReceived();
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
-            Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
+           
+            Self.Tell(new CreateActorRouteMessage(actorType,
+                                                  actorName,
+                                                  msg.PoolType,
+                                                  new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 
-        protected virtual Pool CreateActorRouter(CreateActorRouteMessage msg)
+        protected virtual RouterConfig CreateActorRouter(CreateActorRouteMessage msg)
         {
-            var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
-
-            if (routesMap.All(r => r.Value == null))
+            switch (msg.PoolKind)
             {
-                Log.Debug("Created random pool router to pass messages to {actor} ", msg.ActorName);
+                case PoolKind.Random:
+                    Log.Debug("Created random pool router to pass messages to {actor} ", msg.ActorName);
+                    return new RandomPool(Environment.ProcessorCount);
 
-                return new RandomPool(Environment.ProcessorCount);
-            }
+                case PoolKind.ConsistentHash:
+                    Log.Debug("Created consistent hashing pool router to pass messages to {actor} ", msg.ActorName);
+                    var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
+                    var pool = new ConsistentHashingPool(Environment.ProcessorCount,
+                        m =>
+                        {
+                            var type = m.GetType();
+                            string prop = null;
 
-
-            var pool = new ConsistentHashingPool(Environment.ProcessorCount,
-                       m =>
-                       {
-                           var type = m.GetType();
-                           string prop = null;
-
-                           if (!routesMap.TryGetValue(type.FullName, out prop))
+                            if (!routesMap.TryGetValue(type.FullName, out prop))
                                 throw new CannotFindRouteException(m);
 
-                           var value = type.GetProperty(prop).GetValue(m);
+                            var value = type.GetProperty(prop).GetValue(m);
 
-                           return value;
-                       });
+                            return value;
+                        });
+                    return pool;
 
-            if (pool.Resizer != null)
-            {
-                var invalidOperationException = new InvalidOperationException("Pools with resizer are not supported for now");
-                Log.Error(invalidOperationException);
-                throw invalidOperationException;
+                case PoolKind.None:
+                    Log.Debug("Intentionally use {actor} without router", msg.ActorName);
+                    return NoRouter.Instance;
+
+                default:
+                    Log.Debug("{actor} defaulted to no router", msg.ActorName);
+
+                    return NoRouter.Instance;
             }
-
-            Log.Debug("Created consistent hash pool router to pass messages to {actor} ", msg.ActorName);
-            return pool;
         }
 
-        private IActorRef CreateActor(Type actorType, 
-                                      RouterConfig routeConfig,
-                                      string actorName)
+        private IActorRef CreateActor(Type actorType, RouterConfig routeConfig, string actorName)
         {
             var handleActorProps = Context.System.DI().Props(actorType);
             handleActorProps = handleActorProps.WithRouter(routeConfig);
@@ -112,6 +114,7 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementActorStopped();
         }
+
         protected override void PreRestart(Exception reason, object message)
         {
             _monitor.IncrementActorRestarted();
