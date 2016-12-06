@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     [TestFixture]
-    [Ignore("Under development")]
     public class Future_events_upgraded_by_object_adapter : ExtendedNodeCommandTest
     {
 
