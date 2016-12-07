@@ -33,8 +33,6 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementMessagesReceived();
             var handleActor = CreateActor(msg.ActorType, CreateActorRouter(msg), msg.ActorName);
-            //Context.Watch(handleActor);
-
             foreach (var msgRoute in msg.Routes)
             {
                 Log.Info("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
@@ -42,10 +40,6 @@ namespace GridDomain.Node.Actors
             }
         }
 
-      //  public void Handle(Terminated terminated)
-      //  {
-      //      Log.Warn("Actor involved in message routing terminated: {actor}", terminated.ActorRef.Path);    
-      //  }
 
         public void Handle(CreateHandlerRouteMessage msg)
         {
@@ -76,12 +70,29 @@ namespace GridDomain.Node.Actors
                             var type = m.GetType();
                             string prop = null;
 
-                            if (!routesMap.TryGetValue(type.FullName, out prop))
-                                throw new CannotFindRouteException(m);
+                            if (routesMap.TryGetValue(type.FullName, out prop))
+                                return type.GetProperty(prop)?.GetValue(m);
 
-                            var value = type.GetProperty(prop).GetValue(m);
+                            //TODO: refactor. Need to pass events to schedulingSaga
+                            if (typeof(IFault).IsAssignableFrom(type))
+                            {
+                                prop = routesMap[typeof(IFault).FullName];
+                                return typeof(IFault).GetProperty(prop).GetValue(m);
+                            }
 
-                            return value;
+                            if (typeof(DomainEvent).IsAssignableFrom(type))
+                            {
+                                prop = routesMap[typeof(DomainEvent).FullName];
+                                return typeof(DomainEvent).GetProperty(prop).GetValue(m);
+                            }
+
+                            if (typeof(ICommand).IsAssignableFrom(type))
+                            {
+                                prop = routesMap[typeof(DomainEvent).FullName];
+                                return typeof(DomainEvent).GetProperty(prop).GetValue(m);
+                            }
+
+                            throw new ArgumentException("Cannot extract route property from message " + m);
                         });
                     return pool;
 
