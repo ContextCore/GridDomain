@@ -11,7 +11,6 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
@@ -41,7 +40,7 @@ namespace GridGomain.Tests.Stress
 
             var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer), actorSystemFactory);
 
-            node.Start(new LocalDbConfiguration());
+            node.Start();
 
             var timer = new Stopwatch();
             timer.Start();

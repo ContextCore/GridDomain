@@ -48,18 +48,23 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
 
         }
+
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
+        }
+
         [Test]
         public void Future_event_is_upgraded_by_event_adapter()
         {
-            GridNode.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
 
             var saveOldEventCommand = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true);
 
             GridNode.NewCommandWaiter(Timeout)
-                .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
-                .Create()
-                .Execute(saveOldEventCommand)
-                .Wait();
+                    .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
+                    .Create()
+                    .Execute(saveOldEventCommand)
+                    .Wait();
 
             GridNode.NewWaiter(Timeout).Expect<BalanceChangedEvent_V1>().Create().Wait();
         }

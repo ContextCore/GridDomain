@@ -4,7 +4,6 @@ using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.FutureEvents;
@@ -46,7 +45,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                     .Wait(Timeout);
 
             GridNode.Stop();
-            GridNode.Start(new LocalDbConfiguration());
+            GridNode.Start();
 
             var waiter = GridNode.NewWaiter()
                                  .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)

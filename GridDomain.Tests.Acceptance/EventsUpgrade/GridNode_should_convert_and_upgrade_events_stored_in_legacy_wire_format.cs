@@ -27,11 +27,15 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             
         }
 
+
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new BookOrderAdapter());
+        }
+
         [OneTimeSetUp]
         public void When_wire_stored_events_loaded_and_saved_back()
         {
-            GridNode.EventsAdaptersCatalog.Register(new BookOrderAdapter());
-            
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
             var id = Guid.NewGuid();

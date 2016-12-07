@@ -47,11 +47,15 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             
         }
+
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new BalanceChanged_objectAdapter1());
+        }
+
         [Test]
         public void Future_event_is_upgraded_by_json_adapter()
         {
-            GridNode.EventsAdaptersCatalog.Register(new BalanceChanged_objectAdapter1());
-
             var saveOldEventCommand = new ChangeBalanceInFuture(1,Guid.NewGuid(),BusinessDateTime.Now.AddSeconds(2),true);
 
             GridNode.NewCommandWaiter(Timeout)

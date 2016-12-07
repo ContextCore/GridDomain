@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.CommandsExecution;
@@ -15,14 +16,16 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         public GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal():base(false)
         {
-            
+        }
+
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new BookOrderAdapter());
         }
 
         [Test]
         public void GridNode_updates_objects_in_events_by_adapter()
         {
-            GridNode.ObjectAdapteresCatalog.Register(new BookOrderAdapter());
-            
             var orderA = new BookOrder_V1("A");
             var orderB = new BookOrder_V1("B");
             var id = Guid.NewGuid();

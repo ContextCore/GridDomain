@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
@@ -19,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         public GridNode_upgrade_events_by_json_adapters_when_loading_aggregate():base(false)
         {
-            
+          
         }
     
         class InIncreaseByInstanceAdapter : ObjectAdapter<string, string>
@@ -42,13 +43,16 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             }
         }
 
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new InIncreaseByInstanceAdapter());
+            GridNode.EventsAdaptersCatalog.Register(new NullAdapter());
+        }
+
         [Test]
         public async Task Then_domain_events_should_be_upgraded_by_json_custom_adapter()
         {
             var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
-
-            GridNode.ObjectAdapteresCatalog.Register(new InIncreaseByInstanceAdapter());
-            GridNode.ObjectAdapteresCatalog.Register(new NullAdapter());
 
             var expect = Expect.Message<SampleAggregateCreatedEvent>();
 

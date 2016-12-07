@@ -267,7 +267,6 @@
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
-    <Compile Include="IObjectsAdapter.cs" />
     <Compile Include="DomainEventsJsonSerializationExtension.cs" />
     <Compile Include="DomainEventsJsonSerializationExtensionProvider.cs" />
     <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
