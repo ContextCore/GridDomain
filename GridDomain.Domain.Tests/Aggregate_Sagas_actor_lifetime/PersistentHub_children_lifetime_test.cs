@@ -10,7 +10,6 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Sagas.InstanceSagas;
@@ -86,7 +85,7 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         public void Clear_child_lifetimes()
         {
             _gridDomainNode = new GridDomainNode(CreateConfiguration(),new SoftwareProgrammingSagaRoutes(),() => new []{Sys});
-            _gridDomainNode.Start(new LocalDbConfiguration());
+            _gridDomainNode.Start();
 
             switch (_case)
             {

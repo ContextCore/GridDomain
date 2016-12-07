@@ -26,11 +26,14 @@ namespace GridDomain.Tests.EventsUpgrade
         private Guid _balanceId;
         private BalanceAggregate _aggregate;
 
-   
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
+        }
+
         [OneTimeSetUp]
         public void When_aggregate_is_recovered_from_persistence()
         {
-            GridNode.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
             _balanceId = Guid.NewGuid();
             var events = new DomainEvent[]
             {

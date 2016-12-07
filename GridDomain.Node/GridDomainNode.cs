@@ -24,7 +24,6 @@ using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
@@ -58,8 +57,7 @@ namespace GridDomain.Node
         public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
         private IMessageWaiterFactory _waiterFactory;
 
-        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
-        public IObjectsAdapter ObjectAdapteresCatalog { get; private set; }
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
         public IActorTransport Transport { get; private set; }
 
@@ -98,18 +96,16 @@ namespace GridDomain.Node
 
         public Guid Id { get; } = Guid.NewGuid();
 
-        public void Start(IDbConfiguration databaseConfiguration)
+        public void Start()
         {
 
             Container = new UnityContainer();
             Systems = _actorSystemFactory.Invoke();
-
-           
-            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
-            System.AddDomainEventsJsonSerialization();
 
-            ObjectAdapteresCatalog = DomainEventsJsonSerializationExtensionProvider.Provider.Get(System);
+            System.InitDomainEventsSerialization(EventsAdaptersCatalog);
+
+            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
 
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
@@ -136,8 +132,6 @@ namespace GridDomain.Node
             {
                 AggregateFromSnapshotsFactory.Register(factory.AggregateType, m => factory.Constructor.Build(factory.GetType(), Guid.Empty,m));
             }
-
-
 
             if (appInsightsConfig.IsEnabled)
             {

@@ -125,10 +125,14 @@ namespace GridDomain.Tests.Framework
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
 
             GridNode = CreateGridDomainNode(AkkaConf);
-            GridNode.Start(autoTestGridDomainConfiguration);
-
+            OnNodeCreated();
+            GridNode.Start();
+            OnNodeStarted();
         }
 
+        protected virtual void OnNodeCreated() { }
+        protected virtual void OnNodeStarted() { }
+        
         /// <summary>
         /// Loads aggregate using Sys actor system
         /// </summary>

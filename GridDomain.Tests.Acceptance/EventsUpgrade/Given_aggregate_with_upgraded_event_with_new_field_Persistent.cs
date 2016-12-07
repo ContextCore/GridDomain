@@ -3,6 +3,7 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
@@ -41,7 +42,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         protected override void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages)
         {
-            using (var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration().Copy(8081)))
+            using (var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))
             {
                 var persistId = AggregateActorName.New<BalanceAggregate>(id).Name;
                 eventsRepo.Save(persistId, messages);
@@ -51,7 +52,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         public override T LoadAggregate<T>(Guid id)
         {
-            var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration().Copy(8081));
+            var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(),GridNode.EventsAdaptersCatalog);
             using (var repo = new AggregateRepository(eventsRepo))
             {
                return repo.LoadAggregate<T>(id);

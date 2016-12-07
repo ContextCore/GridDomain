@@ -120,7 +120,7 @@
     <Compile Include="Persistence\SqlPersistence\JournalConfiguration.cs" />
     <Compile Include="Persistence\SqlPersistence\Metadata.cs" />
     <Compile Include="Persistence\SqlPersistence\MetadataConfiguration.cs" />
-    <Compile Include="Persistence\SqlPersistence\Snapshot.cs" />
+    <Compile Include="Persistence\SqlPersistence\SnapshotItem.cs" />
     <Compile Include="Persistence\SqlPersistence\SnapshotConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +151,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760BE08A-D943-4A71-944E-938590527153}</Project>

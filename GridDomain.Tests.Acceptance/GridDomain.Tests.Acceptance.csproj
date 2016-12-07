@@ -234,6 +234,7 @@
   <ItemGroup>
     <Compile Include="Chronicles\EventsReplayInfoHolder.cs" />
     <Compile Include="Chronicles\Given_persisted_events_replay.cs" />
+    <Compile Include="EventsUpgrade\Future_events_upgraded_by_events_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
     <Compile Include="GridConsole\GridConsoleTests.cs" />
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
@@ -284,7 +285,9 @@
     <Compile Include="Scheduling\LogTests.cs" />
     <Compile Include="Scheduling\Spec.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />
+    <Compile Include="Scheduling\TestHelpers\FailIfPlannedCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\PlanFailuresCommand.cs" />
+    <Compile Include="Scheduling\TestHelpers\PlannedFailureException.cs" />
     <Compile Include="Scheduling\TestHelpers\TestEvent.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSaga.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaFactory.cs" />
@@ -306,7 +309,7 @@
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Instance_saga_Should_recover_from_snapshot.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default.cs" />
-    <Compile Include="Snapshots\SnapshotsSaveAfterEachMessagePolicy.cs" />
+    <Compile Include="Snapshots\SnapshotsPersistenceAfterEachMessagePolicy.cs" />
     <Compile Include="Snapshots\State_Saga_Should_Not_save_snapshots_on_message_process_by_default.cs" />
     <Compile Include="Snapshots\State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\State_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
@@ -314,7 +317,7 @@
     <Compile Include="Snapshots\Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Aggregate_should_recover_from_snapshot.cs" />
-    <Compile Include="Snapshots\SnapshotsSaveOnTimeoutPolicy.cs" />
+    <Compile Include="Snapshots\SnapshotsPersistenceOnTimeoutPolicy.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedAsyncExecuteDontWaitExecution.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
@@ -323,7 +326,7 @@
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
     <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
-    <Compile Include="Tools\Given_persisted_aggreate_It_can_loaded_and_saved.cs" />
+    <Compile Include="Tools\Given_persisted_aggreate_It_can_be_loaded_and_saved.cs" />
     <Compile Include="Tools\Test_event_repository_tools_Persistent.cs" />
   </ItemGroup>
   <ItemGroup>

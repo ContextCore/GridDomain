@@ -15,20 +15,18 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
-
-    class BalanceChanged_objectAdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
-    {
-        public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V0 evt)
-        {
-            return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
-        }
-    }
-
-    
-
     [TestFixture]
     public class Future_events_upgraded_by_object_adapter : ExtendedNodeCommandTest
     {
+
+        class BalanceChanged_objectAdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
+        {
+            public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V0 evt)
+            {
+                return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
+            }
+        }
+
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>(),
@@ -49,11 +47,15 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             
         }
+
+        protected override void OnNodeCreated()
+        {
+            GridNode.EventsAdaptersCatalog.Register(new BalanceChanged_objectAdapter1());
+        }
+
         [Test]
         public void Future_event_is_upgraded_by_json_adapter()
         {
-            GridNode.ObjectAdapteresCatalog.Register(new BalanceChanged_objectAdapter1());
-
             var saveOldEventCommand = new ChangeBalanceInFuture(1,Guid.NewGuid(),BusinessDateTime.Now.AddSeconds(2),true);
 
             GridNode.NewCommandWaiter(Timeout)

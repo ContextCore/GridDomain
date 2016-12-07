@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.EventsUpgrade.Domain;
 using Newtonsoft.Json;
@@ -26,7 +25,7 @@ namespace GridDomain.Tests.Serialization
         public void When_settings_are_customized_it_is_used_by_grid_node()
         {
             var node = new GridDomainNode(CustomContainerConfiguration.Empty(),new BalanceRouteMap(), () => ActorSystem.Create("test"));
-            node.Start(new LocalDbConfiguration());
+            node.Start();
 
             var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(node.System);
             ext.Settings = new MyJsonSettings();

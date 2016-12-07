@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 
@@ -9,7 +10,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 {
     public class ActorSystemEventRepository : IRepository<DomainEvent>
     {
-        private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(1000);
         private readonly ActorSystem _system;
 
         public ActorSystemEventRepository(ActorSystem config)
@@ -22,10 +23,11 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             _system = config;
         }
 
-        public static ActorSystemEventRepository New(AkkaConfiguration conf)
+        public static ActorSystemEventRepository New(AkkaConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
         {
             var actorSystem = conf.CreateSystem();
-            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(actorSystem);
+            actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);
+
             return new ActorSystemEventRepository(actorSystem);
         }
 
@@ -35,7 +37,8 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             var persistActor = CreateEventsPersistActor(id);
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout).Wait();
+                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout)
+                    .Wait();
 
             persistActor.Tell(PoisonPill.Instance);
         }

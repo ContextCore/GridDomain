@@ -78,6 +78,7 @@
     <Compile Include="InstanceSagas\SagaTransitionTimeoutException.cs" />
     <Compile Include="InstanceSagas\StartMessagesMissedException.cs" />
     <Compile Include="InstanceSagas\StateChangedData.cs" />
+    <Compile Include="InstanceSagas\WrongSnapshotTypeReceivedException.cs" />
     <Compile Include="ISagaInstance.cs" />
     <Compile Include="ISagaProducer.cs" />
     <Compile Include="MessageBind.cs" />

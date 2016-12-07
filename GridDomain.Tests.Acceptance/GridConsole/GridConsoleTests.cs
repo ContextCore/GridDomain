@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
@@ -33,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
                                        new SampleRouteMap(container),
                                        () => serverConfig.CreateInMemorySystem());
 
-            _node.Start(new LocalDbConfiguration());
+            _node.Start();
 
 
             _connector = new GridNodeConnector(serverConfig.Network);
