@@ -15,7 +15,9 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         private FutureEventOccuredEvent _eventA;
         private FutureEventOccuredEvent _eventB;
         private Guid _aggregateId;
-        [OneTimeSetUp]
+        protected override bool CreateNodeOnEachTest { get; } = true;
+
+     //   [OneTimeSetUp]
         public void FutureDomainEvent_envelops_has_unique_id()
         {
             _aggregateId = Guid.NewGuid();
@@ -34,12 +36,14 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         [Then]
         public void Envelop_ids_are_different()
         {
+            FutureDomainEvent_envelops_has_unique_id();
             Assert.AreNotEqual(_eventA.FutureEventId, _eventB.FutureEventId);
         }
 
         [Then]
         public void Envelop_id_not_equal_to_aggregate_id()
         {
+            FutureDomainEvent_envelops_has_unique_id();
             Assert.True(_eventA.Id != _aggregateId && _aggregateId != _eventB.Id);
         }
 

@@ -187,9 +187,20 @@ namespace GridDomain.Node
         public void Stop()
         {
             if (_stopping) return;
+
+            _log.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
             Container?.Dispose();
-            _quartzScheduler?.Shutdown(true);
+
+            try
+            {
+                _quartzScheduler?.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                _log.Warn($"Got error on quartz scheduler shutdown: {ex}");
+            }
+
             System?.Terminate();
             System?.Dispose();
             _log.Debug("GridDomain node {Id} stopped",Id);

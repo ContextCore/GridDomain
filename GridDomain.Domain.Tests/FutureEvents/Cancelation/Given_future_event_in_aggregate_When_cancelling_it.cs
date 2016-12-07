@@ -20,7 +20,6 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         private FutureEventScheduledEvent _futureEventEnvelop;
         private CancelFutureEventCommand _cancelFutureEventCommand;
 
-        [OneTimeSetUp]
 
         public void When_raising_future_event()
         {
@@ -39,12 +38,14 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         [Then]
         public void Cancelation_event_has_same_id_as_future_event()
         {
+            When_raising_future_event();
             Assert.AreEqual(_futureEventEnvelop.Id, _futureEventCancelation.FutureEventId);
         }
         
         [Then]
         public void Scheduler_does_not_contain_job_for_future_event()
         {
+            When_raising_future_event();
             var scheduler = GridNode.Container.Resolve<IScheduler>();
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait

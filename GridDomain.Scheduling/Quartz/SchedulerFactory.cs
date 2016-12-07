@@ -74,7 +74,6 @@ namespace GridDomain.Scheduling.Quartz
             IJobListener retryListener = new RetryJobListener(sut);
             scheduler.ListenerManager.AddJobListener(retryListener, GroupMatcher<JobKey>.AnyGroup());
 
-
             try
             {
                 scheduler.Start();
