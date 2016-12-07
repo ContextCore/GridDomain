@@ -14,10 +14,4 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
             Actor = actor;
         }
     }
-
-    public class UnsubscribeAck
-    {
-        public static UnsubscribeAck Instance = new UnsubscribeAck();
-        private UnsubscribeAck() { }
-    }
 }

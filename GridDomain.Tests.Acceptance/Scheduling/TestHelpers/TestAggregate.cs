@@ -1,24 +1,10 @@
 using System;
 using System.Threading;
 using CommonDomain.Core;
-using GridDomain.CQRS;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-
-    public class FailIfPlannedCommand : Command
-    {
-        public Guid AggregateId { get;}
-        public TimeSpan Timeout { get; }
-
-        public FailIfPlannedCommand(Guid aggregateId,TimeSpan timeout = default(TimeSpan))
-        {
-            AggregateId = aggregateId;
-            Timeout = timeout;
-        }
-    }
-
     public class TestAggregate : AggregateBase
     {
         private TestAggregate(Guid id)
@@ -83,16 +69,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         {
             Thread.Sleep(timeout);
             throw new InvalidOperationException("ohshitwaddap");
-        }
-    }
-
-    public class PlannedFailureException : Exception
-    {
-        public int TimeToOkResponse { get; }
-
-        public PlannedFailureException(int timeToOkResponse)
-        {
-            TimeToOkResponse = timeToOkResponse;
         }
     }
 }

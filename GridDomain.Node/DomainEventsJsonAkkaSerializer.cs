@@ -32,7 +32,7 @@ namespace GridDomain.Node
                     return new WireJsonSerializer(ext.Settings);
 
                 var settings = DomainSerializer.GetDefaultSettings();
-                foreach (var c in ext.Ñonverters)
+                foreach (var c in ext.Converters)
                     settings.Converters.Add(c);
 
                 return new WireJsonSerializer(settings);

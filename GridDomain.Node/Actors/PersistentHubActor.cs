@@ -115,14 +115,4 @@ namespace GridDomain.Node.Actors
             Logger.Trace("{ActorHub} was stopped", Self.Path);
         }
     }
-
-    public class InvalidChildIdException : Exception
-    {
-        public object Message { get; }
-
-        public InvalidChildIdException(object message):base("Child id should not be empty")
-        {
-            Message = message;
-        }
-    }
 }

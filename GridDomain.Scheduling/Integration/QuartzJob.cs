@@ -170,14 +170,4 @@ namespace GridDomain.Scheduling.Integration
                              .Build();
         }
     }
-
-    public class ScheduledCommandWasNotConfirmedException : Exception
-    {
-        private Command Command { get; }
-
-        public ScheduledCommandWasNotConfirmedException(Command command)
-        {
-            Command = command;
-        }
-    }
 }

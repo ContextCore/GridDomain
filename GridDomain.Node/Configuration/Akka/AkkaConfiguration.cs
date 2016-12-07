@@ -3,13 +3,6 @@ using GridDomain.Node.Configuration.Akka.Hocon;
 
 namespace GridDomain.Node.Configuration.Akka
 {
-    public enum LogVerbosity
-    {
-        Warning,
-        Error,
-        Info,
-        Trace
-    }
     public class AkkaConfiguration
     {
         private readonly LogVerbosity _logVerbosity;

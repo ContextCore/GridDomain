@@ -117,14 +117,4 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorRestarted();
         }
     }
-
-    public class CannotFindRouteException : Exception
-    {
-        public object Msg { get; }
-
-        public CannotFindRouteException(object msg)
-        {
-            Msg = msg;
-        }
-    }
 }

@@ -2,19 +2,17 @@ using System;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
-using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.Serialization
 {
     [TestFixture]
-    class Instance_sagas_should_be_serialize_and_deserialize : SoftwareProgrammingInstanceSagaTest
+    class Instance_sagas_state_aggregates_should_be_serialize_and_deserialize : SoftwareProgrammingInstanceSagaTest
     {
         private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaState;
         private SagaDataAggregate<SoftwareProgrammingSagaData> _restoredState;
-        public Instance_sagas_should_be_serialize_and_deserialize() : base(true) { }
+        public Instance_sagas_state_aggregates_should_be_serialize_and_deserialize() : base(true) { }
 
         [OneTimeSetUp]
         public void Test()
@@ -25,13 +23,6 @@ namespace GridDomain.Tests.Serialization
             _sagaState = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(), state);
             _sagaState.RememberEvent(saga.CoffeReady, state, new object());
             _sagaState.ClearEvents();
-
-            var fixture = new Fixture();
-            var gotTired = fixture.Create<GotTiredEvent>();
-
-            var factory = new SoftwareProgrammingSagaFactory();
-            var instance = factory.Create(gotTired); 
-
 
             var json = JsonConvert.SerializeObject(_sagaState);
             _restoredState = JsonConvert.DeserializeObject<SagaDataAggregate<SoftwareProgrammingSagaData>>(json);
