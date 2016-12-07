@@ -159,7 +159,7 @@
     <Compile Include="DateTimeDeltaComparer.cs" />
     <Compile Include="DateTimeOffsetDeltaComparer.cs" />
     <Compile Include="DebugLocalWaiter.cs" />
-    <Compile Include="DebugMessageWaiterFactory.cs" />
+    <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />

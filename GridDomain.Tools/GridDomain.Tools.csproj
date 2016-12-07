@@ -120,7 +120,7 @@
     <Compile Include="Persistence\SqlPersistence\JournalConfiguration.cs" />
     <Compile Include="Persistence\SqlPersistence\Metadata.cs" />
     <Compile Include="Persistence\SqlPersistence\MetadataConfiguration.cs" />
-    <Compile Include="Persistence\SqlPersistence\Snapshot.cs" />
+    <Compile Include="Persistence\SqlPersistence\SnapshotItem.cs" />
     <Compile Include="Persistence\SqlPersistence\SnapshotConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>

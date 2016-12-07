@@ -52,14 +52,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\IEventAdaptersCatalog.cs" />
     <Compile Include="Adapters\IObjectAdapter.cs" />
+    <Compile Include="Adapters\IObjectUpdateChain.cs" />
     <Compile Include="AggregateFactory.cs" />
     <Compile Include="AggregateSnapshottingFactory.cs" />
     <Compile Include="AggregatesSnapshotsFactory.cs" />
     <Compile Include="CannotFindAggregateCreatorBySnapshotException.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
-    <Compile Include="Adapters\DomainEventSerialization.cs" />
+    <Compile Include="Adapters\DomainSerializer.cs" />
     <Compile Include="Adapters\DomainEventAdapter.cs" />
     <Compile Include="Adapters\EventsAdaptersCatalog.cs" />
     <Compile Include="Adapters\IDomainEventAdapter.cs" />
