@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.TestKit.NUnit3;
 using GridDomain.Common;
@@ -109,9 +110,9 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         }
 
         [TearDown]
-        public void Down()
+        public async Task Down()
         {
-            _gridDomainNode.Stop();
+            await _gridDomainNode.Stop();
         }
     }
 }

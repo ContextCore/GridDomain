@@ -80,7 +80,7 @@ namespace GridGomain.Tests.Stress
 
             timer.Stop();
             Console.WriteLine($"Executed {totalAggregatePacksCount} batches in {timer.Elapsed}");
-            node.Stop();
+            node.Stop().Wait();
 
             Console.WriteLine("Sleeping");
             Thread.Sleep(60);

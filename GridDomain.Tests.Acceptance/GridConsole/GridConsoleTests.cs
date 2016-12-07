@@ -41,9 +41,9 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         }
 
         [OneTimeTearDown]
-        public void TurnOffNode()
+        public async Task TurnOffNode()
         {
-            _node.Stop();
+            await _node.Stop();
         }
 
         [Then]

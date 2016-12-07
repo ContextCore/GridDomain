@@ -1,0 +1,10 @@
+diff a/GridDomain.Node/Actors/RoutingActor.cs b/GridDomain.Node/Actors/RoutingActor.cs	(rejected hunks)
+@@ -36,7 +36,7 @@
+ 
+             foreach (var msgRoute in msg.Routes)
+             {
+-                _log.Debug("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
++                _log.Info("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
+                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
+             }
+         }

@@ -47,13 +47,12 @@ namespace GridDomain.Tests.Framework
         protected abstract TimeSpan Timeout { get; }
 
         [OneTimeTearDown]
-        public void DeleteSystems()
+        public async Task DeleteSystems()
         {
             if (CreateNodeOnEachTest) return;
             Console.WriteLine();
             Console.WriteLine("Stopping node");
-            GridNode?.Stop();
-            Sys?.Terminate();
+            await GridNode.Stop();
         }
 
         protected IActorRef LookupAggregateActor<T>(Guid id) where T: IAggregate
@@ -99,7 +98,7 @@ namespace GridDomain.Tests.Framework
         protected override void AfterAll()
         {
             if (!CreateNodeOnEachTest) return;
-            GridNode?.Stop();
+            GridNode.Stop().Wait(Timeout);
             base.AfterAll();
         }
 

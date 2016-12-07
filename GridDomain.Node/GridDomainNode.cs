@@ -184,7 +184,7 @@ namespace GridDomain.Node
         }
 
 
-        public void Stop()
+        public async Task Stop()
         {
             if (_stopping) return;
 
@@ -201,8 +201,12 @@ namespace GridDomain.Node
                 _log.Warn($"Got error on quartz scheduler shutdown: {ex}");
             }
 
-            System?.Terminate();
-            System?.Dispose();
+            if (System != null)
+            {
+                await System.Terminate();
+                System.Dispose();
+            }
+
             _log.Debug("GridDomain node {Id} stopped",Id);
         }
 
