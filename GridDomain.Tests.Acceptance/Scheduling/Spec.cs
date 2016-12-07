@@ -95,75 +95,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             _quartzScheduler = _container.Resolve<IScheduler>();
         }
-
-
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_domain_event_that_should_start_a_saga_is_scheduled_Then_saga_gets_created()
-        {
-            var sagaId = Guid.NewGuid();
-            var testEvent = new TestSagaStartMessage(sagaId, BusinessDateTime.UtcNow, sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleMessage(testEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
-            WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
-            var sagaState = LoadSagaState<TestSaga, TestSagaState>(sagaId);
-            Assert.True(sagaState.MachineState == TestSaga.TestStates.GotStartEvent);
-        }
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_domain_event_for_a_started_saga_is_scheduled_Then_saga_receives_it()
-        {
-            var sagaId = Guid.NewGuid();
-            var startEvent = new TestSagaStartMessage(sagaId, BusinessDateTime.UtcNow, sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleMessage(startEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
-            WaitFor<SagaCreatedEvent<TestSaga.TestStates>>();
-
-            var secondEvent = new TestEvent(sagaId);
-            _scheduler.Ask<Scheduled>(new ScheduleMessage(secondEvent, new ScheduleKey(Guid.Empty, Name, Group), DateTime.UtcNow.AddSeconds(0.3)));
-            WaitFor<SagaTransitionEvent<TestSaga.TestStates, TestSaga.Transitions>>();
-            var sagaState = LoadSagaState<TestSaga, TestSagaState>(sagaId);
-            Assert.True(sagaState.MachineState == TestSaga.TestStates.GotSecondEvent);
-        }
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_two_commands_with_same_success_event_are_published_Then_first_successfully_handled_command_doesnt_change_second_commands_saga_state()
-        {
-           // var firstCommand = new TimeoutCommand("timeout", TimeSpan.FromMilliseconds(300));
-           // var secondCommand = new TimeoutCommand("timeout", TimeSpan.FromSeconds(10));
-           // var firstKey = Guid.NewGuid();
-           // var secondKey = Guid.NewGuid();
-           //
-           // _scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
-           // _scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
-           //
-           // WaitFor<ScheduledCommandSuccessfullyProcessed>();
-           // Thread.Sleep(1000);
-           //
-           // var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(firstKey);
-           // var secondSaga =     LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(secondKey);
-           //
-           // Assert.AreEqual(ScheduledCommandProcessingSaga.States.MessageSent, secondSaga.MachineState);
-           // Assert.AreEqual(ScheduledCommandProcessingSaga.States.SuccessfullyProcessed, firstSagaState.MachineState);
-        }
-
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_two_commands_of_the_same_type_are_published_Then_first_failed_command_doesnt_change_second_commands_saga_state()
-        {
-           //var firstCommand = new FailCommand(TimeSpan.FromMilliseconds(300));
-           //var secondCommand = new FailCommand(TimeSpan.FromSeconds(3));
-           //var firstKey = Guid.NewGuid();
-           //var secondKey = Guid.NewGuid();
-           //_scheduler.Ask<Scheduled>(new ScheduleCommand(firstCommand, new ScheduleKey(firstKey, Name, Group), CreateOptions(0))).Wait(Timeout);
-           //_scheduler.Ask<Scheduled>(new ScheduleCommand(secondCommand, new ScheduleKey(secondKey, Name + Name, Group), CreateOptions(0))).Wait(Timeout);
-           //Thread.Sleep(2000);
-           //var firstSagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(firstKey);
-           //var secondSaga = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(secondKey);
-           //Assert.True(firstSagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure && secondSaga.MachineState == ScheduledCommandProcessingSaga.States.MessageSent);
-        }
+       
 
         [Test]
         public void Serializer_can_serialize_and_deserialize_polymorphic_types()
@@ -175,16 +107,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var bytes = stream.ToArray();
             var deserialized = serializer.Deserialize<ExecutionOptions>(new MemoryStream(bytes));
             Assert.True(deserialized.SuccesEventType == withType.SuccesEventType);
-        }
-
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_a_message_published_Then_saga_receives_it()
-        {
-           //var testCommand = new SuccessCommand(Name);
-           //_scheduler.Ask<Scheduled>(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1))).Wait(Timeout);
-           //WaitFor<SagaCreatedEvent<ScheduledCommandProcessingSaga.States>>();
         }
 
         private ExtendedExecutionOptions CreateOptions(double seconds, TimeSpan? timeout=null,Guid? id=null, string checkField = null, int? retryCount = null, TimeSpan? repeatInterval = null)
@@ -316,64 +238,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Console.WriteLine("Received third failure");
             GridNode.NewWaiter(TimeSpan.FromSeconds(5)).Expect<JobCompleted>().Create().Wait();
             Console.WriteLine("Received success");
-        }
-
-        [Test]
-        [Ignore("covered by When_job_fails_it_retries_several_times")]
-        public void If_job_failes_fatal_it_remains_in_db()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        [Ignore("covered by When_job_fails_it_retries_several_times")]
-        public void Job_completes_on_expected_message_by_id()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        [Ignore("covered by When_job_fails_it_retries_several_times")]
-        public void Job_not_completes_on_expected_message_type_with_different_id()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        [Ignore("covered by When_job_fails_it_retries_several_times")]
-        public void When_job_is_added_Then_it_gets_executed()
-        {
-            var successCommand = new SuccessCommand(Name);
-            _scheduler.Ask<Scheduled>(new ScheduleCommand(successCommand, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5, Timeout))).Wait(Timeout);
-
-            WaitFor<ScheduledCommandSuccessfullyProcessed>();
-            Throttle.Assert(() => Assert.True(ResultHolder.Contains(successCommand.Text)), maxTimeout: Timeout);
-        }
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_scheduler_is_restarted_during_job_execution_Then_on_next_start_job_is_not_fired_again()
-        {
-            var timeoutCommand = new TimeoutCommand(Name, TimeSpan.FromSeconds(2));
-            _scheduler.Ask<Scheduled>(new ScheduleCommand(timeoutCommand, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5, Timeout))).Wait(Timeout);
-            WaitFor<JobCompleted>();
-            _quartzScheduler.Shutdown(false);
-            CreateScheduler();
-            WaitFor<ScheduledCommandSuccessfullyProcessed>();
-            Assert.True(ResultHolder.Count == 1 && ResultHolder.Contains(Name));
-        }
-
-        [Test]
-        [Ignore("we dont use sagas for scheduling anymore")]
-        public void When_processing_actor_throws_Then_scheduler_receives_failure_response()
-        {
-            //var testMessage = new FailCommand();
-            //var id = Guid.NewGuid();
-            //_scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(id, Name, Group), CreateOptions(0.5)));
-            ////TODO::VZ:: to really test system I need a way to check that scheduling saga received the message
-            ////TODO::VZ:: get saga from persistence
-            //WaitFor<Fault<FailCommand>>(false);
-            //var sagaState = LoadSagaState<ScheduledCommandProcessingSaga, ScheduledCommandProcessingSagaState>(id);
-            //Assert.True(sagaState.MachineState == ScheduledCommandProcessingSaga.States.ProcessingFailure);
         }
 
         [Test]
