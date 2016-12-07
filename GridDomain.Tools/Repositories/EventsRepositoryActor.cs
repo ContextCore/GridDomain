@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka;
 using Akka.Actor;
 using Akka.Persistence;
+using GridDomain.Logging;
 
 namespace GridDomain.Tools.Repositories
 {
@@ -10,7 +11,7 @@ namespace GridDomain.Tools.Repositories
     {
         private readonly List<object> _events = new List<object>();
         public override string PersistenceId { get; }
-
+        private ISoloLogger logger = LogManager.GetLogger();
         public EventsRepositoryActor(string id)
         {
             PersistenceId = id;

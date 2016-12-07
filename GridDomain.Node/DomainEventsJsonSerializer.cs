@@ -21,10 +21,9 @@ namespace GridDomain.Node
 
         public DomainEventsJsonAkkaSerializer(ExtendedActorSystem system) : base(system)
         {
-
             Serializer = new Lazy<WireJsonSerializer>(() =>
             {
-                var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(this.system);
+                var ext = system.GetExtension<DomainEventsJsonSerializationExtension>();
                 if (ext == null)
                     throw new ArgumentNullException(nameof(ext),
                         $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");

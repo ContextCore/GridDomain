@@ -2,6 +2,7 @@
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
@@ -43,7 +44,7 @@ namespace GridDomain.Tests.Tools.Repositories
            var persistId = "testId";
             var saveTime = BusinessDateTime.UtcNow;
            var repo = CreateRepository();
-            repo.Save(persistId, events);
+           repo.Save(persistId, events);
 
            var eventsLoaded = repo.Load(persistId).Where(e => e.CreatedTime >= saveTime).Cast<Message>();
            CollectionAssert.AreEquivalent(events.Cast<Message>().Select(e => e.Id),eventsLoaded.Select(e=> e.Id));
@@ -51,7 +52,7 @@ namespace GridDomain.Tests.Tools.Repositories
 
         protected virtual IRepository<DomainEvent> CreateRepository()
         {
-            return ActorSystemEventRepository.New(new AutoTestAkkaConfiguration());
+            return ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog());
         }
     }
 }

@@ -1,4 +1,5 @@
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Tools;
@@ -14,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Tools
     {
         protected override IRepository<DomainEvent> CreateRepository()
         {
-            return ActorSystemEventRepository.New(new AutoTestAkkaConfiguration());
+            return ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog());
         }
     }
 }

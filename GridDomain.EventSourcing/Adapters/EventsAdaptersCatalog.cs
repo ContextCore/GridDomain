@@ -20,7 +20,13 @@ namespace GridDomain.EventSourcing.Adapters
         void Register<TFrom, TTo>(ObjectAdapter<TFrom, TTo> converter);
     }
 
-    public class EventsAdaptersCatalog : IEventAdaptersCatalog
+
+    public interface IObjectUpdateChain
+    {
+        object[] Update(object evt);
+    }
+
+    public class EventsAdaptersCatalog : IEventAdaptersCatalog, IObjectUpdateChain
     {
         private readonly IDictionary<Type, IEventAdapter> _eventAdapterCatalog = new Dictionary<Type, IEventAdapter>();
         private readonly List<JsonConverter> _objectAdapterCatalog = new List<JsonConverter>();

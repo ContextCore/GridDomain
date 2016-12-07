@@ -57,7 +57,7 @@ namespace GridDomain.Node
         public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
         private IMessageWaiterFactory _waiterFactory;
 
-        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
         public IActorTransport Transport { get; private set; }
 
@@ -101,12 +101,11 @@ namespace GridDomain.Node
 
             Container = new UnityContainer();
             Systems = _actorSystemFactory.Invoke();
-           
-            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System = Systems.First();
 
-            var ext = System.AddDomainEventsJsonSerialization();
-            ext.Сonverters = EventsAdaptersCatalog.JsonConverters;
+            System.InitDomainEventsSerialization(EventsAdaptersCatalog);
+
+            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
 
             System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);

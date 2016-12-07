@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
@@ -50,10 +51,10 @@ namespace GridDomain.Tests.Acceptance.Tools
 
         static readonly object[] EventRepositories =
         {
-            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))},
-            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration), AggregateRepository.New(AkkaWriteDbConnectionString)},
+            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration, new EventsAdaptersCatalog()), new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))},
+            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration, new EventsAdaptersCatalog()), AggregateRepository.New(AkkaWriteDbConnectionString)},
             new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   AggregateRepository.New(AkkaWriteDbConnectionString)},
-            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration()))},
+            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))},
         };
     }
 }

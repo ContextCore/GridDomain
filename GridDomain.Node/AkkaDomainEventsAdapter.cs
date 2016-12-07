@@ -1,5 +1,7 @@
+using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Node.Configuration.Akka.Hocon;
@@ -27,7 +29,7 @@ namespace GridDomain.Node
 
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
-        public static readonly EventsAdaptersCatalog UpgradeChain = new EventsAdaptersCatalog();
+        private readonly Lazy<IObjectUpdateChain> UpgradeChain;
 
         //always called first from Akka internals 
         //if no constructor with system found, we would have en log polluted with confusing exception 
@@ -35,6 +37,20 @@ namespace GridDomain.Node
         //https://github.com/akkadotnet/akka.net/blob/df5f6ebc9e7f6b92aef3ca6d63bb1ab365f1c8fa/src/core/Akka.Persistence/Journal/EventAdapters.cs#L336
         public AkkaDomainEventsAdapter(ExtendedActorSystem system)
         {
+            UpgradeChain = new Lazy<IObjectUpdateChain>(() =>
+            {
+                var ext = system.GetExtension<DomainEventsJsonSerializationExtension>();
+
+                if (ext == null)
+                    throw new ArgumentNullException(nameof(ext),
+                        $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
+
+                if (ext.EventsAdapterCatalog == null)
+                    throw new ArgumentNullException(nameof(ext),
+                        $"Cannot get {typeof(IObjectUpdateChain).Name} extension");
+
+                return ext.EventsAdapterCatalog;
+            });
         }
 
         public string Manifest(object evt)
@@ -49,7 +65,7 @@ namespace GridDomain.Node
 
         public IEventSequence FromJournal(object evt, string manifest)
         {
-            return EventSequence.Create(UpgradeChain.Update(evt));
+            return EventSequence.Create(UpgradeChain.Value.Update(evt));
         }
     }
 }

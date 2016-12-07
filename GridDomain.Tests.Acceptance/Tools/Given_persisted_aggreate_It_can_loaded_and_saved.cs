@@ -1,4 +1,5 @@
 using System;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.Tools;
@@ -23,12 +24,12 @@ namespace GridDomain.Tests.Acceptance.Tools
             _agregateValue = "initial";
             var aggregate = new SampleAggregate(_aggregateId, _agregateValue);
 
-            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration())))
+            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog())))
             {
                 repo.Save(aggregate);
             }
 
-            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration())))
+            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog())))
             {
                 _aggregate = repo.LoadAggregate<SampleAggregate>(aggregate.Id);
             }

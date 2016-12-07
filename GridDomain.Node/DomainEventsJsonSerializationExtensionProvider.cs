@@ -1,4 +1,8 @@
+using System.Collections.Generic;
 using Akka.Actor;
+using GridDomain.EventSourcing.Adapters;
+using Newtonsoft.Json;
+using NEventStore.Conversion;
 
 namespace GridDomain.Node
 {
@@ -9,11 +13,9 @@ namespace GridDomain.Node
         /// </summary>
         public static readonly DomainEventsJsonSerializationExtensionProvider Provider = new DomainEventsJsonSerializationExtensionProvider();
 
-        /// <summary>
-        /// Creates the dependency injection extension using a given actor system.
-        /// </summary>
-        /// <param name="system">The actor system to use when creating the extension.</param>
-        /// <returns>The extension created using the given actor system.</returns>
+       
+       
+                                                                                                         
         public override DomainEventsJsonSerializationExtension CreateExtension(ExtendedActorSystem system)
         {
             return new DomainEventsJsonSerializationExtension();

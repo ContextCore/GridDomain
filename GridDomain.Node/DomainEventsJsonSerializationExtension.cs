@@ -10,24 +10,33 @@ namespace GridDomain.Node
 
     public static class DomainEventsJsonSerializationExtensions
     {
-        /// <summary>
-        /// Registers a dependency resolver with a given actor system.
-        /// </summary>
-        /// <param name="system">The actor system in which to register the given dependency resolver.</param>
-        /// <param name="dependencyResolver">The dependency resolver being registered to the actor system.</param>
-        /// <exception cref="ArgumentNullException">
-        /// Either the <paramref name="system"/> or the <paramref name="dependencyResolver"/> was null.
-        /// </exception>
-        public static DomainEventsJsonSerializationExtension AddDomainEventsJsonSerialization(this ActorSystem system)
+        public static DomainEventsJsonSerializationExtension InitDomainEventsSerialization(
+            this ActorSystem system,
+            EventsAdaptersCatalog eventAdapters
+            )
         {
-            if (system == null) throw new ArgumentNullException(nameof(system));
-            return (DomainEventsJsonSerializationExtension)system.RegisterExtension(DomainEventsJsonSerializationExtensionProvider.Provider);
+            if (system == null)
+                throw new ArgumentNullException(nameof(system));
+
+            var ext = (DomainEventsJsonSerializationExtension)system.RegisterExtension(DomainEventsJsonSerializationExtensionProvider.Provider);
+            ext.Converters = eventAdapters.JsonConverters;
+            ext.EventsAdapterCatalog = eventAdapters;
+            return ext;
             
         }
     }
     public class DomainEventsJsonSerializationExtension : IExtension
     {
         public JsonSerializerSettings Settings { get; set; }
-        public IReadOnlyCollection<JsonConverter> Ñonverters { get; set; }
+        public IReadOnlyCollection<JsonConverter> Converters { get; set; } 
+        public IObjectUpdateChain EventsAdapterCatalog { get; set; }
+
+        //to avoid errors when default values are used unintentionally - it is hard to debug
+        public void InitEmpty()
+        {
+            Settings = null;
+            Converters = new JsonConverter[] {};
+            EventsAdapterCatalog = new EventsAdaptersCatalog();
+        }
     }
 }
