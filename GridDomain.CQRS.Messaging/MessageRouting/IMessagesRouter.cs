@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -15,17 +16,17 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         [Obsolete("Use RegisterHandler instead")]
         IRouteBuilder<TMessage> Route<TMessage>();
 
-        void RegisterAggregate<TAggregate, TCommandHandler>()
+        Task RegisterAggregate<TAggregate, TCommandHandler>()
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
             where TAggregate : AggregateBase;
 
-        void RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor);
+        Task RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor);
 
-        void RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null);
+        Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null);
 
-        void RegisterHandler<TMessage, THandler>(string correlationField) where THandler : IHandler<TMessage>; 
+        Task RegisterHandler<TMessage, THandler>(string correlationField) where THandler : IHandler<TMessage>;
 
-        void RegisterProjectionGroup<T>(T group) where T : IProjectionGroup;
+        Task RegisterProjectionGroup<T>(T group) where T : IProjectionGroup;
     }
 
    

@@ -1,22 +1,23 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.CQRS.Messaging
 {
     public class CustomRouteMap : IMessageRouteMap
     {
-        private readonly Action<IMessagesRouter>[] _routeRules;
+        private readonly Func<IMessagesRouter, Task>[] _routeRules;
 
-        public CustomRouteMap(params Action<IMessagesRouter>[] routeRules)
+        public CustomRouteMap(params Func<IMessagesRouter, Task>[] routeRules)
         {
             _routeRules = routeRules;
         }
 
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
             foreach (var routeRule in _routeRules)
             {
-                routeRule(router);
+               await routeRule(router);
             }
         }
     }

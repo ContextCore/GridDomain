@@ -16,16 +16,17 @@ namespace GridDomain.Node.Actors
         private readonly TimeSpan _sleepTime;
         private readonly int _saveOnEach;
 
-        public SnapshotsPersistencePolicy(TimeSpan sleepTime, int saveOnEach, int eventsToKeep = 10)
+        public SnapshotsPersistencePolicy(TimeSpan sleepTime, int saveOnEach=2, int eventsToKeep = 10)
         {
             _saveOnEach = saveOnEach;
             _sleepTime = sleepTime;
             _eventsToKeep = eventsToKeep;
+            MarkActivity();
         }
 
         public SnapshotSelectionCriteria GetSnapshotsToDelete()
         {
-            var persistenceId = Math.Max(_lastSequenceNumber - _eventsToKeep,0);
+            var persistenceId = Math.Max(_lastSequenceNumber - _eventsToKeep + 1, 0);
             return new SnapshotSelectionCriteria(persistenceId);
         }
 
@@ -43,11 +44,11 @@ namespace GridDomain.Node.Actors
         {
             if (!stateChanges.Any()) return false;
 
-            if(_messagesProduced == 0 && _lastActivityTime == default(DateTime))
-               MarkActivity();
-
             _messagesProduced += stateChanges.Length;
-            if ((_messagesProduced % _saveOnEach == 0) || _lastActivityTime + _sleepTime < BusinessDateTime.UtcNow)
+
+            var now = BusinessDateTime.UtcNow;
+
+            if ((_messagesProduced % _saveOnEach == 0) || now -_lastActivityTime > _sleepTime)
                 return true;
 
             MarkActivity();

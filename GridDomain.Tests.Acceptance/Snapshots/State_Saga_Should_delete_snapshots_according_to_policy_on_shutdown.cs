@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>
                                              (SoftwareProgrammingSaga.Descriptor,
-                                              () => new SnapshotsPersistenceAfterEachMessagePolicy(4),
+                                              () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(10), 2, 3),
                                               SoftwareProgrammingSagaState.FromSnapshot));
         }
 

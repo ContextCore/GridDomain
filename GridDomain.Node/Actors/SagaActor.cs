@@ -98,11 +98,8 @@ namespace GridDomain.Node.Actors
                 Publisher.Publish(fault);
             }
 
-            var stateChange = ProcessSagaStateChange();
-
+            ProcessSagaStateChange();
             ProcessSagaCommands();
-
-            TrySaveSnapshot(stateChange);
         }
 
         private void ProcessSagaCommands()
@@ -118,6 +115,7 @@ namespace GridDomain.Node.Actors
             var stateChangeEvents = State.GetUncommittedEvents().Cast<object>().ToArray();
             PersistAll(stateChangeEvents, 
                 e => {
+                         TrySaveSnapshot(e);
                          Publisher.Publish(e);
                          NotifyWatchers(new Persisted(e));
                 });

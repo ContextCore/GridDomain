@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
@@ -5,9 +6,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 {
     public class CustomRoutesSoftwareProgrammingSagaMap : IMessageRouteMap
     {
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
-            router.RegisterSaga(CustomRoutesSoftwareProgrammingSaga.Descriptor);
+            await router.RegisterSaga(CustomRoutesSoftwareProgrammingSaga.Descriptor);
         }
     }
 }

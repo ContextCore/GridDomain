@@ -40,7 +40,7 @@ namespace GridGomain.Tests.Stress
 
             var node = new GridDomainNode(cfg, new SampleRouteMap(unityContainer), actorSystemFactory);
 
-            node.Start();
+            node.Start().Wait();
 
             var timer = new Stopwatch();
             timer.Start();

@@ -31,8 +31,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         private Guid _sagaId;
         private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
-        private readonly SnapshotsPersistenceAfterEachMessagePolicy _snapshotsPersistencePolicy = 
-                                   new SnapshotsPersistenceAfterEachMessagePolicy(4);
+        private readonly SnapshotsPersistencePolicy _snapshotsPersistencePolicy = 
+                                   new SnapshotsPersistencePolicy(TimeSpan.FromMinutes(10), 2, 3);
             
 
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown():base(false)

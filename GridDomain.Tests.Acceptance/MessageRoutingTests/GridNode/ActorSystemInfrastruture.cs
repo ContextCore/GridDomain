@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
             InitContainer(container, notifyActor);
             var routingActor = CreateRoutingActor(system);
 
-            Router = new ActorMessagesRouter(routingActor, container.Resolve<IAggregateActorLocator>());
+            Router = new ActorMessagesRouter(routingActor);
         }
 
         protected abstract IActorRef CreateRoutingActor(ActorSystem system);

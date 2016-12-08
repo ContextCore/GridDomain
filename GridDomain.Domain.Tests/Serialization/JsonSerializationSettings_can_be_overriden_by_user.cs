@@ -22,10 +22,10 @@ namespace GridDomain.Tests.Serialization
             
         }
         [Test]
-        public void When_settings_are_customized_it_is_used_by_grid_node()
+        public async Task When_settings_are_customized_it_is_used_by_grid_node()
         {
             var node = new GridDomainNode(CustomContainerConfiguration.Empty(),new BalanceRouteMap(), () => ActorSystem.Create("test"));
-            node.Start();
+            await node.Start();
 
             var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(node.System);
             ext.Settings = new MyJsonSettings();

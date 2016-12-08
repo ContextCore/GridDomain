@@ -4,6 +4,7 @@ using System.Threading;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
@@ -31,7 +32,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 SoftwareProgrammingSagaData,
                                 SoftwareProgrammingSagaFactory,
                                 GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsPersistenceAfterEachMessagePolicy())));
+                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor,
+                                () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(10),2))));
         }
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)
         {

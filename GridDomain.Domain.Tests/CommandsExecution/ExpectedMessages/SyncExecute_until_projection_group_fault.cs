@@ -25,7 +25,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         protected override IMessageRouteMap CreateMap()
         {
             var faultyHandlerMap = new CustomRouteMap(r => r.RegisterProjectionGroup(new TestGroup(new UnityContainer())),
-                r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
+                                                      r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);
         }

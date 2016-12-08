@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
@@ -5,9 +6,9 @@ namespace GridDomain.Tests.DependencyInjection.Infrastructure
 {
     class TestRouteMap : IMessageRouteMap
     {
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
-            router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
+            await router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
         }
     }
 }

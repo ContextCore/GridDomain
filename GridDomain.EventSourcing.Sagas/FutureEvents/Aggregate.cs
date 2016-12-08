@@ -16,6 +16,11 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             return Factory.Build<T>(id);
         }
 
+       // public void RegisterRoute<T>(Action<T> act)
+       // {
+       //     base.Register(act);
+       // }
+
         #region AsyncMethods
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
         private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();

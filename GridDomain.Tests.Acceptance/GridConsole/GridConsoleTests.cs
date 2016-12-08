@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         private GridDomainNode _node;
 
         [OneTimeSetUp]
-        public void Given_existing_GridNode()
+        public async Task Given_existing_GridNode()
         {
             var container = new UnityContainer();
             var sampleDomainContainerConfiguration = new SampleDomainContainerConfiguration();
@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
                                        new SampleRouteMap(container),
                                        () => serverConfig.CreateInMemorySystem());
 
-            _node.Start();
+            await _node.Start();
 
 
             _connector = new GridNodeConnector(serverConfig.Network);

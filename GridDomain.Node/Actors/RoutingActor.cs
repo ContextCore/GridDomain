@@ -13,6 +13,12 @@ using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.Actors
 {
+
+    public class RouteCreated
+    {
+        public static RouteCreated Instance = new RouteCreated();
+    }
+
     public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRouteMessage>,
                                                      IHandler<CreateActorRouteMessage>
     {
@@ -38,6 +44,8 @@ namespace GridDomain.Node.Actors
                 Log.Info("Subscribed {actor} to {messageType}", handleActor.Path, msgRoute.MessageType);
                 _subscriber.Subscribe(msgRoute.MessageType, handleActor, Self);
             }
+
+            Sender.Tell(RouteCreated.Instance);
         }
 
 
@@ -47,10 +55,10 @@ namespace GridDomain.Node.Actors
             var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
             string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
            
-            Self.Tell(new CreateActorRouteMessage(actorType,
-                                                  actorName,
-                                                  msg.PoolType,
-                                                  new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
+            Self.Forward(new CreateActorRouteMessage(actorType,
+                                                     actorName,
+                                                     msg.PoolType,
+                                                     new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 
         protected virtual RouterConfig CreateActorRouter(CreateActorRouteMessage msg)

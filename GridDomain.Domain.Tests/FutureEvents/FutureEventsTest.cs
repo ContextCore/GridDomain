@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
@@ -36,9 +37,9 @@ namespace GridDomain.Tests.FutureEvents
         }
 
 
-        protected override void Start()
+        protected override async Task Start()
         {
-            base.Start();
+            await base.Start();
             Scheduler = GridNode.Container.Resolve<IScheduler>();
             Scheduler.Clear();
         }

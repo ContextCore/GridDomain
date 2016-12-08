@@ -7,6 +7,7 @@ using Akka;
 using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
+using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.CQRS;
@@ -79,10 +80,11 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(cmd);
             });
         }
-
+        
         private void ProcessAggregateEvents(ICommand command)
         {
             var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            State.ClearUncommittedEvents();
 
             if (command.SagaId != Guid.Empty)
             {
@@ -98,17 +100,12 @@ namespace GridDomain.Node.Actors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
                          .With<FutureEventCanceledEvent>(Handle);
 
+                TrySaveSnapshot(e);
                 Publisher.Publish(e);
-
                 NotifyWatchers(new Persisted(e));
             });
 
-            State.ClearUncommittedEvents();
-
             ProcessAsyncMethods(command);
-
-            if(SnapshotsPolicy.ShouldSave(events))
-                SaveSnapshot(State.GetSnapshot());
         }
         
         private void ProcessAsyncMethods(ICommand command)

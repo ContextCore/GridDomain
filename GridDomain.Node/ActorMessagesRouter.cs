@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.CQRS;
@@ -6,7 +7,6 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node
@@ -14,33 +14,30 @@ namespace GridDomain.Node
 
     public class ActorMessagesRouter : IMessagesRouter
     {
-        private readonly IAggregateActorLocator _actorLocator;
-        private readonly TypedMessageActor<CreateActorRouteMessage> _routingActorTypedMessageActor;
-        private readonly TypedMessageActor<CreateHandlerRouteMessage> _routingTypedMessageActor;
+        private readonly IActorRef _routingActor;
 
-        public ActorMessagesRouter(IActorRef routingActor, IAggregateActorLocator actorLocator)
+        public ActorMessagesRouter(IActorRef routingActor)
         {
-            _actorLocator = actorLocator;
-            _routingTypedMessageActor = new TypedMessageActor<CreateHandlerRouteMessage>(routingActor);
-            _routingActorTypedMessageActor = new TypedMessageActor<CreateActorRouteMessage>(routingActor);
+            _routingActor = routingActor;
         }
 
         public IRouteBuilder<TMessage> Route<TMessage>()
         {
-            return new AkkaRouteBuilder<TMessage>(_routingTypedMessageActor, _routingActorTypedMessageActor,_actorLocator);
+            return new AkkaRouteBuilder<TMessage>(_routingActor);
         }
 
-        public void RegisterAggregate<TAggregate, TCommandHandler>()
+        public Task RegisterAggregate<TAggregate, TCommandHandler>()
             where TAggregate : AggregateBase
             where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
             var descriptor = new AggregateCommandsHandlerDesriptor<TAggregate>();
             foreach(var info in new TCommandHandler().RegisteredCommands)
                 descriptor.RegisterCommand(info.Command,info.Property);
-            RegisterAggregate(descriptor);
+
+            return RegisterAggregate(descriptor);
         }
 
-        public void RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor)
+        public Task RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor)
         {
             var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
              (
@@ -50,27 +47,27 @@ namespace GridDomain.Node
 
             var name = $"Aggregate_{descriptor.AggregateType.Name}";
             var createActorRoute = CreateActorRouteMessage.ForAggregate(descriptor.AggregateType, name, messageRoutes);
-            _routingActorTypedMessageActor.Handle(createActorRoute);
+            return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 
-        public void RegisterSaga(ISagaDescriptor sagaDescriptor, string name)
+        public Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name)
         {
             var createActorRoute = CreateActorRouteMessage.ForSaga(sagaDescriptor, name);
-            _routingActorTypedMessageActor.Handle(createActorRoute);
+            return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 
-        public void RegisterHandler<TMessage, THandler>(string correlationPropertyName) where THandler : IHandler<TMessage>
+        public Task RegisterHandler<TMessage, THandler>(string correlationPropertyName) where THandler : IHandler<TMessage>
         {
-            Route<TMessage>().ToHandler<THandler>().WithCorrelation(correlationPropertyName).Register();
+            return Route<TMessage>().ToHandler<THandler>().WithCorrelation(correlationPropertyName).Register();
         }
 
-        public void RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup
+        public Task RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup
         {
             var createActorRoute = new CreateActorRouteMessage(typeof(SynchronizationProcessingActor<T>),
                                                                typeof(T).Name,
                                                                PoolKind.ConsistentHash,
                                                                @group.AcceptMessages.ToArray());
-            _routingActorTypedMessageActor.Handle(createActorRoute);
+            return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
@@ -31,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         }
 
         [Then]
-        public void It_fires_after_node_restart()
+        public async Task It_fires_after_node_restart()
         {
 
             var cmd = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(10),
@@ -44,8 +45,8 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                     .Execute(cmd)
                     .Wait(Timeout);
 
-            GridNode.Stop();
-            GridNode.Start();
+            await GridNode.Stop();
+            await GridNode.Start();
 
             var waiter = GridNode.NewWaiter()
                                  .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)

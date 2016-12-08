@@ -96,7 +96,7 @@ namespace GridDomain.Node
 
         public Guid Id { get; } = Guid.NewGuid();
 
-        public void Start()
+        public async Task Start()
         {
 
             Container = new UnityContainer();
@@ -106,8 +106,6 @@ namespace GridDomain.Node
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
-
-            System.WhenTerminated.ContinueWith(OnSystemTermination);
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
@@ -149,14 +147,12 @@ namespace GridDomain.Node
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props,nameof(GridNodeController));
 
-            nodeController.Ask(new GridNodeController.Start
+            await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start
             {
                 RoutingActorType = RoutingActorType[_transportMode]
-            })
-            .Wait(TimeSpan.FromSeconds(2));
+            });
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
-
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer, 

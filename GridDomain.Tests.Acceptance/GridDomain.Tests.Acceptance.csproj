@@ -301,6 +301,7 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />
     <Compile Include="SimpleClusterListener.cs" />
+    <Compile Include="Snapshots\Aggregate_should_save_snapshot_after_all_events_persisted.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown.cs" />
     <Compile Include="Snapshots\State_Saga_Should_delete_snapshots_according_to_policy_on_shutdown.cs" />
     <Compile Include="Snapshots\Aggregate_Should_Not_save_snapshots_on_message_process_by_default.cs" />

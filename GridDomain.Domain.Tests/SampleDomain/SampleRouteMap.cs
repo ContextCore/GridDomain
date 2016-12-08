@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Tests.SampleDomain.Events;
@@ -15,11 +16,11 @@ namespace GridDomain.Tests.SampleDomain
             _locator = locator;
         }
 
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
-            router.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor);
-            router.RegisterProjectionGroup(new SampleProjectionGroup(_locator));
-            router.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
+            await router.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor);
+            await router.RegisterProjectionGroup(new SampleProjectionGroup(_locator));
+            await router.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
 
         }
     }

@@ -3,22 +3,17 @@ using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node.Actors
 {
     public class GridNodeController : TypedActor
     {
-        private readonly IPublisher _messagePublisher;
         private readonly IMessageRouteMap _messageRouting;
 
-        public GridNodeController(IActorTransport transport,
-                                  IMessageRouteMap messageRouting)
+        public GridNodeController(IMessageRouteMap messageRouting)
         {
             _messageRouting = messageRouting;
-            _messagePublisher = transport;
             _monitor = new ActorMonitor(Context);
         }
 
@@ -28,11 +23,9 @@ namespace GridDomain.Node.Actors
             var system = Context.System;
             var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
 
-            var actorMessagesRouter = new ActorMessagesRouter(routingActor, new DefaultAggregateActorLocator());
-            _messageRouting.Register(actorMessagesRouter);
-
-            //TODO: replace with message from router
-            Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(3), Sender, new Started(), Self);
+            var actorMessagesRouter = new ActorMessagesRouter(routingActor);
+            _messageRouting.Register(actorMessagesRouter)
+                           .ContinueWith(T => new Started()).PipeTo(Sender);
         }
       
         public class Start

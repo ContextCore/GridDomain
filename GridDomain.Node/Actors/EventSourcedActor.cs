@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Persistence;
 using CommonDomain;
+using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -11,7 +12,7 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    public class EventSourcedActor<T> : ReceivePersistentActor where T: IAggregate
+    public class EventSourcedActor<T> : ReceivePersistentActor where T: AggregateBase
     {
         private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
         protected Guid Id { get; }
@@ -32,9 +33,8 @@ namespace GridDomain.Node.Actors
             _aggregateConstructor = aggregateConstructor;
             Publisher = publisher;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
-            State = aggregateConstructor.Build(typeof(T), Id, null);
+            State = (AggregateBase)aggregateConstructor.Build(typeof(T), Id, null);
             Monitor = new ActorMonitor(Context, typeof(T).Name);
-
             Command<GracefullShutdownRequest>(req =>
             {
                 Monitor.IncrementMessagesReceived();
@@ -74,12 +74,12 @@ namespace GridDomain.Node.Actors
 
             Recover<RecoveryCompleted>(message =>
             {
-                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                _log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                 NotifyWatchers(message);
             });
         }
 
-        protected bool TrySaveSnapshot(object[] stateChange)
+        protected bool TrySaveSnapshot(params object[] stateChange)
         {
             var shouldSave = SnapshotsPolicy.ShouldSave(stateChange);
             if (shouldSave)
@@ -95,8 +95,9 @@ namespace GridDomain.Node.Actors
 
         private void Terminating()
         {
-            Command<DeleteSnapshotsSuccess>(s => StopNow(s));
-            Command<DeleteSnapshotsFailure>(s => StopNow(s));
+            //for case when we in process of saving snapshot or events
+            Command<DeleteSnapshotsSuccess>(s => DeferAsync(new object(), o => StopNow(s)));
+            Command<DeleteSnapshotsFailure>(s => DeferAsync(new object(), o => StopNow(s)));
         }
 
         private void StopNow(object s)

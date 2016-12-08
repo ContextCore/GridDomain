@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.CQRS.Messaging
@@ -11,11 +12,11 @@ namespace GridDomain.CQRS.Messaging
             _maps = maps;
         }
 
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
             foreach (var messageRouteMap in _maps)
             {
-                messageRouteMap.Register(router);
+               await messageRouteMap.Register(router);
             }
         }
     }

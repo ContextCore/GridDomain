@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -7,11 +8,11 @@ namespace GridDomain.Node
 {
     public class TransportMessageDumpMap : IMessageRouteMap
     {
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
-            router.RegisterHandler<DomainEvent,DefaultMessageLoggerHandler>();
-            router.RegisterHandler<ICommand,DefaultMessageLoggerHandler>();
-            router.RegisterHandler<IFault, DefaultMessageLoggerHandler>();
+            await router.RegisterHandler<DomainEvent,DefaultMessageLoggerHandler>();
+            await router.RegisterHandler<ICommand,DefaultMessageLoggerHandler>();
+            await router.RegisterHandler<IFault, DefaultMessageLoggerHandler>();
         }
     }
 }

@@ -44,7 +44,7 @@ namespace GridDomain.Node.Configuration.Akka
         }
 
 
-        public string ToStandAloneSystemConfig()
+        public virtual string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(
                 new LogConfig(_logVerbosity,false),
@@ -54,7 +54,7 @@ namespace GridDomain.Node.Configuration.Akka
             return cfg.Build();
         }
 
-        public string ToStandAloneInMemorySystemConfig()
+        public virtual string ToStandAloneInMemorySystemConfig()
         {
             var cfg = new RootConfig(
                 new LogConfig(_logVerbosity,false),

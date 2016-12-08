@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
@@ -8,10 +9,10 @@ namespace GridDomain.Tests.EventsUpgrade.Domain
     public class BalanceRouteMap : IMessageRouteMap
     {
 
-        public void Register(IMessagesRouter router)
+        public async Task Register(IMessagesRouter router)
         {
-            router.RegisterAggregate(BalanceAggregatesCommandHandler.Descriptor);
-            router.RegisterHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>(m => m.SourceId);
+            await router.RegisterAggregate(BalanceAggregatesCommandHandler.Descriptor);
+            await router.RegisterHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>(m => m.SourceId);
         }
     }
 }

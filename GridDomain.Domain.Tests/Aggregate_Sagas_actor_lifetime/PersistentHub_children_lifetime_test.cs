@@ -82,10 +82,10 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
         }
 
         [SetUp]
-        public void Clear_child_lifetimes()
+        public async Task Clear_child_lifetimes()
         {
             _gridDomainNode = new GridDomainNode(CreateConfiguration(),new SoftwareProgrammingSagaRoutes(),() => new []{Sys});
-            _gridDomainNode.Start();
+            await _gridDomainNode.Start();
 
             switch (_case)
             {

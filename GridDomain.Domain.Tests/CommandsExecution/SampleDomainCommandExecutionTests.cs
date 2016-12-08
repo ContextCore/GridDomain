@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain;
@@ -27,7 +28,7 @@ namespace GridDomain.Tests.CommandsExecution
             return new SampleRouteMap(container);
         }
 
-        public SampleDomainCommandExecutionTests(bool inMemory) : base(inMemory)
+        public SampleDomainCommandExecutionTests(bool inMemory, AkkaConfiguration config = null) : base(inMemory, config)
         {
         }
 

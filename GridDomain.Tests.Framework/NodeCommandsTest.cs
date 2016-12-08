@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -103,20 +104,20 @@ namespace GridDomain.Tests.Framework
         }
 
         [SetUp]
-        public void CreateNode()
+        public async Task CreateNode()
         {
             if (!CreateNodeOnEachTest) return;
-            Start();
+            await Start();
         }
 
         [OneTimeSetUp]
-        public void Init()
+        public async Task Init()
         {
             if (CreateNodeOnEachTest) return;
-            Start();
+            await Start();
         }
 
-        protected virtual void Start()
+        protected virtual async Task Start()
         {
             LogManager.SetLoggerFactory(new AutoTestLogFactory());
 
@@ -126,7 +127,7 @@ namespace GridDomain.Tests.Framework
 
             GridNode = CreateGridDomainNode(AkkaConf);
             OnNodeCreated();
-            GridNode.Start();
+            await GridNode.Start();
             OnNodeStarted();
         }
 

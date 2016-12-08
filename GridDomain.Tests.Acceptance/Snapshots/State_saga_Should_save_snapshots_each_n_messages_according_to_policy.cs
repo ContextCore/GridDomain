@@ -4,6 +4,7 @@ using System.Threading;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
@@ -36,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                              SoftwareProgrammingSagaFactory,
                                              GotTiredEvent>
                                              (SoftwareProgrammingSaga.Descriptor,
-                                              () => new SnapshotsPersistenceAfterEachMessagePolicy(),
+                                              () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(10), 2, 3),
                                               SoftwareProgrammingSagaState.FromSnapshot));
         }
 
