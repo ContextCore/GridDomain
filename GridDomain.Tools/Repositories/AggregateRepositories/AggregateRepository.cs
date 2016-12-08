@@ -15,7 +15,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IRepository<DomainEvent> _eventRepository;
         private readonly EventsAdaptersCatalog _eventsAdaptersCatalog;
-         
+
         public AggregateRepository(IRepository<DomainEvent> eventRepository, EventsAdaptersCatalog eventsAdaptersCatalog = null)
         {
             _eventsAdaptersCatalog = eventsAdaptersCatalog ?? new EventsAdaptersCatalog();
@@ -29,12 +29,15 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             aggr.ClearUncommittedEvents();
         }
 
-        public T LoadAggregate<T>(Guid id) where T : AggregateBase
+        public T LoadAggregate<T>(Guid id, int? version = null) where T : AggregateBase
         {
             var agr = Aggregate.Empty<T>(id);
             var persistId = AggregateActorName.New<T>(id).ToString();
             var events = _eventRepository.Load(persistId);
-            foreach(var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e)))
+
+            var sequenceNr = version ?? events.Length;
+
+            foreach (var e in events.Take(sequenceNr).SelectMany(e => _eventsAdaptersCatalog.Update(e)))
                 ((IAggregate)agr).ApplyEvent(e);
             return agr;
         }
