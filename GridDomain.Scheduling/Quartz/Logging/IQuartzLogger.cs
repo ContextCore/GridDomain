@@ -6,5 +6,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
     {
         void LogSuccess(string jobName);
         void LogFailure(string jobName, Exception e);
+        void LogWarn(string jobName, string message);
+        void LogInfo(string jobName, string message);
     }
 }

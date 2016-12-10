@@ -62,6 +62,8 @@ namespace GridDomain.Scheduling.Integration
                                                    .GetProperty(extendedOptions.MessageIdFieldName)?
                                                    .GetValue(o) == extendedOptions.SuccessMessageId;
                     }
+                    else
+                        _quartzLogger.LogWarn(context.JobDetail.Key.Name, "Received extended options with empty id property field");
 
                     var task = _executor.NewCommandWaiter()
                                         .Expect(options.SuccesEventType, o => isExpected(o))
@@ -154,7 +156,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception ex)
             {
-                _quartzLogger.LogFailure(jobName, ex);
+                _quartzLogger.LogWarn(jobName, $"Cannot deserialize extended options, will switch to simple options. {ex}");
                 return Deserialize<ExecutionOptions>(bytes);
             }
         }
