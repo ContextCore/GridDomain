@@ -47,15 +47,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public IExpectBuilder<T> And(Type type,Func<object,bool> filter)
         {
-            WaitIsOver = WaitIsOver.And(c => c.Any(filter));
+            WaitIsOver = WaitIsOver.And(c => c != null && c.Any(filter));
             Waiter.Subscribe(type, filter, WaitIsOver.Compile());
             return this;
         }
 
         public IExpectBuilder<T> Or(Type type, Func<object,bool> filter)
         {
-            WaitIsOver = WaitIsOver.Or(c => c.Any(filter));
-            Waiter.Subscribe(type,filter, WaitIsOver.Compile());
+            WaitIsOver = WaitIsOver.Or(c => c != null && c.Any(filter));
+            Waiter.Subscribe(type, filter, WaitIsOver.Compile());
             return this;
         }
     }

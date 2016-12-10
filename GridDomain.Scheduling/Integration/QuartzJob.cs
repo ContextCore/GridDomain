@@ -58,9 +58,9 @@ namespace GridDomain.Scheduling.Integration
 
                     if (!string.IsNullOrEmpty(extendedOptions?.MessageIdFieldName))
                     {
-                        isExpected = o => (Guid) o.GetType()
-                            .GetProperty(extendedOptions.MessageIdFieldName)
-                            ?.GetValue(o) == extendedOptions.SuccessMessageId;
+                        isExpected = o => (Guid) o?.GetType()
+                                                   .GetProperty(extendedOptions.MessageIdFieldName)?
+                                                   .GetValue(o) == extendedOptions.SuccessMessageId;
                     }
 
                     var task = _executor.NewCommandWaiter()

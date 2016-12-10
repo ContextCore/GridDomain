@@ -16,7 +16,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public abstract class LocalMessagesWaiter<T> : IMessageWaiter<T>
     {
         private readonly IActorSubscriber _subscriber;
-        private readonly ConcurrentBag<object> _ignoredMessages = new ConcurrentBag<object>();
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
 
         private readonly List<Func<object,bool>> _filters = new List<Func<object, bool>>();
@@ -49,7 +48,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
         public IExpectBuilder<T> Expect(Type type, Func<object,bool> filter = null)
         {
-            return ExpectBuilder.And(type,filter ?? (o => true));
+            return ExpectBuilder.And(type, filter ?? (o => true));
         }
 
         public async Task<IWaitResults> Start(TimeSpan? timeout = null)
@@ -79,7 +78,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 CheckExecutionError(message);
 
                 if (IsExpected(message)) _allExpectedMessages.Add(message);
-                else _ignoredMessages.Add(message);
             }
         }
 
