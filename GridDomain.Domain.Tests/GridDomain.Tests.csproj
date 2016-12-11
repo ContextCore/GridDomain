@@ -238,6 +238,11 @@
   <ItemGroup>
     <Compile Include="CommandsExecution\ExpectedMessages\CommandPlan_Execute_without_timeout.cs" />
     <Compile Include="EventsUpgrade\Domain\Commands\ChangeBalanceInFuture.cs" />
+    <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />
+    <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
+    <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="LooseCommandOnPoolResize\Aggregate_Hub_dies_after_clear_children.cs" />
     <Compile Include="LooseCommandOnPoolResize\Only_part_of_pooled_actors_receive_messages_from_EventStream.cs" />
     <Compile Include="LooseCommandOnPoolResize\Parent_dies_on_child_stop.cs" />

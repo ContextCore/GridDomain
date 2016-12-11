@@ -270,6 +270,7 @@
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="Configuration\Akka\LogVerbosity.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
+    <Compile Include="DefaultExceptionPolicy.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
     <Compile Include="DomainEventsJsonSerializationExtension.cs" />
     <Compile Include="DomainEventsJsonSerializationExtensionProvider.cs" />

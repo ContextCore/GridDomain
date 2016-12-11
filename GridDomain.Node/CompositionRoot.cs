@@ -18,7 +18,6 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-   // [Obsolete("Use GridNodeConainerConfiguration instead")]
     //TODO: refactor to good config via IContainerConfiguration
     internal static class CompositionRoot
     {
@@ -29,7 +28,10 @@ namespace GridDomain.Node
                                 IQuartzConfig config = null)
         {
             container.Register(new QuartzSchedulerConfiguration(config ?? new PersistedQuartzConfig()));
-       
+            container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings(5,
+                                                                                 TimeSpan.FromMinutes(10),
+                                                                                 new DefaultExceptionPolicy()));
+
             //TODO: replace with config
             IActorTransport transport;
             switch (transportMode)

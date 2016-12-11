@@ -58,20 +58,24 @@ namespace GridDomain.Scheduling.Integration
 
                     if (!string.IsNullOrEmpty(extendedOptions?.MessageIdFieldName))
                     {
-                        isExpected = o => (Guid) o?.GetType()
-                                                   .GetProperty(extendedOptions.MessageIdFieldName)?
-                                                   .GetValue(o) == extendedOptions.SuccessMessageId;
+                        isExpected = o => o.GetType()
+                                           .IsAssignableFrom(extendedOptions.SuccesEventType)
+                                    && (Guid)o?.GetType()
+                                           .GetProperty(extendedOptions.MessageIdFieldName)?
+                                           .GetValue(o) == extendedOptions.SuccessMessageId;
                     }
                     else
                         _quartzLogger.LogWarn(context.JobDetail.Key.Name, "Received extended options with empty id property field");
 
-                    var task = _executor.NewCommandWaiter()
+                    var task = _executor.NewCommandWaiter(options.Timeout)
                                         .Expect(options.SuccesEventType, o => isExpected(o))
                                         .Create()
                                         .Execute(command);
 
                     if (!task.Wait(options.Timeout))
+                    {
                         throw new ScheduledCommandWasNotConfirmedException(command);
+                    }
 
                     _quartzLogger.LogSuccess(context.JobDetail.Key.Name);
                     _publisher.Publish(new JobSucceeded(context.JobDetail.Key.Name, context.JobDetail.Key.Group));

@@ -80,8 +80,8 @@ namespace GridDomain.EventSourcing.Sagas.FutureEvents
             if (!FutureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
             RaiseEvent(e.Event);
+            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
         }
 
         protected void RaiseEvent(DateTime raiseTime, DomainEvent @event)

@@ -28,10 +28,10 @@ namespace GridDomain.Tests.SampleDomain
                                     (c, a) => a.ChangeStateAsync(c.Parameter,c.SleepTime));
                                     
             Map<AlwaysFaultCommand>(c => c.AggregateId,
-                                   (c, a) => a.RaiseExeption());
+                                   (c, a) => a.RaiseException());
 
             Map<AlwaysFaultAsyncCommand>(c => c.AggregateId,
-                                   (c, a) => a.RaiseExeptionAsync(c.SleepTime));
+                                   (c, a) => a.RaiseExceptionAsync(c.SleepTime));
 
             Map<AsyncFaultWithOneEventCommand>(c => c.AggregateId,
                               (c, a) => a.AsyncExceptionWithOneEvent(c.Parameter, c.SleepTime));

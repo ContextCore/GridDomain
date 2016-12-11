@@ -106,7 +106,7 @@ namespace GridDomain.Tests.SampleDomain
             var expectionTask = CreateEventTask(0, sleepTime).ContinueWith(
              t =>
              {
-                 RaiseExeption();
+                 RaiseException();
                  return t.Result;
              });
             RaiseEventAsync(expectionTask);
@@ -123,17 +123,17 @@ namespace GridDomain.Tests.SampleDomain
             Value = e.Value;
         }
 
-        public void RaiseExeption()
+        public void RaiseException()
         {
             throw new SampleAggregateException();
         }
 
-        public void RaiseExeptionAsync(TimeSpan callBackTime)
+        public void RaiseExceptionAsync(TimeSpan callBackTime)
         {
          var expectionTask = CreateEventsTask(0,callBackTime).ContinueWith(
              t =>
              {
-                 RaiseExeption();
+                 RaiseException();
                  return t.Result;
              });
 

@@ -3,17 +3,27 @@ using System.Collections.Generic;
 
 namespace GridDomain.Scheduling.Quartz
 {
+
     public class InMemoryRetrySettings : IRetrySettings
     {
         public int MaxRetries { get; }
         public TimeSpan BackoffBaseInterval { get; }
-        public IReadOnlyCollection<Type> ExceptionsToStop { get; }
+        public IExceptionPolicy ErrorActions { get; }
 
-        public InMemoryRetrySettings(int maxRetries = 5, TimeSpan? baseInterval = null, params Type [] exceptionsToStopRetry)
+        public InMemoryRetrySettings(int maxRetries = 5, TimeSpan? baseInterval = null, IExceptionPolicy errorActions = null)
         {
+            ErrorActions = errorActions;
             MaxRetries = maxRetries;
             BackoffBaseInterval = baseInterval ?? TimeSpan.FromMinutes(20);
-            ExceptionsToStop = exceptionsToStopRetry ?? new Type[] {};
+            ErrorActions = errorActions ?? new AlwaysRetryExceptionPolicy();
+        }
+    }
+
+    public class AlwaysRetryExceptionPolicy : IExceptionPolicy
+    {
+        public bool ShouldContinue(Exception ex)
+        {
+            return true;
         }
     }
 }

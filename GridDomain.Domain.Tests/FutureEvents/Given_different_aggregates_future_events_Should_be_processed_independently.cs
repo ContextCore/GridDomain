@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
-using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using NUnit.Framework;
 

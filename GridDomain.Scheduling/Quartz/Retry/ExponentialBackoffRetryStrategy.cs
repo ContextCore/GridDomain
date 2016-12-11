@@ -1,5 +1,7 @@
 using System;
+using GridDomain.Logging;
 using Quartz;
+using Quartz.Collection;
 
 namespace GridDomain.Scheduling.Quartz
 {
@@ -7,15 +9,31 @@ namespace GridDomain.Scheduling.Quartz
     {
         private const string Retries = "Retries";
         private readonly IRetrySettings _settings;
+        private readonly ISoloLogger _log = LogManager.GetLogger();
+
         public ExponentialBackoffRetryStrategy(IRetrySettings settings)
         {
             this._settings = settings;
         }
-        public bool ShouldRetry(IJobExecutionContext context)
+        public bool ShouldRetry(IJobExecutionContext context, JobExecutionException e)
         {
+            if (e?.InnerException != null && !_settings.ErrorActions.ShouldContinue(e.InnerException))
+            {
+                _log.Debug("Job {Key} will not be retried due to special error encoured: {error}",
+                    context.JobDetail.Key.Name, e.InnerException);
+                return false;
+            }
+
             int retries = GetAlreadyPerformedRetries(context);
-         //   int lastException = GetLastException(context);
-            return retries < this._settings.MaxRetries;
+            var shouldRetry = retries < this._settings.MaxRetries;
+
+            if(shouldRetry)
+                _log.Debug("Job {Key} will be retried, {retries} / {maxRetries}",context.JobDetail.Key.Name, retries,_settings.MaxRetries);
+            else 
+                _log.Debug("Job {Key} will not be retried, as retries limit was reached: {maxRetries}", context.JobDetail.Key.Name,
+                    _settings.MaxRetries);
+
+            return shouldRetry;
         }
         public ITrigger GetTrigger(IJobExecutionContext context)
         {

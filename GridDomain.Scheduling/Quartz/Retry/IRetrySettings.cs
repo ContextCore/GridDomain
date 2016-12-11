@@ -7,7 +7,11 @@ namespace GridDomain.Scheduling.Quartz
     {
         int MaxRetries { get; }
         TimeSpan BackoffBaseInterval { get; }
+        IExceptionPolicy ErrorActions { get; }
+    }
 
-        IReadOnlyCollection<Type> ExceptionsToStop { get; }
+    public interface IExceptionPolicy
+    {
+        bool ShouldContinue(Exception ex);
     }
 }
