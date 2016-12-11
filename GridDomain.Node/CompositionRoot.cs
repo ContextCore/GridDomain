@@ -49,6 +49,7 @@ namespace GridDomain.Node
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
             container.RegisterInstance<IActorTransport>(transport);
+
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();

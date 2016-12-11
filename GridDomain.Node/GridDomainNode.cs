@@ -184,7 +184,7 @@ namespace GridDomain.Node
 
             try
             {
-                _quartzScheduler?.Shutdown();
+                _quartzScheduler?.Shutdown(false);
             }
             catch (Exception ex)
             {

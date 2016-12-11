@@ -248,6 +248,7 @@
     <Compile Include="LooseCommandOnPoolResize\Parent_dies_on_child_stop.cs" />
     <Compile Include="LooseCommandOnPoolResize\Spawn.cs" />
     <Compile Include="LooseCommandOnPoolResize\Stop.cs" />
+    <Compile Include="MessageWaiting\Commanding\AsyncExecute_without_timeout.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
@@ -332,7 +333,7 @@
     <Compile Include="MessageWaiting\Commanding\CommandWaiterWaitsForFaultsFromProjectionGroup.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_results_tests.cs" />
     <Compile Include="MessageWaiting\Commanding\Execute_several_commands_until_projection_build_notification_fetching_results.cs" />
-    <Compile Include="MessageWaiting\Commanding\SyncExecute_without_timeout.cs" />
+    <Compile Include="MessageWaiting\Commanding\SyncExecute_with_timeout.cs" />
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_faults.cs" />
     <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_and_B.cs" />
     <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_and_B_or_C.cs" />

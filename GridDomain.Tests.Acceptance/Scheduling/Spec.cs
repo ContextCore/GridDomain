@@ -88,7 +88,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void TearDown()
         {
             ResultHolder.Clear();
-            _quartzScheduler.Shutdown(true);
+            _quartzScheduler.Shutdown(false);
         }
 
         private void CreateScheduler()
