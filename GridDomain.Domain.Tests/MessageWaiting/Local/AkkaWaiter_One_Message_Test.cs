@@ -31,16 +31,16 @@ namespace GridDomain.Tests.MessageWaiting.Local
         [Test]
         public void Message_is_waitable()
         {
-            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(100)));
+            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(200)));
         }
 
         [Test]
         public void Multiply_waites_completes_after_message_was_received()
         {
-            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(100))
-                     && _results.Wait(TimeSpan.FromMilliseconds(100))
-                     && _results.Wait(TimeSpan.FromMilliseconds(100))
-                     && _results.Wait(TimeSpan.FromMilliseconds(100)));
+            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(200))
+                     && _results.Wait(TimeSpan.FromMilliseconds(200))
+                     && _results.Wait(TimeSpan.FromMilliseconds(200))
+                     && _results.Wait(TimeSpan.FromMilliseconds(200)));
         }
 
         [Test]
