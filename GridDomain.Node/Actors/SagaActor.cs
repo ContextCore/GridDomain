@@ -96,6 +96,7 @@ namespace GridDomain.Node.Actors
                 _log.Error(ex,"Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
                 var fault = Fault.NewGeneric(message, ex, processorType, Id);
                 Publisher.Publish(fault);
+                return;
             }
 
             ProcessSagaStateChange();
@@ -118,12 +119,14 @@ namespace GridDomain.Node.Actors
 
             PersistAll(stateChangeEvents, 
                 e => {
+                    //should save snapshot only after all messages persisted as state was already modified by all of them
                     if(++persistedEvents == totalEvents)
                          TrySaveSnapshot(e);
 
                     Publisher.Publish(e);
                     NotifyWatchers(new Persisted(e));
                 });
+
             State.ClearUncommittedEvents();
             return stateChangeEvents;
         }
