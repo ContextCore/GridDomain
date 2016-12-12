@@ -90,7 +90,8 @@ namespace GridDomain.Node.Actors
             {
                 events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
             }
-
+            int totalEvents = events.Length;
+            int persistedEvents = 0;
             PersistAll(events, e =>
             {
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
@@ -100,7 +101,10 @@ namespace GridDomain.Node.Actors
                 e.Match().With<FutureEventScheduledEvent>(Handle)
                          .With<FutureEventCanceledEvent>(Handle);
 
-                TrySaveSnapshot(e);
+                //should save snapshot only after all messages persisted as state was already modified by all of them
+                if(++persistedEvents == totalEvents)
+                    TrySaveSnapshot(e);
+
                 Publisher.Publish(e);
                 NotifyWatchers(new Persisted(e));
             });

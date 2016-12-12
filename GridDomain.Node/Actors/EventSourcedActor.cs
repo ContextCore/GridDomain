@@ -69,7 +69,6 @@ namespace GridDomain.Node.Actors
             {
                 SnapshotsPolicy.MarkSnapshotApplied(offer.Metadata);
                 State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
-                DeleteSnapshots(SnapshotsPolicy.GetSnapshotsToDelete());
             });
 
             Recover<RecoveryCompleted>(message =>

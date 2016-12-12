@@ -113,11 +113,16 @@ namespace GridDomain.Node.Actors
         private object[] ProcessSagaStateChange()
         {
             var stateChangeEvents = State.GetUncommittedEvents().Cast<object>().ToArray();
+            int totalEvents = stateChangeEvents.Length;
+            int persistedEvents = 0;
+
             PersistAll(stateChangeEvents, 
                 e => {
+                    if(++persistedEvents == totalEvents)
                          TrySaveSnapshot(e);
-                         Publisher.Publish(e);
-                         NotifyWatchers(new Persisted(e));
+
+                    Publisher.Publish(e);
+                    NotifyWatchers(new Persisted(e));
                 });
             State.ClearUncommittedEvents();
             return stateChangeEvents;
