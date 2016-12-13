@@ -31,12 +31,12 @@ namespace GridDomain.CQRS
         public object Message { get; }
         public Type Processor { get; }
 
-        public static Fault NewGeneric(object msg, Exception exception, Type processorType, Guid sagaId)
+        public static IFault NewGeneric(object msg, Exception exception, Type processorType, Guid sagaId)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(Fault).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
-            return (Fault)method.Invoke(null, new [] { msg, exception, sagaId, processorType});
+            return (IFault)method.Invoke(null, new [] { msg, exception, sagaId, processorType});
         }
 
         public static Fault<T> New<T>(T msg, Exception ex, Guid sagaId, Type processorType = null)

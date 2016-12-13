@@ -92,12 +92,11 @@ namespace GridDomain.Node.Actors
         private void ProcessFault(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
         {
             var fault = Fault.NewGeneric(cmd, ex, typeof(TAggregate), cmd.SagaId);
-
             
             var metadata = messageMetadata.CreateChild(cmd.Id,
-                new ProcessEntry(Self.Path.Name,
-                                 CreatedFault,
-                                 CommandRaisedAnError));
+                                           new ProcessEntry(Self.Path.Name,
+                                                            CreatedFault,
+                                                            CommandRaisedAnError));
 
             Publisher.Publish(fault, metadata);
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);

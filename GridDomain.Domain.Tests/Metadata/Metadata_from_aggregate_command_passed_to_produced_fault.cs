@@ -1,5 +1,14 @@
 using System;
+using System.Linq;
+using GridDomain.Common;
+using GridDomain.CQRS;
+using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
+using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.SampleDomain.Commands;
+using GridDomain.Tests.SampleDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Metadata
@@ -7,10 +16,87 @@ namespace GridDomain.Tests.Metadata
     [TestFixture]
     class Metadata_from_aggregate_command_passed_to_produced_fault : SampleDomainCommandExecutionTests
     {
-        [Test]
-        public void Test()
+        private IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>> _answer;
+        private AlwaysFaultAsyncCommand _command;
+        private MessageMetadata _commandMetadata;
+
+        [OneTimeSetUp]
+        public void When_execute_aggregate_command_with_fault_and_metadata()
         {
-            throw new NotImplementedException();
+            _command = new AlwaysFaultAsyncCommand(Guid.NewGuid(),TimeSpan.FromMilliseconds(50));
+            _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
+
+            try
+            {
+                var res = GridNode.NewCommandWaiter(TimeSpan.FromSeconds(30),false)
+                                  .Expect<SampleAggregateCreatedEvent>()
+                                  .Create()
+                                  .Execute(_command, _commandMetadata)
+                                  .Result;
+            }
+            catch (Exception ex)
+            {
+                var a = ex.ToString();// //res.Message<IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>>>();
+            }
+        }
+
+        [Test]
+        public void Result_contains_metadata()
+        {
+            Assert.NotNull(_answer.Metadata);
+        }
+
+        [Test]
+        public void Result_contains_message()
+        {
+            Assert.NotNull(_answer.Message);
+        }
+
+        [Test]
+        public void Result_message_has_expected_type()
+        {
+            Assert.IsInstanceOf<SampleAggregateCreatedEvent>(_answer.Message);
+        }
+
+        [Test]
+        public void Result_message_has_expected_id()
+        {
+            Assert.AreEqual(_command.Id, _answer.Message.Message.Id);
+        }
+
+        [Test]
+        public void Result_message_has_expected_value()
+        {
+            Assert.AreEqual(_command.GetType(), _answer.Message.Message.GetType());
+        }
+
+        [Test]
+        public void Result_metadata_has_command_id_as_casuation_id()
+        {
+            Assert.AreEqual(_command.Id, _answer.Metadata.CasuationId);
+        }
+
+
+        [Test]
+        public void Result_metadata_has_correlation_id_same_as_command_metadata()
+        {
+            Assert.AreEqual(_commandMetadata.CorrelationId, _answer.Metadata.CorrelationId);
+        }
+
+        [Test]
+        public void Result_metadata_has_processed_history_filled_from_aggregate()
+        {
+            Assert.AreEqual(1, _answer.Metadata.History?.Steps.Count);
+        }
+
+        [Test]
+        public void Result_metadata_has_processed_correct_filled_history_step()
+        {
+            var step = _answer.Metadata.History.Steps.First();
+
+            Assert.AreEqual(AggregateActorName.New<SampleAggregate>(_command.AggregateId).Name, step.Who);
+            Assert.AreEqual(AggregateActor<SampleAggregate>.CommandExecutionCreatedAnEvent, step.Why);
+            Assert.AreEqual(AggregateActor<SampleAggregate>.PublishingEvent, step.What);
         }
     }
 }
