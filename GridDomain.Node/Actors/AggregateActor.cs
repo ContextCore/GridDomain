@@ -103,7 +103,7 @@ namespace GridDomain.Node.Actors
 
                 //should save snapshot only after all messages persisted as state was already modified by all of them
                 if(++persistedEvents == totalEvents)
-                    TrySaveSnapshot(e);
+                    TrySaveSnapshot(events);
 
                 Publisher.Publish(e);
                 NotifyWatchers(new Persisted(e));
