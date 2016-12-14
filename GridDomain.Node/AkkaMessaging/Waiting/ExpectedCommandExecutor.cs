@@ -49,8 +49,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
              _waiter.ExpectBuilder.Or<IFault<T>>(f => f.Message.Id == command.Id);
              _waiter.ExpectBuilder.Or<Fault<T>>(f => f.Message.Id == command.Id);
-             _waiter.ExpectBuilder.Or<IFault<IMessageMetadataEnvelop<T>>>(f => f.Message.Message.Id == command.Id);
-             _waiter.ExpectBuilder.Or<Fault<IMessageMetadataEnvelop<T>>>(f => f.Message.Message.Id == command.Id);
+             _waiter.ExpectBuilder.Or<IMessageMetadataEnvelop<IFault<T>>>(f => f.Message.Message.Id == command.Id);
+             _waiter.ExpectBuilder.Or<IMessageMetadataEnvelop<Fault<T>>>(f => f.Message.Message.Id == command.Id);
 
             var task = _waiter.Start();
 

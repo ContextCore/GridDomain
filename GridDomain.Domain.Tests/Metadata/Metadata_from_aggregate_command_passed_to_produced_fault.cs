@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
@@ -21,23 +22,17 @@ namespace GridDomain.Tests.Metadata
         private MessageMetadata _commandMetadata;
 
         [OneTimeSetUp]
-        public void When_execute_aggregate_command_with_fault_and_metadata()
+        public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
             _command = new AlwaysFaultAsyncCommand(Guid.NewGuid(),TimeSpan.FromMilliseconds(50));
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            try
-            {
-                var res = GridNode.NewCommandWaiter(TimeSpan.FromSeconds(30),false)
-                                  .Expect<SampleAggregateCreatedEvent>()
-                                  .Create()
-                                  .Execute(_command, _commandMetadata)
-                                  .Result;
-            }
-            catch (Exception ex)
-            {
-                var a = ex.ToString();// //res.Message<IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>>>();
-            }
+            var res = await GridNode.NewCommandWaiter(null,false)
+                                    .Expect<SampleAggregateCreatedEvent>()
+                                    .Create()
+                                    .Execute(_command, _commandMetadata);
+
+            _answer = res.Message<IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>>>();
         }
 
         [Test]
@@ -55,7 +50,7 @@ namespace GridDomain.Tests.Metadata
         [Test]
         public void Result_message_has_expected_type()
         {
-            Assert.IsInstanceOf<SampleAggregateCreatedEvent>(_answer.Message);
+            Assert.IsInstanceOf<IFault<AsyncFaultWithOneEventCommand>>(_answer.Message);
         }
 
         [Test]
@@ -95,8 +90,8 @@ namespace GridDomain.Tests.Metadata
             var step = _answer.Metadata.History.Steps.First();
 
             Assert.AreEqual(AggregateActorName.New<SampleAggregate>(_command.AggregateId).Name, step.Who);
-            Assert.AreEqual(AggregateActor<SampleAggregate>.CommandExecutionCreatedAnEvent, step.Why);
-            Assert.AreEqual(AggregateActor<SampleAggregate>.PublishingEvent, step.What);
+            Assert.AreEqual(AggregateActor<SampleAggregate>.CommandRaisedAnError, step.Why);
+            Assert.AreEqual(AggregateActor<SampleAggregate>.CreatedFault, step.What);
         }
     }
 }
