@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.EventChronicles;
 using GridDomain.Tests.CommandsExecution;
@@ -26,14 +27,18 @@ namespace GridDomain.Tests.Acceptance.Chronicles
 
         class AggregateCreatedProjectionBuilder_Test : AggregateCreatedProjectionBuilder
         {
-            public override void Handle(SampleAggregateCreatedEvent msg)
+           //public override void Handle(SampleAggregateCreatedEvent msg)
+           //{
+           //    base.Handle(msg);
+           //   EventsReplayInfoHolder.ProcessedMessages[msg.SourceId].Add(new ProcessedHistory
+           //   {
+           //       SequenceNumber = msg.History.SequenceNumber,
+           //       HandlerName = this.GetType().Name
+           //   });
+           //}
+
+            public AggregateCreatedProjectionBuilder_Test(IPublisher publisher) : base(publisher)
             {
-                base.Handle(msg);
-               EventsReplayInfoHolder.ProcessedMessages[msg.SourceId].Add(new ProcessedHistory
-               {
-                   SequenceNumber = msg.History.SequenceNumber,
-                   HandlerName = this.GetType().Name
-               });
             }
         }
 
@@ -65,7 +70,7 @@ namespace GridDomain.Tests.Acceptance.Chronicles
             EventsReplayInfoHolder.ProcessedMessages[aggregateId] = new List<ProcessedHistory>();
 
             var chronicle = new AkkaEventsChronicle(new AutoTestAkkaConfiguration());
-            chronicle.Router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder_Test>(e => e.SourceId);
+            //chronicle.Router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder_Test>(e => e.SourceId);
             chronicle.Router.RegisterHandler<SampleAggregateChangedEvent, AggregateChangedProjectionBuilder_Test>(e => e.SourceId);
             chronicle.Replay<SampleAggregate>(aggregateId);
             Thread.Sleep(2000);

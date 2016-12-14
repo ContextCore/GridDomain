@@ -24,7 +24,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             var faultyHandlerMap =
                 new CustomRouteMap(
                     r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
-                    r => r.RegisterHandler<SampleAggregateCreatedEvent, CreateProjectionBuilder>(e => e.SourceId),
+                    r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(e => e.SourceId),
                     r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);

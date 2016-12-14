@@ -8,6 +8,14 @@ using GridDomain.Logging;
 
 namespace GridDomain.Node.Actors
 {
+    public static class MessageHandlingStatuses
+    {
+        public const string PublishingFault = "publishing fault";
+        public const string MessageProcessCasuedAnError = "message process cased an error";
+        public const string MessageProcessed = "message processed";
+        public const string PublishingNotification = "publishing notification";
+    }
+    
     public class MessageHandlingActor<TMessage, THandler> : TypedActor where THandler : IHandler<TMessage>
     {
         private readonly THandler _handler;
@@ -39,12 +47,11 @@ namespace GridDomain.Node.Actors
             catch (Exception e)
             {
                 _log.Error(e, "Handler actor raised an error on message process: {@Message}", msg);
-                var metadata = msg.Metadata.CreateChild(Guid.Empty,
-                                                        new ProcessEntry(Self.Path.Name,
-                                                                         "publishing fault",
-                                                                         "message process casued an error"));
 
-                var fault = Fault.New(msg, e, GetSagaId(msg.Message), typeof(THandler));
+                var metadata = msg.Metadata.CreateChild(Guid.Empty,
+                                                        new ProcessEntry(typeof(THandler).Name, MessageHandlingStatuses.PublishingFault, MessageHandlingStatuses.MessageProcessCasuedAnError));
+
+                var fault = Fault.New(msg.Message, e, GetSagaId(msg.Message), typeof(THandler));
 
                 _publisher.Publish(fault, metadata);
             }

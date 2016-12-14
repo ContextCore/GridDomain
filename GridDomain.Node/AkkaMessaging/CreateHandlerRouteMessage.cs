@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using GridDomain.Common;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging
@@ -33,7 +35,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public static CreateHandlerRouteMessage New<TMessage, THandler>(string property) where THandler : IHandler<TMessage>
         {
-            return new CreateHandlerRouteMessage(typeof (TMessage), typeof (THandler), property);
+            return new CreateHandlerRouteMessage(typeof(TMessage), typeof (THandler), property);
         }
 
         private void Check()
@@ -44,20 +46,35 @@ namespace GridDomain.Node.AkkaMessaging
 
         private void CheckHandler()
         {
-            var handlerType = typeof (IHandler<>).MakeGenericType(MessageType);
+            var msgType = GetTypeWithoutMetadata(MessageType);
+            var handlerType = typeof(IHandler<>).MakeGenericType(msgType);
             if (!handlerType.IsAssignableFrom(HandlerType))
-                throw new InvalidHandlerType(HandlerType, MessageType);
+                 throw new InvalidHandlerType(HandlerType, MessageType);
+        }
+
+        public static Type GetTypeWithoutMetadata(Type messageType)
+        {
+            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) &&
+                messageType.IsGenericType &&
+                messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>))
+            {
+                return messageType.GetGenericArguments().First();
+            }
+
+            return messageType;
         }
 
         private void CheckCorrelationProperty()
         {
             if (MessageCorrelationProperty == null) return;
 
-            var property = MessageType.GetProperty(MessageCorrelationProperty);
+            var messageType = GetTypeWithoutMetadata(MessageType);
+
+            var property = messageType.GetProperty(MessageCorrelationProperty);
             if (property == null)
-                throw new CannotFindCorrelationProperty(MessageType, MessageCorrelationProperty);
+                throw new CannotFindCorrelationProperty(messageType, MessageCorrelationProperty);
             if (property.PropertyType != typeof (Guid))
-                throw new IncorrectTypeOfCorrelationProperty(MessageType, MessageCorrelationProperty);
+                throw new IncorrectTypeOfCorrelationProperty(messageType, MessageCorrelationProperty);
         }
     }
 }

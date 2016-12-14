@@ -41,8 +41,10 @@ namespace GridDomain.Node.Actors
         public void Handle(CreateHandlerRouteMessage msg)
         {
             _monitor.IncrementMessagesReceived();
-            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
-            string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
+            var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
+
+            var actorType = _actorTypeFactory.GetActorTypeFor(msgType, msg.HandlerType);
+            string actorName = $"{msg.HandlerType}_for_{msgType.Name}";
             Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 

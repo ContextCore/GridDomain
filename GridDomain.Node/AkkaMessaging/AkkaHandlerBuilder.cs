@@ -1,3 +1,4 @@
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
@@ -16,7 +17,9 @@ namespace GridDomain.Node.AkkaMessaging
 
         public void Register()
         {
-            _routingRegistrator.Handle(CreateHandlerRouteMessage.New<TMessage, THandler>(CorrelationPropertyName));
+            _routingRegistrator.Handle(new CreateHandlerRouteMessage(typeof(IMessageMetadataEnvelop<TMessage>),
+                                                                     typeof(THandler), 
+                                                                     CorrelationPropertyName));
         }
 
         public IHandlerBuilder<TMessage, THandler> WithCorrelation(string name)

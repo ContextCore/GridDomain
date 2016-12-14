@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GridDomain.Common;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
@@ -35,6 +36,14 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             if (_acceptMessages.All(m => m.MessageType != typeof (TMessage)))
                 _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
         }
+        public void AddWithMetadata<TMessage, THandler>(string correlationPropertyName)
+                                                        where THandler : IHandler<IMessageMetadataEnvelop<TMessage>>
+                                                        where TMessage : class
+        {
+              Add<IMessageMetadataEnvelop<TMessage>, THandler>(correlationPropertyName);
+              Add<MessageMetadataEnvelop<TMessage>, THandler>(correlationPropertyName);
+        }
+
 
         private void ProjectMessage<TMessage, THandler>(object msg) where THandler : IHandler<TMessage> where TMessage : class
         {

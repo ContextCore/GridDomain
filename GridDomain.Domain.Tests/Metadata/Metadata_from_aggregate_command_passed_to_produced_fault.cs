@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Metadata
         [Test]
         public void Result_message_has_expected_type()
         {
-            Assert.IsInstanceOf<IFault<AsyncFaultWithOneEventCommand>>(_answer.Message);
+            Assert.IsInstanceOf<IFault<AlwaysFaultAsyncCommand>>(_answer.Message);
         }
 
         [Test]
