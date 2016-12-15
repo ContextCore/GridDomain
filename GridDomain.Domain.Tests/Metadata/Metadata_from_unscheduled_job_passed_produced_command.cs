@@ -5,7 +5,8 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Metadata
 {
     [TestFixture]
-    class Metadata_from_scheduled_command_passed_publisher : SoftwareProgrammingInstanceSagaTest
+    [Ignore("not ready")]
+    class Metadata_from_unscheduled_job_passed_produced_command : SoftwareProgrammingInstanceSagaTest
     {
         [Test]
         public void Test()

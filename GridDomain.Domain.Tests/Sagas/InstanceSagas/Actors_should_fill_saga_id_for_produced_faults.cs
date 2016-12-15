@@ -32,9 +32,9 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                                   new TypedMessageActor<Unschedule>(TestActor),
                                                   transport,
                                                   new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
-                                                  new AggregateFactory())),
-
-                AggregateActorName.New<HomeAggregate>(command.Id).Name);
+                                                  new AggregateFactory()
+                                                  )),
+                AggregateActorName.New<HomeAggregate>(command.Id).Name );
 
             actor.Tell(command);
             var fault = ExpectMsg<Fault<GoSleepCommand>>();

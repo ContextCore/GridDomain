@@ -45,9 +45,9 @@ namespace GridDomain.Node.Actors
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor) : base(
-                                  aggregateConstructor,
-                                  snapshotsPersistencePolicy,
-                                  publisher)
+                                                                            aggregateConstructor,
+                                                                            snapshotsPersistencePolicy,
+                                                                            publisher)
         {
             _schedulerActorRef = schedulerActorRef;
             _unscheduleActorRef = unscheduleActorRef;
@@ -69,6 +69,8 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command, d.Metadata);
             });
 
+            Command<IMessageMetadataEnvelop<FutureEventScheduledEvent>>(e => Handle(e));
+            Command<IMessageMetadataEnvelop<FutureEventCanceledEvent>>(e => Handle(e));
 
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
             {
@@ -110,18 +112,17 @@ namespace GridDomain.Node.Actors
 
             PersistAll(events, e =>
             {
+                var eventMetadata = metadata.CreateChild(e.SourceId,
+                                                         new ProcessEntry(Self.Path.Name,
+                                                                          PublishingEvent,
+                                                                          CommandExecutionCreatedAnEvent));
+
                 //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
                 //how to pass aggregate type in this case? 
                 //direct call to method to not postpone process of event scheduling, 
                 //case it can be interrupted by other messages in stash processing errors
-                e.Match().With<FutureEventScheduledEvent>(Handle)
-                         .With<FutureEventCanceledEvent>(Handle);
-
-                
-                var eventMetadata = metadata.CreateChild(command.Id,
-                                                         new ProcessEntry(Self.Path.Name,
-                                                                          PublishingEvent,
-                                                                          CommandExecutionCreatedAnEvent));
+                e.Match().With<FutureEventScheduledEvent>(m => Self.Tell(MessageMetadataEnvelop.New(m, metadata)))
+                         .With<FutureEventCanceledEvent> (m => Self.Tell(MessageMetadataEnvelop.New(m, metadata)));
 
                 Publisher.Publish(e, eventMetadata);
 
@@ -175,8 +176,9 @@ namespace GridDomain.Node.Actors
             extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
-        public void Handle(FutureEventScheduledEvent message)
+        public void Handle(IMessageMetadataEnvelop<FutureEventScheduledEvent> msgWithMetadata)
         {
+            var message = msgWithMetadata.Message;
             Guid scheduleId = message.Id;
             Guid aggregateId = message.Event.SourceId;
 
@@ -186,12 +188,22 @@ namespace GridDomain.Node.Actors
 
             var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
 
-            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid()),
+            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
+            var metadata = msgWithMetadata.Metadata.CreateChild(command.Id,
+                                                                new ProcessEntry(GetType().Name, 
+                                                                                 "Scheduling raise future event command",
+                                                                                 "FutureEventScheduled event occured"));
+
+            var confirmationEventType = typeof(IMessageMetadataEnvelop<>).MakeGenericType(message.Event.GetType());
+
+            var scheduleEvent = new ScheduleCommand(command,
                                                     scheduleKey,
-                                                    new ExtendedExecutionOptions(message.RaiseTime, 
-                                                                                 message.Event.GetType(), 
+                                                    new ExtendedExecutionOptions(message.RaiseTime,
+                                                                                 confirmationEventType, 
                                                                                  message.Event.SourceId,
-                                                                                 nameof(DomainEvent.SourceId)));
+                                                                                 nameof(DomainEvent.SourceId)),
+                                                    metadata);
+
             _schedulerActorRef.Handle(scheduleEvent);
         }
 
@@ -203,8 +215,9 @@ namespace GridDomain.Node.Actors
                                    "");
         }
 
-        public void Handle(FutureEventCanceledEvent message)
+        public void Handle(IMessageMetadataEnvelop<FutureEventCanceledEvent> msg)
         {
+            var message = msg.Message; 
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
             _unscheduleActorRef.Handle(unscheduleMessage);

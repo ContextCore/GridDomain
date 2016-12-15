@@ -11,7 +11,7 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
         private TestAggregate(Guid id):base(id)
         {
         }
-        public  TestAggregate(Guid id, string initialValue =""):this(id)
+        public TestAggregate(Guid id, string initialValue =""):this(id)
         {
             Value = initialValue;
         }
@@ -21,17 +21,49 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
             RaiseEvent(raiseTime, new TestDomainEvent(testValue,Id));
         }
 
+        public void ScheduleErrorInFuture(DateTime raiseTime, string testValue)
+        {
+            RaiseEvent(raiseTime, new ErrorTestDomainEvent(testValue, Id));
+        }
+
         public void CancelFutureEvents(string likeValue)
         {
             base.CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
+
         private void Apply(TestDomainEvent e)
         {
             Value = e.Value;
             ProcessedTime = DateTime.Now;
         }
+
+        private void Apply(ErrorTestDomainEvent e)
+        {
+            throw new TestAggregateException(e.TestValue);
+        }
+
         public DateTime ProcessedTime { get; private set; }
 
         public string Value;
+    }
+
+    internal class TestAggregateException : Exception
+    {
+        public string TestValue { get; }
+
+        public TestAggregateException(string testValue)
+        {
+            TestValue = testValue;
+        }
+    }
+
+    public class ErrorTestDomainEvent : DomainEvent
+    {
+        public string TestValue { get; }
+
+        public ErrorTestDomainEvent(string testValue, Guid id):base(id)
+        {
+            TestValue = testValue;
+        }
     }
 }
