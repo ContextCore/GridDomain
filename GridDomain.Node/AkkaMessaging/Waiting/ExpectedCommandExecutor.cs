@@ -69,49 +69,59 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
     }
 
-    class CommandWaiter : ICommandWaiter
+    class CommandWaiter<TCommand> : ICommandWaiter<TCommand> where TCommand : ICommand
     {
-        private readonly ICommand _cmd;
-        private readonly IMessageMetadata _metadata;
+        private readonly ICommand _command;
+        private readonly IMessageMetadata _commandMetadata;
         private readonly AkkaMessageLocalWaiter _waiter;
-        private readonly ICommandExecutor _executor;
+        private readonly IActorTransport _transport;
 
-        public CommandWaiter(ICommand cmd, 
+        public CommandWaiter(TCommand command,
+                             IMessageMetadata commandMetadata,
                              ActorSystem system, 
                              IActorTransport transport,
-                             IMessageMetadata metadata,
                              TimeSpan defaultTimeout)
         {
-            _executor = new AkkaCommandExecutor(system, transport);
+            _transport = transport;
             _waiter = new AkkaMessageLocalWaiter( system, transport, defaultTimeout);
-            _metadata = metadata;
-            _cmd = cmd;
+            _commandMetadata = commandMetadata;
+            _command = command;
         }
 
         public IExpectBuilder<Task<IWaitResults>> Expect<TMsg>(Predicate<TMsg> filter = null)
         {
-            return _waiter.Expect(filter);
+            if(filter != null) return _waiter.Expect(filter);
+
+            Predicate<IMessageMetadataEnvelop<TMsg>> correlationFilter =
+                env => env.Metadata.CorrelationId == _commandMetadata.CorrelationId;
+
+            return _waiter.Expect(correlationFilter);
         }
 
         public IExpectBuilder<Task<IWaitResults>> Expect(Type type, Func<object, bool> filter = null)
         {
-            return _waiter.Expect(type,filter);
+            if (filter != null) return _waiter.Expect(type,filter);
+
+            Predicate<IMessageMetadataEnvelop> correlationFilter =
+                env => env.Metadata.CorrelationId == _commandMetadata.CorrelationId;
+
+            return _waiter.Expect(correlationFilter);
         }
 
-        public Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
+        public async Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
-            _waiter.ExpectBuilder.Or<IFault<T>>(f => f.Message.Id == command.Id);
-            _waiter.ExpectBuilder.Or<Fault<T>>(f => f.Message.Id == command.Id);
-            _waiter.ExpectBuilder.Or<IMessageMetadataEnvelop<IFault<T>>>(f => f.Message.Message.Id == command.Id);
-            _waiter.ExpectBuilder.Or<IMessageMetadataEnvelop<Fault<T>>>(f => f.Message.Message.Id == command.Id);
+            _waiter.ExpectBuilder.Or<IFault<TCommand>>(f => f.Message.Id == _command.Id);
+            _waiter.ExpectBuilder.Or<Fault<TCommand>>(f => f.Message.Id == _command.Id);
+            _waiter.ExpectBuilder.Or<IMessageMetadataEnvelop<IFault<TCommand>>>(f => f.Message.Message.Id == _command.Id);
+            _waiter.ExpectBuilder.Or<IMessageMetadataEnvelop<Fault<TCommand>>>(f => f.Message.Message.Id == _command.Id);
 
-            var task = _waiter.Start();
+            var task = _waiter.Start(timeout);
 
-            Executor.Execute(command, metadata);
+            _transport.Publish(_command, _commandMetadata);
 
             var res = await task;
 
-            if (!_failOnFaults) return res;
+            if (!failOnAnyFault) return res;
             var faults = res.All.OfType<IFault>().ToArray();
             if (faults.Any())
                 throw new AggregateException(faults.Select(f => f.Exception));

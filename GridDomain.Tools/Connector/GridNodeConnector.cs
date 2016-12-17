@@ -22,7 +22,7 @@ namespace GridDomain.Tools.Console
         private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(5);
         private AkkaCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
-        private MessageWaiterFactory _gridDomainNodeImplementation;
+        private MessageWaiterFactory _waiterFactory;
         
 
         public GridNodeConnector(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
@@ -57,7 +57,7 @@ namespace GridDomain.Tools.Console
                                                 TimeSpan.FromSeconds(5));
 
             _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
-            _gridDomainNodeImplementation = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
+            _waiterFactory = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
         }
       
         public void Dispose()
@@ -87,12 +87,17 @@ namespace GridDomain.Tools.Console
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return _gridDomainNodeImplementation.NewWaiter(defaultTimeout);
+            return _waiterFactory.NewWaiter(defaultTimeout);
         }
 
         public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true)
         {
-            return _gridDomainNodeImplementation.NewCommandWaiter(defaultTimeout, failAnyFault);
+            return _waiterFactory.NewCommandWaiter(defaultTimeout, failAnyFault);
+        }
+
+        public ICommandWaiter<T> PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _waiterFactory.PrepareCommand(cmd, metadata);
         }
     }
 }

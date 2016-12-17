@@ -54,9 +54,11 @@ namespace GridDomain.Node
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
         bool _stopping = false;
-        private ICommandExecutor _commandExecutor;
         public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
         private IMessageWaiterFactory _waiterFactory;
+        private ICommandWaiterFactory _commandWaiterFactory;
+        private ICommandExecutor _commandExecutor;
+
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = AkkaDomainEventsAdapter.UpgradeChain;
         public IObjectsAdapter ObjectAdapteresCatalog { get; private set; }
@@ -122,6 +124,7 @@ namespace GridDomain.Node
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
             _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
+            _commandWaiterFactory = Container.Resolve<ICommandWaiterFactory>();
 
             EventBusForwarder = System.ActorOf(Props.Create(() => new EventBusForwarder(Transport)),nameof(EventBusForwarder));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
@@ -137,8 +140,6 @@ namespace GridDomain.Node
             {
                 AggregateFromSnapshotsFactory.Register(factory.AggregateType, m => factory.Constructor.Build(factory.GetType(), Guid.Empty,m));
             }
-
-
 
             if (appInsightsConfig.IsEnabled)
             {
@@ -224,6 +225,11 @@ namespace GridDomain.Node
         public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failOnAnyFault = true)
         {
             return _waiterFactory.NewCommandWaiter(defaultTimeout ?? DefaultTimeout, failOnAnyFault);
+        }
+
+        public ICommandWaiter<T> PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _commandWaiterFactory.PrepareCommand(cmd, metadata);
         }
     }
 }
