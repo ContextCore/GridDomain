@@ -44,7 +44,7 @@ namespace GridDomain.Node.Actors
             var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
 
             var actorType = _actorTypeFactory.GetActorTypeFor(msgType, msg.HandlerType);
-            string actorName = $"{msg.HandlerType}_for_{msgType.Name}";
+            string actorName = $"{msg.HandlerType.BeautyName()}_for_{msgType.BeautyName()}";
             Self.Tell(new CreateActorRouteMessage(actorType,actorName,new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
 

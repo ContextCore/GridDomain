@@ -56,7 +56,8 @@ namespace GridDomain.Node.AkkaMessaging
         {
             if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) &&
                 messageType.IsGenericType &&
-                messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>))
+                (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>) ||
+                 messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
             {
                 return messageType.GetGenericArguments().First();
             }

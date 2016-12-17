@@ -42,7 +42,11 @@ namespace GridDomain.Node.Actors
 
             try
             {
-                _handler.Handle(msg.Message);
+                var handlerWithMetadata = _handler as IHandlerWithMetadata<TMessage>;
+                if(handlerWithMetadata != null)
+                    handlerWithMetadata.Handle(msg.Message, msg.Metadata);
+                else
+                  _handler.Handle(msg.Message);
             }
             catch (Exception e)
             {

@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -13,6 +14,15 @@ namespace GridDomain.Tests.Framework
         {
             ExpectBuilder = new AnyMessageExpectBuilder(publisher, this, defaultTimeout);
         }
-        public override ExpectBuilder<AnyMessagePublisher> ExpectBuilder { get; }
+        public ExpectBuilder<AnyMessagePublisher> ExpectBuilder { get; }
+        public override IExpectBuilder<AnyMessagePublisher> Expect<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return ExpectBuilder.And(filter);
+        }
+
+        public override IExpectBuilder<AnyMessagePublisher> Expect(Type type, Func<object, bool> filter = null)
+        {
+            return ExpectBuilder.And(type, filter ?? (o => true));
+        }
     }
 }

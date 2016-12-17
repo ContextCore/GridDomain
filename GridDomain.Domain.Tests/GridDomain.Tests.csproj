@@ -236,6 +236,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageWaiting\Commanding\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
     <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />

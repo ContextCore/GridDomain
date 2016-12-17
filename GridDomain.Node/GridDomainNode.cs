@@ -227,7 +227,7 @@ namespace GridDomain.Node
             return _waiterFactory.NewCommandWaiter(defaultTimeout ?? DefaultTimeout, failOnAnyFault);
         }
 
-        public ICommandWaiter<T> PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return _commandWaiterFactory.PrepareCommand(cmd, metadata);
         }

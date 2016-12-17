@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
@@ -46,7 +47,8 @@ namespace GridDomain.Tests.MessageWaiting.Local
             if(!_results.Wait(timeout ?? DefaultTimeout))
                 throw new TimeoutException();
 
-            Assert.AreEqual(msg, _results.Result.Message(filter));
+            filter = filter ?? (t => true);
+            Assert.AreEqual(msg, _results.Result.All.OfType<T>().FirstOrDefault(t =>filter(t)));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class

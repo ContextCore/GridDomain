@@ -95,7 +95,7 @@ namespace GridDomain.Tools.Console
             return _waiterFactory.NewCommandWaiter(defaultTimeout, failAnyFault);
         }
 
-        public ICommandWaiter<T> PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return _waiterFactory.PrepareCommand(cmd, metadata);
         }

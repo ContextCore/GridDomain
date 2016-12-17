@@ -34,7 +34,7 @@ namespace GridDomain.Node
             return new AkkaCommandLocalWaiter(CommandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout, failAnyFault);
 
         }
-        public ICommandWaiter<T> PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             var commandMetadata = metadata ?? new MessageMetadata(cmd.Id,
                                                                   BusinessDateTime.UtcNow,
@@ -45,8 +45,7 @@ namespace GridDomain.Node
                                                                                   "publishing command to transport",
                                                                                   "command is executing")}));
 
-            return new CommandWaiter<T>(cmd,metadata,System,Transport, DefaultTimeout);
-
+            return new CommandWaiter<T>(cmd, commandMetadata, System, Transport, DefaultTimeout);
         }
     }
 }

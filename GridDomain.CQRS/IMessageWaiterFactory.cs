@@ -12,12 +12,13 @@ namespace GridDomain.CQRS
 
     public interface ICommandWaiterFactory
     {
-        ICommandWaiter<T> PrepareCommand<T>(T cmd, IMessageMetadata metadata=null) where T:ICommand;
+        ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata=null) where T:ICommand;
     }
 
-    public interface ICommandWaiter<T> : IMessageWaiter<Task<IWaitResults>> where T: ICommand
+    public interface ICommandWaiter
     {
-        Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true);
+        ICommandExpectBuilder Expect<TMsg>(Predicate<TMsg> filter = null);
+        ICommandExpectBuilder Expect(Type type, Func<object, bool> filter = null);
     }
 
     // GridNode.PrepareCommand(cmd)

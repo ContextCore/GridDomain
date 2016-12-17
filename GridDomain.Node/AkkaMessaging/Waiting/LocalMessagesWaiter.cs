@@ -23,7 +23,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private Func<IEnumerable<object>,bool> _stopCondition;
 
         private readonly TimeSpan _defaultTimeout;
-        public abstract ExpectBuilder<T> ExpectBuilder { get; }
         private readonly List<Type> _messageTypesToSubscribe = new List<Type>();
         private readonly ActorSystem _system;
 
@@ -34,6 +33,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _subscriber = subscriber;
         }
 
+
+        public abstract IExpectBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null);
+        public abstract IExpectBuilder<T> Expect(Type type, Func<object, bool> filter = null);
+
         internal void Subscribe(Type type, 
                                 Func<object,bool> filter,
                                 Func<IEnumerable<object>, bool> stopCondition)
@@ -41,15 +44,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _filters.Add(filter);
             _stopCondition = stopCondition;
             _messageTypesToSubscribe.Add(type);
-        }
-
-        public IExpectBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null)
-        {
-            return ExpectBuilder.And(filter);
-        }
-        public IExpectBuilder<T> Expect(Type type, Func<object,bool> filter = null)
-        {
-            return ExpectBuilder.And(type,filter ?? (o => true));
         }
 
         public async Task<IWaitResults> Start(TimeSpan? timeout = null)
@@ -99,5 +93,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
              .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
              .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }
+
     }
 }

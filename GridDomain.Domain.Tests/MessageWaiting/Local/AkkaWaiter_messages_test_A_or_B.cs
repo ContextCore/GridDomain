@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.TestKit.NUnit3;
 using GridDomain.CQRS;
@@ -25,7 +26,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
             _transport = new LocalAkkaEventBusTransport(Sys);
             _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10));
             _waiter.Expect<string>()
-                   .Or<bool>();
+                   .Or<bool?>();
             _received = _waiter.Start(TimeSpan.FromSeconds(1));
         }
 
@@ -33,7 +34,7 @@ namespace GridDomain.Tests.MessageWaiting.Local
         public void When_publish_one_of_subscribed_message_Then_wait_is_over_And_message_received()
         {
             _transport.Publish(_testmsgBool);
-            Assert.AreEqual(_testmsgBool, _received.Result.Message<bool>());
+            Assert.AreEqual(_testmsgBool, _received.Result.All.OfType<bool>().First());
         }
 
         [Test]
