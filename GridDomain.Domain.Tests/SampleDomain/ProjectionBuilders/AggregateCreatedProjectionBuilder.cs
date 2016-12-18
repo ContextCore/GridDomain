@@ -7,7 +7,7 @@ using GridDomain.Tests.SampleDomain.Events;
 
 namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
-    public class AggregateCreatedProjectionBuilder : IHandler<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>
+    public class AggregateCreatedProjectionBuilder : IHandlerWithMetadata<SampleAggregateCreatedEvent>
     {
         public const string MessageProcessed = "message processed";
         public const string Why = "message received";
@@ -27,19 +27,24 @@ namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public virtual void Handle(IMessageMetadataEnvelop<SampleAggregateCreatedEvent> msg)
+        public virtual void Handle(SampleAggregateCreatedEvent msg, IMessageMetadata metadata)
         {
-            msg.Message.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
-            msg.Message.History.SequenceNumber = ++number;
-            msg.Message.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
-            msg.Message.History.HandlerName = this.GetType().Name;
+            msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
+            msg.History.SequenceNumber = ++number;
+            msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
+            msg.History.HandlerName = this.GetType().Name;
 
-            var metadata = MessageMetadata.CreateFrom(msg.Message.SourceId,
-                                                      msg.Metadata,
+            var notificationMetadata = MessageMetadata.CreateFrom(msg.SourceId,
+                                                      metadata,
                                                       new ProcessEntry(GetType().Name, MessageProcessed, Why));
 
-            var notification = new AggregateCreatedEventNotification() {AggregateId = msg.Message.SourceId};
-            _publisher.Publish(notification, metadata);
+            var notification = new AggregateCreatedEventNotification() {AggregateId = msg.SourceId};
+            _publisher.Publish(notification, notificationMetadata);
+        }
+
+        public void Handle(SampleAggregateCreatedEvent msg)
+        {
+            Handle(msg, MessageMetadata.Empty());
         }
     }
 }

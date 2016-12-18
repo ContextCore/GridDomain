@@ -8,13 +8,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class ProjectionGroup: IProjectionGroup
     {
- 
-
         private readonly IUnityContainer _locator;
-        readonly Dictionary<Type, List<Action<object>>> _handlers = new Dictionary<Type, List<Action<object>>>();
+        readonly Dictionary<Type, List<Action<object,IMessageMetadata>>> _handlers = new Dictionary<Type, List<Action<object,IMessageMetadata>>>();
         public IProjectionGroupDescriptor Descriptor = new ProjectionGroupDescriptor();
 
-        public ProjectionGroup(IUnityContainer locator)
+        public ProjectionGroup(IUnityContainer locator=null)
         {
             _locator = locator;
         }
@@ -23,29 +21,25 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
                                             where THandler : IHandler<TMessage>
                                             where TMessage :class
         {
-            List<Action<object>> builderList;
+            List<Action<object, IMessageMetadata>> builderList;
 
             if (!_handlers.TryGetValue(typeof (TMessage), out builderList))
             {
-                builderList = new List<Action<object>>();
+                builderList = new List<Action<object, IMessageMetadata>>();
                 _handlers[typeof(TMessage)] = builderList;
+                _handlers[typeof(IMessageMetadataEnvelop<TMessage>)] = builderList;
             }
 
             builderList.Add(ProjectMessage<TMessage, THandler>);
 
-            if (_acceptMessages.All(m => m.MessageType != typeof (TMessage)))
+            if (_acceptMessages.All(m => m.MessageType != typeof(TMessage)))
+            {
                 _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
-        }
-        public void AddWithMetadata<TMessage, THandler>(string correlationPropertyName)
-                                                        where THandler : IHandler<IMessageMetadataEnvelop<TMessage>>
-                                                        where TMessage : class
-        {
-              Add<IMessageMetadataEnvelop<TMessage>, THandler>(correlationPropertyName);
-              Add<MessageMetadataEnvelop<TMessage>, THandler>(correlationPropertyName);
+                _acceptMessages.Add(new MessageRoute(typeof(IMessageMetadataEnvelop<TMessage>), correlationPropertyName));
+            }
         }
 
-
-        private void ProjectMessage<TMessage, THandler>(object msg) where THandler : IHandler<TMessage> where TMessage : class
+        private void ProjectMessage<TMessage, THandler>(object msg, IMessageMetadata metadata) where THandler : IHandler<TMessage> where TMessage : class
         {
             var message = msg as TMessage;
             if(message == null)
@@ -54,7 +48,10 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             try
             {
                 var handler = _locator.Resolve<THandler>();
-                handler.Handle(message);
+                var withMetadata = handler as IHandlerWithMetadata<TMessage>;
+                if(withMetadata != null)
+                    withMetadata.Handle(message, metadata);
+                else handler.Handle(message);
             }
             catch (Exception ex)
             {
@@ -62,11 +59,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             }
         }
 
-        public void Project(object message)
+        public void Project(object message, IMessageMetadata metadata)
         {
             var msgType = message.GetType();
             foreach(var handler in _handlers[msgType])
-                    handler(message);
+                    handler(message, metadata);
         }
 
         private readonly List<MessageRoute> _acceptMessages = new List<MessageRoute>();

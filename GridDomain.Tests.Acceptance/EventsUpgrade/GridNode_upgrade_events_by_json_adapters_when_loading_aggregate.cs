@@ -50,9 +50,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             GridNode.ObjectAdapteresCatalog.Register(new InIncreaseByInstanceAdapter());
             GridNode.ObjectAdapteresCatalog.Register(new NullAdapter());
 
-            var expect = Expect.Message<SampleAggregateCreatedEvent>();
-
-            await GridNode.Execute(CommandPlan.New(cmd, TimeSpan.FromSeconds(10), expect));
+            await GridNode.PrepareCommand(cmd)
+                          .Expect<SampleAggregateCreatedEvent>()
+                          .Execute();
 
             var aggregate = LoadAggregate<SampleAggregate>(cmd.AggregateId);
 

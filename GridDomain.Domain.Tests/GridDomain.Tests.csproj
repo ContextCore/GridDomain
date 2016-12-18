@@ -241,6 +241,7 @@
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
     <Compile Include="EventsUpgrade\Domain\Commands\ChangeBalanceInFuture.cs" />
+    <Compile Include="Metadata\Metadata_from_async_aggregate_command_passed_to_produced_events.cs" />
     <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_notification.cs" />
     <Compile Include="Metadata\Metadata_from_saga_received_event_passed_to_produced_commands.cs" />

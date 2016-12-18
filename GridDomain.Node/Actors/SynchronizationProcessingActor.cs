@@ -32,22 +32,27 @@ namespace GridDomain.Node.Actors
         {
             try
             {
-                _group.Project(message);
+                var messageWithMetadata = message as IMessageMetadataEnvelop;
+                if(messageWithMetadata != null)
+                  _group.Project(messageWithMetadata.Message, messageWithMetadata.Metadata);
+                else
+                   _group.Project(message, MessageMetadata.Empty());
             }
             catch (MessageProcessException ex)
             {
                 _log.Error(ex, "Handler actor raised an error on message process: {@Message}", message);
-                var fault = Fault.NewGeneric(message, ex.InnerException, ex.Type, GetSagaId(message));
 
                 var withMetadata = message as IMessageMetadataEnvelop;
                 if (withMetadata == null)
                 {
+                    var fault = Fault.NewGeneric(message, ex.InnerException, ex.Type, GetSagaId(message));
                     _publisher.Publish(fault);
                 }
                 else
                 {
-                
-                   var metadata = withMetadata.Metadata.CreateChild(Guid.Empty,
+                    var fault = Fault.NewGeneric(withMetadata.Message, ex.InnerException, ex.Type, GetSagaId(message));
+
+                    var metadata = withMetadata.Metadata.CreateChild(Guid.Empty,
                                                       new ProcessEntry(Self.Path.Name,
                                                                        "publishing fault",
                                                                        "message process casued an error"));

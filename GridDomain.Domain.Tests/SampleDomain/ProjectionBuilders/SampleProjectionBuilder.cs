@@ -6,7 +6,7 @@ using GridDomain.Tests.SampleDomain.Events;
 
 namespace GridDomain.Tests.SampleDomain.ProjectionBuilders
 {
-    public class SampleProjectionBuilder :// IHandler<SampleAggregateChangedEvent>,
+    public class SampleProjectionBuilder : IHandler<SampleAggregateChangedEvent>,
                                            IHandlerWithMetadata<SampleAggregateChangedEvent>
     {
         private readonly IPublisher _publisher;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -37,7 +38,19 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var res = await task;
 
             if (!_failOnFaults) return res;
-            var faults = res.All.OfType<IFault>().ToArray();
+
+            var faults = new List<IFault>();
+            foreach (var m in res.All)
+            {
+                var fault = m as IFault;
+                if(fault != null)
+                    faults.Add(fault);
+
+                var envelopedFault = m as IMessageMetadataEnvelop<IFault>;
+                if (envelopedFault != null)
+                    faults.Add(envelopedFault.Message);
+            }
+
             if (faults.Any())
                 throw new AggregateException(faults.Select(f => f.Exception));
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node;
@@ -16,16 +17,19 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         private FutureEventOccuredEvent _eventB;
         private Guid _aggregateId;
         [OneTimeSetUp]
-        public void FutureDomainEvent_envelops_has_unique_id()
+        public async Task FutureDomainEvent_envelops_has_unique_id()
         {
             _aggregateId = Guid.NewGuid();
             var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value A");
             var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(5), _aggregateId, "test value B");
 
-            var planA = CommandPlan.New(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
+         //   var planA = CommandPlan.New(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
             var planB = CommandPlan.New(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId));
 
-            _eventA = GridNode.Execute(planA).Result;
+            _eventA = (await GridNode.PrepareCommand(testCommandA)
+                                     .Expect<FutureEventOccuredEvent>()
+                                     .Execute()).Message<FutureEventOccuredEvent>();
+
             _eventB = GridNode.Execute(planB).Result;
         }
 

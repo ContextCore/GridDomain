@@ -23,9 +23,10 @@ namespace GridDomain.Tests.AsyncAggregates
             var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromSeconds(3));
             var syncCommand = new ChangeSampleAggregateCommand(42, aggregateId);
 
-           var asyncCommandTask = GridNode.Execute(asyncCommand,
-                                                    Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
-                                                                                                     asyncCommand.AggregateId));
+            var asyncCommandTask = GridNode.PrepareCommand(asyncCommand)
+                                           .Expect<SampleAggregateChangedEvent>()
+                                           .Execute();
+
             await GridNode.Execute(CommandPlan.New(syncCommand, 
                                                    TimeSpan.FromSeconds(1), 
                                                    Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
@@ -33,9 +34,7 @@ namespace GridDomain.Tests.AsyncAggregates
 
             var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.AreEqual(syncCommand.Parameter.ToString(), sampleAggregate.Value);
-
-            var asyncResult = asyncCommandTask.Result;
-            Assert.AreEqual(asyncCommand.Parameter.ToString(), asyncResult.Value);
+            Assert.AreEqual(asyncCommand.Parameter.ToString(), await asyncCommandTask);
         }
     }
 }

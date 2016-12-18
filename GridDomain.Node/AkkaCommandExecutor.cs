@@ -50,14 +50,15 @@ namespace GridDomain.Node
             //All expected messages should be received 
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => !typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
-                expectBuilder.And(expectedMessage.MessageType, o => expectedMessage.Match(o));
+                expectBuilder.And(MessageMetadataEnvelop.GenericForType(expectedMessage.MessageType), 
+                                  o => expectedMessage.Match(o));
             }
 
 
             //All expected faults should end waiting
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
-                expectBuilder.Or(expectedMessage.MessageType,
+                expectBuilder.Or(MessageMetadataEnvelop.GenericForType(expectedMessage.MessageType),
                                  o => expectedMessage.Match(o) &&
                                       (!expectedMessage.Sources.Any() ||
                                         expectedMessage.Sources.Contains((o as IFault)?.Processor)));
@@ -65,7 +66,7 @@ namespace GridDomain.Node
 
             //Command fault should always end waiting
             var commandFaultType = typeof(IFault<>).MakeGenericType(plan.Command.GetType());
-            expectBuilder.Or(commandFaultType,
+            expectBuilder.Or(MessageMetadataEnvelop.GenericForType(commandFaultType),
                              o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
