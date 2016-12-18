@@ -212,16 +212,6 @@ namespace GridDomain.Node
             return await _commandExecutor.Execute(plan);
         }
 
-        public async Task<object> Execute(CommandPlan plan)
-        {
-            return await _commandExecutor.Execute(plan);
-        }
-
-        public async Task<T> Execute<T>(CommandPlan<T> plan)
-        {
-            return await _commandExecutor.Execute(plan);
-        }
-
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
             _commandExecutor.Execute(command, metadata);
