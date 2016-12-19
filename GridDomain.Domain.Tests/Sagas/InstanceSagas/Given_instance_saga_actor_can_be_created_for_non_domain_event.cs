@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging;
@@ -16,15 +18,14 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         [Then]
         public void Instance_saga_actor_has_correct_path_when_saga_is_raised_by_command_fault()
         {
-            var msg = new CustomEvent { Payload = "1232", SagaId = Guid.NewGuid() };
+            var msg = new CustomEvent(Guid.NewGuid()) { Payload = "1232"};
 
             var publisher = GridNode.Container.Resolve<IPublisher>();
-            publisher.Publish(msg);
+            publisher.Publish(msg,new MessageMetadata(msg.SagaId));
 
             Thread.Sleep(100);
 
-            var sagaActorName =
-                AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
+            var sagaActorName = AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
             var sagaHubName = typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>).BeautyName();
 
             string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/*/{sagaActorName}";

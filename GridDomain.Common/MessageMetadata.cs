@@ -12,10 +12,10 @@ namespace GridDomain.Common
         public DateTime Created { get; }
         public ProcessHistory History { get; }
 
-        public MessageMetadata(Guid messageId, DateTime created, Guid? correlationId = null, Guid? casuationId = null, ProcessHistory  history = null)
+        public MessageMetadata(Guid messageId, DateTime? created = null, Guid? correlationId = null, Guid? casuationId = null, ProcessHistory  history = null)
         {
             MessageId = messageId;
-            Created = created;
+            Created = created ?? BusinessDateTime.UtcNow;
             CasuationId = casuationId ?? Guid.Empty;
             CorrelationId = correlationId ?? Guid.Empty;
             History = history ?? new ProcessHistory(null);
@@ -37,5 +37,6 @@ namespace GridDomain.Common
         {
             return new MessageMetadata(Guid.Empty, BusinessDateTime.UtcNow);
         }
+        
     }
 }

@@ -102,7 +102,6 @@ namespace GridDomain.Node.Actors
 
             Publisher.Publish(fault, metadata);
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
-            return;
         }
 
 

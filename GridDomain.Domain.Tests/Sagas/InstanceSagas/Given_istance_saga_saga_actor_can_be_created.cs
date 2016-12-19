@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.CQRS;
@@ -10,6 +11,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
@@ -36,16 +38,19 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         }
 
         [Then]
-        public void Instance_saga_actor_has_correct_path_when_saga_is_raised_by_domain_message()
+        public async Task Instance_saga_actor_has_correct_path_when_saga_is_raised_by_domain_message()
         {
 
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-            var publisher = GridNode.Container.Resolve<IPublisher>();
-            publisher.Publish(msg);
-            var sagaActorName =
-                AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
+
+            await GridNode.NewDebugWaiter()
+                          .Expect<MakeCoffeCommand>()
+                          .Create()
+                          .Publish(msg);
+
+            var sagaActorName = AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
             var sagaHubName = typeof(ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>).BeautyName();
-            WaitFor<MakeCoffeCommand>();
+
             string path = $"akka://LocalSystem/user/SagaHub_{sagaHubName}/*/{sagaActorName}";
 
             var sagaActor = GridNode.System.ActorSelection(path).ResolveOne(TimeSpan.FromSeconds(1)).Result;

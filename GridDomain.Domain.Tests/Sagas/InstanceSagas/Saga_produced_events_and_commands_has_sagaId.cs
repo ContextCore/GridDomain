@@ -1,7 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using Microsoft.Practices.Unity;
@@ -23,48 +26,48 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         }
 
         [Test]
-        public void When_dispatch_command_than_command_should_have_right_sagaId()
+        public async Task When_dispatch_command_than_command_should_have_right_sagaId()
         {
-            var publisher = GridNode.Container.Resolve<IPublisher>();
             var sagaId = Guid.NewGuid();
-
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            var expectedCommand = (MakeCoffeCommand) WaitFor<MakeCoffeCommand>().Message;
-
+            var domainEvent = new GotTiredEvent(sourceId).CloneWithSaga(sagaId);
+            var expectedCommand =
+                             (await GridNode.NewDebugWaiter()
+                                            .Expect<MakeCoffeCommand>()
+                                            .Create()
+                                            .Publish(domainEvent)).Message<MakeCoffeCommand>();
 
             Assert.AreEqual(sagaId, expectedCommand.SagaId);
         }
 
         [Test]
-        public void When_raise_saga_than_saga_created_event_should_have_right_sagaId()
+        public async Task When_raise_saga_than_saga_created_event_should_have_right_sagaId()
         {
-            var publisher = GridNode.Container.Resolve<IPublisher>();
             var sagaId = Guid.NewGuid();
-
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
+            var domainEvent = new GotTiredEvent(sourceId).CloneWithSaga(sagaId);
 
             var expectedCreatedEvent =
-                (SagaCreatedEvent<SoftwareProgrammingSagaData>)
-                    WaitFor<SagaCreatedEvent<SoftwareProgrammingSagaData>>().Message;
-
+                            (await GridNode.NewDebugWaiter()
+                                           .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                                           .Create()
+                                           .Publish(domainEvent)).Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 
             Assert.AreEqual(sagaId, expectedCreatedEvent.SagaId);
         }
 
         [Test]
-        public void When_raise_saga_than_saga_transitioned_event_should_have_right_sagaId()
+        public async Task When_raise_saga_than_saga_transitioned_event_should_have_right_sagaId()
         {
-            var publisher = GridNode.Container.Resolve<IPublisher>();
             var sagaId = Guid.NewGuid();
-
             var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
+            var domainEvent = new GotTiredEvent(sourceId).CloneWithSaga(sagaId);
 
             var expectedTransitionedEvent =
-                (SagaTransitionEvent<SoftwareProgrammingSagaData>)
-                    WaitFor<SagaTransitionEvent<SoftwareProgrammingSagaData>>().Message;
+                          (await GridNode.NewDebugWaiter()
+                                         .Expect<SagaTransitionEvent<SoftwareProgrammingSagaData>>()
+                                         .Create()
+                                         .Publish(domainEvent)).Message<SagaTransitionEvent<SoftwareProgrammingSagaData>>();
 
 
             Assert.AreEqual(sagaId, expectedTransitionedEvent.SagaId);

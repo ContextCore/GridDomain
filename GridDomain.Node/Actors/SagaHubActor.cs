@@ -67,17 +67,18 @@ namespace GridDomain.Node.Actors
             var metadataMessage = message as IMessageMetadataEnvelop;
 
             DomainEvent domainEvent = metadataMessage?.Message as DomainEvent;
+            IFault fault = metadataMessage?.Message as IFault;
 
-            if(domainEvent == null)
-                throw new InvalidOperationException($"Expected {nameof(DomainEvent)} but got {message}");
+            if (domainEvent == null && fault == null)
+                throw new InvalidOperationException($"Expected {nameof(DomainEvent)} or {nameof(IFault)} but got {message}");
 
-            var msgType = domainEvent.GetType();
+            var msgType = ((object)domainEvent ?? fault).GetType();
 
             string routeField;
             _acceptMessagesSagaIds.TryGetValue(msgType, out routeField);
 
             if (routeField == nameof(DomainEvent.SagaId) &&
-                domainEvent.SagaId == Guid.Empty &&
+                domainEvent?.SagaId == Guid.Empty &&
                 _sagaStartMessages.Contains(msgType))
             {
                 //send message back to publisher to reroute to some hub according to SagaId
