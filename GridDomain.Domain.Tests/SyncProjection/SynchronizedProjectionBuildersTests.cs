@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
@@ -24,8 +25,8 @@ namespace GridDomain.Tests.SyncProjection
     [TestFixture]
     public class SynchronizedProjectionBuildersTests : InMemorySampleDomainTests
     {
-        private ExpectedMessagesReceived _processedEvents;
-        
+        private IWaitResults _waitResults;
+
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
         
 
@@ -55,7 +56,7 @@ namespace GridDomain.Tests.SyncProjection
 
             GridNode.Execute(createCommands);
             GridNode.Execute(updateCommands);
-            await task;
+           _waitResults = await task;
         }
 
         [Test]
@@ -79,7 +80,10 @@ namespace GridDomain.Tests.SyncProjection
 
         private void AllEventsForOneAggregate_should_be_ordered_by(Func<IHaveProcessingHistory, long> valueSelector)
         {
-            foreach (var eventsForOneAggregate in _processedEvents.Received.Cast<DomainEvent>().GroupBy(e => e.SourceId))
+            foreach (var eventsForOneAggregate in _waitResults.All
+                                                              .Cast<IMessageMetadataEnvelop>()
+                                                              .Select(m => m.Message as DomainEvent)
+                                                              .GroupBy(e => e.SourceId))
             {
                 CheckOrderedValues(eventsForOneAggregate.Cast<IHaveProcessingHistory>(),
                                    valueSelector);
