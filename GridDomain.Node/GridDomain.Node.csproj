@@ -244,6 +244,7 @@
     <Compile Include="Actors\HealthStatus.cs" />
     <Compile Include="Actors\ISnapshotsSavePolicy.cs" />
     <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
+    <Compile Include="Actors\SagaActorLiterals.cs" />
     <Compile Include="Actors\SnapshotsSavePolicy.cs" />
     <Compile Include="AkkaCommandExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />

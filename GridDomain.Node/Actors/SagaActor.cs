@@ -39,6 +39,8 @@ namespace GridDomain.Node.Actors
         public TSaga Saga => _saga ?? (_saga = _producer.Create(State));
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly Dictionary<Type, string> _sagaIdFields;
+        private readonly ProcessEntry _sagaProducedEntry;
+        private ProcessEntry _exceptionOnTransit;
 
         private Guid GetSagaId(DomainEvent msg)
         {
@@ -86,6 +88,9 @@ namespace GridDomain.Node.Actors
 
             }, fault => fault.Message.SagaId == Id);
 
+            _sagaProducedEntry = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
+
+            _exceptionOnTransit = new ProcessEntry(Self.Path.Name, SagaActorLiterals.CreatedFaultForSagaTransit, SagaActorLiterals.SagaTransitCasedAndError);
         }
         private void ProcessSaga(object message, IMessageMetadata messageMetadata)
         {
@@ -100,10 +105,10 @@ namespace GridDomain.Node.Actors
                 _log.Error(ex,"Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
                 var fault = Fault.NewGeneric(message, ex, processorType, Id);
 
-                var metadata = messageMetadata.CreateChild(fault.SagaId,
-                                                           new ProcessEntry(Self.Path.Name, "created fault for saga transit", "saga transit cased and error"));
+                var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
 
                 Publisher.Publish(fault, metadata);
+                return;
             }
 
             var stateChange = ProcessSagaStateChange(messageMetadata);
@@ -118,9 +123,7 @@ namespace GridDomain.Node.Actors
             foreach (var cmd in Saga.CommandsToDispatch)
             {
                 var metadata = messageMetadata.CreateChild(cmd.Id,
-                                                           new ProcessEntry(Self.Path.Name, 
-                                                                            "publishing command", 
-                                                                            "saga produced a command"));
+                                                           _sagaProducedEntry);
 
                 Publisher.Publish(cmd, metadata);
             }
@@ -132,16 +135,16 @@ namespace GridDomain.Node.Actors
         {
             var stateChangeEvents = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             PersistAll(stateChangeEvents, 
-                e =>
-                {
-                    var metadata = mutatorMessageMetadata.CreateChild(e.SourceId, 
-                                                                      new ProcessEntry(Self.Path.Name,
-                                                                                       "Saga state event published",
-                                                                                       "Saga changed state"));
-                    
-                    Publisher.Publish(e, metadata);
-                    NotifyWatchers(new Persisted(e));
-                });
+            e =>
+            {
+                var metadata = mutatorMessageMetadata.CreateChild(e.SourceId, 
+                                                                  new ProcessEntry(Self.Path.Name,
+                                                                                   "Saga state event published",
+                                                                                   "Saga changed state"));
+                
+                Publisher.Publish(e, metadata);
+                NotifyWatchers(new Persisted(e));
+            });
             State.ClearUncommittedEvents();
             return stateChangeEvents;
         }

@@ -51,7 +51,7 @@ namespace GridDomain.Node
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => !typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
                 expectBuilder.And(MessageMetadataEnvelop.GenericForType(expectedMessage.MessageType), 
-                                  o => expectedMessage.Match(o));
+                                  o => expectedMessage.Match((o as IMessageMetadataEnvelop)?.Message));
             }
 
 
@@ -59,15 +59,15 @@ namespace GridDomain.Node
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
                 expectBuilder.Or(MessageMetadataEnvelop.GenericForType(expectedMessage.MessageType),
-                                 o => expectedMessage.Match(o) &&
+                                 o => expectedMessage.Match((o as IMessageMetadataEnvelop)?.Message) &&
                                       (!expectedMessage.Sources.Any() ||
-                                        expectedMessage.Sources.Contains((o as IFault)?.Processor)));
+                                        expectedMessage.Sources.Contains(((o as IMessageMetadataEnvelop)?.Message as IFault)?.Processor)));
             }
 
             //Command fault should always end waiting
             var commandFaultType = typeof(IFault<>).MakeGenericType(plan.Command.GetType());
             expectBuilder.Or(MessageMetadataEnvelop.GenericForType(commandFaultType),
-                             o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
+                             o => (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
             var res = await expectBuilder.Create(plan.Timeout)
