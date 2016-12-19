@@ -33,8 +33,10 @@ namespace GridDomain.Tests.AsyncAggregates
                                                    syncCommand.AggregateId)));
 
             var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+
             Assert.AreEqual(syncCommand.Parameter.ToString(), sampleAggregate.Value);
-            Assert.AreEqual(asyncCommand.Parameter.ToString(), await asyncCommandTask);
+            var waitResults = await asyncCommandTask;
+            Assert.AreEqual(asyncCommand.Parameter.ToString(), waitResults.Message<SampleAggregateChangedEvent>().Value);
         }
     }
 }

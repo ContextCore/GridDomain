@@ -79,7 +79,12 @@ namespace GridDomain.Node
 
         public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            return (T) await Execute((CommandPlan)plan).ConfigureAwait(false);
+            var res = await Execute((CommandPlan)plan).ConfigureAwait(false);
+            var envelop = res as IMessageMetadataEnvelop;
+            if (envelop != null && !(typeof(IMessageMetadataEnvelop).IsAssignableFrom(typeof(T))))
+                return (T) envelop.Message;
+
+            return (T) res;
         }
 
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
