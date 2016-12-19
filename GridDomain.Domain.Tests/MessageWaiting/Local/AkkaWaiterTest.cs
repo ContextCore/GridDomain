@@ -42,10 +42,9 @@ namespace GridDomain.Tests.MessageWaiting.Local
               _transport.Publish(msg);
         }
 
-        protected void ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
+        protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
         {
-            if(!_results.Wait(timeout ?? DefaultTimeout))
-                throw new TimeoutException();
+            await _results;
 
             filter = filter ?? (t => true);
             Assert.AreEqual(msg, _results.Result.All.OfType<T>().FirstOrDefault(t =>filter(t)));
