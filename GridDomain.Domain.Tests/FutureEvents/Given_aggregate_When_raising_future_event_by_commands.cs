@@ -28,11 +28,14 @@ namespace GridDomain.Tests.FutureEvents
             _scheduledTime = DateTime.Now.AddSeconds(1);
             _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = 
-                      (await GridNode.PrepareCommand(_testCommand).Expect<FutureEventScheduledEvent>().Execute())
-                      .Message<FutureEventScheduledEvent>();
+            var waitResults = await GridNode.PrepareCommand(_testCommand)
+                                            .Expect<FutureEventScheduledEvent>()
+                                            .And<TestDomainEvent>()
+                                            .Execute();
 
-            _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Received.First();
+            _futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
+            _producedEvent = waitResults.Message<TestDomainEvent>();
+
             _aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
         }
 
