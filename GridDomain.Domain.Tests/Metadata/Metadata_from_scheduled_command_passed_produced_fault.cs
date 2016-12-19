@@ -31,14 +31,13 @@ namespace GridDomain.Tests.Metadata
         [OneTimeSetUp]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddMilliseconds(20), Guid.NewGuid(), "12");
+            _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "12");
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(null, false)
-                                    .Expect<IMessageMetadataEnvelop<JobFailed>>()
-                                    .And<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>()
-                                    .Create()
-                                    .Execute(_command, _commandMetadata);
+            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
+                                    .Expect<JobFailed>()
+                                    .And<IFault<RaiseScheduledDomainEventCommand>>()
+                                    .Execute(TimeSpan.FromSeconds(30));
 
             _schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
             _jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();
