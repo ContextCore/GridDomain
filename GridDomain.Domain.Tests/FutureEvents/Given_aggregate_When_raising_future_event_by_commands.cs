@@ -1,7 +1,10 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.FutureEvents.Infrastructure;
+using Helios.Concurrency;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.FutureEvents
@@ -16,16 +19,19 @@ namespace GridDomain.Tests.FutureEvents
         private ScheduleEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(100);
+        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
 
         [OneTimeSetUp]
 
-        public void When_raising_future_event()
+        public async Task When_raising_future_event()
         {
             _scheduledTime = DateTime.Now.AddSeconds(1);
             _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
+            _futureEventEnvelop = 
+                      (await GridNode.PrepareCommand(_testCommand).Expect<FutureEventScheduledEvent>().Execute())
+                      .Message<FutureEventScheduledEvent>();
+
             _producedEvent =  (TestDomainEvent)WaitFor<TestDomainEvent>().Received.First();
             _aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
         }

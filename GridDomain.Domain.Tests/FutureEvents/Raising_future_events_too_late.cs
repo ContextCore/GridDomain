@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.FutureEvents
@@ -17,11 +18,11 @@ namespace GridDomain.Tests.FutureEvents
 
 
         [Test]
-        public void Given_aggregate_When_raising_future_event_in_past_Then_it_fires_immediatly()
+        public async Task Given_aggregate_When_raising_future_event_in_past_Then_it_fires_immediatly()
         {
             var scheduledTime = DateTime.Now.AddSeconds(-5);
             var now = DateTime.Now;
-            var aggregate = RaiseFutureEventInTime(scheduledTime);
+            var aggregate = await RaiseFutureEventInTime(scheduledTime);
             Assert.LessOrEqual(now.Second - aggregate.ProcessedTime.Second, 1);
         }
 

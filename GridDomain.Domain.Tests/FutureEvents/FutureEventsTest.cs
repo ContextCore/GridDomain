@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
@@ -48,11 +49,11 @@ namespace GridDomain.Tests.FutureEvents
             return InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig();
         }
 
-        protected TestAggregate RaiseFutureEventInTime(DateTime scheduledTime)
+        protected async Task<TestAggregate> RaiseFutureEventInTime(DateTime scheduledTime)
         {
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            ExecuteAndWaitFor<TestDomainEvent>(testCommand);
+            await GridNode.PrepareCommand(testCommand).Expect<TestDomainEvent>().Execute();
 
             return LoadAggregate<TestAggregate>(testCommand.AggregateId);
         }

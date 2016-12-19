@@ -25,23 +25,37 @@ namespace GridDomain.Tests.SyncProjection
     public class SynchronizedProjectionBuildersTests : InMemorySampleDomainTests
     {
         private ExpectedMessagesReceived _processedEvents;
-        private CQRS.ICommand[] _allCommands;
         
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
         
 
         [OneTimeSetUp]
-        public void When_execute_many_commands_for_create_and_update()
+        public async Task When_execute_many_commands_for_create_and_update()
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateSampleAggregateCommand(101, Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
             var updateCommands = Enumerable.Range(0, 10).Select(r => new ChangeSampleAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
-            _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
+            var aggregateId = createCommands.First().AggregateId;
 
-            _processedEvents = ExecuteAndWaitForMany<SampleAggregateCreatedEvent, SampleAggregateChangedEvent>(createCommands.Length,
-                                                                                                   updateCommands.Length,
-                                                                                                   _allCommands);
+            var messageWaiter = GridNode.NewWaiter().Expect<SampleAggregateCreatedEvent>(e => e.SourceId == aggregateId);
+            foreach (var c in createCommands.Skip(1))
+            {
+                var id = c.AggregateId;
+                messageWaiter.And<SampleAggregateCreatedEvent>(e => e.SourceId == id);
+            }
+
+            foreach (var c in updateCommands.Skip(1))
+            {
+                var id = c.AggregateId;
+                messageWaiter.And<SampleAggregateChangedEvent>(e => e.SourceId == id);
+            }
+
+           var task = messageWaiter.Create();
+
+            GridNode.Execute(createCommands);
+            GridNode.Execute(updateCommands);
+            await task;
         }
 
         [Test]

@@ -172,30 +172,11 @@ namespace GridDomain.Tests.Framework
         {
             var faultGeneric = typeof(Fault<>);
             return commands.Select(c => c.GetType())
-                           .Distinct()
-                           .Select(commandType => faultGeneric.MakeGenericType(commandType))
-                           .Select(t => new ExpectedMessage(t, 0))
-                           .ToArray();
+                .Distinct()
+                .Select(commandType => faultGeneric.MakeGenericType(commandType))
+                .Select(t => new ExpectedMessage(t, 0))
+                .ToArray();
         }
-        protected ExpectedMessagesReceived ExecuteAndWaitFor<TEvent>(params ICommand[] commands)
-        {
-            var messageTypes = GetFaults(commands).Concat(new[] { Expect.Message<TEvent>() }).ToArray();
-            return ExecuteAndWaitFor(messageTypes, commands);
-        }
-        protected ExpectedMessagesReceived ExecuteAndWaitFor<TMessage1, TMessage2>(params ICommand[] commands)
-        {
-            var messageTypes = GetFaults(commands).Concat(new[] { Expect.Message<TMessage1>(), Expect.Message<TMessage1>() }).ToArray();
-            return ExecuteAndWaitFor(messageTypes, commands);
-        }
-        protected ExpectedMessagesReceived ExecuteAndWaitForMany<TMessage1, TMessage2>(int eventAnum, int eventBnum, params ICommand[] commands)
-        {
-            var msg1ToWait = new ExpectedMessage(typeof(TMessage1), eventAnum);
-            var msg2ToWait = new ExpectedMessage(typeof(TMessage2), eventBnum);
-            var allMsgToWait = GetFaults(commands).Concat(new [] {msg1ToWait, msg2ToWait}).ToArray();
-
-            return Wait(() => Execute(commands), GridNode.System, true, allMsgToWait);
-        }
-
 
         private ExpectedMessagesReceived Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
         {

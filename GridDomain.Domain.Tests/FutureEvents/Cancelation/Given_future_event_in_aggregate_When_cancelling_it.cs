@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -22,16 +24,22 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
 
         [OneTimeSetUp]
 
-        public void When_raising_future_event()
+        public async Task When_raising_future_event()
         {
             _scheduledTime = DateTime.Now.AddSeconds(200);
             _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
-
+            _futureEventEnvelop = (await GridNode.PrepareCommand(_testCommand)
+                                                .Expect<FutureEventScheduledEvent>()
+                                                .Execute())
+                                  .Message<FutureEventScheduledEvent>();
+                
             _cancelFutureEventCommand = new CancelFutureEventCommand(_testCommand.AggregateId, _testCommand.Value);
 
-            _futureEventCancelation = (FutureEventCanceledEvent)ExecuteAndWaitFor<FutureEventCanceledEvent>(_cancelFutureEventCommand).Received.First();
+            _futureEventCancelation = (await GridNode.PrepareCommand(_cancelFutureEventCommand)
+                                                                   .Expect<FutureEventCanceledEvent>()
+                                                                   .Execute())
+                                                     .Message<FutureEventCanceledEvent>();
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
