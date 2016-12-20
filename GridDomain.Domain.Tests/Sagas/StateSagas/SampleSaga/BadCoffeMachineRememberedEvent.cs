@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Sagas.StateSagas.SampleSaga
     {
         public Guid CoffeMachineId { get; }
 
-        public BadCoffeMachineRememberedEvent(Guid sagaId, Guid coffeMachineId) : base(sagaId)
+        public BadCoffeMachineRememberedEvent(Guid sourceId, Guid coffeMachineId) : base(sourceId)
         {
             CoffeMachineId = coffeMachineId;
         }

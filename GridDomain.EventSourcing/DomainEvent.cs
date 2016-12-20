@@ -11,11 +11,11 @@ namespace GridDomain.EventSourcing
 
     public class DomainEvent : ISourcedEvent
     {
-        public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = default(Guid))
+        public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid? sagaId=null)
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
-            SagaId = sagaId;
+            SagaId = sagaId ?? Guid.NewGuid();
         }
 
         //Source of the event - aggregate that created it

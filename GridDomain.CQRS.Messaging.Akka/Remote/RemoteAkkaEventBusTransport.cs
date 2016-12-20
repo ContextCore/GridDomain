@@ -47,13 +47,15 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
         public void Publish(object msg)
         {
             _local.Publish(msg);
-            _remoteSubscriber.Ask<PublishAck>(msg, _timeout).Wait();
+            _remoteSubscriber.Ask<PublishAck>(new Publish(msg), _timeout).Wait();
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
             _local.Publish(msg);
-            _remoteSubscriber.Ask<PublishAck>(MessageMetadataEnvelop.NewGeneric(msg,metadata), _timeout).Wait();
+            var messageMetadataEnvelop = MessageMetadataEnvelop.NewGeneric(msg,metadata);
+           
+            _remoteSubscriber.Ask<PublishAck>(new Publish(messageMetadataEnvelop), _timeout).Wait();
         }
     }
 }

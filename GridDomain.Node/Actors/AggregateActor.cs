@@ -69,9 +69,6 @@ namespace GridDomain.Node.Actors
                 ProcessAggregateEvents(m.Command, d.Metadata);
             });
 
-            Command<IMessageMetadataEnvelop<FutureEventScheduledEvent>>(e => Handle(e));
-            Command<IMessageMetadataEnvelop<FutureEventCanceledEvent>>(e => Handle(e));
-
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
             {
                 var cmd = m.Message;
@@ -120,8 +117,8 @@ namespace GridDomain.Node.Actors
                 //how to pass aggregate type in this case? 
                 //direct call to method to not postpone process of event scheduling, 
                 //case it can be interrupted by other messages in stash processing errors
-                e.Match().With<FutureEventScheduledEvent>(m => Self.Tell(MessageMetadataEnvelop.New(m, metadata)))
-                         .With<FutureEventCanceledEvent> (m => Self.Tell(MessageMetadataEnvelop.New(m, metadata)));
+                e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventMetadata))
+                         .With<FutureEventCanceledEvent>(m => Handle(m, eventMetadata));
 
                 Publisher.Publish(e, eventMetadata);
 
@@ -175,9 +172,9 @@ namespace GridDomain.Node.Actors
             extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
-        public void Handle(IMessageMetadataEnvelop<FutureEventScheduledEvent> msgWithMetadata)
+        public void Handle(FutureEventScheduledEvent futureEventScheduledEvent, IMessageMetadata messageMetadata)
         {
-            var message = msgWithMetadata.Message;
+            var message = futureEventScheduledEvent;
             Guid scheduleId = message.Id;
             Guid aggregateId = message.Event.SourceId;
 
@@ -188,7 +185,7 @@ namespace GridDomain.Node.Actors
             var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
 
             var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
-            var metadata = msgWithMetadata.Metadata.CreateChild(command.Id,
+            var metadata = messageMetadata.CreateChild(command.Id,
                                                                 new ProcessEntry(GetType().Name, 
                                                                                  "Scheduling raise future event command",
                                                                                  "FutureEventScheduled event occured"));
@@ -214,9 +211,9 @@ namespace GridDomain.Node.Actors
                                    "");
         }
 
-        public void Handle(IMessageMetadataEnvelop<FutureEventCanceledEvent> msg)
+        public void Handle(FutureEventCanceledEvent futureEventCanceledEvent, IMessageMetadata metadata)
         {
-            var message = msg.Message; 
+            var message = futureEventCanceledEvent; 
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
             _unscheduleActorRef.Handle(unscheduleMessage);

@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Metadata
 {
     [TestFixture]
-    class Metadata_from_scheduled_command_passed_produced_event : FutureEventsTest_InMemory
+    class Metadata_from_command_passed_to_produced_scheduled_event : FutureEventsTest_InMemory
     {
         private IMessageMetadataEnvelop<TestDomainEvent> _answer;
         private ScheduleEventInFutureCommand _command;

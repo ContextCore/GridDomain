@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Adapters;
@@ -10,6 +11,7 @@ using GridDomain.Tests.EventsUpgrade.Domain;
 using GridDomain.Tests.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.FutureEvents;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
@@ -37,12 +39,11 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     }
 
     [TestFixture]
-    public class Future_events_upgraded_by_object_adapter : ExtendedNodeCommandTest
+    public class Future_events_upgraded_by_object_adapter : FutureEventsTest
     {
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>(),
-                                                    c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
                                                     c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
                                                         new PersistentChildsRecycleConfiguration(
                                                             TimeSpan.FromMilliseconds(100), 
@@ -59,20 +60,19 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             
         }
+
         [Test]
-        public void Future_event_is_upgraded_by_json_adapter()
+        public async Task Future_event_is_upgraded_by_json_adapter()
         {
             GridNode.ObjectAdapteresCatalog.Register(new BalanceChanged_objectAdapter1());
 
             var saveOldEventCommand = new ChangeBalanceInFuture(1,Guid.NewGuid(),BusinessDateTime.Now.AddSeconds(2),true);
 
-            GridNode.NewCommandWaiter(Timeout)
-                    .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
-                    .Create()
-                    .Execute(saveOldEventCommand)
-                    .Wait();
+            await GridNode.PrepareCommand(saveOldEventCommand)
+                          .Expect<FutureEventScheduledEvent>()
+                          .Execute(Timeout);
 
-            GridNode.NewWaiter(Timeout).Expect<BalanceChangedEvent_V1>().Create().Wait();
+            await GridNode.NewWaiter(Timeout).Expect<BalanceChangedEvent_V1>().Create();
         }
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);

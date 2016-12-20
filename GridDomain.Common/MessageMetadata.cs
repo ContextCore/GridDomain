@@ -5,7 +5,6 @@ namespace GridDomain.Common
     public class MessageMetadata : IMessageMetadata
     {
 
-
         public Guid MessageId { get; }
         public Guid CasuationId { get; }
         public Guid CorrelationId { get; }

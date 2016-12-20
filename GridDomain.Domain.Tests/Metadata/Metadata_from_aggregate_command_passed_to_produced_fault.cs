@@ -33,16 +33,6 @@ namespace GridDomain.Tests.Metadata
                                     .Execute(_command, _commandMetadata);
 
             _answer = res.Message<IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>>>();
-
-            // GridNode.PrepareCommand(cmd)
-            //         .Expect<A>
-            //         .Execute(timeout, null)
-            //           
-            //
-            //
-            //
-            //
-            //
         }
 
         [Test]

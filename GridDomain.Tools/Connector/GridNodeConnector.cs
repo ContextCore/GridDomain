@@ -19,7 +19,7 @@ namespace GridDomain.Tools.Console
     {
         private readonly ActorSystem _consoleSystem;
         public IActorRef EventBusForwarder;
-        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(30);
         private AkkaCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
         private MessageWaiterFactory _waiterFactory;
@@ -54,7 +54,7 @@ namespace GridDomain.Tools.Console
             var transportBridge = new RemoteAkkaEventBusTransport(
                                                 new LocalAkkaEventBusTransport(_consoleSystem),
                                                 EventBusForwarder,
-                                                TimeSpan.FromSeconds(5));
+                                                TimeSpan.FromSeconds(30));
 
             _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
             _waiterFactory = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);

@@ -43,7 +43,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                 );
         }
 
-       // protected override TimeSpan Timeout { get; } //= TimeSpan.FromMinutes(10);
 
         [OneTimeSetUp]
         public void Given_save_on_each_message_policy_and_keep_2_snapshots()

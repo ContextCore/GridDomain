@@ -13,6 +13,8 @@ using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.InstanceSagas;
+using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tests.SampleDomain;
 using Moq;
 using NUnit.Framework;
@@ -76,7 +78,7 @@ namespace GridDomain.Tests
                              typeof(ExtendedExecutionOptions),
                              typeof(ScheduleKey));
         }
-
+       
         [Test]
         public void Aggregates_from_all_assemblies_should_be_deserializable()
         {

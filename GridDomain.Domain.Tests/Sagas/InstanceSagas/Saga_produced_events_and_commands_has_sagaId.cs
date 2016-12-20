@@ -45,11 +45,11 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
         {
             var sagaId = Guid.NewGuid();
             var sourceId = Guid.NewGuid();
-            var domainEvent = new GotTiredEvent(sourceId).CloneWithSaga(sagaId);
+            var domainEvent = new GotTiredEvent(sourceId,Guid.NewGuid(),Guid.NewGuid(),sagaId);
 
             var expectedCreatedEvent =
                             (await GridNode.NewDebugWaiter()
-                                           .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                                           .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>(e => e.State.CoffeeMachineId == domainEvent.FavoriteCoffeMachineId)
                                            .Create()
                                            .Publish(domainEvent)).Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 
