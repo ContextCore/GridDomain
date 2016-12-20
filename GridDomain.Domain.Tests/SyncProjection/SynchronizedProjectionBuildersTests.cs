@@ -25,7 +25,7 @@ namespace GridDomain.Tests.SyncProjection
     [TestFixture]
     public class SynchronizedProjectionBuildersTests : InMemorySampleDomainTests
     {
-        private IWaitResults _waitResults;
+        private Dictionary<Guid, DomainEvent[]> _eventsPerAggregate;
 
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
         
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.SyncProjection
                 messageWaiter.And<SampleAggregateCreatedEvent>(e => e.SourceId == id);
             }
 
-            foreach (var c in updateCommands.Skip(1))
+            foreach (var c in updateCommands)
             {
                 var id = c.AggregateId;
                 messageWaiter.And<SampleAggregateChangedEvent>(e => e.SourceId == id);
@@ -56,7 +56,12 @@ namespace GridDomain.Tests.SyncProjection
 
             GridNode.Execute(createCommands);
             GridNode.Execute(updateCommands);
-           _waitResults = await task;
+
+            _eventsPerAggregate = (await task).All
+                .Cast<IMessageMetadataEnvelop>()
+                .Select(m => m.Message as DomainEvent)
+                .GroupBy(e => e.SourceId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(i => i.CreatedTime).ToArray());
         }
 
         [Test]
@@ -66,7 +71,6 @@ namespace GridDomain.Tests.SyncProjection
         }
 
         [Test]
-        [Ignore("Temporary")]
         public void All_events_related_to_one_aggregate_processed_number_should_be_only_increasing()
         {
             AllEventsForOneAggregate_should_be_ordered_by(e => e.History.SequenceNumber);
@@ -80,12 +84,11 @@ namespace GridDomain.Tests.SyncProjection
 
         private void AllEventsForOneAggregate_should_be_ordered_by(Func<IHaveProcessingHistory, long> valueSelector)
         {
-            foreach (var eventsForOneAggregate in _waitResults.All
-                                                              .Cast<IMessageMetadataEnvelop>()
-                                                              .Select(m => m.Message as DomainEvent)
-                                                              .GroupBy(e => e.SourceId))
+         
+
+            foreach (var eventsForOneAggregate in _eventsPerAggregate)
             {
-                CheckOrderedValues(eventsForOneAggregate.Cast<IHaveProcessingHistory>(),
+                CheckOrderedValues(eventsForOneAggregate.Value.Cast<IHaveProcessingHistory>(),
                                    valueSelector);
             }
         }
