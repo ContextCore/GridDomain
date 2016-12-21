@@ -15,6 +15,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             ExpectBuilder = new MessageExpectBuilder(this, defaultTimeout);
         }
 
-        public override ExpectBuilder<Task<IWaitResults>> ExpectBuilder { get; }
+        public ExpectBuilder<Task<IWaitResults>> ExpectBuilder { get; }
+
+        public override IExpectBuilder<Task<IWaitResults>> Expect<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return ExpectBuilder.And(filter);
+        }
+        public override IExpectBuilder<Task<IWaitResults>> Expect(Type type, Func<object, bool> filter = null)
+        {
+            return ExpectBuilder.And(type, filter ?? (o => true));
+        }
     }
 }

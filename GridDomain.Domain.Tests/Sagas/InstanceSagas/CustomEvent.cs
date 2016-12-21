@@ -1,10 +1,14 @@
 using System;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Sagas.InstanceSagas
 {
-    public class CustomEvent
+    public class CustomEvent : DomainEvent
     {
-        public Guid SagaId { get; set; }
         public string Payload { get; set; }
+
+        public CustomEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+        {
+        }
     }
 }

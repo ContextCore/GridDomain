@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
@@ -46,23 +47,17 @@ namespace GridDomain.Node.AkkaMessaging.Routing
                 throw new DublicateRoutesException(dublicateRoutes.Select(r => r.Key.FullName));
         }
 
-        public static CreateActorRouteMessage ForAggregate<TAggregate>(string name, params MessageRoute[] routes) where TAggregate : AggregateBase
-        {
-            return ForAggregate(typeof(TAggregate), name, routes);
-        }
-        public static CreateActorRouteMessage ForAggregate(Type aggregateType, string name, params MessageRoute[] routes)
-        {
-           return new CreateActorRouteMessage(typeof(AggregateHubActor<>).MakeGenericType(aggregateType), 
-                                              name,
-                                              PoolKind.None,
-                                              routes);
-        }
 
-        public static CreateActorRouteMessage ForSaga<TSaga, TSagaState>(string name, params MessageRoute[] routes) 
-            where TSaga : class, ISagaInstance 
-            where TSagaState : AggregateBase 
+        public static CreateActorRouteMessage ForAggregate(string name, IAggregateCommandsHandlerDesriptor descriptor)
         {
-            return new CreateActorRouteMessage(typeof(SagaHubActor<TSaga, TSagaState>), name, PoolKind.None, routes);
+            var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
+                (
+                     MessageMetadataEnvelop.GenericForType(c.CommandType),
+                     c.Property
+                )).ToArray();
+
+            var hubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
+            return new CreateActorRouteMessage(hubType, name, PoolKind.None, messageRoutes);
         }
 
         public static CreateActorRouteMessage ForSaga(ISagaDescriptor descriptor, string name = null)
@@ -70,13 +65,15 @@ namespace GridDomain.Node.AkkaMessaging.Routing
             name = name ??  $"SagaHub_{descriptor.SagaType.BeautyName()}";
 
             var messageRoutes = descriptor.AcceptMessages
-                .Select(messageBinder => new MessageRoute(messageBinder.MessageType, messageBinder.CorrelationField))
+                .Select(messageBinder => new MessageRoute(
+                        MessageMetadataEnvelop.GenericForType(messageBinder.MessageType), 
+                        messageBinder.CorrelationField))
                 .ToArray();
 
-            var actorType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
+            var hubType = typeof(SagaHubActor<,>).MakeGenericType(descriptor.SagaType, 
                                                                     descriptor.StateType);
 
-            return new CreateActorRouteMessage(actorType, name, PoolKind.None,messageRoutes);
+            return new CreateActorRouteMessage(hubType, name, PoolKind.None, messageRoutes);
         }
     }
 }

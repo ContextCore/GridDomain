@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
+using GridDomain.Common;
 using GridDomain.Logging;
 using LogManager = GridDomain.Logging.LogManager;
 
@@ -48,22 +49,16 @@ namespace GridDomain.CQRS.Messaging.Akka
             _log.Trace("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
         }
 
-        public void Publish<T>(T msg)
+        public void Publish(object msg)
         {
-            var topic = typeof(T).FullName;
+            var topic = msg.GetType().FullName;
             _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(),topic);
             _transport.Tell(new Publish(topic, msg));
         }
 
-        public void Publish(params object[] msgs)
+        public void Publish(object msg, IMessageMetadata metadata)
         {
-            foreach (var msg in msgs)
-            {
-                var topic = msg.GetType().FullName;
-                _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}",
-                    msg.ToPropsString(), topic);
-                _transport.Tell(new Publish(topic, msg));
-            }
+            Publish(MessageMetadataEnvelop.NewGeneric(msg,metadata));
         }
     }
 }

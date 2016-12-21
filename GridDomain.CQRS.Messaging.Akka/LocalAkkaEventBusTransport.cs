@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
+using GridDomain.Common;
 using GridDomain.Logging;
 
 namespace GridDomain.CQRS.Messaging.Akka
@@ -34,13 +34,19 @@ namespace GridDomain.CQRS.Messaging.Akka
             Subscribe(messageType, actor);
         }
 
-        public void Publish(params object[] messages)
+        public void Publish(object msg)
         {
-            foreach (var msg in messages)
-            {
-                _log.Trace("Publishing {@Message} to transport");
-                _bus.Publish(msg);
-            }
+            _log.Trace("Publishing {@Message} to transport", msg);
+            _bus.Publish(msg);
+            //for backward compability - a lot of legacy code publish bare messages and expect some results back
+            //and new actors \ sagas work only with IMessageMetadataEnvelop
+            Publish(msg, MessageMetadata.Empty());
+        }
+
+        public void Publish(object msg, IMessageMetadata metadata)
+        {
+            _log.Trace("Publishing {@Message} to transport with metadata {@metadata}", msg, metadata);
+            _bus.Publish(MessageMetadataEnvelop.NewGeneric(msg,metadata));
         }
 
         public void Subscribe(Type messageType, IActorRef actor)

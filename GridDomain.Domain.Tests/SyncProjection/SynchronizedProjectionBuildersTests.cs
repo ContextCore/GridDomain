@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
@@ -24,24 +25,43 @@ namespace GridDomain.Tests.SyncProjection
     [TestFixture]
     public class SynchronizedProjectionBuildersTests : InMemorySampleDomainTests
     {
-        private ExpectedMessagesReceived _processedEvents;
-        private CQRS.ICommand[] _allCommands;
-        
+        private Dictionary<Guid, DomainEvent[]> _eventsPerAggregate;
+
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
         
 
         [OneTimeSetUp]
-        public void When_execute_many_commands_for_create_and_update()
+        public async Task When_execute_many_commands_for_create_and_update()
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateSampleAggregateCommand(101, Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
             var updateCommands = Enumerable.Range(0, 10).Select(r => new ChangeSampleAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
-            _allCommands = createCommands.Cast<CQRS.ICommand>().Concat(updateCommands).ToArray();
+            var aggregateId = createCommands.First().AggregateId;
 
-            _processedEvents = ExecuteAndWaitForMany<SampleAggregateCreatedEvent, SampleAggregateChangedEvent>(createCommands.Length,
-                                                                                                   updateCommands.Length,
-                                                                                                   _allCommands);
+            var messageWaiter = GridNode.NewWaiter().Expect<SampleAggregateCreatedEvent>(e => e.SourceId == aggregateId);
+            foreach (var c in createCommands.Skip(1))
+            {
+                var id = c.AggregateId;
+                messageWaiter.And<SampleAggregateCreatedEvent>(e => e.SourceId == id);
+            }
+
+            foreach (var c in updateCommands)
+            {
+                var id = c.AggregateId;
+                messageWaiter.And<SampleAggregateChangedEvent>(e => e.SourceId == id);
+            }
+
+           var task = messageWaiter.Create();
+
+            GridNode.Execute(createCommands);
+            GridNode.Execute(updateCommands);
+
+            _eventsPerAggregate = (await task).All
+                .Cast<IMessageMetadataEnvelop>()
+                .Select(m => m.Message as DomainEvent)
+                .GroupBy(e => e.SourceId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(i => i.CreatedTime).ToArray());
         }
 
         [Test]
@@ -51,7 +71,6 @@ namespace GridDomain.Tests.SyncProjection
         }
 
         [Test]
-        [Ignore("Temporary")]
         public void All_events_related_to_one_aggregate_processed_number_should_be_only_increasing()
         {
             AllEventsForOneAggregate_should_be_ordered_by(e => e.History.SequenceNumber);
@@ -65,9 +84,11 @@ namespace GridDomain.Tests.SyncProjection
 
         private void AllEventsForOneAggregate_should_be_ordered_by(Func<IHaveProcessingHistory, long> valueSelector)
         {
-            foreach (var eventsForOneAggregate in _processedEvents.Received.Cast<DomainEvent>().GroupBy(e => e.SourceId))
+         
+
+            foreach (var eventsForOneAggregate in _eventsPerAggregate)
             {
-                CheckOrderedValues(eventsForOneAggregate.Cast<IHaveProcessingHistory>(),
+                CheckOrderedValues(eventsForOneAggregate.Value.Cast<IHaveProcessingHistory>(),
                                    valueSelector);
             }
         }

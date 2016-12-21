@@ -7,9 +7,9 @@ using Akka;
 using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
-using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -29,9 +29,15 @@ namespace GridDomain.Node.Actors
     /// <typeparam name="TAggregate"></typeparam>
     public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : AggregateBase
     {
-        protected readonly IAggregateCommandsHandler<TAggregate> _handler;
+        private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
         private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
+
+        public const string CreatedFault = "created fault";
+        public const string CommandRaisedAnError = "command raised an error";
+        public const string PublishingEvent = "Publishing event";
+        public const string CommandExecutionCreatedAnEvent = "Command execution created an event";
+
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               TypedMessageActor<ScheduleCommand> schedulerActorRef,
@@ -39,9 +45,9 @@ namespace GridDomain.Node.Actors
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor) : base(
-                                  aggregateConstructor,
-                                  snapshotsPersistencePolicy,
-                                  publisher)
+                                                                            aggregateConstructor,
+                                                                            snapshotsPersistencePolicy,
+                                                                            publisher)
         {
             _schedulerActorRef = schedulerActorRef;
             _unscheduleActorRef = unscheduleActorRef;
@@ -49,21 +55,23 @@ namespace GridDomain.Node.Actors
 
             //async aggregate method execution finished, aggregate already raised events
             //need process it in usual way
-            Command<AsyncEventsReceived>(m =>
+            Command<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
             {
+                var m = d.Message;
                 Monitor.IncrementMessagesReceived();
                 if (m.Exception != null)
                 {
-                   Publisher.Publish(Fault.NewGeneric(m.Command, m.Exception, typeof(TAggregate),m.Command.SagaId));
+                    ProcessFault(m.Command, m.Exception, d.Metadata);
                     return;
                 }
 
                 (State as Aggregate).FinishAsyncExecution(m.InvocationId);
-                ProcessAggregateEvents(m.Command);
+                ProcessAggregateEvents(m.Command, d.Metadata);
             });
-           
-            Command<ICommand>(cmd =>
+
+            Command<IMessageMetadataEnvelop<ICommand>>(m =>
             {
+                var cmd = m.Message;
                 Monitor.IncrementMessagesReceived();
                 _log.Trace("{Aggregate} received a {@command}", State.Id, cmd);
                 try
@@ -72,47 +80,77 @@ namespace GridDomain.Node.Actors
                 }
                 catch (Exception ex)
                 {
-                    Publisher.Publish(Fault.NewGeneric(cmd, ex, typeof(TAggregate),cmd.SagaId));
-                    Log.Error(ex,"{Aggregate} raised an expection {@Exception} while executing {@Command}",State.Id,ex,cmd);
+                    ProcessFault(cmd, ex, m.Metadata);
                     return;
                 }
 
-                ProcessAggregateEvents(cmd);
+                ProcessAggregateEvents(cmd, m.Metadata);
             });
         }
-        
-        private void ProcessAggregateEvents(ICommand command)
+
+        private void ProcessFault(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
+        {
+            var fault = Fault.NewGeneric(cmd, ex, typeof(TAggregate), cmd.SagaId);
+            
+            var metadata = messageMetadata.CreateChild(cmd.Id,
+                                           new ProcessEntry(Self.Path.Name,
+                                                            CreatedFault,
+                                                            CommandRaisedAnError));
+
+            Publisher.Publish(fault, metadata);
+            Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
+        }
+
+
+        private void ProcessAggregateEvents(ICommand command, IMessageMetadata metadata)
+        {
+            var events = ExecuteCommand(command);
+
+            int totalEvents = events.Length;
+            int persistedEvents = 0;
+
+            PersistAll(events, e =>
+            {
+                var eventMetadata = metadata.CreateChild(e.SourceId,
+                                                         new ProcessEntry(Self.Path.Name,
+                                                                          PublishingEvent,
+                                                                          CommandExecutionCreatedAnEvent));
+
+                //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
+                //how to pass aggregate type in this case? 
+                //direct call to method to not postpone process of event scheduling, 
+                //case it can be interrupted by other messages in stash processing errors
+                e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventMetadata))
+                         .With<FutureEventCanceledEvent>(m => Handle(m, eventMetadata));
+
+                Publisher.Publish(e, eventMetadata);
+                //should save snapshot only after all messages persisted as state was already modified by all of them
+                if(++persistedEvents == totalEvents)
+                    TrySaveSnapshot(events);
+
+                NotifyWatchers(new Persisted(e));
+            });
+
+            State.ClearUncommittedEvents();
+
+            ProcessAsyncMethods(command, metadata);
+
+            if(SnapshotsPolicy.ShouldSave(events))
+                SaveSnapshot(State.GetSnapshot());
+        }
+
+        private DomainEvent[] ExecuteCommand(ICommand command)
         {
             var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
-            State.ClearUncommittedEvents();
 
             if (command.SagaId != Guid.Empty)
             {
                 events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
             }
-            int totalEvents = events.Length;
-            int persistedEvents = 0;
-            PersistAll(events, e =>
-            {
-                //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
-                //how to pass aggregate type in this case? 
-                //direct call to method to not postpone process of event scheduling, 
-                //case it can be interrupted by other messages in stash processing errors
-                e.Match().With<FutureEventScheduledEvent>(Handle)
-                         .With<FutureEventCanceledEvent>(Handle);
-
-                //should save snapshot only after all messages persisted as state was already modified by all of them
-                if(++persistedEvents == totalEvents)
-                    TrySaveSnapshot(events);
-
-                Publisher.Publish(e);
-                NotifyWatchers(new Persisted(e));
-            });
-
-            ProcessAsyncMethods(command);
+            return events;
         }
-        
-        private void ProcessAsyncMethods(ICommand command)
+
+        private void ProcessAsyncMethods(ICommand command, IMessageMetadata metadata)
         {
             var extendedAggregate = State as Aggregate;
             if (extendedAggregate == null) return;
@@ -122,14 +160,27 @@ namespace GridDomain.Node.Actors
             //command is included to safe access later, after async execution complete
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
-                asyncMethod.ResultProducer.ContinueWith(t => new AsyncEventsReceived(t.IsFaulted ? null: t.Result, cmd, asyncMethod.InvocationId, t.Exception))
-                                          .PipeTo(Self);
+            {
+
+                asyncMethod.ResultProducer.ContinueWith(
+                    t =>
+                    {
+                        var asyncEventsReceived = new AsyncEventsReceived(t.IsFaulted ? null : t.Result, 
+                                                                          cmd, 
+                                                                          asyncMethod.InvocationId,
+                                                                          t.Exception);
+
+                        return new MessageMetadataEnvelop<AsyncEventsReceived>(asyncEventsReceived, metadata);
+                    })
+                    .PipeTo(Self);
+            }
 
             extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
-        public void Handle(FutureEventScheduledEvent message)
+        public void Handle(FutureEventScheduledEvent futureEventScheduledEvent, IMessageMetadata messageMetadata)
         {
+            var message = futureEventScheduledEvent;
             Guid scheduleId = message.Id;
             Guid aggregateId = message.Event.SourceId;
 
@@ -139,12 +190,22 @@ namespace GridDomain.Node.Actors
 
             var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
 
-            var scheduleEvent = new ScheduleCommand(new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid()),
+            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
+            var metadata = messageMetadata.CreateChild(command.Id,
+                                                                new ProcessEntry(GetType().Name, 
+                                                                                 "Scheduling raise future event command",
+                                                                                 "FutureEventScheduled event occured"));
+
+            var confirmationEventType = typeof(IMessageMetadataEnvelop<>).MakeGenericType(message.Event.GetType());
+
+            var scheduleEvent = new ScheduleCommand(command,
                                                     scheduleKey,
-                                                    new ExtendedExecutionOptions(message.RaiseTime, 
-                                                                                 message.Event.GetType(), 
+                                                    new ExtendedExecutionOptions(message.RaiseTime,
+                                                                                 confirmationEventType, 
                                                                                  message.Event.SourceId,
-                                                                                 nameof(DomainEvent.SourceId)));
+                                                                                 nameof(DomainEvent.SourceId)),
+                                                    metadata);
+
             _schedulerActorRef.Handle(scheduleEvent);
         }
 
@@ -156,8 +217,9 @@ namespace GridDomain.Node.Actors
                                    "");
         }
 
-        public void Handle(FutureEventCanceledEvent message)
+        public void Handle(FutureEventCanceledEvent futureEventCanceledEvent, IMessageMetadata metadata)
         {
+            var message = futureEventCanceledEvent; 
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
             _unscheduleActorRef.Handle(unscheduleMessage);

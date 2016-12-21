@@ -2,9 +2,13 @@ using System;
 
 namespace GridDomain.CQRS
 {
-    public interface IMessageWaiter<T>
+    public interface IMessageWaiter<T> : IMessageWaiterBase<T,IExpectBuilder<T>>
     {
-        IExpectBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null);
-        IExpectBuilder<T> Expect(Type type, Func<object, bool> filter = null);
+    }
+
+    public interface IMessageWaiterBase<TResult,TExpectBuilder> where TExpectBuilder : IExpectBuilder<TResult>
+    {
+        TExpectBuilder Expect<TMsg>(Predicate<TMsg> filter = null);
+        TExpectBuilder Expect(Type type, Func<object, bool> filter = null);
     }
 }

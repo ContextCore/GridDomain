@@ -73,8 +73,15 @@
     <Compile Include="DateTimeStrategyHolder.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IContainerConfiguration.cs" />
+    <Compile Include="IMessageMetadata.cs" />
+    <Compile Include="IMessageMetadataEnvelop.cs" />
     <Compile Include="LegacyWireSerializer.cs" />
     <Compile Include="MemberNameExtractor.cs" />
+    <Compile Include="MessageMetadata.cs" />
+    <Compile Include="MessageMetadataEnvelop.cs" />
+    <Compile Include="MessageMetadataExtensions.cs" />
+    <Compile Include="ProcessEntry.cs" />
+    <Compile Include="ProcessHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TasksExtensions.cs" />
   </ItemGroup>
@@ -92,27 +99,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="_NuProjGetProjectClosure"
-          DependsOnTargets="ResolveProjectReferences"
-          Inputs="%(_MSBuildProjectReferenceExistent.Identity)"
-          Outputs="fake"
-          Returns="@(_ProjectReferenceClosure)">
-
+  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
     <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
-             Targets="_NuProjGetProjectClosure"
-             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-             ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs"
-              ItemName="_ProjectReferenceClosureWithDuplicates" />
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
+      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
     </MSBuild>
-
     <!-- Remove duplicates from closure -->
     <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered"
-              ItemName="_ProjectReferenceClosureWithoutMetadata"/>
+      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
     </RemoveDuplicates>
-
     <ItemGroup>
       <!-- Remove references that are also direct references -->
       <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
@@ -127,6 +122,5 @@
         <DependencyKind>Direct</DependencyKind>
       </_ProjectReferenceClosure>
     </ItemGroup>
-
   </Target>
 </Project>

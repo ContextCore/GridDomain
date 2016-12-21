@@ -81,10 +81,13 @@ namespace GridDomain.EventSourcing
                 using (var stream = new MemoryStream(bytes))
                 using (var reader = new StreamReader(stream, Encoding.Unicode))
                 {
-                    var readToEnd = reader.ReadToEnd();
-                    var deserializeObject = JsonConvert.DeserializeObject(readToEnd, settings ?? JsonSerializerSettings);
+                    var jsonString = reader.ReadToEnd();
+                    if (string.IsNullOrEmpty(jsonString))
+                        return null;
+
+                    var deserializeObject = JsonConvert.DeserializeObject(jsonString, settings ?? JsonSerializerSettings);
                     if (deserializeObject == null)
-                        throw new SerializationException("json string: " + readToEnd);
+                        throw new SerializationException("json string: " + jsonString);
 
                     return deserializeObject;
                 }

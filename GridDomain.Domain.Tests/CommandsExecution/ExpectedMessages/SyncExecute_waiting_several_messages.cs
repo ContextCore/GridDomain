@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.SampleDomain;
@@ -56,8 +57,8 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
         [Then]
         public void Then_recieve_collection_of_expected_messages()
         {
-            Assert.IsTrue(_anObject.Any(m => m is SampleAggregateChangedEvent));
-            Assert.IsTrue(_anObject.Any(m => m is SampleAggregateCreatedEvent));
+            Assert.IsTrue(_anObject.Any(m => m is IMessageMetadataEnvelop<SampleAggregateChangedEvent>));
+            Assert.IsTrue(_anObject.Any(m => m is IMessageMetadataEnvelop<SampleAggregateCreatedEvent>));
         }
 
         [Then]

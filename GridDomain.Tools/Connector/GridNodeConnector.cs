@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
@@ -18,10 +19,10 @@ namespace GridDomain.Tools.Console
     {
         private readonly ActorSystem _consoleSystem;
         public IActorRef EventBusForwarder;
-        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(30);
         private AkkaCommandExecutor _commandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
-        private MessageWaiterFactory _gridDomainNodeImplementation;
+        private MessageWaiterFactory _waiterFactory;
         
 
         public GridNodeConnector(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
@@ -53,10 +54,10 @@ namespace GridDomain.Tools.Console
             var transportBridge = new RemoteAkkaEventBusTransport(
                                                 new LocalAkkaEventBusTransport(_consoleSystem),
                                                 EventBusForwarder,
-                                                TimeSpan.FromSeconds(5));
+                                                TimeSpan.FromSeconds(30));
 
             _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
-            _gridDomainNodeImplementation = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
+            _waiterFactory = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
         }
       
         public void Dispose()
@@ -79,14 +80,24 @@ namespace GridDomain.Tools.Console
             return _commandExecutor.Execute(plan);
         }
 
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+            _commandExecutor.Execute(command, metadata);
+        }
+
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return _gridDomainNodeImplementation.NewWaiter(defaultTimeout);
+            return _waiterFactory.NewWaiter(defaultTimeout);
         }
 
         public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true)
         {
-            return _gridDomainNodeImplementation.NewCommandWaiter(defaultTimeout, failAnyFault);
+            return _waiterFactory.NewCommandWaiter(defaultTimeout, failAnyFault);
+        }
+
+        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _waiterFactory.PrepareCommand(cmd, metadata);
         }
     }
 }

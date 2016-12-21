@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -17,10 +18,10 @@ namespace GridDomain.Tests.Framework
 
         }
 
-        public async Task<IWaitResults> Publish(params object[] messages)
+        public async Task<IWaitResults> Publish(object message, IMessageMetadata metadata = null)
         {
             var task =_waiter.Start();
-            _publisher.Publish(messages);
+            _publisher.Publish(message, metadata ?? MessageMetadata.Empty());
             return await task;
 
         }

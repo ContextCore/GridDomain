@@ -236,8 +236,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageWaiting\Commanding\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
     <Compile Include="CommandsExecution\ExpectedMessages\CommandPlan_Execute_without_timeout.cs" />
+    <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
+    <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
+    <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
     <Compile Include="EventsUpgrade\Domain\Commands\ChangeBalanceInFuture.cs" />
+    <Compile Include="Metadata\Metadata_from_async_aggregate_command_passed_to_produced_events.cs" />
+    <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_fault.cs" />
+    <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_notification.cs" />
+    <Compile Include="Metadata\Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
+    <Compile Include="Metadata\Metadata_from_command_passed_to_produced_scheduled_event.cs" />
+    <Compile Include="Metadata\Metadata_from_command_passed_to_produced_scheduled_fault.cs" />
+    <Compile Include="Metadata\Metadata_from_unscheduled_job_passed_produced_command.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />

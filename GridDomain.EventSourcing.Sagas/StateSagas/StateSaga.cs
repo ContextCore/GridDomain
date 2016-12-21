@@ -58,9 +58,9 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         }
 
         public TSagaStates DomainState => State.MachineState;
-        private readonly List<object> _messagesToDispatch = new List<object>();
+        private readonly List<ICommand> _messagesToDispatch = new List<ICommand>();
 
-        public IReadOnlyCollection<object> CommandsToDispatch => _messagesToDispatch;
+        public IReadOnlyCollection<ICommand> CommandsToDispatch => _messagesToDispatch;
 
         public void ClearCommandsToDispatch()
         {
@@ -93,15 +93,6 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
         {
             var commandToDispatch = command.CloneWithSaga(State.Id);
             _messagesToDispatch.Add(commandToDispatch);
-        }
-
-        protected void DispatchSagaFault<T>(Fault<T> commandFault) where T : ICommand
-        {
-            _messagesToDispatch.Add(commandFault);
-        }
-        protected void Dispatch(ISagaFault sagaFault)
-        {
-            _messagesToDispatch.Add(sagaFault);
         }
 
         protected void RegisterStartMessage<T>()

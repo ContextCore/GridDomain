@@ -53,9 +53,11 @@ namespace GridDomain.Node
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
         bool _stopping = false;
-        private ICommandExecutor _commandExecutor;
         public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
         private IMessageWaiterFactory _waiterFactory;
+        private ICommandWaiterFactory _commandWaiterFactory;
+        private ICommandExecutor _commandExecutor;
+
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
@@ -115,6 +117,7 @@ namespace GridDomain.Node
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
             _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
+            _commandWaiterFactory = Container.Resolve<ICommandWaiterFactory>();
 
             EventBusForwarder = System.ActorOf(Props.Create(() => new EventBusForwarder(Transport)),nameof(EventBusForwarder));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
@@ -215,6 +218,11 @@ namespace GridDomain.Node
             return await _commandExecutor.Execute(plan);
         }
 
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+            _commandExecutor.Execute(command, metadata);
+        }
+
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout ?? DefaultTimeout);
@@ -223,6 +231,11 @@ namespace GridDomain.Node
         public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failOnAnyFault = true)
         {
             return _waiterFactory.NewCommandWaiter(defaultTimeout ?? DefaultTimeout, failOnAnyFault);
+        }
+
+        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _commandWaiterFactory.PrepareCommand(cmd, metadata);
         }
     }
 }

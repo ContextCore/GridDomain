@@ -8,7 +8,6 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
-   // [Ignore("Until pull request merge for faked akka.remote")]
 
     class PersistenceHubOnChildActivity : PersistentHub_children_lifetime_test
     {

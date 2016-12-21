@@ -1,6 +1,8 @@
 using System;
 using Akka.Actor;
 using Akka.DI.Core;
+using GridDomain.Common;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -15,11 +17,14 @@ namespace GridDomain.Tests.Aggregate_Sagas_actor_lifetime.Infrastructure
         {
             var sagaId = Guid.NewGuid();
             ChildId = sagaId;
-            var gotTired = new GotTiredEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid());
-            var coffeMadeEvent = new CoffeMadeEvent(gotTired.FavoriteCoffeMachineId, gotTired.PersonId);
+            var gotTired = new GotTiredEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid(), sagaId);
+            var coffeMadeEvent = new CoffeMadeEvent(gotTired.FavoriteCoffeMachineId, gotTired.PersonId,null,sagaId);
 
-            ChildCreateMessage = gotTired.CloneWithSaga(sagaId);
-            ChildActivateMessage = coffeMadeEvent.CloneWithSaga(sagaId);
+            ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, 
+                                                                         new MessageMetadata(gotTired.SourceId));
+
+            ChildActivateMessage = new MessageMetadataEnvelop<DomainEvent>(coffeMadeEvent,
+                                                                           new MessageMetadata(coffeMadeEvent.SourceId));
 
             HubProps = system.DI().Props<
                 SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,

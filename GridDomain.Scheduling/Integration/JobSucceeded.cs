@@ -2,8 +2,10 @@ namespace GridDomain.Scheduling.Integration
 {
     public class JobSucceeded : JobCompleted
     {
-        public JobSucceeded(string name, string group):base(name,group)
+        public object Message { get; }
+        public JobSucceeded(string name, string group, object message):base(name,group)
         {
+            Message = message;
         }
     }
 }

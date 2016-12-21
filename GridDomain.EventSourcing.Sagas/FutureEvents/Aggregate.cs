@@ -8,6 +8,7 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing.Sagas.FutureEvents
 {
+
     public class Aggregate : AggregateBase, IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();

@@ -62,10 +62,9 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         {
             var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
-            var evt =  await _connector.NewCommandWaiter(TimeSpan.FromDays(1))
+            var evt =  await _connector.PrepareCommand(command)
                                        .Expect<SampleAggregateCreatedEvent>()
-                                       .Create()
-                                       .Execute(command);
+                                       .Execute();
                                    
             Assert.AreEqual(command.Parameter.ToString(), evt.Message<SampleAggregateCreatedEvent>().Value);
         }

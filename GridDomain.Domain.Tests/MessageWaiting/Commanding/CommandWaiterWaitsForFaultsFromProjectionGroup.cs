@@ -16,14 +16,14 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         protected override IMessageRouteMap CreateMap()
         {
             var faultyHandlerMap = new CustomRouteMap(r => r.RegisterProjectionGroup(new TestGroup(new UnityContainer())),
-                r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
+                                                      r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);
         }
 
         public class TestGroup : ProjectionGroup
         {
-            public TestGroup(IUnityContainer locator) : base(locator)
+            public TestGroup(IUnityContainer locator = null) : base(locator)
             {
                 this.Add<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId);
                 this.Add<SampleAggregateChangedEvent, EvenFaultyMessageHandler>(e => e.SourceId);
