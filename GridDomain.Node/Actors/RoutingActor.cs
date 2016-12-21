@@ -54,10 +54,10 @@ namespace GridDomain.Node.Actors
         public void Handle(CreateHandlerRouteMessage msg)
         {
             _monitor.IncrementMessagesReceived();
-            var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
+          //  var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
 
-            var actorType = _actorTypeFactory.GetActorTypeFor(msgType, msg.HandlerType);
-            string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
+            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
+            string actorName = $"{msg.HandlerType.BeautyName()}_for_{msg.MessageType.BeautyName()}";
            
             Self.Forward(new CreateActorRouteMessage(actorType,
                                                      actorName,
@@ -87,14 +87,17 @@ namespace GridDomain.Node.Actors
 
                 case PoolKind.ConsistentHash:
                     Log.Debug("Created consistent hashing pool router to pass messages to {actor} ", msg.ActorName);
-                    var routesMap = msg.Routes.ToDictionary(r => r.MessageType, r => r.CorrelationField);
+
+                    var routesMap = msg.Routes.ToDictionary(r => CreateHandlerRouteMessage.GetTypeWithoutMetadata(r.MessageType), 
+                                                            r => r.CorrelationField);
+
                     var pool = new ConsistentHashingPool(Environment.ProcessorCount,
                         message =>
                         {
                             var idContainer = (message as IMessageMetadataEnvelop)?.Message ?? message;
-
                             string prop = null;
-                            if (GetInterfacesAndBaseTypes(message.GetType())
+
+                            if (GetInterfacesAndBaseTypes(idContainer.GetType())
                                                        .Any(type => routesMap.TryGetValue(type, out prop)))
                             {
                                 var value = idContainer.GetType()

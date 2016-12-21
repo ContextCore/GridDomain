@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Metadata
             _command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(20), Guid.NewGuid(), "12");
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(null, false)
+            var res = await GridNode.NewCommandWaiter(TimeSpan.FromHours(1), false)
                                     .Expect<IMessageMetadataEnvelop<TestDomainEvent>>()
                                     .And<IMessageMetadataEnvelop<JobSucceeded>>()
                                     .Create()

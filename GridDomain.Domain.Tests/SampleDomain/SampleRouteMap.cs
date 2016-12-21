@@ -12,7 +12,7 @@ namespace GridDomain.Tests.SampleDomain
     {
         private readonly IUnityContainer _locator;
 
-        public SampleRouteMap(IUnityContainer locator)
+        public SampleRouteMap(IUnityContainer locator=null)
         {
             _locator = locator;
         }

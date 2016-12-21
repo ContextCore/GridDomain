@@ -28,10 +28,8 @@ namespace GridDomain.Tests.Metadata
 
         protected override IMessageRouteMap CreateMap()
         {
-            var container = new UnityContainer();
-            container.Register(CreateConfiguration());
-            return new CustomRouteMap( r => new SampleRouteMap(container).Register(r),
-                                       r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(nameof(DomainEvent.SourceId)));
+            return new CustomRouteMap(new SampleRouteMap(),
+                                      r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(nameof(DomainEvent.SourceId)));
         }
 
         [OneTimeSetUp]
@@ -42,7 +40,7 @@ namespace GridDomain.Tests.Metadata
 
             var res = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(10))
                               .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
-                              .And<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>()
+                              //.And<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>()
                               .Create()
                               .Execute(_command, _commandMetadata)
                               .Result;
@@ -63,6 +61,13 @@ namespace GridDomain.Tests.Metadata
         {
             Assert.IsInstanceOf<IFault<SampleAggregateCreatedEvent>>(_answer.Message);
         }
+
+        [Test]
+        public void Produced_fault_produced_by_projection_builder()
+        {
+            Assert.AreEqual(typeof(FaultyCreateProjectionBuilder), _answer.Message.Processor);
+        }
+
 
         [Test]
         public void Result_message_has_expected_id()

@@ -120,9 +120,6 @@ namespace GridDomain.Scheduling.Integration
                       var envelop = o as IMessageMetadataEnvelop;
                       if (envelop != null) o = envelop.Message;
 
-                      if(!o.GetType().IsAssignableFrom(extendedOptions.SuccesEventType))
-                          return false;
-
                       var guid = (Guid)o?.GetType()
                                          .GetProperty(extendedOptions.MessageIdFieldName)?
                                          .GetValue(o);
@@ -136,7 +133,7 @@ namespace GridDomain.Scheduling.Integration
                                                                             PassingCommandToExecutor,
                                                                             CommandRaiseTimeCame));
 
-                var task = _executor.NewCommandWaiter()
+                var task = _executor.NewCommandWaiter(options.Timeout)
                                     .Expect(options.SuccesEventType, o => isExpected(o))
                                     .Create()
                                     .Execute(command, commandMetadata);
