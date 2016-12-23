@@ -28,8 +28,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
 
             foreach (var command in commands)
-                _waiter.ExpectBuilder.Or(Fault.TypeFor(command),
-                                         f => ((f as IFault)?.Message as ICommand)?.Id == command.Id);
+                _waiter.ExpectBuilder.Or(MessageMetadataEnvelop.GenericForType(Fault.TypeFor(command)),
+                                         f => (((f as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == command.Id);
 
             var task = _waiter.Start();
 

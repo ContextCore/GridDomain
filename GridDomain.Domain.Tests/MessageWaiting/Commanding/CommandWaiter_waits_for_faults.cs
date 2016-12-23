@@ -114,7 +114,7 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
             //will throw exception in aggregate and in message handler
             var syncCommand = new AsyncFaultWithOneEventCommand(50, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(Timeout, false)
+            var res = await GridNode.NewCommandWaiter(TimeSpan.FromMinutes(10), false)
                                     .Expect<AggregateChangedEventNotification>()
                                     .Or<IFault<SampleAggregateChangedEvent>>()
                                     .Create()
