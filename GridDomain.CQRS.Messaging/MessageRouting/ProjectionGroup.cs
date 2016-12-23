@@ -23,19 +23,20 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             List<Action<object, IMessageMetadata>> builderList;
 
+            var messageType = typeof(IMessageMetadataEnvelop<TMessage>);
+
             if (!_handlers.TryGetValue(typeof (TMessage), out builderList))
             {
                 builderList = new List<Action<object, IMessageMetadata>>();
                 _handlers[typeof(TMessage)] = builderList;
-                _handlers[typeof(IMessageMetadataEnvelop<TMessage>)] = builderList;
+                _handlers[messageType] = builderList;
             }
 
             builderList.Add(ProjectMessage<TMessage, THandler>);
 
-            if (_acceptMessages.All(m => m.MessageType != typeof(TMessage)))
+            if (_acceptMessages.All(m => m.MessageType != messageType))
             {
-                _acceptMessages.Add(new MessageRoute(typeof(TMessage), correlationPropertyName));
-                _acceptMessages.Add(new MessageRoute(typeof(IMessageMetadataEnvelop<TMessage>), correlationPropertyName));
+                _acceptMessages.Add(new MessageRoute(messageType, correlationPropertyName));
             }
         }
 

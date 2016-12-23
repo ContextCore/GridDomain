@@ -51,9 +51,14 @@ namespace GridDomain.Node
             return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 
-        public Task RegisterHandler<TMessage, THandler>(string correlationPropertyName) where THandler : IHandler<TMessage>
+        public Task RegisterHandler<TMessage, THandler>(string correlationPropertyName = null) where THandler : IHandler<TMessage>
         {
-            return Route<TMessage>().ToHandler<THandler>().WithCorrelation(correlationPropertyName).Register();
+            var handlerBuilder = Route<TMessage>().ToHandler<THandler>();
+
+            if(!string.IsNullOrEmpty(correlationPropertyName))
+               handlerBuilder = handlerBuilder.WithCorrelation(correlationPropertyName);
+            
+            return handlerBuilder.Register();
         }
 
         public Task RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup

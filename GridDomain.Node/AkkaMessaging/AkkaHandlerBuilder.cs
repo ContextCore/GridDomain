@@ -24,7 +24,9 @@ namespace GridDomain.Node.AkkaMessaging
             var routeMessage = new CreateHandlerRouteMessage(typeof(IMessageMetadataEnvelop<TMessage>),
                                                              typeof(THandler),
                                                              CorrelationPropertyName,
-                                                             PoolKind.ConsistentHash);
+                                                             
+                                                             CorrelationPropertyName == null ? 
+                                                             PoolKind.Random:PoolKind.ConsistentHash);
 
             return _routingRegistrator.Ask<RouteCreated>(routeMessage);
         }

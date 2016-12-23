@@ -54,9 +54,9 @@ namespace GridDomain.Node.Actors
         public void Handle(CreateHandlerRouteMessage msg)
         {
             _monitor.IncrementMessagesReceived();
-          //  var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
+            var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
 
-            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
+            var actorType = _actorTypeFactory.GetActorTypeFor(msgType, msg.HandlerType);
             string actorName = $"{msg.HandlerType.BeautyName()}_for_{msg.MessageType.BeautyName()}";
            
             Self.Forward(new CreateActorRouteMessage(actorType,
@@ -97,9 +97,9 @@ namespace GridDomain.Node.Actors
                             var idContainer = (message as IMessageMetadataEnvelop)?.Message ?? message;
                             string prop = null;
 
-                            if (GetInterfacesAndBaseTypes(idContainer.GetType())
-                                                       .Any(type => routesMap.TryGetValue(type, out prop)))
+                            foreach(var searchType in GetInterfacesAndBaseTypes(idContainer.GetType()))
                             {
+                                if (!routesMap.TryGetValue(searchType, out prop)) continue;
                                 var value = idContainer.GetType()
                                                        .GetProperty(prop)
                                                        .GetValue(idContainer);

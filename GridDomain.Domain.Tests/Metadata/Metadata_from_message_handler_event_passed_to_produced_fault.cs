@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Metadata
 
             var res = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(10))
                               .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
-                              //.And<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>()
+                              .And<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>()
                               .Create()
                               .Execute(_command, _commandMetadata)
                               .Result;
