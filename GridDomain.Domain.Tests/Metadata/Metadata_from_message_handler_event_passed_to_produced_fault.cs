@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -33,17 +34,16 @@ namespace GridDomain.Tests.Metadata
         }
 
         [OneTimeSetUp]
-        public void When_execute_aggregate_command_with_metadata()
+        public async Task When_execute_aggregate_command_with_metadata()
         {
             _command = new CreateSampleAggregateCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(10))
+            var res = await GridNode.NewCommandWaiter(null,false)
                               .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
                               .And<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>()
                               .Create()
-                              .Execute(_command, _commandMetadata)
-                              .Result;
+                              .Execute(_command, _commandMetadata);
 
             _answer = res.Message<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>();
             _aggregateEvent = res.Message<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>();
