@@ -73,9 +73,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var res = await task;
 
             if (!_failOnFaults) return res;
-            var faults = res.All.OfType<IFault>().ToArray();
+            var faults = res.All.OfType<IMessageMetadataEnvelop<IFault>>().ToArray();
             if (faults.Any())
-                throw new AggregateException(faults.Select(f => f.Exception));
+                throw new AggregateException(faults.Select(f => f.Message.Exception));
 
             return res;
         }

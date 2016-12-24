@@ -44,16 +44,16 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
         [Then]
-        public void Cancelation_event_has_same_id_as_future_event()
+        public async Task Cancelation_event_has_same_id_as_future_event()
         {
-            When_raising_future_event();
+            await When_raising_future_event();
             Assert.AreEqual(_futureEventEnvelop.Id, _futureEventCancelation.FutureEventId);
         }
         
         [Then]
-        public void Scheduler_does_not_contain_job_for_future_event()
+        public async Task Scheduler_does_not_contain_job_for_future_event()
         {
-            When_raising_future_event();
+            await When_raising_future_event();
             var scheduler = GridNode.Container.Resolve<IScheduler>();
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait

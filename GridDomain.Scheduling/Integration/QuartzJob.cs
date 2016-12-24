@@ -120,11 +120,13 @@ namespace GridDomain.Scheduling.Integration
                       var envelop = o as IMessageMetadataEnvelop;
                       if (envelop != null) o = envelop.Message;
 
-                      var guid = (Guid)o?.GetType()
-                                         .GetProperty(extendedOptions.MessageIdFieldName)?
-                                         .GetValue(o);
+                      //received fault instead of expected message
+                       var type = o?.GetType();
+                       var guid = type?.GetProperty(extendedOptions.MessageIdFieldName)?
+                                        .GetValue(o);
 
-                      return guid == extendedOptions.SuccessMessageId;
+                      return guid != null && 
+                       (Guid)guid == extendedOptions.SuccessMessageId;
                     };
                 }
 

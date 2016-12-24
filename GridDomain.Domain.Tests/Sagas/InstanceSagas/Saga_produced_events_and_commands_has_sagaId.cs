@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
 
             var expectedCreatedEvent =
                             (await GridNode.NewDebugWaiter()
-                                           .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>(e => e.State.CoffeeMachineId == domainEvent.FavoriteCoffeMachineId)
+                                           .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                            .Create()
                                            .Publish(domainEvent)).Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 
