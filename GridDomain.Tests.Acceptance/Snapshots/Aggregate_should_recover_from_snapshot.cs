@@ -1,9 +1,9 @@
 ﻿using System;
 using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.SampleDomain;
+using GridDomain.Tests.Unit.CommandsExecution;
+using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using NUnit.Framework;

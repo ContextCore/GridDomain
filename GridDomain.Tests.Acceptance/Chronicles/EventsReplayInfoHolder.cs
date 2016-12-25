@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.Unit.SampleDomain.Events;
 
 namespace GridDomain.Tests.Acceptance.Chronicles
 {

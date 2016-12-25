@@ -1,5 +1,6 @@
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.CQRS.Messaging
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GridDomain.Tests.Sagas.InstanceSagas;
+using GridDomain.Tests.Unit.Sagas.InstanceSagas;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.Sagas

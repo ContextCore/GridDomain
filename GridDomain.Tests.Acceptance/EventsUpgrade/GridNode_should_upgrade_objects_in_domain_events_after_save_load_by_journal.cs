@@ -4,7 +4,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
-using GridDomain.Tests.CommandsExecution;
+using GridDomain.Tests.Unit.CommandsExecution;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade

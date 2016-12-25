@@ -3,7 +3,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Sagas.InstanceSagas;
+using GridDomain.Tests.Unit.Sagas.InstanceSagas;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Newtonsoft.Json;

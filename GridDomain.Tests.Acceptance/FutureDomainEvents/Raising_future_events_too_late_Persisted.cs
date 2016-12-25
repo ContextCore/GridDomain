@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.FutureEvents;
+using GridDomain.Tests.Unit.FutureEvents;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.FutureDomainEvents

@@ -1,5 +1,4 @@
-using GridDomain.Tests.FutureEvents;
-using GridDomain.Tests.FutureEvents.Cancelation;
+using GridDomain.Tests.Unit.FutureEvents.Cancelation;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.FutureDomainEvents

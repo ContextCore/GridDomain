@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.EventsUpgrade.Domain;
-using GridDomain.Tests.EventsUpgrade.Domain.Commands;
-using GridDomain.Tests.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
