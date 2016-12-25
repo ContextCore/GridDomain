@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
@@ -20,14 +22,18 @@ namespace GridDomain.Tests.Sagas.StateSagas
         
 
         [OneTimeSetUp]
-        public void When_start_message_has_saga_id()
+        public async Task When_start_message_has_saga_id()
         {
             _sagaId = Guid.NewGuid();
             _personId = Guid.NewGuid();
 
-            var publisher = GridNode.Container.Resolve<IPublisher>();
-            publisher.Publish(new GotTiredEvent(_personId).CloneWithSaga(_sagaId));
-            WaitFor<MakeCoffeCommand>();
+            var sagaStartEvent = new GotTiredEvent(_personId).CloneWithSaga(_sagaId);
+
+            await GridNode.NewDebugWaiter()
+                          .Expect<MakeCoffeCommand>()
+                          .Create()
+                          .Publish(sagaStartEvent);
+
             _sagaState = LoadSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(_sagaId);
         }
 

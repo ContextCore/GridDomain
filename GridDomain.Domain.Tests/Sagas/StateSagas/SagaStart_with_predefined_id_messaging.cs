@@ -1,6 +1,9 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tests.Sagas.StateSagas.SampleSaga;
@@ -13,33 +16,31 @@ namespace GridDomain.Tests.Sagas.StateSagas
     public class SagaStart_with_predefined_id_messaging : SoftwareProgrammingStateSagaTest
     {
         [Test]
-        public void When_dispatch_command_than_command_should_have_right_sagaId()
+        public async Task When_dispatch_command_than_command_should_have_right_sagaId()
         {
-            var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
+            var sagaStartEvent = new GotTiredEvent(Guid.NewGuid()).CloneWithSaga(Guid.NewGuid());
 
-            var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            var expectedCommand = (MakeCoffeCommand)WaitFor<MakeCoffeCommand>().Message;
+            var expectedCommand = ( await GridNode.NewDebugWaiter()
+                                                  .Expect<MakeCoffeCommand>()
+                                                  .Create()
+                                                  .Publish(sagaStartEvent))
+                               .Message<MakeCoffeCommand>();
 
-
-            Assert.AreEqual(sagaId, expectedCommand.SagaId);
+            Assert.AreEqual(sagaStartEvent.SagaId, expectedCommand.SagaId);
         }
 
         [Test]
-        public void When_raise_saga_than_saga_event_should_have_right_sagaId()
+        public async Task When_raise_saga_than_saga_event_should_have_right_sagaId()
         {
-            var publisher = GridNode.Container.Resolve<IPublisher>();
-            var sagaId = Guid.NewGuid();
+            var sagaStartEvent = new GotTiredEvent(Guid.NewGuid()).CloneWithSaga(Guid.NewGuid());
 
-            var sourceId = Guid.NewGuid();
-            publisher.Publish(new GotTiredEvent(sourceId).CloneWithSaga(sagaId));
-            var expectedEvent =
-                (SagaCreatedEvent<SoftwareProgrammingSaga.States>)
-                    WaitFor<SagaCreatedEvent<SoftwareProgrammingSaga.States>>().Message;
+            var expectedEvent = (await GridNode.NewDebugWaiter()
+                                                  .Expect<SagaCreatedEvent<SoftwareProgrammingSaga.States>>()
+                                                  .Create()
+                                                  .Publish(sagaStartEvent))
+                               .Message<SagaCreatedEvent<SoftwareProgrammingSaga.States>>();
 
-
-            Assert.AreEqual(sagaId, expectedEvent.SagaId);
+            Assert.AreEqual(sagaStartEvent.SagaId, expectedEvent.SagaId);
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);

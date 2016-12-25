@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Routing;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -52,17 +54,31 @@ namespace GridDomain.Node.Actors
         public void Handle(CreateHandlerRouteMessage msg)
         {
             _monitor.IncrementMessagesReceived();
-            var actorType = _actorTypeFactory.GetActorTypeFor(msg.MessageType, msg.HandlerType);
-            string actorName = $"{msg.HandlerType}_for_{msg.MessageType.Name}";
+            var msgType = CreateHandlerRouteMessage.GetTypeWithoutMetadata(msg.MessageType);
+
+            var actorType = _actorTypeFactory.GetActorTypeFor(msgType, msg.HandlerType);
+            string actorName = $"{msg.HandlerType.BeautyName()}_for_{msg.MessageType.BeautyName()}";
            
             Self.Forward(new CreateActorRouteMessage(actorType,
                                                      actorName,
                                                      msg.PoolType,
                                                      new MessageRoute(msg.MessageType,msg.MessageCorrelationProperty)));
         }
+        
+        private static IEnumerable<Type> GetInterfacesAndBaseTypes(Type type)
+        {
+            yield return type;
+
+            foreach (var interfaceType in type.GetInterfaces())
+                yield return interfaceType;
+
+            while ((type = type.BaseType) != null)
+                yield return type;
+        }
 
         protected virtual RouterConfig CreateActorRouter(CreateActorRouteMessage msg)
         {
+
             switch (msg.PoolKind)
             {
                 case PoolKind.Random:
@@ -71,37 +87,27 @@ namespace GridDomain.Node.Actors
 
                 case PoolKind.ConsistentHash:
                     Log.Debug("Created consistent hashing pool router to pass messages to {actor} ", msg.ActorName);
-                    var routesMap = msg.Routes.ToDictionary(r => r.Topic, r => r.CorrelationField);
+
+                    var routesMap = msg.Routes.ToDictionary(r => CreateHandlerRouteMessage.GetTypeWithoutMetadata(r.MessageType), 
+                                                            r => r.CorrelationField);
+
                     var pool = new ConsistentHashingPool(Environment.ProcessorCount,
-                        m =>
+                        message =>
                         {
-                            var type = m.GetType();
+                            var idContainer = (message as IMessageMetadataEnvelop)?.Message ?? message;
                             string prop = null;
 
-                            if (routesMap.TryGetValue(type.FullName, out prop))
-                                return type.GetProperty(prop)?.GetValue(m);
-
-                            //TODO: refactor. Need to pass events to schedulingSaga
-                            if (typeof(IFault).IsAssignableFrom(type))
+                            foreach(var searchType in GetInterfacesAndBaseTypes(idContainer.GetType()))
                             {
-                                prop = routesMap[typeof(IFault).FullName];
-                                return typeof(IFault).GetProperty(prop).GetValue(m);
+                                if (!routesMap.TryGetValue(searchType, out prop)) continue;
+                                var value = idContainer.GetType()
+                                                       .GetProperty(prop)
+                                                       .GetValue(idContainer);
+                                return value;
                             }
-
-                            if (typeof(DomainEvent).IsAssignableFrom(type))
-                            {
-                                prop = routesMap[typeof(DomainEvent).FullName];
-                                return typeof(DomainEvent).GetProperty(prop).GetValue(m);
-                            }
-
-                            if (typeof(ICommand).IsAssignableFrom(type))
-                            {
-                                prop = routesMap[typeof(DomainEvent).FullName];
-                                return typeof(DomainEvent).GetProperty(prop).GetValue(m);
-                            }
-
-                            throw new ArgumentException("Cannot extract route property from message " + m);
-                        });
+                            throw new ArgumentException($"Cannot find route for {message.GetType()}");
+                        }
+                        );
                     return pool;
 
                 case PoolKind.None:

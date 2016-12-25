@@ -64,17 +64,20 @@ namespace GridDomain.Node.Actors
             msg.Match()
                .With<ClearChilds>(m => Clear())
                .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
-               .Default(message =>
+               .With<IMessageMetadataEnvelop>(messageWitMetadata =>
                 { 
                     ChildInfo knownChild;
-                    var childId = GetChildActorId(message);
+
+                    messageWitMetadata.Metadata.History.Add(new ProcessEntry(Self.Path.Name,"Forwarding to child","All messages should be forwarded"));
+
+                    var childId = GetChildActorId(messageWitMetadata.Message);
+                    var name = GetChildActorName(messageWitMetadata.Message);
 
                     bool childWasCreated = false;
-                    var name = GetChildActorName(message);
                     if (!Children.TryGetValue(childId, out knownChild))
                     {
                         childWasCreated = true;
-                        var childActorType = GetChildActorType(message);
+                        var childActorType = GetChildActorType(messageWitMetadata.Message);
                         var props = Context.DI().Props(childActorType);
                         var childActorRef = Context.ActorOf(props, name);
                         knownChild = new ChildInfo(childActorRef);
@@ -83,7 +86,7 @@ namespace GridDomain.Node.Actors
 
                     knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
                     knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
-                    knownChild.Ref.Tell(message);
+                    knownChild.Ref.Tell(messageWitMetadata);
 
                     Logger.Trace("Message {@msg} sent to {isknown} child {id}",
                                   msg,

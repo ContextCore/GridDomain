@@ -15,7 +15,7 @@ namespace GridDomain.Tests.CommandsExecution
             container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
             container.RegisterType<AggregateCreatedProjectionBuilder>();
             container.RegisterType<SampleProjectionBuilder>();
-            container.RegisterType<CreateProjectionBuilder>();
+            container.RegisterType<FaultyCreateProjectionBuilder>();
         }
     }
 }

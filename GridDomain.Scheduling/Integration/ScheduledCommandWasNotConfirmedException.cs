@@ -5,9 +5,9 @@ namespace GridDomain.Scheduling.Integration
 {
     public class ScheduledCommandWasNotConfirmedException : Exception
     {
-        private Command Command { get; }
+        private ICommand Command { get; }
 
-        public ScheduledCommandWasNotConfirmedException(Command command)
+        public ScheduledCommandWasNotConfirmedException(ICommand command)
         {
             Command = command;
         }

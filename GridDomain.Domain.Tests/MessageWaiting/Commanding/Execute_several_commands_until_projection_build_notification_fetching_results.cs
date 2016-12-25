@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.CommandsExecution;
@@ -55,7 +56,8 @@ namespace GridDomain.Tests.MessageWaiting.Commanding
         [Test]
         public void Results_contains_all_requested_messages()
         {
-            CollectionAssert.AreEquivalent(new object[] { _changedEventA , _changedEventB, _changedEventC},_results.All.Cast<object>());
+            CollectionAssert.AreEquivalent(new object[] { _changedEventA , _changedEventB, _changedEventC},
+                                          _results.All.Cast<IMessageMetadataEnvelop>().Select(e => e.Message));
         }
 
         [Test]

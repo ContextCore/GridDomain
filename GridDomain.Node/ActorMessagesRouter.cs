@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -32,21 +33,15 @@ namespace GridDomain.Node
         {
             var descriptor = new AggregateCommandsHandlerDesriptor<TAggregate>();
             foreach(var info in new TCommandHandler().RegisteredCommands)
-                descriptor.RegisterCommand(info.Command,info.Property);
+                descriptor.RegisterCommand(info.CommandType,info.Property);
 
             return RegisterAggregate(descriptor);
         }
 
         public Task RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor)
         {
-            var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
-             (
-                 c.Command,
-                 c.Property
-             )).ToArray();
-
             var name = $"Aggregate_{descriptor.AggregateType.Name}";
-            var createActorRoute = CreateActorRouteMessage.ForAggregate(descriptor.AggregateType, name, messageRoutes);
+            var createActorRoute = CreateActorRouteMessage.ForAggregate(name, descriptor);
             return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 
@@ -56,9 +51,14 @@ namespace GridDomain.Node
             return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 
-        public Task RegisterHandler<TMessage, THandler>(string correlationPropertyName) where THandler : IHandler<TMessage>
+        public Task RegisterHandler<TMessage, THandler>(string correlationPropertyName = null) where THandler : IHandler<TMessage>
         {
-            return Route<TMessage>().ToHandler<THandler>().WithCorrelation(correlationPropertyName).Register();
+            var handlerBuilder = Route<TMessage>().ToHandler<THandler>();
+
+            if(!string.IsNullOrEmpty(correlationPropertyName))
+               handlerBuilder = handlerBuilder.WithCorrelation(correlationPropertyName);
+            
+            return handlerBuilder.Register();
         }
 
         public Task RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup

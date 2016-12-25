@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
 
 namespace GridDomain.CQRS.Messaging.Akka.Remote
 {
@@ -41,6 +42,20 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
         {
             _local.Subscribe(messageType, actor, subscribeNotificationWaiter);
             _remoteSubscriber.Ask<SubscribeAck>(new Subscribe(actor, messageType,subscribeNotificationWaiter)).Wait();
+        }
+
+        public void Publish(object msg)
+        {
+            _local.Publish(msg);
+            _remoteSubscriber.Ask<PublishAck>(new Publish(msg), _timeout).Wait();
+        }
+
+        public void Publish(object msg, IMessageMetadata metadata)
+        {
+            _local.Publish(msg);
+            var messageMetadataEnvelop = MessageMetadataEnvelop.NewGeneric(msg,metadata);
+           
+            _remoteSubscriber.Ask<PublishAck>(new Publish(messageMetadataEnvelop), _timeout).Wait();
         }
     }
 }

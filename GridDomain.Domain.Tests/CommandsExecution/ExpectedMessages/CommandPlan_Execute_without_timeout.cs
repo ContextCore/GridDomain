@@ -19,7 +19,7 @@ namespace GridDomain.Tests.CommandsExecution.ExpectedMessages
             var plan = CommandPlan.New(syncCommand, TimeSpan.FromMilliseconds(100), expectedMessage);
 
             await GridNode.Execute(plan)
-                .ShouldThrow<TimeoutException>();
+                  .ShouldThrow<TimeoutException>();
         }
 
     }

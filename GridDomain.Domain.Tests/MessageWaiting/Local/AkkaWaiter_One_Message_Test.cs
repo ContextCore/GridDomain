@@ -29,18 +29,18 @@ namespace GridDomain.Tests.MessageWaiting.Local
         }
 
         [Test]
-        public void Message_is_waitable()
+        public async Task Message_is_waitable()
         {
-            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(200)));
+            await _results;
         }
 
         [Test]
-        public void Multiply_waites_completes_after_message_was_received()
+        public async Task Multiply_waites_completes_after_message_was_received()
         {
-            Assert.True(_results.Wait(TimeSpan.FromMilliseconds(200))
-                     && _results.Wait(TimeSpan.FromMilliseconds(200))
-                     && _results.Wait(TimeSpan.FromMilliseconds(200))
-                     && _results.Wait(TimeSpan.FromMilliseconds(200)));
+            await _results;
+            await _results;
+            await _results;
+            await _results;
         }
 
         [Test]

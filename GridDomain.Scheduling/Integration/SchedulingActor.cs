@@ -40,14 +40,14 @@ namespace GridDomain.Scheduling.Integration
 
         private void Schedule(ScheduleCommand message)
         {
-            Schedule(() => QuartzJob.Create(message.Key, message.Command, message.Options),
+            Schedule(() => QuartzJob.Create(message.Key, message.Command, message.CommandMetadata, message.Options),
                            message.Options.RunAt, 
                            message.Key);
         }
 
         private void Schedule(ScheduleMessage message)
         {
-            Schedule(() => QuartzJob.Create(message.Key, message.Event), 
+            Schedule(() => QuartzJob.Create(message.Key, message.Event, message.EventMetadata), 
                            message.RunAt,
                            message.Key);
         }

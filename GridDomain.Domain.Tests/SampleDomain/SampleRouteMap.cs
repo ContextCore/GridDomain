@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 using GridDomain.Tests.SampleDomain.Events;
 using GridDomain.Tests.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
@@ -11,7 +12,7 @@ namespace GridDomain.Tests.SampleDomain
     {
         private readonly IUnityContainer _locator;
 
-        public SampleRouteMap(IUnityContainer locator)
+        public SampleRouteMap(IUnityContainer locator=null)
         {
             _locator = locator;
         }

@@ -32,7 +32,13 @@ namespace GridDomain.Node
         public void Execute(params ICommand[] commands)
         {
             foreach (var cmd in commands)
-                _transport.Publish(cmd);
+            {
+                var metadata = MessageMetadata.Empty()
+                                              .CreateChild(cmd.Id, new ProcessEntry(nameof(AkkaCommandExecutor),
+                                                                                    "publishing command to transport",
+                                                                                    "command is executing"));
+                Execute(cmd, metadata);
+            }
         }
 
         public async Task<object> Execute(CommandPlan plan)
@@ -44,23 +50,24 @@ namespace GridDomain.Node
             //All expected messages should be received 
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => !typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
-                expectBuilder.And(expectedMessage.MessageType, o => expectedMessage.Match(o));
+                expectBuilder.And(MessageMetadataEnvelop.GenericForType(expectedMessage.MessageType), 
+                                  o => expectedMessage.Match((o as IMessageMetadataEnvelop)?.Message));
             }
 
 
             //All expected faults should end waiting
             foreach (var expectedMessage in plan.ExpectedMessages.Where(e => typeof(IFault).IsAssignableFrom(e.MessageType)))
             {
-                expectBuilder.Or(expectedMessage.MessageType,
-                                 o => expectedMessage.Match(o) &&
+                expectBuilder.Or(MessageMetadataEnvelop.GenericForType(expectedMessage.MessageType),
+                                 o => expectedMessage.Match((o as IMessageMetadataEnvelop)?.Message) &&
                                       (!expectedMessage.Sources.Any() ||
-                                        expectedMessage.Sources.Contains((o as IFault)?.Processor)));
+                                        expectedMessage.Sources.Contains(((o as IMessageMetadataEnvelop)?.Message as IFault)?.Processor)));
             }
 
             //Command fault should always end waiting
             var commandFaultType = typeof(IFault<>).MakeGenericType(plan.Command.GetType());
-            expectBuilder.Or(commandFaultType,
-                             o => ((o as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
+            expectBuilder.Or(MessageMetadataEnvelop.GenericForType(commandFaultType),
+                             o => (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == plan.Command.Id);
 
 
             var res = await expectBuilder.Create(plan.Timeout)
@@ -72,7 +79,17 @@ namespace GridDomain.Node
 
         public async Task<T> Execute<T>(CommandPlan<T> plan)
         {
-            return (T) await Execute((CommandPlan)plan).ConfigureAwait(false);
+            var res = await Execute((CommandPlan)plan).ConfigureAwait(false);
+            var envelop = res as IMessageMetadataEnvelop;
+            if (envelop != null && !(typeof(IMessageMetadataEnvelop).IsAssignableFrom(typeof(T))))
+                return (T) envelop.Message;
+
+            return (T) res;
+        }
+
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+               _transport.Publish(command, metadata);
         }
     }
 }

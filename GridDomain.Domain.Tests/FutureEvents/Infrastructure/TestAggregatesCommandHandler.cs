@@ -20,6 +20,9 @@ namespace GridDomain.Tests.FutureEvents.Infrastructure
             Map<CancelFutureEventCommand>(c => c.AggregateId,
                                           (c, a) => a.CancelFutureEvents(c.Value));
 
+            Map<ScheduleErrorInFutureCommand>(c => c.AggregateId,
+                                              (c, a) => a.ScheduleErrorInFuture(c.RaiseTime,c.Value, c.SuccedOnRetryNum));
+
             this.MapFutureEvents();
         }
 

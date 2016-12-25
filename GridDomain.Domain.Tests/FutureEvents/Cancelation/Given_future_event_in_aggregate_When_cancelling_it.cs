@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -21,31 +23,37 @@ namespace GridDomain.Tests.FutureEvents.Cancelation
         private CancelFutureEventCommand _cancelFutureEventCommand;
 
 
-        public void When_raising_future_event()
+        public async Task When_raising_future_event()
         {
             _scheduledTime = DateTime.Now.AddSeconds(200);
             _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (FutureEventScheduledEvent)ExecuteAndWaitFor<FutureEventScheduledEvent>(_testCommand).Received.First();
-
+            _futureEventEnvelop = (await GridNode.PrepareCommand(_testCommand)
+                                                .Expect<FutureEventScheduledEvent>()
+                                                .Execute())
+                                  .Message<FutureEventScheduledEvent>();
+                
             _cancelFutureEventCommand = new CancelFutureEventCommand(_testCommand.AggregateId, _testCommand.Value);
 
-            _futureEventCancelation = (FutureEventCanceledEvent)ExecuteAndWaitFor<FutureEventCanceledEvent>(_cancelFutureEventCommand).Received.First();
+            _futureEventCancelation = (await GridNode.PrepareCommand(_cancelFutureEventCommand)
+                                                                   .Expect<FutureEventCanceledEvent>()
+                                                                   .Execute())
+                                                     .Message<FutureEventCanceledEvent>();
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
         [Then]
-        public void Cancelation_event_has_same_id_as_future_event()
+        public async Task Cancelation_event_has_same_id_as_future_event()
         {
-            When_raising_future_event();
+            await When_raising_future_event();
             Assert.AreEqual(_futureEventEnvelop.Id, _futureEventCancelation.FutureEventId);
         }
         
         [Then]
-        public void Scheduler_does_not_contain_job_for_future_event()
+        public async Task Scheduler_does_not_contain_job_for_future_event()
         {
-            When_raising_future_event();
+            await When_raising_future_event();
             var scheduler = GridNode.Container.Resolve<IScheduler>();
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait

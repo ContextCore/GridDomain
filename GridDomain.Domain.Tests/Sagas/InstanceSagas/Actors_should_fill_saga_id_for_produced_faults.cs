@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit.NUnit3;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
@@ -24,7 +25,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneWithSaga(Guid.NewGuid());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
-            transport.Subscribe<Fault<GoSleepCommand>>(TestActor);
+            transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() => 
                 new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
@@ -32,13 +33,15 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                                                   new TypedMessageActor<Unschedule>(TestActor),
                                                   transport,
                                                   new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
-                                                  new AggregateFactory())),
+                                                  new AggregateFactory()
+                                                  )),
+                AggregateActorName.New<HomeAggregate>(command.Id).Name );
 
-                AggregateActorName.New<HomeAggregate>(command.Id).Name);
+            actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 
-            actor.Tell(command);
-            var fault = ExpectMsg<Fault<GoSleepCommand>>();
-            Assert.AreEqual(command.SagaId, fault.SagaId);
+            var fault = ExpectMsg<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TimeSpan.FromDays(1));
+
+            Assert.AreEqual(command.SagaId, fault.Message.SagaId);
         }
 
         [TestCase("test", Description = "unplanned exception from message processor")]
@@ -48,7 +51,7 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
             var message = new SampleAggregateChangedEvent(payload,Guid.NewGuid(),DateTime.Now,Guid.NewGuid());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
-            transport.Subscribe<Fault<SampleAggregateChangedEvent>>(TestActor);
+            transport.Subscribe<IMessageMetadataEnvelop<Fault<SampleAggregateChangedEvent>>>(TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() =>
                 new MessageHandlingActor<SampleAggregateChangedEvent,OddFaultyMessageHandler>(
@@ -56,8 +59,8 @@ namespace GridDomain.Tests.Sagas.InstanceSagas
                     transport)));
 
             actor.Tell(message);
-            var fault = ExpectMsg<Fault<SampleAggregateChangedEvent>>();
-            Assert.AreEqual(message.SagaId, fault.SagaId);
+            var fault = ExpectMsg< IMessageMetadataEnvelop<Fault<SampleAggregateChangedEvent>>>();
+            Assert.AreEqual(message.SagaId, fault.Message.SagaId);
         }
 
 

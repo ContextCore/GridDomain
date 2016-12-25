@@ -29,10 +29,8 @@ namespace GridGomain.Tests.Stress
         public static void Main(params string[] args)
         {
             RawCommandExecution(1, 1000, 20);
-
             Console.WriteLine("Sleeping");
             Thread.Sleep(60);
-
         }
 
         private static void RawCommandExecution(int totalAggregateScenariosCount, int aggregateScenarioPackSize, int aggregateChangeAmount)
@@ -115,72 +113,6 @@ namespace GridGomain.Tests.Stress
                 var sqlText = @"SELECT COUNT(*) FROM Journal";
                 var cmdJournal = new SqlCommand(sqlText, connection);
                 var count = (int) cmdJournal.ExecuteScalar();
-
-                Console.WriteLine(count == totalCommandsToIssue
-                    ? "Journal contains all events"
-                    : $"Journal contains only {count} of {totalCommandsToIssue}");
-            }
-        }
-
-        private static void LoadEachAggregateExecution(int totalAggregates, int scenarioPackSize, int changeSize)
-        {
-            var dbCfg = ClearWriteDb();
-
-            var node = StartSampleDomainNode();
-
-            var timer = new Stopwatch();
-            timer.Start();
-
-            int timeoutedCommads = 0;
-            var random = new Random();
-            var aggregateChangeAmount = changeSize;
-            var commandsInScenario = scenarioPackSize * (aggregateChangeAmount + 1);
-            var totalCommandsToIssue = commandsInScenario * totalAggregates;
-
-
-            var aggregateIds = CreateAggregates(totalAggregates);
-
-            for (int i = 0; i < totalAggregates; i++)
-            {
-                var packTimer = new Stopwatch();
-                packTimer.Start();
-                var tasks = Enumerable.Range(0, scenarioPackSize)
-                    .Select(t => ChangeCreatedAggregates(aggregateChangeAmount, random, node))
-                    .ToArray();
-                try
-                {
-                    Task.WhenAll(tasks).Wait();
-                }
-                catch
-                {
-                    timeoutedCommads += tasks.Count(t => t.IsCanceled || t.IsFaulted);
-                }
-
-                packTimer.Stop();
-                var speed = (decimal)(commandsInScenario / packTimer.Elapsed.TotalSeconds);
-                var timeLeft = TimeSpan.FromSeconds((double)((totalCommandsToIssue - i * commandsInScenario) / speed));
-
-                Console.WriteLine($"speed :{speed} cmd/sec," +
-                                  $"total errors: {timeoutedCommads}, " +
-                                  $"total commands executed: {i * commandsInScenario}/{totalCommandsToIssue}," +
-                                  $"approx time remaining: {timeLeft}");
-            }
-
-
-            timer.Stop();
-            node.Stop().Wait();
-
-            var speedTotal = (decimal)(totalCommandsToIssue / timer.Elapsed.TotalSeconds);
-            Console.WriteLine(
-                $"Executed {totalAggregateScenariosCount} batches = {totalCommandsToIssue} commands in {timer.Elapsed}");
-            Console.WriteLine($"Average speed was {speedTotal} cmd/sec");
-
-            using (var connection = new SqlConnection(dbCfg.Persistence.JournalConnectionString))
-            {
-                connection.Open();
-                var sqlText = @"SELECT COUNT(*) FROM Journal";
-                var cmdJournal = new SqlCommand(sqlText, connection);
-                var count = (int)cmdJournal.ExecuteScalar();
 
                 Console.WriteLine(count == totalCommandsToIssue
                     ? "Journal contains all events"

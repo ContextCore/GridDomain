@@ -1,13 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
 {
-    public class MessageWaiterFactory : IMessageWaiterFactory
+    public class MessageWaiterFactory : IMessageWaiterFactory, ICommandWaiterFactory
     {
         public MessageWaiterFactory(ICommandExecutor commandExecutor, ActorSystem system, TimeSpan defaultTimeout, IActorTransport transport)
         {
@@ -32,6 +33,19 @@ namespace GridDomain.Node
         {
             return new AkkaCommandLocalWaiter(CommandExecutor, System, Transport, defaultTimeout ?? DefaultTimeout, failAnyFault);
 
+        }
+        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            var commandMetadata = metadata ?? new MessageMetadata(cmd.Id,
+                                                                  BusinessDateTime.UtcNow,
+                                                                  Guid.NewGuid(),
+                                                                  Guid.Empty,
+                                                                  new ProcessHistory(new[] {
+                                                                    new ProcessEntry(nameof(AkkaCommandExecutor),
+                                                                                  "publishing command to transport",
+                                                                                  "command is executing")}));
+
+            return new CommandWaiter<T>(cmd, commandMetadata, System, Transport, DefaultTimeout);
         }
     }
 }
