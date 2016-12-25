@@ -28,14 +28,13 @@ namespace GridDomain.Tests.SyncProjection
         private Dictionary<Guid, DomainEvent[]> _eventsPerAggregate;
 
         protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
-        
 
         [OneTimeSetUp]
         public async Task When_execute_many_commands_for_create_and_update()
         {
             var createCommands = Enumerable.Range(0, 10).Select(r => new CreateSampleAggregateCommand(101, Guid.NewGuid())).ToArray();
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
-            var updateCommands = Enumerable.Range(0, 10).Select(r => new ChangeSampleAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
+            var updateCommands = Enumerable.Range(0, 40).Select(r => new ChangeSampleAggregateCommand(102, aggregateIds.RandomElement())).ToArray();
 
             var aggregateId = createCommands.First().AggregateId;
 
@@ -49,7 +48,7 @@ namespace GridDomain.Tests.SyncProjection
             foreach (var c in updateCommands)
             {
                 var id = c.AggregateId;
-                messageWaiter.And<SampleAggregateChangedEvent>(e => e.SourceId == id);
+                messageWaiter.And<SampleAggregateChangedEvent>(e => e.SourceId == id && e.Value == c.Parameter.ToString());
             }
 
            var task = messageWaiter.Create();
@@ -59,9 +58,10 @@ namespace GridDomain.Tests.SyncProjection
 
             _eventsPerAggregate = (await task).All
                 .Cast<IMessageMetadataEnvelop>()
-                .Select(m => m.Message as DomainEvent)
+                .Select(m => m.Message as IHaveProcessingHistory)
                 .GroupBy(e => e.SourceId)
-                .ToDictionary(g => g.Key, g => g.OrderBy(i => i.CreatedTime).ToArray());
+                .ToDictionary(g => g.Key, g => g.OrderBy(i => i.History.ElapsedTicksFromAppStart)
+                        .Cast<DomainEvent>().ToArray());
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace GridDomain.Tests.SyncProjection
         }
 
         [Test]
-        public void All_events_related_to_one_aggregate_processor_should_be_the_same()
+        public void All_events_related_to_one_aggregate_should_be_processed_with_same_projection_group()
         {
             AllEventsForOneAggregate_should_be_ordered_by(e => e.History.ProjectionGroupHashCode);
         }
