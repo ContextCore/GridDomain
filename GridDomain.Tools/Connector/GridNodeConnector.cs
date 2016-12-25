@@ -6,11 +6,9 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.Node;
-using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 
-namespace GridDomain.Tools.Console
+namespace GridDomain.Tools.Connector
 {
     /// <summary>
     /// GridNodeConnector is used to connect to remote node and delegate commands execution

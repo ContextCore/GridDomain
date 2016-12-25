@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.Sagas.FutureEvents;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
@@ -17,27 +16,6 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
-
-    class BalanceChanged_objectAdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
-    {
-        public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V0 evt)
-        {
-            return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
-        }
-    }
-
-    internal class PersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
-    {
-        public PersistentChildsRecycleConfiguration(TimeSpan childClearPeriod, TimeSpan childMaxInactiveTime)
-        {
-            ChildClearPeriod = childClearPeriod;
-            ChildMaxInactiveTime = childMaxInactiveTime;
-        }
-
-        public TimeSpan ChildClearPeriod { get; }
-        public TimeSpan ChildMaxInactiveTime { get; }
-    }
-
     [TestFixture]
     public class Future_events_upgraded_by_object_adapter : FutureEventsTest
     { 

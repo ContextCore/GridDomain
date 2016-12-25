@@ -77,14 +77,4 @@ namespace GridDomain.Node.Actors
             throw new CannotGetSagaFromMessage(msg);
         }
     }
-
-    internal class CannotGetSagaFromMessage : Exception
-    {
-        public object Msg { get;}
-
-        public CannotGetSagaFromMessage(object msg)
-        {
-            Msg = msg;
-        }
-    }
 }

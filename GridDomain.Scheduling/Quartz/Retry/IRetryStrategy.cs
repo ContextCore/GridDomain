@@ -1,6 +1,6 @@
 using Quartz;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Quartz.Retry
 {
     public interface IRetryStrategy
     {

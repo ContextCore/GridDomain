@@ -265,6 +265,7 @@
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
     <Compile Include="Serialization\Instance_sagas_state_aggregates_should_be_serialize_and_deserialize.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
@@ -451,7 +452,7 @@
     <Compile Include="SampleDomain\ProjectionBuilders\EvenFaultyMessageHandler.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\MessageHandleException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\OddFaultyMessageHandler.cs" />
-    <Compile Include="SampleDomain\ProjectionBuilders\CreateProjectionBuilder.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\FaultyCreateProjectionBuilder.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="Sagas\StateSagas\SagaStart_with_predefined_id.cs" />

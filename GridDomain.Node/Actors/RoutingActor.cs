@@ -15,12 +15,6 @@ using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.Actors
 {
-
-    public class RouteCreated
-    {
-        public static RouteCreated Instance = new RouteCreated();
-    }
-
     public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRouteMessage>,
                                                      IHandler<CreateActorRouteMessage>
     {

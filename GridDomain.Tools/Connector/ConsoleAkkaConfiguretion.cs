@@ -1,6 +1,6 @@
 using GridDomain.Node.Configuration.Akka;
 
-namespace GridDomain.Tools.Console
+namespace GridDomain.Tools.Connector
 {
     class ConsoleAkkaConfiguretion : AkkaConfiguration
     {

@@ -4,12 +4,12 @@ using GridDomain.Common;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.FutureEvents
+namespace GridDomain.Tests.FutureEvents.Retry
 {
     [TestFixture]
     public class FutureEvent_regular_Reraise : FutureEventsTest_InMemory

@@ -233,6 +233,8 @@
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\CannotGetSagaFromMessage.cs" />
+    <Compile Include="Actors\MessageHandlingStatuses.cs" />
     <Compile Include="Actors\Persisted.cs" />
     <Compile Include="Actors\CannotCreateChildException.cs" />
     <Compile Include="Actors\CannotFindRouteException.cs" />
@@ -247,12 +249,14 @@
     <Compile Include="Actors\ISnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
+    <Compile Include="Actors\RouteCreated.cs" />
     <Compile Include="Actors\SagaActorLiterals.cs" />
     <Compile Include="Actors\SnapshotsPersistencePolicy.cs" />
     <Compile Include="AkkaCommandExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
+    <Compile Include="AkkaMessaging\Routing\PoolKind.cs" />
     <Compile Include="AkkaMessaging\Waiting\AkkaCommandLocalWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\AkkaMessageLocalWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandExpectBuilder.cs" />

@@ -62,15 +62,20 @@
     <Compile Include="CommandExecutorExtensions.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandExecutor.cs" />
+    <Compile Include="ICommandExpectBuilder.cs" />
     <Compile Include="ICommandHandler.cs" />
+    <Compile Include="ICommandWaiter.cs" />
+    <Compile Include="ICommandWaiterFactory.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IExpectBuilder.cs" />
     <Compile Include="IExpectedCommandExecutor.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="IFault.cs" />
+    <Compile Include="IHandlerWithMetadata.cs" />
     <Compile Include="IMessageProcessFault.cs" />
     <Compile Include="IGenericQuery.cs" />
     <Compile Include="IMessageWaiter.cs" />
+    <Compile Include="IMessageWaiterBase.cs" />
     <Compile Include="IMessageWaiterFactory.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IWaitResults.cs" />
@@ -94,27 +99,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="_NuProjGetProjectClosure"
-          DependsOnTargets="ResolveProjectReferences"
-          Inputs="%(_MSBuildProjectReferenceExistent.Identity)"
-          Outputs="fake"
-          Returns="@(_ProjectReferenceClosure)">
-
+  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
     <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
-             Targets="_NuProjGetProjectClosure"
-             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-             ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs"
-              ItemName="_ProjectReferenceClosureWithDuplicates" />
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
+      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
     </MSBuild>
-
     <!-- Remove duplicates from closure -->
     <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered"
-              ItemName="_ProjectReferenceClosureWithoutMetadata"/>
+      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
     </RemoveDuplicates>
-
     <ItemGroup>
       <!-- Remove references that are also direct references -->
       <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
@@ -129,6 +122,5 @@
         <DependencyKind>Direct</DependencyKind>
       </_ProjectReferenceClosure>
     </ItemGroup>
-
   </Target>
 </Project>

@@ -7,7 +7,7 @@ using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.SampleDomain;
 using GridDomain.Tests.SampleDomain.Commands;
 using GridDomain.Tests.SampleDomain.Events;
-using GridDomain.Tools.Console;
+using GridDomain.Tools.Connector;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 

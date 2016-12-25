@@ -144,7 +144,9 @@
     <Compile Include="Integration\JobFailed.cs" />
     <Compile Include="Integration\JobSucceeded.cs" />
     <Compile Include="Integration\ScheduledCommandWasNotConfirmedException.cs" />
+    <Compile Include="Quartz\Retry\AlwaysRetryExceptionPolicy.cs" />
     <Compile Include="Quartz\Retry\ExponentialBackoffRetryStrategy.cs" />
+    <Compile Include="Quartz\Retry\IExceptionPolicy.cs" />
     <Compile Include="Quartz\Retry\InMemoryRetrySettings.cs" />
     <Compile Include="Quartz\Retry\IRetrySettings.cs" />
     <Compile Include="Quartz\Retry\IRetryStrategy.cs" />

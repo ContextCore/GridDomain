@@ -5,6 +5,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
+using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
 using Quartz;

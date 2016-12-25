@@ -21,6 +21,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Logging;
+using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.SampleDomain.Commands;

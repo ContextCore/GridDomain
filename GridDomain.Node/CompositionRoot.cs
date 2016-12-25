@@ -14,6 +14,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

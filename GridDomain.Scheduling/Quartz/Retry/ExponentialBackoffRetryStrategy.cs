@@ -1,9 +1,8 @@
 using System;
 using GridDomain.Logging;
 using Quartz;
-using Quartz.Collection;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Quartz.Retry
 {
     public class ExponentialBackoffRetryStrategy : IRetryStrategy
     {

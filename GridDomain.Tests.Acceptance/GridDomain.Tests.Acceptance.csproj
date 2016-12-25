@@ -234,8 +234,10 @@
   <ItemGroup>
     <Compile Include="Chronicles\EventsReplayInfoHolder.cs" />
     <Compile Include="Chronicles\Given_persisted_events_replay.cs" />
+    <Compile Include="EventsUpgrade\BalanceChanged_objectAdapter1.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_events_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
+    <Compile Include="EventsUpgrade\PersistentChildsRecycleConfiguration.cs" />
     <Compile Include="GridConsole\GridConsoleTests.cs" />
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_convert_and_upgrade_events_stored_in_legacy_wire_format.cs" />

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using GridDomain.Scheduling.Quartz.Logging;
+using GridDomain.Scheduling.Quartz.Retry;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;

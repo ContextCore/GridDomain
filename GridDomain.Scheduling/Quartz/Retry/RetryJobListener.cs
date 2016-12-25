@@ -3,7 +3,7 @@ using GridDomain.Logging;
 using Quartz;
 using Quartz.Listener;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Quartz.Retry
 {
     public class RetryJobListener : JobListenerSupport
     {

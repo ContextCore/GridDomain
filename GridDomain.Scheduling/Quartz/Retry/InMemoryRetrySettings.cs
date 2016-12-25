@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Quartz.Retry
 {
 
     public class InMemoryRetrySettings : IRetrySettings
@@ -16,14 +15,6 @@ namespace GridDomain.Scheduling.Quartz
             MaxRetries = maxRetries;
             BackoffBaseInterval = baseInterval ?? TimeSpan.FromMinutes(20);
             ErrorActions = errorActions ?? new AlwaysRetryExceptionPolicy();
-        }
-    }
-
-    public class AlwaysRetryExceptionPolicy : IExceptionPolicy
-    {
-        public bool ShouldContinue(Exception ex)
-        {
-            return true;
         }
     }
 }

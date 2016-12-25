@@ -8,14 +8,6 @@ using GridDomain.Logging;
 
 namespace GridDomain.Node.Actors
 {
-    public static class MessageHandlingStatuses
-    {
-        public const string PublishingFault = "publishing fault";
-        public const string MessageProcessCasuedAnError = "message process cased an error";
-        public const string MessageProcessed = "message processed";
-        public const string PublishingNotification = "publishing notification";
-    }
-    
     public class MessageHandlingActor<TMessage, THandler> : TypedActor where THandler : IHandler<TMessage>
     {
         private readonly THandler _handler;
