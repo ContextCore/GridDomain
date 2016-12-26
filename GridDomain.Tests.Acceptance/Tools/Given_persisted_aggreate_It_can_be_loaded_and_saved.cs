@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.Tools;
+using GridDomain.Tools;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;

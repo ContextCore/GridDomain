@@ -2,7 +2,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.Tools;
+using GridDomain.Tools;
 using GridDomain.Tests.Unit.Tools.Repositories;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.EventRepositories;
