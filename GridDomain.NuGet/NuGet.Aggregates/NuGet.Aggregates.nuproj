@@ -31,7 +31,7 @@
     </ProjectUrl>
     <LicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt
     </LicenseUrl>
-	<IconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</IconUrl>
+    <IconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</IconUrl>
     <Copyright>Copyright © aleskov</Copyright>
     <Tags>CQRS ES DDD Akka</Tags>
   </PropertyGroup>
@@ -43,7 +43,7 @@
   </ItemGroup>
   <PropertyGroup>
     <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">$(NuProjPath)\NuProj.targets</NuProjTargetsPath>
-	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">$(NuProjPath)\NuProj.Tasks.dll</NuProjTasksPath>
+    <NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">$(NuProjPath)\NuProj.Tasks.dll</NuProjTasksPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
