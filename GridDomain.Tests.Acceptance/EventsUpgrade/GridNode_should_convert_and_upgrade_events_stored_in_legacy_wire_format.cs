@@ -6,7 +6,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
-using GridDomain.Tests.CommandsExecution;
+using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.RawDataRepositories;

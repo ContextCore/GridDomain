@@ -13,11 +13,11 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.CommandsExecution;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.SampleDomain;
-using GridDomain.Tests.SampleDomain.Commands;
-using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution;
+using GridDomain.Tests.Unit.SampleDomain;
+using GridDomain.Tests.Unit.SampleDomain.Commands;
+using GridDomain.Tests.Unit.SampleDomain.Events;
 using Microsoft.Practices.Unity;
 using Ploeh.AutoFixture;
 

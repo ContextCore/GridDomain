@@ -24,8 +24,6 @@ using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.SampleDomain.Commands;
-using GridDomain.Tests.SampleDomain.Events;
 using Microsoft.Practices.Unity;
 using Moq;
 using NMoneys;

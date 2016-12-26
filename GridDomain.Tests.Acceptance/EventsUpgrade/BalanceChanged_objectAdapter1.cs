@@ -1,5 +1,5 @@
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {

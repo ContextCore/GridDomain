@@ -1,9 +1,9 @@
 using System;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.SampleDomain;
-using GridDomain.Tests.Tools;
-using GridDomain.Tests.Tools.Repositories;
+using GridDomain.Tools;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using NUnit.Framework;

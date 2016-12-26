@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
 using GridDomain.Node;
-using GridDomain.Tests.CommandsExecution;
-using GridDomain.Tests.SampleDomain;
-using GridDomain.Tests.SampleDomain.Commands;
-using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution;
+using GridDomain.Tests.Unit.SampleDomain;
+using GridDomain.Tests.Unit.SampleDomain.Commands;
+using GridDomain.Tests.Unit.SampleDomain.Events;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using NUnit.Framework;

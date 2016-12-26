@@ -1,0 +1,11 @@
+using System;
+using GridDomain.Node.Actors;
+
+namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
+{
+    internal class TestPersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
+    {
+        public TimeSpan ChildClearPeriod => PersistentHubTestsStatus.ChildClearTime;
+        public TimeSpan ChildMaxInactiveTime => PersistentHubTestsStatus.ChildMaxLifetime;
+    }
+}

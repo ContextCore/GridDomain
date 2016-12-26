@@ -55,15 +55,6 @@
   <ItemGroup>
     <Compile Include="CannotFindFactoryForSagaCreation.cs" />
     <Compile Include="FactoryAlreadyRegisteredException.cs" />
-    <Compile Include="FutureEvents\Aggregate.cs" />
-    <Compile Include="FutureEvents\AsyncEventsReceived.cs" />
-    <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
-    <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
-    <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
-    <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
-    <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
-    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
-    <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
     <Compile Include="InstanceSagas\ISagaState.cs" />
     <Compile Include="InstanceSagas\MessageReceivedData.cs" />

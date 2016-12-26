@@ -15,7 +15,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.FutureEvents;
+using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Scheduling.Akka.Messages;
 using Helios.Util;

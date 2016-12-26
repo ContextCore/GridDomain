@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Automatonymous;
 using CommonDomain;
 using CommonDomain.Core;
-using GridDomain.EventSourcing.Sagas.FutureEvents;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {

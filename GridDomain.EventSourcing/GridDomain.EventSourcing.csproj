@@ -67,6 +67,15 @@
     <Compile Include="Adapters\IDomainEventAdapter.cs" />
     <Compile Include="Adapters\IEventAdapter.cs" />
     <Compile Include="Adapters\VersionedTypeSerializationBinder.cs" />
+    <Compile Include="Aggregate.cs" />
+    <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
+    <Compile Include="FutureEvents\AsyncEventsReceived.cs" />
+    <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
+    <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
+    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
+    <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="InvalidDefaultMementoException.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,6 +96,10 @@
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
       <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
       <Name>GridDomain.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
+      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Name>GridDomain.CQRS</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
       <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>

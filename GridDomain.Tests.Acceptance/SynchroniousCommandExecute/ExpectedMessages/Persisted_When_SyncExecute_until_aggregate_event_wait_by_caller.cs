@@ -1,4 +1,4 @@
-using GridDomain.Tests.CommandsExecution.ExpectedMessages;
+using GridDomain.Tests.Unit.CommandsExecution.ExpectedMessages;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.SynchroniousCommandExecute.ExpectedMessages

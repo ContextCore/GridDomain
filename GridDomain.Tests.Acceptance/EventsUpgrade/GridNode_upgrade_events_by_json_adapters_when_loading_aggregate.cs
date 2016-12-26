@@ -5,10 +5,10 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
-using GridDomain.Tests.CommandsExecution;
-using GridDomain.Tests.SampleDomain;
-using GridDomain.Tests.SampleDomain.Commands;
-using GridDomain.Tests.SampleDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution;
+using GridDomain.Tests.Unit.SampleDomain;
+using GridDomain.Tests.Unit.SampleDomain.Commands;
+using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
