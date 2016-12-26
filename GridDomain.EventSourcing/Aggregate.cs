@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Core;
@@ -8,7 +9,31 @@ using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing
 {
+    /// <summary>
+    /// DomainException represents an expected error in domain logic,
+    /// not meaning something bad in infrastructure or logic was happened 
+    /// </summary>
+    [Serializable]
+    public class DomainException : Exception
+    {
+        public DomainException()
+        {
+            
+        }
+        public DomainException(string message):base(message)
+        {
 
+        }
+        public DomainException(string message, Exception inner) : base(message,inner)
+        {
+
+        }
+
+        public DomainException(SerializationInfo info, StreamingContext context) : base(info,context)
+        {
+
+        }
+    }
     public class Aggregate : AggregateBase, IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
@@ -17,11 +42,10 @@ namespace GridDomain.EventSourcing
             return Factory.Build<T>(id);
         }
 
-       // public void RegisterRoute<T>(Action<T> act)
-       // {
-       //     base.Register(act);
-       // }
-
+        protected void Apply<T>(Action<T> action) where T : DomainEvent
+        {
+            Register(action);
+        }
         #region AsyncMethods
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
         private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
@@ -74,7 +98,7 @@ namespace GridDomain.EventSourcing
             Register<FutureEventOccuredEvent>(Apply);
             Register<FutureEventCanceledEvent>(Apply);
         }
-        
+
         public void RaiseScheduledEvent(Guid futureEventId)
         {
             FutureEventScheduledEvent e;

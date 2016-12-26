@@ -8,7 +8,7 @@ using GridDomain.Logging;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.Framework
 {
     public abstract class CommandSpecification<TCommand> where TCommand : class, CQRS.ICommand
     {
@@ -63,7 +63,6 @@ namespace GridDomain.Tests.Unit
             GivenEvents = Given().ToArray();
             ExpectedEvents = Expected().ToArray();
             Repository = CreateRepository();
-            //    Bus = MessageTransportSetup.SetupInMemoryBus();
         }
 
         protected List<DomainEvent> ExecuteCommand()

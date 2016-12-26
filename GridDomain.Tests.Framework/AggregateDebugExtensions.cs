@@ -10,9 +10,10 @@ namespace GridDomain.Tests.Framework
 
         public static void ApplyEvents(this IAggregate aggregate, params DomainEvent[] events)
         {
-            foreach(var e in events)
+            foreach (var e in events)
                 aggregate.ApplyEvent(e);
         }
+
 
         public static void ClearEvents(this IAggregate aggregate)
         {

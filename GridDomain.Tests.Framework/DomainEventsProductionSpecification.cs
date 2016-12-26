@@ -5,7 +5,7 @@ using CommonDomain;
 using GridDomain.EventSourcing;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.Framework
 {
     [TestFixture]
     public abstract class DomainEventsProductionSpecification<TAggregate> where TAggregate : IAggregate

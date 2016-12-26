@@ -2,6 +2,7 @@
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.Tests.Framework;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit.Sagas.StateSagas.SagaStateAggregate

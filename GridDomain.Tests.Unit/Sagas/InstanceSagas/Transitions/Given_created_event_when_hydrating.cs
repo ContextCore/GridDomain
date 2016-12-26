@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions

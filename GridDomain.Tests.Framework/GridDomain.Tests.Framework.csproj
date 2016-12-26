@@ -152,6 +152,7 @@
     <Compile Include="CannotCreateGenericType.cs" />
     <Compile Include="CannotFindRequestedEventException.cs" />
     <Compile Include="ChildEcho.cs" />
+    <Compile Include="CommandSpecification.cs" />
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
@@ -159,8 +160,12 @@
     <Compile Include="DateTimeDeltaComparer.cs" />
     <Compile Include="DateTimeOffsetDeltaComparer.cs" />
     <Compile Include="DebugLocalWaiter.cs" />
+    <Compile Include="DomainEventsProductionSpecification.cs" />
+    <Compile Include="EventsExtensions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
+    <Compile Include="HydrationSpecification.cs" />
+    <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />
     <Compile Include="PersistentChildsRecycleConfiguration.cs" />

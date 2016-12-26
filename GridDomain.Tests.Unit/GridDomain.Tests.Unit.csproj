@@ -440,7 +440,6 @@
     <Compile Include="AsyncAggregates\When_wait_Execute_of_async_aggregate_method_until_aggregate_event_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_fault_wait_by_Node.cs" />
     <Compile Include="AsyncAggregates\When_wait_execution_of_async_method_until_projection_build_event_wait_by_Node.cs" />
-    <Compile Include="CommandSpecification.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="Sagas\StateSagas\SampleSaga\SoftwareProgrammingSagaRoutemap.cs" />
@@ -499,10 +498,6 @@
     <Compile Include="FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestRouteMap.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
-    <Compile Include="HydrationSpecification.cs" />
-    <Compile Include="EventsExtensions.cs" />
-    <Compile Include="DomainEventsProductionSpecification.cs" />
-    <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sagas\StateSagas\SagaStateAggregate\Given_created_event_should_hydrate_state.cs" />
     <Compile Include="Sagas\StateSagas\SagaStateAggregate\Given_new_saga_state_When_create_it_by_constructor.cs" />

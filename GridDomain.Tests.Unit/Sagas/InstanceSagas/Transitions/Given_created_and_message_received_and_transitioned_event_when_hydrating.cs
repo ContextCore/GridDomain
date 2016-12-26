@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 

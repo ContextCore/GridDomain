@@ -5,7 +5,7 @@ using GridDomain.EventSourcing;
 using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.Framework
 {
     public static class EventsExtensions
     {
