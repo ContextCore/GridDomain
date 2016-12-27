@@ -16,7 +16,7 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
     {
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new AccountCreatedEvent(Aggregate.Id,Guid.NewGuid());
+            yield return new AccountCreatedEvent(Aggregate.Id,Guid.NewGuid(),34);
             yield return new AccountReplenish(Aggregate.Id, new Money(100));
         }
 

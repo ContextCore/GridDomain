@@ -183,6 +183,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountAggregate\Aggregate\Account_creation_tests.cs" />
     <Compile Include="AccountAggregate\Aggregate\Account_withdrawal_tests.cs" />
     <Compile Include="AccountAggregate\Aggregate\Account_replenish_tests.cs" />
     <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />

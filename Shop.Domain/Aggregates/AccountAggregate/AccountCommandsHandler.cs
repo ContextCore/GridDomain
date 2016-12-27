@@ -8,7 +8,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
         public AccountCommandsHandler() : base(null)
         {
             Map<CreateAccountCommand>(cmd => cmd.AccountId,
-                   cmd => new Account(cmd.AccountId, cmd.BusinessId));
+                   cmd => new Account(cmd.AccountId, cmd.UserId, cmd.Number));
 
             Map<ReplenishAccountByCardCommand>(cmd => cmd.AccountId,
                 (cmd, agr) => agr.Replenish(cmd.Amount));

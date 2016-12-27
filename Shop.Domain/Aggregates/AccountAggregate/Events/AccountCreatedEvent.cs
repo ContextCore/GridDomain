@@ -5,11 +5,14 @@ namespace Shop.Domain.Aggregates.AccountAggregate.Events
 {
     public class AccountCreatedEvent : DomainEvent
     {
-        public AccountCreatedEvent(Guid sourceId, Guid businessId) : base(sourceId)
+        public int AccountNumber { get; }
+        public Guid UserId { get; }
+
+        public AccountCreatedEvent(Guid sourceId, Guid userId, int accountNumber) : base(sourceId)
         {
-            BusinessId = businessId;
+            AccountNumber = accountNumber;
+            UserId = userId;
         }
 
-        public Guid BusinessId { get; }
     }
 }

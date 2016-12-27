@@ -5,13 +5,15 @@ namespace Shop.Domain.Aggregates.AccountAggregate.Commands
 {
     public class CreateAccountCommand : Command
     {
-        public CreateAccountCommand(Guid accountId, Guid businessId)
+        public CreateAccountCommand(Guid accountId, Guid userId, int number)
         {
             AccountId = accountId;
-            BusinessId = businessId;
+            UserId = userId;
+            Number = number;
         }
 
         public Guid AccountId { get; }
-        public Guid BusinessId { get;}
+        public Guid UserId { get;}
+        public int Number { get;}
     }
 }

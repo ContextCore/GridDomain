@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;

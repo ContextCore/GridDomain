@@ -10,20 +10,22 @@ namespace Shop.Domain.Aggregates.AccountAggregate
     {
         public Guid UserId { get; private set; }
         public Money Amount { get; private set; }
+        public int Number { get; private set; }
 
         private Account(Guid id):base(id)
         {
         }
 
-        public Account(Guid id, Guid userId) : this(id)
+        public Account(Guid id, Guid userId, int number) : this(id)
         {
-            RaiseEvent(new AccountCreatedEvent(id, userId));
+            RaiseEvent(new AccountCreatedEvent(id, userId, number));
         }
 
         private void Apply(AccountCreatedEvent e)
         {
             Id = e.SourceId;
-            UserId = e.BusinessId;
+            UserId = e.UserId;
+            Number = e.AccountNumber;
         }
 
         private void Apply(AccountReplenish e)
