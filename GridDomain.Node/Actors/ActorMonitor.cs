@@ -1,6 +1,7 @@
 using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
+using GridDomain.Common;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors

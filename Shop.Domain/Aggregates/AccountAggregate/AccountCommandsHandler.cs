@@ -11,10 +11,10 @@ namespace Shop.Domain.Aggregates.AccountAggregate
                    cmd => new Account(cmd.AccountId, cmd.UserId, cmd.Number));
 
             Map<ReplenishAccountByCardCommand>(cmd => cmd.AccountId,
-                (cmd, agr) => agr.Replenish(cmd.Amount));
+                (cmd, agr) => agr.Replenish(cmd.Amount, cmd.Id));
 
             Map<PayForBillCommand>(cmd => cmd.AccountId,
-                (cmd, agr) => agr.Withdraw(cmd.Amount));
+                (cmd, agr) => agr.Withdraw(cmd.Amount, cmd.Id));
         }
     }
 }

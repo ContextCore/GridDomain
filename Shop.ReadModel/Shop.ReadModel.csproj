@@ -208,6 +208,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountProjectionBuilder.cs" />
+    <Compile Include="Context\Account.cs" />
+    <Compile Include="Context\AccountOperations.cs" />
+    <Compile Include="Context\AccountTransaction.cs" />
     <Compile Include="Context\Good.cs" />
     <Compile Include="Context\Order.cs" />
     <Compile Include="Context\OrderItem.cs" />

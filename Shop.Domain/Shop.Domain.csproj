@@ -72,7 +72,7 @@
     <Compile Include="Aggregates\AccountAggregate\Commands\ReplenishAccountByCardCommand.cs" />
     <Compile Include="Aggregates\AccountAggregate\Events\AccountAmountChanged.cs" />
     <Compile Include="Aggregates\AccountAggregate\Events\AccountReplenish.cs" />
-    <Compile Include="Aggregates\AccountAggregate\Events\AccountCreatedEvent.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Events\AccountCreated.cs" />
     <Compile Include="Aggregates\AccountAggregate\Events\AccountWithdrawal.cs" />
     <Compile Include="Aggregates\AccountAggregate\NegativeMoneyException.cs" />
     <Compile Include="Aggregates\AccountAggregate\NotEnoughMoneyException.cs" />

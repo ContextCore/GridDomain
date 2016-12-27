@@ -310,7 +310,6 @@
     <Compile Include="Actors\MessageHandlingActor.cs" />
     <Compile Include="Actors\RoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
-    <Compile Include="AkkaMessaging\TypeNameExtensions.cs" />
     <Compile Include="AkkaMessaging\Waiting\AllMessageWaiterActor.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />

@@ -187,6 +187,7 @@
     <Compile Include="AccountAggregate\Aggregate\Account_withdrawal_tests.cs" />
     <Compile Include="AccountAggregate\Aggregate\Account_replenish_tests.cs" />
     <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
+    <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_test.cs" />
@@ -231,9 +232,7 @@
       <Name>Shop.ReadModel</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="AccountAggregate\ProjectionBuilder\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

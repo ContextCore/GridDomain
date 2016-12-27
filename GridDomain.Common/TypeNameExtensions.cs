@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Common
 {
     public static class TypeNameExtensions
     {

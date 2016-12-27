@@ -16,8 +16,8 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
     {
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new AccountCreatedEvent(Aggregate.Id,Guid.NewGuid(),34);
-            yield return new AccountReplenish(Aggregate.Id, new Money(100));
+            yield return new AccountCreated(Aggregate.Id,Guid.NewGuid(),34);
+            yield return new AccountReplenish(Aggregate.Id, Guid.NewGuid(), new Money(100));
         }
 
         [SetUp]
@@ -32,7 +32,7 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-           yield return new AccountWithdrawal(Aggregate.Id, _command.Amount);
+           yield return new AccountWithdrawal(Aggregate.Id, _command.Id, _command.Amount);
         }
 
         private PayForBillCommand _command;

@@ -24,7 +24,7 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new AccountCreatedEvent(_command.AccountId,
+            yield return new AccountCreated(_command.AccountId,
                                                  _command.UserId,
                                                  _command.Number);
         }
