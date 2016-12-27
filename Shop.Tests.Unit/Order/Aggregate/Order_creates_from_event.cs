@@ -21,7 +21,7 @@ namespace Shop.Tests.Unit.Order
         [Test]
         public void Order_receives_id()
         {
-            Assert.AreEqual(_createdEvent.Id, Aggregate.Id);
+            Assert.AreEqual(_createdEvent.SourceId, Aggregate.Id);
         }
         [Test]
         public void Order_status_is_created()

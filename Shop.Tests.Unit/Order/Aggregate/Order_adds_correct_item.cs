@@ -37,7 +37,7 @@ namespace Shop.Tests.Unit.Order
         public void Init()
         {
             _createdEvent = new OrderCreated(Aggregate.Id, 1, Guid.NewGuid());
-            _itemAddedEventA = new ItemAdded(Aggregate.Id, Guid.NewGuid(), 2, new Money(100));
+            _itemAddedEventA = new ItemAdded(Aggregate.Id, Guid.NewGuid(), 2, new Money(100),1);
 
             Aggregate.ApplyEvents(_createdEvent, _itemAddedEventA);
             _initialSum = Aggregate.TotalPrice;
@@ -48,7 +48,7 @@ namespace Shop.Tests.Unit.Order
 
         private void When_adding_new_item()
         {
-            _itemAddedEventB = new ItemAdded(Aggregate.Id, Guid.NewGuid(), 1, new Money(50));
+            _itemAddedEventB = new ItemAdded(Aggregate.Id, Guid.NewGuid(), 1, new Money(50),2);
             Aggregate.ApplyEvents(_itemAddedEventB);
         }
 

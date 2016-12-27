@@ -1,17 +1,19 @@
 using System;
 using GridDomain.EventSourcing;
+using Shop.Domain.Aggregates.UserAggregate;
 
 namespace Shop.Domain.Aggregates.OrderAggregate.Events
 {
-    internal class OrderCreated : DomainEvent
+    public class OrderCreated : DomainEvent
     {
         public int Number { get; }
-        public Guid Id { get; }
         public Guid User { get; }
 
-        public OrderCreated(Guid id, int number, Guid user):base(id)
+        public OrderStatus Status { get; }
+
+        public OrderCreated(Guid sourceId, int number, Guid user, OrderStatus status = OrderStatus.Created):base(sourceId)
         {
-            Id = id;
+            Status = status;
             User = user;
             Number = number;
         }

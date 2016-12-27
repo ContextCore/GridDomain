@@ -22,7 +22,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             Apply<OrderCreated>(e =>
             {
                 UserId = e.User;
-                Id = e.Id;
+                Id = e.SourceId;
                 Number = e.Number;
                 Items = new List<OrderItem>();
                 Status = OrderStatus.Created;
@@ -30,11 +30,11 @@ namespace Shop.Domain.Aggregates.OrderAggregate
 
             Apply<ItemAdded>(e =>
             {
-                Items.Add(new OrderItem(Items.Count+1,e.Sku,e.Quantity,e.TotalPrice));
+                Items.Add(new OrderItem(e.NumberInOrder,e.Sku,e.Quantity,e.TotalPrice));
                 TotalPrice = CalculateTotalPrice();
             });
 
-            Apply<OrderCompleted>( e => Status = OrderStatus.Paid);
+            Apply<OrderCompleted>( e => Status = e.Status);
         }
 
         private Money CalculateTotalPrice()
@@ -54,13 +54,14 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             if (totalPrice < Money.Zero()) throw new InvalidMoneyException();
             if (Status != OrderStatus.Created) throw new CantAddItemsToClosedOrder();
 
-            RaiseEvent(new ItemAdded(Id, sku, quantity, totalPrice));
+           
+            RaiseEvent(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
         }
 
         public void Complete()
         {
             if (Status != OrderStatus.Created) throw new CannotCompleteAlreadyClosedOrderException();
-            RaiseEvent(new OrderCompleted(Id));
+            RaiseEvent(new OrderCompleted(Id, OrderStatus.Paid));
         }
     }
 
@@ -70,9 +71,10 @@ namespace Shop.Domain.Aggregates.OrderAggregate
 
     public class OrderCompleted : DomainEvent
     {
-        public OrderCompleted(Guid id):base(id)
+        public OrderStatus Status { get; }
+        public OrderCompleted(Guid id, OrderStatus status):base(id)
         {
-            
+            Status = status;
         }
     }
 
