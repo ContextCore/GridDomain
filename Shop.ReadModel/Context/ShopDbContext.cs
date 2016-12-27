@@ -26,9 +26,10 @@ namespace Shop.ReadModel.Context
             modelBuilder.Entity<Account>().HasIndex(o => o.Number);
 
             modelBuilder.Entity<AccountTransaction>().HasKey(o => o.TransactionId);
-            modelBuilder.Entity<AccountTransaction>().HasIndex(o => o.TransactionNumber);
-            modelBuilder.Entity<AccountTransaction>().Property(o => o.TransactionNumber). ValueGeneratedOnAdd();
             modelBuilder.Entity<AccountTransaction>().HasIndex(o => o.AccountId);
+            modelBuilder.Entity<AccountTransaction>().HasIndex(o => o.TransactionNumber);
+            modelBuilder.Entity<AccountTransaction>().Property(o => o.TransactionNumber)
+                                                     .UseSqlServerIdentityColumn();
 
             modelBuilder.Entity<Good>().HasIndex(o =>  o.Name);
         }

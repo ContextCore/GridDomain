@@ -88,6 +88,7 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
             using (var context = ContextFactory())
             {
                 var history = context.TransactionHistory.Find(_msgWithdrawal.ChangeId);
+
                 Assert.AreEqual(_msgWithdrawal.SourceId, history.AccountId);
                 Assert.AreEqual(_msgWithdrawal.Amount.Amount, history.ChangeAmount);
                 Assert.AreEqual(_msgWithdrawal.CreatedTime, history.Created);

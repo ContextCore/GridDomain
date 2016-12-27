@@ -40,17 +40,22 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var account = context.Accounts.Find(msg.SourceId);
+                account.LastModified = msg.CreatedTime;
+                var initialAmount = account.Amount;
+                account.Amount += msg.Amount.Amount;
+
                 var transaction = new AccountTransaction()
                 {
                     AccountId = msg.SourceId,
                     ChangeAmount = msg.Amount.Amount,
                     Created = msg.CreatedTime,
                     Currency = msg.Amount.CurrencyCode.ToString(),
-                    InitialAmount = account.Amount,
-                    NewAmount = account.Amount + msg.Amount.Amount,
+                    InitialAmount = initialAmount,
+                    NewAmount = account.Amount,
                     Operation = AccountOperations.Replenish,
                     TransactionId = msg.ChangeId
                 };
+
                 context.TransactionHistory.Add(transaction);
                 context.SaveChanges();
             }
@@ -61,17 +66,23 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var account = context.Accounts.Find(msg.SourceId);
+
+                var initialAmount = account.Amount;
+                account.LastModified = msg.CreatedTime;
+                account.Amount -= msg.Amount.Amount;
+
                 var transaction = new AccountTransaction()
                 {
                     AccountId = msg.SourceId,
                     ChangeAmount = msg.Amount.Amount,
                     Created = msg.CreatedTime,
                     Currency = msg.Amount.CurrencyCode.ToString(),
-                    InitialAmount = account.Amount,
-                    NewAmount = account.Amount - msg.Amount.Amount,
+                    InitialAmount = initialAmount,
+                    NewAmount = account.Amount,
                     Operation = AccountOperations.Withdrawal,
                     TransactionId = msg.ChangeId
                 };
+
                 context.TransactionHistory.Add(transaction);
                 context.SaveChanges();
             }
