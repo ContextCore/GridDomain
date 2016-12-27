@@ -15,6 +15,19 @@ namespace Shop.Tests.Unit
     [TestFixture]
     public class User_creates_from_event : AggregateTest<User>
     {
+        private UserCreated _createdEvent;
+
+        protected override IEnumerable<DomainEvent> Given()
+        {
+            yield return _createdEvent = new Fixture().Create<UserCreated>();
+        }
+
+        [OneTimeSetUp]
+        public void Given_just_created_user()
+        {
+            Init();
+        }
+
         [Test]
         public void User_receives_id()
         {
@@ -33,11 +46,6 @@ namespace Shop.Tests.Unit
             Assert.AreEqual(_createdEvent.Account, Aggregate.Account);
         }
 
-        private readonly UserCreated _createdEvent = new Fixture().Create<UserCreated>();
-
-        protected override IEnumerable<DomainEvent> Given()
-        {
-            yield return _createdEvent;
-        }
+    
     }
 }
