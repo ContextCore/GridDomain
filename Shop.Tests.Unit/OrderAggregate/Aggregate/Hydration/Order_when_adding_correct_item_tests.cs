@@ -1,24 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
 
-namespace Shop.Tests.Unit.Order
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Hydration
 {
     [TestFixture]
-    public class Order_adds_correct_item : HydrationSpecification<Domain.Aggregates.OrderAggregate.Order>
+    public class Order_when_adding_correct_item_tests : AggregateTest<Order>
     {
         [Test]
         public void Order_items_contains_new_one_as_separate_item()
         {
             Assert.True(Aggregate.Items.Any(i =>
-                i.Quantity == _itemAddedEventB.Quantity && 
-                i.Sku == _itemAddedEventB.Sku &&
-                i.TotalPrice == _itemAddedEventB.TotalPrice
-                ));
+                                 i.Quantity == _itemAddedEventB.Quantity && 
+                                 i.Sku == _itemAddedEventB.Sku &&
+                                 i.TotalPrice == _itemAddedEventB.TotalPrice
+                                 ));
         }
 
         [Test]
@@ -34,27 +36,25 @@ namespace Shop.Tests.Unit.Order
         }
 
         [OneTimeSetUp]
-        public void Init()
+        public void When_adding_new_item()
         {
-            _createdEvent = new OrderCreated(Aggregate.Id, 1, Guid.NewGuid());
-            _itemAddedEventA = new ItemAdded(Aggregate.Id, Guid.NewGuid(), 2, new Money(100),1);
+            Init();
 
-            Aggregate.ApplyEvents(_createdEvent, _itemAddedEventA);
             _initialSum = Aggregate.TotalPrice;
             _initialItemsCount = Aggregate.Items.Count;
 
-            When_adding_new_item();
-        }
-
-        private void When_adding_new_item()
-        {
             _itemAddedEventB = new ItemAdded(Aggregate.Id, Guid.NewGuid(), 1, new Money(50),2);
             Aggregate.ApplyEvents(_itemAddedEventB);
         }
 
+        protected override IEnumerable<DomainEvent> Given()
+        {
+            yield return new OrderCreated(Aggregate.Id, 1, Guid.NewGuid());
+            yield return new ItemAdded(Aggregate.Id, Guid.NewGuid(), 2, new Money(100), 1);
+
+        }
+
         private Money _initialSum;
-        private OrderCreated _createdEvent;
-        private ItemAdded _itemAddedEventA;
         private ItemAdded _itemAddedEventB;
         private int _initialItemsCount;
     }

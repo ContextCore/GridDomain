@@ -183,12 +183,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Order\Aggregate\Order_adds_bad_item.cs" />
-    <Compile Include="Order\Aggregate\Order_adds_correct_item.cs" />
-    <Compile Include="Order\Aggregate\Completed_order_test.cs" />
-    <Compile Include="Order\Aggregate\Order_creates_from_event.cs" />
-    <Compile Include="Order\Aggregate\Order_guards_its_negative_number.cs" />
-    <Compile Include="Order\ProjectionBuilders\Order_created_projection.cs" />
+    <Compile Include="AccountAggregate\Aggregate\Account_withdrawal_tests.cs" />
+    <Compile Include="AccountAggregate\Aggregate\Account_replenish_tests.cs" />
+    <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
+    <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
+    <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
+    <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_test.cs" />
+    <Compile Include="OrderAggregate\Aggregate\Hydration\Order_creates_from_event.cs" />
+    <Compile Include="OrderAggregate\Aggregate\Commands\Order_guards_its_negative_number_on_creation.cs" />
+    <Compile Include="OrderAggregate\ProjectionBuilders\Order_created_projection_test.cs" />
+    <Compile Include="OrderAggregate\ProjectionBuilders\Order_projection_builder_test.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -225,6 +229,9 @@
       <Project>{105B2938-9764-4341-9C70-D8EAF182D516}</Project>
       <Name>Shop.ReadModel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AccountAggregate\ProjectionBuilder\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

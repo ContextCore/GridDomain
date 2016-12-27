@@ -64,33 +64,4 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             RaiseEvent(new OrderCompleted(Id, OrderStatus.Paid));
         }
     }
-
-    public class CannotCompleteAlreadyClosedOrderException : DomainException
-    {
-    }
-
-    public class OrderCompleted : DomainEvent
-    {
-        public OrderStatus Status { get; }
-        public OrderCompleted(Guid id, OrderStatus status):base(id)
-        {
-            Status = status;
-        }
-    }
-
-    public class CantAddItemsToClosedOrder : DomainException
-    {
-    }
-
-    public class NegativeOrderNumberException : DomainException
-    {
-    }
-
-    public class InvalidMoneyException : DomainException
-    {
-    }
-
-    public class InvalidQuantityException : DomainException
-    {
-    }
 }

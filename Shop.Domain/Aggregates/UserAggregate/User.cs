@@ -16,12 +16,6 @@ namespace Shop.Domain.Aggregates.UserAggregate
    //     public OrderStatus Status { get; }
    // }
 
-    public enum OrderStatus
-    {
-        Created,
-        Paid
-    }
-
     public class User : Aggregate
     {
         public string Login { get; private set; }

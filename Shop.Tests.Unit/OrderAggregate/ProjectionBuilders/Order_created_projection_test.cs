@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
-using Shop.ReadModel;
 using Shop.ReadModel.Context;
 
-namespace Shop.Tests.Unit.Order.ProjectionBuilders
+namespace Shop.Tests.Unit.OrderAggregate.ProjectionBuilders
 {
 
     [TestFixture]
@@ -60,23 +54,6 @@ namespace Shop.Tests.Unit.Order.ProjectionBuilders
                 Assert.AreEqual(_msg.User,row.UserId);
                 Assert.AreEqual(_msg.CreatedTime,row.Created);
             }
-        }
-    }
-
-
-    public class Order_projection_builder_test
-    {
-        protected readonly OrdersProjectionBuilder ProjectionBuilder;
-        protected readonly Func<ShopDbContext> ContextFactory;
-
-        public Order_projection_builder_test()
-        {
-            var options = new DbContextOptionsBuilder<ShopDbContext>()
-                             .UseInMemoryDatabase("Order_created_projection")
-                             .Options;
-
-            ContextFactory = () => new ShopDbContext(options);
-            ProjectionBuilder = new OrdersProjectionBuilder(ContextFactory);
         }
     }
 }

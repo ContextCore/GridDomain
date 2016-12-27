@@ -13,7 +13,7 @@ using Shop.Domain.Aggregates.UserAggregate.Events;
 namespace Shop.Tests.Unit
 {
     [TestFixture]
-    public class User_creates_from_event : HydrationSpecification<User>
+    public class User_creates_from_event : AggregateTest<User>
     {
         [Test]
         public void User_receives_id()
@@ -35,7 +35,7 @@ namespace Shop.Tests.Unit
 
         private readonly UserCreated _createdEvent = new Fixture().Create<UserCreated>();
 
-        protected override IEnumerable<DomainEvent> GivenEvents()
+        protected override IEnumerable<DomainEvent> Given()
         {
             yield return _createdEvent;
         }

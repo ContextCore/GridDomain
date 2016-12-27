@@ -11,20 +11,26 @@ namespace GridDomain.Tests.Framework
     {
         private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};
 
-        private static readonly ComparisonConfig DateCreatedIgnoreConfig = new ComparisonConfig
+        private static readonly ComparisonConfig DateCreatedAndSagaId_IgnoreConfig = new ComparisonConfig
         {
-            MembersToIgnore = new[] {nameof(DomainEvent.CreatedTime)}.ToList(),
+            MembersToIgnore = new[]
+            {
+                nameof(DomainEvent.CreatedTime),
+                nameof(DomainEvent.SagaId)
+            }.ToList(),
             DoublePrecision = 0.0001
         };
 
         /// <summary>
         ///     Compare events ignoring creation date
         /// </summary>
-        /// <param name="expected1"></param>
-        /// <param name="published2"></param>
-        public static void CompareEvents(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2)
+        /// <param name="expected"></param>
+        /// <param name="published"></param>
+        public static void CompareEvents(IEnumerable<DomainEvent> expected,
+                                         IEnumerable<DomainEvent> published,
+                                         CompareLogic logic = null)
         {
-            CompareEventsByLogic(expected1, published2, new CompareLogic {Config = DateCreatedIgnoreConfig});
+            CompareEventsByLogic(expected, published, logic ?? new CompareLogic {Config = DateCreatedAndSagaId_IgnoreConfig});
         }
 
         private static void CompareEventsByLogic(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2,
@@ -36,11 +42,11 @@ namespace GridDomain.Tests.Framework
             if (expected.Length != published.Length)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Разное количество событий");
-                sb.AppendLine($"Ожидается: {expected.Length}, получено: {published.Length}");
-                sb.AppendLine("Ожидаемые события:");
+                sb.AppendLine("Different events number");
+                sb.AppendLine($"Expected: {expected.Length}, received: {published.Length}");
+                sb.AppendLine("Expected events:");
                 sb.AppendLine(string.Join(";", expected.Select(e => e.ToString())));
-                sb.AppendLine("Полученные события:");
+                sb.AppendLine("Received events:");
                 sb.AppendLine(string.Join(";", published.Select(e => e.ToString())));
 
                 Assert.Fail(sb.ToString());

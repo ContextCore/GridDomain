@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
 {
-    class Given_created_event_when_hydrating: HydrationSpecification<SagaDataAggregate<SoftwareProgrammingSagaData>>
+    class Given_created_event_when_hydrating: AggregateTest<SagaDataAggregate<SoftwareProgrammingSagaData>>
     {
         private readonly Guid _sagaId;
         private readonly SoftwareProgrammingSaga _machine;
@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
             _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_machine.Sleeping.Name);
         }
 
-        protected override IEnumerable<DomainEvent> GivenEvents()
+        protected override IEnumerable<DomainEvent> Given()
         {
             yield return new SagaCreatedEvent<SoftwareProgrammingSagaData>(
                 _softwareProgrammingSagaData, _sagaId);

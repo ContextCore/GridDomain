@@ -1,21 +1,28 @@
 using System;
+using System.Collections.Generic;
+using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
 
-namespace Shop.Tests.Unit.Order
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Hydration
 {
     [TestFixture]
-    public class Order_creates_from_event : HydrationSpecification<Domain.Aggregates.OrderAggregate.Order>
+    public class Order_creates_from_event : AggregateTest<Domain.Aggregates.OrderAggregate.Order>
     {
         private OrderCreated _createdEvent;
 
         [OneTimeSetUp]
         public void Given_order_created()
         {
-            _createdEvent = new OrderCreated(Aggregate.Id, 123, Guid.NewGuid());
-            Aggregate.ApplyEvents(_createdEvent);
+            Init();
+        }
+
+        protected override IEnumerable<DomainEvent> Given()
+        {
+           yield return
+             _createdEvent = new OrderCreated(Aggregate.Id, 123, Guid.NewGuid());
         }
 
         [Test]

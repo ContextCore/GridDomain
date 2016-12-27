@@ -65,15 +65,36 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregates\AccountAggregate\Account.cs" />
+    <Compile Include="Aggregates\AccountAggregate\AccountCommandsHandler.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Commands\ChargeAccountCommand.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Commands\CreateAccountCommand.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Commands\PayForBillCommand.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Commands\ReplenishAccountByCardCommand.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Events\AccountAmountChanged.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Events\AccountReplenish.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Events\AccountCreatedEvent.cs" />
+    <Compile Include="Aggregates\AccountAggregate\Events\AccountWithdrawal.cs" />
+    <Compile Include="Aggregates\AccountAggregate\NegativeMoneyException.cs" />
+    <Compile Include="Aggregates\AccountAggregate\NotEnoughMoneyException.cs" />
     <Compile Include="Aggregates\GoodAggregate\Good.cs" />
+    <Compile Include="Aggregates\OrderAggregate\CannotCompleteAlreadyClosedOrderException.cs" />
+    <Compile Include="Aggregates\OrderAggregate\CantAddItemsToClosedOrder.cs" />
+    <Compile Include="Aggregates\OrderAggregate\Commands\AddItemToOrderCommand.cs" />
+    <Compile Include="Aggregates\OrderAggregate\Commands\CompleteOrderCommand.cs" />
     <Compile Include="Aggregates\OrderAggregate\Commands\CreateOrderCommand.cs" />
+    <Compile Include="Aggregates\OrderAggregate\Commands\OrderCommand.cs" />
     <Compile Include="Aggregates\OrderAggregate\Events\OrderCreated.cs" />
+    <Compile Include="Aggregates\OrderAggregate\InvalidMoneyException.cs" />
+    <Compile Include="Aggregates\OrderAggregate\InvalidQuantityException.cs" />
     <Compile Include="Aggregates\OrderAggregate\ItemAdded.cs" />
+    <Compile Include="Aggregates\OrderAggregate\NegativeOrderNumberException.cs" />
     <Compile Include="Aggregates\OrderAggregate\Order.cs" />
     <Compile Include="Aggregates\OrderAggregate\OrderCommandsHandler.cs" />
+    <Compile Include="Aggregates\OrderAggregate\OrderCompleted.cs" />
     <Compile Include="Aggregates\OrderAggregate\OrderItem.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CreateUserCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\UserCreated.cs" />
+    <Compile Include="Aggregates\UserAggregate\OrderStatus.cs" />
     <Compile Include="Aggregates\UserAggregate\User.cs" />
     <Compile Include="Aggregates\UserAggregate\UserCommandsHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,8 +128,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Aggregates\AccountAggregate\Commands\" />
-    <Folder Include="Aggregates\AccountAggregate\Events\" />
     <Folder Include="Aggregates\GoodAggregate\Commands\" />
     <Folder Include="Aggregates\GoodAggregate\Events\" />
     <Folder Include="Sagas\" />
