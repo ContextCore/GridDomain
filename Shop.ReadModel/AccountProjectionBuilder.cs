@@ -5,6 +5,7 @@ using Shop.ReadModel.Context;
 
 namespace Shop.ReadModel
 {
+
     public class AccountProjectionBuilder : IEventHandler<AccountCreated>,
                                             IEventHandler<AccountReplenish>,
                                             IEventHandler<AccountWithdrawal>

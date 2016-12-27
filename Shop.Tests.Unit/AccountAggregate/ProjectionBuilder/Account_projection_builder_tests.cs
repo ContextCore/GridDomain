@@ -12,13 +12,12 @@ using Shop.Tests.Unit.OrderAggregate.ProjectionBuilders;
 
 namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
 {
-
     [TestFixture]
-    public class Account_projection_builder_tests : Account_projection_builder_test
+    public class Account_projection_tests : Account_projection_builder_test
     {
         private AccountCreated _msg;
 
-        [Test]
+        [OneTimeSetUp]
         public void Given_account_created_and_projecting()
         {
             _msg = new AccountCreated(Guid.NewGuid(),Guid.NewGuid(),42);

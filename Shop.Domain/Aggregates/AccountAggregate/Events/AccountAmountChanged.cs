@@ -10,6 +10,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate.Events
         protected AccountAmountChanged(Guid sourceId, Guid changeId, Money amount) : base(sourceId)
         {
             Amount = amount;
+            ChangeId = changeId;
         }
 
         public Money Amount { get; }

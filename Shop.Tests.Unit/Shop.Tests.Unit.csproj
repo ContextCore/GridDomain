@@ -188,6 +188,7 @@
     <Compile Include="AccountAggregate\Aggregate\Account_replenish_tests.cs" />
     <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_tests.cs" />
+    <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_test.cs" />
