@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CommonDomain.Core;
 using GridDomain.Common;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -11,14 +10,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         private readonly Func<ICommand, TAggregate, TAggregate> _executor;
         private readonly Func<ICommand, Guid> _idLocator;
-        private readonly IUnityContainer _locator;
 
         protected AggregateCommandHandler(string name, 
                                         Func<ICommand, Guid> idLocator,
-                                        Func<ICommand, TAggregate, TAggregate> executor,
-                                        IUnityContainer locator)
+                                        Func<ICommand, TAggregate, TAggregate> executor)
         {
-            _locator = locator;
             _executor = executor;
             MachingProperty = name;
             _idLocator = idLocator;
@@ -28,7 +24,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-            Action<TCommand, TAggregate> commandExecutor, IUnityContainer container) where TCommand : ICommand
+            Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             return new AggregateCommandHandler<TAggregate>(MemberNameExtractor.GetName(idLocator),
                 c => idLocator.Compile()((TCommand) c),
@@ -36,15 +32,14 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
                 {
                     commandExecutor((TCommand)cmd, agr);
                     return agr;
-                },
-                container);
+                });
         }
 
         public static AggregateCommandHandler<TAggregate> New<TCommand>(Expression<Func<TCommand, Guid>> idLocator,
-            Func<TCommand, TAggregate> commandExecutor, IUnityContainer container)
+            Func<TCommand, TAggregate> commandExecutor)
         {
             return new AggregateCommandHandler<TAggregate>(MemberNameExtractor.GetName(idLocator),
-                c => idLocator.Compile()((TCommand) c), (cmd, agr) => commandExecutor((TCommand) cmd), container);
+                c => idLocator.Compile()((TCommand) c), (cmd, agr) => commandExecutor((TCommand) cmd));
         }
 
         public Guid GetId(ICommand command)

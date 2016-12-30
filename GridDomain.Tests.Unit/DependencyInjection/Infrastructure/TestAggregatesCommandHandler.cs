@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 
         //TODO: refactor to separate class
         public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler(null);
-        public TestAggregatesCommandHandler(IUnityContainer unityContainer) : base(unityContainer)
+        public TestAggregatesCommandHandler(IUnityContainer unityContainer) : base()
         {
             _locator = unityContainer;
             Map<TestCommand>(c => c.AggregateId,

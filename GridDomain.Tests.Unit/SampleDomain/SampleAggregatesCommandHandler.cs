@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.SampleDomain
     {
         //TODO: refactor to separate class
         public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new SampleAggregatesCommandHandler();
-        public SampleAggregatesCommandHandler() : base(null)
+        public SampleAggregatesCommandHandler() : base()
         {
             Map<ChangeSampleAggregateCommand>(c => c.AggregateId,
                                        (c, a) => a.ChangeState(c.Parameter));

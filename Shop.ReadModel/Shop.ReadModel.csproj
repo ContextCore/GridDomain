@@ -219,10 +219,12 @@
     <Compile Include="Context\Good.cs" />
     <Compile Include="Context\Order.cs" />
     <Compile Include="Context\OrderItem.cs" />
+    <Compile Include="Context\Sku.cs" />
     <Compile Include="Context\User.cs" />
     <Compile Include="OrdersProjectionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Context\ShopDbContext.cs" />
+    <Compile Include="SkuProjectionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
@@ -244,6 +246,10 @@
     <ProjectReference Include="..\Shop.Domain\Shop.Domain.csproj">
       <Project>{ee0b4c0c-7368-4316-8c95-410c91b3e683}</Project>
       <Name>Shop.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shop.Infrastructure\Shop.Infrastructure.csproj">
+      <Project>{DD89FF59-69D6-443D-BA52-669A41F62ADC}</Project>
+      <Name>Shop.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

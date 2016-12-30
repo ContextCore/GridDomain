@@ -5,7 +5,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 {
     public class AccountCommandsHandler : AggregateCommandsHandler<Account>
     {
-        public AccountCommandsHandler() : base(null)
+        public AccountCommandsHandler() : base()
         {
             Map<CreateAccountCommand>(cmd => cmd.AccountId,
                    cmd => new Account(cmd.AccountId, cmd.UserId, cmd.Number));

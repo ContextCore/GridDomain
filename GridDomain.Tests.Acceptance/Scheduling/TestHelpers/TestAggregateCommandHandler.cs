@@ -4,7 +4,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestAggregateCommandHandler : AggregateCommandsHandler<TestAggregate>
     {
-        public TestAggregateCommandHandler():base(null)
+        public TestAggregateCommandHandler():base()
         {
             Map<SuccessCommand>(cmd => cmd.Id, (cmd, agg) => agg.Success(cmd.Text));
             Map<TimeoutCommand>(cmd => cmd.Id, (cmd, agg) => agg.LongTime(cmd.Text, cmd.Timeout));

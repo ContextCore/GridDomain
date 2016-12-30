@@ -13,12 +13,23 @@ namespace GridDomain.Tests.Framework
 {
     public class AggregateCommandsTest<TAggregate, THandler>: AggregateTest<TAggregate>
         where TAggregate : IAggregate
-        where THandler: IAggregateCommandsHandler<TAggregate>, new()
+        where THandler: class, IAggregateCommandsHandler<TAggregate>
     {
-        protected readonly THandler CommandsHandler = new THandler();
+        protected THandler CommandsHandler { get; private set; }
+
+        protected virtual THandler CreateCommandsHandler()
+        {
+            var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
+            if (constructorInfo == null)
+                throw new CannotCreateCommandHandlerExcpetion();
+
+            return (THandler) constructorInfo.Invoke(null);
+        }
 
         protected DomainEvent[] ExecuteCommand(ICommand command)
         {
+            CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
+
             Aggregate = CommandsHandler.Execute(Aggregate, command);
             return ProducedEvents = Aggregate.GetUncommittedEvents()
                                              .Cast<DomainEvent>()
@@ -63,5 +74,9 @@ namespace GridDomain.Tests.Framework
         {
             return Enumerable.Empty<DomainEvent>();
         }
+    }
+
+    public class CannotCreateCommandHandlerExcpetion : Exception
+    {
     }
 }

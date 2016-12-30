@@ -32,6 +32,11 @@ namespace Shop.ReadModel.Context
                                                      .UseSqlServerIdentityColumn();
 
             modelBuilder.Entity<Good>().HasIndex(o =>  o.Name);
+
+            modelBuilder.Entity<Sku>().HasKey(o =>  o.Id);
+            modelBuilder.Entity<Sku>().HasIndex(o =>  o.Number);
+            modelBuilder.Entity<Sku>().HasIndex(o =>  o.Article);
+            modelBuilder.Entity<Sku>().HasIndex(o =>  o.Name);
         }
 
         public DbSet<Order> Orders { get; set; }
@@ -40,5 +45,6 @@ namespace Shop.ReadModel.Context
         public DbSet<Good> Goods { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountTransaction> TransactionHistory { get; set; }
+        public DbSet<Sku> Skus { get; set; }
     }
 }
