@@ -26,17 +26,19 @@ namespace GridDomain.Tests.Framework
             return (THandler) constructorInfo.Invoke(null);
         }
 
-        protected DomainEvent[] ExecuteCommand(ICommand command)
+        protected DomainEvent[] ExecuteCommand(params ICommand[] command)
         {
             CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
 
-            Aggregate = CommandsHandler.Execute(Aggregate, command);
+            foreach(var cmd in command)
+                Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+
             return ProducedEvents = Aggregate.GetUncommittedEvents()
                                              .Cast<DomainEvent>()
                                              .ToArray();
         }
 
-        protected void Execute(ICommand command)
+        protected void Execute(params ICommand[] command)
         {
             ExpectedEvents = Expected().ToArray();
             var events = ExecuteCommand(command);
@@ -58,10 +60,11 @@ namespace GridDomain.Tests.Framework
             }
             builder.AppendLine();
         }
-        protected string CollectDebugInfo(ICommand command)
+        protected string CollectDebugInfo(params ICommand[] commands)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Command: {command.ToPropsString()}");
+            foreach(var cmd in commands)
+                sb.AppendLine($"Command: {cmd.ToPropsString()}");
 
             AddEventInfo("Given events",    GivenEvents, sb);
             AddEventInfo("Produced events", ProducedEvents, sb);

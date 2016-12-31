@@ -203,6 +203,9 @@
     <Compile Include="SkuAggregate\Aggregate\Sku_creation_tests.cs" />
     <Compile Include="SkuAggregate\ProjectionBuilder\SkuProjectionBuilderTests.cs" />
     <Compile Include="SkuAggregate\ProjectionBuilder\Sku_created_projection_tests.cs" />
+    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_replenishment_tests.cs" />
+    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_successfull_creation_tests.cs" />
+    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_negative_creation_tests.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -244,7 +247,9 @@
       <Name>Shop.ReadModel</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SkuStockAggregate\ProjectionBuilder\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

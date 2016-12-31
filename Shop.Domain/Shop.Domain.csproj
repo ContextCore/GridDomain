@@ -78,6 +78,10 @@
     <Compile Include="Aggregates\AccountAggregate\NotEnoughMoneyException.cs" />
     <Compile Include="Aggregates\SkuAggregate\Commands\CreateNewSkuCommand.cs" />
     <Compile Include="Aggregates\SkuAggregate\SkuCommandHandler.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\AddToStockCommand.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\CreateSkuStockCommand.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\InvalidSkuAddException.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\SkuStockCommandsHandler.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\SkuStockCreated.cs" />
     <Compile Include="Aggregates\SkuAggregate\Sku.cs" />
     <Compile Include="Aggregates\SkuAggregate\Events\SkuCreated.cs" />
@@ -97,6 +101,7 @@
     <Compile Include="Aggregates\OrderAggregate\OrderCommandsHandler.cs" />
     <Compile Include="Aggregates\OrderAggregate\OrderCompleted.cs" />
     <Compile Include="Aggregates\OrderAggregate\OrderItem.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\StockAdded.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CreateUserCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\UserCreated.cs" />
     <Compile Include="Aggregates\UserAggregate\OrderStatus.cs" />
