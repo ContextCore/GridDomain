@@ -3,17 +3,17 @@ using Serilog;
 
 namespace GridDomain.Logging
 {
-    public class SerilogLogger : ISoloLogger
+    public class SerilogLogger : ILogger
     {
-        private ILogger _log;
+        private Serilog.ILogger _log;
         
       
-        public SerilogLogger(ILogger log)
+        public SerilogLogger(Serilog.ILogger log)
         {
             _log = log;
         }
 
-        public ISoloLogger ForContext(string name, object value)
+        public ILogger ForContext(string name, object value)
         {
             _log =_log.ForContext(name, value);
             return this;

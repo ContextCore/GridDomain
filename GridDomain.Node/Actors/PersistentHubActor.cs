@@ -21,7 +21,7 @@ namespace GridDomain.Node.Actors
         //TODO: replace with more efficient implementation
         internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
-        protected readonly ISoloLogger Logger = LogManager.GetLogger();
+        protected readonly ILogger Logger = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
 
         protected abstract string GetChildActorName(object message);

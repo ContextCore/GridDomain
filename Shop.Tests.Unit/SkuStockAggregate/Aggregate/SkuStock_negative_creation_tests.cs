@@ -2,6 +2,7 @@
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.SkuStockAggregate;
+using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 
 namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
@@ -12,7 +13,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void When_creating_stock_with_negative_number_error_is_raised()
         {
             Init();
-            var command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), -10, "test batch");
+            var command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), -10, "test batch",TimeSpan.FromDays(1));
             Assert.Throws<ArgumentException>( () => Execute(command));
         }
     }

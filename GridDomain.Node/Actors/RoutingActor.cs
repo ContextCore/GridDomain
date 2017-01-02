@@ -19,7 +19,7 @@ namespace GridDomain.Node.Actors
                                                      IHandler<CreateActorRouteMessage>
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
-        protected readonly ISoloLogger Log = LogManager.GetLogger();
+        protected readonly ILogger Log = LogManager.GetLogger();
         private readonly IActorSubscriber _subscriber;
         private readonly ActorMonitor _monitor;
 

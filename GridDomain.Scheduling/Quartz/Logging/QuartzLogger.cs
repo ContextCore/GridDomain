@@ -6,7 +6,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class QuartzLogger : IQuartzLogger
     {
-        private readonly ISoloLogger _coreLogger;
+        private readonly ILogger _coreLogger;
 
         public QuartzLogger()
         {

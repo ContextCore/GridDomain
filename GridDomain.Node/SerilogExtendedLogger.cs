@@ -8,7 +8,7 @@ namespace GridDomain.Node
 {
     public class SerilogExtendedLogger : ReceiveActor
     {
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogExtendedLogger"/> class.
         /// </summary>
@@ -26,13 +26,13 @@ namespace GridDomain.Node
             });
         }
 
-        private void WithSerilog(Action<ISoloLogger> logStatement)
+        private void WithSerilog(Action<ILogger> logStatement)
         {
             logStatement(_log.ForContext("SourceContext", Context.Sender.Path));
         }
 
 
-        private ISoloLogger SetContextFromLogEvent(ISoloLogger logger, LogEvent logEvent)
+        private ILogger SetContextFromLogEvent(ILogger logger, LogEvent logEvent)
         {
             return logger;
         }

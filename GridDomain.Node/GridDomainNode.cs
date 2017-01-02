@@ -41,7 +41,7 @@ namespace GridDomain.Node
             {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
 
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
         private readonly IMessageRouteMap _messageRouting;
         private TransportMode _transportMode;
         public ActorSystem[] Systems;

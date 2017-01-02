@@ -11,7 +11,7 @@ namespace GridDomain.Node.Actors
     public class MessageHandlingActor<TMessage, THandler> : TypedActor where THandler : IHandler<TMessage>
     {
         private readonly THandler _handler;
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
         private readonly IPublisher _publisher;
 

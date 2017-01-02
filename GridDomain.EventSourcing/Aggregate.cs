@@ -109,9 +109,9 @@ namespace GridDomain.EventSourcing
             RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
         }
 
-        protected void RaiseEvent(DateTime raiseTime, DomainEvent @event)
+        protected void RaiseEvent(DateTime raiseTime, DomainEvent @event, Guid? futureEventId = null)
         {
-            RaiseEvent(new FutureEventScheduledEvent(Guid.NewGuid(), Id, raiseTime, @event));
+            RaiseEvent(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent : DomainEvent

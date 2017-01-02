@@ -1,12 +1,13 @@
 using Akka.Remote.Transport;
 using GridDomain.Logging;
 using Serilog;
+using ILogger = GridDomain.Logging.ILogger;
 
 namespace GridDomain.Tests.Framework
 {
     public class AutoTestLogFactory : LoggerFactory
     {
-        public override ISoloLogger GetLogger(string className = null)
+        public override ILogger GetLogger(string className = null)
         {
             className = className ?? GetClassName();
             return new SerilogLogger(GetConfiguration().CreateLogger()).ForContext("className", className);

@@ -9,6 +9,8 @@ using GridDomain.Tests.Framework;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.SkuAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate;
+using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
+using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 
 namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
@@ -21,7 +23,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void When_creating_stock()
         {
             Init();
-            _command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), 10, "test batch");
+            _command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), 10, "test batch",TimeSpan.FromMinutes(1));
             Execute(_command);
         }
 
@@ -39,7 +41,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new SkuStockCreated(Aggregate.Id, _command.SkuId, _command.Quantity);
+            yield return new SkuStockCreated(Aggregate.Id, _command.SkuId, _command.Quantity, _command.ReserveTime);
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace Shop.Domain.Aggregates.SkuStockAggregate
+namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
 {
     public class AddToStockCommand : Command
     {

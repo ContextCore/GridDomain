@@ -11,7 +11,7 @@ namespace GridDomain.Scheduling.Integration
     public class SchedulingActor : ReceiveActor
     {
         private readonly IScheduler _scheduler;
-        private readonly ISoloLogger _logger = LogManager.GetLogger();
+        private readonly ILogger _logger = LogManager.GetLogger();
         public SchedulingActor(IScheduler scheduler)
         {
             _logger.Debug("Scheduling actor started at path {Path}",Self.Path);

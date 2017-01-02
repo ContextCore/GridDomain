@@ -30,7 +30,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                                                                 .GetMethods()
                                                                 .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
 
-        private static readonly ISoloLogger Log = LogManager.GetLogger();
+        private static readonly ILogger Log = LogManager.GetLogger();
         
         private List<ICommand> _commandsToDispatch = new List<ICommand>();
         public IReadOnlyCollection<ICommand> CommandsToDispatch => _commandsToDispatch;

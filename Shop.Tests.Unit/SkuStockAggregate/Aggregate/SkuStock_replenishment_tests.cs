@@ -4,6 +4,8 @@ using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.SkuStockAggregate;
+using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
+using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 
 namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
@@ -16,7 +18,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new SkuStockCreated(Aggregate.Id,  _skuId,50);
+            yield return new SkuStockCreated(Aggregate.Id,  _skuId,50,TimeSpan.FromMilliseconds(100));
             yield return new StockAdded(Aggregate.Id, 10,"test batch 2");
         }
 
@@ -38,6 +40,21 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void Aggregate_quantity_should_be_increased_by_command_amount()
         {
             Assert.AreEqual(_command.Quantity + _initialStock, Aggregate.Quantity);
+        }
+
+        [Test]
+        public void When_add_negative_amount_should_throw_exception()
+        {
+            var command = new AddToStockCommand(Aggregate.Id, _skuId, -10, "test batch");
+
+            Assert.Throws<ArgumentException>(() => Execute(command));
+        }
+        [Test]
+        public void When_add_sku_not_belonging_to_stock_should_throw_exception()
+        {
+            var command = new AddToStockCommand(Aggregate.Id, Guid.NewGuid(), 10, "test batch");
+
+            Assert.Throws<InvalidSkuAddException>(() => Execute(command));
         }
     }
 }

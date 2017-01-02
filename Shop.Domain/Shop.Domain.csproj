@@ -78,11 +78,14 @@
     <Compile Include="Aggregates\AccountAggregate\NotEnoughMoneyException.cs" />
     <Compile Include="Aggregates\SkuAggregate\Commands\CreateNewSkuCommand.cs" />
     <Compile Include="Aggregates\SkuAggregate\SkuCommandHandler.cs" />
-    <Compile Include="Aggregates\SkuStockAggregate\AddToStockCommand.cs" />
-    <Compile Include="Aggregates\SkuStockAggregate\CreateSkuStockCommand.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Commands\AddToStockCommand.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Commands\CreateSkuStockCommand.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\InvalidSkuAddException.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\OutOfStockException.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\ReserveExpired.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Commands\ReserveStockCommand.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\SkuStockCommandsHandler.cs" />
-    <Compile Include="Aggregates\SkuStockAggregate\SkuStockCreated.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\SkuStockCreated.cs" />
     <Compile Include="Aggregates\SkuAggregate\Sku.cs" />
     <Compile Include="Aggregates\SkuAggregate\Events\SkuCreated.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\SkuStock.cs" />
@@ -101,7 +104,12 @@
     <Compile Include="Aggregates\OrderAggregate\OrderCommandsHandler.cs" />
     <Compile Include="Aggregates\OrderAggregate\OrderCompleted.cs" />
     <Compile Include="Aggregates\OrderAggregate\OrderItem.cs" />
-    <Compile Include="Aggregates\SkuStockAggregate\StockAdded.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\StockAdded.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\StockReserved.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\StockReserveTaken.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\StockTaken.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Commands\TakeFromStockCommand.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Commands\TakeReservedStockCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CreateUserCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\UserCreated.cs" />
     <Compile Include="Aggregates\UserAggregate\OrderStatus.cs" />
@@ -113,6 +121,10 @@
     <Content Include="Scenarious.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
@@ -128,6 +140,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>

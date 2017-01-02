@@ -13,7 +13,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
             this._retryStrategy = retryStrategy;
         }
         public override string Name => "Retry";
-        private ISoloLogger _logger = LogManager.GetLogger();
+        private ILogger _logger = LogManager.GetLogger();
 
         public override void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {

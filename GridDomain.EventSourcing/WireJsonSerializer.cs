@@ -49,7 +49,7 @@ namespace GridDomain.EventSourcing
             JsonSerializerSettings = settings ?? DomainSerializer.GetDefaultSettings();
             UseWire = useWire;
         }
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
         public bool UseWire { get; set; }
 
         // <summary>

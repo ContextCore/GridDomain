@@ -9,7 +9,7 @@ namespace GridDomain.CQRS.Messaging.Akka
 {
     public class DistributedPubSubTransport : IActorTransport
     {
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
         private readonly IActorRef _transport;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
 

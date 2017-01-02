@@ -20,7 +20,7 @@ namespace GridDomain.Node.Actors
     {
         private readonly T _group;
         private readonly IPublisher _publisher;
-        private ISoloLogger _log = LogManager.GetLogger();
+        private ILogger _log = LogManager.GetLogger();
 
         public SynchronizationProcessingActor(T group, IPublisher publisher)
         {

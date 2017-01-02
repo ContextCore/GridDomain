@@ -5,7 +5,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class LoggingJobListener : ILoggingJobListener
     {
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
 
         public string Name => GetType().Name;
 

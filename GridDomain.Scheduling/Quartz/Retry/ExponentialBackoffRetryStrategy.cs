@@ -8,7 +8,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
     {
         private const string Retries = "Retries";
         private readonly IRetrySettings _settings;
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
 
         public ExponentialBackoffRetryStrategy(IRetrySettings settings)
         {

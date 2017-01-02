@@ -1,8 +1,9 @@
 using System;
+using GridDomain.EventSourcing;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate
 {
-    public class InvalidSkuAddException : Exception
+    public class InvalidSkuAddException : DomainException
     {
         public Guid ExpectedSku { get; }
         public Guid ReceivedSku { get;}

@@ -2,9 +2,9 @@ using System;
 
 namespace GridDomain.Logging
 {
-    public interface ISoloLogger
+    public interface ILogger
     {
-        ISoloLogger ForContext(string name, object value);
+        ILogger ForContext(string name, object value);
         void Trace(string message, params object[] parameters);
         void Debug(string message, params object[] parameters);
         void Info(string message, params object[] parameters);

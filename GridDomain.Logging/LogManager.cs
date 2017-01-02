@@ -8,7 +8,7 @@
             _loggerFactory = loggerFactory;
         }
 
-        public static ISoloLogger GetLogger(LoggerFactory factory = null)
+        public static ILogger GetLogger(LoggerFactory factory = null)
         {
             return factory != null ? factory.GetLogger() : _loggerFactory.GetLogger();
         }

@@ -38,7 +38,7 @@ namespace GridDomain.Node
 
         }
         protected override string ByPersistenceIdSql { get; }
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = LogManager.GetLogger();
 
         private async Task RetryAsync(Func<Task> act, int maxCount = 3) 
         {

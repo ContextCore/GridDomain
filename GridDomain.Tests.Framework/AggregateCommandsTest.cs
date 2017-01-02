@@ -11,6 +11,23 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Framework
 {
+
+    //
+    // var Aggregate = Scenario.New()
+    //                          .Given(new evt1,
+    //                                 new evt2)
+    //                          .When(cmd1, cmd2)
+    //                          .Then(new evt1, evt2)
+    //
+    //
+
+    public class ScenarioBuilder
+    {
+        
+    }
+
+
+
     public class AggregateCommandsTest<TAggregate, THandler>: AggregateTest<TAggregate>
         where TAggregate : IAggregate
         where THandler: class, IAggregateCommandsHandler<TAggregate>
@@ -21,7 +38,7 @@ namespace GridDomain.Tests.Framework
         {
             var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
             if (constructorInfo == null)
-                throw new CannotCreateCommandHandlerExcpetion();
+                throw new CannotCreateCommandHandlerExeption();
 
             return (THandler) constructorInfo.Invoke(null);
         }
@@ -44,6 +61,28 @@ namespace GridDomain.Tests.Framework
             var events = ExecuteCommand(command);
             Console.WriteLine(CollectDebugInfo(command));
             EventsExtensions.CompareEvents(ExpectedEvents,events);
+        }
+
+        protected void RunScenario(IEnumerable<DomainEvent> given, 
+                                   IEnumerable<DomainEvent> expected, 
+                                   params ICommand[] command)
+        {
+            CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
+
+            Aggregate = (TAggregate)aggregateFactory.Build(typeof(TAggregate), Guid.NewGuid(), null);
+
+            GivenEvents = given.ToArray();
+            Aggregate.ApplyEvents(GivenEvents);
+
+            foreach (var cmd in command)
+                Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+
+            ProducedEvents = Aggregate.GetUncommittedEvents()
+                                      .Cast<DomainEvent>()
+                                      .ToArray();
+
+            Console.WriteLine(CollectDebugInfo(command));
+            EventsExtensions.CompareEvents(expected.ToArray(), ProducedEvents);
         }
 
         protected DomainEvent[] ExpectedEvents { get; private set; }
@@ -79,7 +118,7 @@ namespace GridDomain.Tests.Framework
         }
     }
 
-    public class CannotCreateCommandHandlerExcpetion : Exception
+    public class CannotCreateCommandHandlerExeption : Exception
     {
     }
 }

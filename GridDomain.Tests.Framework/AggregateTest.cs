@@ -19,8 +19,8 @@ namespace GridDomain.Tests.Framework
         }
 
         protected static Fixture Data { get; } = new Fixture();
-        private readonly AggregateFactory aggregateFactory = new AggregateFactory();
-        protected DomainEvent[] GivenEvents { get; private set; }
+        protected readonly AggregateFactory aggregateFactory = new AggregateFactory();
+        protected DomainEvent[] GivenEvents { get; set; }
 
         protected virtual void Init()
         {

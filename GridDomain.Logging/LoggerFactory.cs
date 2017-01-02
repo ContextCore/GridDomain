@@ -4,7 +4,7 @@ namespace GridDomain.Logging
 {
     public abstract class LoggerFactory
     {
-        public abstract ISoloLogger GetLogger(string className = null);
+        public abstract ILogger GetLogger(string className = null);
         protected string GetClassName()
         {
             StackFrame frame = new StackFrame(3, false);

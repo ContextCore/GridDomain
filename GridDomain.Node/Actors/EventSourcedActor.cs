@@ -18,7 +18,7 @@ namespace GridDomain.Node.Actors
         protected Guid Id { get; }
         protected readonly ISnapshotsPersistencePolicy SnapshotsPolicy;
         protected readonly ActorMonitor Monitor;
-        protected readonly ISoloLogger _log = LogManager.GetLogger();
+        protected readonly ILogger _log = LogManager.GetLogger();
         protected readonly IPublisher Publisher;
         private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }
