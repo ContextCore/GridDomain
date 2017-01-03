@@ -1,3 +1,4 @@
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 
@@ -21,6 +22,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
 
             Map<TakeReservedStockCommand>(c => c.StockId,
                 (c, a) => a.Take(c.ReserveId));
+
+            this.MapFutureEvents();
         }
     }
 }

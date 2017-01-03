@@ -26,10 +26,10 @@ namespace GridDomain.Tests.Framework
         protected TCommandsHandler CommandsHandler { get; }
         public TAggregate Aggregate { get; private set; }
 
-        protected DomainEvent[] ExpectedEvents { get; private set; }
-        protected DomainEvent[] ProducedEvents { get; private set; }
-        protected DomainEvent[] GivenEvents { get; private set; }
-        protected Command[]   GivenCommands { get; private set; }
+        protected DomainEvent[] ExpectedEvents { get; private set; } = {};
+        protected DomainEvent[] ProducedEvents { get; private set; } = {};
+        protected DomainEvent[] GivenEvents { get; private set; } = {};
+        protected Command[]   GivenCommands { get; private set; } = {};
 
         private void AddEventInfo(string message, IEnumerable<DomainEvent> ev, StringBuilder builder)
         {
@@ -38,8 +38,8 @@ namespace GridDomain.Tests.Framework
             builder.AppendLine();
             foreach (var e in ev)
             {
-                builder.AppendLine($"Event:{e.GetType().Name} : ");
-                builder.AppendLine(e.ToPropsString());
+                builder.AppendLine($"Event:{e?.GetType().Name} : ");
+                builder.AppendLine(e?.ToPropsString());
             }
             builder.AppendLine();
         }
