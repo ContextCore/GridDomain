@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
             _aggregate.ScheduleInFuture(_testCommand.RaiseTime, _testCommand.Value);
 
             _futureEventEnvelop = _aggregate.GetEvent<FutureEventScheduledEvent>();
-            _aggregate.RaiseScheduledEvent(_futureEventEnvelop.Id);
+            _aggregate.RaiseScheduledEvent(_futureEventEnvelop.Id, Guid.NewGuid());
             _producedEvent = _aggregate.GetEvent<TestDomainEvent>();
             _futureEventOccuredEvent = _aggregate.GetEvent<FutureEventOccuredEvent>();
         }

@@ -145,6 +145,7 @@
   <ItemGroup>
     <Compile Include="AggregateCommandsTest.cs" />
     <Compile Include="AggregateDebugExtensions.cs" />
+    <Compile Include="Any.cs" />
     <Compile Include="AnyMessageExpectBuilder.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="AutoFix.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="AggregateTest.cs" />
+    <Compile Include="GuidComparer.cs" />
     <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />

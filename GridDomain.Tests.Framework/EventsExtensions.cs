@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using GridDomain.EventSourcing;
 using KellermanSoftware.CompareNetObjects;
+using KellermanSoftware.CompareNetObjects.TypeComparers;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Framework
@@ -18,6 +19,7 @@ namespace GridDomain.Tests.Framework
                 nameof(DomainEvent.CreatedTime),
                 nameof(DomainEvent.SagaId)
             }.ToList(),
+            CustomComparers = new List<BaseTypeComparer>() { new GuidComparer(RootComparerFactory.GetRootComparer()) },
             DoublePrecision = 0.0001
         };
 
@@ -30,7 +32,7 @@ namespace GridDomain.Tests.Framework
                                          IEnumerable<DomainEvent> published,
                                          CompareLogic logic = null)
         {
-            CompareEventsByLogic(expected, published, logic ?? new CompareLogic {Config = DateCreatedAndSagaId_IgnoreConfig});
+            CompareEventsByLogic(expected, published, logic ?? new CompareLogic(DateCreatedAndSagaId_IgnoreConfig));
         }
 
         private static void CompareEventsByLogic(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2,

@@ -34,8 +34,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 
             _reserveStockCommand = new ReserveStockCommand(aggregateId,
                                                            Guid.NewGuid(), 
-                                                           10, 
-                                                           Guid.NewGuid(),
+                                                           10,
                                                            reservationStartTime);
 
             _expirationDate = reservationStartTime + _reserveTime;
@@ -50,7 +49,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario.Aggregate.Reservations.TryGetValue(_reserveStockCommand.CustomerId, out _aggregateReserve);
 
             if(_aggregateReserve != null)
-            _scenario.Aggregate.FutureEvents.TryGetValue(_aggregateReserve.Id, out _reserveExpirationFutureEvent);
+                _reserveExpirationFutureEvent = _scenario.Aggregate.FutureEvents.Values.FirstOrDefault();
             _reserveExpiredEvent = _reserveExpirationFutureEvent?.Event as ReserveExpired;
         }
 
@@ -59,14 +58,13 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         {
             _scenario.Then(new StockReserved(_reserveStockCommand.StockId,
                                              _reserveStockCommand.CustomerId,
-                                             _reserveStockCommand.ReservationId,
                                              _expirationDate,
                                              _reserveStockCommand.Quantity),
-                           new FutureEventScheduledEvent(_reserveStockCommand.ReservationId,
+                           new FutureEventScheduledEvent(Any.GUID, 
                                                          _scenario.Aggregate.Id,
                                                          _expirationDate,
                                                          new ReserveExpired(_scenario.Aggregate.Id,
-                                                                             _reserveStockCommand.ReservationId)));
+                                                                             _reserveStockCommand.CustomerId)));
             _scenario.Check();
         }
 
@@ -95,12 +93,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         }
 
         [Test]
-        public void Reserve_expiration_future_event_should_have_reservation_id()
-        {
-            Assert.AreEqual(_aggregateReserve.Id,_reserveExpirationFutureEvent.Id);
-        }
-
-        [Test]
         public void Reserve_expiration_future_event_should_have_reservation_expiration_date()
         {
             Assert.AreEqual(_aggregateReserve.ExpirationDate, _reserveExpirationFutureEvent.RaiseTime);
@@ -115,13 +107,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         [Test]
         public void Reserve_expiration_event_should_have_reserve_id()
         {
-            Assert.AreEqual(_aggregateReserve.Id,_reserveExpiredEvent?.ReserveId);
-        }
-
-        [Test]
-        public void Then_aggregate_reservation_for_stock_should_have_correct_id_date()
-        {
-            Assert.AreEqual(_reserveStockCommand.ReservationId, _aggregateReserve.Id);
+            Assert.AreEqual(_reserveStockCommand.CustomerId,_reserveExpiredEvent?.CustomerId);
         }
 
         [Test]

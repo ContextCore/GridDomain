@@ -99,27 +99,28 @@ namespace GridDomain.EventSourcing
             Register<FutureEventCanceledEvent>(Apply);
         }
 
-        public void RaiseScheduledEvent(Guid futureEventId)
+        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent e;
             if (!FutureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
             RaiseEvent(e.Event);
-            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
+            RaiseEvent(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
         }
 
-        protected void RaiseEvent(DateTime raiseTime, DomainEvent @event, Guid? futureEventId = null)
+        protected void RaiseEvent(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
             RaiseEvent(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent : DomainEvent
+        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
-            var eventsToCancel = FutureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
+            var eventsToCancel = FutureEvents.Values.Where(fe => (fe.Event is TEvent));
+            if (criteia != null)
+                eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            var cancelEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id));
-            foreach (var e in cancelEvents)
+            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
                 RaiseEvent(e);
         }
 

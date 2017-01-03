@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
         [Then]
         public void All_existed_future_events_remain_the_same()
         {
-            _aggregate.RaiseScheduledEvent(_futureEvent.Id);
+            _aggregate.RaiseScheduledEvent(_futureEvent.Id, Guid.NewGuid());
             var occuredEvent = _aggregate.GetEvent<FutureEventOccuredEvent>();
             Assert.AreEqual(_futureEvent.Id, occuredEvent.FutureEventId);
         }

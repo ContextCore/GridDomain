@@ -16,11 +16,11 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         private DateTime _expirationDate;
         private ReserveStockCommand _reserveStockCommand;
         private StockReserved _stockReservedEvent;
+
         [SetUp]
         public void Given_sku_stock_with_amount_and_reserve_When_renew_reserve()
         {
             Guid aggregateId = Guid.NewGuid();
-            var reservationId = Guid.NewGuid();
             var customerId = Guid.NewGuid();
             var reservationStartTime = BusinessDateTime.Now;
             var reserveTime = TimeSpan.FromMilliseconds(100);
@@ -30,16 +30,16 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
                                 .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, reserveTime),
                                        new StockAdded(aggregateId, 10, "test batch 2"),
                                        _stockReservedEvent = 
-                                       new StockReserved(aggregateId, customerId, reservationId, _expirationDate, 5),
-                                       new FutureEventScheduledEvent(reservationId,
+                                       new StockReserved(aggregateId, customerId, _expirationDate, 5),
+                                       new FutureEventScheduledEvent(Guid.NewGuid(),
                                                                      aggregateId,
                                                                      _expirationDate,
-                                                                     new ReserveExpired(aggregateId,reservationId)))
+                                                                     new ReserveExpired(aggregateId, customerId)))
+
                                 .When(_reserveStockCommand = new ReserveStockCommand(aggregateId,
-                                                              customerId,
-                                                              10,
-                                                              Guid.NewGuid(),
-                                                              reservationStartTime)
+                                                                                     customerId,
+                                                                                     10,
+                                                                                     reservationStartTime)
                                       );
 
             _scenario.Run();
@@ -49,24 +49,22 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
        public void Then_correct_events_should_be_raised()
         { 
            var customerId = _stockReservedEvent.ClientId;
-           var oldReserveId = _stockReservedEvent.ReservationId;
-           var newReserveId = _reserveStockCommand.ReservationId;
+      
            var sourceId = _scenario.Aggregate.Id;
 
-           _scenario.Then(new FutureEventCanceledEvent(oldReserveId, sourceId),
+           _scenario.Then(new FutureEventCanceledEvent(Any.GUID, sourceId),
                           new ReserveRenewed(sourceId,
-                                             customerId,
-                                             oldReserveId,
-                                             newReserveId),
+                                             customerId),
+
                           new StockReserved(sourceId,
                                             customerId,
-                                            newReserveId,
                                             _expirationDate,
                                             _reserveStockCommand.Quantity + _stockReservedEvent.Quantity),
-                          new FutureEventScheduledEvent(newReserveId,
+
+                          new FutureEventScheduledEvent(Any.GUID,
                                                         sourceId,
                                                         _expirationDate,
-                                                        new ReserveExpired(sourceId,newReserveId)));
+                                                        new ReserveExpired(sourceId,customerId)));
                                             
            _scenario.Check();
        }
@@ -98,12 +96,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void Then_aggregate_reservation_quantity_is_sum_of_initial_and_new_reservations()
         {
             Assert.AreEqual(_reserveStockCommand.Quantity + _stockReservedEvent.Quantity, NewReservation.Quantity);
-        }
-
-        [Test]
-        public void Then_aggregate_reservation_id_should_change()
-        {
-            Assert.AreEqual(_reserveStockCommand.ReservationId, NewReservation.Id);
         }
     }
 }

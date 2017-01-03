@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
         public void Canceled_event_cannot_be_raised()
         {
             _aggregate.ClearEvents();
-            Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(_futureEventA.Id));
+            Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(_futureEventA.Id,Guid.NewGuid()));
             var anyEvents = _aggregate.GetEvents<DomainEvent>();
             CollectionAssert.IsEmpty(anyEvents);
         }

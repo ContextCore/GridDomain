@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         [Then]
         public void Then_raising_event_with_wrong_id_throws_an_error()
         {
-            Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(Guid.NewGuid()));
+            Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid()));
         }
 
         [Then]
@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
             try
             {
-                _aggregate.RaiseScheduledEvent(Guid.NewGuid());
+                _aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid());
             }
             catch
             {

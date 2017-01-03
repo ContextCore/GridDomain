@@ -15,15 +15,15 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public void ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            RaiseEvent(raiseTime, new TestDomainEvent(testValue,Id));
+            RaiseEvent(new TestDomainEvent(testValue,Id), raiseTime);
         }
         public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
             if (RetriesToSucceed == 0)
-                RaiseEvent(raiseTime, new TestDomainEvent(testValue, Id));
+                RaiseEvent(new TestDomainEvent(testValue, Id), raiseTime);
             else
             {
-                RaiseEvent(raiseTime, new TestErrorDomainEvent(testValue, Id, succedOnRetryNum));
+                RaiseEvent(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
             }
         }
 
