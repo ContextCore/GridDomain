@@ -47,9 +47,10 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void Then_stock_reserved_event_should_be_raised()
         {
             _scenario.Then(new StockReserved(_reserveStockCommand.StockId,
-                _reserveStockCommand.ReservationId,
-                _expirationDate,
-                _reserveStockCommand.Quantity));
+                                             _reserveStockCommand.CustomerId,
+                                             _reserveStockCommand.ReservationId,
+                                             _expirationDate,
+                                             _reserveStockCommand.Quantity));
             _scenario.Check();
         }
 

@@ -47,7 +47,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
                                 
             _initialStock = _scenario.Aggregate.Quantity;
             _scenario.Run();
-            _scenario.Aggregate.Reservations.TryGetValue(_reserveStockCommand.ReservationId, out _aggregateReserve);
+            _scenario.Aggregate.Reservations.TryGetValue(_reserveStockCommand.CustomerId, out _aggregateReserve);
 
             if(_aggregateReserve != null)
             _scenario.Aggregate.FutureEvents.TryGetValue(_aggregateReserve.Id, out _reserveExpirationFutureEvent);
@@ -58,6 +58,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void Then_stock_reserved_event_should_be_raised()
         {
             _scenario.Then(new StockReserved(_reserveStockCommand.StockId,
+                                             _reserveStockCommand.CustomerId,
                                              _reserveStockCommand.ReservationId,
                                              _expirationDate,
                                              _reserveStockCommand.Quantity),

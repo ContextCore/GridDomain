@@ -32,7 +32,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             Apply<StockAdded>(e => Quantity += e.Quantity);
             Apply<StockReserved>(e =>
             {
-                Reservations[e.ReservationId] = new Reservation(e.ReservationId, e.Quantity, e.ExpirationDate);
+                Reservations[e.ClientId] = new Reservation(e.ReservationId, e.Quantity, e.ExpirationDate);
                 Quantity -= e.Quantity;
             });
             Apply<ReserveExpired>(e => CancelReservation(e.ReserveId));
@@ -93,10 +93,10 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             if (Reservations.TryGetValue(clientId, out oldReservation))
             {
                 quantityToReserve += oldReservation.Quantity;
-                RaiseEvent(new ReserveRenewed(Id, oldReservation.Id, newReserveId));
+                RaiseEvent(new ReserveRenewed(Id, clientId, oldReservation.Id, newReserveId));
             }
 
-            RaiseEvent(new StockReserved(Id, newReserveId, expirationDate, quantityToReserve));
+            RaiseEvent(new StockReserved(Id, clientId, newReserveId, expirationDate, quantityToReserve));
             RaiseEvent(expirationDate, new ReserveExpired(Id, newReserveId),newReserveId);
         }
 
