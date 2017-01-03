@@ -84,6 +84,9 @@
     <Compile Include="Aggregates\SkuStockAggregate\OutOfStockException.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\Events\ReserveExpired.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\Commands\ReserveStockCommand.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Reservation.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\ReserveCanceled.cs" />
+    <Compile Include="Aggregates\SkuStockAggregate\Events\ReserveRenewed.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\SkuStockCommandsHandler.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\Events\SkuStockCreated.cs" />
     <Compile Include="Aggregates\SkuAggregate\Sku.cs" />

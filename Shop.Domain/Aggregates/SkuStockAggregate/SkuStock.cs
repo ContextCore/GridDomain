@@ -14,24 +14,9 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         public Guid SkuId { get; private set; }
         public int Quantity { get; private set; }
 
+        private readonly ILogger _logger = LogManager.GetLogger();
 
-        private ILogger _logger = LogManager.GetLogger();
-
-        public IDictionary<Guid, Reservation> Reservations = new Dictionary<Guid, Reservation>();
-
-        public class Reservation
-        {
-            public Reservation(Guid id, int quantity, DateTime expirationDate)
-            {
-                Id = id;
-                Quantity = quantity;
-                ExpirationDate = expirationDate;
-            }
-
-            public Guid Id { get;}
-            public int Quantity { get; }
-            public DateTime ExpirationDate { get; }
-        }
+        public readonly IDictionary<Guid, Reservation> Reservations = new Dictionary<Guid, Reservation>();
 
         private SkuStock(Guid id) : base(id)
         {
@@ -40,42 +25,45 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
                 SkuId = e.SkuId;
                 Quantity = e.Quantity;
             });
-            Apply<StockAdded>(e =>
-            {
-                //TODO: use part article
-                Quantity += e.Quantity;
-            });
+            //TODO: use part article
+
+            Apply<StockAdded>(e => Quantity += e.Quantity);
             Apply<StockReserved>(e =>
             {
                 Reservations[e.ReservationId] = new Reservation(e.ReservationId, e.Quantity, e.ExpirationDate);
                 Quantity -= e.Quantity;
             });
-            Apply<ReserveExpired>(e =>
+            Apply<ReserveExpired>(e => CancelReservation(e.ReserveId));
+            Apply<StockTaken>(e => Quantity -= e.Quantity);
+            Apply<StockReserveTaken>(e => Reservations.Remove(e.ReserveId));
+            Apply<ReserveRenewed>(e =>
             {
-                Reservation reservation;
-                if (!Reservations.TryGetValue(e.ReserveId, out reservation))
-                {
-                    _logger.Warn("Could not find expired reservation {reserve}", e.ReserveId);
-                    return;
-                }
-                Quantity += reservation.Quantity;
-                Reservations.Remove(e.ReserveId);
+                CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == e.OldReserveId);
+                CancelReservation(e.OldReserveId);
             });
-            Apply<StockTaken>(e =>
+
+            Apply<ReserveCanceled>(e =>
             {
-                Quantity -= e.Quantity;
-            });
-            Apply<StockReserveTaken>(e =>
-            {
-                Reservations.Remove(e.ReserveId);
+                 CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == e.ReservationId);
+                 CancelReservation(e.ReservationId);
             });
         }
-
-        public SkuStock(Guid sourceId, Guid skuId, int amount, TimeSpan reservationTime):this(sourceId)
+        public SkuStock(Guid sourceId, Guid skuId, int amount, TimeSpan reservationTime) : this(sourceId)
         {
             if (amount <= 0) throw new ArgumentException(nameof(amount));
+            RaiseEvent(new SkuStockCreated(sourceId, skuId, amount, reservationTime));
+        }
 
-            RaiseEvent(new SkuStockCreated(sourceId,skuId,amount,reservationTime));
+        private void CancelReservation(Guid reserveId)
+        {
+            Reservation reservation;
+            if (!Reservations.TryGetValue(reserveId, out reservation))
+            {
+                _logger.Warn("Could not find expired reservation {reserve}", reserveId);
+                return;
+            }
+            Quantity += reservation.Quantity;
+            Reservations.Remove(reserveId);
         }
 
         public void Take(int quantity)
@@ -90,29 +78,24 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             RaiseEvent(new StockReserveTaken(Id,reserveId));
         }
 
-        public void Reserve(Guid clientId, int quantity, Guid? reservationId = null)
+        public void Reserve(Guid clientId, int quantity, Guid? reservationId = null, DateTime? reservationStartTime = null)
         {
             if(Quantity < quantity)
                 throw new OutOfStockException(quantity,Quantity);
 
-            Reservation reservation;
+            Reservation oldReservation;
             int quantityToReserve = quantity;
-            if (Reservations.TryGetValue(clientId, out reservation))
+            var newReserveId = reservationId ?? Guid.NewGuid();
+            var expirationDate = (reservationStartTime ?? BusinessDateTime.UtcNow) + ReservationTime;
+
+            if (Reservations.TryGetValue(clientId, out oldReservation))
             {
-                CancelScheduledEvents<ReserveExpired>(e => e.ReserveId == reservation.Id);
-                quantityToReserve += reservation.Quantity;
+                quantityToReserve += oldReservation.Quantity;
+                RaiseEvent(new ReserveRenewed(Id, oldReservation.Id, newReserveId));
             }
 
-            ReserveStock(quantityToReserve, reservationId);
-        }
-
-        private void ReserveStock(int quantity, Guid? reservationId = null)
-        {
-            var reserveId = reservationId ?? Guid.NewGuid();
-            var expirationDate = BusinessDateTime.UtcNow + ReservationTime;
-
-            RaiseEvent(expirationDate, new ReserveExpired(Id, reserveId));
-            RaiseEvent(new StockReserved(Id, reserveId, expirationDate, quantity));
+            RaiseEvent(new StockReserved(Id, newReserveId, expirationDate, quantityToReserve));
+            RaiseEvent(expirationDate, new ReserveExpired(Id, newReserveId));
         }
 
         public void AddToToStock(int quantity, Guid skuId, string packArticle)
@@ -122,6 +105,9 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             RaiseEvent(new StockAdded(Id, quantity, packArticle));
         }
 
-
+        public void Cancel(Guid reserveId)
+        {
+            RaiseEvent(new ReserveCanceled(Id, reserveId));
+        }
     }
 }

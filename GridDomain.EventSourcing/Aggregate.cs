@@ -116,7 +116,7 @@ namespace GridDomain.EventSourcing
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent : DomainEvent
         {
-            var eventsToCancel = this.FutureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
+            var eventsToCancel = FutureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
 
             var cancelEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id));
             foreach (var e in cancelEvents)
