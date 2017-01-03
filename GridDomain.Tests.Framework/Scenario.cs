@@ -25,7 +25,6 @@ namespace GridDomain.Tests.Framework
     {
         protected TCommandsHandler CommandsHandler { get; }
         public TAggregate Aggregate { get; private set; }
-        public TAggregate GivenAggregate { get; private set; }
 
         protected DomainEvent[] ExpectedEvents { get; private set; }
         protected DomainEvent[] ProducedEvents { get; private set; }
@@ -61,7 +60,6 @@ namespace GridDomain.Tests.Framework
         {
             CommandsHandler = handler ?? CreateCommandsHandler();
             Aggregate = agr ?? CreateAggregate();
-            GivenAggregate = agr ?? CreateAggregate();
         }
 
         public Scenario<TAggregate, TCommandsHandler> Given(params DomainEvent[] events)
@@ -69,10 +67,6 @@ namespace GridDomain.Tests.Framework
             GivenEvents = events;
             Aggregate.ApplyEvents(events);
             Aggregate.ClearUncommittedEvents();
-
-            GivenAggregate.ApplyEvents(events);
-            GivenAggregate.ClearUncommittedEvents();
-
             return this;
         }
         public Scenario<TAggregate, TCommandsHandler> Given(IEnumerable<DomainEvent> events)

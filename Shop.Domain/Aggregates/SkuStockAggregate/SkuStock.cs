@@ -24,6 +24,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             {
                 SkuId = e.SkuId;
                 Quantity = e.Quantity;
+                ReservationTime = e.ReservationTime;
+                Id = e.SourceId;
             });
             //TODO: use part article
 
@@ -95,7 +97,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             }
 
             RaiseEvent(new StockReserved(Id, newReserveId, expirationDate, quantityToReserve));
-            RaiseEvent(expirationDate, new ReserveExpired(Id, newReserveId));
+            RaiseEvent(expirationDate, new ReserveExpired(Id, newReserveId),newReserveId);
         }
 
         public void AddToToStock(int quantity, Guid skuId, string packArticle)

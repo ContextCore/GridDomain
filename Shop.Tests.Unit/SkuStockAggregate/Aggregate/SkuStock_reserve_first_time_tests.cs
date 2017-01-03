@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.FutureEvents;
@@ -59,7 +60,12 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario.Then(new StockReserved(_reserveStockCommand.StockId,
                                              _reserveStockCommand.ReservationId,
                                              _expirationDate,
-                                             _reserveStockCommand.Quantity));
+                                             _reserveStockCommand.Quantity),
+                           new FutureEventScheduledEvent(_reserveStockCommand.ReservationId,
+                                                         _scenario.Aggregate.Id,
+                                                         _expirationDate,
+                                                         new ReserveExpired(_scenario.Aggregate.Id,
+                                                                             _reserveStockCommand.ReservationId)));
             _scenario.Check();
         }
 
