@@ -1,4 +1,5 @@
 using System;
+using System.Net.Mime;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
@@ -7,13 +8,13 @@ using Shop.ReadModel.Context;
 namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
     [TestFixture]
-    public class SkuStock_stock_added_tests : SkuStockProjectionBuilderTests
+    public class SkuStock_added_tests : SkuStockProjectionBuilderTests
     {
         private StockAdded _stockAddedEvent;
         private SkuStockCreated _stockCreatedEvent;
 
         [OneTimeSetUp]
-        public void Given_sku_created_message_projected()
+        public void Given_sku_created_and_stock_added_messages_When_projected()
         {
             _stockCreatedEvent = new SkuStockCreated(Guid.NewGuid(), Guid.NewGuid(), 100, TimeSpan.FromDays(2));
             _stockAddedEvent = new StockAdded(_stockCreatedEvent.SourceId, 15, "test pack");
@@ -23,14 +24,14 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
 
         [Test]
-        public void When_project_new_row_is_added()
+        public void Then_history_new_row_is_added()
         {
             using (var context = ContextFactory())
-                Assert.NotNull(context.StockHistory.Find( _stockAddedEvent.SourceId , 1));
+                Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, 1));
         }
 
         [Test]
-        public void When_project_all_fields_are_filled()
+        public void Then_history_fields_are_filled()
         {
             using (var context = ContextFactory())
             {
@@ -38,7 +39,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 
                 Assert.AreEqual(1, row.Number);
                 Assert.AreEqual(_stockAddedEvent.SourceId, row.StockId);
-                Assert.AreEqual(SkuStockOperation.Added, row.Operation);
+                Assert.AreEqual(StockOperation.Added, row.Operation);
                 Assert.AreEqual(_stockAddedEvent.Quantity, row.Quanity);
 
                 Assert.AreEqual(0, row.OldReservedQuantity);
@@ -52,7 +53,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
 
         [Test]
-        public void When_project_stock_entry_is_renewed_are_filled()
+        public void Then_stock_entry_is_renewed()
         {
             using (var context = ContextFactory())
             {
@@ -64,3 +65,4 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
     }
 }
+

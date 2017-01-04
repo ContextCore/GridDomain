@@ -58,7 +58,7 @@ namespace Shop.ReadModel.Context
         public DbSet<AccountTransaction> TransactionHistory { get; set; }
         public DbSet<Sku> Skus { get; set; }
         public DbSet<SkuStock> SkuStocks { get; set; }
-        public DbSet<SkuReserve> SkuReserves { get; set; }
+        public DbSet<SkuReserve> StockReserves { get; set; }
         public DbSet<SkuStockHistory> StockHistory { get;set; }
     }
 }

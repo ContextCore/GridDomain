@@ -7,7 +7,7 @@ namespace Shop.ReadModel.Context
         public int Number { get; set; }
         public Guid StockId { get; set; }
         public int Quanity { get; set; }
-        public SkuStockOperation Operation { get; set; }
+        public StockOperation Operation { get; set; }
         public int OldAvailableQuantity { get; set; }
         public int NewAvailableQuantity { get; set; }
         public int OldReservedQuantity { get; set; }

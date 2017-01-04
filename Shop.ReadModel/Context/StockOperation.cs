@@ -1,6 +1,6 @@
 namespace Shop.ReadModel.Context
 {
-    public enum SkuStockOperation
+    public enum StockOperation
     {
         Created,
         Taken,

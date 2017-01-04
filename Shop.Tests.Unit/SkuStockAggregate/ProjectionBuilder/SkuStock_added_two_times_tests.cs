@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
-using Shop.ReadModel;
 
 namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
@@ -30,23 +28,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             using (var context = ContextFactory())
                 Assert.AreEqual(2, context.StockHistory.Count());
 
-        }
-    }
-
-    [TestFixture]
-    public class SkuStock_added_without_sku_created_tests : SkuStockProjectionBuilderTests
-    {
-        private StockAdded _stockAddedEvent;
-        [OneTimeSetUp]
-        public void Given_sku_created_message_double_projected()
-        {
-            _stockAddedEvent = new StockAdded(Guid.NewGuid(), 15, "test pack");
-
-        }
-        [Test]
-        public void When_project_Then_error_occures()
-        {
-            Assert.Throws<SkuStockEntryNotFoundException>(() => ProjectionBuilder.Handle(_stockAddedEvent));
         }
     }
 }

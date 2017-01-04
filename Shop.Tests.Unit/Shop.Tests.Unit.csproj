@@ -213,8 +213,12 @@
     <Compile Include="SkuStockAggregate\Aggregate\SkuStock_take_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStockProjectionBuilderTests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_two_times_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_without_sku_created_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_created_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_stock_added_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_double_reserved_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_wihout_sku_entry_tests.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -238,6 +242,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
+      <Name>GridDomain.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
       <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>

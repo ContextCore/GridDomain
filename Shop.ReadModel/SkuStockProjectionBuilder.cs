@@ -62,7 +62,7 @@ namespace Shop.ReadModel
                     OldAvailableQuantity = skuStock.AvailableQuantity,
                     OldTotalQuantity = skuStock.TotalQuantity,
                     OldReservedQuantity = skuStock.ReservedQuantity,
-                    Operation = SkuStockOperation.Added,
+                    Operation = StockOperation.Added,
                     Quanity = msg.Quantity,
                     StockId = msg.SourceId
                 };
@@ -80,10 +80,88 @@ namespace Shop.ReadModel
             }
         }
 
+        public void Handle(StockReserved msg)
+        {
+            using (var context = _contextFactory())
+            {
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
+                var reserve = new SkuReserve()
+                {
+                    Created = msg.CreatedTime,
+                    CustomerId = msg.ClientId,
+                    ExpirationDate = msg.ExpirationDate,
+                    Quantity = msg.Quantity,
+                    SkuId = skuStock.SkuId,
+                    StockId = msg.SourceId
+                };
+
+                var history = CreateHistory(skuStock, StockOperation.Reserved, msg.Quantity);
+
+                skuStock.AvailableQuantity -= msg.Quantity;
+                skuStock.ReservedQuantity += msg.Quantity;
+                skuStock.CustomersReservationsTotal ++;
+                skuStock.LastModified = msg.CreatedTime;
+
+                FillNewQuantities(history, skuStock);
+
+                context.StockHistory.Add(history);
+                context.StockReserves.Add(reserve);
+
+                context.SaveChanges();
+            }
+        }
+
+        private SkuStockHistory CreateHistory(SkuStock skuStock, StockOperation stockOperation, int quantity)
+        {
+            return new SkuStockHistory()
+            {
+                OldAvailableQuantity = skuStock.AvailableQuantity,
+                OldTotalQuantity = skuStock.TotalQuantity,
+                OldReservedQuantity = skuStock.ReservedQuantity,
+                Operation = stockOperation,
+                Quanity = quantity,
+                StockId = skuStock.Id
+            };
+        }
+
+        private void FillNewQuantities(SkuStockHistory history, SkuStock skuStock)
+        {
+            history.NewAvailableQuantity = skuStock.AvailableQuantity;
+            history.NewTotalQuantity = skuStock.TotalQuantity;
+            history.NewReservedQuantity = skuStock.ReservedQuantity;
+        }
         public void Handle(ReserveCanceled msg)
         {
-            throw new NotImplementedException();
+            using (var context = _contextFactory())
+            {
+               // var skuStock = context.SkuStocks.Find(msg.SourceId);
+               // if (skuStock == null)
+               //     throw new SkuStockEntryNotFoundException(msg.SourceId);
+               //
+               // var history = new SkuStockHistory()
+               // {
+               //     OldAvailableQuantity = skuStock.AvailableQuantity,
+               //     OldTotalQuantity = skuStock.TotalQuantity,
+               //     OldReservedQuantity = skuStock.ReservedQuantity,
+               //     Operation = SkuStockOperation.Added,
+               //     Quanity = msg.Quantity,
+               //     StockId = msg.SourceId
+               // };
+               //
+               // skuStock.AvailableQuantity += msg.Quantity;
+               // skuStock.TotalQuantity += msg.Quantity;
+               // skuStock.LastModified = msg.CreatedTime;
+               //
+               // history.NewAvailableQuantity = skuStock.AvailableQuantity;
+               // history.NewTotalQuantity = skuStock.TotalQuantity;
+               // history.NewReservedQuantity = skuStock.ReservedQuantity;
+               //
+               // context.StockHistory.Add(history);
+               // context.SaveChanges();
+            }
         }
 
         public void Handle(ReserveExpired msg)
@@ -107,11 +185,6 @@ namespace Shop.ReadModel
         }
 
     
-     
-
-        public void Handle(StockReserved msg)
-        {
-            throw new NotImplementedException();
-        }
+  
     }
 }
