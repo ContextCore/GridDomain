@@ -19,7 +19,7 @@ namespace Shop.ReadModel.Context
             modelBuilder.Entity<User>().HasKey(o =>  o.Id);
             modelBuilder.Entity<User>().HasIndex(o =>  o.Login);
 
-            modelBuilder.Entity<Good>().HasIndex(o =>  o.Id);
+            modelBuilder.Entity<Good>().HasKey(o =>  o.Id);
             modelBuilder.Entity<Good>().HasIndex(o =>  o.Name);
 
             modelBuilder.Entity<Account>().HasKey(o =>  o.Id);
@@ -37,6 +37,12 @@ namespace Shop.ReadModel.Context
             modelBuilder.Entity<Sku>().HasIndex(o =>  o.Number);
             modelBuilder.Entity<Sku>().HasIndex(o =>  o.Article);
             modelBuilder.Entity<Sku>().HasIndex(o =>  o.Name);
+
+            modelBuilder.Entity<SkuStock>().HasKey(o =>  o.Id);
+            modelBuilder.Entity<SkuStock>().HasIndex(o =>  o.SkuId);
+
+            modelBuilder.Entity<SkuReserve>().HasKey(o =>  new { o.StockId, o.CustomerId});
+            modelBuilder.Entity<SkuReserve>().HasIndex(o =>  new {o.SkuId});
         }
 
         public DbSet<Order> Orders { get; set; }
@@ -46,5 +52,7 @@ namespace Shop.ReadModel.Context
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountTransaction> TransactionHistory { get; set; }
         public DbSet<Sku> Skus { get; set; }
+        public DbSet<SkuStock> SkuStocks { get; set; }
+        public DbSet<SkuReserve> SkuReserves { get; set; }
     }
 }

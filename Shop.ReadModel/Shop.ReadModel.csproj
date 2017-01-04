@@ -220,11 +220,14 @@
     <Compile Include="Context\Order.cs" />
     <Compile Include="Context\OrderItem.cs" />
     <Compile Include="Context\Sku.cs" />
+    <Compile Include="Context\SkuReserve.cs" />
+    <Compile Include="Context\SkuStock.cs" />
     <Compile Include="Context\User.cs" />
     <Compile Include="OrdersProjectionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Context\ShopDbContext.cs" />
     <Compile Include="SkuProjectionBuilder.cs" />
+    <Compile Include="SkuStockProjectionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
