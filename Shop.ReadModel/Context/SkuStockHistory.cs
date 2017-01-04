@@ -4,7 +4,7 @@ namespace Shop.ReadModel.Context
 {
     public class SkuStockHistory
     {
-        public int Number { get; set; }
+        public long Number { get; set; }
         public Guid StockId { get; set; }
         public int Quanity { get; set; }
         public StockOperation Operation { get; set; }

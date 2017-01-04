@@ -10,9 +10,9 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
     [TestFixture]
     public class SkuStock_reserved_tests : SkuStockProjectionBuilderTests
     {
-        private StockAdded _stockAddedEvent;
+        private StockAdded      _stockAddedEvent;
         private SkuStockCreated _stockCreatedEvent;
-        private StockReserved _stockReservedEvent;
+        private StockReserved   _stockReservedEvent;
 
         [OneTimeSetUp]
         public void Given_sku_created_and_stock_added_and_stock_reserved_messages_When_projected()
@@ -32,7 +32,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
             {
-                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, 2);
+                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long)3);
                 if (history != null) return;
 
                 foreach(var hist in context.StockHistory)
@@ -45,7 +45,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         public void Then_history_containes_rows_for_added_and_reserved_events()
         {
             using (var context = ContextFactory())
-                Assert.AreEqual(2, context.StockHistory.Count());
+                Assert.AreEqual(3, context.StockHistory.Count());
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             using (var context = ContextFactory())
             {
                 //#1 is stock added history
-                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, 2);
+                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long)3);
                 Assert.AreEqual(_stockCreatedEvent.Quantity +
                                 _stockAddedEvent.Quantity -
                                 _stockReservedEvent.Quantity, history.NewAvailableQuantity);
@@ -69,7 +69,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 Assert.AreEqual(StockOperation.Reserved, history.Operation);
                 Assert.AreEqual(_stockReservedEvent.Quantity, history.Quanity);
                 Assert.AreEqual(_stockReservedEvent.SourceId, history.StockId);
-                Assert.AreEqual(2, history.Number);
+                Assert.AreEqual(3, history.Number);
             }
         }
 

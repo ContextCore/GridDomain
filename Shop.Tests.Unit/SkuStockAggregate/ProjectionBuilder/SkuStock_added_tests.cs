@@ -27,7 +27,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         public void Then_history_new_row_is_added()
         {
             using (var context = ContextFactory())
-                Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, 1));
+                Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, (long)2));
         }
 
         [Test]
@@ -35,9 +35,9 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
             {
-                var row = context.StockHistory.Find(_stockAddedEvent.SourceId, 1);
+                var row = context.StockHistory.Find(_stockAddedEvent.SourceId, (long)2);
 
-                Assert.AreEqual(1, row.Number);
+                Assert.AreEqual(2, row.Number);
                 Assert.AreEqual(_stockAddedEvent.SourceId, row.StockId);
                 Assert.AreEqual(StockOperation.Added, row.Operation);
                 Assert.AreEqual(_stockAddedEvent.Quantity, row.Quanity);

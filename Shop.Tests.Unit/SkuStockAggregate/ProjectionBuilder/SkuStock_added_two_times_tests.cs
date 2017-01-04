@@ -26,7 +26,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         public void When_project_again_additioanal_transaction_occures()
         {
             using (var context = ContextFactory())
-                Assert.AreEqual(2, context.StockHistory.Count());
+                Assert.AreEqual(3, context.StockHistory.Count());
 
         }
     }

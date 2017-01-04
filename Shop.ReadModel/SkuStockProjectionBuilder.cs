@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
+using Shop.Infrastructure;
 using Shop.ReadModel.Context;
 using SkuStock = Shop.ReadModel.Context.SkuStock;
 
@@ -22,9 +23,12 @@ namespace Shop.ReadModel
                                              IEventHandler<ReserveCanceled>
     {
         private readonly Func<ShopDbContext> _contextFactory;
+        private readonly ISequenceProvider _sequenceProvider;
+        private const string SkuHistorySequenceName = "SkuHistory";
 
-        public SkuStockProjectionBuilder(Func<ShopDbContext> contextFactory)
+        public SkuStockProjectionBuilder(Func<ShopDbContext> contextFactory, ISequenceProvider sequenceProvider)
         {
+            _sequenceProvider = sequenceProvider;
             _contextFactory = contextFactory;
         }
 
@@ -35,16 +39,24 @@ namespace Shop.ReadModel
                 var skuStock = new SkuStock
                 {
                     Id = msg.SourceId,
-                    AvailableQuantity = msg.Quantity,
+                    AvailableQuantity = 0,
                     Created = msg.CreatedTime,
                     CustomersReservationsTotal = 0,
                     LastModified = msg.CreatedTime,
                     ReservedQuantity = 0,
                     SkuId = msg.SkuId,
-                    TotalQuantity = msg.Quantity
+                    TotalQuantity = 0
                 };
 
+                var history = CreateHistory(skuStock, StockOperation.Created, msg.Quantity);
+
+                skuStock.TotalQuantity = msg.Quantity;
+                skuStock.AvailableQuantity = msg.Quantity;
+
+                FillNewQuantities(history, skuStock);
+
                 context.SkuStocks.Add(skuStock);
+                context.StockHistory.Add(history);
                 context.SaveChanges();
             }
         }
@@ -57,23 +69,13 @@ namespace Shop.ReadModel
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var history = new SkuStockHistory()
-                {
-                    OldAvailableQuantity = skuStock.AvailableQuantity,
-                    OldTotalQuantity = skuStock.TotalQuantity,
-                    OldReservedQuantity = skuStock.ReservedQuantity,
-                    Operation = StockOperation.Added,
-                    Quanity = msg.Quantity,
-                    StockId = msg.SourceId
-                };
+                var history = CreateHistory(skuStock, StockOperation.Added, msg.Quantity);
 
                 skuStock.AvailableQuantity += msg.Quantity;
                 skuStock.TotalQuantity += msg.Quantity;
                 skuStock.LastModified = msg.CreatedTime;
 
-                history.NewAvailableQuantity = skuStock.AvailableQuantity;
-                history.NewTotalQuantity = skuStock.TotalQuantity;
-                history.NewReservedQuantity = skuStock.ReservedQuantity;
+                FillNewQuantities(history, skuStock);
 
                 context.StockHistory.Add(history);
                 context.SaveChanges();
@@ -123,7 +125,8 @@ namespace Shop.ReadModel
                 OldReservedQuantity = skuStock.ReservedQuantity,
                 Operation = stockOperation,
                 Quanity = quantity,
-                StockId = skuStock.Id
+                StockId = skuStock.Id,
+                Number = _sequenceProvider.GetNext(SkuHistorySequenceName)
             };
         }
 
