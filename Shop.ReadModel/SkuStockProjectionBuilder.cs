@@ -222,15 +222,51 @@ namespace Shop.ReadModel
 
         public void Handle(ReserveRenewed msg)
         {
-            throw new NotImplementedException();
+            using (var context = _contextFactory())
+            {
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
+
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
+
+                var history = CreateHistory(skuStock, StockOperation.ReserveRenewed, reserve.Quantity);
+
+                skuStock.ReservedQuantity -= reserve.Quantity;
+                skuStock.AvailableQuantity += reserve.Quantity;
+                skuStock.LastModified = msg.CreatedTime;
+                skuStock.CustomersReservationsTotal--;
+
+                FillNewQuantities(history, skuStock);
+
+                context.StockReserves.Remove(reserve);
+                context.StockHistory.Add(history);
+
+                context.SaveChanges();
+            }
         }
 
         public void Handle(StockTaken msg)
         {
-            throw new NotImplementedException();
-        }
+            using (var context = _contextFactory())
+            {
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-    
-  
+                var history = CreateHistory(skuStock, StockOperation.Taken, msg.Quantity);
+
+                skuStock.AvailableQuantity -= msg.Quantity;
+                skuStock.TotalQuantity -= msg.Quantity;
+                skuStock.LastModified = msg.CreatedTime;
+
+                FillNewQuantities(history, skuStock);
+
+                context.StockHistory.Add(history);
+                context.SaveChanges();
+            }
+        }
     }
 }
