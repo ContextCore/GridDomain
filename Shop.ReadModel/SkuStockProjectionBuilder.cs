@@ -140,41 +140,84 @@ namespace Shop.ReadModel
         {
             using (var context = _contextFactory())
             {
-               // var skuStock = context.SkuStocks.Find(msg.SourceId);
-               // if (skuStock == null)
-               //     throw new SkuStockEntryNotFoundException(msg.SourceId);
-               //
-               // var history = new SkuStockHistory()
-               // {
-               //     OldAvailableQuantity = skuStock.AvailableQuantity,
-               //     OldTotalQuantity = skuStock.TotalQuantity,
-               //     OldReservedQuantity = skuStock.ReservedQuantity,
-               //     Operation = SkuStockOperation.Added,
-               //     Quanity = msg.Quantity,
-               //     StockId = msg.SourceId
-               // };
-               //
-               // skuStock.AvailableQuantity += msg.Quantity;
-               // skuStock.TotalQuantity += msg.Quantity;
-               // skuStock.LastModified = msg.CreatedTime;
-               //
-               // history.NewAvailableQuantity = skuStock.AvailableQuantity;
-               // history.NewTotalQuantity = skuStock.TotalQuantity;
-               // history.NewReservedQuantity = skuStock.ReservedQuantity;
-               //
-               // context.StockHistory.Add(history);
-               // context.SaveChanges();
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
+
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
+
+                var history = CreateHistory(skuStock, StockOperation.ReserveCanceled, reserve.Quantity);
+                
+                skuStock.AvailableQuantity += reserve.Quantity;
+                skuStock.ReservedQuantity -= reserve.Quantity;
+                skuStock.LastModified = msg.CreatedTime;
+                skuStock.CustomersReservationsTotal --;
+
+                FillNewQuantities(history, skuStock);
+
+                context.StockReserves.Remove(reserve);
+                context.StockHistory.Add(history);
+
+                context.SaveChanges();
             }
         }
 
         public void Handle(ReserveExpired msg)
         {
-            throw new NotImplementedException();
+            using (var context = _contextFactory())
+            {
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
+
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
+
+                var history = CreateHistory(skuStock, StockOperation.ReserveExpired, reserve.Quantity);
+
+                skuStock.AvailableQuantity += reserve.Quantity;
+                skuStock.ReservedQuantity -= reserve.Quantity;
+                skuStock.LastModified = msg.CreatedTime;
+                skuStock.CustomersReservationsTotal--;
+
+                FillNewQuantities(history, skuStock);
+
+                context.StockReserves.Remove(reserve);
+                context.StockHistory.Add(history);
+
+                context.SaveChanges();
+            }
         }
 
         public void Handle(StockReserveTaken msg)
         {
-            throw new NotImplementedException();
+            using (var context = _contextFactory())
+            {
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
+
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
+
+                var history = CreateHistory(skuStock, StockOperation.ReserveTaken, reserve.Quantity);
+
+                skuStock.ReservedQuantity -= reserve.Quantity;
+                skuStock.TotalQuantity -= reserve.Quantity;
+                skuStock.LastModified = msg.CreatedTime;
+                skuStock.CustomersReservationsTotal--;
+
+                FillNewQuantities(history, skuStock);
+
+                context.StockReserves.Remove(reserve);
+                context.StockHistory.Add(history);
+
+                context.SaveChanges();
+            }
         }
 
         public void Handle(ReserveRenewed msg)

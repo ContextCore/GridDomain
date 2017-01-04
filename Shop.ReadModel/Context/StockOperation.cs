@@ -5,9 +5,10 @@ namespace Shop.ReadModel.Context
         Created,
         Taken,
         Reserved,
-        ResereveTaken,
+        ReserveTaken,
         ReserveRenewed, 
         ReserveExpired,
+        ReserveCanceled,
         Added
     }
 }

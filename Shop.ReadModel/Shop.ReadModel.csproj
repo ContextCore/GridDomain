@@ -228,6 +228,7 @@
     <Compile Include="OrdersProjectionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Context\ShopDbContext.cs" />
+    <Compile Include="ReserveEntryNotFoundException.cs" />
     <Compile Include="SkuProjectionBuilder.cs" />
     <Compile Include="SkuStockEntryNotFoundException.cs" />
     <Compile Include="SkuStockProjectionBuilder.cs" />

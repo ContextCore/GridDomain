@@ -37,7 +37,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             });
             Apply<ReserveExpired>(e => CancelReservation(e.CustomerId));
             Apply<StockTaken>(e => Quantity -= e.Quantity);
-            Apply<StockReserveTaken>(e => Reservations.Remove(e.ReserveId));
+            Apply<StockReserveTaken>(e => Reservations.Remove(e.CustomerId));
             Apply<ReserveRenewed>(e =>
             {
                 CancelScheduledEvents<ReserveExpired>(exp => exp.CustomerId == e.CustomerId);

@@ -217,8 +217,14 @@
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_created_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_double_reserved_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_taken_errors_test.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_taken_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_twice_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_wihout_sku_entry_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_errors_tests.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
