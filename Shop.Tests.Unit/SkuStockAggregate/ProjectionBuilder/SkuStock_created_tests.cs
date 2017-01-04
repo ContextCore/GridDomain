@@ -10,6 +10,8 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 
 namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
+
+
     [TestFixture]
     public class SkuStock_created_tests : SkuStockProjectionBuilderTests
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
@@ -52,19 +53,29 @@ namespace Shop.ReadModel
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.
+                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
+
+                var history = new SkuStockHistory()
                 {
-                    Id = msg.SourceId,
-                    AvailableQuantity = msg.Quantity,
-                    Created = msg.CreatedTime,
-                    CustomersReservationsTotal = 0,
-                    LastModified = msg.CreatedTime,
-                    ReservedQuantity = 0,
-                    SkuId = msg.SkuId,
-                    TotalQuantity = msg.Quantity
+                    OldAvailableQuantity = skuStock.AvailableQuantity,
+                    OldTotalQuantity = skuStock.TotalQuantity,
+                    OldReservedQuantity = skuStock.ReservedQuantity,
+                    Operation = SkuStockOperation.Added,
+                    Quanity = msg.Quantity,
+                    StockId = msg.SourceId
                 };
 
-                context.SkuStocks.Add(skuStock);
+                skuStock.AvailableQuantity += msg.Quantity;
+                skuStock.TotalQuantity += msg.Quantity;
+                skuStock.LastModified = msg.CreatedTime;
+
+                history.NewAvailableQuantity = skuStock.AvailableQuantity;
+                history.NewTotalQuantity = skuStock.TotalQuantity;
+                history.NewReservedQuantity = skuStock.ReservedQuantity;
+
+                context.StockHistory.Add(history);
                 context.SaveChanges();
             }
         }

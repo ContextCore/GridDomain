@@ -7,6 +7,7 @@ namespace Shop.ReadModel.Context
         Reserved,
         ResereveTaken,
         ReserveRenewed, 
-        ReserveExpired
+        ReserveExpired,
+        Added
     }
 }

@@ -45,7 +45,9 @@ namespace Shop.ReadModel.Context
             modelBuilder.Entity<SkuReserve>().HasKey(o =>  new { o.StockId, o.CustomerId});
             modelBuilder.Entity<SkuReserve>().HasIndex(o =>  new {o.SkuId});
 
-            modelBuilder.Entity<SkuStockHistory>().HasIndex(o =>  new {o.});
+            modelBuilder.Entity<SkuStockHistory>().HasKey(o => new {o.StockId, o.Number});
+            modelBuilder.Entity<SkuStockHistory>().Property(o => o.Number)
+                                                  .UseSqlServerIdentityColumn();
         }
 
         public DbSet<Order> Orders { get; set; }

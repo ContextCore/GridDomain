@@ -212,7 +212,9 @@
     <Compile Include="SkuStockAggregate\Aggregate\SkuStock_negative_creation_tests.cs" />
     <Compile Include="SkuStockAggregate\Aggregate\SkuStock_take_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStockProjectionBuilderTests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_two_times_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_created_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_stock_added_tests.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
