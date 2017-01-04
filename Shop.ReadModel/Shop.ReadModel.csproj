@@ -222,6 +222,8 @@
     <Compile Include="Context\Sku.cs" />
     <Compile Include="Context\SkuReserve.cs" />
     <Compile Include="Context\SkuStock.cs" />
+    <Compile Include="Context\SkuStockHistory.cs" />
+    <Compile Include="Context\SkuStockOperation.cs" />
     <Compile Include="Context\User.cs" />
     <Compile Include="OrdersProjectionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

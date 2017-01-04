@@ -48,6 +48,28 @@ namespace Shop.ReadModel
             }
         }
 
+        public void Handle(StockAdded msg)
+        {
+            using (var context = _contextFactory())
+            {
+                var skuStock = context.
+                {
+                    Id = msg.SourceId,
+                    AvailableQuantity = msg.Quantity,
+                    Created = msg.CreatedTime,
+                    CustomersReservationsTotal = 0,
+                    LastModified = msg.CreatedTime,
+                    ReservedQuantity = 0,
+                    SkuId = msg.SkuId,
+                    TotalQuantity = msg.Quantity
+                };
+
+                context.SkuStocks.Add(skuStock);
+                context.SaveChanges();
+            }
+        }
+
+
         public void Handle(ReserveCanceled msg)
         {
             throw new NotImplementedException();
@@ -73,11 +95,7 @@ namespace Shop.ReadModel
             throw new NotImplementedException();
         }
 
-        public void Handle(StockAdded msg)
-        {
-            throw new NotImplementedException();
-        }
-
+    
      
 
         public void Handle(StockReserved msg)

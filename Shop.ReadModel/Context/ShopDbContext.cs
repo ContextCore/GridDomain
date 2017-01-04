@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Shop.ReadModel.Context
 {
@@ -43,6 +44,8 @@ namespace Shop.ReadModel.Context
 
             modelBuilder.Entity<SkuReserve>().HasKey(o =>  new { o.StockId, o.CustomerId});
             modelBuilder.Entity<SkuReserve>().HasIndex(o =>  new {o.SkuId});
+
+            modelBuilder.Entity<SkuStockHistory>().HasIndex(o =>  new {o.});
         }
 
         public DbSet<Order> Orders { get; set; }
@@ -54,5 +57,6 @@ namespace Shop.ReadModel.Context
         public DbSet<Sku> Skus { get; set; }
         public DbSet<SkuStock> SkuStocks { get; set; }
         public DbSet<SkuReserve> SkuReserves { get; set; }
+        public DbSet<SkuStockHistory> StockHistory { get;set; }
     }
 }
