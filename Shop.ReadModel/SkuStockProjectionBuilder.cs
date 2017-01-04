@@ -11,20 +11,16 @@ using SkuStock = Shop.ReadModel.Context.SkuStock;
 
 namespace Shop.ReadModel
 {
-
-
-
     public class SkuStockProjectionBuilder : IEventHandler<SkuStockCreated>,
                                              IEventHandler<StockAdded>,
                                              IEventHandler<StockReserved>,
                                              IEventHandler<ReserveExpired>,
-                                             IEventHandler<SkuStockCreated>,
                                              IEventHandler<StockTaken>,
                                              IEventHandler<StockReserveTaken>,
                                              IEventHandler<ReserveRenewed>,
                                              IEventHandler<ReserveCanceled>
     {
-        private Func<ShopDbContext> _contextFactory;
+        private readonly Func<ShopDbContext> _contextFactory;
 
         public SkuStockProjectionBuilder(Func<ShopDbContext> contextFactory)
         {
