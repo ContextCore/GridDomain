@@ -6,13 +6,21 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public static class SagaExtensions
     {
-        public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData, TStartMessagaA>(Expression<Func<TStartMessagaA,string>> correlationField = null )
+        public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData, TStartMessagaA>(
+            Expression<Func<TStartMessagaA,string>> correlationField = null )
         where TSagaData : class, ISagaState
         where TSaga : Saga<TSagaData>, new()
         {
             return CreateDescriptor<TSaga, TSagaData>(new TSaga(), typeof(TStartMessagaA));
         }
 
+        public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData, TStartMessagaA>(TSaga saga,
+                                            Expression<Func<TStartMessagaA, string>> correlationField = null)
+                                        where TSagaData : class, ISagaState
+                                        where TSaga : Saga<TSagaData>
+        {
+            return CreateDescriptor<TSaga, TSagaData>(saga, typeof(TStartMessagaA));
+        }
         public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData, TStartMessagaA,TStartMessagaB>()
          where TSagaData : class, ISagaState
          where TSaga : Saga<TSagaData>, new()
@@ -28,13 +36,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                                                       typeof(TStartMessagaA),
                                                       typeof(TStartMessagaB),
                                                       typeof(TStartMessagaC));
-        }
-
-        public static ISagaDescriptor CreateDescriptor<TSaga, TSagaData>(params Type[] startMessages)
-            where TSagaData : class, ISagaState
-            where TSaga : Saga<TSagaData>, new()
-        {
-            return CreateDescriptor<TSaga, TSagaData>(new TSaga(),startMessages);
         }
 
         public static ISagaDescriptor CreateDescriptor<TSaga,TSagaData>(this TSaga saga, params Type[] startMessages) 
