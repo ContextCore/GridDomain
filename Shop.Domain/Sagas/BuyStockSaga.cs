@@ -8,6 +8,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
+using Shop.Domain.Aggregates.OrderAggregate.Commands;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 using Shop.Domain.Aggregates.UserAggregate;
 
@@ -25,6 +26,25 @@ namespace Shop.Domain.Sagas
             Command<ReserveStockCommand>();
             Command<PayForOrderCommand>();
             Command<TakeReservedStockCommand>();
+
+            Event(() => PurchaseOrdered);
+
+            During(CreatingOrder,
+                When(PurchaseOrdered).Then(ctx =>
+                {
+                    var state = ctx.Instance;
+                    var domainEvent = ctx.Data;
+                    state.AccountId = domainEvent.AccountId;
+                    state.OrderId = domainEvent.OrderId;
+                    state.Quantity = domainEvent.Quantity;
+                    state.SkuId = domainEvent.SkuId;
+                    state.UserId = domainEvent.SourceId;
+                    state.StockId = domainEvent.StockId;
+
+                    Dispatch(new CreateOrderCommand(state.OrderId,state.UserId));
+                    //  Dispatch(new ReserveStockCommand(state.StockId,state.UserId,state.Quantity));
+                }));
+
         }
 
       // public Event<GotTiredEvent> GotTired { get; private set; }
@@ -33,6 +53,7 @@ namespace Shop.Domain.Sagas
       // public Event<Fault<GoSleepCommand>> SleptBad { get; private set; }
       // public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
 
+        public Event<SkuPurchaseOrdered> PurchaseOrdered { get; private set; }
         public State CreatingOrder { get; private set; }
         public State Reserving { get; private set; }
         public State Paying { get; private set; }

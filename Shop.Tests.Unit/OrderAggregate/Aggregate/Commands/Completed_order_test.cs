@@ -8,12 +8,18 @@ using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
+using Shop.Infrastructure;
 
 namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 {
     [TestFixture]
     public class Completed_order_test : AggregateCommandsTest<Order,OrderCommandsHandler>
     {
+        protected override OrderCommandsHandler CreateCommandsHandler()
+        {
+            return new OrderCommandsHandler(new InMemorySequenceProvider());
+        }
+
         protected override IEnumerable<DomainEvent> Given()
         {
             yield return new OrderCreated(Aggregate.Id, 123, Guid.NewGuid());

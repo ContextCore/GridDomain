@@ -12,22 +12,6 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Framework
 {
 
-    //
-    // var Aggregate = Scenario.New()
-    //                          .Given(new evt1,
-    //                                 new evt2)
-    //                          .When(cmd1, cmd2)
-    //                          .Then(new evt1, evt2)
-    //
-    //
-
-    public class ScenarioBuilder
-    {
-        
-    }
-
-
-
     public class AggregateCommandsTest<TAggregate, THandler>: AggregateTest<TAggregate>
         where TAggregate : IAggregate
         where THandler: class, IAggregateCommandsHandler<TAggregate>

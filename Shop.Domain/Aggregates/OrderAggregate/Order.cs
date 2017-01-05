@@ -14,7 +14,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
         public Guid UserId { get; private set; }
         public List<OrderItem> Items { get; private set; }
         public Money TotalPrice { get; private set; }
-        public int Number { get; private set; }
+        public long Number { get; private set; }
         public OrderStatus Status { get; private set; }
 
         private Order(Guid id) : base(id)
@@ -42,7 +42,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             return Items.Aggregate(Money.Zero(),(m, i) =>  m + i.TotalPrice);
         }
 
-        public Order(Guid id, int number,Guid user) : this(id)
+        public Order(Guid id, long number,Guid user) : this(id)
         {
             if (number < 0) throw new NegativeOrderNumberException();
             RaiseEvent(new OrderCreated(id, number,user));

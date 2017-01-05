@@ -9,13 +9,15 @@ namespace Shop.Domain.Aggregates.UserAggregate
         public int Quantity { get; }
         public Guid OrderId { get; }
         public Guid StockId { get; }
+        public Guid AccountId { get; }
 
-        public SkuPurchaseOrdered(Guid sourceId, Guid skuId, int quantity, Guid orderId, Guid stockId):base(sourceId)
+        public SkuPurchaseOrdered(Guid sourceId, Guid skuId, int quantity, Guid orderId, Guid stockId, Guid accountId):base(sourceId)
         {
             SkuId = skuId;
             Quantity = quantity;
             OrderId = orderId;
             StockId = stockId;
+            AccountId = accountId;
         }
     }
 }

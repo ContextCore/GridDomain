@@ -7,12 +7,18 @@ using NUnit.Framework;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
+using Shop.Infrastructure;
 
 namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 {
     [TestFixture]
     public class Order_commands_adds_bad_item : AggregateCommandsTest<Order,OrderCommandsHandler>
     {
+        protected override OrderCommandsHandler CreateCommandsHandler()
+        {
+            return new OrderCommandsHandler(new InMemorySequenceProvider());
+        }
+
         [Test]
         public void Order_should_throw_exñeption_on_item_add_with_negative_quantity()
         {

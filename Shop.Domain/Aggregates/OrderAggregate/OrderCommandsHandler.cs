@@ -1,14 +1,16 @@
 using GridDomain.CQRS.Messaging.MessageRouting;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
+using Shop.Infrastructure;
 
 namespace Shop.Domain.Aggregates.OrderAggregate
 {
     public class OrderCommandsHandler : AggregateCommandsHandler<Order>
     {
-        public OrderCommandsHandler()
+        private const string OrdersSequenceName = "OrdersSequence";
+        public OrderCommandsHandler(ISequenceProvider sequenceProvider)
         {
             Map<CreateOrderCommand>(c => c.OrderId,
-                                   c => new Order(c.OrderId, c.OrderNumber, c.UserId));
+                                   c => new Order(c.OrderId, sequenceProvider.GetNext(OrdersSequenceName), c.UserId));
 
             Map<AddItemToOrderCommand>(c => c.OrderId,
                                       (c,a) => a.AddItem(c.SkuId, c.Quantity, c.TotalPrice));

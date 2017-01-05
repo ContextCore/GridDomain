@@ -50,11 +50,12 @@ namespace Shop.Tests.Unit.UserAggregate
             var userId = Guid.NewGuid();
             var skuId = Guid.NewGuid();
             var quantity = 10;
+            var account = Guid.NewGuid();
 
             var scenario = NewScenario()
-                                   .Given(new UserCreated(userId, "testLogin", Guid.NewGuid()))
+                                   .Given(new UserCreated(userId, "testLogin", account))
                                    .When(new BuySkuNowCommand(userId, skuId,quantity))
-                                   .Then(new SkuPurchaseOrdered(userId, skuId,10, Any.GUID, _stockId));
+                                   .Then(new SkuPurchaseOrdered(userId, skuId,10, Any.GUID, _stockId, account));
 
             scenario.Run().Check();
 
@@ -74,10 +75,12 @@ namespace Shop.Tests.Unit.UserAggregate
             var skuId = Guid.NewGuid();
             var quantity = 10;
             var orderId = Guid.NewGuid();
+            var account = Guid.NewGuid();
+
 
             var scenario = NewScenario()
-                                   .Given(new UserCreated(userId, "testLogin", Guid.NewGuid()),
-                                          new SkuPurchaseOrdered(userId,skuId,quantity,orderId,_stockId))
+                                   .Given(new UserCreated(userId, "testLogin", account),
+                                          new SkuPurchaseOrdered(userId,skuId,quantity,orderId,_stockId,account))
                                    .When(new CancelPendingOrderCommand(userId, orderId))
                                    .Then(new PendingOrderCanceled(userId,orderId));
 
@@ -94,10 +97,12 @@ namespace Shop.Tests.Unit.UserAggregate
             var skuId = Guid.NewGuid();
             var quantity = 10;
             var orderId = Guid.NewGuid();
+            var account = Guid.NewGuid();
+
 
             var scenario = NewScenario()
-                                   .Given(new UserCreated(userId, "testLogin", Guid.NewGuid()),
-                                          new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId))
+                                   .Given(new UserCreated(userId, "testLogin", account),
+                                          new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId,account))
                                    .When(new CompletePendingOrderCommand(userId, orderId))
                                    .Then(new PendingOrderCompleted(userId, orderId));
 

@@ -8,7 +8,7 @@ namespace Shop.ReadModel.Context
     {
         [Key]
         public Guid Id { get; set; }
-        public int Number { get; set; }
+        public long Number { get; set; }
         public string UserLogin { get; set; }
         public Guid UserId { get; set; }
         public OrderStatus Status { get; set; }

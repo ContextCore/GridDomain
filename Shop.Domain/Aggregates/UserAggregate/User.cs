@@ -48,7 +48,7 @@ namespace Shop.Domain.Aggregates.UserAggregate
 
         public void BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
         {
-            RaiseEvent(new SkuPurchaseOrdered(Id,skuId,quantity,Guid.NewGuid(),stockProvider.GetStockForSku(skuId)));
+            RaiseEvent(new SkuPurchaseOrdered(Id,skuId,quantity,Guid.NewGuid(),stockProvider.GetStockForSku(skuId),Account));
         }
 
         public void CompleteOrder(Guid orderId)
