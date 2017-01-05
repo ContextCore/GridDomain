@@ -3,9 +3,9 @@ using NMoneys;
 
 namespace Shop.Domain.Aggregates.AccountAggregate.Commands
 {
-    public class PayForBillCommand : ChargeAccountCommand
+    public class PayForOrderCommand : ChargeAccountCommand
     {
-        public PayForBillCommand(Guid accountId, Money amount, Guid billId)
+        public PayForOrderCommand(Guid accountId, Money amount, Guid billId)
             : base(accountId, amount)
         {
             BillId = billId;

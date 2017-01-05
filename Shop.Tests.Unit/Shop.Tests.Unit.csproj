@@ -229,6 +229,7 @@
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_wihout_sku_entry_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_errors_tests.cs" />
+    <Compile Include="UserAggregate\User_created_tests.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

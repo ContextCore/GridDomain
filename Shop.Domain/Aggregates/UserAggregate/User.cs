@@ -1,27 +1,17 @@
 using System;
+using System.Collections.Generic;
 using GridDomain.EventSourcing;
+using GridDomain.Logging;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Aggregates.UserAggregate
 {
-   // public class OrderHistory
-   // {
-   //     public OrderHistory(Guid order, OrderStatus status)
-   //     {
-   //         Order = order;
-   //         Status = status;
-   //     }
-   //
-   //     public Guid Order { get; }
-   //     public OrderStatus Status { get; }
-   // }
-
     public class User : Aggregate
     {
+        private ILogger _logger = LogManager.GetLogger();
         public string Login { get; private set; }
-      //  public List<OrderHistory> History { get; private set; }
+        public IDictionary<Guid,PendingOrder> PendingOrders { get; } = new Dictionary<Guid, PendingOrder>();
         public Guid Account { get; private set; }
-
         private User(Guid id) : base(id)
         {
             Apply<UserCreated>(e =>
@@ -29,7 +19,20 @@ namespace Shop.Domain.Aggregates.UserAggregate
                 Login = e.Login;
                 Id = e.Id;
                 Account = e.Account;
-                //History = new List<OrderHistory>();
+            });
+            Apply<BuyNowOrderAdded>(e =>
+            {
+                PendingOrders[e.OrderId] = new PendingOrder(e.OrderId, e.SkuId, e.Quantity);
+            });
+            Apply<PendingOrderCanceled>(e =>
+            {
+                if (!PendingOrders.Remove(e.OrderId))
+                    _logger.Warn("Could not find pending order {order} to cancel",e.OrderId);
+            });
+            Apply<PendingOrderCompleted>(e =>
+            {
+                if (!PendingOrders.Remove(e.OrderId))
+                    _logger.Warn("Could not find pending order {order} to complete", e.OrderId);
             });
         }
 
@@ -38,9 +41,19 @@ namespace Shop.Domain.Aggregates.UserAggregate
             RaiseEvent(new UserCreated(id, login, account));
         }
 
-        //public void CreateNewOrder(Guid orderId)
-        //{
-        //    RaiseEvent(new OrderAdded);
-        //}
+        public void BuyNow(Guid skuId, int quantity)
+        {
+            RaiseEvent(new BuyNowOrderAdded(Id,skuId,quantity,Guid.NewGuid()));
+        }
+
+        public void CompleteOrder(Guid orderId)
+        {
+            RaiseEvent(new PendingOrderCompleted(Id, orderId));
+        }
+
+        public void CancelOrder(Guid orderId)
+        {
+            RaiseEvent(new PendingOrderCanceled(Id, orderId));
+        }
     }
 }

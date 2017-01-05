@@ -26,7 +26,7 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
             Init();
             _initialAmount = Aggregate.Amount;
 
-            _command = new PayForBillCommand(Aggregate.Id, new Money(12), Guid.NewGuid());
+            _command = new PayForOrderCommand(Aggregate.Id, new Money(12), Guid.NewGuid());
             Execute(_command);
         }
 
@@ -35,14 +35,14 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
            yield return new AccountWithdrawal(Aggregate.Id, _command.Id, _command.Amount);
         }
 
-        private PayForBillCommand _command;
+        private PayForOrderCommand _command;
         private Money _initialAmount;
 
 
         [Test]
         public void When_withdraw_too_much_Not_enough_money_error_is_occured()
         {
-            var cmd = new PayForBillCommand(Aggregate.Id, new Money(12000), Guid.NewGuid());
+            var cmd = new PayForOrderCommand(Aggregate.Id, new Money(12000), Guid.NewGuid());
 
             Assert.Throws<NotEnoughMoneyException>(() => Execute(cmd));
         }

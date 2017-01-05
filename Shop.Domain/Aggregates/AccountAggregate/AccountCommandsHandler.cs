@@ -13,7 +13,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
             Map<ReplenishAccountByCardCommand>(cmd => cmd.AccountId,
                 (cmd, agr) => agr.Replenish(cmd.Amount, cmd.Id));
 
-            Map<PayForBillCommand>(cmd => cmd.AccountId,
+            Map<PayForOrderCommand>(cmd => cmd.AccountId,
                 (cmd, agr) => agr.Withdraw(cmd.Amount, cmd.Id));
         }
     }

@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
-using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Infrastructure;
 using Shop.ReadModel.Context;
@@ -136,6 +130,7 @@ namespace Shop.ReadModel
             history.NewTotalQuantity = skuStock.TotalQuantity;
             history.NewReservedQuantity = skuStock.ReservedQuantity;
         }
+
         public void Handle(ReserveCanceled msg)
         {
             using (var context = _contextFactory())
