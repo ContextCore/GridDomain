@@ -119,7 +119,7 @@
     <Compile Include="Aggregates\SkuStockAggregate\Commands\TakeReservedStockCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CancelPendingOrderCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CompletePendingOrderCommand.cs" />
-    <Compile Include="Aggregates\UserAggregate\Events\BuyNowOrderAdded.cs" />
+    <Compile Include="Aggregates\UserAggregate\Events\SkuPurchaseOrdered.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\BuySkuNowCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CreateUserCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\UserCreated.cs" />

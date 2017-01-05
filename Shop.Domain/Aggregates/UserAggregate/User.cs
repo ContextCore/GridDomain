@@ -6,6 +6,11 @@ using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Aggregates.UserAggregate
 {
+    public interface IDefaultStockProvider
+    {
+        Guid GetStockForSku(Guid skuId);
+    }
+
     public class User : Aggregate
     {
         private ILogger _logger = LogManager.GetLogger();
@@ -20,9 +25,9 @@ namespace Shop.Domain.Aggregates.UserAggregate
                 Id = e.Id;
                 Account = e.Account;
             });
-            Apply<BuyNowOrderAdded>(e =>
+            Apply<SkuPurchaseOrdered>(e =>
             {
-                PendingOrders[e.OrderId] = new PendingOrder(e.OrderId, e.SkuId, e.Quantity);
+                PendingOrders[e.OrderId] = new PendingOrder(e.OrderId, e.SkuId, e.Quantity,e.StockId);
             });
             Apply<PendingOrderCanceled>(e =>
             {
@@ -41,9 +46,9 @@ namespace Shop.Domain.Aggregates.UserAggregate
             RaiseEvent(new UserCreated(id, login, account));
         }
 
-        public void BuyNow(Guid skuId, int quantity)
+        public void BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
         {
-            RaiseEvent(new BuyNowOrderAdded(Id,skuId,quantity,Guid.NewGuid()));
+            RaiseEvent(new SkuPurchaseOrdered(Id,skuId,quantity,Guid.NewGuid(),stockProvider.GetStockForSku(skuId)));
         }
 
         public void CompleteOrder(Guid orderId)
