@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using NMoneys;
 
-namespace Shop.Domain.Sagas
+namespace Shop.Domain.DomainServices
 {
     //must not change state after method invocation 
     public interface IPriceCalculator

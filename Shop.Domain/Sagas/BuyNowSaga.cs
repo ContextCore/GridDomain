@@ -18,14 +18,15 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Commands;
 using Shop.Domain.Aggregates.UserAggregate.Events;
+using Shop.Domain.DomainServices;
 
 namespace Shop.Domain.Sagas
 {
-    class BuyNowSaga : Saga<BuyStockSagaData>
+    public class BuyNowSaga : Saga<BuyNowSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
             = SagaExtensions.CreateDescriptor<BuyNowSaga,
-                                              BuyStockSagaData,
+                                              BuyNowSagaData,
                                               SkuPurchaseOrdered>(new BuyNowSaga(null));
 
         public BuyNowSaga(IPriceCalculator calculator)
@@ -48,10 +49,8 @@ namespace Shop.Domain.Sagas
              Event(() => ReserveTaken);
 
             During(ReceivingPurchaseOrder,
-                When(PurchaseOrdered).Then(ctx =>
+                When(PurchaseOrdered).Then((state, domainEvent) =>
                 {
-                    var state = ctx.Instance;
-                    var domainEvent = ctx.Data;
                     state.AccountId = domainEvent.AccountId;
                     state.OrderId = domainEvent.OrderId;
                     state.Quantity = domainEvent.Quantity;
@@ -63,9 +62,8 @@ namespace Shop.Domain.Sagas
                 }).TransitionTo(CreatingOrder));
 
             During(CreatingOrder,
-                When(OrderCreated).Then(ctx =>
+                When(OrderCreated).Then((state,e) =>
                 {
-                    var state = ctx.Instance;
                     var totalPrice = calculator.CalculatePrice(state.SkuId, state.Quantity);
                     Dispatch(new AddItemToOrderCommand(state.OrderId,
                                                        state.SkuId,
@@ -74,9 +72,8 @@ namespace Shop.Domain.Sagas
                 }).TransitionTo(AddingOrderItems));
 
             During(AddingOrderItems,
-                   When(ItemAdded).Then(ctx =>
+                   When(ItemAdded).Then((state,e) =>
                    {
-                       var state = ctx.Instance;
                        Dispatch(new ReserveStockCommand(state.StockId,state.UserId,state.Quantity));
                    }).TransitionTo(Reserving));
 
@@ -92,13 +89,13 @@ namespace Shop.Domain.Sagas
                    .TransitionTo(Paying));
 
             During(Paying,
-                When(OrderPaid).Then((state, @event) =>
+                When(OrderPaid).Then((state, e) =>
                 {
                     Dispatch(new TakeReservedStockCommand(state.StockId, state.ReserveId));
                 }).TransitionTo(TakingStock));
 
             During(TakingStock,
-                When(ReserveTaken).Then((state, @event) =>
+                When(ReserveTaken).Then((state, e) =>
                 {
                     Dispatch(new CompleteOrderCommand(state.OrderId));
                     Dispatch(new CompletePendingOrderCommand(state.UserId,state.OrderId));
