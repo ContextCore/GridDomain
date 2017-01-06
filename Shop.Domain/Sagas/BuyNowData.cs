@@ -4,9 +4,9 @@ using NMoneys;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowSagaData : ISagaState
+    public class BuyNowData : ISagaState
     {
-        public BuyNowSagaData(string stateName)
+        public BuyNowData(string stateName)
         {
             CurrentStateName = stateName;
         }

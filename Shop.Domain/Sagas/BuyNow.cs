@@ -22,14 +22,14 @@ using Shop.Domain.DomainServices;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowSaga : Saga<BuyNowSagaData>
+    public class BuyNow : Saga<BuyNowData>
     {
         public static readonly ISagaDescriptor Descriptor
-            = SagaExtensions.CreateDescriptor<BuyNowSaga,
-                                              BuyNowSagaData,
-                                              SkuPurchaseOrdered>(new BuyNowSaga(null));
+            = SagaExtensions.CreateDescriptor<BuyNow,
+                                              BuyNowData,
+                                              SkuPurchaseOrdered>(new BuyNow(null));
 
-        public BuyNowSaga(IPriceCalculator calculator)
+        public BuyNow(IPriceCalculator calculator)
         {
              Command<CreateOrderCommand>();
              Command<AddItemToOrderCommand>();

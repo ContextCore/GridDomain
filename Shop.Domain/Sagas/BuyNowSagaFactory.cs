@@ -6,8 +6,8 @@ using Shop.Domain.DomainServices;
 namespace Shop.Domain.Sagas
 {
     public class BuyNowSagaFactory :
-        ISagaFactory<ISagaInstance<BuyNowSaga, BuyNowSagaData>, SagaDataAggregate<BuyNowSagaData>>,
-        ISagaFactory<ISagaInstance<BuyNowSaga, BuyNowSagaData>, SkuPurchaseOrdered>
+        ISagaFactory<ISagaInstance<BuyNow, BuyNowData>, SagaDataAggregate<BuyNowData>>,
+        ISagaFactory<ISagaInstance<BuyNow, BuyNowData>, SkuPurchaseOrdered>
     {
         private readonly IPriceCalculator _priceCalculator;
 
@@ -16,16 +16,16 @@ namespace Shop.Domain.Sagas
             _priceCalculator = priceCalculator;
         }
 
-        public ISagaInstance<BuyNowSaga, BuyNowSagaData> Create(SagaDataAggregate<BuyNowSagaData> message)
+        public ISagaInstance<BuyNow, BuyNowData> Create(SagaDataAggregate<BuyNowData> message)
         {
-            return SagaInstance.New(new BuyNowSaga(_priceCalculator), message);
+            return SagaInstance.New(new BuyNow(_priceCalculator), message);
 
         }
 
-        public ISagaInstance<BuyNowSaga, BuyNowSagaData> Create(SkuPurchaseOrdered message)
+        public ISagaInstance<BuyNow, BuyNowData> Create(SkuPurchaseOrdered message)
         {
-            var sagaState = new BuyNowSagaData(nameof(BuyNowSaga.ReceivingPurchaseOrder));
-            var dataAggregate = new SagaDataAggregate<BuyNowSagaData>(message.SagaId,sagaState);
+            var sagaState = new BuyNowData(nameof(BuyNow.ReceivingPurchaseOrder));
+            var dataAggregate = new SagaDataAggregate<BuyNowData>(message.SagaId,sagaState);
             return Create(dataAggregate);
         }
     }

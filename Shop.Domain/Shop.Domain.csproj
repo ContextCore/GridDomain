@@ -132,8 +132,8 @@
     <Compile Include="Aggregates\UserAggregate\User.cs" />
     <Compile Include="Aggregates\UserAggregate\UserCommandsHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sagas\BuyNowSaga.cs" />
-    <Compile Include="Sagas\BuyNowSagaData.cs" />
+    <Compile Include="Sagas\BuyNow.cs" />
+    <Compile Include="Sagas\BuyNowData.cs" />
     <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="DomainServices\IPriceCalculator.cs" />
     <Compile Include="DomainServices\SkuPriceNotFoundException.cs" />

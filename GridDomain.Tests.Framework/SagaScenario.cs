@@ -34,7 +34,11 @@ namespace GridDomain.Tests.Framework
 
             foreach(var startMessageType in descriptor.StartMessages)
                     producer.Register(startMessageType,
-                                      msg => (ISagaInstance<TSaga, TData>)dynamicfactory.Create(msg));
+                        msg =>
+                        {
+                            var saga = dynamicfactory.Create((dynamic)msg);
+                            return (ISagaInstance<TSaga, TData>) saga;
+                        });
 
             return new SagaScenario<TSaga, TData, TFactory>(producer);
         }
@@ -71,7 +75,7 @@ namespace GridDomain.Tests.Framework
 
            //When
            foreach(var evt in ReceivedEvents)
-                SagaInstance.Transit(evt);
+                SagaInstance.Transit((dynamic)evt);
 
             //Then
            ProducedCommands = SagaInstance.CommandsToDispatch.ToArray();
