@@ -20,14 +20,14 @@ using Shop.Domain.Aggregates.UserAggregate.Commands;
 namespace Shop.Domain.Sagas
 {
 
-    class BuyStockSaga : Saga<BuyStockSagaData>
+    class BuyNowSaga : Saga<BuyStockSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
-            = SagaExtensions.CreateDescriptor<BuyStockSaga,
+            = SagaExtensions.CreateDescriptor<BuyNowSaga,
                                               BuyStockSagaData,
-                                              SkuPurchaseOrdered>(new BuyStockSaga(null));
+                                              SkuPurchaseOrdered>(new BuyNowSaga(null));
 
-        public BuyStockSaga(IPriceCalculator calculator)
+        public BuyNowSaga(IPriceCalculator calculator)
         {
             Command<ReserveStockCommand>();
             Command<PayForOrderCommand>();
@@ -36,6 +36,7 @@ namespace Shop.Domain.Sagas
             Event(() => PurchaseOrdered);
             Event(() => ItemAdded);
             Event(() => OrderCreated);
+            Event(() => StockReserved);
 
             During(ReceivingPurchaseOrder,
                 When(PurchaseOrdered).Then(ctx =>
@@ -64,18 +65,18 @@ namespace Shop.Domain.Sagas
                 }).TransitionTo(AddingOrderItems));
 
             During(AddingOrderItems,
-                When(ItemAdded).Then(ctx =>
-                {
-                    var state = ctx.Instance;
-                    Dispatch(new ReserveStockCommand(state.StockId,state.UserId,state.Quantity));
-                }).TransitionTo(Reserving));
+                   When(ItemAdded).Then(ctx =>
+                   {
+                       var state = ctx.Instance;
+                       Dispatch(new ReserveStockCommand(state.StockId,state.UserId,state.Quantity));
+                   }).TransitionTo(Reserving));
 
-          //  During(Reserving,
-          //         When(StockReserved).Then(ctx =>
-          //         {
-          //             Dispatch(new PayForOrderCommand(state.StockId, state.UserId, state.Quantity));
-          //         }).TransitionTo(Reserving));
-          //
+            During(Reserving,
+                   When(StockReserved).Then(ctx =>
+                   {
+                    //   Dispatch(new PayForOrderCommand(state.StockId, state.UserId, state.Quantity));
+                   }).TransitionTo(Reserving));
+          
 
         }
 

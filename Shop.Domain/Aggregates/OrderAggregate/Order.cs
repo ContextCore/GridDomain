@@ -35,6 +35,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             });
 
             Apply<OrderCompleted>( e => Status = e.Status);
+            Apply<TotalCalculated>( e => TotalPrice = e.TotalPrice);
         }
 
         private Money CalculateTotalPrice()
@@ -48,13 +49,19 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             RaiseEvent(new OrderCreated(id, number,user));
         }
 
+        //any discounting logic can be placed here, such as "buy 2 items for price of 1
+        //calculate total call is last oin order lifetime, it means order is ready to be paid
+        public void CalculateTotal()
+        {
+            RaiseEvent(new TotalCalculated(Id, CalculateTotalPrice()));
+        }
+
         public void AddItem(Guid sku, int quantity, Money totalPrice)
         {
             if (quantity <= 0) throw new InvalidQuantityException();
             if (totalPrice < Money.Zero()) throw new InvalidMoneyException();
             if (Status != OrderStatus.Created) throw new CantAddItemsToClosedOrder();
 
-           
             RaiseEvent(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
         }
 

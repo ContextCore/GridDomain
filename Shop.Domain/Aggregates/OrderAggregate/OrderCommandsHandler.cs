@@ -15,8 +15,12 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             Map<AddItemToOrderCommand>(c => c.OrderId,
                                       (c,a) => a.AddItem(c.SkuId, c.Quantity, c.TotalPrice));
 
+            Map<CalculateOrderTotalCommand>(c => c.OrderId,
+                                      (c, a) => a.CalculateTotal());
+
             Map<CompleteOrderCommand>(c => c.OrderId,
                                       (c,a) => a.Complete());
+
         }
     }
 }
