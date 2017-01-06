@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NMoneys;
 
-namespace Shop.Domain.Sagas
+namespace Shop.Domain.DomainServices
 {
     public class InMemoryPriceCalculator: IPriceCalculator
     {

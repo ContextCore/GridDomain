@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="CannotFindFactoryForSagaCreation.cs" />
     <Compile Include="FactoryAlreadyRegisteredException.cs" />
+    <Compile Include="InstanceSagas\AutomatonymousExtensions.cs" />
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
     <Compile Include="InstanceSagas\ISagaState.cs" />
     <Compile Include="InstanceSagas\MessageReceivedData.cs" />

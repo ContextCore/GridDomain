@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Automatonymous.Binders;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using NMoneys;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.Domain.Aggregates.OrderAggregate;
@@ -23,24 +21,6 @@ using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Sagas
 {
-
-    public static class AutonomuousExtensions
-    {
-        /// <summary>
-        /// Adds a synchronous delegate activity to the event's behavior
-        /// </summary>
-        /// <typeparam name="TInstance">The state machine instance type</typeparam>
-        /// <typeparam name="TData">The event data type</typeparam>
-        /// <param name="binder">The event binder</param>
-        /// <param name="action">The synchronous delegate</param>
-        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> binder, Action<TInstance, TData> action) where TInstance : class
-        {
-            return binder.Add((Activity<TInstance, TData>) new ActionActivity<TInstance, TData>(ctx => action(ctx.Instance,ctx.Data)));
-        }
-    }
-
-
     class BuyNowSaga : Saga<BuyStockSagaData>
     {
         public static readonly ISagaDescriptor Descriptor
@@ -50,14 +30,22 @@ namespace Shop.Domain.Sagas
 
         public BuyNowSaga(IPriceCalculator calculator)
         {
-            Command<ReserveStockCommand>();
-            Command<PayForOrderCommand>();
-            Command<TakeReservedStockCommand>();
+             Command<CreateOrderCommand>();
+             Command<AddItemToOrderCommand>();
+             Command<ReserveStockCommand>();
+             Command<CalculateOrderTotalCommand>();
+             Command<PayForOrderCommand>();
+             Command<TakeReservedStockCommand>();
+             Command<CompleteOrderCommand>();
+             Command<CompletePendingOrderCommand>();
 
-            Event(() => PurchaseOrdered);
-            Event(() => ItemAdded);
-            Event(() => OrderCreated);
-            Event(() => StockReserved);
+             Event(() => PurchaseOrdered);
+             Event(() => ItemAdded);
+             Event(() => OrderCreated);
+             Event(() => StockReserved);
+             Event(() => OrderFinilized);
+             Event(() => OrderPaid);
+             Event(() => ReserveTaken);
 
             During(ReceivingPurchaseOrder,
                 When(PurchaseOrdered).Then(ctx =>
@@ -109,14 +97,13 @@ namespace Shop.Domain.Sagas
                     Dispatch(new TakeReservedStockCommand(state.StockId, state.ReserveId));
                 }).TransitionTo(TakingStock));
 
-
+            During(TakingStock,
+                When(ReserveTaken).Then((state, @event) =>
+                {
+                    Dispatch(new CompleteOrderCommand(state.OrderId));
+                    Dispatch(new CompletePendingOrderCommand(state.UserId,state.OrderId));
+                }).Finalize());
         }
-
-      // public Event<GotTiredEvent> GotTired { get; private set; }
-      // public Event<CoffeMadeEvent> CoffeReady { get; private set; }
-      // public Event<SleptWellEvent> SleptWell { get; private set; }
-      // public Event<Fault<GoSleepCommand>> SleptBad { get; private set; }
-      // public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
 
         public Event<SkuPurchaseOrdered> PurchaseOrdered { get; private set; }
         public Event<OrderCreated> OrderCreated { get; private set; }
@@ -124,6 +111,7 @@ namespace Shop.Domain.Sagas
         public Event<StockReserved> StockReserved { get; private set; }
         public Event<TotalCalculated> OrderFinilized { get; private set; }
         public Event<AccountWithdrawal> OrderPaid { get; private set; }
+        public Event<StockReserveTaken> ReserveTaken { get; private set; }
 
         public State ReceivingPurchaseOrder{ get; private set; }
         public State CreatingOrder { get; private set; }
@@ -131,18 +119,5 @@ namespace Shop.Domain.Sagas
         public State Reserving { get; private set; }
         public State Paying { get; private set; }
         public State TakingStock { get; private set; }
-    }
-
-    internal class BuyStockSagaData : ISagaState
-    {
-        public string CurrentStateName { get; set; }
-        public Guid UserId { get; set; }
-        public Guid SkuId { get; set; }
-        public Guid AccountId { get; set; }
-        public Guid OrderId { get; set; }
-        public Guid StockId { get; set; }
-        public int Quantity { get; set; }
-        public Guid ReserveId { get; set; }
-        public Money TotalOrderCost { get; set; }
     }
 }
