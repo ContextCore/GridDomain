@@ -96,7 +96,7 @@ namespace GridDomain.Node.Actors
         {
             try
             {
-                Saga.Transit(message);
+                Saga.Transit((dynamic)message);
             }
             catch (Exception ex)
             {

@@ -74,8 +74,10 @@ namespace GridDomain.Tests.Framework
                 SagaInstance = SagaProducer.Create(evt);
 
            //When
+
            foreach(var evt in ReceivedEvents)
-                SagaInstance.Transit((dynamic)evt);
+                //cast to allow dynamic to locate Transit method
+                (SagaInstance as ISagaInstance).Transit((dynamic)evt);
 
             //Then
            ProducedCommands = SagaInstance.CommandsToDispatch.ToArray();

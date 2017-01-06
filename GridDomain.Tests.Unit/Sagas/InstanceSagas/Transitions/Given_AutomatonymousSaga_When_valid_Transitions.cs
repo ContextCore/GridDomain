@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee);
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
-            given.SagaInstance.Transit(msg);
+            given.SagaInstance.Transit((dynamic)msg);
             Assert.AreEqual(given.SagaMachine.Coding.Name, given.SagaDataAggregate.Data.CurrentStateName);
         }
 

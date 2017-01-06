@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
         [Then]
         public void Null_message_Exception_occurs()
         {
-            Assert.Throws<NullMessageTransitException>(() => _given.SagaInstance.Transit(null));
+            Assert.Throws<NullMessageTransitException>(() => _given.SagaInstance.Transit((object)null));
         }
 
         [Then]

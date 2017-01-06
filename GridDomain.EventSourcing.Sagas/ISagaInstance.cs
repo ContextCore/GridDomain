@@ -11,7 +11,6 @@ namespace GridDomain.EventSourcing.Sagas
         IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
         void ClearCommandsToDispatch();
         IAggregate Data { get; }
-        void Transit(object message);
         void Transit<T>(T message) where T : class;
     }
 

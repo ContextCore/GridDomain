@@ -26,9 +26,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public readonly Saga<TSagaData> Machine;
         private readonly SagaDataAggregate<TSagaData> _dataAggregate;
-        private readonly MethodInfo _transitGenericMethodInfo = typeof(SagaInstance<TSaga, TSagaData>)
-                                                                .GetMethods()
-                                                                .Single(m => m.IsGenericMethod && m.Name == nameof(Transit));
 
         private static readonly ILogger Log = LogManager.GetLogger();
         
@@ -83,26 +80,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                 Log.Warn("Not initialized saga {Type} received a message {@Msg}", GetType().Name, msg);
             };
             return false;
-        }
-
-        public void Transit(object message)
-        {
-            if(message == null)
-                throw new NullMessageTransitException(_dataAggregate.Data);
-
-            var messageType = message.GetType();
-
-            var method = _transitGenericMethodInfo.MakeGenericMethod(messageType);
-
-            try
-            {
-                method.Invoke(this, new[] {message});
-            }
-            catch (TargetInvocationException e)
-            {
-                //catch special exception and rethrow, otherwise caller cannot handle it
-                ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-            }
         }
 
         public void Transit<TMessage>(TMessage message) where TMessage : class

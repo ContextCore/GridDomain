@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Unit.Sagas.StateSagas.Transitions
             var given = new Given_State_SoftareProgramming_Saga(SoftwareProgrammingSaga.States.MakingCoffee);
 
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
-            given.SagaMachine.Transit(msg);
+            given.SagaMachine.Transit((dynamic)msg);
             Assert.AreEqual(SoftwareProgrammingSaga.States.Coding, given.SagaMachine.State.MachineState);
         }
 

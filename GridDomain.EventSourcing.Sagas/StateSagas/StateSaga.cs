@@ -69,21 +69,6 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
 
         IAggregate ISagaInstance.Data => State;
 
-        private readonly MethodInfo _transitMethod;
-        public virtual void Transit(object msg)
-        {
-            MethodInfo genericTransit = _transitMethod.MakeGenericMethod(msg.GetType());
-            try
-            {
-                genericTransit.Invoke(this, new[] {msg});
-            }
-            catch (TargetInvocationException e)
-            {
-                //catch special exception and rethrow, otherwire caller cannot handle it
-                ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-            }
-        }
-
         public void Transit<T>(T message) where T : class
         {
            TransitState(message);
