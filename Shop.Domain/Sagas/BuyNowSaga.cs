@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Automatonymous;
+using Automatonymous.Activities;
+using Automatonymous.Binders;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using NMoneys;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
+using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
@@ -20,6 +23,23 @@ using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Sagas
 {
+
+    public static class AutonomuousExtensions
+    {
+        /// <summary>
+        /// Adds a synchronous delegate activity to the event's behavior
+        /// </summary>
+        /// <typeparam name="TInstance">The state machine instance type</typeparam>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="binder">The event binder</param>
+        /// <param name="action">The synchronous delegate</param>
+        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> binder, Action<TInstance, TData> action) where TInstance : class
+        {
+            return binder.Add((Activity<TInstance, TData>) new ActionActivity<TInstance, TData>(ctx => action(ctx.Instance,ctx.Data)));
+        }
+    }
+
 
     class BuyNowSaga : Saga<BuyStockSagaData>
     {
@@ -75,9 +95,20 @@ namespace Shop.Domain.Sagas
             During(Reserving,
                    When(StockReserved).Then(ctx =>
                    {
-                    //   Dispatch(new PayForOrderCommand(state.StockId, state.UserId, state.Quantity));
-                   }).TransitionTo(Reserving));
-          
+                       Dispatch(new CalculateOrderTotalCommand(ctx.Instance.OrderId));
+                   }),
+                   When(OrderFinilized).Then((state, domainEvent)  =>
+                   {
+                       Dispatch(new PayForOrderCommand(state.AccountId,domainEvent.TotalPrice,state.OrderId));
+                   })
+                   .TransitionTo(Paying));
+
+            During(Paying,
+                When(OrderPaid).Then((state, @event) =>
+                {
+                    Dispatch(new TakeReservedStockCommand(state.StockId, state.ReserveId));
+                }).TransitionTo(TakingStock));
+
 
         }
 
@@ -91,11 +122,12 @@ namespace Shop.Domain.Sagas
         public Event<OrderCreated> OrderCreated { get; private set; }
         public Event<ItemAdded> ItemAdded { get; private set; }
         public Event<StockReserved> StockReserved { get; private set; }
+        public Event<TotalCalculated> OrderFinilized { get; private set; }
+        public Event<AccountWithdrawal> OrderPaid { get; private set; }
 
         public State ReceivingPurchaseOrder{ get; private set; }
         public State CreatingOrder { get; private set; }
         public State AddingOrderItems { get; private set; }
-        public State CreatingBill { get; private set; }
         public State Reserving { get; private set; }
         public State Paying { get; private set; }
         public State TakingStock { get; private set; }

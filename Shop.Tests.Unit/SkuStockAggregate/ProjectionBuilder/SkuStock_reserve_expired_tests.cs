@@ -23,7 +23,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             _stockCreatedEvent = new SkuStockCreated(stockId, Guid.NewGuid(), 1, TimeSpan.FromDays(2));
             _stockAddedEvent = new StockAdded(stockId, 15, "test pack");
             _stockReservedEvent = new StockReserved(stockId, Guid.NewGuid(), DateTime.Now.AddDays(1),7);
-            _reserveCanceledEvent = new ReserveExpired(stockId, _stockReservedEvent.ClientId);
+            _reserveCanceledEvent = new ReserveExpired(stockId, _stockReservedEvent.ReserveId);
 
             ProjectionBuilder.Handle(_stockCreatedEvent);
             ProjectionBuilder.Handle(_stockAddedEvent);
@@ -69,7 +69,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         public void Then_reserve_row_is_removed()
         {
             using (var context = ContextFactory())
-                Assert.Null(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ClientId));
+                Assert.Null(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
 
         }
 

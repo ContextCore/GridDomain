@@ -107,7 +107,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         [Test]
         public void Reserve_expiration_event_should_have_reserve_id()
         {
-            Assert.AreEqual(_reserveStockCommand.CustomerId,_reserveExpiredEvent?.CustomerId);
+            Assert.AreEqual(_reserveStockCommand.CustomerId,_reserveExpiredEvent?.ReserveId);
         }
 
         [Test]

@@ -5,12 +5,12 @@ namespace Shop.Domain.Aggregates.AccountAggregate.Commands
 {
     public class PayForOrderCommand : ChargeAccountCommand
     {
-        public PayForOrderCommand(Guid accountId, Money amount, Guid billId)
+        public PayForOrderCommand(Guid accountId, Money amount, Guid orderId)
             : base(accountId, amount)
         {
-            BillId = billId;
+            OrderId = orderId;
         }
 
-        public Guid BillId { get; }
+        public Guid OrderId { get; }
     }
 }

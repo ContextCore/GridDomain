@@ -5,13 +5,13 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
 {
     public class TakeReservedStockCommand:Command
     {
-        public TakeReservedStockCommand(Guid stockId, int reserveId)
+        public TakeReservedStockCommand(Guid stockId, Guid customerId)
         {
             StockId = stockId;
-            ReserveId = reserveId;
+            CustomerId = customerId;
         }
 
         public Guid StockId { get; }
-        public int ReserveId { get; }
+        public Guid CustomerId { get; }
     }
 }

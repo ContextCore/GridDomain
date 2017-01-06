@@ -5,11 +5,11 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate.Events
 {
     public class ReserveCanceled:DomainEvent
     {
-        public Guid CustomerId { get; }
+        public Guid ReserveId { get; }
 
-        public ReserveCanceled(Guid sourceId, Guid customerId):base(sourceId)
+        public ReserveCanceled(Guid sourceId, Guid reserveId):base(sourceId)
         {
-            CustomerId = customerId;
+            ReserveId = reserveId;
         }
     }
 }

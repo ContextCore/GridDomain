@@ -87,7 +87,7 @@ namespace Shop.ReadModel
                 var reserve = new SkuReserve()
                 {
                     Created = msg.CreatedTime,
-                    CustomerId = msg.ClientId,
+                    CustomerId = msg.ReserveId,
                     ExpirationDate = msg.ExpirationDate,
                     Quantity = msg.Quantity,
                     SkuId = skuStock.SkuId,
@@ -139,7 +139,7 @@ namespace Shop.ReadModel
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -167,7 +167,7 @@ namespace Shop.ReadModel
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -195,7 +195,7 @@ namespace Shop.ReadModel
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -223,7 +223,7 @@ namespace Shop.ReadModel
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.CustomerId);
+                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 

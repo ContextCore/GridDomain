@@ -5,11 +5,11 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate.Events
 {
     public class ReserveRenewed : DomainEvent
     {
-        public Guid CustomerId { get; }
+        public Guid ReserveId { get; }
 
-        public ReserveRenewed(Guid sourceId, Guid customerId):base(sourceId)
+        public ReserveRenewed(Guid sourceId, Guid reserveId):base(sourceId)
         {
-            CustomerId = customerId;
+            ReserveId = reserveId;
         }
     }
 }

@@ -77,7 +77,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         public void Then_reserve_row_is_added()
         {
             using (var context = ContextFactory())
-                Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ClientId));
+                Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
 
         }
 
@@ -86,9 +86,9 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
             {
-                var reserve = context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ClientId);
+                var reserve = context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId);
 
-                Assert.AreEqual(_stockReservedEvent.ClientId, reserve.CustomerId);
+                Assert.AreEqual(_stockReservedEvent.ReserveId, reserve.CustomerId);
                 Assert.AreEqual(_stockCreatedEvent.SkuId, reserve.SkuId);
                 Assert.AreEqual(_stockReservedEvent.SourceId, reserve.StockId);
                 Assert.AreEqual(_stockReservedEvent.CreatedTime, reserve.Created);

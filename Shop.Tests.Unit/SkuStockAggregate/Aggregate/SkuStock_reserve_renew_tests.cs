@@ -48,7 +48,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
        [Test]
        public void Then_correct_events_should_be_raised()
         { 
-           var customerId = _stockReservedEvent.ClientId;
+           var customerId = _stockReservedEvent.ReserveId;
       
            var sourceId = _scenario.Aggregate.Id;
 

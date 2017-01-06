@@ -16,7 +16,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 
             var stockCreatedEvent = new SkuStockCreated(stockId, Guid.NewGuid(), 1, TimeSpan.FromDays(2));
             var stockReservedEvent = new StockReserved(stockId, Guid.NewGuid(), DateTime.Now.AddDays(1), 7);
-            var reserveRenewed = new ReserveRenewed(stockId, stockReservedEvent.ClientId);
+            var reserveRenewed = new ReserveRenewed(stockId, stockReservedEvent.ReserveId);
 
             ProjectionBuilder.Handle(stockCreatedEvent);
             ProjectionBuilder.Handle(stockReservedEvent);
