@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace Shop.Domain.Aggregates.UserAggregate
+namespace Shop.Domain.Aggregates.UserAggregate.Events
 {
     public class SkuPurchaseOrdered : DomainEvent
     {

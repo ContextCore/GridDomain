@@ -2,7 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using Shop.Domain.Aggregates.UserAggregate;
 
-namespace Shop.Domain.Aggregates.OrderAggregate
+namespace Shop.Domain.Aggregates.OrderAggregate.Events
 {
     public class OrderCompleted : DomainEvent
     {

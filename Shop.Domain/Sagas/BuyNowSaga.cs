@@ -16,6 +16,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Commands;
+using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Sagas
 {

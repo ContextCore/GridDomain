@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
+using Shop.Domain.Aggregates.OrderAggregate.Exceptions;
 using Shop.Infrastructure;
 
 namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands

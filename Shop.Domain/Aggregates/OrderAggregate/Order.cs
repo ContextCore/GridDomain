@@ -4,6 +4,7 @@ using System.Linq;
 using GridDomain.EventSourcing;
 using NMoneys;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
+using Shop.Domain.Aggregates.OrderAggregate.Exceptions;
 using Shop.Domain.Aggregates.UserAggregate;
 
 namespace Shop.Domain.Aggregates.OrderAggregate
