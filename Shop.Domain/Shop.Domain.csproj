@@ -137,6 +137,7 @@
     <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="DomainServices\IPriceCalculator.cs" />
     <Compile Include="DomainServices\SkuPriceNotFoundException.cs" />
+    <Compile Include="Sagas\BuyNowSagaFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scenarious.txt" />

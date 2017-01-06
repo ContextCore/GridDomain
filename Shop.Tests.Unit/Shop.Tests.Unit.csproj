@@ -197,6 +197,7 @@
     <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
+    <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_calculate_total_test.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
@@ -258,6 +259,10 @@
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+      <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
+      <Name>GridDomain.EventSourcing.Sagas</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>

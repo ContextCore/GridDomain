@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
@@ -23,6 +24,16 @@ namespace GridDomain.Tests.Framework
             DoublePrecision = 0.0001
         };
 
+        private static readonly ComparisonConfig DateCreated_IgnoreConfig = new ComparisonConfig
+        {
+            MembersToIgnore = new[]
+            {
+                nameof(DomainEvent.CreatedTime)
+            }.ToList(),
+            CustomComparers = new List<BaseTypeComparer>() { new GuidComparer(RootComparerFactory.GetRootComparer()) },
+            DoublePrecision = 0.0001
+        };
+
         /// <summary>
         ///     Compare events ignoring creation date
         /// </summary>
@@ -32,11 +43,24 @@ namespace GridDomain.Tests.Framework
                                          IEnumerable<DomainEvent> published,
                                          CompareLogic logic = null)
         {
-            CompareEventsByLogic(expected, published, logic ?? new CompareLogic(DateCreatedAndSagaId_IgnoreConfig));
+            CompareByLogic(expected, published, logic ?? new CompareLogic(DateCreatedAndSagaId_IgnoreConfig));
         }
 
-        private static void CompareEventsByLogic(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2,
-            CompareLogic compareLogic)
+        /// <summary>
+        ///     Compare events ignoring creation date
+        /// </summary>
+        /// <param name="expected"></param>
+        /// <param name="published"></param>
+        public static void CompareCommands(IEnumerable<ICommand> expected,
+                                         IEnumerable<ICommand> published,
+                                         CompareLogic logic = null)
+        {
+            CompareByLogic(expected, published, logic ?? new CompareLogic(DateCreated_IgnoreConfig));
+        }
+
+        private static void CompareByLogic<T>(IEnumerable<T> expected1, 
+                                              IEnumerable<T> published2,
+                                              CompareLogic compareLogic)
         {
             var expected = expected1.ToArray();
             var published = published2.ToArray();
@@ -71,7 +95,7 @@ namespace GridDomain.Tests.Framework
 
         public static void CompareEventsStrict(IEnumerable<DomainEvent> expected1, IEnumerable<DomainEvent> published2)
         {
-            CompareEventsByLogic(expected1, published2, new CompareLogic {Config = StrictConfig});
+            CompareByLogic(expected1, published2, new CompareLogic {Config = StrictConfig});
         }
     }
 }

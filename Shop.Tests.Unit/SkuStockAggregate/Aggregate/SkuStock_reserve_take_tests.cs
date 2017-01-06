@@ -13,7 +13,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
     {
         private TakeFromStockCommand _takeCommand;
         private int _initialStock;
-        private Scenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
 
         [SetUp]
         public void Given_sku_stock_with_amount_When_reserve_first_time()

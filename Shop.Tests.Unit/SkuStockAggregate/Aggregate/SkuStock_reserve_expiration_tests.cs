@@ -13,7 +13,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
     class SkuStock_reserve_expiration_tests
     {
         private int _initialStock;
-        private Scenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
         private DateTime _expirationDate;
         private Guid _aggregateId;
         private RaiseScheduledDomainEventCommand _raiseEventCommand;

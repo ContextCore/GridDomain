@@ -12,9 +12,9 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
     [TestFixture]
     public class Order_calculate_total_test
     {
-        private Scenario<Order, OrderCommandsHandler> NewScenario()
+        private AggregateScenario<Order, OrderCommandsHandler> NewScenario()
         {
-            return Scenario<Order, OrderCommandsHandler>.New(null,new OrderCommandsHandler(new InMemorySequenceProvider()));
+            return AggregateScenario<Order, OrderCommandsHandler>.New(null,new OrderCommandsHandler(new InMemorySequenceProvider()));
         }
 
         [Test]

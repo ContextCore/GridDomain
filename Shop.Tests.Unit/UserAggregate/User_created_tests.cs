@@ -20,12 +20,12 @@ namespace Shop.Tests.Unit.UserAggregate
     {
         private readonly Guid _stockId = Guid.NewGuid();
 
-        private Scenario<User, UserCommandsHandler> NewScenario()
+        private AggregateScenario<User, UserCommandsHandler> NewScenario()
         {
             var stockProviderMoq = new Mock<IDefaultStockProvider>();
             stockProviderMoq.Setup(p => p.GetStockForSku(It.IsAny<Guid>())).Returns(_stockId);
 
-            return Scenario<User, UserCommandsHandler>.New(null,
+            return AggregateScenario<User, UserCommandsHandler>.New(null,
                                                            new UserCommandsHandler(stockProviderMoq.Object));
         }
         [Test]

@@ -12,7 +12,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
     [TestFixture]
     class SkuStock_reserve_renew_tests
     {
-        private Scenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
         private DateTime _expirationDate;
         private ReserveStockCommand _reserveStockCommand;
         private StockReserved _stockReservedEvent;
