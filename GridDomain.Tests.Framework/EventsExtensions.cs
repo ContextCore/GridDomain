@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
 using NUnit.Framework;
@@ -31,6 +32,20 @@ namespace GridDomain.Tests.Framework
                 nameof(Command.Time),
                 nameof(Command.Id)
             }.ToList(),
+            CustomComparers = new List<BaseTypeComparer>()
+            {
+                new GuidComparer(RootComparerFactory.GetRootComparer()),
+                new DateTimeComparer(RootComparerFactory.GetRootComparer())
+            },
+            DoublePrecision = 0.0001
+        };
+
+        private static readonly ComparisonConfig IgnoreStateNameConfig = new ComparisonConfig
+        {
+            MembersToIgnore = new[]
+            {
+                nameof(ISagaState.CurrentStateName),
+            }.ToList(),
             CustomComparers = new List<BaseTypeComparer>() { new GuidComparer(RootComparerFactory.GetRootComparer()) },
             DoublePrecision = 0.0001
         };
@@ -57,6 +72,19 @@ namespace GridDomain.Tests.Framework
                                            CompareLogic logic = null)
         {
             CompareByLogic(expected, published, logic ?? new CompareLogic(DateCreated_IgnoreConfig));
+        }
+
+        public static void CompareState<T>(T expected,
+                                           T published,
+                                           CompareLogic logic = null)
+        {
+            CompareByLogic<T>(new[] {expected}, new []{published}, logic ?? new CompareLogic());
+        }
+        public static void CompareStateWithoutName<T>(T expected,
+                                        T published,
+                                        CompareLogic logic = null)
+        {
+            CompareByLogic<T>(new[] { expected }, new[] { published }, logic ?? new CompareLogic(IgnoreStateNameConfig));
         }
 
         private static void CompareByLogic<T>(IEnumerable<T> expected1, 

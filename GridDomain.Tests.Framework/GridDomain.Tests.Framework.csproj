@@ -156,6 +156,7 @@
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
+    <Compile Include="DateTimeComparer.cs" />
     <Compile Include="DateTimeDeltaComparer.cs" />
     <Compile Include="DateTimeOffsetDeltaComparer.cs" />
     <Compile Include="DebugLocalWaiter.cs" />

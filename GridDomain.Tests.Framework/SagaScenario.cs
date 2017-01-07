@@ -1,9 +1,15 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using Automatonymous;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using NUnit.Framework;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.Dsl;
 
 namespace GridDomain.Tests.Framework
 {
@@ -26,6 +32,16 @@ namespace GridDomain.Tests.Framework
             SagaProducer = producer;
         }
 
+        public TData GenerateState(string stateName,Func<ICustomizationComposer<TData>,IPostprocessComposer<TData>> fixtureConfig = null)
+        {
+            var fixture = new Fixture();
+            var composer = fixtureConfig?.Invoke(fixture.Build<TData>());
+            var generateState = composer.Create();
+
+            generateState.CurrentStateName = stateName;
+            return generateState;
+        }
+
         public static SagaScenario<TSaga, TData, TFactory> New(ISagaDescriptor descriptor,
                                                                TFactory factory = null)
         {
@@ -40,18 +56,30 @@ namespace GridDomain.Tests.Framework
                             return (ISagaInstance<TSaga, TData>) saga;
                         });
 
+            producer.Register(factory);
+
             return new SagaScenario<TSaga, TData, TFactory>(producer);
         }
 
         public SagaScenario<TSaga, TData, TFactory> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
-            SagaStateAggregate = CreateAggregate<SagaDataAggregate<TData>>();
+            SagaStateAggregate = CreateAggregate<SagaDataAggregate<TData>>(Guid.NewGuid());
             SagaStateAggregate.ApplyEvents(events);
             SagaStateAggregate.ClearEvents();
             return this;
         }
-     
+        public SagaScenario<TSaga, TData, TFactory> GivenState(Guid id, TData state)
+        {
+            InitialState = state;
+            SagaStateAggregate = CreateAggregate<SagaDataAggregate<TData>>(id);
+            SagaStateAggregate.ApplyEvents(new SagaTransitionEvent<TData>(SagaStateAggregate.Id, state));
+            SagaStateAggregate.ClearEvents();
+            return this;
+        }
+
+        public TData InitialState { get; private set; }
+
         public SagaScenario<TSaga, TData, TFactory> When(params DomainEvent[] events)
         {
             ReceivedEvents = events;
@@ -85,10 +113,43 @@ namespace GridDomain.Tests.Framework
            return this;
        }
 
-       public void Check()
-       {
-           EventsExtensions.CompareCommands(ExpectedCommands, ProducedCommands);
-       }
+        public SagaScenario<TSaga, TData, TFactory> CheckProducedCommands()
+        {
+            EventsExtensions.CompareCommands(ExpectedCommands, ProducedCommands);
+            return this;
+
+        }
+
+        public SagaScenario<TSaga, TData, TFactory> CheckProducedState(TData expectedState)
+        {
+            EventsExtensions.CompareState(expectedState, SagaInstance.Data.Data);
+            return this;
+        }
+      
+
+        public SagaScenario<TSaga, TData, TFactory> CheckProducedStateIsNotChanged()
+        {
+            EventsExtensions.CompareState(InitialState, SagaInstance.Data.Data);
+            return this;
+        }
+
+        public SagaScenario<TSaga, TData, TFactory> CheckProducedStateName(string stateName)
+        {
+            Assert.AreEqual(stateName, SagaInstance.Data.Data.CurrentStateName);
+            return this;
+        }
+        public SagaScenario<TSaga, TData, TFactory> CheckOnlyStateNameChanged(string stateName)
+        {
+            CheckProducedStateName(stateName);
+            EventsExtensions.CompareStateWithoutName(InitialState, SagaInstance.Data.Data);
+
+            return this;
+        }
+
+        public SagaScenario<TSaga, TData, TFactory> CheckProducedStateName(Func<TData> expectedStateProducer)
+        {
+            return CheckProducedState(expectedStateProducer());
+        }
 
         private static TFactory CreateSagaFactory()
         {
@@ -98,9 +159,9 @@ namespace GridDomain.Tests.Framework
 
             return (TFactory)constructorInfo.Invoke(null);
         }
-        private static T CreateAggregate<T>()
+        private static T CreateAggregate<T>(Guid id)
         {
-            return (T)(new AggregateFactory().Build(typeof(T), Guid.NewGuid(), null));
+            return (T)(new AggregateFactory().Build(typeof(T), id, null));
         }
 
     }
