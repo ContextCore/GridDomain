@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     [TestFixture]
+    [Ignore("Under development")]
     public class VersionedTypeSerializationBinderTests
     {
         

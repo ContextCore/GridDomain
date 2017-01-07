@@ -96,7 +96,8 @@ namespace GridDomain.Node.Actors
         {
             try
             {
-                Saga.Transit((dynamic)message);
+                //cast is need for dynamic call of Transit
+                (Saga as ISagaInstance).Transit((dynamic)message);
             }
             catch (Exception ex)
             {

@@ -54,7 +54,6 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
 
             Machine = new StateMachine<TSagaStates, TSagaTriggers>(State.MachineState);
             Machine.OnTransitioned(t => State.StateChanged(t.Trigger, t.Destination));
-            _transitMethod = GetType().GetMethod(nameof(TransitState), BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public TSagaStates DomainState => State.MachineState;

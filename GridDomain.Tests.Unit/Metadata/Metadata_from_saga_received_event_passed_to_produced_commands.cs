@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.Metadata
             _gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(),Guid.NewGuid(), SagaId);
             _gotTiredEventMetadata = new MessageMetadata(_gotTiredEvent.SourceId, BusinessDateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid());
 
-            var res = await GridNode.NewDebugWaiter(TimeSpan.FromHours(5))
+            var res = await GridNode.NewDebugWaiter()
                                     .Expect<IMessageMetadataEnvelop<MakeCoffeCommand>>()
                                     .Create()
                                     .Publish(_gotTiredEvent, _gotTiredEventMetadata);

@@ -14,6 +14,12 @@ namespace GridDomain.Tests.Unit.Sagas.StateSagas.SagaStateAggregate
     {
         private readonly Guid _sourceId = Guid.NewGuid();
 
+        [OneTimeSetUp]
+        public void Given_transitioned_event()
+        {
+            Init();    
+        }
+
         protected override IEnumerable<DomainEvent> Given()
         {
             yield return new SagaCreatedEvent<TestState>(TestState.Idle, _sourceId);

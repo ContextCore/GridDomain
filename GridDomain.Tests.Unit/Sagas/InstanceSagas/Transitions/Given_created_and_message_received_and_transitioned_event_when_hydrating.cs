@@ -9,19 +9,22 @@ using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
 {
+    [TestFixture]
     class Given_created_and_message_received_and_transitioned_event_when_hydrating : AggregateTest<SagaDataAggregate<SoftwareProgrammingSagaData>>
     {
-        private readonly Guid _sagaId;
-        private readonly SoftwareProgrammingSaga _machine;
-        private readonly SoftwareProgrammingSagaData _softwareProgrammingSagaData;
-        private readonly GotTiredEvent _message;
+        private Guid _sagaId;
+        private SoftwareProgrammingSaga _machine;
+        private SoftwareProgrammingSagaData _softwareProgrammingSagaData;
+        private GotTiredEvent _message;
 
-        public Given_created_and_message_received_and_transitioned_event_when_hydrating()
+        [OneTimeSetUp]
+        public void Given_created_and_message_received_and_transitioned_event()
         {
             _sagaId = Guid.NewGuid();
             _machine = new SoftwareProgrammingSaga();
             _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_machine.Sleeping.Name);
             _message = new GotTiredEvent(Guid.NewGuid());
+            Init();
         }
 
         protected override IEnumerable<DomainEvent> Given()
