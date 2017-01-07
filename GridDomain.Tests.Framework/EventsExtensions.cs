@@ -28,7 +28,8 @@ namespace GridDomain.Tests.Framework
         {
             MembersToIgnore = new[]
             {
-                nameof(DomainEvent.CreatedTime)
+                nameof(Command.Time),
+                nameof(Command.Id)
             }.ToList(),
             CustomComparers = new List<BaseTypeComparer>() { new GuidComparer(RootComparerFactory.GetRootComparer()) },
             DoublePrecision = 0.0001
@@ -52,8 +53,8 @@ namespace GridDomain.Tests.Framework
         /// <param name="expected"></param>
         /// <param name="published"></param>
         public static void CompareCommands(IEnumerable<ICommand> expected,
-                                         IEnumerable<ICommand> published,
-                                         CompareLogic logic = null)
+                                           IEnumerable<ICommand> published,
+                                           CompareLogic logic = null)
         {
             CompareByLogic(expected, published, logic ?? new CompareLogic(DateCreated_IgnoreConfig));
         }

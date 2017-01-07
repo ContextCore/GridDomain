@@ -19,7 +19,6 @@ namespace Shop.Tests.Unit.BuyNowSaga
         public void Given_sku_purchase_ordered_Then_buy_now_saga_is_created()
         {
             var factory = new BuyNowSagaFactory(new InMemoryPriceCalculator());
-
             var scenario = SagaScenario<BuyNow, BuyNowData, BuyNowSagaFactory>.New(BuyNow.Descriptor,factory);
 
             var orderId = Guid.NewGuid();
@@ -35,11 +34,10 @@ namespace Shop.Tests.Unit.BuyNowSaga
                                                  quantity,
                                                  orderId,
                                                  stockId,
-                                                 accountId)
-                               .CloneWithSaga(sagaId))
-                     .Then(new CreateOrderCommand(orderId,userId))
-                     .Run()
-                     .Check();
+                                                 accountId).CloneWithSaga(sagaId))
+                    .Then(new CreateOrderCommand(orderId,userId).CloneWithSaga(sagaId))
+                    .Run()
+                    .Check();
 
             Assert.IsNotNull(scenario.SagaInstance.Data);
             Assert.AreEqual(sagaId,scenario.SagaInstance.Data.Id);
@@ -50,10 +48,11 @@ namespace Shop.Tests.Unit.BuyNowSaga
             Assert.AreEqual(accountId, sagaState.AccountId);
             Assert.AreEqual(orderId, sagaState.OrderId);
             Assert.AreEqual(quantity, sagaState.Quantity);
-            Assert.AreEqual(userId, sagaState.ReserveId);
+            Assert.AreEqual(Guid.Empty, sagaState.ReserveId);
             Assert.AreEqual(skuId, sagaState.SkuId);
             Assert.AreEqual(stockId, sagaState.StockId);
             Assert.AreEqual(userId, sagaState.UserId);
         }
+
     }
 }
