@@ -48,6 +48,7 @@ namespace Shop.Domain.Sagas
              Event(() => OrderPaid);
              Event(() => ReserveTaken);
 
+
             During(ReceivingPurchaseOrder,
                 When(PurchaseOrdered).Then((state, domainEvent) =>
                 {
@@ -78,19 +79,27 @@ namespace Shop.Domain.Sagas
                    }).TransitionTo(Reserving));
 
             During(Reserving,
-                   When(StockReserved).Then((state, domainEvent) =>
+                When(StockReserved).Then((state, domainEvent) =>
+                {
+                    state.ReserveId = domainEvent.ReserveId;
+                    Dispatch(new CalculateOrderTotalCommand(state.OrderId));
+                }),
+                When(OrderFinilized).Then((state, domainEvent) =>
+                {
+                    Dispatch(new PayForOrderCommand(state.AccountId, domainEvent.TotalPrice, state.OrderId));
+                }));
+
+            CompositeEvent(() => OrderWasReserved, x => x.OrderWarReserved_Status, OrderFinilized, StockReserved);
+
+            During(Reserving,
+                   When(OrderWasReserved).Then(ctx =>
                    {
-                       state.ReserveId = domainEvent.ReserveId;
-                       Dispatch(new CalculateOrderTotalCommand(state.OrderId));
-                   }),
-                   When(OrderFinilized).Then((state, domainEvent)  =>
-                   {
-                       Dispatch(new PayForOrderCommand(state.AccountId,domainEvent.TotalPrice,state.OrderId));
-                   })
-                   .TransitionTo(Paying));
+                       int a = 1;
+                   } ).TransitionTo(Paying));
+
 
             During(Paying,
-                When(OrderPaid).Then((state, e) =>
+                When(OrderPaid, ctx => ctx.Data.ChangeId == ctx.Instance.OrderId).Then((state, e) =>
                 {
                     Dispatch(new TakeReservedStockCommand(state.StockId, state.ReserveId));
                 }).TransitionTo(TakingStock));
@@ -104,6 +113,7 @@ namespace Shop.Domain.Sagas
         }
 
         public Event<SkuPurchaseOrdered> PurchaseOrdered { get; private set; }
+        public Event OrderWasReserved { get; private set; }
         public Event<OrderCreated> OrderCreated { get; private set; }
         public Event<ItemAdded> ItemAdded { get; private set; }
         public Event<StockReserved> StockReserved { get; private set; }

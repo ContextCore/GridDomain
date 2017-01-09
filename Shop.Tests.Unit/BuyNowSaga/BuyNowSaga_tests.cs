@@ -149,7 +149,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                                    .CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
-                    .CheckOnlyStateNameChanged(nameof(BuyNow.Reserving));
+                    .CheckOnlyStateNameChanged(nameof(BuyNow.Paying));
         }
 
 
@@ -206,12 +206,11 @@ namespace Shop.Tests.Unit.BuyNowSaga
             var state = scenario.GenerateState(nameof(BuyNow.Paying));
 
             scenario.GivenState(sagaId, state)
-                    .When(new AccountWithdrawal(state.AccountId, state.ReserveId, new Money(100))
-                                   .CloneWithSaga(sagaId))
-                     .Then(new TakeReservedStockCommand(state.StockId, state.ReserveId))
-                     .Run()
-                     .CheckProducedCommands()
-                     .CheckOnlyStateNameChanged(nameof(BuyNow.TakingStock));
+                    .When(new AccountWithdrawal(state.AccountId, state.OrderId, new Money(100)).CloneWithSaga(sagaId))
+                    .Then(new TakeReservedStockCommand(state.StockId, state.ReserveId).CloneWithSaga(sagaId))
+                    .Run()
+                    .CheckProducedCommands()
+                    .CheckOnlyStateNameChanged(nameof(BuyNow.TakingStock));
         }
 
         [Test]

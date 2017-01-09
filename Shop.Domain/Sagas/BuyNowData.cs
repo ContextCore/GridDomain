@@ -1,4 +1,5 @@
 ﻿using System;
+using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using NMoneys;
 
@@ -19,5 +20,6 @@ namespace Shop.Domain.Sagas
         public Guid StockId { get; set; }
         public int Quantity { get; set; }
         public Guid ReserveId { get; set; }
+        public CompositeEventStatus OrderWarReserved_Status { get; set; }
     }
 }
