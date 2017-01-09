@@ -26,7 +26,7 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
                 .Given(new OrderCreated(sourceId, 123, Guid.NewGuid()),
                     new ItemAdded(sourceId,Guid.NewGuid(),1,new Money(50), 1))
                 .When(new CalculateOrderTotalCommand(sourceId))
-                .Then(new TotalCalculated(sourceId, new Money(50)))
+                .Then(new OrderTotalCalculated(sourceId, new Money(50)))
                 .Run()
                 .Check();
         }

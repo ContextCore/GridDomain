@@ -36,8 +36,7 @@ namespace GridDomain.Tests.Framework
         {
             var fixture = new Fixture();
             var composer = fixtureConfig?.Invoke(fixture.Build<TData>());
-            var generateState = composer.Create();
-
+            var generateState = composer != null ? composer.Create() : fixture.Create<TData>();
             generateState.CurrentStateName = stateName;
             return generateState;
         }

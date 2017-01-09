@@ -21,7 +21,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
                 (c, a) => a.Reserve(c.CustomerId, c.Quantity, c.ReservationStartTime));
 
             Map<TakeReservedStockCommand>(c => c.StockId,
-                (c, a) => a.Take(c.CustomerId));
+                (c, a) => a.Take(c.ReserveId));
 
             this.MapFutureEvents();
         }

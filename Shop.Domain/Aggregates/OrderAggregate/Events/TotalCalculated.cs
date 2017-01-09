@@ -4,11 +4,11 @@ using NMoneys;
 
 namespace Shop.Domain.Aggregates.OrderAggregate.Events
 {
-    public class TotalCalculated : DomainEvent
+    public class OrderTotalCalculated : DomainEvent
     {
         public Money TotalPrice { get; }
 
-        public TotalCalculated(Guid sourceId, Money totalPrice) : base(sourceId)
+        public OrderTotalCalculated(Guid sourceId, Money totalPrice) : base(sourceId)
         {
             TotalPrice = totalPrice;
         }

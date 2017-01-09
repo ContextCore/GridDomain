@@ -78,9 +78,10 @@ namespace Shop.Domain.Sagas
                    }).TransitionTo(Reserving));
 
             During(Reserving,
-                   When(StockReserved).Then(ctx =>
+                   When(StockReserved).Then((state, domainEvent) =>
                    {
-                       Dispatch(new CalculateOrderTotalCommand(ctx.Instance.OrderId));
+                       state.ReserveId = domainEvent.ReserveId;
+                       Dispatch(new CalculateOrderTotalCommand(state.OrderId));
                    }),
                    When(OrderFinilized).Then((state, domainEvent)  =>
                    {
@@ -106,7 +107,7 @@ namespace Shop.Domain.Sagas
         public Event<OrderCreated> OrderCreated { get; private set; }
         public Event<ItemAdded> ItemAdded { get; private set; }
         public Event<StockReserved> StockReserved { get; private set; }
-        public Event<TotalCalculated> OrderFinilized { get; private set; }
+        public Event<OrderTotalCalculated> OrderFinilized { get; private set; }
         public Event<AccountWithdrawal> OrderPaid { get; private set; }
         public Event<StockReserveTaken> ReserveTaken { get; private set; }
 

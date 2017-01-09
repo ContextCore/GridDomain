@@ -36,7 +36,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             });
 
             Apply<OrderCompleted>( e => Status = e.Status);
-            Apply<TotalCalculated>( e => TotalPrice = e.TotalPrice);
+            Apply<OrderTotalCalculated>( e => TotalPrice = e.TotalPrice);
         }
 
         private Money CalculateTotalPrice()
@@ -54,7 +54,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
         //calculate total call is last oin order lifetime, it means order is ready to be paid
         public void CalculateTotal()
         {
-            RaiseEvent(new TotalCalculated(Id, CalculateTotalPrice()));
+            RaiseEvent(new OrderTotalCalculated(Id, CalculateTotalPrice()));
         }
 
         public void AddItem(Guid sku, int quantity, Money totalPrice)
