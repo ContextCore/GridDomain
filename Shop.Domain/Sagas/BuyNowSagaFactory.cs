@@ -24,7 +24,7 @@ namespace Shop.Domain.Sagas
 
         public ISagaInstance<BuyNow, BuyNowData> Create(SkuPurchaseOrdered message)
         {
-            var sagaState = new BuyNowData(nameof(BuyNow.ReceivingPurchaseOrder));
+            var sagaState = new BuyNowData(nameof(BuyNow.Initial));
             var dataAggregate = new SagaDataAggregate<BuyNowData>(message.SagaId,sagaState);
             return Create(dataAggregate);
         }

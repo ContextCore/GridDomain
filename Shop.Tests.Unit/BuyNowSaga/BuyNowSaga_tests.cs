@@ -170,7 +170,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                                    state.ReserveId,
                                    DateTime.UtcNow.AddDays(1),
                                    state.Quantity)
-                          .CloneWithSaga(sagaId))
+                                   .CloneWithSaga(sagaId))
                     .Then(new PayForOrderCommand(state.AccountId, totalPrice, state.OrderId)
                                    .CloneWithSaga(sagaId),
                           new CalculateOrderTotalCommand(state.OrderId)
@@ -223,7 +223,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
             scenario.GivenState(sagaId, state)
                     .When(new StockReserveTaken(state.StockId, state.ReserveId).CloneWithSaga(sagaId))
                     .Then(new CompleteOrderCommand(state.OrderId).CloneWithSaga(sagaId),
-                           new CompletePendingOrderCommand(state.UserId,state.OrderId).CloneWithSaga(sagaId))
+                          new CompletePendingOrderCommand(state.UserId,state.OrderId).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
                     .CheckOnlyStateNameChanged(nameof(BuyNow.Final));

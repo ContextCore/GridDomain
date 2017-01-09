@@ -49,7 +49,7 @@ namespace Shop.Domain.Sagas
              Event(() => ReserveTaken);
 
 
-            During(ReceivingPurchaseOrder,
+            During(Initial,
                 When(PurchaseOrdered).Then((state, domainEvent) =>
                 {
                     state.AccountId = domainEvent.AccountId;
@@ -121,7 +121,6 @@ namespace Shop.Domain.Sagas
         public Event<AccountWithdrawal> OrderPaid { get; private set; }
         public Event<StockReserveTaken> ReserveTaken { get; private set; }
 
-        public State ReceivingPurchaseOrder{ get; private set; }
         public State CreatingOrder { get; private set; }
         public State AddingOrderItems { get; private set; }
         public State Reserving { get; private set; }

@@ -57,7 +57,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _messagesToEventsMap[typeof(TEventData)] = machineEvent;
             _acceptedMessageMap.Add(new MessageBind(typeof(TEventData),fieldName));
 
-            base.Event(propertyExpression);
+          //  base.Event(propertyExpression);
 
             DuringAny(
                      When(machineEvent).Then(
