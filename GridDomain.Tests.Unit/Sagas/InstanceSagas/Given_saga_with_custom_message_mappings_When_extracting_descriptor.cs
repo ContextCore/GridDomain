@@ -15,8 +15,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [OneTimeSetUp]
         public void ExtractDescriptor()
         {
-            var saga = new CustomRoutesSoftwareProgrammingSaga();
-            _descriptor = saga.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>(typeof(GotTiredEvent), typeof(SleptWellEvent));
+            _descriptor = CustomRoutesSoftwareProgrammingSaga.Descriptor;
         }
 
         [Then]

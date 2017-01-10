@@ -9,29 +9,30 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
-        public static readonly ISagaDescriptor Descriptor
-                                            = SagaExtensions.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga,
-                                                SoftwareProgrammingSagaData,
-                                                GotTiredEvent,
-                                                SleptWellEvent>();
+        public static readonly ISagaDescriptor Descriptor  = CreateDescriptor();
 
-      
+        private static SagaDescriptor CreateDescriptor()
+        {
+            var descriptor = SagaDescriptor.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga,
+                                                             SoftwareProgrammingSagaData>();
+
+            descriptor.AddStartMessage<GotTiredEvent>();
+            descriptor.AddStartMessage<SleptWellEvent>();
+            descriptor.AddCommand<MakeCoffeCommand>();
+            descriptor.AddCommand<GoSleepCommand>();
+
+            descriptor.MapDomainEvent(s => s.GotTired, e => e.PersonId);
+            descriptor.MapDomainEvent(s => s.CoffeReady, e => e.ForPersonId);
+            descriptor.MapDomainEvent(s => s.SleptWell, e => e.SofaId);
+            descriptor.MapDomainEvent(s => s.CoffeNotAvailable, e => e.CoffeMachineId);
+            descriptor.MapDomainEvent(s => s.Custom, e => e.SagaId);
+
+            return descriptor;
+        }
+
 
         public CustomRoutesSoftwareProgrammingSaga()
         {
-            Event(() => GotTired, e => e.PersonId);
-            Event(() => CoffeReady, e => e.ForPersonId);
-            Event(() => SleptWell, e => e.SofaId);
-            Event(() => CoffeNotAvailable, e => e.CoffeMachineId);
-            Event(() => Custom, e => e.SagaId);
-
-            State(() => Coding);
-            State(() => MakingCoffee);
-            State(() => Sleeping);
-
-            Command<MakeCoffeCommand>();
-            Command<GoSleepCommand>();
-
             During(Coding,
                 When(GotTired).Then(context =>
                 {
@@ -56,8 +57,6 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                 When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
                     .TransitionTo(Coding));
         }
-
-       
 
         public Event<GotTiredEvent> GotTired { get; private set; }
         public Event<CustomEvent> Custom { get; private set; }

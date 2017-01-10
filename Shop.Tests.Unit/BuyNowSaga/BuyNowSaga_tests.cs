@@ -165,17 +165,13 @@ namespace Shop.Tests.Unit.BuyNowSaga
             var state = scenario.GenerateState(nameof(BuyNow.Reserving), c => c.Without(s => s.OrderWarReservedStatus));
             var totalPrice = new Money(100);
 
-            var orderTotalCalculated = (OrderTotalCalculated) new OrderTotalCalculated(state.OrderId, totalPrice).CloneWithSaga(sagaId);
-
-            var stockReserved = (StockReserved)new StockReserved(state.StockId, 
-                                                  state.ReserveId,
-                                                  DateTime.UtcNow.AddDays(1),
-                                                  state.Quantity)
-                                .CloneWithSaga(sagaId);
-
             scenario.GivenState(sagaId, state)
-                    .When(orderTotalCalculated,
-                          stockReserved)
+                    .When(new OrderTotalCalculated(state.OrderId, totalPrice).CloneWithSaga(sagaId),
+                          new StockReserved(state.StockId, 
+                                            state.ReserveId,
+                                            DateTime.UtcNow.AddDays(1),
+                                            state.Quantity)
+                                            .CloneWithSaga(sagaId))
                     .Then(new PayForOrderCommand(state.AccountId, totalPrice, state.OrderId)
                                    .CloneWithSaga(sagaId),
                           new CalculateOrderTotalCommand(state.OrderId)

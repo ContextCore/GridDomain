@@ -17,8 +17,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [OneTimeSetUp]
         public void ExtractDescriptor()
         {
-            var saga = new SoftwareProgrammingSaga();
-            _descriptor = saga.CreateDescriptor<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>(typeof(GotTiredEvent),typeof(SleptWellEvent));
+            _descriptor = SoftwareProgrammingSaga.Descriptor;
         }
 
         [Then]

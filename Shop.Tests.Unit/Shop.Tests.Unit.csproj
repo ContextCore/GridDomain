@@ -205,11 +205,7 @@
     <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
-    <Compile Include="BuyNowSaga\BuyNowPure.cs" />
-    <Compile Include="BuyNowSaga\BuyNowPureSaga_tests.cs" />
     <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
-    <Compile Include="BuyNowSaga\Instance.cs" />
-    <Compile Include="BuyNowSaga\TestStateMachine.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_calculate_total_test.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
@@ -251,7 +247,6 @@
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_wihout_sku_entry_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_errors_tests.cs" />
-    <Compile Include="BuyNowSaga\When_combining_events_with_an_int_for_state.cs" />
     <Compile Include="UserAggregate\User_created_tests.cs" />
     <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

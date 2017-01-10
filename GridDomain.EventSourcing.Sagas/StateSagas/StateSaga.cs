@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.CQRS;
 using Stateless;
@@ -68,9 +69,10 @@ namespace GridDomain.EventSourcing.Sagas.StateSagas
 
         IAggregate ISagaInstance.Data => State;
 
-        public void Transit<T>(T message) where T : class
+        public Task Transit<T>(T message) where T : class
         {
            TransitState(message);
+            return Task.CompletedTask;
         }
 
         protected void Dispatch(Command command)

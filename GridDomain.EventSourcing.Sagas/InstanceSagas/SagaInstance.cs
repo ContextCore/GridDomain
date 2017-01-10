@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 using Automatonymous;
 using CommonDomain;
 using GridDomain.CQRS;
@@ -82,7 +83,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             return false;
         }
 
-        public void Transit<TMessage>(TMessage message) where TMessage : class
+        public async Task Transit<TMessage>(TMessage message) where TMessage : class
         {
             //Saga is not initialized
             if (_dataAggregate.Id == Guid.Empty)
@@ -97,7 +98,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                 return;
             }
 
-            Machine.RaiseByMessage(_dataAggregate.Data, message);
+            await Machine.RaiseByMessage(_dataAggregate.Data, message);
             _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id))
                                                             .Cast<ICommand>()
                                                             .ToList();

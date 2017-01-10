@@ -12,26 +12,23 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     public class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
     {
-        public static readonly ISagaDescriptor Descriptor
-            = SagaExtensions.CreateDescriptor<SoftwareProgrammingSaga,
-                                              SoftwareProgrammingSagaData,
-                                              GotTiredEvent,
-                                              SleptWellEvent>();
-        
+        public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
+
+        private static ISagaDescriptor CreateDescriptor()
+        {
+            var descriptor = SagaDescriptor.CreateDescriptor<SoftwareProgrammingSaga,
+                                                             SoftwareProgrammingSagaData>();
+
+            descriptor.AddStartMessage<GotTiredEvent>();
+            descriptor.AddStartMessage<SleptWellEvent>();
+
+            descriptor.AddCommand<MakeCoffeCommand>();
+            descriptor.AddCommand<GoSleepCommand>();
+
+            return descriptor;
+        }
         public SoftwareProgrammingSaga()
         { 
-            Event(() => GotTired);
-            Event(() => CoffeReady);
-            Event(() => SleptWell);
-            Event(() => CoffeNotAvailable);
-            Event(() => SleptBad);
-
-            State(() => Coding);
-            State(() => MakingCoffee);
-            State(() => Sleeping);
-
-            Command<MakeCoffeCommand>();
-            Command<GoSleepCommand>();
 
             During(Coding,
                 When(GotTired).Then(context =>

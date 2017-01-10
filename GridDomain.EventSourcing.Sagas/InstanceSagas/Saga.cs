@@ -2,14 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Automatonymous;
+using Automatonymous.Events;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Logging;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class Saga<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
+    public class Saga<TSagaData>: AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
         private readonly List<Command> _commandsToDispatch = new List<Command>();
         public IReadOnlyCollection<Command> CommandsToDispatch => _commandsToDispatch;
@@ -27,59 +29,39 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         protected Saga()
         {
             InstanceState(d => d.CurrentStateName);
+            foreach (var machineEvent in Events.Where(e =>
+            {
+                var type = e.GetType();
+                return type.IsGenericType && typeof(DataEvent<>).IsAssignableFrom(type.GetGenericTypeDefinition());
+            }))
+            {
+                MapDomainEvent((dynamic) machineEvent);
+            }
+
+            foreach (var state in States)
+            {
+                WhenEnter(state, x => x.Then(ctx =>  OnStateEnter.Invoke(this, new StateChangedData<TSagaData>(state, ctx.Instance))));
+            }
         }
 
-        private readonly List<Type> _dispatchedCommands = new List<Type>(); 
-        private readonly List<MessageBind> _acceptedMessageMap = new List<MessageBind>(); 
         private readonly IDictionary<Type,Event> _messagesToEventsMap = new Dictionary<Type, Event>();
-        public IReadOnlyCollection<MessageBind> AcceptedMessageMap => _acceptedMessageMap;
 
-
-        public IReadOnlyCollection<Type> DispatchedCommands => _dispatchedCommands;
-        protected void Command<TCommand>()
+        private void MapDomainEvent<TDomainEvent>(Event<TDomainEvent> fromMachineEvent)
         {
-            _dispatchedCommands.Add(typeof(TCommand));
-        } 
-
-        protected override void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression)
-        {
-            Event(propertyExpression, nameof(DomainEvent.SagaId));
-        }
-
-        protected void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression, Expression<Func<TEventData,object>> fieldExpr)
-        {
-            Event(propertyExpression, MemberNameExtractor.GetName(fieldExpr));
-        }
-
-        protected void Event<TEventData>(Expression<Func<Event<TEventData>>> propertyExpression, string fieldName)
-        {
-            var machineEvent = propertyExpression.Compile().Invoke();
-            _messagesToEventsMap[typeof(TEventData)] = machineEvent;
-            _acceptedMessageMap.Add(new MessageBind(typeof(TEventData),fieldName));
-
-          //  base.Event(propertyExpression);
+            _messagesToEventsMap[typeof(TDomainEvent)] = fromMachineEvent;
 
             DuringAny(
-                     When(machineEvent).Then(
+                     When(fromMachineEvent).Then(
                          ctx =>
                              OnEventReceived.Invoke(this,
-                                 new EventReceivedData<TEventData, TSagaData>(ctx.Event, ctx.Data, ctx.Instance))));
+                                 new EventReceivedData<TSagaData>(ctx.Event, ctx.Data, ctx.Instance))));
         }
 
         public event EventHandler<StateChangedData<TSagaData>> OnStateEnter = delegate { };
         public event EventHandler<EventReceivedData<TSagaData>> OnEventReceived = delegate { };
         public event EventHandler<MessageReceivedData<TSagaData>> OnMessageReceived = delegate { };
 
-        protected override void State(Expression<Func<State>> propertyExpression)
-        {
-            var state = propertyExpression.Compile().Invoke();
-            WhenEnter(state, x => x.Then(ctx => 
-                OnStateEnter.Invoke(this, new StateChangedData<TSagaData>(state, ctx.Instance))));
-
-            base.State(propertyExpression);
-        }
-
-        public void RaiseByMessage<TMessage>(TSagaData progress, TMessage message) where TMessage : class
+        public async Task RaiseByMessage<TMessage>(TSagaData progress, TMessage message) where TMessage : class
         {
             if (message == null)
                 throw new NullMessageTransitException(progress);
@@ -90,8 +72,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             try
             {
-                if (!this.RaiseEvent(progress, machineEvent, message).Wait(1000))
-                    throw new SagaTransitionTimeoutException(machineEvent.Name,message);
+                await this.RaiseEvent(progress, machineEvent, message);
             }
             catch(Exception ex)
             {

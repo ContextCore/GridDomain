@@ -63,7 +63,6 @@
     <Compile Include="InstanceSagas\Saga.cs" />
     <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
     <Compile Include="InstanceSagas\SagaMessageReceivedEvent.cs" />
-    <Compile Include="InstanceSagas\SagaExtensions.cs" />
     <Compile Include="InstanceSagas\SagaInstance.cs" />
     <Compile Include="InstanceSagas\SagaTransitionEvent.cs" />
     <Compile Include="InstanceSagas\SagaTransitionException.cs" />

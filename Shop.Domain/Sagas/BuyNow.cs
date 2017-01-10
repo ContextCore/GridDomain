@@ -24,31 +24,29 @@ namespace Shop.Domain.Sagas
 {
     public class BuyNow : Saga<BuyNowData>
     {
-        public static readonly ISagaDescriptor Descriptor
-            = SagaExtensions.CreateDescriptor<BuyNow,
-                                              BuyNowData,
-                                              SkuPurchaseOrdered>(new BuyNow(null));
+        public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
+
+        private static SagaDescriptor CreateDescriptor()
+        {
+            var descriptor = SagaDescriptor.CreateDescriptor<BuyNow,BuyNowData>();
+
+            descriptor.AddStartMessage<SkuPurchaseOrdered>();
+
+            descriptor.AddCommand<CreateOrderCommand>();
+            descriptor.AddCommand<AddItemToOrderCommand>();
+            descriptor.AddCommand<ReserveStockCommand>();
+            descriptor.AddCommand<CalculateOrderTotalCommand>();
+            descriptor.AddCommand<PayForOrderCommand>();
+            descriptor.AddCommand<TakeReservedStockCommand>();
+            descriptor.AddCommand<CompleteOrderCommand>();
+            descriptor.AddCommand<CompletePendingOrderCommand>();
+
+            return descriptor;
+        }
 
         public BuyNow(IPriceCalculator calculator)
         {
-             Command<CreateOrderCommand>();
-             Command<AddItemToOrderCommand>();
-             Command<ReserveStockCommand>();
-             Command<CalculateOrderTotalCommand>();
-             Command<PayForOrderCommand>();
-             Command<TakeReservedStockCommand>();
-             Command<CompleteOrderCommand>();
-             Command<CompletePendingOrderCommand>();
-
-             Event(() => PurchaseOrdered);
-             Event(() => ItemAdded);
-             Event(() => OrderCreated);
-             Event(() => StockReserved);
-             Event(() => OrderFinilized);
-             Event(() => OrderPaid);
-             Event(() => ReserveTaken);
-             CompositeEvent(() => OrderWasReserved, x => x.OrderWarReservedStatus, OrderFinilized, StockReserved);
-
+            CompositeEvent(() => OrderWasReserved, x => x.OrderWarReservedStatus, OrderFinilized, StockReserved);
 
             During(Initial,
                 When(PurchaseOrdered).Then((state, domainEvent) =>

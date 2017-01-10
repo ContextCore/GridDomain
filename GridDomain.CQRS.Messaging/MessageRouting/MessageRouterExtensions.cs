@@ -14,12 +14,5 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             return router.RegisterHandler<TMessage,THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
         }
-
-        public static Task RegisterSaga<TSaga,TData>(this IMessagesRouter router,params Type[] startMessages) 
-            where TSaga : Saga<TData>, new()
-            where TData : class, ISagaState
-        {
-            return router.RegisterSaga(new TSaga().CreateDescriptor<TSaga,TData>(startMessages), typeof(TSaga).Name);
-        }
     }
 }
