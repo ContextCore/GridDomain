@@ -30,11 +30,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Akka, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.1.2\lib\net45\Akka.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.TestKit, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.2.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,8 +66,29 @@
   <ItemGroup>
     <Compile Include="SqlSequence_tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserFlows\User_buy_now.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
+      <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
+      <Name>GridDomain.CQRS.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
+      <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>
+      <Name>GridDomain.Tests.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shop.Composition\Shop.Composition.csproj">
+      <Project>{b2a45ba3-c914-429e-bcc4-df1199e6d072}</Project>
+      <Name>Shop.Composition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shop.Domain\Shop.Domain.csproj">
+      <Project>{ee0b4c0c-7368-4316-8c95-410c91b3e683}</Project>
+      <Name>Shop.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shop.Infrastructure\Shop.Infrastructure.csproj">
       <Project>{dd89ff59-69d6-443d-ba52-669a41f62adc}</Project>
       <Name>Shop.Infrastructure</Name>

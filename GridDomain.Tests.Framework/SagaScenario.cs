@@ -7,6 +7,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using KellermanSoftware.CompareNetObjects;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Dsl;
@@ -44,19 +45,8 @@ namespace GridDomain.Tests.Framework
         public static SagaScenario<TSaga, TData, TFactory> New(ISagaDescriptor descriptor,
                                                                TFactory factory = null)
         {
-            dynamic dynamicfactory = factory ?? CreateSagaFactory();
             var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
-
-            foreach(var startMessageType in descriptor.StartMessages)
-                    producer.Register(startMessageType,
-                        msg =>
-                        {
-                            var saga = dynamicfactory.Create((dynamic)msg);
-                            return (ISagaInstance<TSaga, TData>) saga;
-                        });
-
-            producer.Register(factory);
-
+            producer.RegisterAll<TFactory,TData>(factory ?? CreateSagaFactory());
             return new SagaScenario<TSaga, TData, TFactory>(producer);
         }
 
@@ -119,9 +109,9 @@ namespace GridDomain.Tests.Framework
 
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckProducedState(TData expectedState)
+        public SagaScenario<TSaga, TData, TFactory> CheckProducedState(TData expectedState, CompareLogic customCompareLogic = null)
         {
-            EventsExtensions.CompareState(expectedState, SagaInstance.Data.Data);
+            EventsExtensions.CompareState(expectedState, SagaInstance.Data.Data, customCompareLogic);
             return this;
         }
       

@@ -7,9 +7,9 @@ namespace Shop.Domain.Sagas
 {
     public class BuyNowData : ISagaState
     {
-        public BuyNowData(string stateName)
+        public BuyNowData(string currentStateName)
         {
-            CurrentStateName = stateName;
+            CurrentStateName = currentStateName;
         }
 
         public string CurrentStateName { get; set; }
@@ -20,6 +20,6 @@ namespace Shop.Domain.Sagas
         public Guid StockId { get; set; }
         public int Quantity { get; set; }
         public Guid ReserveId { get; set; }
-        public int OrderWarReserved_Status { get; set; }
+        public int OrderWarReservedStatus { get; set; }
     }
 }

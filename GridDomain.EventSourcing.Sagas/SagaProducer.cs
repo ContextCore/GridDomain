@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
@@ -12,10 +13,22 @@ namespace GridDomain.EventSourcing.Sagas
             Descriptor = descriptor;
         }
 
-        public SagaProducer(ISagaDescriptor descriptor, Func<object, TSaga> commonFactory) : this(descriptor)
+        public void RegisterAll<TFactory, TData>(TFactory factory) where TFactory : ISagaFactory<TSaga, SagaDataAggregate<TData>> where TData : ISagaState
         {
-            foreach(var msgType in descriptor.StartMessages)
-                Register(msgType, commonFactory);
+            dynamic dynamicfactory = factory;
+
+            foreach (var startMessageType in Descriptor.StartMessages)
+            {
+                var expectedFactoryType = typeof(ISagaFactory<,>).MakeGenericType(typeof(TSaga), startMessageType);
+                if (!expectedFactoryType.IsInstanceOfType(factory))
+                    throw new FactoryNotSupportStartMessageException(factory.GetType(), startMessageType);
+
+                //TODO: think how to avoid dynamic call and call method need by message
+                Register(startMessageType,
+                    msg => (TSaga) dynamicfactory.Create((dynamic) msg));
+            }
+
+            Register(factory);
         }
 
         public void Register<TMessage>(ISagaFactory<TSaga, TMessage> factory)
@@ -23,7 +36,7 @@ namespace GridDomain.EventSourcing.Sagas
             Register(typeof(TMessage), m => factory.Create((TMessage) m));
         }
 
-        public void Register(Type dataType, Func<object, TSaga> factory)
+        private void Register(Type dataType, Func<object, TSaga> factory)
         {
             if (_factories.ContainsKey(dataType))
                 throw new FactoryAlreadyRegisteredException(dataType);
@@ -44,5 +57,17 @@ namespace GridDomain.EventSourcing.Sagas
         public ISagaDescriptor Descriptor { get; }
 
         public IReadOnlyCollection<Type> KnownDataTypes => _factories.Keys;
+    }
+
+    public class FactoryNotSupportStartMessageException : Exception
+    {
+        public Type FactoryType { get; }
+        public Type StartMessageType { get;}
+
+        public FactoryNotSupportStartMessageException(Type factoryType, Type startMessageType)
+        {
+            FactoryType = factoryType;
+            StartMessageType = startMessageType;
+        }
     }
 }

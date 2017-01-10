@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Tests.Framework;
+using KellermanSoftware.CompareNetObjects;
 using NMoneys;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
@@ -34,6 +36,8 @@ namespace Shop.Tests.Unit.BuyNowSaga
             var state = scenario.GenerateState(nameof(BuyNow.CreatingOrder),
                                                c => c.Without(d => d.ReserveId));
 
+            var compare_ignore_complex_event_status = new CompareLogic() {Config = new ComparisonConfig() {MembersToIgnore = new List<string>() {nameof(state.OrderWarReservedStatus)} } };
+
             scenario.When(new SkuPurchaseOrdered(state.UserId,
                                                  state.SkuId,
                                                  state.Quantity,
@@ -43,7 +47,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                     .Then(new CreateOrderCommand(state.OrderId, state.UserId).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
-                    .CheckProducedState(state);
+                    .CheckProducedState(state, compare_ignore_complex_event_status);
 
             Assert.AreEqual(sagaId, scenario.SagaInstance.Data.Id);
         }
@@ -132,7 +136,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
         }
 
         [Test]
-        public void Given_reserving_state_When_order_total_calculated_Then_reserve_stock_command_is_issued()
+        public void Given_reserving_state_When_order_total_calculated_Then_reserve_stock_command_is_issued_And_state_is_not_changed()
         {
             var scenario = NewScenario();
 
@@ -149,35 +153,36 @@ namespace Shop.Tests.Unit.BuyNowSaga
                                    .CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
-                    .CheckOnlyStateNameChanged(nameof(BuyNow.Paying));
+                    .CheckOnlyStateNameChanged(nameof(BuyNow.Reserving));
         }
 
-
         [Test]
-        public void Given_reserving_state_When_order_total_calculated_and__order_item_added_Then_state_is_changed()
+        public async Task Given_reserving_state_When_order_total_calculated_and__order_item_added_Then_state_is_changed()
         {
             var scenario = NewScenario();
 
             var sagaId = Guid.NewGuid();
-            var state = scenario.GenerateState(nameof(BuyNow.Reserving));
-
+            var state = scenario.GenerateState(nameof(BuyNow.Reserving), c => c.Without(s => s.OrderWarReservedStatus));
             var totalPrice = new Money(100);
 
+            var orderTotalCalculated = (OrderTotalCalculated) new OrderTotalCalculated(state.OrderId, totalPrice).CloneWithSaga(sagaId);
+
+            var stockReserved = (StockReserved)new StockReserved(state.StockId, 
+                                                  state.ReserveId,
+                                                  DateTime.UtcNow.AddDays(1),
+                                                  state.Quantity)
+                                .CloneWithSaga(sagaId);
+
             scenario.GivenState(sagaId, state)
-                    .When(new OrderTotalCalculated(state.OrderId, totalPrice)
-                                   .CloneWithSaga(sagaId),
-                          new StockReserved(state.StockId,
-                                   state.ReserveId,
-                                   DateTime.UtcNow.AddDays(1),
-                                   state.Quantity)
-                                   .CloneWithSaga(sagaId))
+                    .When(orderTotalCalculated,
+                          stockReserved)
                     .Then(new PayForOrderCommand(state.AccountId, totalPrice, state.OrderId)
                                    .CloneWithSaga(sagaId),
                           new CalculateOrderTotalCommand(state.OrderId)
                                    .CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
-                    .CheckOnlyStateNameChanged(nameof(BuyNow.Paying));
+                    .CheckOnlyStateNameChanged(nameof(BuyNow.Paying));  
         }
 
         [Test]

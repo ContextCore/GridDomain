@@ -47,6 +47,7 @@ namespace Shop.Domain.Sagas
              Event(() => OrderFinilized);
              Event(() => OrderPaid);
              Event(() => ReserveTaken);
+             CompositeEvent(() => OrderWasReserved, x => x.OrderWarReservedStatus, OrderFinilized, StockReserved);
 
 
             During(Initial,
@@ -87,15 +88,11 @@ namespace Shop.Domain.Sagas
                 When(OrderFinilized).Then((state, domainEvent) =>
                 {
                     Dispatch(new PayForOrderCommand(state.AccountId, domainEvent.TotalPrice, state.OrderId));
-                }));
-
-            CompositeEvent(() => OrderWasReserved, x => x.OrderWarReserved_Status, OrderFinilized, StockReserved);
-
-            During(Reserving,
-                   When(OrderWasReserved).Then(ctx =>
-                   {
-                       int a = 1;
-                   } ).TransitionTo(Paying));
+                }),
+                When(OrderWasReserved).Then(ctx =>
+                {
+                    int a = 1;
+                } ).TransitionTo(Paying));
 
 
             During(Paying,
