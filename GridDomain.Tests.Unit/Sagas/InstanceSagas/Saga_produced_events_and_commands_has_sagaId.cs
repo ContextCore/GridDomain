@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var sourceId = Guid.NewGuid();
             var domainEvent = new GotTiredEvent(sourceId).CloneWithSaga(sagaId);
             var expectedCommand =
-                             (await GridNode.NewDebugWaiter()
+                             (await GridNode.NewDebugWaiter(TimeSpan.FromHours(10))
                                             .Expect<MakeCoffeCommand>()
                                             .Create()
                                             .Publish(domainEvent)).Message<MakeCoffeCommand>();

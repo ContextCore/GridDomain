@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using Akka.Monitoring;
@@ -30,9 +31,8 @@ namespace GridDomain.Node.Actors
     /// </summary>
     /// <typeparam name="TSaga"></typeparam>
     /// <typeparam name="TSagaState"></typeparam>
-    public class SagaActor<TSaga, TSagaState> :
-         EventSourcedActor<TSagaState> where TSaga : class,ISagaInstance 
-        where TSagaState : AggregateBase
+    public class SagaActor<TSaga, TSagaState>: EventSourcedActor<TSagaState> where TSaga : class,ISagaInstance 
+                                                                             where TSagaState : AggregateBase
     {
         private readonly ISagaProducer<TSaga> _producer;
         private TSaga _saga;
@@ -40,7 +40,7 @@ namespace GridDomain.Node.Actors
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly Dictionary<Type, string> _sagaIdFields;
         private readonly ProcessEntry _sagaProducedEntry;
-        private ProcessEntry _exceptionOnTransit;
+        private readonly ProcessEntry _exceptionOnTransit;
 
         private Guid GetSagaId(DomainEvent msg)
         {
@@ -76,28 +76,55 @@ namespace GridDomain.Node.Actors
                     State = _saga.Data;
                 }
 
-                ProcessSaga(msg, m.Metadata);
+                //block any other executing until saga completes transition
+                BecomeStacked(SagaProcessWaiting);
+                ProcessSaga(msg, m.Metadata).PipeTo(Self);
 
             }, e => GetSagaId(e.Message) == Id);
-
             Command<IMessageMetadataEnvelop<IFault>>(m =>
             {
                 var fault = m.Message;
                 Monitor.IncrementMessagesReceived();
-                ProcessSaga(fault, m.Metadata);
-
+                //block any other executing until saga completes transition
+                ProcessSaga(fault, m.Metadata).PipeTo(Self);
+                BecomeStacked(SagaProcessWaiting);
             }, fault => fault.Message.SagaId == Id);
 
             _sagaProducedEntry = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
-
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name, SagaActorLiterals.CreatedFaultForSagaTransit, SagaActorLiterals.SagaTransitCasedAndError);
         }
-        private void ProcessSaga(object message, IMessageMetadata messageMetadata)
+
+        private void SagaProcessWaiting()
+        {
+            CommandAny(o =>
+            {
+                o.Match()
+                    .With<SagaProcessResult>(r =>
+                    {
+                        Stash.UnstashAll();
+                        UnbecomeStacked();
+                    })
+                    .Default(m => Stash.Stash());
+            });
+        }
+
+        private class SagaProcessResult
+        {
+            public SagaProcessResult(Exception error)
+            {
+                Error = error;
+            }
+
+            public Exception Error { get; }
+            public static SagaProcessResult OK { get; } = new SagaProcessResult(null);
+        }
+
+        private async Task<SagaProcessResult> ProcessSaga(object message, IMessageMetadata messageMetadata)
         {
             try
             {
                 //cast is need for dynamic call of Transit
-                (Saga as ISagaInstance).Transit((dynamic)message);
+                await (Saga as ISagaInstance).Transit((dynamic)message);
             }
             catch (Exception ex)
             {
@@ -109,12 +136,13 @@ namespace GridDomain.Node.Actors
                 var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
 
                 Publisher.Publish(fault, metadata);
-                return;
+                return new SagaProcessResult(ex);
             }
 
             var stateChange = ProcessSagaStateChange(messageMetadata);
-
             ProcessSagaCommands(messageMetadata);
+
+            return SagaProcessResult.OK;
         }
 
         private void ProcessSagaCommands(IMessageMetadata messageMetadata)
