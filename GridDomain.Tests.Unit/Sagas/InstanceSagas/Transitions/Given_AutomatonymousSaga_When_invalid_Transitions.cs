@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
         [Then]
         public void Null_message_Exception_occurs()
         {
-            Assert.ThrowsAsync<NullMessageTransitException>(async () => await  _given.SagaInstance.Transit((object)null));
+            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await  _given.SagaInstance.Transit((object)null));
         }
 
         [Then]

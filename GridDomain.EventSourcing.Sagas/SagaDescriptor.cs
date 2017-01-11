@@ -45,11 +45,13 @@ namespace GridDomain.EventSourcing.Sagas
 
         public void AddAcceptedMessage(Type messageType, string correlationFieldName = nameof(DomainEvent.SagaId))
         {
+            _acceptedMessages.RemoveAll(b => b.MessageType == messageType);
             _acceptedMessages.Add(new MessageBind(messageType,correlationFieldName));
         }
 
         public void AddProduceCommandMessage(Type messageType)
         {
+            _producedMessages.RemoveAll(t => t == messageType);
             _producedMessages.Add(messageType);
         }
         public void AddCommand<T>() where T:ICommand
@@ -59,6 +61,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         public void AddStartMessage(Type messageType)
         {
+            _startMessages.RemoveAll(t => t == messageType);
             _startMessages.Add(messageType);
         }
         public void AddStartMessage<T>()

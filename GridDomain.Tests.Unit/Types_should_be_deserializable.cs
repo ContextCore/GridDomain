@@ -31,7 +31,6 @@ namespace GridDomain.Tests.Unit
                 yield return typeof(SagaStateAggregate<,>);
                 yield return typeof(SagaCreatedEvent<>);
                 yield return typeof(SagaMessageReceivedEvent<>);
-                yield return typeof(SagaTransitionEvent<>);
                 yield return typeof(SagaTransitionEvent<,>);
             }
         }
@@ -52,14 +51,8 @@ namespace GridDomain.Tests.Unit
             CheckAll<object>(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>),
                              typeof(SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
                              typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>),
-                             typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>),
                              typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>)
                             );
-        }
-        [Test]
-        public void Saga_events_classes_should_be_deserializable()
-        {
-            CheckAll<object>(typeof(SagaTransitionEvent<SoftwareProgrammingSagaData>));
         }
 
         [Test]
@@ -98,7 +91,6 @@ namespace GridDomain.Tests.Unit
             {
                 Assembly.GetAssembly(typeof(GridDomainNode)),
                 Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SagaTransitionEvent<>)),
                 Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
                 Assembly.GetAssembly(typeof(SampleAggregate)),
                 Assembly.GetAssembly(typeof(ISagaProducer<>)),

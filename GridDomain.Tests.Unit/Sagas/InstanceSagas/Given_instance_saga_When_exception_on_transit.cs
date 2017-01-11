@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
             SaveInJournal<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
-            var waiter = GridNode.NewWaiter(TimeSpan.FromSeconds(5))
+            var waiter = GridNode.NewWaiter(TimeSpan.FromSeconds(1000))
                                  .Expect<IFault<CoffeMakeFailedEvent>>()
                                  .Create();
 

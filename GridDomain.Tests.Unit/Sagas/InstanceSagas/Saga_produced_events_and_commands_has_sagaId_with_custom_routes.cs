@@ -47,19 +47,5 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             Assert.AreEqual(gotTiredEvent.PersonId, expectedCreatedEvent.SagaId);
         }
 
-        [Test]
-        public async Task When_raise_saga_than_saga_transitioned_event_should_have_right_sagaId()
-        {
-            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-
-            var expectedTransitionedEvent =
-                       (await GridNode.NewDebugWaiter()
-                                      .Expect<SagaTransitionEvent<SoftwareProgrammingSagaData>>()
-                                      .Create()
-                                      .Publish(gotTiredEvent)).Message<SagaTransitionEvent<SoftwareProgrammingSagaData>>();
-
-            Assert.AreEqual(gotTiredEvent.PersonId, expectedTransitionedEvent.SagaId);
-        }
-
     }
 }

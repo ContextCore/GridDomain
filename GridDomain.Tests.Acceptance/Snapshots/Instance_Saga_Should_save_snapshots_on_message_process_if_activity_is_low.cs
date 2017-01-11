@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                             _sagaId);
 
             var waiterB = GridNode.NewWaiter()
-                                  .Expect<SagaTransitionEvent<SoftwareProgrammingSagaData>>()
+                                  .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                                   .Create();
 
             Publisher.Publish(sagaContinueEvent);

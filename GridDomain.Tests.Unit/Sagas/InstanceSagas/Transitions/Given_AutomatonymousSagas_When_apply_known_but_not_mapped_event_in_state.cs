@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -24,28 +25,18 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
 
         private readonly Given_AutomatonymousSaga _given;
         private static GotTiredEvent _gotTiredEvent;
-        private IAggregate SagaDataAggregate => _given.SagaDataAggregate;
 
-        private static void When_apply_known_but_not_mapped_event_in_state(ISagaInstance sagaInstance)
+        private static async Task When_apply_known_but_not_mapped_event_in_state(ISagaInstance sagaInstance)
         {
             _gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            sagaInstance.Transit(_gotTiredEvent);
+            await sagaInstance.Transit(_gotTiredEvent);
         }
 
+        
         [Then]
-        public void State_not_changed()
+        public async Task Transition_raises_an_error()
         {
-            When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
-            Assert.AreEqual(_given.SagaMachine.Sleeping.Name, _given.SagaDataAggregate.Data.CurrentStateName);
-        }
-
-        [Then]
-        public void State_events_containes_received_message()
-        {
-            SagaDataAggregate.ClearUncommittedEvents();
-            When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance);
-            var @event = SagaDataAggregate.GetUncommittedEvents().OfType<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>().First();
-            Assert.AreEqual(_gotTiredEvent, @event.Message);
+            Assert.ThrowsAsync<SagaTransitionException>(async () => await When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance));
         }
     }
 }

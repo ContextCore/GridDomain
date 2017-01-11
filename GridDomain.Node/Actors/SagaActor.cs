@@ -69,6 +69,8 @@ namespace GridDomain.Node.Actors
             Command<IMessageMetadataEnvelop<DomainEvent>>(m =>
             {
                 var msg = m.Message;
+                var metadata = m.Metadata;
+
                 Monitor.IncrementMessagesReceived();
                 if (_sagaStartMessageTypes.Contains(msg.GetType()))
                 {
@@ -77,17 +79,19 @@ namespace GridDomain.Node.Actors
                 }
 
                 //block any other executing until saga completes transition
-                BecomeStacked(() => SagaProcessWaiting(m, m.Metadata));
+                BecomeStacked(() => SagaProcessWaiting(msg, metadata));
                 ProcessSaga(msg).PipeTo(Self);
 
             }, e => GetSagaId(e.Message) == Id);
             Command<IMessageMetadataEnvelop<IFault>>(m =>
             {
                 var fault = m.Message;
+                var metadata = m.Metadata;
+
                 Monitor.IncrementMessagesReceived();
                 //block any other executing until saga completes transition
                 ProcessSaga(fault).PipeTo(Self);
-                BecomeStacked(() => SagaProcessWaiting(m, m.Metadata));
+                BecomeStacked(() => SagaProcessWaiting(fault, metadata));
             }, fault => fault.Message.SagaId == Id);
 
             _sagaProducedEntry = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
@@ -110,7 +114,7 @@ namespace GridDomain.Node.Actors
                         }
                         else
                         {
-                            PublishError(message, messageMetadata, r.Error);
+                            PublishError(message, messageMetadata, r.Error.UnwrapSingle());
                         }
                         UnbecomeStacked();
                     })
