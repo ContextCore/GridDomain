@@ -1,8 +1,15 @@
 using System;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
@@ -24,7 +31,45 @@ namespace GridDomain.Node
 
         public void Register(IUnityContainer container)
         {
-            CompositionRoot.Init(container, _actorSystem, _transportMode, _config);
+            TransportMode transportMode = _transportMode;
+            container.Register(new QuartzSchedulerConfiguration(_config ?? new PersistedQuartzConfig()));
+            container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings(5,
+                TimeSpan.FromMinutes(10),
+                new DefaultExceptionPolicy()));
+
+            //TODO: replace with config
+            IActorTransport transport;
+            switch (transportMode)
+            {
+                case TransportMode.Standalone:
+                    transport = new LocalAkkaEventBusTransport(_actorSystem);
+                    break;
+                case TransportMode.Cluster:
+                    transport = new DistributedPubSubTransport(_actorSystem);
+                    break;
+                default:
+                    throw new ArgumentException(nameof(transportMode));
+            }
+
+            container.RegisterInstance<IPublisher>(transport);
+            container.RegisterInstance<IActorSubscriber>(transport);
+            container.RegisterInstance<IActorTransport>(transport);
+
+            container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
+            container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
+            container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
+            container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default ??
+                                                                                      new DefaultAppInsightsConfiguration());
+            container.RegisterInstance<IPerformanceCountersConfiguration>(PerformanceCountersConfigSection.Default ??
+                                                                                              new DefaultPerfCountersConfiguration());
+
+            container.RegisterInstance(_actorSystem);
+
+            var executor = new AkkaCommandExecutor(_actorSystem, transport);
+            container.RegisterType<ICommandExecutor, AkkaCommandExecutor>();
+            var messageWaiterFactory = new MessageWaiterFactory(executor,_actorSystem,TimeSpan.FromSeconds(15),transport);
+            container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
+            container.RegisterInstance<ICommandWaiterFactory>(messageWaiterFactory);
         }
     }
 }

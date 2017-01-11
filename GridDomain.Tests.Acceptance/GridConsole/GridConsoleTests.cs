@@ -35,9 +35,8 @@ namespace GridDomain.Tests.Acceptance.GridConsole
 
             await _node.Start();
 
-
             _connector = new GridNodeConnector(serverConfig.Network);
-            _connector.Connect();
+            await _connector.Connect();
         }
 
         [OneTimeTearDown]
@@ -47,9 +46,9 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         }
 
         [Then]
-        public void Can_manual_reconnect_several_times()
+        public async Task Can_manual_reconnect_several_times()
         {
-            _connector.Connect();
+            await _connector.Connect();
         }
 
         [Then]

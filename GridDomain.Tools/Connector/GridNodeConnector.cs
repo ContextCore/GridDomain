@@ -33,9 +33,9 @@ namespace GridDomain.Tools.Connector
             DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
         }
 
-        public IActorRef GetActor(ActorSelection selection)
+        public async Task<IActorRef> GetActor(ActorSelection selection)
         {
-            return selection.ResolveOne(NodeControllerResolveTimeout).Result;
+            return await selection.ResolveOne(NodeControllerResolveTimeout);
         }
 
         public ActorSelection GetSelection(string relativePath)
@@ -45,9 +45,9 @@ namespace GridDomain.Tools.Connector
             return _consoleSystem.ActorSelection(actorPath);
         }
 
-        public void Connect()
+        public async Task Connect()
         {
-            EventBusForwarder = GetActor(GetSelection(nameof(EventBusForwarder)));
+            EventBusForwarder = await GetActor(GetSelection(nameof(EventBusForwarder)));
 
             var transportBridge = new RemoteAkkaEventBusTransport(
                                                 new LocalAkkaEventBusTransport(_consoleSystem),

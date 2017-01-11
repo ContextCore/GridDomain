@@ -1,5 +1,7 @@
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit
@@ -11,9 +13,7 @@ namespace GridDomain.Tests.Unit
             var container = new UnityContainer();
 
             var actorSystem = ActorSystemBuilders[mode]();
-            //container.RegisterInstance<IMessageWaiterFactory>();
-            CompositionRoot.Init(container, actorSystem, mode);
-
+            container.Register(new GridNodeContainerConfiguration(actorSystem, mode, new InMemoryQuartzConfig()));
             actorSystem.Terminate();
             return container;
         }
