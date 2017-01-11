@@ -31,15 +31,11 @@ namespace GridDomain.Node
 
         public void Register(IUnityContainer container)
         {
-            TransportMode transportMode = _transportMode;
-            container.Register(new QuartzSchedulerConfiguration(_config ?? new PersistedQuartzConfig()));
-            container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings(5,
-                TimeSpan.FromMinutes(10),
-                new DefaultExceptionPolicy()));
+            RegisterScheduler(container);
 
             //TODO: replace with config
             IActorTransport transport;
-            switch (transportMode)
+            switch (_transportMode)
             {
                 case TransportMode.Standalone:
                     transport = new LocalAkkaEventBusTransport(_actorSystem);
@@ -48,7 +44,7 @@ namespace GridDomain.Node
                     transport = new DistributedPubSubTransport(_actorSystem);
                     break;
                 default:
-                    throw new ArgumentException(nameof(transportMode));
+                    throw new ArgumentException(nameof(_transportMode));
             }
 
             container.RegisterInstance<IPublisher>(transport);
@@ -70,6 +66,14 @@ namespace GridDomain.Node
             var messageWaiterFactory = new MessageWaiterFactory(executor,_actorSystem,TimeSpan.FromSeconds(15),transport);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
             container.RegisterInstance<ICommandWaiterFactory>(messageWaiterFactory);
+        }
+
+        private void RegisterScheduler(IUnityContainer container)
+        {
+            container.Register(new QuartzSchedulerConfiguration(_config ?? new PersistedQuartzConfig()));
+            container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings(5,
+                                                                                 TimeSpan.FromMinutes(10),
+                                                                                 new DefaultExceptionPolicy()));
         }
     }
 }

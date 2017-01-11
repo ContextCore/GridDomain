@@ -84,17 +84,5 @@ namespace GridDomain.Scheduling.Integration
                 Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
             }
         }
-
-        protected override void PreStart()
-        {
-            _scheduler.Start();
-            base.PreStart();
-        }
-
-        protected override void PostStop()
-        {
-            _scheduler.Shutdown();
-            base.PostStop();
-        }
     }
 }

@@ -42,11 +42,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         private IActorRef _scheduler;
         private IScheduler _quartzScheduler;
         private IUnityContainer _container;
-
+        
         public Spec() : base(false)
         {
 
         }
+
+        protected override bool CreateNodeOnEachTest { get; } = false;
+
         protected override IContainerConfiguration CreateConfiguration()
         {
             return new SchedulerContainerConfiguration();
@@ -68,16 +71,20 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             }
         }
 
-        [SetUp]
-        public void SetUp()
+        protected override void OnNodeStarted()
         {
             TypesForScalarDestructionHolder.Add(typeof(Money));
             LogManager.SetLoggerFactory(new DefaultLoggerFactory());
 
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             _container = GridNode.Container;
-            CreateScheduler();
+            _quartzScheduler = _container.Resolve<IScheduler>();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
+        }
+
+        [SetUp]
+        public void Clear()
+        {
             _quartzScheduler.Clear();
         }
 
@@ -85,14 +92,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void TearDown()
         {
             ResultHolder.Clear();
-            _quartzScheduler.Shutdown(false);
         }
 
-        private void CreateScheduler()
-        {
-            _quartzScheduler = _container.Resolve<IScheduler>();
-        }
-       
 
         [Test]
         public void Serializer_can_serialize_and_deserialize_polymorphic_types()
@@ -334,7 +335,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             }
 
             _quartzScheduler.Shutdown(false);
-            CreateScheduler();
+            _quartzScheduler = _container.Resolve<IScheduler>();
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 

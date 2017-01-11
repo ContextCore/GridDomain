@@ -166,7 +166,7 @@ namespace GridDomain.Node
                                                                        _transportMode,
                                                                        quartzConfig));
 
-            _configuration.Register(unityContainer);
+            unityContainer.Register(_configuration);
 
             var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
             unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
@@ -183,6 +183,16 @@ namespace GridDomain.Node
             _log.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
             Container?.Dispose();
+
+            try
+            {
+                if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false)
+                        _quartzScheduler.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                _log.Warn($"Got error on quartz scheduler shutdown:{ex}");
+            }
 
             if (System != null)
             {
