@@ -4,7 +4,7 @@ namespace GridDomain.Common
 {
     public class MessageMetadataEnvelop : IMessageMetadataEnvelop
     {
-        public MessageMetadataEnvelop(object message,  IMessageMetadata metadata)
+        protected MessageMetadataEnvelop(object message,  IMessageMetadata metadata)
         {
             Message = message;
             Metadata = metadata;

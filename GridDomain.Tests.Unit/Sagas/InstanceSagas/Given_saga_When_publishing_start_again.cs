@@ -40,15 +40,6 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
         }
 
-
-        [Then]
-        public void Saga_state_should_contain_all_messages()
-        {
-            var messagesSent = new DomainEvent[] {_startMessage, _coffeMadeEvent, _reStartEvent};
-            CollectionAssert.AreEquivalent(messagesSent.Select(m => m.SourceId), 
-                _sagaDataAggregate.ReceivedMessages.Cast<DomainEvent>().Select(m => m.SourceId));
-        }
-
         [Then]
         public void Saga_state_should_be_correct()
         {
@@ -62,8 +53,6 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var saga = new SoftwareProgrammingSaga();
             Assert.AreEqual(_reStartEvent.PersonId, _sagaDataAggregate.Data.PersonId);
         }
-
-
 
 
         public Given_saga_When_publishing_start_again() : base(true)

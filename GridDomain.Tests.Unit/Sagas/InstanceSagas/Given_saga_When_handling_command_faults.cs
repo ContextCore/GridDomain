@@ -50,8 +50,6 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             GridNode.Transport.Publish(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
 
-            //WaitFor<SagaTransitionEvent<SoftwareProgrammingSagaData>>();
-            //WaitFor<SagaTransitionEvent<SoftwareProgrammingSagaData>>();
             Thread.Sleep(1000);
             _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId);
         }
@@ -63,16 +61,9 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         }
 
         [Then]
-        public void Saga_should_receive_fault_message()
-        {
-            CollectionAssert.IsNotEmpty(_sagaDataAggregate.ReceivedMessages.OfType<IFault<GoSleepCommand>>());
-        }
-
-        [Then]
         public void Saga_state_should_contain_data_from_fault_message()
         {
-            var fault = _sagaDataAggregate.ReceivedMessages.OfType<IFault<GoSleepCommand>>().First();
-            Assert.AreEqual(_sagaData.SofaId, fault.Message.SofaId);
+            Assert.AreEqual(_coffeMakeFailedEvent.ForPersonId, _sagaData.BadSleepPersonId);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                     .TransitionTo(Coding));
 
              During(Sleeping,
-                When(SleptBad).Then(ctx => ctx.Instance.PersonId = ctx.Data.Message.PersonId)
+                When(SleptBad).Then(ctx => ctx.Instance.BadSleepPersonId = ctx.Data.Message.PersonId)
                               .TransitionTo(MakingCoffee),
                 When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
                                .TransitionTo(Coding));

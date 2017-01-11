@@ -77,8 +77,8 @@ namespace GridDomain.Node.Actors
                 }
 
                 //block any other executing until saga completes transition
-                BecomeStacked(SagaProcessWaiting);
-                ProcessSaga(msg, m.Metadata).PipeTo(Self);
+                BecomeStacked(() => SagaProcessWaiting(m, m.Metadata));
+                ProcessSaga(msg).PipeTo(Self);
 
             }, e => GetSagaId(e.Message) == Id);
             Command<IMessageMetadataEnvelop<IFault>>(m =>
@@ -86,26 +86,54 @@ namespace GridDomain.Node.Actors
                 var fault = m.Message;
                 Monitor.IncrementMessagesReceived();
                 //block any other executing until saga completes transition
-                ProcessSaga(fault, m.Metadata).PipeTo(Self);
-                BecomeStacked(SagaProcessWaiting);
+                ProcessSaga(fault).PipeTo(Self);
+                BecomeStacked(() => SagaProcessWaiting(m, m.Metadata));
             }, fault => fault.Message.SagaId == Id);
 
             _sagaProducedEntry = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name, SagaActorLiterals.CreatedFaultForSagaTransit, SagaActorLiterals.SagaTransitCasedAndError);
         }
 
-        private void SagaProcessWaiting()
+        private void SagaProcessWaiting(object message, IMessageMetadata messageMetadata)
         {
             CommandAny(o =>
             {
                 o.Match()
                     .With<SagaProcessResult>(r =>
                     {
+                        if (r.Error == null)
+                        {
+                            ProcessSagaStateChange(messageMetadata);
+                            ProcessSagaCommands(messageMetadata);
+
+                            Stash.UnstashAll();
+                        }
+                        else
+                        {
+                            PublishError(message, messageMetadata, r.Error);
+                        }
+                        UnbecomeStacked();
+                    })
+                    .With<Exception>(ex =>
+                    {
+                        PublishError(message, messageMetadata, ex);
                         Stash.UnstashAll();
                         UnbecomeStacked();
                     })
                     .Default(m => Stash.Stash());
             });
+        }
+
+        private void PublishError(object message, IMessageMetadata messageMetadata, Exception exception)
+        {
+            var processorType = _producer.Descriptor.StateMachineType;
+
+            _log.Error(exception, "Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
+            var fault = Fault.NewGeneric(message, exception, processorType, Id);
+
+            var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
+
+            Publisher.Publish(fault, metadata);
         }
 
         private class SagaProcessResult
@@ -119,30 +147,17 @@ namespace GridDomain.Node.Actors
             public static SagaProcessResult OK { get; } = new SagaProcessResult(null);
         }
 
-        private async Task<SagaProcessResult> ProcessSaga(object message, IMessageMetadata messageMetadata)
+        private Task<SagaProcessResult> ProcessSaga(object message)
         {
-            try
+            //cast is need for dynamic call of Transit
+            Task processSagaTask = (Saga as ISagaInstance).Transit((dynamic) message);
+            return processSagaTask.ContinueWith(t =>
             {
-                //cast is need for dynamic call of Transit
-                await (Saga as ISagaInstance).Transit((dynamic)message);
-            }
-            catch (Exception ex)
-            {
-                var processorType = _producer.Descriptor.StateMachineType;
+                if (t.IsFaulted)  return new SagaProcessResult(t.Exception);
+                if (t.IsCanceled) return new SagaProcessResult(t.Exception as Exception ?? new TimeoutException());
 
-                _log.Error(ex,"Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
-                var fault = Fault.NewGeneric(message, ex, processorType, Id);
-
-                var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
-
-                Publisher.Publish(fault, metadata);
-                return new SagaProcessResult(ex);
-            }
-
-            var stateChange = ProcessSagaStateChange(messageMetadata);
-            ProcessSagaCommands(messageMetadata);
-
-            return SagaProcessResult.OK;
+                return SagaProcessResult.OK;
+            });
         }
 
         private void ProcessSagaCommands(IMessageMetadata messageMetadata)

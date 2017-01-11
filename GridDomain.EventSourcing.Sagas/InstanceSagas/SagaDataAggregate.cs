@@ -37,8 +37,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
 
         public TSagaData Data { get; private set; }
-        //for debugging purposes
-        public IList<object> ReceivedMessages { get; } = new List<object>();
 
         private SagaDataAggregate(Guid id)
         {
@@ -49,11 +47,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             RaiseEvent(new SagaCreatedEvent<TSagaData>(data, id));
         }
-        public void RememberTransition(TSagaData modifiedData)
-        {
-            RaiseEvent(new SagaTransitionEvent<TSagaData>(Id, modifiedData));
-        }
-
+   
         public void RememberEvent(Event @event, TSagaData sagaData, object message)
         {
             RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event.Name, message));
@@ -63,18 +57,10 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Data = e.State;
             Id = e.SourceId;
         }
-        public void Apply(SagaTransitionEvent<TSagaData> e)
-        {
-            Data = e.SagaData;
-        }
 
         public void Apply(SagaMessageReceivedEvent<TSagaData> e)
         {
             Data = e.SagaData;
-
-            if (ReceivedMessages.Count > 10)
-                ReceivedMessages.Clear();
-            ReceivedMessages.Add(e.Message);
         }
 
     }

@@ -51,16 +51,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _dataAggregate = dataAggregate;
             Machine = machine;
 
-            if (!CheckInitialState(dataAggregate, doUninitializedWarnings)) return;
-
-            RegisterPersistence(dataAggregate);
-        }
-
-        private void RegisterPersistence(SagaDataAggregate<TSagaData> dataAggregate)
-        {
-            Machine.TransitionToState(_dataAggregate.Data, Machine.GetState(CurrentStateName));
-            Machine.OnStateEnter += (sender, context) => dataAggregate.RememberTransition(context.Instance);
-            Machine.OnEventReceived += (sender, context) => dataAggregate.RememberEvent(context.Event, context.SagaData, context.EventData);
+            CheckInitialState(dataAggregate, doUninitializedWarnings);
         }
 
         private string CurrentStateName => _dataAggregate.Data?.CurrentStateName;
@@ -75,11 +66,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             if (!logUninitializedState) return false;
 
             Log.Warn("Saga will not process and only record incoming messages");
-            Machine.OnMessageReceived += (sender, context) =>
-            {
-                var msg = context.Message;
-                Log.Warn("Not initialized saga {Type} received a message {@Msg}", GetType().Name, msg);
-            };
             return false;
         }
 
@@ -98,7 +84,18 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                 return;
             }
 
-            await Machine.RaiseByMessage(_dataAggregate.Data, message);
+            var machineEvent = Machine.GetMachineEvent(message);
+
+            try
+            {
+                await Machine.RaiseEvent(_dataAggregate.Data, machineEvent, message);
+            }
+            catch (Exception ex)
+            {
+                throw new SagaTransitionException(message, _dataAggregate.Data, ex);
+            }
+
+            _dataAggregate.RememberEvent(machineEvent, _dataAggregate.Data, message);
             _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id))
                                                             .Cast<ICommand>()
                                                             .ToList();

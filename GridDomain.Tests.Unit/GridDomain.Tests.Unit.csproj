@@ -261,6 +261,10 @@
     <Compile Include="LooseCommandOnPoolResize\Spawn.cs" />
     <Compile Include="LooseCommandOnPoolResize\Stop.cs" />
     <Compile Include="MessageWaiting\Commanding\AsyncExecute_without_timeout.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\TestState.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
@@ -360,7 +364,7 @@
     <Compile Include="MessageWaiting\Local\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\Local\Message.cs" />
     <Compile Include="QuartzJobSeserializationTests.cs" />
-    <Compile Include="Sagas\InstanceSagas\Actors_should_fill_saga_id_for_produced_faults.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
     <Compile Include="ExceptionExtensions.cs" />

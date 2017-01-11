@@ -44,11 +44,5 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
         {
             Assert.AreEqual(_softwareProgrammingSagaData, Aggregate.Data);
         }
-
-        [Test]
-        public void Then_received_messages_contains_message()
-        {
-            CollectionAssert.Contains(Aggregate.ReceivedMessages, _message);
-        }
     }
 }

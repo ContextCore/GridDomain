@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Automatonymous;
+using Automatonymous.Events;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -68,7 +70,17 @@ namespace GridDomain.EventSourcing.Sagas
             where TSagaData : class, ISagaState
             where TSaga: Saga<TSagaData>
         {
-            return new SagaDescriptor<TSaga, TSagaData>();
+            var sagaDescriptor = new SagaDescriptor<TSaga, TSagaData>();
+
+            var domainBindedEvents = typeof(TSaga).GetProperties().Where(p => p.PropertyType.IsGenericType 
+                                                                         && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
+            foreach(var prop in domainBindedEvents)
+            {
+                var domainEventType = prop.PropertyType.GetGenericArguments().First();
+                sagaDescriptor.AddAcceptedMessage(domainEventType);
+            }
+
+            return sagaDescriptor;
         }
     }
 }

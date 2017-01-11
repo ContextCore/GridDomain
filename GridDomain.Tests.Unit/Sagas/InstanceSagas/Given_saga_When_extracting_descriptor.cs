@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                 typeof(Fault<GoSleepCommand>)
             };
 
-            CollectionAssert.AreEquivalent(_descriptor.AcceptMessages.Select(m => m.MessageType), expectedEvents);
+            CollectionAssert.AreEquivalent(expectedEvents, _descriptor.AcceptMessages.Select(m => m.MessageType));
         }
 
         [Then]
@@ -84,7 +84,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                 nameof(Fault.SagaId),
             };
 
-            CollectionAssert.AreEquivalent(_descriptor.AcceptMessages.Select(m => m.CorrelationField), expectedEvents);
+            CollectionAssert.AreEquivalent(expectedEvents, _descriptor.AcceptMessages.Select(m => m.CorrelationField));
         }
     }
 }
