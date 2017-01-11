@@ -134,9 +134,6 @@ namespace GridDomain.Node.Actors
             State.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command, metadata);
-
-            if(SnapshotsPolicy.ShouldSave(events))
-                SaveSnapshot(State.GetSnapshot());
         }
 
         private DomainEvent[] ExecuteCommand(ICommand command)

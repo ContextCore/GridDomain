@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private Guid _sagaId;
         private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
         private readonly SnapshotsPersistencePolicy _snapshotsPersistencePolicy = 
-                                   new SnapshotsPersistencePolicy(TimeSpan.FromMinutes(10), 2, 3);
+                                   new SnapshotsPersistencePolicy(TimeSpan.FromMinutes(10), 1, 2);
             
 
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown():base(false)
@@ -98,7 +98,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void Only_2_Snapshots_should_left()
+        public void Only_two_Snapshots_should_left()
         {
             Assert.AreEqual(2, _snapshots.Length);
         }

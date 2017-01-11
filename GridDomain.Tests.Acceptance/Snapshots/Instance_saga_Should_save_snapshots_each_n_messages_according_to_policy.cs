@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 SoftwareProgrammingSagaFactory,
                                 GotTiredEvent,
                                 SleptWellEvent>(SoftwareProgrammingSaga.Descriptor,
-                                () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(10),2))));
+                                () => new EachMessageSnapshotsPersistencePolicy())));
         }
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)
         {
@@ -71,6 +71,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
         }
 
+        //saving on each message, maximum on each command
         [Test]
         public void Snapshots_should_be_saved_two_times()
         {
@@ -90,9 +91,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [Test]
-        public void Second_snapshot_should_have_parameters_from_second_command()
+        public void Last_snapshot_should_have_parameters_from_last_command()
         {
-            Assert.AreEqual(nameof(SoftwareProgrammingSaga.Sleeping),_snapshots.Skip(1).First().Aggregate.Data.CurrentStateName);
+            Assert.AreEqual(nameof(SoftwareProgrammingSaga.Sleeping),_snapshots.Last().Aggregate.Data.CurrentStateName);
         }
 
         [Test]

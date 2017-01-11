@@ -65,6 +65,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                     .Create()
                     .Execute(changeCmds)
                     .Wait();
+
             Thread.Sleep(100); 
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);
