@@ -305,7 +305,6 @@
     <Compile Include="SimpleClusterListener.cs" />
     <Compile Include="Snapshots\Aggregate_should_save_snapshot_after_all_events_persisted.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown.cs" />
-    <Compile Include="Snapshots\State_Saga_Should_delete_snapshots_according_to_policy_on_shutdown.cs" />
     <Compile Include="Snapshots\Aggregate_Should_Not_save_snapshots_on_message_process_by_default.cs" />
     <Compile Include="Snapshots\Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown.cs" />
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy.cs" />
@@ -313,10 +312,6 @@
     <Compile Include="Snapshots\Instance_saga_Should_recover_from_snapshot.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default.cs" />
     <Compile Include="Snapshots\SnapshotsPersistenceAfterEachMessagePolicy.cs" />
-    <Compile Include="Snapshots\State_Saga_Should_Not_save_snapshots_on_message_process_by_default.cs" />
-    <Compile Include="Snapshots\State_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
-    <Compile Include="Snapshots\State_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
-    <Compile Include="Snapshots\State_saga_Should_recover_from_snapshot.cs" />
     <Compile Include="Snapshots\Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Aggregate_should_recover_from_snapshot.cs" />

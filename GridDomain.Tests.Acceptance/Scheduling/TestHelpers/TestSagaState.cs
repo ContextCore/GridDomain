@@ -1,17 +1,16 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestSagaState : SagaStateAggregate<TestSaga.TestStates, TestSaga.Transitions>
+    public class TestSagaState : ISagaState
     {
-        public TestSagaState(Guid id) : base(id)
+        public TestSagaState(string currentStateName)
         {
+            CurrentStateName = currentStateName;
         }
 
-        public TestSagaState(Guid id, TestSaga.TestStates state) : base(id, state)
-        {
-        }
+        public string CurrentStateName { get; set; }
     }
 }

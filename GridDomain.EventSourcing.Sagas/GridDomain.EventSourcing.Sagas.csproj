@@ -74,18 +74,13 @@
     <Compile Include="MessageBind.cs" />
     <Compile Include="SagaDescriptor.cs" />
     <Compile Include="SagaProducer.cs" />
-    <Compile Include="StateSagas\IDomainStateSaga.cs" />
     <Compile Include="IEmptySagaFactory.cs" />
     <Compile Include="ISagaDescriptor.cs" />
     <Compile Include="ISagaFactory.cs" />
     <Compile Include="ISagaFault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SagaCreatedEvent.cs" />
-    <Compile Include="SagaFault.cs" />
-    <Compile Include="StateSagas\SagaStateAggregate.cs" />
     <Compile Include="SagaStateEvent.cs" />
-    <Compile Include="StateSagas\SagaTransitionEvent.cs" />
-    <Compile Include="StateSagas\StateSaga.cs" />
     <Compile Include="UnbindedMessageReceivedException.cs" />
   </ItemGroup>
   <ItemGroup>

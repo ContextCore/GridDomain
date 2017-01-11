@@ -11,7 +11,6 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         {
             Aggregate,
             IstanceSaga,
-            StateSaga,
         }
     }
 }

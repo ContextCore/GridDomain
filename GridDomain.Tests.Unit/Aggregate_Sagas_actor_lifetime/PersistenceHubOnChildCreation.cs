@@ -5,7 +5,6 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.IstanceSaga)]
     [TestFixture(PersistentHubTestsStatus.PersistenceCase.Aggregate)]
-    [TestFixture(PersistentHubTestsStatus.PersistenceCase.StateSaga)]
     class PersistenceHubOnChildCreation : PersistentHub_children_lifetime_test
     {
 

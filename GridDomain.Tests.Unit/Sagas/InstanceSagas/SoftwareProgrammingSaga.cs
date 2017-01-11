@@ -6,7 +6,6 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
-using GridDomain.Tests.Unit.Sagas.StateSagas.SampleSaga;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {

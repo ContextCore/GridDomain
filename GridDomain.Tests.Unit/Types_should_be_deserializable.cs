@@ -7,7 +7,6 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
@@ -16,7 +15,6 @@ using GridDomain.Tests.Unit.Sagas.InstanceSagas;
 using GridDomain.Tests.Unit.SampleDomain;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
-using SoftwareProgrammingSaga = GridDomain.Tests.Unit.Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga;
 
 namespace GridDomain.Tests.Unit
 {
@@ -28,10 +26,8 @@ namespace GridDomain.Tests.Unit
             get
             {
                 yield return typeof(SagaDataAggregate<>);
-                yield return typeof(SagaStateAggregate<,>);
                 yield return typeof(SagaCreatedEvent<>);
                 yield return typeof(SagaMessageReceivedEvent<>);
-                yield return typeof(SagaTransitionEvent<,>);
             }
         }
 
@@ -49,9 +45,7 @@ namespace GridDomain.Tests.Unit
         public void Generic_domain_classes_should_be_deserializable()
         {
             CheckAll<object>(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>),
-                             typeof(SagaStateAggregate<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>),
-                             typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>),
-                             typeof(SagaTransitionEvent<SoftwareProgrammingSaga.States, SoftwareProgrammingSaga.Triggers>)
+                             typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>)
                             );
         }
 

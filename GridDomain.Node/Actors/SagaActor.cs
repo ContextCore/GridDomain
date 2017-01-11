@@ -18,7 +18,6 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 

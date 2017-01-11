@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Unit.Sagas.StateSagas.SampleSaga
+namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     public class UndefinedCoffeMachineException : Exception
     {

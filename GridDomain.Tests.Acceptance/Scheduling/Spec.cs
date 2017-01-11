@@ -12,7 +12,6 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -66,7 +65,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                 container.RegisterInstance(new Mock<ILoggingSchedulerListener>().Object);
                 container.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
                 container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
-                container.RegisterStateSaga<TestSaga, TestSagaState, TestSagaFactory, TestSagaStartMessage>(TestSaga.SagaDescriptor);
             }
         }
 

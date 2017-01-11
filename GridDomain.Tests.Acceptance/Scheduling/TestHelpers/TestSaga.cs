@@ -1,42 +1,37 @@
 using System;
+using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.StateSagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestSaga : StateSaga<TestSaga.TestStates, TestSaga.Transitions, TestSagaState, TestSagaStartMessage>
+    public class TestSaga : Saga<TestSagaState>
     {
-        public enum TestStates
+        public TestSaga()
         {
-            Created,
-            GotStartEvent,
-            GotSecondEvent
+            During(Initial,
+                When(Start)
+                    .TransitionTo(Started));
+
+            During(Started,
+                When(Process)
+                    .Then(ctx => ResultHolder.Add("123", "123"))
+                    .Finalize());
         }
 
-        public enum Transitions
+        public Event<TestSagaStartMessage> Start { get; private set; }
+        public Event<TestEvent> Process { get; private set; }
+
+        public State Started { get; set; }
+
+        public static ISagaDescriptor Descriptor
         {
-            StartEventArrived,
-            SecondEventArrived
+            get
+            {
+                var descriptor = SagaDescriptor.CreateDescriptor<TestSaga, TestSagaState>();
+                descriptor.AddStartMessage<TestSagaState>();
+                return descriptor;
+            }
         }
-
-
-        public TestSaga(TestSagaState state) : base(state)
-        {
-            RegisterEvent<TestSagaStartMessage>(Transitions.StartEventArrived);
-            RegisterEvent<TestEvent>(Transitions.SecondEventArrived);
-
-            Machine
-                .Configure(TestStates.Created)
-                .Permit(Transitions.StartEventArrived, TestStates.GotStartEvent);
-
-            Machine.Configure(TestStates.GotStartEvent)
-                .OnExit(() =>
-                {
-                    ResultHolder.Add("123","123");    
-                })
-                .Permit(Transitions.SecondEventArrived, TestStates.GotSecondEvent);
-        }
-
-        public static readonly ISagaDescriptor SagaDescriptor = new TestSaga(new TestSagaState(Guid.Empty, TestStates.Created));
     }
 }

@@ -4,7 +4,6 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
-using GridDomain.Tests.Unit.Sagas.StateSagas.SampleSaga;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas

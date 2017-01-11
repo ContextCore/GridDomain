@@ -12,7 +12,6 @@ using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime.Infrastructure;
 using GridDomain.Tests.Unit.Sagas.InstanceSagas;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
-using GridDomain.Tests.Unit.Sagas.StateSagas.SampleSaga;
 using GridDomain.Tests.Unit.SampleDomain;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -32,11 +31,6 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         protected IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-                        c => c.RegisterStateSaga<Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga,
-                                                 SoftwareProgrammingSagaState,
-                                                 Sagas.StateSagas.SampleSaga.SoftwareProgrammingSagaFactory,
-                                                 GotTiredEvent>(Sagas.StateSagas.SampleSaga.SoftwareProgrammingSaga.Descriptor),
-                        
                         c => c.RegisterSaga<Sagas.InstanceSagas.SoftwareProgrammingSaga,
                                             SoftwareProgrammingSagaData,
                                             Sagas.InstanceSagas.SoftwareProgrammingSagaFactory,
@@ -93,10 +87,6 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 
                      case PersistentHubTestsStatus.PersistenceCase.IstanceSaga:
                          Infrastructure = new InstanceSagaPersistedHub_Infrastructure(_gridDomainNode.System);
-                         break;
-
-                     case PersistentHubTestsStatus.PersistenceCase.StateSaga:
-                         Infrastructure = new StateSagaPersistedHub_Infrastructure(_gridDomainNode.System);
                          break;
                      default: 
                     throw new UnknownCaseException();
