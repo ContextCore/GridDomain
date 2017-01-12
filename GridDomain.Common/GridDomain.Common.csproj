@@ -68,14 +68,12 @@
     <Compile Include="BusinessDateTime.cs" />
     <Compile Include="Condition.cs" />
     <Compile Include="DefaultDateTimeStrategy.cs" />
-    <Compile Include="DateTimeFacade.cs" />
     <Compile Include="DateTimeStrategy.cs" />
     <Compile Include="DateTimeStrategyHolder.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IContainerConfiguration.cs" />
     <Compile Include="IMessageMetadata.cs" />
     <Compile Include="IMessageMetadataEnvelop.cs" />
-    <Compile Include="LegacyWireSerializer.cs" />
     <Compile Include="MemberNameExtractor.cs" />
     <Compile Include="MessageMetadata.cs" />
     <Compile Include="MessageMetadataEnvelop.cs" />
@@ -88,9 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Wire.0.0.6.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -11,6 +11,7 @@ using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Newtonsoft.Json;
+using DomainSerializer = GridDomain.EventSourcing.DomainSerializer;
 
 namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
@@ -28,7 +29,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public AggregateVersion<T>[] Load<T>(Guid id) where T:IAggregate
         {
-            var serializer = new WireJsonSerializer();
+            var serializer = new DomainSerializer();
             using (var repo = new RawSnapshotsRepository(_writeString))
                 return repo.Load(AggregateActorName.New<T>(id).Name)
                            .Select(s =>
@@ -42,7 +43,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public void Add<T>(T aggregate) where T : IAggregate
         {
-            var serializer = new WireJsonSerializer();
+            var serializer = new DomainSerializer();
 
             using (var repo = new RawSnapshotsRepository(_writeString))
             {

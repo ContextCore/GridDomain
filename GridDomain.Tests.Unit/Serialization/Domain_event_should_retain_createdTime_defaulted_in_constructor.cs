@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.Serialization
         public void Test()
         {
             _original = (SampleDomainEvent)new SampleDomainEvent(1223, Guid.NewGuid()).CloneWithSaga(Guid.NewGuid());
-            var ser = new WireJsonSerializer();
+            var ser = new DomainSerializer();
             var bytes = ser.ToBinary(_original);
             _restored = (SampleDomainEvent)ser.FromBinary(bytes, typeof(SampleDomainEvent));
         }

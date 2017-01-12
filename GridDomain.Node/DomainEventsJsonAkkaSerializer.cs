@@ -11,17 +11,18 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Logging;
 using Newtonsoft.Json;
+using DomainSerializer = GridDomain.EventSourcing.DomainSerializer;
 
 namespace GridDomain.Node
 {
 
     internal class DomainEventsJsonAkkaSerializer : Serializer
     {
-        internal readonly Lazy<WireJsonSerializer> Serializer;
+        internal readonly Lazy<DomainSerializer> Serializer;
 
         public DomainEventsJsonAkkaSerializer(ExtendedActorSystem system) : base(system)
         {
-            Serializer = new Lazy<WireJsonSerializer>(() =>
+            Serializer = new Lazy<DomainSerializer>(() =>
             {
                 var ext = system.GetExtension<DomainEventsJsonSerializationExtension>();
                 if (ext == null)
@@ -29,13 +30,13 @@ namespace GridDomain.Node
                         $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
                 if(ext.Settings != null)
-                    return new WireJsonSerializer(ext.Settings);
+                    return new DomainSerializer(ext.Settings);
 
                 var settings = DomainSerializer.GetDefaultSettings();
                 foreach (var c in ext.Converters)
                     settings.Converters.Add(c);
 
-                return new WireJsonSerializer(settings);
+                return new DomainSerializer(settings);
             });
         }
 

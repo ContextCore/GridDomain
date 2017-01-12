@@ -12,7 +12,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
     public class DomainEventsRepository : IRepository<DomainEvent>
     {
         private readonly IRepository<JournalItem> _rawDataRepo;
-        private readonly WireJsonSerializer _serializer = new WireJsonSerializer();
+        private readonly DomainSerializer _serializer = new DomainSerializer();
 
         public void Dispose()
         {

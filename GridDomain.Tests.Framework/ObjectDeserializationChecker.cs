@@ -7,14 +7,14 @@ namespace GridDomain.Tests.Framework
 {
     public class ObjectDeserializationChecker
     {
-        private readonly WireJsonSerializer _serializer;
+        private readonly DomainSerializer _serializer;
         private readonly CompareLogic _compareLogic;
 
         public CompareLogic CompareLogic => _compareLogic;
 
-        public ObjectDeserializationChecker(WireJsonSerializer serializer = null, CompareLogic logic = null)
+        public ObjectDeserializationChecker(DomainSerializer serializer = null, CompareLogic logic = null)
         {
-            _serializer = serializer ?? new WireJsonSerializer();
+            _serializer = serializer ?? new DomainSerializer();
             _compareLogic = logic ?? new CompareLogic {Config = new ComparisonConfig()};
         }
 

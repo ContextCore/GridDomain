@@ -319,7 +319,6 @@
     <Compile Include="EventsUpgrade\Events\TestEvent_V1.cs" />
     <Compile Include="EventsUpgrade\Events\TestType.cs" />
     <Compile Include="EventsUpgrade\Events\TestType_V1.cs" />
-    <Compile Include="EventsUpgrade\LegacyWireSerializerTests.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade.cs" />
     <Compile Include="EventsUpgrade\Nested_property_upgrade_with_custom_constructor.cs" />
     <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
@@ -359,7 +358,6 @@
     <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B.cs" />
     <Compile Include="MessageWaiting\Local\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\Local\Message.cs" />
-    <Compile Include="QuartzJobSeserializationTests.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />

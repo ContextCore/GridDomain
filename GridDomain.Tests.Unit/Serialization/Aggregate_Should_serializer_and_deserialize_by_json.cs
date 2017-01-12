@@ -1,4 +1,5 @@
 using System;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.SampleDomain;

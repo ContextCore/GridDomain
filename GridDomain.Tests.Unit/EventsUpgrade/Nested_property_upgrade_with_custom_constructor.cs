@@ -1,3 +1,4 @@
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using Newtonsoft.Json;
 using NUnit.Framework;

@@ -30,7 +30,7 @@ namespace GridDomain.Scheduling.Integration
         private readonly IQuartzLogger _quartzLogger;
         private readonly IPublisher _publisher;
         private readonly IMessageWaiterFactory _executor;
-        private readonly WireJsonSerializer _serializer = new WireJsonSerializer();
+        private readonly DomainSerializer _serializer = new DomainSerializer();
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
@@ -201,14 +201,14 @@ namespace GridDomain.Scheduling.Integration
             return CreateJob(key, jobDataMap);
         }
 
-        private static byte[] Serialize(object source, WireJsonSerializer serializer = null)
+        private static byte[] Serialize(object source, DomainSerializer serializer = null)
         {
-            return (serializer ?? new WireJsonSerializer()).ToBinary(source);
+            return (serializer ?? new DomainSerializer()).ToBinary(source);
         }
 
-        private static T Deserialize<T>(byte[] source, WireJsonSerializer serializer = null)
+        private static T Deserialize<T>(byte[] source, DomainSerializer serializer = null)
         {
-            return (T)(serializer ?? new WireJsonSerializer()).FromBinary(source, typeof(T));
+            return (T)(serializer ?? new DomainSerializer()).FromBinary(source, typeof(T));
         }
 
         private DomainEvent GetEvent(JobDataMap jobDataMap)
