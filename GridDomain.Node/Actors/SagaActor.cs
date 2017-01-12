@@ -82,6 +82,7 @@ namespace GridDomain.Node.Actors
                 ProcessSaga(msg).PipeTo(Self);
 
             }, e => GetSagaId(e.Message) == Id);
+
             Command<IMessageMetadataEnvelop<IFault>>(m =>
             {
                 var fault = m.Message;

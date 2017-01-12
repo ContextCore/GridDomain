@@ -6,7 +6,6 @@ using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.AkkaMessaging;
@@ -18,18 +17,12 @@ namespace GridDomain.Node.Actors
         where TSagaState  : AggregateBase 
     {
         private readonly Type _actorType = typeof(SagaActor<TSaga, TSagaState>);
-        private readonly IPublisher _publisher;
-        private readonly HashSet<Type> _sagaStartMessages;
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
 
-        public SagaHubActor(IPublisher publisher, 
-                            IPersistentChildsRecycleConfiguration recycleConf, 
+        public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf, 
                             ISagaProducer<TSaga> sagaProducer) : base(recycleConf, typeof(TSaga).Name)
         {
             _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m=> m.CorrelationField);
-
-            _sagaStartMessages = new HashSet<Type>(sagaProducer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
-            _publisher = publisher;
         }
 
         protected override string GetChildActorName(object message)
@@ -60,36 +53,6 @@ namespace GridDomain.Node.Actors
             }
             return childActorId;
         }
-
-      //protected override void OnReceive(object message)
-      //{
-      //    DomainEvent domainEvent = (message as DomainEvent)??((message as IMessageMetadataEnvelop)?.Message as DomainEvent);
-      //  
-      //    if (domainEvent?.SagaId == Guid.Empty)
-      //    {
-      //        var msgType = domainEvent?.GetType();
-      //        string routeField;
-      //        if(_acceptMessagesSagaIds.TryGetValue(msgType, out routeField) &&
-      //            routeField == nameof(DomainEvent.SagaId) &&
-      //            _sagaStartMessages.Contains(msgType))
-      //        {
-      //            //send message back to publisher to reroute to some hub according to SagaId
-      //            //if message has custom mapping, no action is required
-      //            var newSagaId = Guid.NewGuid();
-      //            var metadata = (message as IMessageMetadataEnvelop).Metadata.CreateChild(newSagaId,
-      //                new ProcessEntry(Self.Path.Name,
-      //                    "reroute saga message to different hub",
-      //                    "message is saga starting message but its saga id is empty"));
-      //
-      //            var sagaStartMessage = domainEvent.CloneWithSaga(newSagaId);
-      //
-      //            _publisher.Publish(sagaStartMessage, metadata);
-      //            return;
-      //        }
-      //    }
-      //
-      //    base.OnReceive(message);
-      //}
 
         protected override Type GetChildActorType(object message)
         {
