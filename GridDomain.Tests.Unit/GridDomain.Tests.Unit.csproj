@@ -265,6 +265,7 @@
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\TestState.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaContainerConfiguration.cs" />
     <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />

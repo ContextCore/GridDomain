@@ -11,5 +11,7 @@ namespace Shop.ReadModel.Context
 
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }
+        public decimal Price { get; set; }
+        public string Currency { get; set; }
     }
 }

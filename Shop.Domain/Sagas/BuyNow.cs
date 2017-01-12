@@ -18,7 +18,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Commands;
 using Shop.Domain.Aggregates.UserAggregate.Events;
-using Shop.Domain.DomainServices;
+using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
@@ -62,9 +62,9 @@ namespace Shop.Domain.Sagas
                 }).TransitionTo(CreatingOrder));
 
             During(CreatingOrder,
-                When(OrderCreated).Then((state,e) =>
+                When(OrderCreated).ThenAsync(async (state,e) =>
                 {
-                    var totalPrice = calculator.CalculatePrice(state.SkuId, state.Quantity);
+                    var totalPrice = await calculator.CalculatePrice(state.SkuId, state.Quantity);
                     Dispatch(new AddItemToOrderCommand(state.OrderId,
                                                        state.SkuId,
                                                        state.Quantity,

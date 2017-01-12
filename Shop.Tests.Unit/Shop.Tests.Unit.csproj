@@ -206,6 +206,7 @@
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
     <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
+    <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_calculate_total_test.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
@@ -239,9 +240,9 @@
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_renewed_errors_test.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_taken_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_taken_errors_test.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_renewed_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_renewed_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_taken_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_twice_tests.cs" />
+    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_errors_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_tests.cs" />

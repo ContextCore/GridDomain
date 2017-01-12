@@ -6,12 +6,12 @@ using Shop.Infrastructure;
 
 namespace Shop.Domain.Aggregates.SkuAggregate
 {
-    public class SkuCommandHandler : AggregateCommandsHandler<Sku>
+    public class SkuCommandsHandler : AggregateCommandsHandler<Sku>
     {
-        public SkuCommandHandler(ISequenceProvider provider)
+        public SkuCommandsHandler(ISequenceProvider provider)
         {
             Map<CreateNewSkuCommand>(c => c.SkuId,
-                c => new Sku(c.SkuId,c.Name,c.Article, (int)provider.GetNext("Sku")));
+                c => new Sku(c.SkuId,c.Name,c.Article, (int)provider.GetNext("Sku"), c.Price));
         }
     }
 }

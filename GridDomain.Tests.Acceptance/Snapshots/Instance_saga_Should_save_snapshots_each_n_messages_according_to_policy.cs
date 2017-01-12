@@ -25,11 +25,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
-                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,
-                                SoftwareProgrammingSagaData,
-                                SoftwareProgrammingSagaFactory,
-                                GotTiredEvent,
-                                SleptWellEvent>(SoftwareProgrammingSaga.Descriptor,
+                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>(
+                                new SoftwareProgrammingSagaFactory(),
+                                SoftwareProgrammingSaga.Descriptor,
                                 () => new EachMessageSnapshotsPersistencePolicy())));
         }
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy():base(false)

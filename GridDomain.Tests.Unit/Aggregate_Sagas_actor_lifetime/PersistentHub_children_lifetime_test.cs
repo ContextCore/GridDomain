@@ -31,11 +31,12 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         protected IContainerConfiguration CreateConfiguration()
         {
             return new CustomContainerConfiguration(
-                        c => c.RegisterSaga<Sagas.InstanceSagas.SoftwareProgrammingSaga,
-                                            SoftwareProgrammingSagaData,
-                                            Sagas.InstanceSagas.SoftwareProgrammingSagaFactory,
-                                            GotTiredEvent>(Sagas.InstanceSagas.SoftwareProgrammingSaga.Descriptor),
-                        
+                         c => c.Register(
+                                     SagaConfiguration.Instance<SoftwareProgrammingSaga,
+                                                                 SoftwareProgrammingSagaData>(
+                                             new SoftwareProgrammingSagaFactory(),
+                                             SoftwareProgrammingSaga.Descriptor)),
+
                         c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
                                                  SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
                         

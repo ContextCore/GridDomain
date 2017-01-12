@@ -1,6 +1,6 @@
 using System;
 
-namespace Shop.Domain.DomainServices
+namespace Shop.Domain.DomainServices.PriceCalculator
 {
     public class SkuPriceNotFoundException : Exception
     {

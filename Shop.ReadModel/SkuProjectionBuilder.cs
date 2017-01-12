@@ -30,7 +30,9 @@ namespace Shop.ReadModel
                     Created = msg.CreatedTime,
                     LastModified = msg.CreatedTime,
                     Name = msg.Name,
-                    Number = msg.Number
+                    Number = msg.Number,
+                    Price = msg.Price.Amount,
+                    Currency = msg.Price.CurrencyCode.ToString()
                 });
                 context.SaveChanges();
             }

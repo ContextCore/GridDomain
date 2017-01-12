@@ -17,8 +17,8 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Commands;
 using Shop.Domain.Aggregates.UserAggregate.Events;
-using Shop.Domain.DomainServices;
 using Shop.Domain.Sagas;
+using Shop.Tests.Unit.DomainServices;
 
 namespace Shop.Tests.Unit.BuyNowSaga
 {
@@ -53,7 +53,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
         }
 
         [Test]
-        public void Given_creating_order_state_When_order_created_Then_add_items_to_order_command_is_issued()
+        public async Task Given_creating_order_state_When_order_created_Then_add_items_to_order_command_is_issued()
         {
             var scenario = NewScenario();
             var sagaId = Guid.NewGuid();
@@ -70,7 +70,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                     .Then(new AddItemToOrderCommand(state.OrderId,
                                                     state.SkuId,
                                                     state.Quantity,
-                                                    _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity))
+                                                    await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity))
                                                 .CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
@@ -85,7 +85,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
         }
 
         [Test]
-        public void Given_adding_order_items_state_When_order_item_added_Then_reserve_stock_command_is_issued()
+        public async Task Given_adding_order_items_state_When_order_item_added_Then_reserve_stock_command_is_issued()
         {
             var scenario = NewScenario();
 
@@ -99,7 +99,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                     .When(new ItemAdded(state.OrderId,
                                         state.SkuId,
                                         state.Quantity,
-                                       _inMemoryPriceCalculator.CalculatePrice(state.SkuId,state.Quantity),
+                                        await _inMemoryPriceCalculator.CalculatePrice(state.SkuId,state.Quantity),
                                         1).CloneWithSaga(sagaId))
 
                     .Then(new ReserveStockCommand(state.StockId,

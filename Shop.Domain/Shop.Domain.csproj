@@ -81,9 +81,9 @@
     <Compile Include="Aggregates\AccountAggregate\NegativeMoneyException.cs" />
     <Compile Include="Aggregates\AccountAggregate\NotEnoughMoneyException.cs" />
     <Compile Include="Aggregates\OrderAggregate\Commands\CalculateOrderTotalCommand.cs" />
-    <Compile Include="Aggregates\OrderAggregate\Events\TotalCalculated.cs" />
+    <Compile Include="Aggregates\OrderAggregate\Events\OrderTotalCalculated.cs" />
     <Compile Include="Aggregates\SkuAggregate\Commands\CreateNewSkuCommand.cs" />
-    <Compile Include="Aggregates\SkuAggregate\SkuCommandHandler.cs" />
+    <Compile Include="Aggregates\SkuAggregate\SkuCommandsHandler.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\Commands\AddToStockCommand.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\Commands\CreateSkuStockCommand.cs" />
     <Compile Include="Aggregates\SkuStockAggregate\InvalidSkuAddException.cs" />
@@ -125,18 +125,20 @@
     <Compile Include="Aggregates\UserAggregate\Commands\BuySkuNowCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Commands\CreateUserCommand.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\UserCreated.cs" />
+    <Compile Include="Aggregates\UserAggregate\IDefaultStockProvider.cs" />
     <Compile Include="Aggregates\UserAggregate\OrderStatus.cs" />
     <Compile Include="Aggregates\UserAggregate\PendingOrder.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\PendingOrderCanceled.cs" />
     <Compile Include="Aggregates\UserAggregate\Events\PendingOrderCompleted.cs" />
     <Compile Include="Aggregates\UserAggregate\User.cs" />
     <Compile Include="Aggregates\UserAggregate\UserCommandsHandler.cs" />
+    <Compile Include="DomainServices\PriceCalculator\ISkuPriceQuery.cs" />
+    <Compile Include="DomainServices\PriceCalculator\SqlPriceCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sagas\BuyNow.cs" />
     <Compile Include="Sagas\BuyNowData.cs" />
-    <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
-    <Compile Include="DomainServices\IPriceCalculator.cs" />
-    <Compile Include="DomainServices\SkuPriceNotFoundException.cs" />
+    <Compile Include="DomainServices\PriceCalculator\IPriceCalculator.cs" />
+    <Compile Include="DomainServices\PriceCalculator\SkuPriceNotFoundException.cs" />
     <Compile Include="Sagas\BuyNowSagaFactory.cs" />
   </ItemGroup>
   <ItemGroup>

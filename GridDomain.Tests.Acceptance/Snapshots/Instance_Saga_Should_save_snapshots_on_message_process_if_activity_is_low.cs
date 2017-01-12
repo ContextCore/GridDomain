@@ -31,12 +31,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             return new CustomContainerConfiguration(
                 base.CreateConfiguration(),
                 SagaConfiguration.Instance<SoftwareProgrammingSaga,
-                                           SoftwareProgrammingSagaData,
-                                           SoftwareProgrammingSagaFactory,
-                                           GotTiredEvent,
-                                           SleptWellEvent>(SoftwareProgrammingSaga.Descriptor, 
-                                                           () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),10,1)
-
+                                           SoftwareProgrammingSagaData>(
+                                           new SoftwareProgrammingSagaFactory(),
+                                           SoftwareProgrammingSaga.Descriptor, 
+                                           () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),10,1)
                                            ));
         }
 

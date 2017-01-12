@@ -1,7 +1,7 @@
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Shop.Domain.Aggregates.UserAggregate.Events;
-using Shop.Domain.DomainServices;
+using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {

@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace GridDomain.CQRS
 {
     public interface IGenericQuery<TRes>
     {
-        TRes Execute();
+        Task<TRes> Execute();
     }
 }

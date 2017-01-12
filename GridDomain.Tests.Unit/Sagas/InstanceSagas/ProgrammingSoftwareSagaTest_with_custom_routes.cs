@@ -22,12 +22,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var baseConf = base.CreateConfiguration();
 
             return new CustomContainerConfiguration(
-                c => c.RegisterSaga<CustomRoutesSoftwareProgrammingSaga,
-                                    SoftwareProgrammingSagaData,
-                                    CustomRoutesSoftwareProgrammingSagaFactory,
-                                    SleptWellEvent,
-                                    GotTiredEvent>(CustomRoutesSoftwareProgrammingSaga.Descriptor),
-
+                c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()

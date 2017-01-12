@@ -18,46 +18,6 @@ namespace GridDomain.Node.Configuration.Composition
 
     public class SagaConfiguration
     {
-      // public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData>
-      //     (SagaProducer<ISagaInstance<TSaga, TData>> producer, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null) where TData : ISagaState
-      // {
-      //     return new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer,snapShotsPolicy);
-      // }
-
-
-
-        public static SagaConfiguration<ISagaInstance<TSaga,TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessage>(ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null)
-         where TSaga : Saga<TData>
-         where TData : class, ISagaState
-         where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
-                          ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessage>, new()
-        {
-            return State<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>, TFactory, TStartMessage>(descriptor,snapShotsPolicy);
-        }
-
-     
-
-        public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData, TFactory, TStartMessageA, TStartMessageB>
-            (ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null, Func<IMemento, SagaDataAggregate<TData>> stateConstructor = null)
-               where TSaga : Saga<TData>
-               where TData : class, ISagaState
-               where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,
-                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageA>,
-                                ISagaFactory<ISagaInstance<TSaga, TData>, TStartMessageB>,
-                               new()
-        {
-            var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
-            var factory = new TFactory();
-
-            producer.Register<TStartMessageA>(factory);
-            producer.Register<TStartMessageB>(factory);
-            producer.Register<SagaDataAggregate<TData>>(factory);
-            stateConstructor = stateConstructor ?? SagaDataAggregate<TData>.FromSnapshot;
-
-            return new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer,snapShotsPolicy, stateConstructor);
-        }
-
-
         public static SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> Instance<TSaga, TData>(ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>> factory, ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null)
                  where TSaga : Saga<TData>
                  where TData : class, ISagaState
@@ -66,36 +26,59 @@ namespace GridDomain.Node.Configuration.Composition
             producer.RegisterAll<ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>,TData>(factory);
             return new SagaConfiguration<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>(producer, snapShotsPolicy);
         }
-
-        public static SagaConfiguration<TSaga, TState> State<TSaga, TState, TFactory, TStartMessage>(ISagaDescriptor descriptor,
-                                                                                                     Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null,
-                                                                                                     Func<IMemento,TState> snapshotsConstructor = null )
-                where TFactory : ISagaFactory<TSaga, TState>,
-                                 ISagaFactory<TSaga, TStartMessage>,
-                                 new()
-
-                where TSaga : class, ISagaInstance
-                where TState : AggregateBase
+        public static IContainerConfiguration Instance<TSaga, TData,TFactory>(ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null, IConstructAggregates factory = null)
+                 where TSaga : Saga<TData>
+                 where TData : class, ISagaState
+                 where TFactory : ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>
         {
-            var producer = new SagaProducer<TSaga>(descriptor);
-            var factory = new TFactory();
-            producer.Register<TState>(factory);
-            producer.Register<TStartMessage>(factory);
-
-            return new SagaConfiguration<TSaga, TState>(producer,snapShotsPolicy, snapshotsConstructor);
+            return new SagaConfiguration<TSaga, TData, TFactory>(descriptor,snapShotsPolicy, factory);
         }
     }
+
+
+    public class SagaConfiguration<TSaga, TState, TFactory> : IContainerConfiguration
+        where TSaga : Saga<TState>
+        where TState : class, ISagaState
+        where TFactory : ISagaFactory<ISagaInstance<TSaga, TState>, SagaDataAggregate<TState>>
+    {
+        private readonly Func<ISnapshotsPersistencePolicy> _snapShotsPolicy;
+        private IConstructAggregates _aggregateFactory;
+        private readonly ISagaDescriptor _descriptor;
+
+        public SagaConfiguration(ISagaDescriptor descriptor, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null, IConstructAggregates factory = null)
+        {
+            _descriptor = descriptor;
+            _aggregateFactory = factory;
+            _snapShotsPolicy = snapShotsPolicy;
+        }
+
+        public void Register(IUnityContainer container)
+        {
+            var sagaSpecificRegistrationsName = typeof(TSaga).Name;
+
+            container.RegisterInstance<IConstructAggregates>(sagaSpecificRegistrationsName, _aggregateFactory);
+            container.RegisterType<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName, new InjectionFactory(c => _snapShotsPolicy()));
+            container.RegisterType<ISagaProducer<ISagaInstance<TSaga, TState>>>(sagaSpecificRegistrationsName,
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(
+                    c =>
+                    {
+                        var factory = c.Resolve<TFactory>();
+                        var producer = new SagaProducer<ISagaInstance<TSaga, TState>>(_descriptor);
+                        producer.RegisterAll<TFactory, TState>(factory);
+                        return producer;
+                    }));
+
+           container.RegisterType<SagaActor<ISagaInstance<TSaga, TState>, SagaDataAggregate<TState>>>();
+        }
+    }
+
 
     public class SagaConfiguration<TSaga,TState> : IContainerConfiguration where TSaga : class, ISagaInstance where TState : AggregateBase
     {
         private readonly SagaProducer<TSaga> _producer;
         private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
         private readonly IConstructAggregates _factory;
-
-        public SagaConfiguration(SagaProducer<TSaga> producer, Func<ISnapshotsPersistencePolicy> snapShotsPolicy, Func<IMemento, TState> stateProducer)
-            :this(producer,snapShotsPolicy,new AggregateSnapshottingFactory<TState>(stateProducer))
-        {
-        }
 
         public SagaConfiguration(SagaProducer<TSaga> producer, Func<ISnapshotsPersistencePolicy> snapShotsPolicy = null, IConstructAggregates factory = null)
         {
@@ -120,8 +103,5 @@ namespace GridDomain.Node.Configuration.Composition
 
             container.RegisterInstance(snapshotsPolicyRegistrationName, _factory);
         }
-
-
-
     }
 }

@@ -25,4 +25,5 @@ namespace Shop.Tests.Acceptance.UserFlows
             throw new NotImplementedException();
         }
     }
+
 }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NMoneys;
+using Shop.Domain.DomainServices.PriceCalculator;
 
-namespace Shop.Domain.DomainServices
+namespace Shop.Tests.Unit.DomainServices
 {
     public class InMemoryPriceCalculator: IPriceCalculator
     {
@@ -13,14 +15,13 @@ namespace Shop.Domain.DomainServices
             _skuPrices[skuId] = money;
         }
 
-
-        public Money CalculatePrice(Guid skuId, int quantity)
+        public Task<Money> CalculatePrice(Guid skuId, int quantity)
         {
             Money skuPrice;
             if (!_skuPrices.TryGetValue(skuId, out skuPrice))
                 throw new SkuPriceNotFoundException(skuId);
 
-            return skuPrice*quantity;
+            return Task.FromResult(skuPrice*quantity);
         }
     }
 }

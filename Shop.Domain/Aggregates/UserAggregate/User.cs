@@ -6,11 +6,6 @@ using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Aggregates.UserAggregate
 {
-    public interface IDefaultStockProvider
-    {
-        Guid GetStockForSku(Guid skuId);
-    }
-
     public class User : Aggregate
     {
         private ILogger _logger = LogManager.GetLogger();

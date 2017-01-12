@@ -225,6 +225,7 @@
     <Compile Include="Context\SkuStockHistory.cs" />
     <Compile Include="Context\StockOperation.cs" />
     <Compile Include="Context\User.cs" />
+    <Compile Include="DomanServices\SkuPriceQuery.cs" />
     <Compile Include="OrdersProjectionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Context\ShopDbContext.cs" />

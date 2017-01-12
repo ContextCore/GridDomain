@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Automatonymous;
 using Automatonymous.Activities;
 using Automatonymous.Binders;
@@ -17,7 +18,13 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> binder, Action<TInstance, TData> action) where TInstance : class
         {
-            return binder.Add((Activity<TInstance, TData>)new ActionActivity<TInstance, TData>(ctx => action(ctx.Instance, ctx.Data)));
+            return binder.Then(ctx => action(ctx.Instance, ctx.Data));
+        }
+
+        public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
+        this EventActivityBinder<TInstance, TData> binder, Func<TInstance, TData, Task> action) where TInstance : class
+        {
+            return binder.ThenAsync(ctx => action(ctx.Instance, ctx.Data));
         }
     }
 }
