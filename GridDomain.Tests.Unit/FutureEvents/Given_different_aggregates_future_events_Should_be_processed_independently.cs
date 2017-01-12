@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using NUnit.Framework;
 
@@ -16,20 +17,20 @@ namespace GridDomain.Tests.Unit.FutureEvents
         private ScheduleEventInFutureCommand _commandB;
 
         [OneTimeSetUp]
-        public void Raising_several_future_events_for_different_aggregates()
+        public async Task Raising_several_future_events_for_different_aggregates()
         {
             _commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
-            var expectedMessageA = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandA.AggregateId);
-            var planA = CommandPlan.New(_commandA, expectedMessageA);
-
             _commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
-            var expectedMessageB = Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, _commandB.AggregateId);
-            var planB = CommandPlan.New(_commandB, expectedMessageB);
+         
+            _eventA = (await GridNode.PrepareCommand(_commandA)
+                                   .Expect<FutureEventOccuredEvent>()
+                                   .Execute())
+                                   .Message<FutureEventOccuredEvent>();
 
-            var taskA = GridNode.Execute<FutureEventOccuredEvent>(planA).ContinueWith( r => _eventA = r.Result);
-            var taskB = GridNode.Execute<FutureEventOccuredEvent>(planB).ContinueWith( r=>  _eventB = r.Result);
-
-            Task.WaitAll(taskA, taskB);
+            _eventB = (await GridNode.PrepareCommand(_commandB)
+                                     .Expect<FutureEventOccuredEvent>()
+                                     .Execute())
+                                     .Message<FutureEventOccuredEvent>();
         }
 
         [Then]

@@ -3,16 +3,18 @@ using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.CommandsExecution.ExpectedMessages
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
-    public class When_dont_wait_execution : SampleDomainCommandExecutionTests
+    public class When_execute_command_without_expectations : SampleDomainCommandExecutionTests
     {
-        public When_dont_wait_execution():base(true)
+
+        public When_execute_command_without_expectations() : base(true)
         {
-            
+
         }
-        public When_dont_wait_execution(bool inMemory = true):base(inMemory)
+
+        public When_execute_command_without_expectations(bool inMemory = true):base(inMemory)
         {
             
         }

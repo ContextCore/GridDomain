@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         public async Task When_dispatch_command_than_command_should_have_right_sagaId()
         {
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var waitResults = await GridNode.NewDebugWaiter(TimeSpan.FromHours(10))
+            var waitResults = await GridNode.NewDebugWaiter()
                                             .Expect<MakeCoffeCommand>()
                                             .Create()
                                             .Publish(gotTiredEvent);

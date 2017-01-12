@@ -54,7 +54,7 @@ namespace GridDomain.Tools.Connector
                                                 EventBusForwarder,
                                                 TimeSpan.FromSeconds(30));
 
-            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
+            _commandExecutor = new AkkaCommandExecutor(transportBridge);
             _waiterFactory = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
         }
       
@@ -66,16 +66,6 @@ namespace GridDomain.Tools.Connector
         public void Execute(params ICommand[] commands)
         {
             _commandExecutor.Execute(commands);
-        }
-
-        public Task<object> Execute(CommandPlan plan)
-        {
-           return _commandExecutor.Execute(plan);
-        }
-
-        public Task<T> Execute<T>(CommandPlan<T> plan)
-        {
-            return _commandExecutor.Execute(plan);
         }
 
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand

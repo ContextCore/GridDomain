@@ -310,7 +310,6 @@
     <Compile Include="Actors\MessageHandlingActor.cs" />
     <Compile Include="Actors\RoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AllMessageWaiterActor.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />
     <Compile Include="Configuration\Akka\Hocon\DomainEventAdaptersConfig.cs" />
@@ -353,7 +352,6 @@
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessageWaiterActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlAzureRetriableExceptionDetector.cs" />
     <Compile Include="SqlDomainJournal.cs" />

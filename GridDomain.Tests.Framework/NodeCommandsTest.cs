@@ -178,42 +178,6 @@ namespace GridDomain.Tests.Framework
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf);
 
-        private ExpectedMessagesReceived Wait(Action act, ActorSystem system, bool failOnCommandFault = true,  params ExpectedMessage[] expectedMessages)
-        {
-            var actor = system.ActorOf(Props.Create(() => new AllMessageWaiterActor(TestActor, expectedMessages)),
-                                         "MessageWaiter_" + Guid.NewGuid());
-            var actorSubscriber= GridNode.Container.Resolve<IActorSubscriber>();
-
-            foreach (var m in expectedMessages)
-                actorSubscriber.Subscribe(m.MessageType, actor);
-
-            act();
-
-            Console.WriteLine();
-            Console.WriteLine($"Execution finished, wait started with timeout {Timeout}");
-
-            var msg = (ExpectedMessagesReceived) FishForMessage(m => m is ExpectedMessagesReceived, Timeout);
-            _watch.Stop();
-
-            Console.WriteLine();
-            Console.WriteLine($"Wait ended, total wait time: {_watch.Elapsed}");
-            Console.WriteLine("Stopped after message received:");
-            Console.WriteLine("------begin of message-----");
-            Console.WriteLine(msg.ToPropsString());
-            Console.WriteLine("------end of message-----");
-
-            if (failOnCommandFault && msg.Message is IFault)
-            {
-                Assert.Fail($"Command fault received: {msg.ToPropsString()}");
-            }
-
-            return msg;
-        }
-
-        protected ExpectedMessagesReceived WaitFor<TMessage>(bool failOnFault = true)
-        {
-            return Wait(() => { }, GridNode.System, failOnFault, new ExpectedMessage(typeof(TMessage), 1));
-        }
 
         protected void SaveToJournal(params object[] messages)
         {

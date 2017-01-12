@@ -1,13 +1,13 @@
-using GridDomain.Tests.Unit.CommandsExecution.ExpectedMessages;
+using GridDomain.Tests.Unit.CommandsExecution;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.SynchroniousCommandExecute.ExpectedMessages
 {
     [TestFixture]
-    public class Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller : SyncExecute_until_aggregate_event_wait_by_caller
+    public class PersistedWhenWhenExecuteCommandThenAggregateEventWaitByCaller : When_execute_command_Then_aggregate_Should_persist_changed
     {
 
-        public Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller():base(false)
+        public PersistedWhenWhenExecuteCommandThenAggregateEventWaitByCaller():base(false)
         {
             
         }

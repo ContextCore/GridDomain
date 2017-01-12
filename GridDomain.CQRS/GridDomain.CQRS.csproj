@@ -53,17 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
-    <Compile Include="CommandPlan.cs" />
-    <Compile Include="Expect.cs" />
-    <Compile Include="ExpectedFault.cs" />
-    <Compile Include="ExpectedMessage.cs" />
-    <Compile Include="ExpectedMessagesReceived.cs" />
     <Compile Include="Fault.cs" />
-    <Compile Include="CommandExecutorExtensions.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandExecutor.cs" />
     <Compile Include="ICommandExpectBuilder.cs" />
-    <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICommandWaiter.cs" />
     <Compile Include="ICommandWaiterFactory.cs" />
     <Compile Include="ICriteria.cs" />
@@ -72,7 +65,6 @@
     <Compile Include="IHandler.cs" />
     <Compile Include="IFault.cs" />
     <Compile Include="IHandlerWithMetadata.cs" />
-    <Compile Include="IMessageProcessFault.cs" />
     <Compile Include="IGenericQuery.cs" />
     <Compile Include="IMessageWaiter.cs" />
     <Compile Include="IMessageWaiterBase.cs" />

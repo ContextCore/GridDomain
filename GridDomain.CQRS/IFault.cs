@@ -14,4 +14,8 @@ namespace GridDomain.CQRS
         DateTime OccuredTime { get; }
         Type Processor { get; }
     }
+    public interface IFault<out T> : IFault
+    {
+        new T Message { get; }
+    }
 }

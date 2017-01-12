@@ -66,13 +66,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private async Task WaitForMessages(Inbox inbox, TimeSpan timeoutPerMessage)
         {
-            while (!IsAllExpectedMessagedReceived())
+            do
             {
                 var message = await inbox.ReceiveAsync(timeoutPerMessage).ConfigureAwait(false);
                 CheckExecutionError(message);
-
                 if (IsExpected(message)) _allExpectedMessages.Add(message);
-            }
+
+            } while (!IsAllExpectedMessagedReceived());
         }
 
         private bool IsAllExpectedMessagedReceived()

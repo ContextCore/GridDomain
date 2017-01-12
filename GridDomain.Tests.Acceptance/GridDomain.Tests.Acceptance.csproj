@@ -317,11 +317,7 @@
     <Compile Include="Snapshots\Aggregate_should_recover_from_snapshot.cs" />
     <Compile Include="Snapshots\SnapshotsPersistenceOnTimeoutPolicy.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedAsyncExecuteDontWaitExecution.cs" />
-    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_SyncExecute_until_projection_build_event_wait_by_caller.cs" />
     <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_caller.cs" />
-    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\Persisted_When_SyncExecute_until_aggregate_event_wait_by_Node.cs" />
-    <Compile Include="SynchroniousCommandExecute\PersistedWhenSyncExecuteOfAsyncMethodUntilProjectionBuildEventWaitByNode.cs" />
-    <Compile Include="SynchroniousCommandExecute\ExpectedMessages\PersistedWhenSyncExecuteWithSyncFaultWaitByNode.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_correlated_routing.cs" />
     <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
     <Compile Include="Tools\Given_persisted_aggreate_It_can_be_loaded_and_saved.cs" />

@@ -4,10 +4,10 @@ using System.Threading;
 using GridDomain.Tests.Unit.SampleDomain;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.AsyncAggregates
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
-    public class When_aggregate_raise_async_events_
+    public class When_aggregate_raise_async_events
     {
         [Then]
         public void It_places_continuation_in_uncommited_async_events_collection()

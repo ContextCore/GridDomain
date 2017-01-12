@@ -1,15 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.AsyncAggregates
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
-    public class Given_async_events_execute : InMemorySampleDomainTests
+    public class When_async_method_called_Then_domainEvents_are_persisted : InMemorySampleDomainTests
     {
 
         [Test]

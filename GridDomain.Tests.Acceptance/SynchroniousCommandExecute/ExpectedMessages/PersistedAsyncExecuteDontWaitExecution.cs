@@ -1,12 +1,12 @@
-using GridDomain.Tests.Unit.CommandsExecution.ExpectedMessages;
+using GridDomain.Tests.Unit.CommandsExecution;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Acceptance.SynchroniousCommandExecute.ExpectedMessages
 {
     [TestFixture]
-    public class PersistedAsyncExecuteDontWaitExecution : When_dont_wait_execution
+    public class PersistedAsyncExecuteExecuteCommandWithoutExpectations : When_execute_command_without_expectations
     {
-        public PersistedAsyncExecuteDontWaitExecution():base(false)
+        public PersistedAsyncExecuteExecuteCommandWithoutExpectations():base(false)
         {
             
         }

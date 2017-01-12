@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using NUnit.Framework;
 
@@ -21,8 +22,16 @@ namespace GridDomain.Tests.Unit.FutureEvents
             var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), _aggregateId, "test value A");
             var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value B");
 
-            _eventA = await GridNode.Execute(CommandPlan.New(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId)));
-            _eventB = await GridNode.Execute(CommandPlan.New(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId)));
+            _eventA = (await GridNode.PrepareCommand(testCommandA)
+                                     .Expect<FutureEventOccuredEvent>()
+                                     .Execute())
+                                     .Message<FutureEventOccuredEvent>();
+
+            _eventB = (await GridNode.PrepareCommand(testCommandB)
+                                     .Expect<FutureEventOccuredEvent>()
+                                     .Execute())
+                                     .Message<FutureEventOccuredEvent>();
+
         }
 
         protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);

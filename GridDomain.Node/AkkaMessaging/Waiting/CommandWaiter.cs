@@ -33,6 +33,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return _expectBuilder;
         }
 
+        public Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
+        {
+            return _expectBuilder.Execute(timeout,failOnAnyFault);
+        }
+
         ICommandExpectBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
         {
             return _expectBuilder.And(filter);

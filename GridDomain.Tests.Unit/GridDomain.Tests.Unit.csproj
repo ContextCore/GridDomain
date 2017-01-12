@@ -238,7 +238,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MessageWaiting\Commanding\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\CommandPlan_Execute_without_timeout.cs" />
     <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
@@ -285,11 +284,7 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHub_children_lifetime_test.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\InstanceSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
-    <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_one_event_fault_wait_by_Node.cs" />
-    <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_with_fault_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\When_SyncExecute_until_projection_fault.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_until_projection_group_fault.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_waiting_several_messages.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
@@ -414,16 +409,12 @@
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
-    <Compile Include="AsyncAggregates\When_async_method_is_called_domainEvents_are_persisted.cs" />
-    <Compile Include="AsyncAggregates\Given_async_events_execute.cs" />
-    <Compile Include="AsyncAggregates\Async_execution_dont_block_aggregate.cs" />
-    <Compile Include="AsyncAggregates\Async_execute_dont_wait.cs" />
-    <Compile Include="AsyncAggregates\Wait_execution_of_async_method_until_projection_build_event_wait_by_caller.cs" />
-    <Compile Include="AsyncAggregates\When_aggregate_raise_async_events_.cs" />
-    <Compile Include="AsyncAggregates\When_wait_execution_of_async_method_until_aggregate_event_wait_by_caller.cs" />
-    <Compile Include="AsyncAggregates\When_wait_Execute_of_async_aggregate_method_until_aggregate_event_wait_by_Node.cs" />
-    <Compile Include="AsyncAggregates\When_WaitExecute_of_async_aggregate_method_with_fault_wait_by_Node.cs" />
-    <Compile Include="AsyncAggregates\When_wait_execution_of_async_method_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="CommandsExecution\When_executing_command_domainEvents_Should_have_sagaId.cs" />
+    <Compile Include="CommandsExecution\When_async_method_called_Then_domainEvents_are_persisted.cs" />
+    <Compile Include="CommandsExecution\Async_execution_dont_block_aggregate.cs" />
+    <Compile Include="CommandsExecution\Async_execute_dont_wait.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_Then_produced_event_are_available_for_projection_builders.cs" />
+    <Compile Include="CommandsExecution\When_aggregate_raise_async_events.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
@@ -436,18 +427,12 @@
     <Compile Include="SampleDomain\ProjectionBuilders\FaultyCreateProjectionBuilder.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\When_SyncExecute_until_aggregate_event_wait_by_Node_without_message_base_class.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\When_SyncExecute_until_aggregate_event_wait_by_Node_with_message_base_class.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_without_timeout.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\Sync_execute_with_command_fault.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_causing_an_aggregate_error.cs" />
     <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
     <Compile Include="CommandsExecution\SampleDomainContainerConfiguration.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\When_dont_wait_execution.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_until_projection_build_event_wait_by_caller.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_until_aggregate_event_wait_by_caller.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_until_aggregate_event_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\SyncExecute_with_sync_fault_wait_by_Node.cs" />
-    <Compile Include="CommandsExecution\ExpectedMessages\When_wait_execution__of_async_method_until_projection_build_event_wait_by_Node.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_without_expectations.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_Then_aggregate_Should_persist_changed.cs" />
     <Compile Include="CommandsExecution\InMemorySampleDomainTests.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder.cs" />

@@ -1,14 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.AsyncAggregates
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
     class Async_execution_dont_block_aggregate : InMemorySampleDomainTests
@@ -25,10 +23,9 @@ namespace GridDomain.Tests.Unit.AsyncAggregates
                                            .Expect<SampleAggregateChangedEvent>()
                                            .Execute();
 
-            await GridNode.Execute(CommandPlan.New(syncCommand, 
-                                                   TimeSpan.FromSeconds(1), 
-                                                   Expect.Message<SampleAggregateChangedEvent>(e =>e.SourceId,
-                                                   syncCommand.AggregateId)));
+           await GridNode.PrepareCommand(syncCommand)
+                         .Expect<SampleAggregateChangedEvent>()
+                         .Execute();
 
             var sampleAggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
 
