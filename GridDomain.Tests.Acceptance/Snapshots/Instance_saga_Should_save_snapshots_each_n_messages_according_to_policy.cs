@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     class Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy : SoftwareProgrammingInstanceSagaTest
     {
         private Guid _sagaId;
-        private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
+        private AggregateVersion<SagaStateAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
 
         protected override IContainerConfiguration CreateConfiguration()
         {
@@ -66,7 +66,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Thread.Sleep(200);
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory)
-                                .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
+                                .Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
         }
 
         //saving on each message, maximum on each command

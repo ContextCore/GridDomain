@@ -15,8 +15,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     class Instance_saga_Should_recover_from_snapshot : SoftwareProgrammingInstanceSagaTest
     {
 
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaState;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _restoredState;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaState;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _restoredState;
         public Instance_saga_Should_recover_from_snapshot() : base(false) { }
 
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
@@ -25,9 +25,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public void Test()
         {
             var saga = new SoftwareProgrammingSaga();
-            var state = new SoftwareProgrammingSagaData(saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
+            var state = new SoftwareProgrammingSagaData(Guid.NewGuid(),saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
 
-            _sagaState = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(), state);
+            _sagaState = new SagaStateAggregate<SoftwareProgrammingSagaData>(state);
             _sagaState.RememberEvent(saga.CoffeReady, state, new object());
             _sagaState.ClearEvents();
 

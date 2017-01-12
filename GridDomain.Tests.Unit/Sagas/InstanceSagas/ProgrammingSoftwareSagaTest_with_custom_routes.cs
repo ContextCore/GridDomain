@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             return new CustomContainerConfiguration(
                 c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
                 c => c.Register(baseConf),
-                c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
+                c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,
                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()
                 );
         }

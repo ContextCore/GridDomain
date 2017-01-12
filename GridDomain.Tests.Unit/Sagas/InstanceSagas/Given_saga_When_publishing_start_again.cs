@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         private GotTiredEvent _startMessage;
         private CoffeMadeEvent _coffeMadeEvent;
         private GotTiredEvent _reStartEvent;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
 
         [OneTimeSetUp]
         public void When_publishing_start_message()
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             Thread.Sleep(3000);
          
-            _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
+            _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
         }
 
         [Then]

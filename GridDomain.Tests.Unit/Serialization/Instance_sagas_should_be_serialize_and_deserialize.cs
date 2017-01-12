@@ -12,17 +12,17 @@ namespace GridDomain.Tests.Unit.Serialization
     [TestFixture]
     class Instance_sagas_should_be_serialize_and_deserialize : SoftwareProgrammingInstanceSagaTest
     {
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaState;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _restoredState;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaState;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _restoredState;
         public Instance_sagas_should_be_serialize_and_deserialize() : base(true) { }
 
         [OneTimeSetUp]
         public void Test()
         {
             var saga  = new SoftwareProgrammingSaga();
-            var state = new SoftwareProgrammingSagaData("123", Guid.NewGuid(), Guid.NewGuid());
+            var state = new SoftwareProgrammingSagaData(Guid.NewGuid(),"123", Guid.NewGuid(), Guid.NewGuid());
 
-            _sagaState = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(), state);
+            _sagaState = new SagaStateAggregate<SoftwareProgrammingSagaData>(state);
             _sagaState.RememberEvent(saga.CoffeReady, state, new object());
             _sagaState.ClearEvents();
 
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
 
             var json = JsonConvert.SerializeObject(_sagaState);
-            _restoredState = JsonConvert.DeserializeObject<SagaDataAggregate<SoftwareProgrammingSagaData>>(json);
+            _restoredState = JsonConvert.DeserializeObject<SagaStateAggregate<SoftwareProgrammingSagaData>>(json);
         }
 
         [Test]

@@ -17,6 +17,6 @@ namespace GridDomain.EventSourcing.Sagas
 
     public interface ISagaInstance<TSaga, TData> : ISagaInstance where TData : ISagaState
     {
-        new SagaDataAggregate<TData> Data { get; }
+        new SagaStateAggregate<TData> Data { get; }
     }
 }

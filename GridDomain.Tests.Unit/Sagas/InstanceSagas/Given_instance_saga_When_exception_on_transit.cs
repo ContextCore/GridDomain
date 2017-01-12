@@ -18,12 +18,12 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         {
             var sagaId = Guid.NewGuid();
             //prepare initial saga state
-            var sagaData = new SoftwareProgrammingSagaData(nameof(SoftwareProgrammingSaga.MakingCoffee))
+            var sagaData = new SoftwareProgrammingSagaData(sagaId,nameof(SoftwareProgrammingSaga.MakingCoffee))
             {
                 PersonId = Guid.NewGuid()
             };
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
-            SaveInJournal<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
+            SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
             var waiter = GridNode.NewWaiter(TimeSpan.FromSeconds(1000))
                                  .Expect<IFault<CoffeMakeFailedEvent>>()

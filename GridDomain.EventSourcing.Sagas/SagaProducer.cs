@@ -13,7 +13,7 @@ namespace GridDomain.EventSourcing.Sagas
             Descriptor = descriptor;
         }
 
-        public void RegisterAll<TFactory, TData>(TFactory factory) where TFactory : ISagaFactory<TSaga, SagaDataAggregate<TData>> where TData : ISagaState
+        public void RegisterAll<TFactory, TData>(TFactory factory) where TFactory : ISagaFactory<TSaga, SagaStateAggregate<TData>> where TData : ISagaState
         {
             dynamic dynamicfactory = factory;
 

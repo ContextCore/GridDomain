@@ -18,7 +18,7 @@ namespace GridDomain.EventSourcing.Sagas
             AddAcceptedMessage(typeof(TDomainEvent), MemberNameExtractor.GetName(correlationFieldExpression));
         }
 
-        public SagaDescriptor() : base(typeof(ISagaInstance<TSaga, TSagaData>), typeof(SagaDataAggregate<TSagaData>), typeof(TSaga))
+        public SagaDescriptor() : base(typeof(ISagaInstance<TSaga, TSagaData>), typeof(SagaStateAggregate<TSagaData>), typeof(TSaga))
         {
         }
     }

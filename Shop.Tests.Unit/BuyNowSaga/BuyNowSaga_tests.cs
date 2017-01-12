@@ -31,10 +31,10 @@ namespace Shop.Tests.Unit.BuyNowSaga
         public void Given_sku_purchase_ordered_Then_buy_now_saga_is_created_and_create_order_command_issued()
         {
             var scenario = NewScenario();
-            var sagaId = Guid.NewGuid();
 
             var state = scenario.GenerateState(nameof(BuyNow.CreatingOrder),
                                                c => c.Without(d => d.ReserveId));
+            var sagaId = state.Id;
 
             var compare_ignore_complex_event_status = new CompareLogic() {Config = new ComparisonConfig() {MembersToIgnore = new List<string>() {nameof(state.OrderWarReservedStatus)} } };
 
@@ -50,6 +50,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                     .CheckProducedState(state, compare_ignore_complex_event_status);
 
             Assert.AreEqual(sagaId, scenario.SagaInstance.Data.Id);
+            Assert.AreEqual(sagaId, scenario.SagaInstance.Data.Data.Id);
         }
 
         [Test]

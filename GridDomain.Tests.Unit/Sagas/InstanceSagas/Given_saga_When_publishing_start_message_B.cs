@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     class Given_saga_When_publishing_start_message_B : SoftwareProgrammingInstanceSagaTest
     {
         private static readonly SleptWellEvent StartMessage = new SleptWellEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid(), null);
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaData;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaData;
 
         [OneTimeSetUp]
         public void When_publishing_start_message()
@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                     .Publish(StartMessage)
                     .Wait();
 
-            _sagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(StartMessage.SagaId);
+            _sagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(StartMessage.SagaId);
         }
 
         [Then]

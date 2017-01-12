@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     class Given_uninitialized_saga_When_processing_messages : SoftwareProgrammingInstanceSagaTest
     {
         private CoffeMadeEvent _coffeMadeEvent;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
 
         [TestCase(false, true , Description="Saga id is empty and it has data")]
         [TestCase(false, false, Description = "Saga id is empty and no data")]
@@ -22,8 +22,9 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
 
-            var sagaDataAggregate = Aggregate.Empty<SagaDataAggregate<SoftwareProgrammingSagaData>>(!sagaHasId ? Guid.Empty : Guid.NewGuid());
-            sagaDataAggregate.RememberEvent(softwareProgrammingSaga.CoffeReady, !sagaHasData ? null : new SoftwareProgrammingSagaData(""), null);
+            var sagaId = !sagaHasId ? Guid.Empty : Guid.NewGuid();
+            var sagaDataAggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            sagaDataAggregate.RememberEvent(softwareProgrammingSaga.CoffeReady, !sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId,""), null);
 
             var saga = SagaInstance.New(softwareProgrammingSaga,sagaDataAggregate);
             saga.Transit(coffeMadeEvent);
@@ -38,7 +39,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             GridNode.Transport.Publish(_coffeMadeEvent);
             Thread.Sleep(200);
-            _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_coffeMadeEvent.SagaId);
+            _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(_coffeMadeEvent.SagaId);
             Assert.Null(_sagaDataAggregate.Data);
         }
 

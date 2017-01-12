@@ -6,11 +6,11 @@ using CommonDomain.Core;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class SagaDataAggregate<TSagaData> : AggregateBase
+    public class SagaStateAggregate<TSagaState> : AggregateBase where TSagaState: ISagaState
     {
         private class Snapshot : IMemento
         {
-            public Snapshot(Guid id, int version, TSagaData data)
+            public Snapshot(Guid id, int version, TSagaState data)
             {
                 Id = id;
                 Data = data;
@@ -19,46 +19,46 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             public Guid Id { get; set; }
             public int Version { get; set; }
-            public TSagaData Data {get; }
+            public TSagaState Data {get; }
         }
         protected override IMemento GetSnapshot()
         {
             return new Snapshot(Id,Version,Data);
         }
 
-        public static SagaDataAggregate<TSagaData> FromSnapshot(IMemento m)
+        public static SagaStateAggregate<TSagaState> FromSnapshot(IMemento m)
         {
             Snapshot s = m as Snapshot;
             if (s == null)
                 throw new WrongSnapshotTypeReceivedException(m.GetType(), typeof(Snapshot));
-            var sagaDataAggregate = new SagaDataAggregate<TSagaData>(s.Id, s.Data) {Version = s.Version};
+            var sagaDataAggregate = new SagaStateAggregate<TSagaState>(s.Data) {Version = s.Version};
             ((IAggregate)sagaDataAggregate).ClearUncommittedEvents();
             return sagaDataAggregate;    
         }
 
-        public TSagaData Data { get; private set; }
+        public TSagaState Data { get; private set; }
 
-        private SagaDataAggregate(Guid id)
+        private SagaStateAggregate(Guid id)
         {
             Id = id;
         }
 
-        public SagaDataAggregate(Guid id, TSagaData data ):this(id)
+        public SagaStateAggregate(TSagaState data ):this(data.Id)
         {
-            RaiseEvent(new SagaCreatedEvent<TSagaData>(data, id));
+            RaiseEvent(new SagaCreatedEvent<TSagaState>(data,data.Id));
         }
    
-        public void RememberEvent(Event @event, TSagaData sagaData, object message)
+        public void RememberEvent(Event @event, TSagaState sagaData, object message)
         {
-            RaiseEvent(new SagaMessageReceivedEvent<TSagaData>(Id, sagaData, @event.Name, message));
+            RaiseEvent(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, @event.Name, message));
         }
-        public void Apply(SagaCreatedEvent<TSagaData> e)
+        public void Apply(SagaCreatedEvent<TSagaState> e)
         {
             Data = e.State;
             Id = e.SourceId;
         }
 
-        public void Apply(SagaMessageReceivedEvent<TSagaData> e)
+        public void Apply(SagaMessageReceivedEvent<TSagaState> e)
         {
             Data = e.SagaData;
         }

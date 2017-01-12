@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime.Infrastructure
 
             HubProps = system.DI().Props<
                 SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                             SagaDataAggregate<SoftwareProgrammingSagaData>>>();
+                             SagaStateAggregate<SoftwareProgrammingSagaData>>>();
         }
         public Props HubProps { get; }
         public object ChildCreateMessage { get; }

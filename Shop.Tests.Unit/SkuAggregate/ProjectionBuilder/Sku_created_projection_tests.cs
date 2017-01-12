@@ -42,7 +42,8 @@ namespace Shop.Tests.Unit.SkuAggregate.ProjectionBuilder
                 Assert.AreEqual(_message.Number, row.Number);
                 Assert.AreEqual(_message.CreatedTime, row.Created);
                 Assert.AreEqual(_message.CreatedTime, row.LastModified);
-                Assert.AreEqual(_message.Price, row.Price);
+                Assert.AreEqual(_message.Price.Amount, row.Price);
+                Assert.AreEqual(_message.Price.CurrencyCode.ToString(), row.Currency);
             }
         }
 

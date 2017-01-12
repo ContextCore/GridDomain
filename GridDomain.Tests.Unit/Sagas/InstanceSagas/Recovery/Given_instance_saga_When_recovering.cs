@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Recovery
     {
         private SagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> _sagaInstance;
         private IReadOnlyCollection<object> _dispatchedCommands;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _data;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _data;
         private CoffeMakeFailedEvent _coffeMakeFailedEvent;
 
         [OneTimeSetUp]
@@ -25,9 +25,9 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Recovery
             var aggregateFactory = new AggregateFactory();
             var sagaId = Guid.NewGuid();
 
-            _data = aggregateFactory.Build<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            _data = aggregateFactory.Build<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
             var saga = new SoftwareProgrammingSaga();
-            var initialState = new SoftwareProgrammingSagaData(saga.MakingCoffee.Name);
+            var initialState = new SoftwareProgrammingSagaData(sagaId,saga.MakingCoffee.Name);
 
             var eventsToReplay = new DomainEvent[]
             {

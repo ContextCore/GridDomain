@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     class Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown: SoftwareProgrammingInstanceSagaTest
     {
         private Guid _sagaId;
-        private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
+        private AggregateVersion<SagaStateAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
         private readonly SnapshotsPersistencePolicy _snapshotsPersistencePolicy = 
                                    new SnapshotsPersistencePolicy(TimeSpan.FromMinutes(10), 1, 2);
             
@@ -90,7 +90,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Thread.Sleep(1000);
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, 
                                                          GridNode.AggregateFromSnapshotsFactory)
-                                                         .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
+                                                         .Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(_sagaId);
 
             Console.WriteLine(_snapshotsPersistencePolicy.ToPropsString());
         }

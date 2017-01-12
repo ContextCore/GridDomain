@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
                                              new SoftwareProgrammingSagaFactory(),
                                              SoftwareProgrammingSaga.Descriptor)),
 
-                        c => c.RegisterAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>,
+                        c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,
                                                  SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
                         
                         c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),

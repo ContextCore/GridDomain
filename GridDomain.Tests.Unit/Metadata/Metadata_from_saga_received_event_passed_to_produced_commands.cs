@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.Metadata
     class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest
     {
         private Guid SagaId;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
         private IMessageMetadataEnvelop<MakeCoffeCommand> _answer;
         private GotTiredEvent _gotTiredEvent;
         private MessageMetadata _gotTiredEventMetadata;
@@ -85,7 +85,7 @@ namespace GridDomain.Tests.Unit.Metadata
         public void Result_metadata_has_processed_correct_filled_history_step()
         {
             var step = _answer.Metadata.History.Steps.First();
-            var name = AggregateActorName.New<SagaDataAggregate<SoftwareProgrammingSagaData>>(SagaId);
+            var name = AggregateActorName.New<SagaStateAggregate<SoftwareProgrammingSagaData>>(SagaId);
 
             Assert.AreEqual(name.Name, step.Who);
             Assert.AreEqual(SagaActorLiterals.SagaProducedACommand, step.Why);

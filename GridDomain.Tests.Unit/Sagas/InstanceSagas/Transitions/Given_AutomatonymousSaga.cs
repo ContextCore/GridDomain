@@ -8,13 +8,12 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
     {
         public readonly SoftwareProgrammingSaga SagaMachine = new SoftwareProgrammingSaga();
         public readonly SagaInstance<SoftwareProgrammingSaga,SoftwareProgrammingSagaData> SagaInstance;
-        public readonly SagaDataAggregate<SoftwareProgrammingSagaData> SagaDataAggregate;
+        public readonly SagaStateAggregate<SoftwareProgrammingSagaData> SagaDataAggregate;
 
         public Given_AutomatonymousSaga(Func<SoftwareProgrammingSaga, State> initialState)
         {
-            var sagaData = new SoftwareProgrammingSagaData(initialState(SagaMachine).Name);
-            SagaDataAggregate = new SagaDataAggregate<SoftwareProgrammingSagaData>(Guid.NewGuid(),
-                                                                                   sagaData);
+            var sagaData = new SoftwareProgrammingSagaData(Guid.NewGuid(),initialState(SagaMachine).Name);
+            SagaDataAggregate = new SagaStateAggregate<SoftwareProgrammingSagaData>(sagaData);
             SagaInstance = new SagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaMachine, SagaDataAggregate);
         }
     }

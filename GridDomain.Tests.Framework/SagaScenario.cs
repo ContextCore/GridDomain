@@ -17,11 +17,11 @@ namespace GridDomain.Tests.Framework
     public class SagaScenario<TSaga, TData, TFactory>
         where TSaga: Saga<TData>
         where TData : class, ISagaState
-        where TFactory : class, ISagaFactory<ISagaInstance<TSaga, TData>, SagaDataAggregate<TData>>
+        where TFactory : class, ISagaFactory<ISagaInstance<TSaga, TData>, SagaStateAggregate<TData>>
     {
         protected ISagaProducer<ISagaInstance<TSaga,TData>> SagaProducer { get; }
         public ISagaInstance<TSaga, TData> SagaInstance { get; private set; }
-        protected SagaDataAggregate<TData> SagaStateAggregate { get; private set; }
+        protected SagaStateAggregate<TData> SagaStateAggregate { get; private set; }
 
         protected ICommand[] ExpectedCommands { get; private set; } = { };
         protected ICommand[] ProducedCommands { get; private set; } = { };
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Framework
         public SagaScenario<TSaga, TData, TFactory> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
-            SagaStateAggregate = CreateAggregate<SagaDataAggregate<TData>>(Guid.NewGuid());
+            SagaStateAggregate = CreateAggregate<SagaStateAggregate<TData>>(Guid.NewGuid());
             SagaStateAggregate.ApplyEvents(events);
             SagaStateAggregate.ClearEvents();
             return this;
@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Framework
         public SagaScenario<TSaga, TData, TFactory> GivenState(Guid id, TData state)
         {
             InitialState = state;
-            SagaStateAggregate = CreateAggregate<SagaDataAggregate<TData>>(id);
+            SagaStateAggregate = CreateAggregate<SagaStateAggregate<TData>>(id);
             SagaStateAggregate.ApplyEvents(new SagaCreatedEvent<TData>(state,id));
             SagaStateAggregate.ClearEvents();
             return this;

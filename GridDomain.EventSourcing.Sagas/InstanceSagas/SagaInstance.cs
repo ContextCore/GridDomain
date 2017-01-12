@@ -13,7 +13,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public static class SagaInstance
     {
-        public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga, SagaDataAggregate<TSagaData> data)
+        public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga, SagaStateAggregate<TSagaData> data)
             where TSaga : Saga<TSagaData>
             where TSagaData : class, ISagaState
         {
@@ -26,7 +26,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         where TSagaData : class, ISagaState
     {
         public readonly Saga<TSagaData> Machine;
-        private readonly SagaDataAggregate<TSagaData> _dataAggregate;
+        private readonly SagaStateAggregate<TSagaData> _dataAggregate;
 
         private static readonly ILogger Log = LogManager.GetLogger();
         
@@ -38,12 +38,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _commandsToDispatch.Clear();
         }
 
-        SagaDataAggregate<TSagaData> ISagaInstance<TSaga, TSagaData>.Data => _dataAggregate;
+        SagaStateAggregate<TSagaData> ISagaInstance<TSaga, TSagaData>.Data => _dataAggregate;
 
         public IAggregate Data => _dataAggregate;
 
         public SagaInstance(Saga<TSagaData> machine, 
-                            SagaDataAggregate<TSagaData> dataAggregate, 
+                            SagaStateAggregate<TSagaData> dataAggregate, 
                             bool doUninitializedWarnings = true)
         {
             if (machine == null) throw new ArgumentNullException(nameof(machine));
@@ -56,7 +56,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private string CurrentStateName => _dataAggregate.Data?.CurrentStateName;
 
-        private bool CheckInitialState(SagaDataAggregate<TSagaData> dataAggregate, bool logUninitializedState = true)
+        private bool CheckInitialState(SagaStateAggregate<TSagaData> dataAggregate, bool logUninitializedState = true)
         {
             if (!string.IsNullOrEmpty(CurrentStateName)) return true;
 

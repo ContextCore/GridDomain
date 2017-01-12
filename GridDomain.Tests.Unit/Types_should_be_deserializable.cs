@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit
         {
             get
             {
-                yield return typeof(SagaDataAggregate<>);
+                yield return typeof(SagaStateAggregate<>);
                 yield return typeof(SagaCreatedEvent<>);
                 yield return typeof(SagaMessageReceivedEvent<>);
             }
@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Unit
         [Test]
         public void Generic_domain_classes_should_be_deserializable()
         {
-            CheckAll<object>(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>),
+            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>),
                              typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>)
                             );
         }

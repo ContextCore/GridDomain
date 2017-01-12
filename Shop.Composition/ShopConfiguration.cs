@@ -26,7 +26,6 @@ namespace Shop.Composition
     {
         public void Register(IUnityContainer container)
         {
-            //var inMemoryPriceCalculator = new SqlPriceCalculator();
             var contextSqlOptions = new DbContextOptionsBuilder<ShopDbContext>()
                                     .UseSqlServer("Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
                                     .Options;
@@ -35,8 +34,6 @@ namespace Shop.Composition
             container.RegisterType<ISkuPriceQuery, SkuPriceQuery>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>(new ContainerControlledLifetimeManager());
 
-
-         
             container.Register(new AggregateConfiguration<Account,AccountCommandsHandler>());
             container.Register(new AggregateConfiguration<Order,OrderCommandsHandler>());
             container.Register(new AggregateConfiguration<Sku,SkuCommandsHandler>());

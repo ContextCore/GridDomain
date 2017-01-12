@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [Then]
         public void Descriptor_contains_saga_data_type()
         {
-            Assert.AreEqual(typeof(SagaDataAggregate<SoftwareProgrammingSagaData>), _descriptor.StateType);
+            Assert.AreEqual(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), _descriptor.StateType);
         }
 
 

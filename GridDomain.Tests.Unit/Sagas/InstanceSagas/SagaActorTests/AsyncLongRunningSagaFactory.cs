@@ -5,17 +5,17 @@ using GridDomain.Tests.Unit.SampleDomain.Events;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
-    public class AsyncLongRunningSagaFactory : ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaDataAggregate<TestState>>,
+    public class AsyncLongRunningSagaFactory : ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>,
         ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SampleAggregateCreatedEvent>
     {
-        public ISagaInstance<AsyncLongRunningSaga, TestState> Create(SagaDataAggregate<TestState> message)
+        public ISagaInstance<AsyncLongRunningSaga, TestState> Create(SagaStateAggregate<TestState> message)
         {
             return SagaInstance.New(new AsyncLongRunningSaga(), message);
         }
 
         public ISagaInstance<AsyncLongRunningSaga, TestState> Create(SampleAggregateCreatedEvent message)
         {
-            return SagaInstance.New(new AsyncLongRunningSaga(), new SagaDataAggregate<TestState>(message.SagaId, new TestState(nameof(AsyncLongRunningSaga.Initial))));
+            return SagaInstance.New(new AsyncLongRunningSaga(), new SagaStateAggregate<TestState>(new TestState(message.SagaId,nameof(AsyncLongRunningSaga.Initial))));
         }
     }
 }

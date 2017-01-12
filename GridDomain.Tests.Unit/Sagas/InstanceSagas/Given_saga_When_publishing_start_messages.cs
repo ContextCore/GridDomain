@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     {
         protected readonly Guid _sagaId;
         private readonly object[] _sagaMessages;
-        protected SagaDataAggregate<SoftwareProgrammingSagaData> SagaData;
+        protected SagaStateAggregate<SoftwareProgrammingSagaData> SagaData;
        
 
         public Given_saga_When_publishing_start_messages(Guid sagaId, params object[] messages)
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                         .Publish(_sagaMessages)
                         .Wait();
 
-            SagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(_sagaId);
+            SagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(_sagaId);
         }
 
         protected abstract IExpectBuilder<AnyMessagePublisher> ConfigureWait(IMessageWaiter<AnyMessagePublisher> waiter);

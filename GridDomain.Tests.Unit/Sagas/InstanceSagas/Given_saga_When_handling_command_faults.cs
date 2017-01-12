@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     [TestFixture]
     class Given_saga_When_handling_command_faults : SoftwareProgrammingInstanceSagaTest
     {
-        private SagaDataAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
         private CoffeMakeFailedEvent _coffeMakeFailedEvent;
         private SoftwareProgrammingSagaData _sagaData;
 
@@ -36,14 +36,14 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         public void When_publishing_start_message()
         {
             var sagaId = Guid.NewGuid();
-            _sagaData = new SoftwareProgrammingSagaData(nameof(SoftwareProgrammingSaga.MakingCoffee))
+            _sagaData = new SoftwareProgrammingSagaData(sagaId,nameof(SoftwareProgrammingSaga.MakingCoffee))
             {
                PersonId = Guid.NewGuid()
             };
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(_sagaData, sagaId);
 
-            SaveInJournal<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId,sagaDataEvent);
+            SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId,sagaDataEvent);
 
             Thread.Sleep(100);
             _coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid(), BusinessDateTime.UtcNow,sagaId);
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             GridNode.Transport.Publish(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
 
             Thread.Sleep(1000);
-            _sagaDataAggregate = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
         }
 
         [Then]

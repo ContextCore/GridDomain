@@ -5,11 +5,11 @@ using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     class CustomRoutesSoftwareProgrammingSagaFactory :
-        ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaDataAggregate<SoftwareProgrammingSagaData>>,
+        ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SagaStateAggregate<SoftwareProgrammingSagaData>>,
         ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
         ISagaFactory<ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
     {
-        public ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SagaDataAggregate<SoftwareProgrammingSagaData> message)
+        public ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
             return SagaInstance.New(new CustomRoutesSoftwareProgrammingSaga(), message);
         }
@@ -17,16 +17,16 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         public ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
         {
             var saga = new CustomRoutesSoftwareProgrammingSaga();
-            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.PersonId,
-                                          new SoftwareProgrammingSagaData(saga.Coding.Name));
+            var data = new SagaStateAggregate<SoftwareProgrammingSagaData>(
+                                          new SoftwareProgrammingSagaData(message.SagaId,saga.Coding.Name));
             return SagaInstance.New(saga, data);
         }
 
         public ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
             var saga = new CustomRoutesSoftwareProgrammingSaga();
-            var data = new SagaDataAggregate<SoftwareProgrammingSagaData>(message.SofaId,
-                new SoftwareProgrammingSagaData(saga.Sleeping.Name));
+            var data = new SagaStateAggregate<SoftwareProgrammingSagaData>(
+                new SoftwareProgrammingSagaData(message.SofaId,saga.Sleeping.Name));
             return SagaInstance.New(saga, data);
         }
     }

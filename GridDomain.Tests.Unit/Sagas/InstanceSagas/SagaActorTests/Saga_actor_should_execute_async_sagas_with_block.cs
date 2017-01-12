@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     [TestFixture]
     public class Saga_actor_should_execute_async_sagas_with_block : TestKit
     {
-        private TestActorRef<SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaDataAggregate<TestState>>> _actor;
+        private TestActorRef<SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>> _actor;
         private Guid _sagaId;
         private LocalAkkaEventBusTransport _localAkkaEventBusTransport;
 
@@ -33,16 +33,16 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             var props =
                 Props.Create(
-                    () => new SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaDataAggregate<TestState>>(
+                    () => new SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>(
                             producer,
                             _localAkkaEventBusTransport,
                             new EachMessageSnapshotsPersistencePolicy(),
                             new AggregateFactory()));
 
             _sagaId = Guid.NewGuid();
-            var name = AggregateActorName.New<SagaDataAggregate<TestState>>(_sagaId).Name;
+            var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
 
-            _actor = ActorOfAsTestActorRef<SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaDataAggregate<TestState>>>(props,name);
+            _actor = ActorOfAsTestActorRef<SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>>(props,name);
 
         }
 

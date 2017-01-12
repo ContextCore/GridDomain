@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
 {
     [TestFixture]
-    public class Given_created_event_when_hydrating: AggregateTest<SagaDataAggregate<SoftwareProgrammingSagaData>>
+    public class Given_created_event_when_hydrating: AggregateTest<SagaStateAggregate<SoftwareProgrammingSagaData>>
     {
         private Guid _sagaId;
         private SoftwareProgrammingSaga _machine;
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
         {
             _sagaId = Guid.NewGuid();
             _machine = new SoftwareProgrammingSaga();
-            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_machine.Sleeping.Name);
+            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_sagaId,_machine.Sleeping.Name);
             Init();
         }
 

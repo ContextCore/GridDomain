@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     class Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low: SoftwareProgrammingInstanceSagaTest
     {
         private Guid _sagaId;
-        private AggregateVersion<SagaDataAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
+        private AggregateVersion<SagaStateAggregate<SoftwareProgrammingSagaData>>[] _snapshots;
 
         public Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low():base(false)
         {
@@ -71,7 +71,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Thread.Sleep(200);
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory)
-                                .Load<SagaDataAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
+                                .Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaStartEvent.SagaId);
         }
 
         [Test]

@@ -5,10 +5,13 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     public class TestState : ISagaState
     {
-        public TestState(string currentStateName)
+        public TestState(Guid id, string currentStateName)
         {
             CurrentStateName = currentStateName;
+            Id = id;
         }
+
+        public Guid Id { get; set; }
         public string CurrentStateName { get; set; }
         public Guid ProcessingId { get; set; }
     }

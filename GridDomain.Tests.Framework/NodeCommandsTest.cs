@@ -74,7 +74,7 @@ namespace GridDomain.Tests.Framework
 
         protected IActorRef LookupInstanceSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
         {
-            var sagaName = AggregateActorName.New<SagaDataAggregate<TData>>(id).Name;
+            var sagaName = AggregateActorName.New<SagaStateAggregate<TData>>(id).Name;
             var sagaType = typeof(ISagaInstance<TSaga,TData>).BeautyName();
 
             return GetSagaActor(sagaType, sagaName);
@@ -170,10 +170,10 @@ namespace GridDomain.Tests.Framework
             var actor = LoadActorByDI<SagaActor<TSaga, TSagaState>>(name).Result;
             return (TSagaState)actor.Saga.Data;
         }
-        public SagaDataAggregate<TSagaState> LoadInstanceSagaState<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
+        public SagaStateAggregate<TSagaState> LoadInstanceSagaState<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
                                                                             where TSaga : Saga<TSagaState>
         {
-            return  LoadSagaState<ISagaInstance<TSaga,TSagaState>, SagaDataAggregate<TSagaState>>(id);
+            return  LoadSagaState<ISagaInstance<TSaga,TSagaState>, SagaStateAggregate<TSagaState>>(id);
         }
 
         protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf);

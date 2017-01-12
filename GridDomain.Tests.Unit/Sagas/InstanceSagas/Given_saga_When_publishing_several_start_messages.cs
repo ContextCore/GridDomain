@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     {
         private static readonly Guid SagaId = Guid.NewGuid();
         private static  SleptWellEvent secondStartMessage;
-        private SagaDataAggregate<SoftwareProgrammingSagaData> SagaData;
+        private SagaStateAggregate<SoftwareProgrammingSagaData> SagaData;
 
         [OneTimeSetUp]
         public void When_publishing_start_message()
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             Publisher.Publish(secondStartMessage);
             FishForMessage<Persisted>(m => true );
 
-           SagaData = LoadAggregate<SagaDataAggregate<SoftwareProgrammingSagaData>>(SagaId);
+           SagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(SagaId);
         }
 
         [Then]
