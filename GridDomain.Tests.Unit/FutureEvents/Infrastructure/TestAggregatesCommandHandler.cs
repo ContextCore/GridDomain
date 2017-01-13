@@ -5,10 +5,10 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
-                                                IAggregateCommandsHandlerDesriptor
+                                                IAggregateCommandsHandlerDescriptor
 
     {
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler();
+        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new TestAggregatesCommandHandler();
         public TestAggregatesCommandHandler() : base()
         {
             Map<ScheduleEventInFutureCommand>(c => c.AggregateId,

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public interface  IAggregateCommandsHandlerDesriptor
+    public interface IAggregateCommandsHandlerDescriptor
     {
-        IReadOnlyCollection<AggregateLookupInfo> RegisteredCommands { get; } 
+        IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands { get; } 
         Type AggregateType { get; }
     }
 }

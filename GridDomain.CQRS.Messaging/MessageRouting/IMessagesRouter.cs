@@ -9,18 +9,9 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
 
-    
-
     public interface IMessagesRouter
     {
-        [Obsolete("Use RegisterHandler instead")]
-        IRouteBuilder<TMessage> Route<TMessage>();
-
-        Task RegisterAggregate<TAggregate, TCommandHandler>()
-            where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
-            where TAggregate : AggregateBase;
-
-        Task RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor);
+        Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor);
 
         Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null);
 
@@ -28,6 +19,4 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         Task RegisterProjectionGroup<T>(T group) where T : IProjectionGroup;
     }
-
-   
 }

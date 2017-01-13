@@ -24,13 +24,20 @@ namespace Shop.Composition
 {
     public class ShopConfiguration : IContainerConfiguration
     {
-        public void Register(IUnityContainer container)
+        private readonly DbContextOptions<ShopDbContext> _readModelContextOptions;
+
+        public ShopConfiguration(DbContextOptions<ShopDbContext> readModelContextOptions = null )
         {
-            var contextSqlOptions = new DbContextOptionsBuilder<ShopDbContext>()
+            _readModelContextOptions = readModelContextOptions ?? 
+                                 new DbContextOptionsBuilder<ShopDbContext>()
                                     .UseSqlServer("Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
                                     .Options;
+            ;
+        }
 
-            container.RegisterInstance<Func<ShopDbContext>>(() => new ShopDbContext(contextSqlOptions));
+        public void Register(IUnityContainer container)
+        {
+            container.RegisterInstance<Func<ShopDbContext>>(() => new ShopDbContext(_readModelContextOptions));
             container.RegisterType<ISkuPriceQuery, SkuPriceQuery>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>(new ContainerControlledLifetimeManager());
 
@@ -39,8 +46,8 @@ namespace Shop.Composition
             container.Register(new AggregateConfiguration<Sku,SkuCommandsHandler>());
             container.Register(new AggregateConfiguration<SkuStock,SkuStockCommandsHandler>());
             container.Register(new AggregateConfiguration<User,UserCommandsHandler>());
-            container.RegisterType<ISequenceProvider,SqlSequenceProvider>();
-            container.RegisterType<IPriceCalculator,SqlPriceCalculator>();
+            container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
+            container.RegisterType<IPriceCalculator, SqlPriceCalculator>();
             container.Register(SagaConfiguration.Instance<BuyNow, BuyNowData, BuyNowSagaFactory>(BuyNow.Descriptor));
         }
     }

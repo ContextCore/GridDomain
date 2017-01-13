@@ -5,13 +5,13 @@ using Microsoft.Practices.Unity;
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
     public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
-                                                        IAggregateCommandsHandlerDesriptor
+                                                        IAggregateCommandsHandlerDescriptor
 
     {
         private IUnityContainer _locator;
 
         //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler(null);
+        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new TestAggregatesCommandHandler(null);
         public TestAggregatesCommandHandler(IUnityContainer unityContainer) : base()
         {
             _locator = unityContainer;

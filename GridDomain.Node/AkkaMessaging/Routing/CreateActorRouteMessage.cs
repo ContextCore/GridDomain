@@ -40,12 +40,12 @@ namespace GridDomain.Node.AkkaMessaging.Routing
         }
 
 
-        public static CreateActorRouteMessage ForAggregate(string name, IAggregateCommandsHandlerDesriptor descriptor)
+        public static CreateActorRouteMessage ForAggregate(string name, IAggregateCommandsHandlerDescriptor descriptor)
         {
             var messageRoutes = descriptor.RegisteredCommands.Select(c => new MessageRoute
                 (
                      MessageMetadataEnvelop.GenericForType(c.CommandType),
-                     c.Property
+                     c.AggregateIdPropertyName
                 )).ToArray();
 
             var hubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);

@@ -6,11 +6,11 @@ using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
     public class BalanceAggregatesCommandHandler: AggregateCommandsHandler<BalanceAggregate>,
-                                                        IAggregateCommandsHandlerDesriptor
+                                                        IAggregateCommandsHandlerDescriptor
 
     {
         //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new BalanceAggregatesCommandHandler();
+        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new BalanceAggregatesCommandHandler();
         public BalanceAggregatesCommandHandler() : base()
         {
             Map<ChangeBalanceCommand>(c => c.AggregateId,

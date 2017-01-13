@@ -27,18 +27,7 @@ namespace GridDomain.Node
             return new AkkaRouteBuilder<TMessage>(_routingActor);
         }
 
-        public Task RegisterAggregate<TAggregate, TCommandHandler>()
-            where TAggregate : AggregateBase
-            where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
-        {
-            var descriptor = new AggregateCommandsHandlerDesriptor<TAggregate>();
-            foreach(var info in new TCommandHandler().RegisteredCommands)
-                descriptor.RegisterCommand(info.CommandType,info.Property);
-
-            return RegisterAggregate(descriptor);
-        }
-
-        public Task RegisterAggregate(IAggregateCommandsHandlerDesriptor descriptor)
+        public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
             var name = $"Aggregate_{descriptor.AggregateType.Name}";
             var createActorRoute = CreateActorRouteMessage.ForAggregate(name, descriptor);

@@ -5,11 +5,11 @@ using GridDomain.Tests.Unit.SampleDomain.Commands;
 namespace GridDomain.Tests.Unit.SampleDomain
 {
     public class SampleAggregatesCommandHandler: AggregateCommandsHandler<SampleAggregate>,
-                                                 IAggregateCommandsHandlerDesriptor
+                                                 IAggregateCommandsHandlerDescriptor
 
     {
         //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new SampleAggregatesCommandHandler();
+        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new SampleAggregatesCommandHandler();
         public SampleAggregatesCommandHandler() : base()
         {
             Map<ChangeSampleAggregateCommand>(c => c.AggregateId,
