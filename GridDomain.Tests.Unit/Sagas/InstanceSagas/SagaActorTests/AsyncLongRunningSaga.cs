@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 using Automatonymous;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 
-namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
+namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 {
     public class AsyncLongRunningSaga : Saga<TestState>
     {

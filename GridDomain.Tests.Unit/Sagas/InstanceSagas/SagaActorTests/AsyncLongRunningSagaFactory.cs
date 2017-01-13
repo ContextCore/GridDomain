@@ -1,9 +1,8 @@
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 
-namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
+namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 {
     public class AsyncLongRunningSagaFactory : ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>,
         ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SampleAggregateCreatedEvent>

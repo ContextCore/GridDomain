@@ -237,7 +237,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageWaiting\Commanding\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
+    <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
+    <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />
     <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
@@ -259,7 +260,7 @@
     <Compile Include="LooseCommandOnPoolResize\Parent_dies_on_child_stop.cs" />
     <Compile Include="LooseCommandOnPoolResize\Spawn.cs" />
     <Compile Include="LooseCommandOnPoolResize\Stop.cs" />
-    <Compile Include="MessageWaiting\Commanding\AsyncExecute_without_timeout.cs" />
+    <Compile Include="CommandsExecution\AsyncExecute_without_timeout.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
@@ -271,7 +272,6 @@
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
     <Compile Include="Serialization\Instance_sagas_state_aggregates_should_be_serialize_and_deserialize.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
-    <Compile Include="Test.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
@@ -307,7 +307,6 @@
     <Compile Include="EventsUpgrade\Domain\Events\BalanceChangedEvent_V1.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateChangedEventNotification.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateChangedProjectionBuilder.cs" />
-    <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\BalanceAggregateCreatedProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\Domain\ProjectionBuilders\SampleProjectionBuilder.cs" />
     <Compile Include="EventsUpgrade\Events\TestEvent_V2.cs" />
     <Compile Include="EventsUpgrade\Events\TestEvent_V3.cs" />
@@ -340,24 +339,24 @@
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
     <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
-    <Compile Include="MessageWaiting\Commanding\Execute_command_waiting_aggregate_event.cs" />
-    <Compile Include="MessageWaiting\Commanding\Execute_command_until_projection_build_notification_fetching_results.cs" />
-    <Compile Include="MessageWaiting\Commanding\CommandWaiterWaitsForFaultsFromProjectionGroup.cs" />
-    <Compile Include="MessageWaiting\Commanding\CommandWaiter_results_tests.cs" />
-    <Compile Include="MessageWaiting\Commanding\Execute_several_commands_until_projection_build_notification_fetching_results.cs" />
-    <Compile Include="MessageWaiting\Commanding\SyncExecute_with_timeout.cs" />
-    <Compile Include="MessageWaiting\Commanding\CommandWaiter_waits_for_faults.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_and_B.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_and_B_or_C.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_and_B_or_C_and_D.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B_and_C.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B_and_C_or_D.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B_or_C.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_message_test_filtered_message.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_One_Message_Test.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiter_messages_test_A_or_B.cs" />
-    <Compile Include="MessageWaiting\Local\AkkaWaiterTest.cs" />
-    <Compile Include="MessageWaiting\Local\Message.cs" />
+    <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
+    <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
+    <Compile Include="CommandsExecution\CommandWaiterWaitsForFaultsFromProjectionGroup.cs" />
+    <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
+    <Compile Include="CommandsExecution\Execute_several_commands_until_projection_build_notification_fetching_results.cs" />
+    <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
+    <Compile Include="CommandsExecution\CommandWaiter_waits_for_faults.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C_and_D.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B_and_C.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B_and_C_or_D.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B_or_C.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_message_test_filtered_message.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_One_Message_Test.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B.cs" />
+    <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
+    <Compile Include="MessageWaiting\Message.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
@@ -402,7 +401,7 @@
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_and_transitioned_event_when_hydrating.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_when_hydrating.cs" />
     <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />

@@ -16,65 +16,30 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 { 
-    class SynchronizationProcessingActor<T> : UntypedActor where T: IProjectionGroup 
+    class SynchronizationProcessingActor<T> : MessageHandlingActor<object,IProjectionGroup> where T: IProjectionGroup 
     {
-        private readonly T _group;
-        private readonly IPublisher _publisher;
-        private ILogger _log = LogManager.GetLogger();
 
-        public SynchronizationProcessingActor(T group, IPublisher publisher)
+        public SynchronizationProcessingActor(T group, IPublisher publisher):base(group, publisher)
         {
-            _group = @group;
-            _publisher = publisher;
+        
         }
 
-        protected override void OnReceive(object message)
+        protected override void PublishFault(IMessageMetadataEnvelop<object> msg, Exception ex)
         {
-            try
+            var projectionGroupException = ex as ProjectionGroupMessageProcessException;
+            if (projectionGroupException == null)
             {
-                var messageWithMetadata = message as IMessageMetadataEnvelop;
-                if(messageWithMetadata != null)
-                  _group.Project(messageWithMetadata.Message, messageWithMetadata.Metadata);
-                else
-                   _group.Project(message, MessageMetadata.Empty());
+                base.PublishFault(msg, ex);
+                return;
             }
-            catch (MessageProcessException ex)
-            {
-                _log.Error(ex, "Handler actor raised an error on message process: {@Message}", message);
 
-                var withMetadata = message as IMessageMetadataEnvelop;
-                if (withMetadata == null)
-                {
-                    var fault = Fault.NewGeneric(message, ex.InnerException, ex.Type, GetSagaId(message));
-                    _publisher.Publish(fault);
-                }
-                else
-                {
-                    var fault = Fault.NewGeneric(withMetadata.Message, ex.InnerException, ex.Type, GetSagaId(message));
+            var processEntry = new ProcessEntry(typeof(T).Name,
+                                                MessageHandlingStatuses.PublishingFault,
+                                                MessageHandlingStatuses.MessageProcessCasuedAnError);
 
-                    var metadata = withMetadata.Metadata.CreateChild(Guid.Empty,
-                                                      new ProcessEntry(Self.Path.Name,
-                                                                       "publishing fault",
-                                                                       "message process casued an error"));
-
-                   _publisher.Publish(fault, metadata);
-                }
-            }
-        }
-
-        //TODO: add custom saga id mapping
-        private Guid GetSagaId(object msg)
-        {
-            Guid? sagaId = null;
-
-            msg.Match()
-                .With<ISourcedEvent>(e => sagaId = e.SagaId)
-                .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
-
-            if (sagaId.HasValue)
-                return sagaId.Value;
-
-            throw new CannotGetSagaFromMessage(msg);
+            var metadata = msg.Metadata.CreateChild(Guid.Empty, processEntry);
+            var fault = Fault.NewGeneric(msg.Message, ex, projectionGroupException.HandlerType, GetSagaId(msg.Message));
+            Publisher.Publish(fault, metadata);
         }
     }
 }

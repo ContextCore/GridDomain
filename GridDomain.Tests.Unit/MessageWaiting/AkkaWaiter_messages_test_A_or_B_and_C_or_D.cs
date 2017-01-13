@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Local
+namespace GridDomain.Tests.Unit.MessageWaiting
 {
     [TestFixture]
     public class AkkaWaiter_messages_test_A_or_B_and_C_or_D : AkkaWaiterTest

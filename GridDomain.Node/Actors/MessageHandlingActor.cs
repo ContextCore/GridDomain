@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -8,57 +10,91 @@ using GridDomain.Logging;
 
 namespace GridDomain.Node.Actors
 {
-    public class MessageHandlingActor<TMessage, THandler> : TypedActor where THandler : IHandler<TMessage>
+    public class MessageHandlingActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage>
     {
-        private readonly THandler _handler;
         private readonly ILogger _log = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
-        private readonly IPublisher _publisher;
+        protected readonly IPublisher Publisher;
 
-        public MessageHandlingActor(THandler handler,IPublisher publisher)
+        public MessageHandlingActor(THandler handler, IPublisher publisher)
         {
-            _publisher = publisher;
-            _handler = handler;
-            _monitor = new ActorMonitor(Context,typeof(THandler).Name);
-        }
-        
-        public virtual void Handle(TMessage msg)
-        {
-            Handle(new MessageMetadataEnvelop<TMessage>(msg, MessageMetadata.Empty()));
-        }
+            Publisher = publisher;
+            _monitor = new ActorMonitor(Context, typeof(THandler).Name);
 
-        public virtual void Handle(IMessageMetadataEnvelop<TMessage> msg)
-        {
-            _monitor.IncrementMessagesReceived();
-            _log.Trace("Handler actor got message: {@Message}", msg);
-
-            try
+            Receive<IMessageMetadataEnvelop<TMessage>>(msg =>
             {
-                var handlerWithMetadata = _handler as IHandlerWithMetadata<TMessage>;
-                if(handlerWithMetadata != null)
-                    handlerWithMetadata.Handle(msg.Message, msg.Metadata);
+                _monitor.IncrementMessagesReceived();
+
+                _log.Trace("Handler actor got message: {@Message}", msg);
+                var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
+
+                Func<Task> handlerExecute;
+                if (handlerWithMetadata != null)
+                {
+                    handlerExecute = () => handlerWithMetadata.Handle(msg.Message, msg.Metadata);
+                }
                 else
-                  _handler.Handle(msg.Message);
-            }
-            catch (Exception e)
+                {
+                    handlerExecute = () => handler.Handle(msg.Message);
+                }
+
+                try
+                {
+                    handlerExecute().ContinueWith(t => new HandlerExecutionResult(msg, t.Exception.UnwrapSingle()),
+                                           TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted)
+                                     .PipeTo(Self);
+                }
+                catch (Exception ex)
+                {
+                    //for case when handler cannot create its task
+                    PublishFault(msg, ex);
+                }
+                
+            });
+            Receive<HandlerExecutionResult>(res => PublishFault(res.ProcessingMessage, res.Error), m => m.Error != null);
+        }
+    
+        private class HandlerExecutionResult
+        {
+            public HandlerExecutionResult(IMessageMetadataEnvelop<TMessage> processingMessage, Exception error = null)
             {
-                _log.Error(e, "Handler actor raised an error on message process: {@Message}", msg);
-
-                var metadata = msg.Metadata.CreateChild(Guid.Empty,
-                                                        new ProcessEntry(typeof(THandler).Name, MessageHandlingStatuses.PublishingFault, MessageHandlingStatuses.MessageProcessCasuedAnError));
-
-                var fault = Fault.New(msg.Message, e, GetSagaId(msg.Message), typeof(THandler));
-
-                _publisher.Publish(fault, metadata);
+                ProcessingMessage = processingMessage;
+                Error = error;
             }
+
+            public IMessageMetadataEnvelop<TMessage> ProcessingMessage { get; }
+            public Exception Error { get; }
+
+        }
+
+        protected virtual void PublishFault(IMessageMetadataEnvelop<TMessage> msg, Exception ex)
+        {
+            _log.Error(ex, "Handler actor raised an error on message process: {@Message}", msg);
+
+            var processEntry = new ProcessEntry(typeof(THandler).Name,
+                MessageHandlingStatuses.PublishingFault,
+                MessageHandlingStatuses.MessageProcessCasuedAnError);
+
+            var metadata = msg.Metadata.CreateChild(Guid.Empty, processEntry);
+
+            var fault = Fault.New(msg.Message, ex, GetSagaId(msg.Message), typeof(THandler));
+
+            Publisher.Publish(fault, metadata);
         }
 
         //TODO: add custom saga id mapping
-        protected virtual Guid GetSagaId(TMessage msg)
+        protected Guid GetSagaId(object msg)
         {
-            ISourcedEvent e = msg as ISourcedEvent;
-            if (e != null) return e.SagaId;
-            return Guid.Empty;
+            Guid? sagaId = null;
+
+            msg.Match()
+                .With<ISourcedEvent>(e => sagaId = e.SagaId)
+                .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
+
+            if (sagaId.HasValue)
+                return sagaId.Value;
+
+            throw new CannotGetSagaFromMessage(msg);
         }
 
         protected override void PreStart()

@@ -67,6 +67,7 @@
     <Compile Include="Adapters\IEventAdapter.cs" />
     <Compile Include="Adapters\VersionedTypeSerializationBinder.cs" />
     <Compile Include="Aggregate.cs" />
+    <Compile Include="DomainException.cs" />
     <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
     <Compile Include="FutureEvents\AsyncEventsReceived.cs" />
     <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />

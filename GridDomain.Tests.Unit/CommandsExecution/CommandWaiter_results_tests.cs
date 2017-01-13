@@ -2,13 +2,12 @@ using System;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
     public class CommandWaiter_results_tests : SampleDomainCommandExecutionTests

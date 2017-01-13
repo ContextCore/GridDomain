@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
     class CommandWaiter_picks_events_by_correlation_id_by_default : SampleDomainCommandExecutionTests

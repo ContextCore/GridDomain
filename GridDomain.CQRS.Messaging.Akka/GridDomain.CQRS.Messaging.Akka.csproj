@@ -116,7 +116,6 @@
     <Compile Include="Remote\SubscribeAck.cs" />
     <Compile Include="Remote\UnSubscribe.cs" />
     <Compile Include="Remote\UnsubscribeAck.cs" />
-    <Compile Include="TypedMessageActor.cs" />
     <Compile Include="UnsuccessfullSubscribeException.cs" />
   </ItemGroup>
   <ItemGroup>

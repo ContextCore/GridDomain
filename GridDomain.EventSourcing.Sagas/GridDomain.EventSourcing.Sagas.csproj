@@ -55,13 +55,14 @@
   <ItemGroup>
     <Compile Include="CannotFindFactoryForSagaCreation.cs" />
     <Compile Include="FactoryAlreadyRegisteredException.cs" />
+    <Compile Include="FactoryNotSupportStartMessageException.cs" />
     <Compile Include="InstanceSagas\AutomatonymousExtensions.cs" />
     <Compile Include="InstanceSagas\EventReceivedData.cs" />
     <Compile Include="InstanceSagas\ISagaState.cs" />
     <Compile Include="InstanceSagas\MessageReceivedData.cs" />
     <Compile Include="InstanceSagas\NullMessageTransitException.cs" />
     <Compile Include="InstanceSagas\Saga.cs" />
-    <Compile Include="InstanceSagas\SagaDataAggregate.cs" />
+    <Compile Include="InstanceSagas\SagaStateAggregate.cs" />
     <Compile Include="InstanceSagas\SagaMessageReceivedEvent.cs" />
     <Compile Include="InstanceSagas\SagaInstance.cs" />
     <Compile Include="InstanceSagas\SagaTransitionException.cs" />

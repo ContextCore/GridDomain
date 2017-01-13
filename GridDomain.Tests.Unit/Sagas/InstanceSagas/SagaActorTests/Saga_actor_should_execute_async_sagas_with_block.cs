@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using Akka.Actor;
 using Akka.TestKit;
 using Akka.TestKit.NUnit3;
@@ -13,7 +12,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
+namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 {
     [TestFixture]
     public class Saga_actor_should_execute_async_sagas_with_block : TestKit

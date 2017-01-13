@@ -7,14 +7,13 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
+namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 {
     [TestFixture]
     class Actors_should_fill_saga_id_for_produced_faults: TestKit

@@ -101,8 +101,4 @@ namespace GridDomain.Tests.Framework
             return Enumerable.Empty<DomainEvent>();
         }
     }
-
-    public class CannotCreateCommandHandlerExeption : Exception
-    {
-    }
 }

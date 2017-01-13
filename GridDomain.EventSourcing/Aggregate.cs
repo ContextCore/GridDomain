@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Core;
@@ -9,31 +8,6 @@ using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing
 {
-    /// <summary>
-    /// DomainException represents an expected error in domain logic,
-    /// not meaning something bad in infrastructure or logic was happened 
-    /// </summary>
-    [Serializable]
-    public class DomainException : Exception
-    {
-        public DomainException()
-        {
-            
-        }
-        public DomainException(string message):base(message)
-        {
-
-        }
-        public DomainException(string message, Exception inner) : base(message,inner)
-        {
-
-        }
-
-        public DomainException(SerializationInfo info, StreamingContext context) : base(info,context)
-        {
-
-        }
-    }
     public class Aggregate : AggregateBase, IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();

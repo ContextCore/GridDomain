@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public Task Handle(SampleAggregateCreatedEvent msg, IMessageMetadata metadata)
+        public virtual Task Handle(SampleAggregateCreatedEvent msg, IMessageMetadata metadata)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;

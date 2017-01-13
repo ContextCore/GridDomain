@@ -3,13 +3,12 @@ using System.Linq;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
     public class Execute_several_commands_until_projection_build_notification_fetching_results : SampleDomainCommandExecutionTests

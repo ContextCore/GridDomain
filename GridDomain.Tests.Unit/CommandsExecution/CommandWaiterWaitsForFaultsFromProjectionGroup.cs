@@ -6,13 +6,11 @@ using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
-    public class CommandWaiterWaitsForFaultsFromProjectionGroup : CommandWaiter_waits_for_faults
+    public class CommandWaiterWaitsForFaultsFromProjectionGroup : CommandWaiter_waits_for_faults<ProjectionGroupMessageProcessException>
     {
-
-
         protected override IMessageRouteMap CreateMap()
         {
             var faultyHandlerMap = new CustomRouteMap(r => r.RegisterProjectionGroup(new TestGroup(new UnityContainer())),

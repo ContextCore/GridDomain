@@ -2,50 +2,50 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    [TestFixture]
-    public class CommandWaiter_waits_for_faults : SampleDomainCommandExecutionTests
+    public class CommandWaiter_waits_for_faults<TProcessException> : SampleDomainCommandExecutionTests
     {
-        protected override IMessageRouteMap CreateMap()
-        {
-            var faultyHandlerMap =
-                new CustomRouteMap(
-                    r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
-                    r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(e => e.SourceId),
-                    r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
-
-            return new CompositeRouteMap(faultyHandlerMap);
-        }
-
 
         [Then]
-        public void When_expected_fault_received_it_contains_error()
+        public void When_expected_fault_from_projection_group_call_received_it_contains_error()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var res = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(10), false)
+            var res = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(5), false)
                                 .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
                                 .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId && 
-                                                                                  (f.Processor == typeof(EvenFaultyMessageHandler) || 
-                                                                                   f.Processor == typeof(OddFaultyMessageHandler)))
+                                                                                   f.Processor == typeof(OddFaultyMessageHandler))
                               .Create()
                               .Execute(syncCommand)
                               .Result;
 
-            Assert.IsInstanceOf<MessageHandleException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
+            Assert.IsInstanceOf<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
         }
+
+        [Then]
+        public void When_expected_fault_from_projection_group_task_received_it_contains_error()
+        {
+            var syncCommand = new LongOperationCommand(8, Guid.NewGuid());
+            var res = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(5), false)
+                                .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
+                                .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId &&
+                                                                                   f.Processor == typeof(OddFaultyMessageHandler))
+                              .Create()
+                              .Execute(syncCommand)
+                              .Result;
+
+            Assert.IsInstanceOf<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
+        }
+
 
         [Then]
         public void When_expecting_generic_fault_without_processor_received_fault_contains_error()
@@ -58,8 +58,9 @@ namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
                               .Execute(syncCommand)
                               .Result;
 
-            Assert.IsInstanceOf<MessageHandleException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
+            Assert.IsInstanceOf<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
         }
+
 
         [Then]
         public void When_does_not_expect_fault_and_it_accures_wait_times_out()
@@ -102,7 +103,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
             await  GridNode.NewCommandWaiter()
                            .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
                            .Create()
-                           .Execute((ICommand)syncCommand)
+                           .Execute(syncCommand)
                            .ShouldThrow<SampleAggregateException>();
 
         }
@@ -113,7 +114,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
             //will throw exception in aggregate and in message handler
             var syncCommand = new AsyncFaultWithOneEventCommand(50, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(TimeSpan.FromMinutes(10), false)
+            var res = await GridNode.NewCommandWaiter(null, false)
                                     .Expect<AggregateChangedEventNotification>()
                                     .Or<IFault<SampleAggregateChangedEvent>>()
                                     .Create()

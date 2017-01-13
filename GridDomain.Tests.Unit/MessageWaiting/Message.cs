@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Unit.MessageWaiting.Local
+namespace GridDomain.Tests.Unit.MessageWaiting
 {
     public class Message
     {

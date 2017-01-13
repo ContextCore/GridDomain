@@ -121,21 +121,20 @@
     <Compile Include="CustomRouteMap.cs" />
     <Compile Include="MessageRouting\AggregateCommandHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandler.cs" />
-    <Compile Include="MessageRouting\AggregateCommandsHandlerDesriptor.cs" />
-    <Compile Include="MessageRouting\AggregateLookupInfo.cs" />
+    <Compile Include="MessageRouting\AggregateCommandsHandlerDescriptor.cs" />
+    <Compile Include="MessageRouting\AggregateCommandInfo.cs" />
     <Compile Include="MessageRouting\CannotFindAggregateCommandHandlerExeption.cs" />
     <Compile Include="MessageRouting\IAggregateCommandsHandler.cs" />
-    <Compile Include="IEventHandler.cs" />
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
-    <Compile Include="MessageRouting\IAggregateCommandsHandlerDesriptor.cs" />
+    <Compile Include="MessageRouting\IAggregateCommandsHandlerDescriptor.cs" />
     <Compile Include="MessageRouting\ICommandAggregateLocator.cs" />
     <Compile Include="MessageRouting\IHandlerBuilder.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
     <Compile Include="MessageRouting\IProjectionGroup.cs" />
     <Compile Include="MessageRouting\IProjectionGroupDescriptor.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />
-    <Compile Include="MessageRouting\MessageProcessException.cs" />
+    <Compile Include="MessageRouting\ProjectionGroupMessageProcessException.cs" />
     <Compile Include="MessageRouting\MessageRoute.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="MessageRouting\ProjectionGroup.cs" />
@@ -181,27 +180,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="_NuProjGetProjectClosure"
-          DependsOnTargets="ResolveProjectReferences"
-          Inputs="%(_MSBuildProjectReferenceExistent.Identity)"
-          Outputs="fake"
-          Returns="@(_ProjectReferenceClosure)">
-
+  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
     <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
-             Targets="_NuProjGetProjectClosure"
-             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-             ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs"
-              ItemName="_ProjectReferenceClosureWithDuplicates" />
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
+      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
     </MSBuild>
-
     <!-- Remove duplicates from closure -->
     <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered"
-              ItemName="_ProjectReferenceClosureWithoutMetadata"/>
+      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
     </RemoveDuplicates>
-
     <ItemGroup>
       <!-- Remove references that are also direct references -->
       <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
@@ -216,6 +203,5 @@
         <DependencyKind>Direct</DependencyKind>
       </_ProjectReferenceClosure>
     </ItemGroup>
-
   </Target>
 </Project>

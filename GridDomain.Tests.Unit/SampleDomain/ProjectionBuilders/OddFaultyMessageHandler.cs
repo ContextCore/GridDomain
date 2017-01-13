@@ -17,7 +17,14 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
         public Task Handle(SampleAggregateChangedEvent msg)
         {
             var i = int.Parse(msg.Value);
-            if(i % 2 == 0)
+
+            if (i % 8 == 0)
+                return Task.Run(() =>
+                {
+                    throw new MessageHandleException(msg);
+                });
+
+            if (i % 2 == 0)
                 throw new MessageHandleException(msg);
 
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId });

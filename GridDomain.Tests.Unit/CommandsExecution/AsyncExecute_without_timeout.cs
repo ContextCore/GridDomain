@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.MessageWaiting.Commanding
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     [TestFixture]
     public class AsyncExecute_without_timeout : SampleDomainCommandExecutionTests

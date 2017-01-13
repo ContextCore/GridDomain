@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using GridDomain.Common;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public interface IProjectionGroup : IProjectionGroupDescriptor
+    public interface IProjectionGroup : IProjectionGroupDescriptor, IHandlerWithMetadata<object>
     {
-        void Project(object message, IMessageMetadata metadata);
+        Task Project(object message, IMessageMetadata metadata);
     }
 
 }
