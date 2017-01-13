@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using Shop.Domain.Aggregates.SkuAggregate;
 using Shop.Domain.Aggregates.SkuAggregate.Events;
@@ -10,7 +11,7 @@ using Shop.ReadModel.Context;
 
 namespace Shop.ReadModel
 {
-    public class SkuProjectionBuilder : IEventHandler<SkuCreated>
+    public class SkuProjectionBuilder : IHandler<SkuCreated>
     {
         private readonly Func<ShopDbContext> _contextFactory;
 
@@ -19,7 +20,7 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public void Handle(SkuCreated msg)
+        public async Task Handle(SkuCreated msg)
         {
             using(var context = _contextFactory())
             {
@@ -34,7 +35,7 @@ namespace Shop.ReadModel
                     Price = msg.Price.Amount,
                     Currency = msg.Price.CurrencyCode.ToString()
                 });
-                context.SaveChanges();
+               await context.SaveChangesAsync();
             }
         }
     }

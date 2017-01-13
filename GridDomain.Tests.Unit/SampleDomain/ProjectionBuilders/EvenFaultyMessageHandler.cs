@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.Unit.SampleDomain.Events;
@@ -13,13 +14,14 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public void Handle(SampleAggregateChangedEvent msg)
+        public Task Handle(SampleAggregateChangedEvent msg)
         {
             var i = int.Parse(msg.Value);
             if (i % 2 == 1)
                 throw new MessageHandleException(msg);
 
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId });
+            return Task.CompletedTask;
         }
     }
 }

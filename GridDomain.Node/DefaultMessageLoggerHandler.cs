@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
@@ -9,24 +10,25 @@ namespace GridDomain.Node
                                                IHandler<IFault>
     {
         private static readonly ILogger Log = LogManager.GetLogger().ForContext("GridInternal", true);
-        private void Handle(object msg)
+        private Task Handle(object msg)
         {
             Log.Trace("got message from transpot: {@msg}", msg);
+            return Task.CompletedTask;
         }
 
-        public void Handle(DomainEvent msg)
+        public Task Handle(DomainEvent msg)
         {
-            Handle((object)msg);
+            return Handle((object)msg);
         }
 
-        public void Handle(ICommand msg)
+        public Task Handle(ICommand msg)
         {
-            Handle((object)msg);
+            return Handle((object)msg);
         }
 
-        public void Handle(IFault msg)
+        public Task Handle(IFault msg)
         {
-            Handle((object)msg);
+            return Handle((object)msg);
         }
     }
 }

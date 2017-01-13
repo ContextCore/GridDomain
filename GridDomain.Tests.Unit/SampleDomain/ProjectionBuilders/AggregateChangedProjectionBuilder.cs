@@ -1,26 +1,25 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 
 namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
 {
-
-
-
     public class AggregateChangedProjectionBuilder : IHandler<SampleAggregateChangedEvent>
     {
         public static int ProjectionGroupHashCode;
-        private static Stopwatch watch = new Stopwatch();
+        private static readonly Stopwatch Watch = new Stopwatch();
         static AggregateChangedProjectionBuilder()
         {
-            watch.Start();
+            Watch.Start();
         }
-        private int number = 0;
-        public virtual void Handle(SampleAggregateChangedEvent msg)
+        private int _number;
+        public virtual Task Handle(SampleAggregateChangedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
-            msg.History.SequenceNumber = ++number;
-            msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
+            msg.History.SequenceNumber = ++_number;
+            msg.History.ElapsedTicksFromAppStart = Watch.ElapsedTicks;
+            return Task.CompletedTask;
         }
     }
 }

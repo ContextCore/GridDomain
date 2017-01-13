@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -26,7 +27,7 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public virtual void Handle(SampleAggregateCreatedEvent msg, IMessageMetadata metadata)
+        public Task Handle(SampleAggregateCreatedEvent msg, IMessageMetadata metadata)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
@@ -38,11 +39,13 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
 
             var notification = new AggregateCreatedEventNotification() {AggregateId = msg.SourceId};
             _publisher.Publish(notification, notificationMetadata);
+
+            return Task.CompletedTask;
         }
 
-        public void Handle(SampleAggregateCreatedEvent msg)
+        public Task Handle(SampleAggregateCreatedEvent msg)
         {
-            Handle(msg, MessageMetadata.Empty());
+           return Handle(msg, MessageMetadata.Empty());
         }
     }
 }

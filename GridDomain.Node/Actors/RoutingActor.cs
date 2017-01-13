@@ -15,8 +15,7 @@ using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.Actors
 {
-    public abstract class RoutingActor : TypedActor, IHandler<CreateHandlerRouteMessage>,
-                                                     IHandler<CreateActorRouteMessage>
+    public abstract class RoutingActor : TypedActor
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
         protected readonly ILogger Log = LogManager.GetLogger();

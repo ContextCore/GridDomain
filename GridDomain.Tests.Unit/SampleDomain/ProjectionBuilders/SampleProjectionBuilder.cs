@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -6,8 +7,7 @@ using GridDomain.Tests.Unit.SampleDomain.Events;
 
 namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
 {
-    public class SampleProjectionBuilder : IHandler<SampleAggregateChangedEvent>,
-                                           IHandlerWithMetadata<SampleAggregateChangedEvent>
+    public class SampleProjectionBuilder : IHandlerWithMetadata<SampleAggregateChangedEvent>
     {
         private readonly IPublisher _publisher;
 
@@ -16,12 +16,13 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public void Handle(SampleAggregateChangedEvent msg)
+        public Task Handle(SampleAggregateChangedEvent msg)
         {
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId} );
+            return Task.CompletedTask;
         }
 
-        public void Handle(SampleAggregateChangedEvent msg, IMessageMetadata metadata)
+        public Task Handle(SampleAggregateChangedEvent msg, IMessageMetadata metadata)
         {
             var notificationMetadata = metadata.CreateChild(Guid.NewGuid(), 
                                                     new ProcessEntry(nameof(SampleProjectionBuilder),
@@ -29,6 +30,7 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
                                                     "Aggregate created event processed"));
 
             _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId }, notificationMetadata);
+            return Task.CompletedTask;
         }
     }
 }

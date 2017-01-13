@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
@@ -13,9 +14,10 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public void Handle(BalanceChangedEvent_V0 msg)
+        public Task Handle(BalanceChangedEvent_V0 msg)
         {
             _publisher.Publish(new BalanceAggregateChangedEventNotification() { AggregateId = msg.SourceId} );
+            return Task.CompletedTask;
         }
     }
 }

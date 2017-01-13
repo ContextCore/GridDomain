@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
@@ -12,9 +13,9 @@ using OrderItem = Shop.ReadModel.Context.OrderItem;
 
 namespace Shop.ReadModel
 {
-    public class OrdersProjectionBuilder : IEventHandler<OrderCreated>,
-                                           IEventHandler<ItemAdded>,            
-                                           IEventHandler<OrderCompleted>
+    public class OrdersProjectionBuilder : IHandler<OrderCreated>,
+                                           IHandler<ItemAdded>,            
+                                           IHandler<OrderCompleted>
 
     {
         private readonly Func<ShopDbContext> _contextFactory;
@@ -24,11 +25,13 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public void Handle(OrderCreated msg)
+        public async Task Handle(OrderCreated msg)
         {
             using (var context = _contextFactory())
             {
-                var userLogin = context.Users.Find(msg.User).Login;
+                var user = await context.Users.FindAsync(msg.User);
+                var userLogin = user.Login;
+
                 context.Orders.Add(new Order()
                 {
                     Id = msg.SourceId,
@@ -39,15 +42,15 @@ namespace Shop.ReadModel
                     Created = msg.CreatedTime,
                     LastModified = msg.CreatedTime
                 });
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(ItemAdded msg)
+        public async Task Handle(ItemAdded msg)
         {
             using (var context = _contextFactory())
             {
-                var sku = context.Goods.Find(msg.Sku);
+                var sku = await context.Goods.FindAsync(msg.Sku);
                 context.OrderItems.Add(new OrderItem()
                 {
                     OrderId = msg.SourceId,
@@ -59,18 +62,18 @@ namespace Shop.ReadModel
                     SkuName = sku.Name,
                     TotalPrice = msg.TotalPrice.Amount
                 });
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(OrderCompleted msg)
+        public async Task Handle(OrderCompleted msg)
         {
             using (var context = _contextFactory())
             {
-                var order = context.Orders.Find(msg.SourceId);
+                var order = await context.Orders.FindAsync(msg.SourceId);
                 order.Status = msg.Status;
                 order.LastModified = msg.CreatedTime;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

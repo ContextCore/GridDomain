@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
 
@@ -13,11 +14,12 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
             _notifier = notifier;
         }
 
-        public void Handle(TestMessage msg)
+        public Task Handle(TestMessage msg)
         {
             msg.HandlerHashCode = GetHashCode();
             msg.HandleOrder = ++_handleCounter;
             _notifier.Tell(msg);
+            return Task.CompletedTask;
         }
     }
 }

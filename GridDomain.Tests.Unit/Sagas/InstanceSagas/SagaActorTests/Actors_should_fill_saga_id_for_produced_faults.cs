@@ -29,8 +29,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             var actor = Sys.ActorOf(Props.Create(() => 
                 new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
-                                                  new TypedMessageActor<ScheduleCommand>(TestActor), 
-                                                  new TypedMessageActor<Unschedule>(TestActor),
+                                                  TestActor,
                                                   transport,
                                                   new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
                                                   new AggregateFactory()

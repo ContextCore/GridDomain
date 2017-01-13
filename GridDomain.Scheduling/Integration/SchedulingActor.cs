@@ -10,6 +10,8 @@ namespace GridDomain.Scheduling.Integration
 {
     public class SchedulingActor : ReceiveActor
     {
+        public const string RegistrationName = nameof(SchedulingActor);
+
         private readonly IScheduler _scheduler;
         private readonly ILogger _logger = LogManager.GetLogger();
         public SchedulingActor(IScheduler scheduler)

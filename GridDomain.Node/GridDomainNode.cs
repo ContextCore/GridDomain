@@ -173,9 +173,7 @@ namespace GridDomain.Node
             unityContainer.Register(_configuration);
 
             var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
-            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleMessage>(persistentScheduler));
-            unityContainer.RegisterInstance(new TypedMessageActor<ScheduleCommand>(persistentScheduler));
-            unityContainer.RegisterInstance(new TypedMessageActor<Unschedule>(persistentScheduler));
+            unityContainer.RegisterInstance<IActorRef>(SchedulingActor.RegistrationName, persistentScheduler);
             unityContainer.RegisterInstance(_messageRouting);
         }
 

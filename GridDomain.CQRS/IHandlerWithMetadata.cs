@@ -1,9 +1,10 @@
+using System.Threading.Tasks;
 using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
     public interface IHandlerWithMetadata<in T> : IHandler<T>
     {
-        void Handle(T message, IMessageMetadata metadata = null);
+        Task Handle(T message, IMessageMetadata metadata = null);
     }
 }

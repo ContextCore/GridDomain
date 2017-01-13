@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Infrastructure;
@@ -7,14 +9,14 @@ using SkuStock = Shop.ReadModel.Context.SkuStock;
 
 namespace Shop.ReadModel
 {
-    public class SkuStockProjectionBuilder : IEventHandler<SkuStockCreated>,
-                                             IEventHandler<StockAdded>,
-                                             IEventHandler<StockReserved>,
-                                             IEventHandler<ReserveExpired>,
-                                             IEventHandler<StockTaken>,
-                                             IEventHandler<StockReserveTaken>,
-                                             IEventHandler<ReserveRenewed>,
-                                             IEventHandler<ReserveCanceled>
+    public class SkuStockProjectionBuilder : IHandler<SkuStockCreated>,
+                                             IHandler<StockAdded>,
+                                             IHandler<StockReserved>,
+                                             IHandler<ReserveExpired>,
+                                             IHandler<StockTaken>,
+                                             IHandler<StockReserveTaken>,
+                                             IHandler<ReserveRenewed>,
+                                             IHandler<ReserveCanceled>
     {
         private readonly Func<ShopDbContext> _contextFactory;
         private readonly ISequenceProvider _sequenceProvider;
@@ -26,7 +28,7 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public void Handle(SkuStockCreated msg)
+        public async Task Handle(SkuStockCreated msg)
         {
             using (var context = _contextFactory())
             {
@@ -51,15 +53,15 @@ namespace Shop.ReadModel
 
                 context.SkuStocks.Add(skuStock);
                 context.StockHistory.Add(history);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(StockAdded msg)
+        public async Task Handle(StockAdded msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
@@ -72,15 +74,15 @@ namespace Shop.ReadModel
                 FillNewQuantities(history, skuStock);
 
                 context.StockHistory.Add(history);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(StockReserved msg)
+        public async Task Handle(StockReserved msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
@@ -106,7 +108,7 @@ namespace Shop.ReadModel
                 context.StockHistory.Add(history);
                 context.StockReserves.Add(reserve);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -131,15 +133,15 @@ namespace Shop.ReadModel
             history.NewReservedQuantity = skuStock.ReservedQuantity;
         }
 
-        public void Handle(ReserveCanceled msg)
+        public async Task Handle(ReserveCanceled msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
+                var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -155,19 +157,19 @@ namespace Shop.ReadModel
                 context.StockReserves.Remove(reserve);
                 context.StockHistory.Add(history);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(ReserveExpired msg)
+        public async Task Handle(ReserveExpired msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
+                var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -183,19 +185,19 @@ namespace Shop.ReadModel
                 context.StockReserves.Remove(reserve);
                 context.StockHistory.Add(history);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(StockReserveTaken msg)
+        public async Task Handle(StockReserveTaken msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
+                var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -211,19 +213,19 @@ namespace Shop.ReadModel
                 context.StockReserves.Remove(reserve);
                 context.StockHistory.Add(history);
 
-                context.SaveChanges();
+               await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(ReserveRenewed msg)
+        public async Task Handle(ReserveRenewed msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
-                var reserve = context.StockReserves.Find(msg.SourceId, msg.ReserveId);
+                var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
                 if (reserve == null)
                     throw new ReserveEntryNotFoundException(msg.SourceId);
 
@@ -239,15 +241,15 @@ namespace Shop.ReadModel
                 context.StockReserves.Remove(reserve);
                 context.StockHistory.Add(history);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(StockTaken msg)
+        public async Task Handle(StockTaken msg)
         {
             using (var context = _contextFactory())
             {
-                var skuStock = context.SkuStocks.Find(msg.SourceId);
+                var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
                 if (skuStock == null)
                     throw new SkuStockEntryNotFoundException(msg.SourceId);
 
@@ -260,7 +262,7 @@ namespace Shop.ReadModel
                 FillNewQuantities(history, skuStock);
 
                 context.StockHistory.Add(history);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

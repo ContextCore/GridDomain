@@ -1,4 +1,5 @@
 using System;
+using Akka.Actor;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
@@ -9,6 +10,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -64,8 +66,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<AggregateActor<TAggregate>>(
                                     new InjectionConstructor(
                                         new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
-                                        new ResolvedParameter<TypedMessageActor<ScheduleCommand>>(),
-                                        new ResolvedParameter<TypedMessageActor<Unschedule>>(),
+                                        new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
                                         new ResolvedParameter<IPublisher>(),
                                         new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
                                         new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName)

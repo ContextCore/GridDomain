@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.ReadModel.Context;
@@ -6,9 +8,9 @@ using Shop.ReadModel.Context;
 namespace Shop.ReadModel
 {
 
-    public class AccountProjectionBuilder : IEventHandler<AccountCreated>,
-                                            IEventHandler<AccountReplenish>,
-                                            IEventHandler<AccountWithdrawal>
+    public class AccountProjectionBuilder : IHandler<AccountCreated>,
+                                            IHandler<AccountReplenish>,
+                                            IHandler<AccountWithdrawal>
     {
         private readonly Func<ShopDbContext> _contextFactory;
         public AccountProjectionBuilder(Func<ShopDbContext> contextFactory)
@@ -16,11 +18,11 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public void Handle(AccountCreated msg)
+        public async Task Handle(AccountCreated msg)
         {
             using (var context = _contextFactory())
             {
-                var user = context.Users.Find(msg.UserId);
+                var user = await context.Users.FindAsync(msg.UserId);
                 var account = new Account()
                 {
                     Created = msg.CreatedTime,
@@ -31,15 +33,15 @@ namespace Shop.ReadModel
                     UserId = msg.UserId
                 };
                 context.Accounts.Add(account);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(AccountReplenish msg)
+        public async Task Handle(AccountReplenish msg)
         {
             using (var context = _contextFactory())
             {
-                var account = context.Accounts.Find(msg.SourceId);
+                var account = await context.Accounts.FindAsync(msg.SourceId);
                 account.LastModified = msg.CreatedTime;
                 var initialAmount = account.Amount;
                 account.Amount += msg.Amount.Amount;
@@ -57,15 +59,15 @@ namespace Shop.ReadModel
                 };
 
                 context.TransactionHistory.Add(transaction);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(AccountWithdrawal msg)
+        public async Task Handle(AccountWithdrawal msg)
         {
             using (var context = _contextFactory())
             {
-                var account = context.Accounts.Find(msg.SourceId);
+                var account = await context.Accounts.FindAsync(msg.SourceId);
 
                 var initialAmount = account.Amount;
                 account.LastModified = msg.CreatedTime;
@@ -84,7 +86,7 @@ namespace Shop.ReadModel
                 };
 
                 context.TransactionHistory.Add(transaction);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 
@@ -15,12 +16,13 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
         private int number = 0;
         public static int ProjectionGroupHashCode { get; set; }
 
-        public void Handle(SampleAggregateCreatedEvent msg)
+        public Task Handle(SampleAggregateCreatedEvent msg)
         {
             msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
             msg.History.SequenceNumber = ++number;
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
             msg.History.HandlerName = this.GetType().Name;
+            return Task.CompletedTask;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.EventChronicles;
@@ -28,16 +29,6 @@ namespace GridDomain.Tests.Acceptance.Chronicles
 
         class AggregateCreatedProjectionBuilder_Test : AggregateCreatedProjectionBuilder
         {
-           //public override void Handle(SampleAggregateCreatedEvent msg)
-           //{
-           //    base.Handle(msg);
-           //   EventsReplayInfoHolder.ProcessedMessages[msg.SourceId].Add(new ProcessedHistory
-           //   {
-           //       SequenceNumber = msg.History.SequenceNumber,
-           //       HandlerName = this.GetType().Name
-           //   });
-           //}
-
             public AggregateCreatedProjectionBuilder_Test(IPublisher publisher) : base(publisher)
             {
             }
@@ -45,9 +36,9 @@ namespace GridDomain.Tests.Acceptance.Chronicles
 
         class AggregateChangedProjectionBuilder_Test : AggregateChangedProjectionBuilder
         {
-            public override void Handle(SampleAggregateChangedEvent msg)
+            public override async Task Handle(SampleAggregateChangedEvent msg)
             {
-                base.Handle(msg);
+                await base.Handle(msg);
                 EventsReplayInfoHolder.ProcessedMessages[msg.SourceId].Add(new ProcessedHistory
                 {
                     SequenceNumber = msg.History.SequenceNumber,

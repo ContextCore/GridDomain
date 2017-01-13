@@ -30,8 +30,7 @@ namespace GridDomain.Node.Actors
     public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : AggregateBase
     {
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
-        private readonly TypedMessageActor<ScheduleCommand> _schedulerActorRef;
-        private readonly TypedMessageActor<Unschedule> _unscheduleActorRef;
+        private readonly IActorRef _schedulerActorRef;
 
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
@@ -40,8 +39,7 @@ namespace GridDomain.Node.Actors
 
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-                              TypedMessageActor<ScheduleCommand> schedulerActorRef,
-                              TypedMessageActor<Unschedule> unscheduleActorRef,
+                              IActorRef schedulerActorRef,
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor) : base(
@@ -50,7 +48,6 @@ namespace GridDomain.Node.Actors
                                                                             publisher)
         {
             _schedulerActorRef = schedulerActorRef;
-            _unscheduleActorRef = unscheduleActorRef;
             _handler = handler;
 
             //async aggregate method execution finished, aggregate already raised events
@@ -203,7 +200,7 @@ namespace GridDomain.Node.Actors
                                                                                  nameof(DomainEvent.SourceId)),
                                                     metadata);
 
-            _schedulerActorRef.Handle(scheduleEvent);
+            _schedulerActorRef.Tell(scheduleEvent);
         }
 
         public static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid aggregateId, string description)
@@ -219,7 +216,7 @@ namespace GridDomain.Node.Actors
             var message = futureEventCanceledEvent; 
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
-            _unscheduleActorRef.Handle(unscheduleMessage);
+            _schedulerActorRef.Tell(unscheduleMessage);
         }
     }
 }
