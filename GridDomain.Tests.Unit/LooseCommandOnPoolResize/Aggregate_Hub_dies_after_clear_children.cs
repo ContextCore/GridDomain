@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.LooseCommandOnPoolResize
         public async Task Start()
         {
             var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateCreatedEvent>()
                           .Execute();
 

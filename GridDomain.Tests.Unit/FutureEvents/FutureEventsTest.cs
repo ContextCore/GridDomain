@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            await GridNode.PrepareCommand(testCommand).Expect<TestDomainEvent>().Execute();
+            await GridNode.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
 
             return LoadAggregate<TestAggregate>(testCommand.AggregateId);
         }

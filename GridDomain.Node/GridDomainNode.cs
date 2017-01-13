@@ -55,7 +55,6 @@ namespace GridDomain.Node
         bool _stopping = false;
         public TimeSpan DefaultTimeout { get; }
         private IMessageWaiterFactory _waiterFactory;
-        private ICommandWaiterFactory _commandWaiterFactory;
         private ICommandExecutor _commandExecutor;
 
 
@@ -118,7 +117,6 @@ namespace GridDomain.Node
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
             _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
-            _commandWaiterFactory = Container.Resolve<ICommandWaiterFactory>();
 
             EventBusForwarder = System.ActorOf(Props.Create(() => new EventBusForwarder(Transport)),nameof(EventBusForwarder));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
@@ -224,9 +222,9 @@ namespace GridDomain.Node
             return _waiterFactory.NewWaiter(defaultTimeout ?? DefaultTimeout);
         }
 
-        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
-            return _commandWaiterFactory.PrepareCommand(cmd, metadata);
+            return _commandExecutor.Prepare(cmd, metadata);
         }
     }
 }

@@ -174,7 +174,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public async Task When_job_fails_it_retries_several_times()
         {
             var cmd = new PlanFailuresCommand(Guid.NewGuid(), 3);
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<ScheduledCommandProcessingFailuresPlanned>()
                           .Execute();
 

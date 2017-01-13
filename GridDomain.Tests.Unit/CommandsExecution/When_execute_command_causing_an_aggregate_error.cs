@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());
 
-            await GridNode.PrepareCommand(syncCommand)
+            await GridNode.Prepare(syncCommand)
                           .Execute()
                           .ShouldThrow<SampleAggregateException>();
         }
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());
 
-            await GridNode.PrepareCommand(syncCommand)
+            await GridNode.Prepare(syncCommand)
                           .Execute()
                           .ShouldThrow<SampleAggregateException>(ex => ex.StackTrace.Contains(typeof(SampleAggregate).Name));
         }
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var syncCommand = new AlwaysFaultAsyncCommand(Guid.NewGuid());
 
-            await GridNode.PrepareCommand(syncCommand)
+            await GridNode.Prepare(syncCommand)
                           .Execute()
                           .ShouldThrow<SampleAggregateException>();
         }
@@ -48,7 +48,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var syncCommand = new AsyncFaultWithOneEventCommand(42, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromMilliseconds(500));
 
-            await GridNode.PrepareCommand(syncCommand)
+            await GridNode.Prepare(syncCommand)
                           .Execute()
                           .ShouldThrow<SampleAggregateException>(ex => ex.StackTrace.Contains(typeof(SampleAggregate).Name));
         }

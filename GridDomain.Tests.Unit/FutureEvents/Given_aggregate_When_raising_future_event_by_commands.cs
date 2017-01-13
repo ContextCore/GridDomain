@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
             _scheduledTime = DateTime.Now.AddSeconds(1);
             _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            var waitResults = await GridNode.PrepareCommand(_testCommand)
+            var waitResults = await GridNode.Prepare(_testCommand)
                                             .Expect<FutureEventScheduledEvent>()
                                             .And<TestDomainEvent>()
                                             .Execute();

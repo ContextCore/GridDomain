@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             var commandB = new LongOperationCommand(10, Guid.NewGuid());
 
             GridNode.Execute(commandB);
-            var res =  await GridNode.PrepareCommand(commandA)
+            var res =  await GridNode.Prepare(commandA)
                                      .Expect<AggregateChangedEventNotification>()
                                      .Execute(TimeSpan.FromSeconds(500), false);
                               

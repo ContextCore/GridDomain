@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.Empty,TimeSpan.FromMilliseconds(50));
 
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateChangedEvent>()
                           .Execute();
 

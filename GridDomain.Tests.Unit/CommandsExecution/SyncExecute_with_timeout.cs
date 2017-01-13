@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public void CommandWaiter_doesnt_throw_exception_after_wait_with_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            GridNode.PrepareCommand(syncCommand)
+            GridNode.Prepare(syncCommand)
                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
                     .Execute(TimeSpan.FromMilliseconds(500))
                     .Wait(100);

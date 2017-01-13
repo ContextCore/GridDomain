@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task CommandWaiter_throws_exception_after_wait_with_only_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000,Guid.NewGuid());
-            var waiter = GridNode.PrepareCommand(syncCommand)
+            var waiter = GridNode.Prepare(syncCommand)
                                  .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
                                  .Execute(TimeSpan.FromMilliseconds(100));
 

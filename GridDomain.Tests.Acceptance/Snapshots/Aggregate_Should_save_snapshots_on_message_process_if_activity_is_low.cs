@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _aggregateId = Guid.NewGuid();
             _initialParameter = 1;
             var cmd = new CreateSampleAggregateCommand(_initialParameter, _aggregateId);
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateCreatedEvent>()
                           .Execute();
 
@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _changedParameter = 2;
             var changeSampleAggregateCommand = new ChangeSampleAggregateCommand(_changedParameter, _aggregateId);
 
-            await GridNode.PrepareCommand(changeSampleAggregateCommand)
+            await GridNode.Prepare(changeSampleAggregateCommand)
                           .Expect<SampleAggregateChangedEvent>()
                           .Execute();
 

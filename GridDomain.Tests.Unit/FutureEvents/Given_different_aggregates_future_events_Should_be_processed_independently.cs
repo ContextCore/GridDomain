@@ -22,12 +22,12 @@ namespace GridDomain.Tests.Unit.FutureEvents
             _commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
             _commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
          
-            _eventA = (await GridNode.PrepareCommand(_commandA)
+            _eventA = (await GridNode.Prepare(_commandA)
                                    .Expect<FutureEventOccuredEvent>()
                                    .Execute())
                                    .Message<FutureEventOccuredEvent>();
 
-            _eventB = (await GridNode.PrepareCommand(_commandB)
+            _eventB = (await GridNode.Prepare(_commandB)
                                      .Expect<FutureEventOccuredEvent>()
                                      .Execute())
                                      .Message<FutureEventOccuredEvent>();

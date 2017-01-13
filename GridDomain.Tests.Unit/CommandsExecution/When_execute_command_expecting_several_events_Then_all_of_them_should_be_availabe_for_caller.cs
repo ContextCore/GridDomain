@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task When_expect_more_than_one_messages()
         {
             var syncCommand = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
-            var waitResults = await GridNode.PrepareCommand(syncCommand)
+            var waitResults = await GridNode.Prepare(syncCommand)
                                             .Expect<SampleAggregateChangedEvent>()
                                             .And<SampleAggregateCreatedEvent>()
                                             .Execute();

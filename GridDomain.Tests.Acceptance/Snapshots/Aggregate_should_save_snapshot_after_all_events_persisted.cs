@@ -83,7 +83,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             _aggregateId = Guid.NewGuid();
             var cmd = new CreateSampleAggregateCommand(1, _aggregateId);
 
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateCreatedEvent>()
                           .Execute();
 
@@ -107,7 +107,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             {
                 _parameters[cmdNum] = cmdNum;
                 var changeCmd = new ChangeSampleAggregateCommand(cmdNum, _aggregateId);
-                yield return GridNode.PrepareCommand(changeCmd)
+                yield return GridNode.Prepare(changeCmd)
                                      .Expect<SampleAggregateChangedEvent>(e => e.Value == changeCmd.Parameter.ToString())
                                      .Execute();
             }

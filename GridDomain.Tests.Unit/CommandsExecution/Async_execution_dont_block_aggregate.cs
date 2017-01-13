@@ -20,11 +20,11 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromSeconds(3));
             var syncCommand = new ChangeSampleAggregateCommand(42, aggregateId);
 
-            var asyncCommandTask = GridNode.PrepareCommand(asyncCommand)
+            var asyncCommandTask = GridNode.Prepare(asyncCommand)
                                            .Expect<SampleAggregateChangedEvent>()
                                            .Execute();
 
-           await GridNode.PrepareCommand(syncCommand)
+           await GridNode.Prepare(syncCommand)
                          .Expect<SampleAggregateChangedEvent>()
                          .Execute();
 

@@ -28,14 +28,14 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
             _scheduledTime = DateTime.Now.AddSeconds(200);
             _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (await GridNode.PrepareCommand(_testCommand)
+            _futureEventEnvelop = (await GridNode.Prepare(_testCommand)
                                                 .Expect<FutureEventScheduledEvent>()
                                                 .Execute())
                                   .Message<FutureEventScheduledEvent>();
                 
             _cancelFutureEventCommand = new CancelFutureEventCommand(_testCommand.AggregateId, _testCommand.Value);
 
-            _futureEventCancelation = (await GridNode.PrepareCommand(_cancelFutureEventCommand)
+            _futureEventCancelation = (await GridNode.Prepare(_cancelFutureEventCommand)
                                                                    .Expect<FutureEventCanceledEvent>()
                                                                    .Execute())
                                                      .Message<FutureEventCanceledEvent>();

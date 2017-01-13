@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                                                         Guid.NewGuid(),
                                                        "test value");
 
-           GridNode.PrepareCommand(cmd)
+           GridNode.Prepare(cmd)
                    .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId)
                    .Execute(Timeout)
                    .Wait();

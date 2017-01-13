@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
 
-            _results = await GridNode.PrepareCommand(cmd)
+            _results = await GridNode.Prepare(cmd)
                                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                      .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
                                      .Execute(Timeout);

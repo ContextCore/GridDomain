@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Akka;
+using Akka.Actor;
 using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -19,11 +20,15 @@ namespace GridDomain.Node
     /// </summary>
     public class AkkaCommandExecutor : ICommandExecutor
     {
-        private readonly IActorTransport _transport;
+        public IActorTransport Transport { get; }
+        public TimeSpan DefaultTimeout { get; }
+        public ActorSystem System { get; }
 
-        public AkkaCommandExecutor(IActorTransport transport)
+        public AkkaCommandExecutor(ActorSystem system, IActorTransport transport, TimeSpan defaultTimeout)
         {
-            _transport = transport;
+            Transport = transport;
+            System = system;
+            DefaultTimeout = defaultTimeout;
         }
 
         public void Execute(params ICommand[] commands)
@@ -40,7 +45,22 @@ namespace GridDomain.Node
 
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
-               _transport.Publish(command, metadata);
+               Transport.Publish(command, metadata);
+        }
+
+
+        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            var commandMetadata = metadata ?? new MessageMetadata(cmd.Id,
+                                                                  BusinessDateTime.UtcNow,
+                                                                  Guid.NewGuid(),
+                                                                  Guid.Empty,
+                                                                  new ProcessHistory(new[] {
+                                                                    new ProcessEntry(nameof(AkkaCommandExecutor),
+                                                                                  "publishing command to transport",
+                                                                                  "command is executing")}));
+
+            return new CommandWaiter<T>(cmd, commandMetadata, System, Transport, DefaultTimeout);
         }
     }
 }

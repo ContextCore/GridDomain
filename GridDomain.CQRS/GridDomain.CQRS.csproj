@@ -59,7 +59,6 @@
     <Compile Include="ICommandExecutor.cs" />
     <Compile Include="ICommandExpectBuilder.cs" />
     <Compile Include="ICommandWaiter.cs" />
-    <Compile Include="ICommandWaiterFactory.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IExpectBuilder.cs" />
     <Compile Include="IExpectedCommandExecutor.cs" />

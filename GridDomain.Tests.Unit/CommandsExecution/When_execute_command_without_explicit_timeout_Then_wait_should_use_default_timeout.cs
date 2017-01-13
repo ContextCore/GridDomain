@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
-            await GridNode.PrepareCommand(syncCommand)
+            await GridNode.Prepare(syncCommand)
                           .Expect<SampleAggregateChangedEvent>()
                           .Execute(TimeSpan.FromMilliseconds(500))
                           .ShouldThrow<TimeoutException>();

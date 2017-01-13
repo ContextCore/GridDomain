@@ -158,13 +158,13 @@ namespace GridGomain.Tests.Stress
 
         private static async Task WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
         {
-            await node.PrepareCommand(new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()))
+            await node.Prepare(new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()))
                       .Expect<SampleAggregateCreatedEvent>()
                       .Execute();
 
             for (var num = 0; num < changeNumber; num++)
             {
-                await node.PrepareCommand(new ChangeSampleAggregateCommand(random.Next(), new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
+                await node.Prepare(new ChangeSampleAggregateCommand(random.Next(), new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
                                                .Expect<SampleAggregateChangedEvent>()
                                                .Execute();
             }

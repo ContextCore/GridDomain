@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var res = await GridNode.PrepareCommand(cmd)
+            var res = await GridNode.Prepare(cmd)
                                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                     .Execute();
 
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var res = await GridNode.PrepareCommand(cmd)
+            var res = await GridNode.Prepare(cmd)
                                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                     .Execute();
 
@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                           .Execute(TimeSpan.FromMilliseconds(100))
                           .ShouldThrow<TimeoutException>();
@@ -72,7 +72,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new AsyncMethodCommand(42, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromMilliseconds(50));
 
-            var res = await GridNode.PrepareCommand(cmd)
+            var res = await GridNode.Prepare(cmd)
                                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                     .Execute();
 
@@ -85,7 +85,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                           .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
                           .Execute()

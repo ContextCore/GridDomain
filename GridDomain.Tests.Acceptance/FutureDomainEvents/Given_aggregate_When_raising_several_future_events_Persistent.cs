@@ -24,11 +24,11 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
             var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value A");
             var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(5), _aggregateId, "test value B");
 
-            _eventA = (await GridNode.PrepareCommand(testCommandA)
+            _eventA = (await GridNode.Prepare(testCommandA)
                                      .Expect<FutureEventOccuredEvent>()
                                      .Execute()).Message<FutureEventOccuredEvent>();
 
-            _eventB = (await GridNode.PrepareCommand(testCommandB)
+            _eventB = (await GridNode.Prepare(testCommandB)
                                      .Expect<FutureEventOccuredEvent>()
                                      .Execute()).Message<FutureEventOccuredEvent>();
         }

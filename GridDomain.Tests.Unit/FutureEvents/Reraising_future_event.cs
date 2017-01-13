@@ -18,13 +18,13 @@ namespace GridDomain.Tests.Unit.FutureEvents
 
             var testCommand = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId,"test value");
 
-            await GridNode.PrepareCommand(testCommand).Expect<TestDomainEvent>().Execute();
+            await GridNode.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
 
             var reraiseTime = DateTime.Now.AddSeconds(1);
 
             testCommand = new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value");
 
-            await GridNode.PrepareCommand(testCommand).Expect<TestDomainEvent>().Execute();
+            await GridNode.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
 
             var aggregate = LoadAggregate<TestAggregate>(aggregateId);
 

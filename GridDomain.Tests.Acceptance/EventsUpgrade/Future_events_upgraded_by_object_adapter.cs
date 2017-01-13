@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             var saveOldEventCommand = new ChangeBalanceInFuture(1,Guid.NewGuid(),BusinessDateTime.Now.AddSeconds(2),true);
 
-            await GridNode.PrepareCommand(saveOldEventCommand)
+            await GridNode.Prepare(saveOldEventCommand)
                           .Expect<FutureEventScheduledEvent>()
                           .Execute(Timeout);
 

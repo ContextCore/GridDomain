@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.Metadata
             _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "12",1);
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
+            var res = await GridNode.Prepare(_command, _commandMetadata)
                                     .Expect<JobFailed>()
                                     .And<IFault<RaiseScheduledDomainEventCommand>>()
                                     .Execute(TimeSpan.FromSeconds(30),false);

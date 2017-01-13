@@ -49,13 +49,15 @@ namespace GridDomain.Tools.Connector
         {
             EventBusForwarder = await GetActor(GetSelection(nameof(EventBusForwarder)));
 
+            var defaultTimeout = TimeSpan.FromSeconds(30);
+
             var transportBridge = new RemoteAkkaEventBusTransport(
                                                 new LocalAkkaEventBusTransport(_consoleSystem),
                                                 EventBusForwarder,
-                                                TimeSpan.FromSeconds(30));
+                                                defaultTimeout);
 
-            _commandExecutor = new AkkaCommandExecutor(transportBridge);
-            _waiterFactory = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
+            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge, defaultTimeout);
+            _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, defaultTimeout);
         }
       
         public void Dispose()
@@ -78,14 +80,9 @@ namespace GridDomain.Tools.Connector
             return _waiterFactory.NewWaiter(defaultTimeout);
         }
 
-        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true)
+        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
-            return _waiterFactory.NewCommandWaiter(defaultTimeout, failAnyFault);
-        }
-
-        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
-        {
-            return _waiterFactory.PrepareCommand(cmd, metadata);
+            return _commandExecutor.Prepare(cmd, metadata);
         }
     }
 }

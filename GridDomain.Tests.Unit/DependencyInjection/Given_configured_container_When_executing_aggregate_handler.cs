@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
         {
             var testCommand = new TestCommand(42, Guid.NewGuid());
 
-            await GridNode.PrepareCommand(testCommand)
+            await GridNode.Prepare(testCommand)
                           .Expect<TestDomainEvent>()
                           .Execute();
         }

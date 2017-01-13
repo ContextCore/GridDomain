@@ -29,13 +29,13 @@ namespace GridDomain.Scheduling.Integration
 
         private readonly IQuartzLogger _quartzLogger;
         private readonly IPublisher _publisher;
-        private readonly ICommandWaiterFactory _executor;
+        private readonly ICommandExecutor _executor;
         private readonly DomainSerializer _serializer = new DomainSerializer();
 
 
         public QuartzJob(IQuartzLogger quartzLogger,
                          IPublisher publisher,
-                         ICommandWaiterFactory executor)
+                         ICommandExecutor executor)
         {
             Condition.NotNull(()=> quartzLogger);
             Condition.NotNull(()=> publisher);
@@ -135,7 +135,7 @@ namespace GridDomain.Scheduling.Integration
                                                                             PassingCommandToExecutor,
                                                                             CommandRaiseTimeCame));
 
-                var task = _executor.PrepareCommand(command, commandMetadata)
+                var task = _executor.Prepare(command, commandMetadata)
                                     .Expect(options.SuccesEventType, o => isExpected(o))
                                     .Execute(options.Timeout);
 

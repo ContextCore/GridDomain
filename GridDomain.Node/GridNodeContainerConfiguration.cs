@@ -64,11 +64,11 @@ namespace GridDomain.Node
 
             container.RegisterInstance(_actorSystem);
 
-            var executor = new AkkaCommandExecutor(transport);
-            container.RegisterType<ICommandExecutor, AkkaCommandExecutor>();
-            var messageWaiterFactory = new MessageWaiterFactory(executor,_actorSystem, _defaultCommandExecutionTimeout, transport);
+            var executor = new AkkaCommandExecutor(_actorSystem, transport, _defaultCommandExecutionTimeout);
+            container.RegisterInstance<ICommandExecutor>(executor);
+
+            var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
-            container.RegisterInstance<ICommandWaiterFactory>(messageWaiterFactory);
         }
 
         private void RegisterScheduler(IUnityContainer container)

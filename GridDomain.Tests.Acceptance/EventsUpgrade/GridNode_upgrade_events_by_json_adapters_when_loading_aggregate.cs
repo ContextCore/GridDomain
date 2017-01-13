@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
 
-            await GridNode.PrepareCommand(cmd)
+            await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateCreatedEvent>()
                           .Execute();
 
