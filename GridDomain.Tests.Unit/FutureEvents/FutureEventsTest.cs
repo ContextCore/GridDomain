@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.SampleDomain;
@@ -18,16 +19,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 
 
         [OneTimeSetUp]
-        public void Given_command_executes_with_waiter_When_fetching_results()
+        public async Task Given_command_executes_with_waiter_When_fetching_results()
         {
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
 
-           _results = GridNode.NewCommandWaiter(Timeout)
-                                .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
-                                .Create()
-                                .Execute(_syncCommand)
-                                .Result;
+           _results = await GridNode.PrepareCommand(_syncCommand)
+                                    .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
+                                    .Execute(Timeout);
 
             _changedEvent = _results.Message<AggregateChangedEventNotification>();
 

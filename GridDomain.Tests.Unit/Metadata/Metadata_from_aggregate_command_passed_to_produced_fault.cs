@@ -27,10 +27,9 @@ namespace GridDomain.Tests.Unit.Metadata
             _command = new AlwaysFaultAsyncCommand(Guid.NewGuid(),TimeSpan.FromMilliseconds(50));
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(null,false)
+            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
                                     .Expect<SampleAggregateCreatedEvent>()
-                                    .Create()
-                                    .Execute(_command, _commandMetadata);
+                                    .Execute(null,false);
 
             _answer = res.Message<IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>>>();
         }

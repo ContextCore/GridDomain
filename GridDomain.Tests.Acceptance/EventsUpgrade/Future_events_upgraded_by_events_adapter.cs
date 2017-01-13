@@ -13,6 +13,7 @@ using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
@@ -60,10 +61,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
             var saveOldEventCommand = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true);
 
-            GridNode.NewCommandWaiter(Timeout)
+            GridNode.PrepareCommand(saveOldEventCommand)
                     .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
-                    .Create()
-                    .Execute(saveOldEventCommand)
+                    .Execute(Timeout)
                     .Wait();
 
             GridNode.NewWaiter(Timeout).Expect<BalanceChangedEvent_V1>().Create().Wait();

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;

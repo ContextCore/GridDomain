@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
@@ -40,11 +41,10 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                                                         Guid.NewGuid(),
                                                        "test value");
 
-           GridNode.NewCommandWaiter()
-                    .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId)
-                    .Create()
-                    .Execute(cmd)
-                    .Wait(Timeout);
+           GridNode.PrepareCommand(cmd)
+                   .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId)
+                   .Execute(Timeout)
+                   .Wait();
 
             await GridNode.Stop();
             await GridNode.Start();

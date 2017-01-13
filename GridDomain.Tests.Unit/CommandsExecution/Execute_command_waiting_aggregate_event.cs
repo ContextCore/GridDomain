@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
@@ -12,16 +13,15 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     {
 
         [Test]
-        public void CommandWaiter_Should_wait_until_aggregate_event()
+        public async Task CommandWaiter_Should_wait_until_aggregate_event()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var msg = GridNode.NewCommandWaiter(Timeout)
-                              .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                              .Create()
-                              .Execute(cmd)
-                              .Result
-                              .Message<SampleAggregateChangedEvent>();
+            var res = await GridNode.PrepareCommand(cmd)
+                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                    .Execute();
+
+            var msg = res.Message<SampleAggregateChangedEvent>();
 
             Assert.AreEqual(cmd.Parameter.ToString(), msg.Value);
         }
@@ -42,16 +42,15 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         }
 
         [Then]
-        public void After_wait_ends_aggregate_should_be_changed()
+        public async Task After_wait_ends_aggregate_should_be_changed()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var msg = GridNode.NewCommandWaiter(Timeout)
-                            .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                            .Create()
-                            .Execute(cmd)
-                            .Result
-                            .Message<SampleAggregateChangedEvent>();
+            var res = await GridNode.PrepareCommand(cmd)
+                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                    .Execute();
+
+            var msg = res.Message<SampleAggregateChangedEvent>();
 
             Assert.AreEqual(cmd.Parameter.ToString(), msg.Value);
         }
@@ -61,12 +60,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
-            var res = GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(100))
-                              .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                              .Create()
-                              .Execute(cmd);
-
-            await res.ShouldThrow<TimeoutException>();
+            await GridNode.PrepareCommand(cmd)
+                          .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                          .Execute(TimeSpan.FromMilliseconds(100))
+                          .ShouldThrow<TimeoutException>();
         }
 
 
@@ -75,10 +72,9 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new AsyncMethodCommand(42, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromMilliseconds(50));
 
-            var res = await GridNode.NewCommandWaiter(Timeout)
-                          .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                          .Create()
-                          .Execute(cmd);
+            var res = await GridNode.PrepareCommand(cmd)
+                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                    .Execute();
 
             Assert.AreEqual(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);
         }
@@ -89,11 +85,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
-            await GridNode.NewCommandWaiter(Timeout)
+            await GridNode.PrepareCommand(cmd)
                           .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                           .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                          .Create()
-                          .Execute(cmd)
+                          .Execute()
                           .ShouldThrow<TimeoutException>();
         }
     }

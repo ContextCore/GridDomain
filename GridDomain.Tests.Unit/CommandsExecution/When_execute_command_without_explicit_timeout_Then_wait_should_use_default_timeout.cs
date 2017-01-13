@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;
@@ -9,13 +10,6 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     [TestFixture]
     public class When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout : SampleDomainCommandExecutionTests
     {
-
-        //protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
-        //{
-        //    return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },
-        //                                new InMemoryQuartzConfig());
-        //}
-
         [Then]
         public async Task PlanExecute_by_result_throws_exception_after_default_timeout()
         {

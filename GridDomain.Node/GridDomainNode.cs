@@ -53,7 +53,7 @@ namespace GridDomain.Node
         private readonly Func<ActorSystem[]> _actorSystemFactory;
 
         bool _stopping = false;
-        public TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+        public TimeSpan DefaultTimeout { get; }
         private IMessageWaiterFactory _waiterFactory;
         private ICommandWaiterFactory _commandWaiterFactory;
         private ICommandExecutor _commandExecutor;
@@ -68,19 +68,22 @@ namespace GridDomain.Node
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
-                              Func<ActorSystem> actorSystemFactory) : this(configuration, messageRouting, () => new [] { actorSystemFactory()})
+                              Func<ActorSystem> actorSystemFactory,
+                              TimeSpan? defaultTimeout =null) : this(configuration, messageRouting, () => new [] { actorSystemFactory()}, null, defaultTimeout)
         {
         }
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
                               Func<ActorSystem[]> actorSystemFactory,
-                              IQuartzConfig quartzConfig = null)
+                              IQuartzConfig quartzConfig = null, 
+                              TimeSpan? defaultTimeout = null)
         {
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting, new TransportMessageDumpMap());
+            DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
         }
 
         private void OnSystemTermination()
@@ -168,7 +171,8 @@ namespace GridDomain.Node
         {
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        _transportMode,
-                                                                       quartzConfig));
+                                                                       quartzConfig,
+                                                                       DefaultTimeout));
 
             unityContainer.Register(_configuration);
 
@@ -218,11 +222,6 @@ namespace GridDomain.Node
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout ?? DefaultTimeout);
-        }
-
-        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failOnAnyFault = true)
-        {
-            return _waiterFactory.NewCommandWaiter(defaultTimeout ?? DefaultTimeout, failOnAnyFault);
         }
 
         public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand

@@ -156,29 +156,18 @@ namespace GridGomain.Tests.Stress
             return dbCfg;
         }
 
-        private static Task<IWaitResults> WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
+        private static async Task WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
         {
-            var commands = new List<ICommand>(changeNumber + 1);
-            var createCmd = new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid());
+            await node.PrepareCommand(new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()))
+                      .Expect<SampleAggregateCreatedEvent>()
+                      .Execute();
 
-            commands.Add(createCmd);
-
-            var expectBuilder = node.NewCommandWaiter()
-                                    .Expect<SampleAggregateCreatedEvent>(e => e.SourceId == createCmd.AggregateId);
-
-
-            var changeCmds = Enumerable.Range(0, changeNumber)
-                                       .Select(n => new ChangeSampleAggregateCommand(random.Next(), createCmd.AggregateId))
-                                       .ToArray();
-
-            commands.AddRange(changeCmds);
-
-        
-            foreach (var cmd in changeCmds)
-                expectBuilder.And<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId && e.Value == cmd.Parameter.ToString());
-
-            return expectBuilder.Create()
-                                .Execute(commands.ToArray());
+            for (var num = 0; num < changeNumber; num++)
+            {
+                await node.PrepareCommand(new ChangeSampleAggregateCommand(random.Next(), new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
+                                               .Expect<SampleAggregateChangedEvent>()
+                                               .Execute();
+            }
         }
     }
 }

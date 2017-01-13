@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -20,18 +22,16 @@ namespace GridDomain.Tests.Unit.Metadata
         private MessageMetadata _commandMetadata;
 
         [OneTimeSetUp]
-        public void When_execute_aggregate_command_with_metadata()
+        public async Task When_execute_aggregate_command_with_metadata()
         {
             _command = new AsyncMethodCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = GridNode.NewCommandWaiter()
-                .Expect<IMessageMetadataEnvelop<SampleAggregateChangedEvent>>()
-                .Create()
-                .Execute(_command, _commandMetadata)
-                .Result;
+            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
+                                    .Expect<SampleAggregateChangedEvent>()
+                                    .Execute();
 
-            _answer = res.Message<IMessageMetadataEnvelop<SampleAggregateChangedEvent>>();
+            _answer = res.MessageWithMetadata<SampleAggregateChangedEvent>();
         }
 
         [Test]

@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
@@ -28,13 +30,12 @@ namespace GridDomain.Tests.Unit.LooseCommandOnPoolResize
         }
 
         [Test]
-        public void Start()
+        public async Task Start()
         {
             var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
-            GridNode.NewCommandWaiter()
-                .Expect<SampleAggregateCreatedEvent>()
-                .Create()
-                .Execute(cmd);
+            await GridNode.PrepareCommand(cmd)
+                          .Expect<SampleAggregateCreatedEvent>()
+                          .Execute();
 
             var aggregate = LookupAggregateActor<SampleAggregate>(cmd.AggregateId);
             Watch(aggregate);

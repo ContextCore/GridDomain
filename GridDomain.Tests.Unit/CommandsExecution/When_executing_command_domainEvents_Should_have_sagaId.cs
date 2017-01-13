@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
@@ -16,7 +17,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var externalCallCommand = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.NewGuid());
 
-            var waitResults = await GridNode.PrepareCommand(externalCallCommand).Expect<SampleAggregateChangedEvent>().Execute();
+            var waitResults = await GridNode.PrepareCommand(externalCallCommand)
+                                            .Expect<SampleAggregateChangedEvent>()
+                                            .Execute();
+
             var domainEvent = waitResults.Message<SampleAggregateChangedEvent>();
 
             Assert.AreEqual(externalCallCommand.SagaId, domainEvent.SagaId);

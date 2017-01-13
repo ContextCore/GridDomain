@@ -19,12 +19,15 @@ namespace GridDomain.Node
         private readonly ActorSystem _actorSystem;
         private readonly TransportMode _transportMode;
         private readonly IQuartzConfig _config;
+        private readonly TimeSpan _defaultCommandExecutionTimeout;
 
         public GridNodeContainerConfiguration(ActorSystem actorSystem,
                                              TransportMode transportMode,
-                                             IQuartzConfig config)
+                                             IQuartzConfig config,
+                                             TimeSpan defaultCommandExecutionTimeout)
         {
             _config = config;
+            _defaultCommandExecutionTimeout = defaultCommandExecutionTimeout;
             _transportMode = transportMode;
             _actorSystem = actorSystem;
         }
@@ -63,7 +66,7 @@ namespace GridDomain.Node
 
             var executor = new AkkaCommandExecutor(transport);
             container.RegisterType<ICommandExecutor, AkkaCommandExecutor>();
-            var messageWaiterFactory = new MessageWaiterFactory(executor,_actorSystem,TimeSpan.FromSeconds(15),transport);
+            var messageWaiterFactory = new MessageWaiterFactory(executor,_actorSystem, _defaultCommandExecutionTimeout, transport);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
             container.RegisterInstance<ICommandWaiterFactory>(messageWaiterFactory);
         }

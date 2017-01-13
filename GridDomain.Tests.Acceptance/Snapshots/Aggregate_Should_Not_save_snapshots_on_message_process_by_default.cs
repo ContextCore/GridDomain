@@ -1,5 +1,7 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
@@ -27,30 +29,24 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [OneTimeSetUp]
-        public void Given_timeout_only_default_policy()
+        public async Task Given_timeout_only_default_policy()
         {
             _aggregateId = Guid.NewGuid();
             _initialParameter = 1;
             var cmd = new CreateSampleAggregateCommand(_initialParameter, _aggregateId);
-            GridNode.NewCommandWaiter(Timeout)
-                .Expect<SampleAggregateCreatedEvent>()
-                .Create()
-                .Execute(cmd)
-                .Wait();
+            await GridNode.PrepareCommand(cmd)
+                          .Expect<SampleAggregateCreatedEvent>()
+                          .Execute(Timeout);
 
             //checking "time-out" rule for policy, snapshots should be saved once on second command
             Thread.Sleep(1000);
             _changedParameter = 2;
-            var changeCmds = new[]
-            {
-                new ChangeSampleAggregateCommand(_changedParameter, _aggregateId)
-            };
+            var changeSampleAggregateCommand = new ChangeSampleAggregateCommand(_changedParameter, _aggregateId);
 
-            GridNode.NewCommandWaiter(Timeout)
-                    .Expect<SampleAggregateChangedEvent>()
-                    .Create()
-                    .Execute(changeCmds)
-                    .Wait();
+            await GridNode.PrepareCommand(changeSampleAggregateCommand)
+                          .Expect<SampleAggregateChangedEvent>()
+                          .Execute();
+
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);

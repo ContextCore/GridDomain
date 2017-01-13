@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using NUnit.Framework;
 

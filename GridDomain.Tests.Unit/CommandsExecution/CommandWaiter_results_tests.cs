@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -24,15 +25,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         }
 
         [OneTimeSetUp]
-        public void When_expect_more_than_one_messages()
+        public async Task When_expect_more_than_one_messages()
         {
             var cmd = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
 
-            _results = GridNode.NewCommandWaiter(Timeout)
-                               .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                               .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                               .Create()
-                               .Execute(cmd).Result;
+            _results = await GridNode.PrepareCommand(cmd)
+                                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                     .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
+                                     .Execute(Timeout);
         }
 
         [Then]

@@ -27,14 +27,13 @@ namespace GridDomain.Tests.Unit.Metadata
             _command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(20), Guid.NewGuid(), "12");
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(null, false)
-                                    .Expect<IMessageMetadataEnvelop<TestDomainEvent>>()
-                                    .And<IMessageMetadataEnvelop<JobSucceeded>>()
-                                    .Create()
-                                    .Execute(_command, _commandMetadata);
+            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
+                                    .Expect<TestDomainEvent>()
+                                    .And<JobSucceeded>()
+                                    .Execute(null, false);
 
-            _answer = res.Message<IMessageMetadataEnvelop<TestDomainEvent>>();
-            _jobSucced = res.Message<IMessageMetadataEnvelop<JobSucceeded>>();
+            _answer = res.MessageWithMetadata<TestDomainEvent>();
+            _jobSucced = res.MessageWithMetadata<JobSucceeded>();
         }
 
         [Test]

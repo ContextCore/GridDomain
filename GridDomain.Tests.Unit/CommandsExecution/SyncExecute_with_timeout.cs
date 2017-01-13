@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Scheduling.Quartz;
@@ -23,10 +25,9 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public void CommandWaiter_doesnt_throw_exception_after_wait_with_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-            GridNode.NewCommandWaiter(TimeSpan.FromMilliseconds(500))
+            GridNode.PrepareCommand(syncCommand)
                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                    .Create()
-                    .Execute(syncCommand)
+                    .Execute(TimeSpan.FromMilliseconds(500))
                     .Wait(100);
         }
     }

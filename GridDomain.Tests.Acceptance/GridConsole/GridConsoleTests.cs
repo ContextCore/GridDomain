@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;

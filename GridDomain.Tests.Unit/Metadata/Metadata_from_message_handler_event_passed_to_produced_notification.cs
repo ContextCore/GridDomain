@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
@@ -19,20 +21,18 @@ namespace GridDomain.Tests.Unit.Metadata
         private IMessageMetadataEnvelop<SampleAggregateCreatedEvent> _aggregateEvent;
 
         [OneTimeSetUp]
-        public void When_execute_aggregate_command_with_metadata()
+        public async Task When_execute_aggregate_command_with_metadata()
         {
             _command = new CreateSampleAggregateCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = GridNode.NewCommandWaiter()
-                .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
-                .And<IMessageMetadataEnvelop<AggregateCreatedEventNotification>>()
-                .Create()
-                .Execute(_command, _commandMetadata)
-                .Result;
+            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
+                                    .Expect<SampleAggregateCreatedEvent>()
+                                    .And<AggregateCreatedEventNotification>()
+                                    .Execute();
 
-            _answer = res.Message<IMessageMetadataEnvelop<AggregateCreatedEventNotification>>();
-            _aggregateEvent = res.Message<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>();
+            _answer = res.MessageWithMetadata<AggregateCreatedEventNotification>();
+            _aggregateEvent = res.MessageWithMetadata<SampleAggregateCreatedEvent>();
         }
 
 

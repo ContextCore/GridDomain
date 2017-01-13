@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Tests.Unit.DependencyInjection.Infrastructure;
 using NUnit.Framework;
 

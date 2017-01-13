@@ -13,6 +13,7 @@ using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.Unit.FutureEvents;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {

@@ -36,14 +36,13 @@ namespace GridDomain.Tests.Unit.Metadata
             _command = new CreateSampleAggregateCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await GridNode.NewCommandWaiter(null,false)
-                              .Expect<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>()
-                              .And<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>()
-                              .Create()
-                              .Execute(_command, _commandMetadata);
+            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
+                                    .Expect<SampleAggregateCreatedEvent>()
+                                    .And<IFault<SampleAggregateCreatedEvent>>()
+                                    .Execute(null, false);
 
-            _answer = res.Message<IMessageMetadataEnvelop<IFault<SampleAggregateCreatedEvent>>>();
-            _aggregateEvent = res.Message<IMessageMetadataEnvelop<SampleAggregateCreatedEvent>>();
+            _answer = res.MessageWithMetadata<IFault<SampleAggregateCreatedEvent>>();
+            _aggregateEvent = res.MessageWithMetadata<SampleAggregateCreatedEvent>();
         }
 
 

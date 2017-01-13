@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
@@ -43,28 +45,21 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         protected override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(10);
 
         [OneTimeSetUp]
-        public void Given_default_policy()
+        public async Task Given_default_policy()
         {
             _aggregateId = Guid.NewGuid();
             _initialParameter = 1;
             var cmd = new CreateSampleAggregateCommand(_initialParameter,_aggregateId);
-            GridNode.NewCommandWaiter(Timeout)
-                    .Expect<SampleAggregateCreatedEvent>()
-                    .Create()
-                    .Execute(cmd)
-                    .Wait();
+            await GridNode.PrepareCommand(cmd)
+                          .Expect<SampleAggregateCreatedEvent>()
+                          .Execute();
 
             _changedParameter = 2;
-            var changeCmds = new[]
-            {
-                new ChangeSampleAggregateCommand(_changedParameter, _aggregateId)
-            };
+            var changeSampleAggregateCommand = new ChangeSampleAggregateCommand(_changedParameter, _aggregateId);
 
-            GridNode.NewCommandWaiter(Timeout)
-                    .Expect<SampleAggregateChangedEvent>()
-                    .Create()
-                    .Execute(changeCmds)
-                    .Wait();
+            await GridNode.PrepareCommand(changeSampleAggregateCommand)
+                          .Expect<SampleAggregateChangedEvent>()
+                          .Execute();
 
             Thread.Sleep(100); 
 

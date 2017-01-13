@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Persistence;
 using GridDomain.Common;
@@ -44,38 +45,20 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
 
         [OneTimeSetUp]
-        public void Given_save_on_each_message_policy_and_keep_2_snapshots()
+        public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
             _aggregateId = Guid.NewGuid();
             var cmd = new CreateSampleAggregateCommand(1,_aggregateId);
 
-            GridNode.NewCommandWaiter()
-                    .Expect<SampleAggregateCreatedEvent>()
-                    .Create()
-                    .Execute(cmd)
-                    .Wait();   
+            await GridNode.PrepareCommand(cmd)
+                          .Expect<SampleAggregateCreatedEvent>()
+                          .Execute();
               
             var aggregateActorRef = LookupAggregateActor<SampleAggregate>(_aggregateId);
 
             aggregateActorRef.Tell(new NotifyOnPersistenceEvents(TestActor),TestActor);
 
-            var commands = new List<ICommand>();
-
-            var waiter = GridNode.NewCommandWaiter(TimeSpan.FromMinutes(5))
-                                 .Expect<object>();
-
-
-            for (var cmdNum = 0; cmdNum < 5; cmdNum ++)
-            {
-                var changeCmd = new ChangeSampleAggregateCommand(cmdNum, _aggregateId);
-                waiter.And<SampleAggregateChangedEvent>(e => e.Value == changeCmd.Parameter.ToString());
-                commands.Add(changeCmd);
-                _parameters[cmdNum] = cmdNum;
-            }
-
-            waiter.Create()
-                  .Execute(commands.ToArray())
-                  .Wait();
+            await Task.WhenAll(ChangeSeveralTimes(5));
 
             Watch(aggregateActorRef);
             aggregateActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
@@ -83,6 +66,18 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             FishForMessage<Terminated>(m => true,TimeSpan.FromMinutes(10));
 
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);
+        }
+
+        private IEnumerable<Task> ChangeSeveralTimes(int changeNumber)
+        {
+            for (var cmdNum = 0; cmdNum < changeNumber; cmdNum ++)
+            {
+                _parameters[cmdNum] = cmdNum;
+                var changeCmd = new ChangeSampleAggregateCommand(cmdNum, _aggregateId);
+                yield return GridNode.PrepareCommand(changeCmd)
+                                     .Expect<SampleAggregateChangedEvent>(e => e.Value == changeCmd.Parameter.ToString())
+                                     .Execute();
+            }
         }
 
         [Test]
