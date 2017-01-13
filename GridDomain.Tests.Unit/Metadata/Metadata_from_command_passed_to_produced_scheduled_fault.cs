@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.Metadata
             var res = await GridNode.PrepareCommand(_command, _commandMetadata)
                                     .Expect<JobFailed>()
                                     .And<IFault<RaiseScheduledDomainEventCommand>>()
-                                    .Execute(TimeSpan.FromSeconds(30));
+                                    .Execute(TimeSpan.FromSeconds(30),false);
 
             _schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
             _jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();
