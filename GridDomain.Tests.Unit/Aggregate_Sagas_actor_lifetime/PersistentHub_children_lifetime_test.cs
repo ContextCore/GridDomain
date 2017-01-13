@@ -33,8 +33,8 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
             return new CustomContainerConfiguration(
                          c => c.Register(
                                      SagaConfiguration.Instance<SoftwareProgrammingSaga,
-                                                                 SoftwareProgrammingSagaData>(
-                                             new SoftwareProgrammingSagaFactory(),
+                                                                 SoftwareProgrammingSagaData,
+                                                                 SoftwareProgrammingSagaFactory>(
                                              SoftwareProgrammingSaga.Descriptor)),
 
                         c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,

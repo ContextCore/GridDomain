@@ -7,8 +7,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
     public class SoftwareProgrammingSagaContainerConfiguration : IContainerConfiguration
     {
         private readonly IContainerConfiguration _sagaConfiguration = SagaConfiguration.Instance<SoftwareProgrammingSaga,
-            SoftwareProgrammingSagaData>(
-                new SoftwareProgrammingSagaFactory(),
+            SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
                 SoftwareProgrammingSaga.Descriptor);
         public void Register(IUnityContainer container)
         {

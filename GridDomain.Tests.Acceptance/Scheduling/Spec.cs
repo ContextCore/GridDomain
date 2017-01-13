@@ -171,46 +171,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Test]
-        public void Legacy_wire_data_can_run_with_latest_job_code()
-        {
-            ScheduleKey key = new ScheduleKey(Guid.NewGuid(), Name, Group);
-            Command command = new SuccessCommand("1232");
-            ExecutionOptions executionOptions = new ExecutionOptions(DateTime.Now.AddSeconds(1),typeof(ScheduledCommandSuccessfullyProcessed));
-
-            var serializedCommand = SerializeAsLegacy(command);
-            var serializedKey = SerializeAsLegacy(key);
-            var serializedOptions = SerializeAsLegacy(executionOptions);
-
-            var jobDataMap = new JobDataMap
-            {
-                { QuartzJob.CommandKey, serializedCommand },
-                { QuartzJob.ScheduleKey, serializedKey },
-                { QuartzJob.ExecutionOptionsKey, serializedOptions }
-            };
-
-            var legacyJob = QuartzJob.CreateJob(key, jobDataMap);
-
-            var listener = new CallbackJobListener();
-            _quartzScheduler.ListenerManager.AddJobListener(listener, KeyMatcher<JobKey>.KeyEquals(legacyJob.Key));
-            var task = listener.TaskFinish.Task;
-
-            var trigger = TriggerBuilder.Create()
-                                        .WithIdentity(legacyJob.Key.Name, legacyJob.Key.Group)
-                                        .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow()
-                                                                  .WithRepeatCount(0))
-                                        .StartAt(DateTimeOffset.Now.AddMilliseconds(200))
-                                        .Build();
-
-            _quartzScheduler.ScheduleJob(legacyJob, trigger);
-
-            if (!task.Wait(TimeSpan.FromSeconds(10000)))
-              Assert.Fail("Job execution timed out");
-
-            if (task.Result.Item2 != null)
-                Assert.Fail("Job threw an exception", task.Result.Item2);
-        }
-
-        [Test]
         public void When_job_fails_it_retries_several_times()
         {
             var cmd = new PlanFailuresCommand(Guid.NewGuid(), 3);

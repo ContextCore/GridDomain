@@ -25,7 +25,7 @@ namespace GridDomain.Node.Configuration.Composition
         }
 
         public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy, Func<IMemento,TAggregate> snapshotsFactory) : base(snapshotsPolicy, 
-                                                                                                                            new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory))
+                                                                                                           new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory))
         {
 
         }
@@ -57,22 +57,21 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<AggregateHubActor<TAggregate>>();
             container.RegisterType<ICommandAggregateLocator<TAggregate>, TCommandAggregateLocator>();
             container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
-            container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
 
-            var snapshotsPolicyRegistrationName = typeof(TAggregate).Name;
-            container.RegisterType<ISnapshotsPersistencePolicy>(snapshotsPolicyRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
-
+            var aggregateRegistrationName = typeof(TAggregate).Name;
+            container.RegisterType<ISnapshotsPersistencePolicy>(aggregateRegistrationName, new InjectionFactory(c => _snapshotsPolicyFactory()));
+            
             container.RegisterType<AggregateActor<TAggregate>>(
                                     new InjectionConstructor(
                                         new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
                                         new ResolvedParameter<TypedMessageActor<ScheduleCommand>>(),
                                         new ResolvedParameter<TypedMessageActor<Unschedule>>(),
                                         new ResolvedParameter<IPublisher>(),
-                                        new ResolvedParameter<ISnapshotsPersistencePolicy>(snapshotsPolicyRegistrationName),
-                                        _factory
+                                        new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
+                                        new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName)
                                         ));
 
-            container.RegisterInstance(snapshotsPolicyRegistrationName, _factory);
+            container.RegisterInstance(aggregateRegistrationName, _factory);
         }
     }
 }

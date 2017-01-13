@@ -21,10 +21,10 @@ namespace GridDomain.EventSourcing
         {
             Func<IMemento, IAggregate> factory;
 
-            if (!_creators.TryGetValue(type, out factory))
-                throw new CannotFindAggregateCreatorBySnapshotException(type);
+            if (_creators.TryGetValue(type, out factory))
+                return factory.Invoke(snapshot);
 
-            return factory.Invoke(snapshot);
+            return base.BuildFromSnapshot(type, id, snapshot);
         }
     }
 }

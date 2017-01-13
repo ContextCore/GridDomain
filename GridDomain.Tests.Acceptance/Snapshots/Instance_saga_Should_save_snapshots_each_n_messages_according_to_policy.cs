@@ -25,8 +25,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
-                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>(
-                                new SoftwareProgrammingSagaFactory(),
+                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
                                 SoftwareProgrammingSaga.Descriptor,
                                 () => new EachMessageSnapshotsPersistencePolicy())));
         }

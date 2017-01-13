@@ -40,10 +40,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             return new CustomContainerConfiguration(
                 c => base.CreateConfiguration().Register(c),
-                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,SoftwareProgrammingSagaData>(
-                                                             new SoftwareProgrammingSagaFactory(), 
-                                                             SoftwareProgrammingSaga.Descriptor,
-                                                             () => _snapshotsPersistencePolicy)));
+                c => c.Register(SagaConfiguration.Instance<SoftwareProgrammingSaga,SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+                                                           SoftwareProgrammingSaga.Descriptor,
+                                                           () => _snapshotsPersistencePolicy)));
         }
 
         [OneTimeSetUp]
@@ -86,7 +85,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Watch(sagaActorRef);
             sagaActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
 
-            FishForMessage<Terminated>(m => true,TimeSpan.FromDays(1));
+            FishForMessage<Terminated>(m => true);
             Thread.Sleep(1000);
             _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, 
                                                          GridNode.AggregateFromSnapshotsFactory)

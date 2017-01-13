@@ -80,9 +80,7 @@ namespace GridDomain.Node
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
-            _messageRouting = new CompositeRouteMap(messageRouting, 
-                                                    new TransportMessageDumpMap()
-                                                  );
+            _messageRouting = new CompositeRouteMap(messageRouting, new TransportMessageDumpMap());
         }
 
         private void OnSystemTermination()
@@ -123,16 +121,7 @@ namespace GridDomain.Node
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
-            var factories = Container.ResolveAll(typeof(IConstructAggregates))
-                                     .Select(o => new { Type = o.GetType(), Obj = (IConstructAggregates)o})
-                                     .Where(o => o.Type.IsGenericType && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
-                                     .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
-                                     .ToArray();
-
-            foreach (var factory in factories)
-            {
-                AggregateFromSnapshotsFactory.Register(factory.AggregateType, m => factory.Constructor.Build(factory.GetType(), Guid.Empty,m));
-            }
+            RegisterCustomAggregateSnapshots();
 
             if (appInsightsConfig.IsEnabled)
             {
@@ -156,6 +145,21 @@ namespace GridDomain.Node
             });
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+        }
+
+        private void RegisterCustomAggregateSnapshots()
+        {
+            var factories = Container.ResolveAll(typeof(IConstructAggregates))
+                .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
+                .Where(o => o.Type.IsGenericType && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
+                .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
+                .ToArray();
+
+            foreach (var factory in factories)
+            {
+                AggregateFromSnapshotsFactory.Register(factory.AggregateType,
+                    m => factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
+            }
         }
 
         private void ConfigureContainer(IUnityContainer unityContainer, 

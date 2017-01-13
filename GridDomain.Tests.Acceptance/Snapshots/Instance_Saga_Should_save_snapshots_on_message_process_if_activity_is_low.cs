@@ -31,8 +31,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             return new CustomContainerConfiguration(
                 base.CreateConfiguration(),
                 SagaConfiguration.Instance<SoftwareProgrammingSaga,
-                                           SoftwareProgrammingSagaData>(
-                                           new SoftwareProgrammingSagaFactory(),
+                                           SoftwareProgrammingSagaData,
+                                           SoftwareProgrammingSagaFactory>(
                                            SoftwareProgrammingSaga.Descriptor, 
                                            () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),10,1)
                                            ));
