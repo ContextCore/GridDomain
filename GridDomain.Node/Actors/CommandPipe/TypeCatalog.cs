@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     abstract class TypeCatalog<TData,TMessage>
     {

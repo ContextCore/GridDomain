@@ -10,6 +10,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node
@@ -17,6 +18,9 @@ namespace GridDomain.Node
     public class ActorMessagesRouter : IMessagesRouter
     {
         private readonly IActorRef _routingActor;
+       private AggregateProcessorCatalog aggregatesCatalog = new AggregateProcessorCatalog();
+       private SagaProcessorCatalog sagaCatalog = new SagaProcessorCatalog();
+       private CustomHandlersProcessCatalog handlersCatalog = new CustomHandlersProcessCatalog();
        
         public ActorMessagesRouter(IActorRef routingActor)
         {
@@ -30,9 +34,12 @@ namespace GridDomain.Node
 
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
-            var name = $"Aggregate_{descriptor.AggregateType.Name}";
-            var createActorRoute = CreateActorRouteMessage.ForAggregate(name, descriptor);
-            return _routingActor.Ask<RouteCreated>(createActorRoute);
+            ////var name = $"Aggregate_{descriptor.AggregateType.Name}";
+            //var createActorRoute = CreateActorRouteMessage.ForAggregate(name, descriptor);
+            //return _routingActor.Ask<RouteCreated>(createActorRoute);
+            //var actorType = 
+            //aggregatesCatalog.Add<>();
+            return null;
         }
 
         public Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name)

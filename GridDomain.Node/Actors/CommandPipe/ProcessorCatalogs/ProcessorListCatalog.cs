@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
 {
     class ProcessorListCatalog<TMessage> : TypeCatalog<List<Processor>,TMessage>
     {
