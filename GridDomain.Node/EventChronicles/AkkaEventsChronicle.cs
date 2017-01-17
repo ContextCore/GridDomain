@@ -33,7 +33,7 @@ namespace GridDomain.Node.EventChronicles
             _transport = new LocalAkkaEventBusTransport(_system);
 
             var routingActor =
-                _system.ActorOf(Props.Create(() => new LocalSystemRoutingActor(new DefaultHandlerActorTypeFactory(),
+                _system.ActorOf(Props.Create(() => new LocalSystemBusRoutingActor(new DefaultHandlerActorTypeFactory(),
                                                                                new LocalAkkaEventBusTransport(_system))));
 
             var actorLocator = new DefaultAggregateActorLocator();

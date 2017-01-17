@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using CommonDomain.Core;
@@ -12,11 +14,10 @@ using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node
 {
-
     public class ActorMessagesRouter : IMessagesRouter
     {
         private readonly IActorRef _routingActor;
-
+       
         public ActorMessagesRouter(IActorRef routingActor)
         {
             _routingActor = routingActor;
@@ -56,6 +57,7 @@ namespace GridDomain.Node
                                                                typeof(T).Name,
                                                                PoolKind.ConsistentHash,
                                                                @group.AcceptMessages.ToArray());
+
             return _routingActor.Ask<RouteCreated>(createActorRoute);
         }
 

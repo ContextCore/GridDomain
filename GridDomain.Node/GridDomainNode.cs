@@ -37,7 +37,7 @@ namespace GridDomain.Node
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
             <TransportMode, Type>
         {
-            {TransportMode.Standalone, typeof (LocalSystemRoutingActor)},
+            {TransportMode.Standalone, typeof (LocalSystemBusRoutingActor)},
             {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
 

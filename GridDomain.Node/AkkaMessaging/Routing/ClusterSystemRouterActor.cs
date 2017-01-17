@@ -10,7 +10,7 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public class ClusterSystemRouterActor : RoutingActor
+    public class ClusterSystemRouterActor : BusRoutingActor
     {
         private IActorRef _subscriptionWaiter;
 

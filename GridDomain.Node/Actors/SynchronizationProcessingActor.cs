@@ -24,7 +24,7 @@ namespace GridDomain.Node.Actors
         
         }
 
-        protected override void PublishFault(IMessageMetadataEnvelop<object> msg, Exception ex)
+        protected override void PublishFault(IMessageMetadataEnvelop msg, Exception ex)
         {
             var projectionGroupException = ex as ProjectionGroupMessageProcessException;
             if (projectionGroupException == null)

@@ -7,9 +7,9 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.AkkaMessaging.Routing
 {
-    public class LocalSystemRoutingActor : RoutingActor
+    public class LocalSystemBusRoutingActor : BusRoutingActor
     {
-        public LocalSystemRoutingActor(IHandlerActorTypeFactory actorTypeFactory, IActorSubscriber subscriber)
+        public LocalSystemBusRoutingActor(IHandlerActorTypeFactory actorTypeFactory, IActorSubscriber subscriber)
             : base(actorTypeFactory, subscriber)
         {
         }

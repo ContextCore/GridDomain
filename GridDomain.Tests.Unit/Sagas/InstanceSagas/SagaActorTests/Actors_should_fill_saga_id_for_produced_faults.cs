@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
                                                   TestActor,
                                                   transport,
                                                   new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
-                                                  new AggregateFactory()
+                                                  new AggregateFactory(), null
                                                   )),
                 AggregateActorName.New<HomeAggregate>(command.Id).Name );
 

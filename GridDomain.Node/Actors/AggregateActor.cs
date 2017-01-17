@@ -31,22 +31,23 @@ namespace GridDomain.Node.Actors
     {
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IActorRef _schedulerActorRef;
+        private readonly IActorRef _customHandlersActor;
 
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
         public const string PublishingEvent = "Publishing event";
         public const string CommandExecutionCreatedAnEvent = "Command execution created an event";
 
-
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               IActorRef schedulerActorRef,
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
-                              IConstructAggregates aggregateConstructor) : base(
-                                                                            aggregateConstructor,
-                                                                            snapshotsPersistencePolicy,
-                                                                            publisher)
+                              IConstructAggregates aggregateConstructor,
+                              IActorRef customHandlersActor) : base(aggregateConstructor,
+                                                                                    snapshotsPersistencePolicy,
+                                                                                    publisher)
         {
+            _customHandlersActor = customHandlersActor;
             _schedulerActorRef = schedulerActorRef;
             _handler = handler;
 
@@ -102,28 +103,14 @@ namespace GridDomain.Node.Actors
         private void ProcessAggregateEvents(ICommand command, IMessageMetadata metadata)
         {
             var events = ExecuteCommand(command);
-
             int totalEvents = events.Length;
             int persistedEvents = 0;
 
             PersistAll(events, e =>
             {
-                var eventMetadata = metadata.CreateChild(e.SourceId,
-                                                         new ProcessEntry(Self.Path.Name,
-                                                                          PublishingEvent,
-                                                                          CommandExecutionCreatedAnEvent));
-
-                //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
-                //how to pass aggregate type in this case? 
-                //direct call to method to not postpone process of event scheduling, 
-                //case it can be interrupted by other messages in stash processing errors
-                e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventMetadata))
-                         .With<FutureEventCanceledEvent>(m => Handle(m, eventMetadata));
-
-                Publisher.Publish(e, eventMetadata);
                 //should save snapshot only after all messages persisted as state was already modified by all of them
                 if(++persistedEvents == totalEvents)
-                    TrySaveSnapshot(events);
+                    OnCommandEventsPersisted(events, metadata);
 
                 NotifyWatchers(new Persisted(e));
             });
@@ -131,6 +118,47 @@ namespace GridDomain.Node.Actors
             State.ClearUncommittedEvents();
 
             ProcessAsyncMethods(command, metadata);
+            BecomeStacked(WaitingForCommandProcess);
+        }
+
+        private void WaitingForCommandProcess()
+        {
+            CommandAny(c =>
+            {
+                c.Match()
+                    .With<CustomHandlersProcessCompleted>(processComplete =>
+                    {
+                        foreach (var e in processComplete.DomainEvents)
+                        {
+                            var eventMetadata = processComplete.Metadata.CreateChild(e.SourceId,
+                                                                     new ProcessEntry(Self.Path.Name,
+                                                                         PublishingEvent,
+                                                                         CommandExecutionCreatedAnEvent));
+
+                            //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
+                            //how to pass aggregate type in this case? 
+                            //direct call to method to not postpone process of event scheduling, 
+                            //case it can be interrupted by other messages in stash processing errors
+                            e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventMetadata))
+                                     .With<FutureEventCanceledEvent>(m => Handle(m, eventMetadata));
+
+                            Publisher.Publish(e, eventMetadata);
+                        }
+
+                        UnbecomeStacked();
+                        Stash.UnstashAll();
+                    })
+                    .Default(o => Stash.Stash());
+            });
+        }
+
+        private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata metadata)
+        {
+            TrySaveSnapshot(events);
+            var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, metadata);
+
+            _customHandlersActor.Ask<CustomHandlersProcessCompleted>(envelop)
+                                .PipeTo(Self);
         }
 
         private DomainEvent[] ExecuteCommand(ICommand command)

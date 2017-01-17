@@ -40,9 +40,10 @@ namespace GridDomain.Node.Actors
 
                 try
                 {
-                    handlerExecute().ContinueWith(t => new HandlerExecutionResult(msg, t.Exception.UnwrapSingle()),
-                                           TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted)
-                                     .PipeTo(Self);
+                    var sender = Sender;
+                    handlerExecute().ContinueWith(t => new HandlerExecuted(msg, t?.Exception.UnwrapSingle()),
+                                                            TaskContinuationOptions.ExecuteSynchronously)
+                                     .PipeTo(Self,sender);
                 }
                 catch (Exception ex)
                 {
@@ -51,23 +52,17 @@ namespace GridDomain.Node.Actors
                 }
                 
             });
-            Receive<HandlerExecutionResult>(res => PublishFault(res.ProcessingMessage, res.Error), m => m.Error != null);
+            Receive<HandlerExecuted>(res =>
+            {
+                Sender.Tell(res);
+                if (res.Error != null)
+                    PublishFault(res.ProcessingMessage, res.Error);
+            });
         }
     
-        private class HandlerExecutionResult
-        {
-            public HandlerExecutionResult(IMessageMetadataEnvelop<TMessage> processingMessage, Exception error = null)
-            {
-                ProcessingMessage = processingMessage;
-                Error = error;
-            }
+    
 
-            public IMessageMetadataEnvelop<TMessage> ProcessingMessage { get; }
-            public Exception Error { get; }
-
-        }
-
-        protected virtual void PublishFault(IMessageMetadataEnvelop<TMessage> msg, Exception ex)
+        protected virtual void PublishFault(IMessageMetadataEnvelop msg, Exception ex)
         {
             _log.Error(ex, "Handler actor raised an error on message process: {@Message}", msg);
 

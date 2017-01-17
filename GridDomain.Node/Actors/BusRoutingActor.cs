@@ -15,15 +15,15 @@ using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.Actors
 {
-    public abstract class RoutingActor : TypedActor
+    public abstract class BusRoutingActor : TypedActor
     {
         private readonly IHandlerActorTypeFactory _actorTypeFactory;
         protected readonly ILogger Log = LogManager.GetLogger();
         private readonly IActorSubscriber _subscriber;
         private readonly ActorMonitor _monitor;
 
-        protected RoutingActor(IHandlerActorTypeFactory actorTypeFactory,
-                               IActorSubscriber subscriber)
+        protected BusRoutingActor(IHandlerActorTypeFactory actorTypeFactory,
+                                  IActorSubscriber subscriber)
         {
             _subscriber = subscriber;
             _actorTypeFactory = actorTypeFactory;
