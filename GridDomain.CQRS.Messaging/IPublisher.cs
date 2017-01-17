@@ -12,16 +12,4 @@ namespace GridDomain.CQRS.Messaging
         void Publish(object msg);
         void Publish(object msg, IMessageMetadata metadata);
     }
-
-    public interface ICommandProcessChain
-    {
-        Task<DomainEvent> ProcessAggregate(ICommand command, IMessageMetadata metadata);
-        Task<object[]> ProcessHandlers(DomainEvent[] events, IMessageMetadata metadata);
-        Task<ICommand[]> ProcessSagas(DomainEvent[] events, IMessageMetadata metadata);
-    }
-
-    public interface IMessageHandlerDescriptor
-    {
-        Type[] AcceptTypes { get; }
-    }
 }

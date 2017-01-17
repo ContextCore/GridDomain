@@ -1,8 +1,7 @@
-using System.ServiceModel;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     public class CustomHandlersProcessCompleted 
     {

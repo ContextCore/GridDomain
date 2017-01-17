@@ -1,7 +1,7 @@
 using GridDomain.Common;
 using GridDomain.CQRS;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     public class SagasProcessComplete
     {

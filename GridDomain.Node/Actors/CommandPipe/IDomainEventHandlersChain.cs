@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
-using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     public interface IDomainEventHandlersChain
     {

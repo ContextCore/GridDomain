@@ -5,14 +5,14 @@ namespace GridDomain.Node.Actors.CommandPipe
 {
     abstract class TypeCatalog<TData,TMessage>
     {
-        protected readonly IDictionary<Type, TData> _catalog = new Dictionary<Type, TData>();
+        protected readonly IDictionary<Type, TData> Catalog = new Dictionary<Type, TData>();
 
         public abstract void Add<U>(Processor processor) where U : TMessage;
 
-        protected TData GetProcessor<U>(U message) where U:TMessage
+        protected TData GetProcessor(object message)
         {
             TData processor;
-            _catalog.TryGetValue(typeof(U), out processor);
+            Catalog.TryGetValue(message.GetType(), out processor);
             return processor;
         }
     }

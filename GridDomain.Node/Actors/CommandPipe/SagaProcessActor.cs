@@ -5,8 +5,9 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     /// <summary>
     /// Synhronize sagas processing for produced domain events
@@ -40,7 +41,7 @@ namespace GridDomain.Node.Actors
             {
                 Sender.Tell(m);
                 foreach (var command in m.ProducedCommands)
-                    _commandExecutionActor.Tell(MessageMetadataEnvelop.NewGeneric(command, m.Metadata));
+                    _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata));
             });
         }
 
@@ -50,7 +51,7 @@ namespace GridDomain.Node.Actors
             if(!eventProcessors.Any())
                  return Task.FromResult(Enumerable.Empty<ICommand>());
 
-            var messageMetadataEnvelop = MessageMetadataEnvelop.NewGeneric(evt, metadata);
+            var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
 
             var allAsyncTask = new List<Task<IEnumerable<ICommand>>>();
 

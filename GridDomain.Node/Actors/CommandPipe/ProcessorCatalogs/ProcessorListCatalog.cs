@@ -8,8 +8,8 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
         {
             List<Processor> list;
             var messageType = typeof(U);
-            if (!_catalog.TryGetValue(messageType, out list))
-                list = _catalog[messageType] = new List<Processor>();
+            if (!Catalog.TryGetValue(messageType, out list))
+                list = Catalog[messageType] = new List<Processor>();
 
             list.Add(processor);
         }

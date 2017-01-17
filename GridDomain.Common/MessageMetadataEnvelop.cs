@@ -25,11 +25,6 @@ namespace GridDomain.Common
             var method = methodOpenType.MakeGenericMethod(msgType);
             return (IMessageMetadataEnvelop) method.Invoke(null, new[] { msg, metadata});
         }
-
-        public static Type GenericForMessage(object msg)
-        {
-            return GenericForType(msg.GetType());
-        }
         public static Type GenericForType(Type type)
         {
             return typeof(IMessageMetadataEnvelop<>).MakeGenericType(type);

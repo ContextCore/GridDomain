@@ -48,7 +48,6 @@ namespace GridDomain.Node
                Transport.Publish(command, metadata);
         }
 
-
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             var commandMetadata = metadata ?? new MessageMetadata(cmd.Id,

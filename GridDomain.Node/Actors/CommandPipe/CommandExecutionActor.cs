@@ -1,23 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     internal class CommandExecutionActor : ReceiveActor
     {
-        private readonly AggregateProcessorCatalog _aggregateCatalog;
+        private readonly IAggregateProcessorCatalog _aggregateCatalog;
 
-        public CommandExecutionActor(AggregateProcessorCatalog aggregateCatalog)
+        public CommandExecutionActor(IAggregateProcessorCatalog aggregateCatalog)
         {
             _aggregateCatalog = aggregateCatalog;
-        }
 
-        public CommandExecutionActor()
-        {
             Receive<IMessageMetadataEnvelop<ICommand>>(c =>
             {
                 Processor aggregateProcessor = _aggregateCatalog.GetAggregateProcessor(c.Message);

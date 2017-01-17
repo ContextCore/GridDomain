@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Node.Actors.CommandPipe
 {
     /// <summary>
     /// Synhronize message handlers work for produced domain events
@@ -44,7 +45,7 @@ namespace GridDomain.Node.Actors
             IReadOnlyCollection<Processor> eventProcessors = _map.GetAggregateProcessor(evt);
             if(!eventProcessors.Any()) return Task.CompletedTask;
 
-            var messageMetadataEnvelop = MessageMetadataEnvelop.NewGeneric(evt, metadata);
+            var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
 
             return eventProcessors.Select(p => {
                                          if (p.Policy.IsSynchronious)
