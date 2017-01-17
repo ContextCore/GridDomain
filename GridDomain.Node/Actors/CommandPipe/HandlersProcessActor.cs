@@ -15,13 +15,13 @@ namespace GridDomain.Node.Actors.CommandPipe
     /// </summary>
     public class HandlersProcessActor : ReceiveActor
     {
-        private readonly ICustomHandlersProcessorCatalog _map;
+        private readonly ICustomHandlersProcessorCatalog _handlersCatalog;
         private readonly IActorRef _sagasProcessActor;
 
-        public HandlersProcessActor(ICustomHandlersProcessorCatalog map, IActorRef sagasProcessActor)
+        public HandlersProcessActor(ICustomHandlersProcessorCatalog handlersCatalog, IActorRef sagasProcessActor)
         {
             _sagasProcessActor = sagasProcessActor;
-            _map = map;
+            _handlersCatalog = handlersCatalog;
     
             Receive<IMessageMetadataEnvelop<DomainEvent[]>>(envelop =>
             {
@@ -42,7 +42,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 
         private Task ProcessMessageHandlers(DomainEvent evt, IMessageMetadata metadata)
         {
-            IReadOnlyCollection<Processor> eventProcessors = _map.GetAggregateProcessor(evt);
+            IReadOnlyCollection<Processor> eventProcessors = _handlersCatalog.GetHandlerProcessor(evt);
             if(!eventProcessors.Any()) return Task.CompletedTask;
 
             var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
