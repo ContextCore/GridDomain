@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,21 +53,6 @@ namespace GridDomain.Node.Actors
             _schedulerActorRef = schedulerActorRef;
             _handler = handler;
 
-            //async aggregate method execution finished, aggregate already raised events
-            //need process it in usual way
-            Command<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
-            {
-                var m = d.Message;
-                Monitor.IncrementMessagesReceived();
-                if (m.Exception != null)
-                {
-                    ProcessFault(m.Command, m.Exception, d.Metadata);
-                    return;
-                }
-
-                (State as Aggregate).FinishAsyncExecution(m.InvocationId);
-                ProcessAggregateEvents(m.Command, d.Metadata);
-            });
 
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
             {
@@ -84,6 +70,10 @@ namespace GridDomain.Node.Actors
                 }
 
                 ProcessAggregateEvents(cmd, m.Metadata);
+
+                ProcessAsyncMethods(cmd, m.Metadata);
+
+                BecomeStacked(WaitingForCommandProcess);
             });
         }
 
@@ -100,10 +90,9 @@ namespace GridDomain.Node.Actors
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
         }
 
-
         private void ProcessAggregateEvents(ICommand command, IMessageMetadata metadata)
         {
-            var events = ExecuteCommand(command);
+            var events = GatherEvents(command);
             int totalEvents = events.Length;
             int persistedEvents = 0;
 
@@ -117,9 +106,6 @@ namespace GridDomain.Node.Actors
             });
 
             State.ClearUncommittedEvents();
-
-            ProcessAsyncMethods(command, metadata);
-            BecomeStacked(WaitingForCommandProcess);
         }
 
         private void WaitingForCommandProcess()
@@ -149,6 +135,19 @@ namespace GridDomain.Node.Actors
                         UnbecomeStacked();
                         Stash.UnstashAll();
                     })
+                    .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
+                     {
+                         var m = d.Message;
+                         Monitor.IncrementMessagesReceived();
+                         if (m.Exception != null)
+                         {
+                             ProcessFault(m.Command, m.Exception, d.Metadata);
+                             return;
+                         }
+
+                         (State as Aggregate).FinishAsyncExecution(m.InvocationId);
+                         ProcessAggregateEvents(m.Command, d.Metadata);
+                     })
                     .Default(o => Stash.Stash());
             });
         }
@@ -158,11 +157,14 @@ namespace GridDomain.Node.Actors
             TrySaveSnapshot(events);
             var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, metadata);
 
+            foreach(var evt in events)
+                Publisher.Publish(evt, metadata);
+
             _customHandlersActor.Ask<CustomHandlersProcessCompleted>(envelop)
                                 .PipeTo(Self);
         }
 
-        private DomainEvent[] ExecuteCommand(ICommand command)
+        private DomainEvent[] GatherEvents(ICommand command)
         {
             var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
@@ -184,7 +186,6 @@ namespace GridDomain.Node.Actors
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
             {
-
                 asyncMethod.ResultProducer.ContinueWith(
                     t =>
                     {
@@ -197,7 +198,6 @@ namespace GridDomain.Node.Actors
                     })
                     .PipeTo(Self);
             }
-
             extendedAggregate.ClearAsyncUncomittedEvents();
         }
 

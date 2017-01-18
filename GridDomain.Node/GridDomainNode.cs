@@ -111,6 +111,10 @@ namespace GridDomain.Node
             await ConfigureContainer(Container, _quartzConfig, System);
 
             Transport = Container.Resolve<IActorTransport>();
+
+            var executor = await ConfigureCommandPipe();
+            Container.RegisterInstance<ICommandExecutor>(executor);
+
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
             _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
@@ -182,9 +186,6 @@ namespace GridDomain.Node
 
             var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
             unityContainer.RegisterInstance<IActorRef>(SchedulingActor.RegistrationName, persistentScheduler);
-
-            var executor = await ConfigureCommandPipe();
-            unityContainer.RegisterInstance<ICommandExecutor>(executor);
         }
 
 

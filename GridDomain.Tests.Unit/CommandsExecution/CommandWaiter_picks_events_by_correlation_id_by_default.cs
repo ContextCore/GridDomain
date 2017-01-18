@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
@@ -23,7 +24,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             GridNode.Execute(commandB);
             var res =  await GridNode.Prepare(commandA)
                                      .Expect<AggregateChangedEventNotification>()
-                                     .Execute(TimeSpan.FromSeconds(500), false);
+                                     .Execute(false);
                               
             //will pick right command by correlation Id
             Assert.AreEqual(commandA.AggregateId, res.Message<AggregateChangedEventNotification>().AggregateId);

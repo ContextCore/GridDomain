@@ -11,7 +11,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                            ICommandWaiter where TCommand : ICommand
     {
         private readonly CommandExpectBuilder<TCommand> _expectBuilder;
-        private readonly IActorRef _executorActor;
 
         public CommandWaiter(TCommand command,
                              IMessageMetadata commandMetadata,
@@ -20,7 +19,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                              IActorRef executorActor,
                              TimeSpan defaultTimeout):base(system,transport,defaultTimeout)
         {
-            _executorActor = executorActor;
             _expectBuilder = new CommandExpectBuilder<TCommand>(command, commandMetadata, executorActor, this);
         }
 
