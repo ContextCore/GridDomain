@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,18 +24,13 @@ namespace GridDomain.Node.Actors.CommandPipe
         {
             _catalog = catalog;
             _commandExecutionActor = commandExecutionActor;
-        }
-
-        public SagaProcessActor()
-        {
+     
             Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
             {
-                var eventsToProcess = c.Message;
-                var sender = Sender;
-                eventsToProcess.Select(e => ProcessSagas(e, c.Metadata))
-                               .ToChain()
-                               .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
-                               .PipeTo(Self,sender);
+                c.Message.Select(e => ProcessSagas(e, c.Metadata))
+                         .ToChain()
+                         .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
+                         .PipeTo(Self,Sender);
             });
 
             Receive<SagasProcessComplete>(m =>
@@ -53,26 +49,8 @@ namespace GridDomain.Node.Actors.CommandPipe
 
             var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
 
-            var allAsyncTask = new List<Task<IEnumerable<ICommand>>>();
-
-            Task<IEnumerable<ICommand>> resultTask = null;
-
-            foreach (var p in eventProcessors)
-            {
-                Task<IEnumerable<ICommand>> sagaProcessTask = p.ActorRef.Ask<SagasProcessComplete>(messageMetadataEnvelop)
-                                                                        .ContinueWith(t => (IEnumerable<ICommand>)t.Result.ProducedCommands);
-                if (p.Policy.IsSynchronious)
-                {
-                    resultTask = resultTask?.ContinueWith(t => sagaProcessTask.Result.Union(t.Result)) ?? sagaProcessTask;
-                }
-                else
-                {
-                    allAsyncTask.Add(sagaProcessTask);
-                }
-            }
-            allAsyncTask.Add(resultTask);
-
-            return Task.WhenAll(allAsyncTask)
+            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<SagaProcessCompleted>(messageMetadataEnvelop)
+                                               .ContinueWith(t => (IEnumerable<ICommand>)t.Result.ProducedCommands)))
                        .ContinueWith(t => t.Result.SelectMany(c => c));
         }
 

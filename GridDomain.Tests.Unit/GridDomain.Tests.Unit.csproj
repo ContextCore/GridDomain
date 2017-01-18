@@ -239,6 +239,7 @@
   <ItemGroup>
     <Compile Include="CommandPipe\CommandExecutorActorTests.cs" />
     <Compile Include="CommandPipe\CustomHandlerProcessorActorTests.cs" />
+    <Compile Include="CommandPipe\SagaProcessorActorTests.cs" />
     <Compile Include="CommandsExecution\AsyncExecute_without_timeout_using_node_defaults.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
     <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />

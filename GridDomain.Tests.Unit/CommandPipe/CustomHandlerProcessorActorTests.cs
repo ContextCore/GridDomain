@@ -96,6 +96,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
 
@@ -109,6 +110,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateCreatedEvent);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
