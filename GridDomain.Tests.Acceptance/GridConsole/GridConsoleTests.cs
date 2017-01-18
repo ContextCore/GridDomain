@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
             var serverConfig = new TestGridNodeConfiguration();
 
             _node = new GridDomainNode(sampleDomainContainerConfiguration,
-                                       new SampleRouteMap(container),
+                                       new SampleRouteMap(),
                                        () => serverConfig.CreateInMemorySystem());
 
             await _node.Start();

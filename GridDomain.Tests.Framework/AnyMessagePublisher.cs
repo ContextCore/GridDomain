@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Framework
         public async Task<IWaitResults> Publish(object message, IMessageMetadata metadata = null)
         {
             var task =_waiter.Start();
-            _publisher.Publish(message, metadata ?? MessageMetadata.Empty());
+            _publisher.Publish(message, metadata ?? MessageMetadata.Empty);
             return await task;
 
         }

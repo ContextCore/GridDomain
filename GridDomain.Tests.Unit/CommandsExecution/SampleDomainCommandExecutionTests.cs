@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var container = new UnityContainer();
             container.Register(CreateConfiguration());
-            return new SampleRouteMap(container);
+            return new SampleRouteMap();
         }
 
         public SampleDomainCommandExecutionTests(bool inMemory, AkkaConfiguration config = null) : base(inMemory, config)

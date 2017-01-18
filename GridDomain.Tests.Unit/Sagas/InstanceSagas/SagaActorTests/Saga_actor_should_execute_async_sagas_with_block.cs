@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
-            _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty()));
+            _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
 
             Assert.AreEqual(domainEventA.SourceId, _actor.UnderlyingActor.Saga.Data.Data.ProcessingId);
@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
-            _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty()));
+            _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
 
             FishForMessage<IMessageMetadataEnvelop<SagaCreatedEvent<TestState>>>(m => true);
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
@@ -79,8 +79,8 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
             var domainEventA = new SampleAggregateCreatedEvent("1",Guid.NewGuid(),DateTime.Now, _sagaId);
             var domainEventB = new SampleAggregateCreatedEvent("2",Guid.NewGuid(),DateTime.Now, _sagaId);
 
-            _actor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty()));
-            _actor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty()));
+            _actor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
+            _actor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //B should not be processed until A is completed
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);

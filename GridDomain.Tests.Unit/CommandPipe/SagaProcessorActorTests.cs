@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[] { new SampleAggregateCreatedEvent("1", Guid.NewGuid()) },
-                                                                MessageMetadata.Empty());
+                                                                MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 
@@ -55,7 +55,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new [] { new DomainEvent(Guid.NewGuid())  },
-                                                                MessageMetadata.Empty());
+                                                                MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 
@@ -92,7 +92,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
                                                                     new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
                                                                     new SampleAggregateChangedEvent("2", Guid.NewGuid())
                                                                 },
-                                                                MessageMetadata.Empty());
+                                                                MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 

@@ -9,18 +9,13 @@ namespace GridDomain.Tests.Unit.SampleDomain
 {
     public class SampleRouteMap : IMessageRouteMap
     {
-        private readonly IUnityContainer _locator;
-
-        public SampleRouteMap(IUnityContainer locator=null)
-        {
-            _locator = locator;
-        }
-
         public async Task Register(IMessagesRouter router)
         {
             await router.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor);
-            await router.RegisterProjectionGroup(new SampleProjectionGroup(_locator));
             await router.RegisterHandler<SampleAggregateChangedEvent, SampleProjectionBuilder>(m => m.SourceId);
+            await router.RegisterHandler<SampleAggregateChangedEvent, AggregateChangedProjectionBuilder>(m => m.SourceId);
+            await router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder>(m => m.SourceId);
+            await router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder_Alternative>(m => m.SourceId);
 
         }
     }

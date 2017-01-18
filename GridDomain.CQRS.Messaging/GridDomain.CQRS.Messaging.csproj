@@ -131,15 +131,9 @@
     <Compile Include="MessageRouting\ICommandAggregateLocator.cs" />
     <Compile Include="MessageRouting\IHandlerBuilder.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
-    <Compile Include="MessageRouting\IProjectionGroup.cs" />
-    <Compile Include="MessageRouting\IProjectionGroupDescriptor.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />
-    <Compile Include="MessageRouting\ProjectionGroupMessageProcessException.cs" />
     <Compile Include="MessageRouting\MessageRoute.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
-    <Compile Include="MessageRouting\ProjectionGroup.cs" />
-    <Compile Include="MessageRouting\ProjectionGroupDescriptor.cs" />
-    <Compile Include="MessageRouting\ProjectionGroupExtensions.cs" />
     <Compile Include="MessageRouting\UnknownMessageException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -271,7 +271,7 @@
     <Compile Include="Actors\CommandPipe\TypeCatalog.cs" />
     <Compile Include="Actors\SagaActorLiterals.cs" />
     <Compile Include="Actors\SnapshotsPersistencePolicy.cs" />
-    <Compile Include="AkkaCommandExecutor.cs" />
+    <Compile Include="AkkaCommandPipeExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
@@ -305,7 +305,6 @@
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
     <Compile Include="Actors\SagaHubActor.cs" />
-    <Compile Include="Actors\SynchronizationProcessingActor.cs" />
     <Compile Include="Actors\GracefullShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="Actors\AggregateActor.cs" />

@@ -64,9 +64,6 @@ namespace GridDomain.Node
 
             container.RegisterInstance(_actorSystem);
 
-            var executor = new AkkaCommandExecutor(_actorSystem, transport, _defaultCommandExecutionTimeout);
-            container.RegisterInstance<ICommandExecutor>(executor);
-
             var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
         }

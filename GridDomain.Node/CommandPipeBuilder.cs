@@ -10,7 +10,6 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
-using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
@@ -22,11 +21,10 @@ namespace GridDomain.Node
 {
     public class CommandPipeBuilder : IMessagesRouter
     {
-        private AggregateProcessorCatalog aggregatesCatalog = new AggregateProcessorCatalog();
-        private SagaProcessorCatalog sagaCatalog = new SagaProcessorCatalog();
-        private CustomHandlersProcessCatalog handlersCatalog = new CustomHandlersProcessCatalog();
+        private readonly AggregateProcessorCatalog _aggregatesCatalog = new AggregateProcessorCatalog();
+        private readonly SagaProcessorCatalog _sagaCatalog = new SagaProcessorCatalog();
+        private readonly CustomHandlersProcessCatalog _handlersCatalog = new CustomHandlersProcessCatalog();
         private readonly ActorSystem _system;
-        private ILogger Log = LogManager.GetLogger();
         private IActorRef _sagasProcessActor;
         private IActorRef _handlersProcessActor;
         private IActorRef _commandExecutorActor;
@@ -38,15 +36,20 @@ namespace GridDomain.Node
             _system = system;
         }
 
-        public async Task Init()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Reference to pipe actor for command execution</returns>
+        public async Task<IActorRef> Init()
         {
-            _sagasProcessActor = _system.ActorOf(Props.Create(() => new SagaProcessActor(sagaCatalog)));
-            _handlersProcessActor = _system.ActorOf(Props.Create(() => new HandlersProcessActor(handlersCatalog,_sagasProcessActor)));
-            _commandExecutorActor = _system.ActorOf(Props.Create(() => new CommandExecutionActor(aggregatesCatalog)));
+            _sagasProcessActor = _system.ActorOf(Props.Create(() => new SagaProcessActor(_sagaCatalog)));
+            _handlersProcessActor = _system.ActorOf(Props.Create(() => new HandlersProcessActor(_handlersCatalog,_sagasProcessActor)));
+            _commandExecutorActor = _system.ActorOf(Props.Create(() => new CommandExecutionActor(_aggregatesCatalog)));
 
             _container.RegisterInstance(HandlersProcessActor.CustomHandlersProcessActorRegistrationName, _handlersProcessActor);
 
             await _sagasProcessActor.Ask<Initialized>(new Initialize(_commandExecutorActor));
+            return _commandExecutorActor;
         }
 
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
@@ -61,7 +64,7 @@ namespace GridDomain.Node
 
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
             {
-                aggregatesCatalog.Add(aggregateCommandInfo.CommandType, processor);
+                _aggregatesCatalog.Add(aggregateCommandInfo.CommandType, processor);
             }
 
             return Task.CompletedTask;
@@ -75,7 +78,7 @@ namespace GridDomain.Node
 
             foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
             {
-                sagaCatalog.Add(acceptMsg.MessageType, processor);
+                _sagaCatalog.Add(acceptMsg.MessageType, processor);
             }
 
             return Task.CompletedTask;
@@ -92,13 +95,8 @@ namespace GridDomain.Node
             var handlerActorType = typeof(MessageHandlingActor<TMessage, THandler>);
             var handlerActor = CreateActor(handlerActorType, NoRouter.Instance, handlerActorType.BeautyName());
 
-            handlersCatalog.Add<TMessage>(new Processor(handlerActor,new MessageProcessPolicy(sync)));
+            _handlersCatalog.Add<TMessage>(new Processor(handlerActor,new MessageProcessPolicy(sync)));
             return Task.CompletedTask;
-        }
-
-        public Task RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup
-        {
-            throw new NotImplementedException();
         }
 
         private IActorRef CreateActor(Type actorType, RouterConfig routeConfig, string actorName)

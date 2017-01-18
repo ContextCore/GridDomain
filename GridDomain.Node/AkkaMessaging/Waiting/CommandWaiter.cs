@@ -11,14 +11,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                            ICommandWaiter where TCommand : ICommand
     {
         private readonly CommandExpectBuilder<TCommand> _expectBuilder;
+        private readonly IActorRef _executorActor;
 
         public CommandWaiter(TCommand command,
                              IMessageMetadata commandMetadata,
                              ActorSystem system, 
                              IActorTransport transport,
+                             IActorRef executorActor,
                              TimeSpan defaultTimeout):base(system,transport,defaultTimeout)
         {
-            _expectBuilder = new CommandExpectBuilder<TCommand>(command, commandMetadata, transport, this);
+            _executorActor = executorActor;
+            _expectBuilder = new CommandExpectBuilder<TCommand>(command, commandMetadata, executorActor, this);
         }
 
         public override IExpectBuilder<Task<IWaitResults>> Expect<TMsg>(Predicate<TMsg> filter = null)

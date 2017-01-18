@@ -89,10 +89,6 @@ namespace GridDomain.Node
         {
             _log.Debug("grid node Actor system terminated");
         }
-        private void OnSystemTermination(Task obj)
-        {
-            _log.Debug("grid node Actor system terminated");
-        }
 
         public IUnityContainer Container { get; private set; }
 
@@ -100,6 +96,7 @@ namespace GridDomain.Node
 
         public async Task Start()
         {
+            _stopping = false;
 
             Container = new UnityContainer();
             Systems = _actorSystemFactory.Invoke();
@@ -111,7 +108,7 @@ namespace GridDomain.Node
             System.RegisterOnTermination(OnSystemTermination);
             System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            ConfigureContainer(Container, _quartzConfig, System);
+            await ConfigureContainer(Container, _quartzConfig, System);
 
             Transport = Container.Resolve<IActorTransport>();
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
@@ -134,8 +131,8 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-            _stopping = false;
             _log.Debug("Launching GridDomain node {Id}",Id);
+
 
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props,nameof(GridNodeController));
@@ -146,6 +143,15 @@ namespace GridDomain.Node
             });
 
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+        }
+
+        private async Task<ICommandExecutor> ConfigureCommandPipe()
+        {
+            var pipeBuilder = new CommandPipeBuilder(System, Container);
+            var commandExecutorActor = await pipeBuilder.Init();
+            await _messageRouting.Register(pipeBuilder);
+
+            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor,DefaultTimeout);
         }
 
         private void RegisterCustomAggregateSnapshots()
@@ -163,7 +169,7 @@ namespace GridDomain.Node
             }
         }
 
-        private void ConfigureContainer(IUnityContainer unityContainer, 
+        private async Task ConfigureContainer(IUnityContainer unityContainer, 
                                         IQuartzConfig quartzConfig, 
                                         ActorSystem actorSystem)
         {
@@ -176,7 +182,9 @@ namespace GridDomain.Node
 
             var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
             unityContainer.RegisterInstance<IActorRef>(SchedulingActor.RegistrationName, persistentScheduler);
-            unityContainer.RegisterInstance(_messageRouting);
+
+            var executor = await ConfigureCommandPipe();
+            unityContainer.RegisterInstance<ICommandExecutor>(executor);
         }
 
 

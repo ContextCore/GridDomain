@@ -164,7 +164,7 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception ex)
             {
-                return MessageMetadata.Empty();
+                return MessageMetadata.Empty;
             }
         }
 

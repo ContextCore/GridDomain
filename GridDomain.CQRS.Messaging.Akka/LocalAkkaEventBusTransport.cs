@@ -40,7 +40,7 @@ namespace GridDomain.CQRS.Messaging.Akka
             _bus.Publish(msg);
             //for backward compability - a lot of legacy code publish bare messages and expect some results back
             //and new actors \ sagas work only with IMessageMetadataEnvelop
-            Publish(msg, MessageMetadata.Empty());
+            Publish(msg, MessageMetadata.Empty);
         }
 
         public void Publish(object msg, IMessageMetadata metadata)

@@ -50,16 +50,5 @@ namespace GridDomain.Node
             
             return handlerBuilder.Register();
         }
-
-        public Task RegisterProjectionGroup<T>(T @group) where T : IProjectionGroup
-        {
-            var createActorRoute = new CreateActorRouteMessage(typeof(SynchronizationProcessingActor<T>),
-                                                               typeof(T).Name,
-                                                               PoolKind.ConsistentHash,
-                                                               @group.AcceptMessages.ToArray());
-
-            return _routingActor.Ask<RouteCreated>(createActorRoute);
-        }
-
     }
 }

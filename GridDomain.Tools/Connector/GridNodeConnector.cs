@@ -18,7 +18,7 @@ namespace GridDomain.Tools.Connector
         private readonly ActorSystem _consoleSystem;
         public IActorRef EventBusForwarder;
         private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(30);
-        private AkkaCommandExecutor _commandExecutor;
+        private ICommandExecutor _busCommandExecutor;
         private readonly IAkkaNetworkAddress _serverAddress;
         private MessageWaiterFactory _waiterFactory;
         
@@ -56,7 +56,7 @@ namespace GridDomain.Tools.Connector
                                                 EventBusForwarder,
                                                 defaultTimeout);
 
-            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge, defaultTimeout);
+            //_busCommandExecutor = new AkkaCommmandPipeExecutor();
             _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, defaultTimeout);
         }
       
@@ -67,12 +67,12 @@ namespace GridDomain.Tools.Connector
 
         public void Execute(params ICommand[] commands)
         {
-            _commandExecutor.Execute(commands);
+            _busCommandExecutor.Execute(commands);
         }
 
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
-            _commandExecutor.Execute(command, metadata);
+            _busCommandExecutor.Execute(command, metadata);
         }
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
@@ -82,7 +82,7 @@ namespace GridDomain.Tools.Connector
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
-            return _commandExecutor.Prepare(cmd, metadata);
+            return _busCommandExecutor.Prepare(cmd, metadata);
         }
     }
 }

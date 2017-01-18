@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
 
         public Task Handle(SampleAggregateCreatedEvent msg)
         {
-           return Handle(msg, MessageMetadata.Empty());
+           return Handle(msg, MessageMetadata.Empty);
         }
     }
 }

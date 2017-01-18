@@ -348,7 +348,6 @@
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
-    <Compile Include="CommandsExecution\CommandWaiterWaitsForFaultsFromProjectionGroup.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
     <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_waits_for_faults.cs" />
@@ -449,7 +448,6 @@
     <Compile Include="SampleDomain\SampleAggregatesCommandHandler.cs" />
     <Compile Include="SampleDomain\Commands\ChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateCreatedEvent.cs" />
-    <Compile Include="SampleDomain\SampleProjectionGroup.cs" />
     <Compile Include="SampleDomain\SampleRouteMap.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />

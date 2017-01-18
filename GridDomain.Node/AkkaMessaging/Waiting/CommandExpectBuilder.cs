@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -31,19 +32,19 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                                   where TCommand : ICommand
     {
         private readonly TCommand _command;
-        private readonly IPublisher _publisher;
         private readonly LocalMessagesWaiter<Task<IWaitResults>> _waiter;
         private readonly IMessageMetadata _commandMetadata;
+        private readonly IActorRef _executorActorRef;
 
         public CommandExpectBuilder(TCommand command, 
                                     IMessageMetadata commandMetadata, 
-                                    IPublisher publisher,
+                                    IActorRef executorActorRef,
                                     LocalMessagesWaiter<Task<IWaitResults>> waiter) : base(waiter)
         {
             _commandMetadata = commandMetadata;
+            _executorActorRef = executorActorRef;
             _waiter = waiter;
             _command = command;
-            _publisher = publisher;
         }
 
         private bool CorrelationFilter<T>(IMessageMetadataEnvelop<T> envelop)
@@ -69,7 +70,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             var task = _waiter.Start(timeout);
 
-            _publisher.Publish(_command, _commandMetadata);
+            _executorActorRef.Tell(new MessageMetadataEnvelop<ICommand>(_command, _commandMetadata));
 
             var res = await task;
 

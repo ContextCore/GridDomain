@@ -17,7 +17,5 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         Task RegisterHandler<TMessage, THandler>(string correlationField) where THandler : IHandler<TMessage>
                                                                           where TMessage : DomainEvent;
-
-        Task RegisterProjectionGroup<T>(T group) where T : IProjectionGroup;
     }
 }

@@ -20,6 +20,7 @@ namespace GridDomain.Common
             History = history ?? new ProcessHistory(null);
         }
 
+
         public static MessageMetadata CreateFrom(Guid messageId, 
                                                  IMessageMetadata existedMessage, 
                                                  params ProcessEntry[] process)
@@ -31,11 +32,6 @@ namespace GridDomain.Common
                                        new ProcessHistory(process));
         }
 
-
-        public static MessageMetadata Empty()
-        {
-            return new MessageMetadata(Guid.Empty, BusinessDateTime.UtcNow);
-        }
-        
+        public static MessageMetadata Empty { get; } = new MessageMetadata(Guid.Empty, BusinessDateTime.UtcNow);
     }
 }

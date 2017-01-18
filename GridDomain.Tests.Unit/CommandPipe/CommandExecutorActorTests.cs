@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));
 
-            var msg = new MessageMetadataEnvelop<ICommand>(new CreateSampleAggregateCommand(1, Guid.NewGuid()),MessageMetadata.Empty());
+            var msg = new MessageMetadataEnvelop<ICommand>(new CreateSampleAggregateCommand(1, Guid.NewGuid()),MessageMetadata.Empty);
 
             actor.Tell(msg);
 
@@ -48,7 +48,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));
 
-            var msg = new MessageMetadataEnvelop<CreateCommand>(new CreateCommand(1, Guid.NewGuid()), MessageMetadata.Empty());
+            var msg = new MessageMetadataEnvelop<CreateCommand>(new CreateCommand(1, Guid.NewGuid()), MessageMetadata.Empty);
 
             actor.Tell(msg);
 
