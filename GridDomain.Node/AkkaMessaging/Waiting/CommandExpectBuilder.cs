@@ -8,25 +8,6 @@ using GridDomain.CQRS.Messaging;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandExpectBuilder : ExpectBuilder<IExpectedCommandExecutor>
-    {
-        private readonly ICommandExecutor _executor;
-        private readonly bool _failOnAnyFault;
-        private readonly AkkaCommandLocalWaiter _waiter;
-
-        public CommandExpectBuilder(ICommandExecutor executor, AkkaCommandLocalWaiter waiter, bool failOnAnyFault) : base(waiter)
-        {
-            _waiter = waiter;
-            _failOnAnyFault = failOnAnyFault;
-            _executor = executor;
-        }
-
-        public override IExpectedCommandExecutor Create(TimeSpan? timeout)
-        {
-            return new ExpectedCommandExecutor(_executor, _waiter, _failOnAnyFault);
-        }
-    }
-
     public class CommandExpectBuilder<TCommand> : ExpectBuilder<Task<IWaitResults>>, 
                                                   ICommandExpectBuilder
                                                   where TCommand : ICommand
