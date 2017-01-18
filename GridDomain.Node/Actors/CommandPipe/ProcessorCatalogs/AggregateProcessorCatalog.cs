@@ -1,3 +1,4 @@
+using System;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
@@ -9,9 +10,9 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
             return GetProcessor(command);
         }
 
-        public override void Add<U>(Processor processor)
+        public override void Add(Type type,Processor processor)
         {
-            Catalog[typeof(U)] = processor;
+            Catalog[type] = processor;
         }
     }
 }

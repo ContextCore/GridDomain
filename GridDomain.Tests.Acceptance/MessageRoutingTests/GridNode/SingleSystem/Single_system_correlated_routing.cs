@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
 
         protected override IRouterConfiguration CreateRoutes()
         {
-            return new CorrelatedRouting<TestMessage, TestHandler>(nameof(TestMessage.CorrelationId));
+            return new CorrelatedRouting<TestEvent, TestHandler>(nameof(TestEvent.CorrelationId));
         }
 
         [Test]

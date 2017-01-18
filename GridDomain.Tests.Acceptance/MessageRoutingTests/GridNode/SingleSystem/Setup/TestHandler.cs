@@ -4,7 +4,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
-    public class TestHandler : IHandler<TestMessage>
+    public class TestHandler : IHandler<TestEvent>
     {
         private readonly IActorRef _notifier;
         private int _handleCounter;
@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
             _notifier = notifier;
         }
 
-        public Task Handle(TestMessage msg)
+        public Task Handle(TestEvent msg)
         {
             msg.HandlerHashCode = GetHashCode();
             msg.HandleOrder = ++_handleCounter;

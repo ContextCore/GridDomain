@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem
 
         protected override IRouterConfiguration CreateRoutes()
         {
-            return new NotCorrelatedRouting<TestMessage, TestHandler>();
+            return new NotCorrelatedRouting<TestEvent, TestHandler>();
         }
 
         [Test]

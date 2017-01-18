@@ -9,6 +9,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
@@ -69,7 +70,8 @@ namespace GridDomain.Node.Configuration.Composition
                                         new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
                                         new ResolvedParameter<IPublisher>(),
                                         new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
-                                        new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName)
+                                        new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
+                                        new ResolvedParameter<IActorRef>(HandlersProcessActor.CustomHandlersProcessActorRegistrationName)
                                         ));
 
             container.RegisterInstance(aggregateRegistrationName, _factory);

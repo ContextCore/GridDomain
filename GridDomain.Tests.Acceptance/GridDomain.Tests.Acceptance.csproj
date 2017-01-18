@@ -268,8 +268,8 @@
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\GivenTestMessages.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\SingleActorSystemInfrastructure.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\TestHandler.cs" />
-    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\TestMessage.cs" />
-    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterMessage.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Setup\TestEvent.cs" />
+    <Compile Include="MessageRoutingTests\GridNode\Cluster\Setup\ClusterEvent.cs" />
     <Compile Include="MessageRoutingTests\ConsistentHashingRoutingTest.cs" />
     <Compile Include="MessageRoutingTests\GridNode\SingleSystem\Single_system_not_correlated_routing.cs" />
     <Compile Include="MessageRoutingTests\GridNode\ActorSystemTest.cs" />

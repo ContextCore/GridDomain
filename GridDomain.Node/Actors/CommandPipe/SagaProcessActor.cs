@@ -18,19 +18,28 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class SagaProcessActor : ReceiveActor
     {
         private readonly ISagaProcessorCatalog _catalog;
-        private readonly IActorRef _commandExecutionActor;
+        private IActorRef _commandExecutionActor;
 
-        public SagaProcessActor(ISagaProcessorCatalog catalog, IActorRef commandExecutionActor)
+        public SagaProcessActor(ISagaProcessorCatalog catalog)
         {
             _catalog = catalog;
-            _commandExecutionActor = commandExecutionActor;
-     
+
+            Receive<Initialize>(i =>
+            {
+                _commandExecutionActor = i.CommandExecutorActor;
+                Sender.Tell(Initialized.Instance);
+                Become(Working);
+            });
+        }
+
+        private void Working()
+        {
             Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
             {
                 c.Message.Select(e => ProcessSagas(e, c.Metadata))
-                         .ToChain()
-                         .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
-                         .PipeTo(Self,Sender);
+                    .ToChain()
+                    .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
+                    .PipeTo(Self, Sender);
             });
 
             Receive<SagasProcessComplete>(m =>
@@ -54,5 +63,24 @@ namespace GridDomain.Node.Actors.CommandPipe
                        .ContinueWith(t => t.Result.SelectMany(c => c));
         }
 
+    }
+
+    public class Initialize
+    {
+        public Initialize(IActorRef commandExecutorActor)
+        {
+            CommandExecutorActor = commandExecutorActor;
+        }
+
+        public IActorRef CommandExecutorActor { get; }
+    }
+
+    public class Initialized
+    {
+        private Initialized()
+        {
+        }
+
+        public static Initialized Instance { get; } = new Initialized();
     }
 }

@@ -5,7 +5,7 @@ using GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setu
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    internal class ClusterMessageHandlerActor : MessageHandlingActor<ClusterMessage, TestHandler>
+    internal class ClusterMessageHandlerActor : MessageHandlingActor<ClusterEvent, TestHandler>
     {
         public ClusterMessageHandlerActor(TestHandler handler, IPublisher publisher) : base(handler, publisher)
         {

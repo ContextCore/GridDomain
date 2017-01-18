@@ -345,6 +345,7 @@
     <Compile Include="DomainEventsJsonAkkaSerializer.cs" />
     <Compile Include="MessageWaiterFactory.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
+    <Compile Include="CommandPipeBuilder.cs" />
     <Compile Include="SerilogExtendedLogger.cs" />
     <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />

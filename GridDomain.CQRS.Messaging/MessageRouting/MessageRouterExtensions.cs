@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.Common;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
@@ -11,7 +12,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         //TODO: add version without correlation property
         public static Task RegisterHandler<TMessage, THandler>(this IMessagesRouter router,
-            Expression<Func<TMessage, Guid>>  correlationPropertyExpression = null) where THandler : IHandler<TMessage>
+            Expression<Func<TMessage, Guid>>  correlationPropertyExpression = null) where THandler : IHandler<TMessage> where TMessage : DomainEvent
         {
             return router.RegisterHandler<TMessage,THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
         }

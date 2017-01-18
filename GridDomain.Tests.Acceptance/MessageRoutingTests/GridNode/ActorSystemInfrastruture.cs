@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 
         protected virtual void InitContainer(UnityContainer container, IActorRef actor)
         {
-            container.RegisterType<IHandler<TestMessage>, TestHandler>(new InjectionConstructor(actor));
+            container.RegisterType<IHandler<TestEvent>, TestHandler>(new InjectionConstructor(actor));
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterInstance(Subscriber);

@@ -6,14 +6,14 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
    // [TestFixture]
     //[Ignore("Cluster is not supported for now")]
-    internal abstract class ClusterActorSystemTest : ActorSystemTest<ClusterMessage, ClusterActorSystemInfrastructure>
+    internal abstract class ClusterActorSystemTest : ActorSystemTest<ClusterEvent, ClusterActorSystemInfrastructure>
     {
         protected override ClusterActorSystemInfrastructure CreateInfrastructure()
         {
             return new ClusterActorSystemInfrastructure(new AutoTestAkkaConfiguration());
         }
 
-        protected override IGivenMessages<ClusterMessage> GivenCommands()
+        protected override IGivenMessages<ClusterEvent> GivenCommands()
         {
             return new GivenClusterTestMessages(100);
         }

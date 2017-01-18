@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster
     {
         protected override IRouterConfiguration CreateRoutes()
         {
-            return new NotCorrelatedRouting<ClusterMessage, TestHandler>();
+            return new NotCorrelatedRouting<ClusterEvent, TestHandler>();
         }
     }
 }

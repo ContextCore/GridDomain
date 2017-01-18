@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using Akka.TestKit.NUnit3;
@@ -39,23 +38,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<CustomHandlersProcessCompleted>();
         }
 
-        class EchoSleepActor : ReceiveActor
-        {
-          
-            public EchoSleepActor(TimeSpan sleepTime, IActorRef watcher)
-            {
-                Receive<IMessageMetadataEnvelop>(m =>
-                              Task.Delay(sleepTime)
-                                  .ContinueWith(t => new HandlerExecuted(m))
-                                  .PipeTo(Self,Sender));
-
-                Receive<HandlerExecuted>(m =>
-                {
-                    watcher.Tell(m);
-                    Sender.Tell(m);
-                });
-            }
-        }
+   
 
         [Test]
         public void All_async_handlers_performs_in_parralel()

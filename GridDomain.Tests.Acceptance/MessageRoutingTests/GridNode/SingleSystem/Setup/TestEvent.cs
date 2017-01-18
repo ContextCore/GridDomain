@@ -1,9 +1,10 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.Setup
 {
-    public class TestMessage : ICommand
+    public class TestEvent : DomainEvent
     {
         public Guid CorrelationId { get; set; }
         public Guid ProcessedBy { get; }
@@ -11,7 +12,10 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.SingleSystem.
 
         public int HandleOrder { get; set; }
         public int ExecuteOrder { get; set; }
-        public Guid Id { get; } = Guid.NewGuid();
-        public Guid SagaId { get; }
+        public Guid Id => SourceId;
+
+        public TestEvent() : base(Guid.NewGuid())
+        {
+        }
     }
 }

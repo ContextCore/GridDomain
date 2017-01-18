@@ -16,6 +16,8 @@ namespace GridDomain.Node.Actors.CommandPipe
     /// </summary>
     public class HandlersProcessActor : ReceiveActor
     {
+        public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
+
         private readonly ICustomHandlersProcessorCatalog _handlersCatalog;
         private readonly IActorRef _sagasProcessActor;
 
@@ -57,5 +59,6 @@ namespace GridDomain.Node.Actors.CommandPipe
                                          })
                                   .ToChain();
         }
+
     }
 }

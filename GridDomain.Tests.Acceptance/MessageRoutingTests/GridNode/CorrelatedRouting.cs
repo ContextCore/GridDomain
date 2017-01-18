@@ -1,10 +1,11 @@
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode
 {
     internal class CorrelatedRouting<TMsg, THandler> : IRouterConfiguration
-        where THandler : IHandler<TMsg>
+        where THandler : IHandler<TMsg> where TMsg : DomainEvent
     {
         private readonly string _correlationPropertyName;
 

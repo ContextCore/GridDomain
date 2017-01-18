@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
 {
-    internal class GivenClusterTestMessages : IGivenMessages<ClusterMessage>
+    internal class GivenClusterTestMessages : IGivenMessages<ClusterEvent>
     {
         private readonly int _number;
 
@@ -12,12 +12,12 @@ namespace GridDomain.Tests.Acceptance.MessageRoutingTests.GridNode.Cluster.Setup
             _number = number;
         }
 
-        public ClusterMessage[] GetCommands()
+        public ClusterEvent[] GetCommands()
         {
             var guid = Guid.NewGuid();
             var commands =
                 Enumerable.Range(0, _number)
-                    .Select(n => new ClusterMessage {CorrelationId = guid, ExecuteOrder = n})
+                    .Select(n => new ClusterEvent {CorrelationId = guid, ExecuteOrder = n})
                     .ToArray();
 
             return commands;

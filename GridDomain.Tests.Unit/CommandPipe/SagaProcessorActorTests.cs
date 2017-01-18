@@ -18,51 +18,17 @@ namespace GridDomain.Tests.Unit.CommandPipe
     class SagaProcessorActorTests : TestKit
     {
 
-        class TestCommand : Command
-        {
-            public TestCommand(DomainEvent fromEvent)
-            {
-                FromEvent = fromEvent;
-            }
-
-            public DomainEvent FromEvent { get; }
-        }
-
-        class TestSagaActor : ReceiveActor
-        {
-
-            public TestSagaActor(IActorRef watcher, 
-                                 Func<DomainEvent, ICommand[]> commandFactory = null,
-                                 TimeSpan? sleepTime = null)
-            {
-                var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);
-                commandFactory = commandFactory ?? (e => new ICommand[] { new TestCommand(e)});
-
-                Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
-                {
-                    Task.Delay(sleep)
-                        .ContinueWith(t => new SagaProcessCompleted(commandFactory(m.Message),m.Metadata))
-                        .PipeTo(Self, Sender);
-                });
-                    
-
-                Receive<SagaProcessCompleted>(m =>
-                {
-                    watcher.Tell(m);
-                    Sender.Tell(m);
-                });
-            }
-        }
-
-
         [Test]
-        public void SagaProcessor_routes_events_by_type()
+        public async Task SagaProcessor_routes_events_by_type()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
+
             var catalog = new SagaProcessorCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog, TestActor)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
+
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[] { new SampleAggregateCreatedEvent("1", Guid.NewGuid()) },
                                                                 MessageMetadata.Empty());
@@ -78,13 +44,15 @@ namespace GridDomain.Tests.Unit.CommandPipe
         }
 
         [Test]
-        public void SagaProcessor_does_not_support_domain_event_inheritance()
+        public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
             var catalog = new SagaProcessorCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog, TestActor)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
+
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new [] { new DomainEvent(Guid.NewGuid())  },
                                                                 MessageMetadata.Empty());
@@ -96,7 +64,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
 
         [Test]
-        public void All_Sagas_performs_in_parralel_and_results_from_all_sagas_are_gathered()
+        public async Task All_Sagas_performs_in_parralel_and_results_from_all_sagas_are_gathered()
         {
             var testSagaActorA = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
 
@@ -116,7 +84,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<SampleAggregateChangedEvent>(new Processor(testSagaActorB));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(testSagaActorÑ));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog, TestActor)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[]
                                                                 {

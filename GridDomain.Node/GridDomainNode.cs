@@ -81,7 +81,7 @@ namespace GridDomain.Node
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
-            _messageRouting = new CompositeRouteMap(messageRouting, new TransportMessageDumpMap());
+            _messageRouting = new CompositeRouteMap(messageRouting);
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
         }
 

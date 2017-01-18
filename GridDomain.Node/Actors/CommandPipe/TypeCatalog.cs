@@ -7,7 +7,12 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         protected readonly IDictionary<Type, TData> Catalog = new Dictionary<Type, TData>();
 
-        public abstract void Add<U>(Processor processor) where U : TMessage;
+        public abstract void Add(Type type, Processor processor);
+
+        public void Add<U>(Processor processor) where U : TMessage
+        {
+            Add(typeof(U), processor);
+        }
 
         protected TData GetProcessor(object message)
         {
