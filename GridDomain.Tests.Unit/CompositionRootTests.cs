@@ -15,7 +15,6 @@ namespace GridDomain.Tests.Unit
     [TestFixture]
     public abstract class CompositionRootTests
     {
-       // [TestCase(TransportMode.Cluster)]
         [TestCase(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
@@ -24,7 +23,6 @@ namespace GridDomain.Tests.Unit
         }
 
         
-      //  [TestCase(TransportMode.Cluster)]
         [TestCase(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
@@ -79,8 +77,9 @@ namespace GridDomain.Tests.Unit
             var builder = new StringBuilder();
             foreach (var error in errors.Take(5))
             {
-                builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name}");
+                builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name} : {error.Value}");
             }
+
             Assert.Fail("Can not resolve registrations: \r\n " + builder);
         }
 

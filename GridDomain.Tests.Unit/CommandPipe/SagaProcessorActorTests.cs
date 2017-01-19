@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             sagaProcessActor.Tell(msg);
 
             //TestActor from testSagaActor processor receives message after work is done
-            ExpectMsg<SagaProcessCompleted>();
+            ExpectMsg<SagaTransited>();
             //SagaProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<SagasProcessComplete>();
             //SagaProcessActor should send next step - command execution actor that new commands should be executed
@@ -59,7 +59,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             sagaProcessActor.Tell(msg);
 
-            ExpectNoMsg();
+            //saga processor did not run due to error, but we received processing complete message
+            ExpectMsg<SagasProcessComplete>();
         }
 
 
@@ -97,9 +98,9 @@ namespace GridDomain.Tests.Unit.CommandPipe
             sagaProcessActor.Tell(msg);
 
             //first we received complete message from all saga actors in undetermined sequence
-            ExpectMsg<SagaProcessCompleted>();
-            ExpectMsg<SagaProcessCompleted>();
-            ExpectMsg<SagaProcessCompleted>();
+            ExpectMsg<SagaTransited>();
+            ExpectMsg<SagaTransited>();
+            ExpectMsg<SagaTransited>();
 
             //after all sagas complets, SagaProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<SagasProcessComplete>();

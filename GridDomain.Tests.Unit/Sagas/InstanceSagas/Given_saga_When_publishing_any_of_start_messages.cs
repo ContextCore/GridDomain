@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             GridNode.NewDebugWaiter(Timeout)
                     .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                     .Create()
-                    .Publish(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId))
+                    .SendToSaga(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId))
                     .Wait();
 
             _sagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(SagaId);

@@ -1,5 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.DI.Core;
+using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -8,6 +11,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
@@ -22,9 +26,9 @@ namespace GridDomain.Node
         private readonly TimeSpan _defaultCommandExecutionTimeout;
 
         public GridNodeContainerConfiguration(ActorSystem actorSystem,
-                                             TransportMode transportMode,
-                                             IQuartzConfig config,
-                                             TimeSpan defaultCommandExecutionTimeout)
+                                              TransportMode transportMode,
+                                              IQuartzConfig config,
+                                              TimeSpan defaultCommandExecutionTimeout)
         {
             _config = config;
             _defaultCommandExecutionTimeout = defaultCommandExecutionTimeout;
@@ -64,9 +68,27 @@ namespace GridDomain.Node
 
             container.RegisterInstance(_actorSystem);
 
+            _actorSystem.AddDependencyResolver(new UnityDependencyResolver(container, _actorSystem));
+            var persistentScheduler = _actorSystem.ActorOf(_actorSystem.DI().Props<SchedulingActor>(), nameof(SchedulingActor));
+            container.RegisterInstance(SchedulingActor.RegistrationName, persistentScheduler);
+
             var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
+
+
+            var executor = ConfigureCommandPipe(_actorSystem, transport, container, _defaultCommandExecutionTimeout).Result;
+            container.RegisterInstance(executor);
         }
+
+        private async Task<ICommandExecutor> ConfigureCommandPipe(ActorSystem actorSystem, IActorTransport actorTransport, IUnityContainer unityContainer, TimeSpan defaultTimeout)
+        {
+            var pipeBuilder = new CommandPipeBuilder(actorSystem, unityContainer);
+            var commandExecutorActor = await pipeBuilder.Init();
+            unityContainer.RegisterInstance(pipeBuilder);
+
+            return new AkkaCommandPipeExecutor(actorSystem, actorTransport, commandExecutorActor, defaultTimeout);
+        }
+
 
         private void RegisterScheduler(IUnityContainer container)
         {

@@ -34,12 +34,14 @@ namespace GridDomain.Node.Actors.CommandPipe
 
         private void Working()
         {
+            //results of one command execution
             Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
             {
+                var sender = Sender;
                 c.Message.Select(e => ProcessSagas(e, c.Metadata))
-                    .ToChain()
-                    .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
-                    .PipeTo(Self, Sender);
+                         .ToChain()
+                         .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
+                         .PipeTo(Self, sender);
             });
 
             Receive<SagasProcessComplete>(m =>
@@ -58,7 +60,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 
             var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
 
-            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<SagaProcessCompleted>(messageMetadataEnvelop)
+            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<SagaTransited>(messageMetadataEnvelop)
                                                .ContinueWith(t => (IEnumerable<ICommand>)t.Result.ProducedCommands)))
                        .ContinueWith(t => t.Result.SelectMany(c => c));
         }

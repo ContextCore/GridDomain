@@ -25,9 +25,9 @@ namespace GridDomain.Node
         private readonly SagaProcessorCatalog _sagaCatalog = new SagaProcessorCatalog();
         private readonly CustomHandlersProcessCatalog _handlersCatalog = new CustomHandlersProcessCatalog();
         private readonly ActorSystem _system;
-        private IActorRef _sagasProcessActor;
-        private IActorRef _handlersProcessActor;
-        private IActorRef _commandExecutorActor;
+        public IActorRef SagasProcessActor { get; private set; }
+        public IActorRef HandlersProcessActor { get; private set; }
+        public IActorRef CommandExecutorActor { get; private set; }
         private readonly IUnityContainer _container;
 
         public CommandPipeBuilder(ActorSystem system, IUnityContainer container)
@@ -42,14 +42,17 @@ namespace GridDomain.Node
         /// <returns>Reference to pipe actor for command execution</returns>
         public async Task<IActorRef> Init()
         {
-            _sagasProcessActor = _system.ActorOf(Props.Create(() => new SagaProcessActor(_sagaCatalog)));
-            _handlersProcessActor = _system.ActorOf(Props.Create(() => new HandlersProcessActor(_handlersCatalog,_sagasProcessActor)));
-            _commandExecutorActor = _system.ActorOf(Props.Create(() => new CommandExecutionActor(_aggregatesCatalog)));
+            SagasProcessActor = _system.ActorOf(Props.Create(() => new SagaProcessActor(_sagaCatalog)));
 
-            _container.RegisterInstance(HandlersProcessActor.CustomHandlersProcessActorRegistrationName, _handlersProcessActor);
+            HandlersProcessActor =
+                _system.ActorOf(Props.Create(() => new HandlersProcessActor(_handlersCatalog, SagasProcessActor)));
 
-            await _sagasProcessActor.Ask<Initialized>(new Initialize(_commandExecutorActor));
-            return _commandExecutorActor;
+            CommandExecutorActor = _system.ActorOf(Props.Create(() => new CommandExecutionActor(_aggregatesCatalog)));
+
+            _container.RegisterInstance(Actors.CommandPipe.HandlersProcessActor.CustomHandlersProcessActorRegistrationName, HandlersProcessActor);
+
+            await SagasProcessActor.Ask<Initialized>(new Initialize(CommandExecutorActor));
+            return CommandExecutorActor;
         }
 
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)

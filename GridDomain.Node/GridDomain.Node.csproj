@@ -234,7 +234,7 @@
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\CannotGetSagaFromMessage.cs" />
-    <Compile Include="Actors\CommandPipe\SagaProcessCompleted.cs" />
+    <Compile Include="Actors\CommandPipe\SagaTransited.cs" />
     <Compile Include="Actors\HandlerExecuted.cs" />
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExeption.cs" />
     <Compile Include="Actors\CommandPipe\CommandExecutionActor.cs" />

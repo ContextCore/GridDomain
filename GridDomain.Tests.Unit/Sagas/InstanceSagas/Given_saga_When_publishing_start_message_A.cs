@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             GridNode.NewDebugWaiter()
                     .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                     .Create()
-                    .Publish(StartMessage)
+                    .SendToSaga(StartMessage)
                     .Wait();
 
             _sagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(StartMessage.SagaId);

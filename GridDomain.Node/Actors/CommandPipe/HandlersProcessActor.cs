@@ -10,7 +10,7 @@ using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 namespace GridDomain.Node.Actors.CommandPipe
 {
     /// <summary>
-    /// Synhronize message handlers work for produced domain events
+    /// Synhronize message handlers work for domain events produced by command
     /// If message process policy is set to synchronized, will process such events one after one
     /// Will process all other messages in parallel
     /// </summary>

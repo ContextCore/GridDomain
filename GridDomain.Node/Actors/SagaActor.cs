@@ -133,7 +133,7 @@ namespace GridDomain.Node.Actors
             var processorType = _producer.Descriptor.StateMachineType;
 
             _log.Error(exception, "Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
-            var fault = Fault.NewGeneric(message, exception, processorType, Id);
+            var fault = Fault.NewGeneric(message, exception, Id, processorType);
 
             var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
 

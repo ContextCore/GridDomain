@@ -56,6 +56,7 @@ namespace GridDomain.Node
         public TimeSpan DefaultTimeout { get; }
         private IMessageWaiterFactory _waiterFactory;
         private ICommandExecutor _commandExecutor;
+        internal CommandPipeBuilder Pipe;
 
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
@@ -106,14 +107,13 @@ namespace GridDomain.Node
 
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System.RegisterOnTermination(OnSystemTermination);
-            System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            await ConfigureContainer(Container, _quartzConfig, System);
+            ConfigureContainer(Container, _quartzConfig, System);
+
+            Pipe = Container.Resolve<CommandPipeBuilder>();
+            await _messageRouting.Register(Pipe);
 
             Transport = Container.Resolve<IActorTransport>();
-
-            var executor = await ConfigureCommandPipe();
-            Container.RegisterInstance<ICommandExecutor>(executor);
 
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
@@ -149,14 +149,7 @@ namespace GridDomain.Node
             _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
-        private async Task<ICommandExecutor> ConfigureCommandPipe()
-        {
-            var pipeBuilder = new CommandPipeBuilder(System, Container);
-            var commandExecutorActor = await pipeBuilder.Init();
-            await _messageRouting.Register(pipeBuilder);
 
-            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor,DefaultTimeout);
-        }
 
         private void RegisterCustomAggregateSnapshots()
         {
@@ -173,21 +166,19 @@ namespace GridDomain.Node
             }
         }
 
-        private async Task ConfigureContainer(IUnityContainer unityContainer, 
-                                        IQuartzConfig quartzConfig, 
+
+        private void ConfigureContainer(IUnityContainer unityContainer,
+                                        IQuartzConfig quartzConfig,
                                         ActorSystem actorSystem)
         {
+
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        _transportMode,
                                                                        quartzConfig,
                                                                        DefaultTimeout));
 
             unityContainer.Register(_configuration);
-
-            var persistentScheduler = System.ActorOf(System.DI().Props<SchedulingActor>(),nameof(SchedulingActor));
-            unityContainer.RegisterInstance<IActorRef>(SchedulingActor.RegistrationName, persistentScheduler);
         }
-
 
         public async Task Stop()
         {

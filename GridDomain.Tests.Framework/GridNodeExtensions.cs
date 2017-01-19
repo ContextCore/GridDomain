@@ -8,8 +8,7 @@ namespace GridDomain.Tests.Framework
     {
         public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
-            return new DebugLocalWaiter(node.Transport, node.System, node.Transport,timeout ??  node.DefaultTimeout);
-
+            return new DebugLocalWaiter(node.Pipe, node.System, node.Transport,timeout ??  node.DefaultTimeout);
         }
     }
 }

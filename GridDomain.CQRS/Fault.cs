@@ -31,7 +31,7 @@ namespace GridDomain.CQRS
         public object Message { get; }
         public Type Processor { get; }
 
-        public static IFault NewGeneric(object msg, Exception exception, Type processorType, Guid sagaId)
+        public static IFault NewGeneric(object msg, Exception exception, Guid sagaId, Type processorType)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(Fault).GetMethod(nameof(New));

@@ -7,6 +7,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
@@ -48,7 +49,10 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             Thread.Sleep(100);
             _coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid(), BusinessDateTime.UtcNow,sagaId);
 
-            GridNode.Transport.Publish(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
+            GridNode.NewDebugWaiter()
+                    .Expect<object>()
+                    .Create()
+                    .SendToSaga(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
 
             Thread.Sleep(1000);
             _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
@@ -57,7 +61,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [Then]
         public void Saga_should_be_in_correct_state_after_fault_handling()
         {
-            Assert.AreEqual(nameof(SoftwareProgrammingSaga.MakingCoffee), _sagaDataAggregate.Data.CurrentStateName);
+            Assert.AreEqual(nameof(SoftwareProgrammingSaga.Coding), _sagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]

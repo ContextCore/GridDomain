@@ -21,12 +21,12 @@ namespace GridDomain.Tests.Unit.CommandPipe
             Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
             {
                 Task.Delay(sleep)
-                    .ContinueWith(t => new SagaProcessCompleted(commandFactory(m.Message), m.Metadata))
+                    .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata))
                     .PipeTo(Self, Sender);
             });
 
 
-            Receive<SagaProcessCompleted>(m =>
+            Receive<SagaTransited>(m =>
             {
                 watcher.Tell(m);
                 Sender.Tell(m);

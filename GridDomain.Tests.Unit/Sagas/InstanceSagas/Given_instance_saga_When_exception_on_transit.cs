@@ -1,8 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
@@ -14,7 +16,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         private IFault<CoffeMakeFailedEvent> _fault;
 
         [OneTimeSetUp]
-        public void When_saga_receives_a_message_that_case_saga_exception()
+        public async Task When_saga_receives_a_message_that_case_saga_exception()
         {
             var sagaId = Guid.NewGuid();
             //prepare initial saga state
@@ -25,13 +27,12 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
             SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
-            var waiter = GridNode.NewWaiter(TimeSpan.FromSeconds(1000))
-                                 .Expect<IFault<CoffeMakeFailedEvent>>()
-                                 .Create();
+            var results = await GridNode.NewDebugWaiter()
+                                        .Expect<IFault<CoffeMakeFailedEvent>>()
+                                        .Create()
+                                        .SendToSaga(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId), sagaId);
 
-            GridNode.Transport.Publish(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId).CloneWithSaga(sagaId));
-
-            _fault = waiter.Result.Message<IFault<CoffeMakeFailedEvent>>();
+            _fault = results.Message<IFault<CoffeMakeFailedEvent>>();
         }
 
         [Test]

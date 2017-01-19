@@ -34,6 +34,8 @@ namespace GridDomain.Node.Actors
         private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IActorRef _schedulerActorRef;
         private readonly IActorRef _customHandlersActor;
+        private readonly ProcessEntry _domainEventProcessEntry;
+        private readonly ProcessEntry _domainEventProcessFailEntry;
 
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
@@ -52,7 +54,13 @@ namespace GridDomain.Node.Actors
             _customHandlersActor = customHandlersActor;
             _schedulerActorRef = schedulerActorRef;
             _handler = handler;
+            _domainEventProcessEntry = new ProcessEntry(Self.Path.Name,
+                                                        PublishingEvent,
+                                                        CommandExecutionCreatedAnEvent);
 
+            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name,
+                                                            CreatedFault,
+                                                            CommandRaisedAnError);
 
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
             {
@@ -75,22 +83,20 @@ namespace GridDomain.Node.Actors
 
                 BecomeStacked(WaitingForCommandProcess);
             });
+          
         }
 
         private void ProcessFault(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
         {
-            var fault = Fault.NewGeneric(cmd, ex, typeof(TAggregate), cmd.SagaId);
-            
-            var metadata = messageMetadata.CreateChild(cmd.Id,
-                                           new ProcessEntry(Self.Path.Name,
-                                                            CreatedFault,
-                                                            CommandRaisedAnError));
+            var fault = Fault.NewGeneric(cmd, ex, cmd.SagaId, typeof(TAggregate));
+
+            var metadata = messageMetadata.CreateChild(cmd.Id, _domainEventProcessFailEntry);
 
             Publisher.Publish(fault, metadata);
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
         }
 
-        private void ProcessAggregateEvents(ICommand command, IMessageMetadata metadata)
+        private void ProcessAggregateEvents(ICommand command, IMessageMetadata commandMetadata)
         {
             var events = GatherEvents(command);
             int totalEvents = events.Length;
@@ -99,8 +105,13 @@ namespace GridDomain.Node.Actors
             PersistAll(events, e =>
             {
                 //should save snapshot only after all messages persisted as state was already modified by all of them
-                if(++persistedEvents == totalEvents)
-                    OnCommandEventsPersisted(events, metadata);
+                if (++persistedEvents == totalEvents)
+                {
+                    var eventsMetadata  = commandMetadata.CreateChild(e.SourceId,
+                                                                      _domainEventProcessEntry);
+
+                    OnCommandEventsPersisted(events, eventsMetadata);
+                }
 
                 NotifyWatchers(new Persisted(e));
             });
@@ -118,9 +129,7 @@ namespace GridDomain.Node.Actors
                         foreach (var e in processComplete.DomainEvents)
                         {
                             var eventMetadata = processComplete.Metadata.CreateChild(e.SourceId,
-                                                                     new ProcessEntry(Self.Path.Name,
-                                                                         PublishingEvent,
-                                                                         CommandExecutionCreatedAnEvent));
+                                                                                      _domainEventProcessEntry);
 
                             //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
                             //how to pass aggregate type in this case? 
@@ -152,13 +161,14 @@ namespace GridDomain.Node.Actors
             });
         }
 
-        private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata metadata)
+        private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata eventCommonMetadata)
         {
             TrySaveSnapshot(events);
-            var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, metadata);
+            var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, eventCommonMetadata);
 
-            foreach(var evt in events)
-                Publisher.Publish(evt, metadata);
+            foreach (var evt in events)
+                Publisher.Publish(evt, eventCommonMetadata);
+            
 
             _customHandlersActor.Ask<CustomHandlersProcessCompleted>(envelop)
                                 .PipeTo(Self);

@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             wait.Wait();
 
-            var sagaActorRef = LookupInstanceSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaId);
+            var sagaActorRef = LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaId);
 
             sagaActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
 

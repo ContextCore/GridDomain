@@ -10,7 +10,7 @@ using GridDomain.Logging;
 
 namespace GridDomain.Node.Actors
 {
-    public class MessageHandlingActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage>
+    public class MessageHandlingActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage> where TMessage : class
     {
         private readonly ILogger _log = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
@@ -21,9 +21,11 @@ namespace GridDomain.Node.Actors
             Publisher = publisher;
             _monitor = new ActorMonitor(Context, typeof(THandler).Name);
 
-            Receive<IMessageMetadataEnvelop<TMessage>>(msg =>
+            //to avoid creation of generic types in senders
+            Receive<IMessageMetadataEnvelop>(msg =>
             {
                 _monitor.IncrementMessagesReceived();
+                var message = (TMessage)msg.Message;
 
                 _log.Trace("Handler actor got message: {@Message}", msg);
                 var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
@@ -31,11 +33,11 @@ namespace GridDomain.Node.Actors
                 Func<Task> handlerExecute;
                 if (handlerWithMetadata != null)
                 {
-                    handlerExecute = () => handlerWithMetadata.Handle(msg.Message, msg.Metadata);
+                    handlerExecute = () => handlerWithMetadata.Handle(message, msg.Metadata);
                 }
                 else
                 {
-                    handlerExecute = () => handler.Handle(msg.Message);
+                    handlerExecute = () => handler.Handle(message);
                 }
 
                 try
@@ -48,10 +50,12 @@ namespace GridDomain.Node.Actors
                 catch (Exception ex)
                 {
                     //for case when handler cannot create its task
-                    PublishFault(msg, ex);
+                    Self.Tell(new HandlerExecuted(msg, ex));
                 }
                 
-            });
+                
+            }, m => m.Message is TMessage);
+
             Receive<HandlerExecuted>(res =>
             {
                 Sender.Tell(res);
@@ -72,7 +76,7 @@ namespace GridDomain.Node.Actors
 
             var metadata = msg.Metadata.CreateChild(Guid.Empty, processEntry);
 
-            var fault = Fault.New(msg.Message, ex, GetSagaId(msg.Message), typeof(THandler));
+            var fault = Fault.NewGeneric(msg.Message, ex, GetSagaId(msg.Message), typeof(THandler));
 
             Publisher.Publish(fault, metadata);
         }
@@ -83,8 +87,8 @@ namespace GridDomain.Node.Actors
             Guid? sagaId = null;
 
             msg.Match()
-                .With<ISourcedEvent>(e => sagaId = e.SagaId)
-                .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
+               .With<ISourcedEvent>(e => sagaId = e.SagaId)
+               .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
 
             if (sagaId.HasValue)
                 return sagaId.Value;

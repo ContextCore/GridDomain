@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -24,10 +25,10 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         public async Task When_dispatch_command_than_command_should_have_right_sagaId()
         {
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var waitResults = await GridNode.NewDebugWaiter()
-                                            .Expect<MakeCoffeCommand>()
+            var waitResults = await GridNode.NewDebugWaiter(TimeSpan.FromHours(1))
+                                            .Expect<IMessageMetadataEnvelop>()
                                             .Create()
-                                            .Publish(gotTiredEvent);
+                                            .SendToSaga(gotTiredEvent);
 
             var expectedCommand = waitResults.Message<MakeCoffeCommand>();
 
@@ -39,11 +40,12 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         {
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
 
-            var expectedCreatedEvent =
-                         (await GridNode.NewDebugWaiter()
-                                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                                        .Create()
-                                        .Publish(gotTiredEvent)).Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
+            var waitResults = await GridNode.NewDebugWaiter()
+                                            .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                                            .Create()
+                                            .SendToSaga(gotTiredEvent);
+
+            var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 
             Assert.AreEqual(gotTiredEvent.PersonId, expectedCreatedEvent.SagaId);
         }

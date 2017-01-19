@@ -35,6 +35,7 @@ namespace GridDomain.Node.Actors
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = (AggregateBase)aggregateConstructor.Build(typeof(T), Id, null);
             Monitor = new ActorMonitor(Context, typeof(T).Name);
+
             Command<GracefullShutdownRequest>(req =>
             {
                 Monitor.IncrementMessagesReceived();

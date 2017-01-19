@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                              (await GridNode.NewDebugWaiter(TimeSpan.FromHours(10))
                                             .Expect<MakeCoffeCommand>()
                                             .Create()
-                                            .Publish(domainEvent)).Message<MakeCoffeCommand>();
+                                            .SendToSaga(domainEvent)).Message<MakeCoffeCommand>();
 
             Assert.AreEqual(sagaId, expectedCommand.SagaId);
         }
@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                             (await GridNode.NewDebugWaiter()
                                            .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                            .Create()
-                                           .Publish(domainEvent)).Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
+                                           .SendToSaga(domainEvent)).Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 
             Assert.AreEqual(sagaId, expectedCreatedEvent.SagaId);
         }

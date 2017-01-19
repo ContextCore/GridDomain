@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                 c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
                 c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,
-                    SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()
+                                         SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()
                 );
         }
 

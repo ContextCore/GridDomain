@@ -341,7 +341,6 @@
     <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
-    <Compile Include="Given_Node_When_Start_TrasportRegistrations_Test.cs" />
     <Compile Include="AssertEx.cs" />
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
     <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
@@ -369,7 +368,6 @@
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_handling_command_faults.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_messages.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_with_custom_message_mappings_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />

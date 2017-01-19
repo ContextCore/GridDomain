@@ -29,6 +29,5 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             //will pick right command by correlation Id
             Assert.AreEqual(commandA.AggregateId, res.Message<AggregateChangedEventNotification>().AggregateId);
         }
-
     }
 }

@@ -72,28 +72,18 @@ namespace GridDomain.Tests.Framework
                                   .Result;
         }
 
-        protected IActorRef LookupInstanceSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
+        protected IActorRef LookupSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
         {
             var sagaName = AggregateActorName.New<SagaStateAggregate<TData>>(id).Name;
-            var sagaType = typeof(ISagaInstance<TSaga,TData>).BeautyName();
+            var sagaType = typeof(TSaga).BeautyName();
 
             return GetSagaActor(sagaType, sagaName);
         }
 
         private IActorRef GetSagaActor(string sagaType, string sagaName)
         {
-            return ResolveActor($"akka://LocalSystem/user/SagaHub_{sagaType}/{sagaName}");
+            return ResolveActor($"akka://LocalSystem/user/{sagaType}/{sagaName}");
         }
-
-        protected IActorRef LookupStateSagaActor<TSaga, TData>(Guid id) where TData : IAggregate
-                                                                        where TSaga: ISagaInstance
-        {
-            var sagaName = AggregateActorName.New<TData>(id).Name;
-            var sagaType = typeof(TSaga).BeautyName();
-
-            return GetSagaActor(sagaType, sagaName);
-        }
-
 
         protected override void AfterAll()
         {

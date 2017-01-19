@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -17,25 +19,24 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         private SagaStateAggregate<SoftwareProgrammingSagaData> SagaData;
 
         [OneTimeSetUp]
-        public void When_publishing_start_message()
+        public async Task When_publishing_start_message()
         {
-           var waiter = GridNode.NewDebugWaiter(Timeout);
+            var anyMessagePublisher = GridNode.NewDebugWaiter(Timeout)
+                                              .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                                              .Create();
 
-           secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId);
+            await anyMessagePublisher.SendToSaga(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId));
 
+            LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaId)
+                             .Tell(NotifyOnPersistenceEvents.Instance);
 
-            waiter.Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                  .Create()
-                  .Publish(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId))
-                  .Wait();
+            secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId);
 
-            LookupInstanceSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaId)
-                                                        .Tell(NotifyOnPersistenceEvents.Instance);
+            anyMessagePublisher.SendToSaga(secondStartMessage);
 
-            Publisher.Publish(secondStartMessage);
             FishForMessage<Persisted>(m => true );
 
-           SagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(SagaId);
+            SagaData = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(SagaId);
         }
 
         [Then]

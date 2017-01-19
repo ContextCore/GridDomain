@@ -147,7 +147,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             actor.Tell(msg);
 
-            ExpectNoMsg();
+            //processor did not run, but we received processing complete message
+            ExpectMsg<CustomHandlersProcessCompleted>();
         }
     }
 }

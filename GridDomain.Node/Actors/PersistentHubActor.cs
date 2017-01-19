@@ -55,6 +55,15 @@ namespace GridDomain.Node.Actors
         {
         }
 
+        protected override bool AroundReceive(Receive receive, object message)
+        {
+            return base.AroundReceive(receive, message);
+        }
+
+        protected override void Unhandled(object message)
+        {
+            base.Unhandled(message);
+        }
 
         protected override void OnReceive(object msg)
         {

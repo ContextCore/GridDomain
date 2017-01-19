@@ -71,9 +71,9 @@ namespace GridDomain.Scheduling.Integration
                                                                       EventRaiseTimeCame));
 
             var successMetadata = eventMetadata.CreateChild(Guid.NewGuid(),
-                                            new ProcessEntry(nameof(QuartzJob), 
-                                                             "Publishing success notification",
-                                                             "Job execution completed succesfully. Message published."));
+                                                            new ProcessEntry(nameof(QuartzJob), 
+                                                                             "Publishing success notification",
+                                                                             "Job execution completed succesfully. Message published."));
 
             var jobSucceeded = new JobSucceeded(jobKey.Name,
                                                 jobKey.Group,
