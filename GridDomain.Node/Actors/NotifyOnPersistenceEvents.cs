@@ -3,11 +3,6 @@ using Akka.Actor;
 
 namespace GridDomain.Node.Actors
 {
-    public interface IPersistenceEntityActorMaintainanceMessage
-    {
-        Guid Id { get; }
-    }
-
     public class NotifyOnPersistenceEvents : IPersistenceEntityActorMaintainanceMessage
     {
         public Guid Id { get; }

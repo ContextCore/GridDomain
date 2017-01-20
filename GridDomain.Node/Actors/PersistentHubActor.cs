@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors
     /// <summary>
     /// Any child should be terminated by ShutdownRequest message
     /// </summary>
-    public abstract class PersistentHubActor: UntypedActor
+    public abstract class PersistentHubActor: ReceiveActor
     {
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
@@ -28,13 +28,47 @@ namespace GridDomain.Node.Actors
         protected abstract Guid GetChildActorId(object message);
         protected abstract Type GetChildActorType(object message);
 
-        public PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
+        protected PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {
             _recycleConfiguration = recycleConfiguration;
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
+
+            Receive<ClearChilds>(m => Clear());
+            Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
+            Receive<IMessageMetadataEnvelop>(messageWitMetadata =>
+            {
+                ChildInfo knownChild;
+
+                messageWitMetadata.Metadata.History.Add(new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded"));
+
+                var childId = GetChildActorId(messageWitMetadata.Message);
+                var name = GetChildActorName(messageWitMetadata.Message);
+
+                bool childWasCreated = false;
+                if (!Children.TryGetValue(childId, out knownChild))
+                {
+                    childWasCreated = true;
+                    knownChild = CreateChild(messageWitMetadata, name);
+                    Children[childId] = knownChild;
+                }
+
+                knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
+                knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
+                SendMessageToChild(knownChild, messageWitMetadata);
+
+                Logger.Trace("Message {@msg} sent to {isknown} child {id}",
+                              messageWitMetadata,
+                              childWasCreated ? "known" : "new",
+                              childId);
+            });
         }
 
-        
+        protected virtual void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
+        {
+            knownChild.Ref.Tell(message);
+        }
+
+
         private void Clear()
         {
            var now = BusinessDateTime.UtcNow;
@@ -57,6 +91,8 @@ namespace GridDomain.Node.Actors
 
         protected override bool AroundReceive(Receive receive, object message)
         {
+            _monitor.IncrementMessagesReceived();
+            Logger.Trace("{ActorHub} pre-receive {@message}", Self.Path, message);
             return base.AroundReceive(receive, message);
         }
 
@@ -65,44 +101,14 @@ namespace GridDomain.Node.Actors
             base.Unhandled(message);
         }
 
-        protected override void OnReceive(object msg)
+        protected ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
         {
-            _monitor.IncrementMessagesReceived();
-            Logger.Trace("{ActorHub} received {@message}", Self.Path, msg);
-
-            msg.Match()
-               .With<ClearChilds>(m => Clear())
-               .With<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)))
-               .With<IMessageMetadataEnvelop>(messageWitMetadata =>
-                { 
-                    ChildInfo knownChild;
-
-                    messageWitMetadata.Metadata.History.Add(new ProcessEntry(Self.Path.Name,"Forwarding to child","All messages should be forwarded"));
-
-                    var childId = GetChildActorId(messageWitMetadata.Message);
-                    var name = GetChildActorName(messageWitMetadata.Message);
-
-                    bool childWasCreated = false;
-                    if (!Children.TryGetValue(childId, out knownChild))
-                    {
-                        childWasCreated = true;
-                        var childActorType = GetChildActorType(messageWitMetadata.Message);
-                        var props = Context.DI().Props(childActorType);
-                        var childActorRef = Context.ActorOf(props, name);
-                        knownChild = new ChildInfo(childActorRef);
-                        Children[childId] = knownChild;
-                    }
-
-                    knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
-                    knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
-                    knownChild.Ref.Tell(messageWitMetadata);
-
-                    Logger.Trace("Message {@msg} sent to {isknown} child {id}",
-                                  msg,
-                                  childWasCreated ? "known" : "unknown",
-                                  childId);
-                });
+            var childActorType = GetChildActorType(messageWitMetadata.Message);
+            var props = Context.DI().Props(childActorType);
+            var childActorRef = Context.ActorOf(props, name);
+            return new ChildInfo(childActorRef);
         }
+
         protected override void PreStart()
         {
             _monitor.IncrementActorStarted();

@@ -10,6 +10,6 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
         /// </summary>
         /// <param name="evt"></param>
         /// <returns></returns>
-        IReadOnlyCollection<Processor> GetHandlerProcessor(DomainEvent evt);
+        IReadOnlyCollection<Processor> GetHandlerProcessor(object evt);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Akka.Actor;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
@@ -10,6 +11,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
 using Microsoft.Practices.Unity;
 using Quartz.Simpl;
 
@@ -66,7 +68,14 @@ namespace GridDomain.Node.Configuration.Composition
                         new ResolvedParameter<ISagaProducer<ISagaInstance<TSaga, TState>>>(),
                         new ResolvedParameter<IPublisher>(),
                         new ResolvedParameter<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName),
-                        new ResolvedParameter<IConstructAggregates>(sagaSpecificRegistrationsName)));
+                        new ResolvedParameter<IConstructAggregates>(sagaSpecificRegistrationsName)
+                        ));
+
+            container.RegisterType<SagaHubActor<ISagaInstance<TSaga, TState>, SagaStateAggregate<TState>>>(new InjectionConstructor(
+                         new ResolvedParameter<IPersistentChildsRecycleConfiguration>(),
+                         new ResolvedParameter<ISagaProducer<ISagaInstance<TSaga, TState>>>(),
+                         new ResolvedParameter<IActorRef>(SagaProcessActor.SagaProcessActorRegistrationName)));
+
         }
     }
 }

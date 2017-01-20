@@ -234,6 +234,8 @@
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\CannotGetSagaFromMessage.cs" />
+    <Compile Include="Actors\CommandPipe\Initialize.cs" />
+    <Compile Include="Actors\CommandPipe\Initialized.cs" />
     <Compile Include="Actors\CommandPipe\SagaTransited.cs" />
     <Compile Include="Actors\HandlerExecuted.cs" />
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExeption.cs" />
@@ -243,6 +245,7 @@
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\ICustomHandlersProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\ISagaProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\Processor.cs" />
+    <Compile Include="Actors\IPersistenceEntityActorMaintainanceMessage.cs" />
     <Compile Include="Actors\MessageHandlingStatuses.cs" />
     <Compile Include="Actors\Persisted.cs" />
     <Compile Include="Actors\CannotCreateChildException.cs" />
@@ -264,7 +267,7 @@
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\SagaProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\SagasProcessComplete.cs" />
     <Compile Include="Actors\CommandPipe\HandlersProcessActor.cs" />
-    <Compile Include="Actors\CommandPipe\CustomHandlersProcessCompleted.cs" />
+    <Compile Include="Actors\CommandPipe\HandlersExecuted.cs" />
     <Compile Include="Actors\CommandPipe\IDomainEventHandlersChain.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\AggregateProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\MessageProcessPolicy.cs" />

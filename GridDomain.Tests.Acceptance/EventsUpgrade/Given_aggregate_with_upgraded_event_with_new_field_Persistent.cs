@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
@@ -40,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             return new BalanceRouteMap();
         }
 
-        protected override void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages)
+        protected override async Task SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages)
         {
             using (var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))
             {

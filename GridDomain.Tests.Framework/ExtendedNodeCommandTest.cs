@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.Common;
@@ -42,14 +43,14 @@ namespace GridDomain.Tests.Framework
                 (InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig()));
         } 
 
-        protected virtual void SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
+        protected virtual async Task SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
         {
             string persistId = AggregateActorName.New<TAggregate>(id).ToString();
             var persistActor = GridNode.System.ActorOf(
                 Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o)).Wait(Timeout);
+                await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
         }
     }
 }

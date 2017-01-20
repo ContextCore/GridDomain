@@ -19,6 +19,7 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         private readonly ISagaProcessorCatalog _catalog;
         private IActorRef _commandExecutionActor;
+        public const string SagaProcessActorRegistrationName = nameof(SagaProcessActorRegistrationName);
 
         public SagaProcessActor(ISagaProcessorCatalog catalog)
         {
@@ -37,52 +38,33 @@ namespace GridDomain.Node.Actors.CommandPipe
             //results of one command execution
             Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
             {
-                var sender = Sender;
-                c.Message.Select(e => ProcessSagas(e, c.Metadata))
+                c.Message.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
                          .ToChain()
                          .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
-                         .PipeTo(Self, sender);
+                         .PipeTo(Self, Sender);
+            });
+            Receive<IMessageMetadataEnvelop<IFault>>(c =>
+            {
+                ProcessSagas(c).ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
+                               .PipeTo(Self, Sender);
             });
 
             Receive<SagasProcessComplete>(m =>
             {
-                Sender.Tell(m);
+               // Sender.Tell(m);
                 foreach (var command in m.ProducedCommands)
                     _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata));
             });
         }
 
-        private Task<IEnumerable<ICommand>> ProcessSagas(DomainEvent evt, IMessageMetadata metadata)
+        private Task<IEnumerable<ICommand>> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
-            IReadOnlyCollection<Processor> eventProcessors = _catalog.GetSagaProcessor(evt);
+            IReadOnlyCollection<Processor> eventProcessors = _catalog.GetSagaProcessor(messageMetadataEnvelop.Message);
             if(!eventProcessors.Any())
                  return Task.FromResult(Enumerable.Empty<ICommand>());
 
-            var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
-
-            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<SagaTransited>(messageMetadataEnvelop)
-                                               .ContinueWith(t => (IEnumerable<ICommand>)t.Result.ProducedCommands)))
-                       .ContinueWith(t => t.Result.SelectMany(c => c));
+            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<SagaTransited>(messageMetadataEnvelop)))
+                       .ContinueWith(t => t.Result.SelectMany(c => c.ProducedCommands));
         }
-
-    }
-
-    public class Initialize
-    {
-        public Initialize(IActorRef commandExecutorActor)
-        {
-            CommandExecutorActor = commandExecutorActor;
-        }
-
-        public IActorRef CommandExecutorActor { get; }
-    }
-
-    public class Initialized
-    {
-        private Initialized()
-        {
-        }
-
-        public static Initialized Instance { get; } = new Initialized();
     }
 }

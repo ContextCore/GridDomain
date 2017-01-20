@@ -43,14 +43,12 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [Then]
         public void Saga_state_should_be_correct()
         {
-            var saga = new SoftwareProgrammingSaga();
-            Assert.AreEqual(saga.MakingCoffee.Name, _sagaDataAggregate.Data.CurrentStateName);
+            Assert.AreEqual(nameof(SoftwareProgrammingSaga.MakingCoffee), _sagaDataAggregate.Data.CurrentStateName);
         }
 
         [Then]
         public void Saga_data_contains_information_from_restart_message()
         {
-            var saga = new SoftwareProgrammingSaga();
             Assert.AreEqual(_reStartEvent.PersonId, _sagaDataAggregate.Data.PersonId);
         }
 

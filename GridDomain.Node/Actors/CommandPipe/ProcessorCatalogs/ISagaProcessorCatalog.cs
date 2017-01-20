@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
@@ -10,6 +11,6 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
         /// </summary>
         /// <param name="evt"></param>
         /// <returns></returns>
-        IReadOnlyCollection<Processor> GetSagaProcessor(DomainEvent evt);
+        IReadOnlyCollection<Processor> GetSagaProcessor(object evt);
     }
 }

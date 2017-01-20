@@ -1,5 +1,6 @@
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Tools.Persistence.SqlPersistence;
 
 namespace GridDomain.Tools.Repositories.RawDataRepositories
@@ -16,7 +17,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         public void Dispose()
         {
         }
-        public void Save(string id, params SnapshotItem[] messages)
+        public async Task Save(string id, params SnapshotItem[] messages)
         {
 
             foreach (var m in messages)
@@ -25,7 +26,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
                 context.Snapshots.AddOrUpdate(messages);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 

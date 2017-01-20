@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -34,9 +35,10 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         }
 
         [OneTimeSetUp]
-        public void When_publishing_start_message()
+        public async Task When_saga_produce_command_and_waiting_for_it_fault()
         {
             var sagaId = Guid.NewGuid();
+
             _sagaData = new SoftwareProgrammingSagaData(sagaId,nameof(SoftwareProgrammingSaga.MakingCoffee))
             {
                PersonId = Guid.NewGuid()
@@ -44,15 +46,15 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(_sagaData, sagaId);
 
-            SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId,sagaDataEvent);
+            await SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId,sagaDataEvent);
 
             Thread.Sleep(100);
             _coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid(), BusinessDateTime.UtcNow,sagaId);
 
-            GridNode.NewDebugWaiter()
-                    .Expect<object>()
-                    .Create()
-                    .SendToSaga(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
+            await GridNode.NewDebugWaiter(TimeSpan.FromMinutes(10))
+                          .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
+                          .Create()
+                          .SendToSaga(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
 
             Thread.Sleep(1000);
             _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);

@@ -8,6 +8,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
@@ -20,9 +21,11 @@ namespace GridDomain.Node.Actors
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
 
         public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf, 
-                            ISagaProducer<TSaga> sagaProducer) : base(recycleConf, typeof(TSaga).Name)
+                            ISagaProducer<TSaga> sagaProducer,
+                            IActorRef sagaTransitedWaiter) : base(recycleConf, typeof(TSaga).Name)
         {
             _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m=> m.CorrelationField);
+
         }
 
         protected override string GetChildActorName(object message)
@@ -57,6 +60,11 @@ namespace GridDomain.Node.Actors
         protected override Type GetChildActorType(object message)
         {
             return _actorType;
+        }
+
+        protected override void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
+        {
+            knownChild.Ref.Ask<SagaTransited>(message).PipeTo(Sender, Self);
         }
     }
 }

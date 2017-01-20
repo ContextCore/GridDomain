@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
@@ -24,7 +25,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         }
 
         //Event order matter!!
-        public void Save(string id, params DomainEvent[] messages)
+        public async Task Save(string id, params DomainEvent[] messages)
         {
             long counter=0;
 
@@ -34,11 +35,9 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                                                                       m.GetType().AssemblyQualifiedShortName(),
                                                                       m.CreatedTime,
                                                                       "",
-                                                                      _serializer.ToBinary(m))
-                                                                     )
-                                         .ToArray();
+                                                                      _serializer.ToBinary(m)));
 
-            _rawDataRepo.Save(id, journalEntries);
+            await  _rawDataRepo.Save(id, journalEntries.ToArray());
         }
 
         public DomainEvent[] Load(string id)

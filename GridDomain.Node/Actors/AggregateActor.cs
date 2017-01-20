@@ -69,95 +69,92 @@ namespace GridDomain.Node.Actors
                 _log.Trace("{Aggregate} received a {@command}", State.Id, cmd);
                 try
                 {
-                    State = _handler.Execute((TAggregate)State, cmd);
+                    State = _handler.Execute((TAggregate) State, cmd);
                 }
                 catch (Exception ex)
                 {
-                    ProcessFault(cmd, ex, m.Metadata);
+                    WaitForFaultProcessedByHandlers(cmd, ex, m.Metadata);
+                    BecomeStacked(WaitingHandlersProcess);
                     return;
                 }
 
-                ProcessAggregateEvents(cmd, m.Metadata);
+                PersistState(cmd, m.Metadata);
 
                 ProcessAsyncMethods(cmd, m.Metadata);
 
-                BecomeStacked(WaitingForCommandProcess);
+                BecomeStacked(WaitingHandlersProcess);
             });
           
         }
 
-        private void ProcessFault(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
+        private void WaitForFaultProcessedByHandlers(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
         {
             var fault = Fault.NewGeneric(cmd, ex, cmd.SagaId, typeof(TAggregate));
 
             var metadata = messageMetadata.CreateChild(cmd.Id, _domainEventProcessFailEntry);
 
-            Publisher.Publish(fault, metadata);
+            _customHandlersActor.Ask<HandlersExecuted>(new MessageMetadataEnvelop<IFault>(fault,metadata))
+                                .PipeTo(Self);
+
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
         }
 
-        private void ProcessAggregateEvents(ICommand command, IMessageMetadata commandMetadata)
+        private void PersistState(ICommand command, IMessageMetadata commandMetadata)
         {
-            var events = GatherEvents(command);
+            var events = State.GetUncommittedEvents()
+                              .Cast<DomainEvent>()
+                              .Select(e => e.CloneWithSaga(command.SagaId))
+                              .ToArray();
+
             int totalEvents = events.Length;
             int persistedEvents = 0;
+            var eventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
 
             PersistAll(events, e =>
             {
                 //should save snapshot only after all messages persisted as state was already modified by all of them
                 if (++persistedEvents == totalEvents)
-                {
-                    var eventsMetadata  = commandMetadata.CreateChild(e.SourceId,
-                                                                      _domainEventProcessEntry);
-
                     OnCommandEventsPersisted(events, eventsMetadata);
-                }
 
-                NotifyWatchers(new Persisted(e));
+                NotifyPersistenceWatchers(e);
             });
 
             State.ClearUncommittedEvents();
         }
 
-        private void WaitingForCommandProcess()
+        private void WaitingHandlersProcess()
         {
             CommandAny(c =>
             {
                 c.Match()
-                    .With<CustomHandlersProcessCompleted>(processComplete =>
-                    {
-                        foreach (var e in processComplete.DomainEvents)
-                        {
-                            var eventMetadata = processComplete.Metadata.CreateChild(e.SourceId,
-                                                                                      _domainEventProcessEntry);
-
-                            //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
-                            //how to pass aggregate type in this case? 
-                            //direct call to method to not postpone process of event scheduling, 
-                            //case it can be interrupted by other messages in stash processing errors
-                            e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventMetadata))
-                                     .With<FutureEventCanceledEvent>(m => Handle(m, eventMetadata));
-
-                            Publisher.Publish(e, eventMetadata);
-                        }
-
-                        UnbecomeStacked();
-                        Stash.UnstashAll();
-                    })
-                    .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
+                 .With<HandlersExecuted>(processComplete =>
+                 {
+                     foreach (var e in processComplete.DomainEvents)
                      {
-                         var m = d.Message;
-                         Monitor.IncrementMessagesReceived();
-                         if (m.Exception != null)
-                         {
-                             ProcessFault(m.Command, m.Exception, d.Metadata);
-                             return;
-                         }
+                         var eventMetadata = processComplete.Metadata.CreateChild(e.SourceId,_domainEventProcessEntry);
+                         Publisher.Publish(e, eventMetadata);
+                     }
 
-                         (State as Aggregate).FinishAsyncExecution(m.InvocationId);
-                         ProcessAggregateEvents(m.Command, d.Metadata);
-                     })
-                    .Default(o => Stash.Stash());
+                     if(processComplete.Fault != null)
+                         Publisher.Publish(processComplete.Fault, processComplete.Metadata);
+
+                     UnbecomeStacked();
+                     Stash.UnstashAll();
+                 })
+                 .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
+                  {
+                      var m = d.Message;
+                      Monitor.IncrementMessagesReceived();
+                      if (m.Exception != null)
+                      {
+                          WaitForFaultProcessedByHandlers(m.Command, m.Exception, d.Metadata);
+                          return;
+                      }
+
+                      (State as Aggregate).FinishAsyncExecution(m.InvocationId);
+                      PersistState(m.Command, d.Metadata);
+                  })
+                 .Default(o => Stash.Stash());
             });
         }
 
@@ -166,23 +163,18 @@ namespace GridDomain.Node.Actors
             TrySaveSnapshot(events);
             var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, eventCommonMetadata);
 
-            foreach (var evt in events)
-                Publisher.Publish(evt, eventCommonMetadata);
-            
-
-            _customHandlersActor.Ask<CustomHandlersProcessCompleted>(envelop)
-                                .PipeTo(Self);
-        }
-
-        private DomainEvent[] GatherEvents(ICommand command)
-        {
-            var events = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
-
-            if (command.SagaId != Guid.Empty)
+            foreach (var e in events)
             {
-                events = events.Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
+                //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
+                //how to pass aggregate type in this case? 
+                //direct call to method to not postpone process of event scheduling, 
+                //case it can be interrupted by other messages in stash processing errors
+                e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventCommonMetadata))
+                         .With<FutureEventCanceledEvent>(m => Handle(m, eventCommonMetadata));
             }
-            return events;
+
+            _customHandlersActor.Ask<HandlersExecuted>(envelop)
+                                .PipeTo(Self);
         }
 
         private void ProcessAsyncMethods(ICommand command, IMessageMetadata metadata)

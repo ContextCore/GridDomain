@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors
 {
     public class EventSourcedActor<T> : ReceivePersistentActor where T: AggregateBase
     {
-        private readonly List<IActorRef> _persistenceWaiters = new List<IActorRef>();
+        private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         protected Guid Id { get; }
         protected readonly ISnapshotsPersistencePolicy SnapshotsPolicy;
         protected readonly ActorMonitor Monitor;
@@ -47,7 +47,7 @@ namespace GridDomain.Node.Actors
 
             Command<SaveSnapshotSuccess>(s =>
             {
-                NotifyWatchers(s);
+                NotifyPersistenceWatchers(s);
                 SnapshotsPolicy.MarkSnapshotSaved(s.Metadata);
             });
 
@@ -57,7 +57,7 @@ namespace GridDomain.Node.Actors
                 if (IsRecoveryFinished)
                     waiter.Tell(RecoveryCompleted.Instance);
 
-                 _persistenceWaiters.Add(waiter);
+                 _persistenceWatchers.Add(waiter);
             });
 
             Recover<DomainEvent>(e =>
@@ -75,7 +75,7 @@ namespace GridDomain.Node.Actors
             Recover<RecoveryCompleted>(message =>
             {
                 _log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                NotifyWatchers(message);
+                NotifyPersistenceWatchers(message);
             });
         }
 
@@ -87,10 +87,10 @@ namespace GridDomain.Node.Actors
             return shouldSave;
         }
 
-        protected void NotifyWatchers(object msg)
+        protected void NotifyPersistenceWatchers(object msg)
         {
-            foreach (var watcher in _persistenceWaiters)
-                watcher.Tell(msg);
+            foreach (var watcher in _persistenceWatchers)
+                watcher.Tell(new Persisted(msg));
         }
 
         private void Terminating()
@@ -102,7 +102,7 @@ namespace GridDomain.Node.Actors
 
         private void StopNow(object s)
         {
-            NotifyWatchers(s);
+            NotifyPersistenceWatchers(s);
             Context.Stop(Self);
         }
 

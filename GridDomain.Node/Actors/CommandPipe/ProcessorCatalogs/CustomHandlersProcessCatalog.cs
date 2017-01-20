@@ -3,9 +3,9 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
 {
-    internal class CustomHandlersProcessCatalog : ProcessorListCatalog<DomainEvent>, ICustomHandlersProcessorCatalog
+    internal class CustomHandlersProcessCatalog : ProcessorListCatalog<object>, ICustomHandlersProcessorCatalog
     {
-        public IReadOnlyCollection<Processor> GetHandlerProcessor(DomainEvent evt)
+        public IReadOnlyCollection<Processor> GetHandlerProcessor(object evt)
         {
             return GetProcessor(evt);
         }

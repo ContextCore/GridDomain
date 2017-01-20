@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
@@ -32,13 +33,12 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         }
 
 
-        public void Save(string id, params DomainEvent[] messages)
+        public async Task Save(string id, params DomainEvent[] messages)
         {
             var persistActor = CreateEventsPersistActor(id);
 
             foreach (var o in messages)
-                persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout)
-                    .Wait();
+                await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout);
 
             persistActor.Tell(PoisonPill.Instance);
         }

@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                 PersonId = Guid.NewGuid()
             };
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
-            SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
+            await SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
             var results = await GridNode.NewDebugWaiter()
                                         .Expect<IFault<CoffeMakeFailedEvent>>()

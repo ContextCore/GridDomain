@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
@@ -24,7 +25,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         }
 
         [OneTimeSetUp]
-        public void When_aggregate_is_recovered_from_persistence()
+        public async Task When_aggregate_is_recovered_from_persistence()
         {
             _balanceId = Guid.NewGuid();
             var events = new DomainEvent[]
@@ -34,7 +35,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
                 new BalanceChangedEvent_V1(5, _balanceId),
             };
 
-             SaveInJournal<BalanceAggregate>(_balanceId, events);
+             await SaveInJournal<BalanceAggregate>(_balanceId, events);
              _aggregate = LoadAggregate<BalanceAggregate>(_balanceId);
         }
 

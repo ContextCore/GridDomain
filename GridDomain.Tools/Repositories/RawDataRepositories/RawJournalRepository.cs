@@ -1,5 +1,6 @@
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Tools.Persistence.SqlPersistence;
 
 namespace GridDomain.Tools.Repositories.RawDataRepositories
@@ -23,7 +24,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         {
         }
 
-        public void Save(string id, params JournalItem[] messages)
+        public async Task Save(string id, params JournalItem[] messages)
         {
             foreach (var m in messages)
                 m.PersistenceId = id;
@@ -31,7 +32,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
                 context.Journal.AddOrUpdate(messages);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 

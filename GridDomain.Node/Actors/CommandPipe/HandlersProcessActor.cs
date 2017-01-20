@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
@@ -30,35 +31,43 @@ namespace GridDomain.Node.Actors.CommandPipe
             {
                 var eventsToProcess = envelop.Message;
                 var sender = Sender;
-                eventsToProcess.Select(e => ProcessMessageHandlers(e, envelop.Metadata))
+                eventsToProcess.Select(e => SynhronizeHandlers(new MessageMetadataEnvelop<DomainEvent>(e, envelop.Metadata)))
                                .ToChain()
-                               .ContinueWith(t => new CustomHandlersProcessCompleted(envelop.Metadata, envelop.Message))
+                               .ContinueWith(t => new HandlersExecuted(envelop.Metadata, envelop.Message))
                                .PipeTo(Self, sender);
             });
 
-            Receive<CustomHandlersProcessCompleted>(m =>
+            Receive<IMessageMetadataEnvelop<IFault>>(envelop =>
+            {
+                SynhronizeHandlers(envelop).ContinueWith(t => new HandlersExecuted(envelop.Metadata, envelop.Message))
+                                           .PipeTo(Self, Sender);;
+            });
+
+            Receive<HandlersExecuted>(m =>
             {
                 Sender.Tell(m); //notifying aggregate actor
-                _sagasProcessActor.Tell(m); //starting sagas processing
+
+                if(m.DomainEvents?.Length > 0)
+                    _sagasProcessActor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(m.DomainEvents,m.Metadata));
+
+                if(m.Fault != null)
+                    _sagasProcessActor.Tell(new MessageMetadataEnvelop<IFault>(m.Fault, m.Metadata));
             });
         }
 
-        private Task ProcessMessageHandlers(DomainEvent evt, IMessageMetadata metadata)
+        private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
-            IReadOnlyCollection<Processor> eventProcessors = _handlersCatalog.GetHandlerProcessor(evt);
-            if(!eventProcessors.Any()) return Task.CompletedTask;
+            IReadOnlyCollection<Processor> faultProcessors = _handlersCatalog.GetHandlerProcessor(messageMetadataEnvelop.Message);
+            if (!faultProcessors.Any()) return Task.CompletedTask;
 
-            var messageMetadataEnvelop = new MessageMetadataEnvelop<DomainEvent>(evt, metadata);
+            return faultProcessors.Select(p => {
+                                             if (p.Policy.IsSynchronious)
+                                                  return p.ActorRef.Ask<HandlerExecuted>(messageMetadataEnvelop);
 
-            return eventProcessors.Select(p => {
-                                         if (p.Policy.IsSynchronious)
-                                             return p.ActorRef.Ask<HandlerExecuted>(messageMetadataEnvelop);
-                                         
-                                         p.ActorRef.Tell(messageMetadataEnvelop);
+                                              p.ActorRef.Tell(messageMetadataEnvelop);
                                               return Task.CompletedTask;
-                                         })
+                                        })
                                   .ToChain();
         }
-
     }
 }
