@@ -71,11 +71,6 @@ namespace GridDomain.Node.Configuration.Composition
                         new ResolvedParameter<IConstructAggregates>(sagaSpecificRegistrationsName)
                         ));
 
-            container.RegisterType<SagaHubActor<ISagaInstance<TSaga, TState>, SagaStateAggregate<TState>>>(new InjectionConstructor(
-                         new ResolvedParameter<IPersistentChildsRecycleConfiguration>(),
-                         new ResolvedParameter<ISagaProducer<ISagaInstance<TSaga, TState>>>(),
-                         new ResolvedParameter<IActorRef>(SagaProcessActor.SagaProcessActorRegistrationName)));
-
         }
     }
 }

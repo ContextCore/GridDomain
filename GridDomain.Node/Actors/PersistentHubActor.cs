@@ -4,6 +4,7 @@ using System.Linq;
 using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Event;
 using Akka.Monitoring;
 using GridDomain.Common;
 using GridDomain.Logging;
@@ -21,8 +22,8 @@ namespace GridDomain.Node.Actors
         //TODO: replace with more efficient implementation
         internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
-        protected readonly ILogger Logger = LogManager.GetLogger();
         private readonly ActorMonitor _monitor;
+        private readonly ILoggingAdapter Logger = Context.GetLogger();
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
@@ -56,7 +57,7 @@ namespace GridDomain.Node.Actors
                 knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                 SendMessageToChild(knownChild, messageWitMetadata);
 
-                Logger.Trace("Message {@msg} sent to {isknown} child {id}",
+                Logger.Debug("Message {@msg} sent to {isknown} child {id}",
                               messageWitMetadata,
                               childWasCreated ? "known" : "new",
                               childId);
@@ -82,7 +83,7 @@ namespace GridDomain.Node.Actors
                Children.Remove(childId);
            }
 
-           Logger.Trace("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
+           Logger.Debug("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
         }
 
         public class ClearChilds
@@ -92,13 +93,8 @@ namespace GridDomain.Node.Actors
         protected override bool AroundReceive(Receive receive, object message)
         {
             _monitor.IncrementMessagesReceived();
-            Logger.Trace("{ActorHub} pre-receive {@message}", Self.Path, message);
+            Logger.Debug("{ActorHub} pre-receive {@message}", Self.Path, message);
             return base.AroundReceive(receive, message);
-        }
-
-        protected override void Unhandled(object message)
-        {
-            base.Unhandled(message);
         }
 
         protected ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
@@ -112,14 +108,14 @@ namespace GridDomain.Node.Actors
         protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
-            Logger.Trace("{ActorHub} is going to start", Self.Path);
+            Logger.Debug("{ActorHub} is going to start", Self.Path);
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
         }
 
         protected override void PostStop()
         {
             _monitor.IncrementActorStopped();
-            Logger.Trace("{ActorHub} was stopped", Self.Path);
+            Logger.Debug("{ActorHub} was stopped", Self.Path);
         }
 
         protected override SupervisorStrategy SupervisorStrategy()

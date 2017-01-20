@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Configuration;
+using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
@@ -48,7 +49,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             public override string ToStandAloneSystemConfig()
             {
              var cfg = new RootConfig(
-                    new LogConfig(LogVerbosity.Info, false),
+                    new LogConfig(LogLevel.DebugLevel, false),
                     new StandAloneConfig(Network),
                     new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig(), typeof(SlowDomainJournal)),
                                           new PersistenceSnapshotConfig(this)));

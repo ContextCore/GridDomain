@@ -1,37 +1,35 @@
 using System.Collections.Generic;
+using Akka.Event;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class LogConfig : IAkkaConfig
     {
         private readonly bool _includeConfig;
-        private readonly string _logLevel;
 
-        private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
+        private readonly Dictionary<LogLevel, string> _akkaLogLevels = new Dictionary<LogLevel, string>
         {
-            {LogVerbosity.Info, "INFO"},
-            {LogVerbosity.Error, "ERROR"},
-            {LogVerbosity.Trace, "DEBUG"},
-            {LogVerbosity.Warning, "WARNING"}
+            {LogLevel.InfoLevel,    "INFO"},
+            {LogLevel.ErrorLevel,   "ERROR"},
+            {LogLevel.DebugLevel,   "DEBUG"},
+            {LogLevel.WarningLevel, "WARNING"}
         };
 
-        private readonly LogVerbosity _verbosity;
+        private readonly LogLevel _verbosity;
 
-
-        public LogConfig(LogVerbosity verbosity, bool includeConfig = true)
+        public LogConfig(LogLevel verbosity, bool includeConfig = true)
         {
             _verbosity = verbosity;
             _includeConfig = includeConfig;
-            _logLevel = _akkaLogLevels[verbosity];
         }
 
         public string Build()
         {
-           
+            var logLevel = _akkaLogLevels[_verbosity];
             var logConfig =
                 @"
-                stdout-loglevel = " + _logLevel + @"
-                loglevel=" + _logLevel;
+                stdout-loglevel = " + logLevel + @"
+                loglevel=" + logLevel;
             logConfig += @"
                 loggers=["""+typeof(SerilogExtendedLogger).AssemblyQualifiedShortName() + @"""]
 
@@ -54,9 +52,9 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             return logConfig;
         }
 
-        private object AdditionalLogs(LogVerbosity verbosity)
+        private object AdditionalLogs(LogLevel verbosity)
         {
-            return verbosity == LogVerbosity.Trace
+            return verbosity == LogLevel.DebugLevel
                 ? @"autoreceive = on
                     lifecycle = on
                     router-misconfiguration = on"

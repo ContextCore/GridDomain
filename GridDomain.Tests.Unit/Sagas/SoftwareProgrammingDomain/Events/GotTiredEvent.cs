@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events
         public GotTiredEvent(Guid sourceId,
                              Guid lovelySofaId = default(Guid), 
                              Guid favoriteCoffeMachineId=default(Guid), 
-                             Guid sagaId = default(Guid),
+                             Guid? sagaId = null,
                              DateTime? createdTime = null)
             : base(sourceId, createdTime,sagaId)
         {

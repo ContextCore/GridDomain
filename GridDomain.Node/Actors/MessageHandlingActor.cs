@@ -16,6 +16,10 @@ namespace GridDomain.Node.Actors
         private readonly ActorMonitor _monitor;
         protected readonly IPublisher Publisher;
 
+        private static readonly ProcessEntry FaltProcessEntry = new ProcessEntry(typeof(THandler).Name,
+            MessageHandlingStatuses.PublishingFault,
+            MessageHandlingStatuses.MessageProcessCasuedAnError);
+
         public MessageHandlingActor(THandler handler, IPublisher publisher)
         {
             Publisher = publisher;
@@ -32,20 +36,15 @@ namespace GridDomain.Node.Actors
 
                 Func<Task> handlerExecute;
                 if (handlerWithMetadata != null)
-                {
                     handlerExecute = () => handlerWithMetadata.Handle(message, msg.Metadata);
-                }
                 else
-                {
                     handlerExecute = () => handler.Handle(message);
-                }
 
                 try
                 {
-                    var sender = Sender;
                     handlerExecute().ContinueWith(t => new HandlerExecuted(msg, t?.Exception.UnwrapSingle()),
                                                             TaskContinuationOptions.ExecuteSynchronously)
-                                     .PipeTo(Self,sender);
+                                    .PipeTo(Self, Sender);
                 }
                 catch (Exception ex)
                 {
@@ -70,11 +69,7 @@ namespace GridDomain.Node.Actors
         {
             _log.Error(ex, "Handler actor raised an error on message process: {@Message}", msg);
 
-            var processEntry = new ProcessEntry(typeof(THandler).Name,
-                MessageHandlingStatuses.PublishingFault,
-                MessageHandlingStatuses.MessageProcessCasuedAnError);
-
-            var metadata = msg.Metadata.CreateChild(Guid.Empty, processEntry);
+            var metadata = msg.Metadata.CreateChild(Guid.Empty, FaltProcessEntry);
 
             var fault = Fault.NewGeneric(msg.Message, ex, GetSagaId(msg.Message), typeof(THandler));
 

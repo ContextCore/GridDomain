@@ -10,6 +10,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
@@ -30,10 +31,13 @@ namespace GridDomain.Node
         public IActorRef CommandExecutor { get; private set; }
         private readonly IUnityContainer _container;
 
+        private ILogger _log = LogManager.GetLogger();
+
         public CommandPipeBuilder(ActorSystem system, IUnityContainer container)
         {
             _container = container;
             _system = system;
+          //  var logger = system.GetLogger()
         }
 
         /// <summary>
@@ -42,6 +46,8 @@ namespace GridDomain.Node
         /// <returns>Reference to pipe actor for command execution</returns>
         public async Task<IActorRef> Init()
         {
+            _log.Debug("Command pipe is starting initialization");
+
             SagaProcessor = _system.ActorOf(Props.Create(() => new SagaProcessActor(_sagaCatalog)),nameof(SagaProcessActor));
 
             HandlersProcessor =
@@ -106,9 +112,7 @@ namespace GridDomain.Node
 
         private IActorRef CreateActor(Type actorType, RouterConfig routeConfig, string actorName)
         {
-            var handleActorProps =_system.DI().Props(actorType);
-            handleActorProps = handleActorProps.WithRouter(routeConfig);
-
+            var handleActorProps =_system.DI().Props(actorType).WithRouter(routeConfig);
             var handleActor = _system.ActorOf(handleActorProps, actorName);
             return handleActor;
         }

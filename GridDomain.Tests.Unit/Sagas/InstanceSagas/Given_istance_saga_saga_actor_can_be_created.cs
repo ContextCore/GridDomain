@@ -32,15 +32,12 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [Then]
         public async Task Instance_saga_actor_has_correct_path_when_saga_is_raised_by_domain_message()
         {
-
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             await GridNode.NewDebugWaiter()
-                          .Expect<MakeCoffeCommand>()
+                          .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                           .Create()
                           .SendToSaga(msg);
-
-            var sagaActorName = AggregateActorName.New<SagaStateAggregate<SoftwareProgrammingSagaData>>(msg.SagaId).ToString();
 
             var sagaActor = LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);

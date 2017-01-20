@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
-        public static readonly ISagaDescriptor Descriptor  = CreateDescriptor();
+        public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
 
         private static SagaDescriptor CreateDescriptor()
         {

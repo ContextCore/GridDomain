@@ -21,11 +21,9 @@ namespace GridDomain.Node.Actors
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
 
         public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf, 
-                            ISagaProducer<TSaga> sagaProducer,
-                            IActorRef sagaTransitedWaiter) : base(recycleConf, typeof(TSaga).Name)
+                            ISagaProducer<TSaga> sagaProducer) : base(recycleConf, typeof(TSaga).Name)
         {
             _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m=> m.CorrelationField);
-
         }
 
         protected override string GetChildActorName(object message)

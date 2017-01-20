@@ -12,6 +12,7 @@ using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
 {
@@ -31,15 +32,16 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
                                                   TestActor,
                                                   transport,
                                                   new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
-                                                  new AggregateFactory(), null
+                                                  new AggregateFactory(), TestActor
                                                   )),
                 AggregateActorName.New<HomeAggregate>(command.Id).Name );
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 
-            var fault = ExpectMsg<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TimeSpan.FromDays(1));
+            var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
 
             Assert.AreEqual(command.SagaId, fault.Message.SagaId);
+            Assert.IsInstanceOf<Fault<GoSleepCommand>>(fault.Message);
         }
 
         [TestCase("test", Description = "unplanned exception from message processor")]
@@ -49,16 +51,19 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.SagaActorTests
             var message = new SampleAggregateChangedEvent(payload,Guid.NewGuid(),DateTime.Now,Guid.NewGuid());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
-            transport.Subscribe<IMessageMetadataEnvelop<Fault<SampleAggregateChangedEvent>>>(TestActor);
+            transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() =>
                 new MessageHandlingActor<SampleAggregateChangedEvent,OddFaultyMessageHandler>(
                     new OddFaultyMessageHandler(transport), 
                     transport)));
 
-            actor.Tell(message);
-            var fault = ExpectMsg< IMessageMetadataEnvelop<Fault<SampleAggregateChangedEvent>>>();
+            actor.Tell(new MessageMetadataEnvelop<DomainEvent>(message,MessageMetadata.Empty));
+
+            var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
+
             Assert.AreEqual(message.SagaId, fault.Message.SagaId);
+            Assert.IsInstanceOf<Fault<SampleAggregateChangedEvent>>(fault.Message);
         }
 
 

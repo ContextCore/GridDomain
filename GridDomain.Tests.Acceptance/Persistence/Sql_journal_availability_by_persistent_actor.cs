@@ -12,8 +12,7 @@ namespace GridDomain.Tests.Acceptance.Persistence
     [TestFixture]
     public class Sql_journal_availability_by_persistent_actor : TestKit
     {
-        private readonly AutoTestAkkaConfiguration _conf =
-            new AutoTestAkkaConfiguration(LogVerbosity.Warning);
+        private readonly AutoTestAkkaConfiguration _conf = new AutoTestAkkaConfiguration();
 
         private void CHeckPersist(IActorRef actor)
         {

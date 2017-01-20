@@ -1,8 +1,12 @@
 using System;
 using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
@@ -12,8 +16,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     [TestFixture]
-    public class Saga_produced_events_and_commands_has_sagaId_with_custom_routes :
-        ProgrammingSoftwareSagaTest_with_custom_routes
+    public class Saga_produced_events_and_commands_has_sagaId_with_custom_routes : ProgrammingSoftwareSagaTest_with_custom_routes
     {
 
         public Saga_produced_events_and_commands_has_sagaId_with_custom_routes() : base(true)
@@ -22,17 +25,19 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         }
 
         [Test]
-        public async Task When_dispatch_command_than_command_should_have_right_sagaId()
-        {
-            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var waitResults = await GridNode.NewDebugWaiter(TimeSpan.FromHours(1))
-                                            .Expect<IMessageMetadataEnvelop>()
-                                            .Create()
-                                            .SendToSaga(gotTiredEvent);
+        public void When_dispatch_command_than_command_should_have_right_sagaId()
+        { 
+            var domainEvent = new GotTiredEvent(Guid.NewGuid());
 
-            var expectedCommand = waitResults.Message<MakeCoffeCommand>();
+            GridNode.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
+            GridNode.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] { domainEvent },
+                                                                                       MessageMetadata.Empty));
 
-            Assert.AreEqual(gotTiredEvent.PersonId, expectedCommand.SagaId);
+            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
+            var command = sagaCompleteMsg.Message;
+
+            Assert.AreEqual(domainEvent.SagaId, command.SagaId);
+            Assert.IsInstanceOf<MakeCoffeCommand>(command);
         }
 
         [Test]

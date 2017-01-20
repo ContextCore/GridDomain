@@ -72,6 +72,7 @@ namespace GridDomain.Node.Actors
                 var metadata = m.Metadata;
 
                 Monitor.IncrementMessagesReceived();
+
                 if (_sagaStartMessageTypes.Contains(msg.GetType()))
                 {
                     _saga = _producer.Create(msg);
@@ -79,8 +80,8 @@ namespace GridDomain.Node.Actors
                 }
 
                 //block any other executing until saga completes transition
-                BecomeStacked(() => SagaProcessWaiting(msg));
                 ProcessSaga(msg, metadata).PipeTo(Self,Sender);
+                BecomeStacked(() => SagaProcessWaiting(msg));
 
             }, e => GetSagaId(e.Message) == Id);
 
@@ -118,7 +119,6 @@ namespace GridDomain.Node.Actors
 
                      //notify saga process actor that saga transit is done
                      Sender.Tell(r);
-                     Saga.ClearCommandsToDispatch();
                      Stash.UnstashAll();
                      UnbecomeStacked();
                  })
@@ -144,10 +144,13 @@ namespace GridDomain.Node.Actors
             Task processSagaTask = (Saga as ISagaInstance).Transit((dynamic) message);
             return processSagaTask.ContinueWith(t =>
             {
-                if (t.IsFaulted)  return SagaTransited.CreateError(t.Exception);
-                if (t.IsCanceled) return SagaTransited.CreateError(t.Exception as Exception ?? new TimeoutException());
+                if (t.IsFaulted)  return SagaTransited.CreateError(t.Exception, domainEventMetadata);
+                if (t.IsCanceled) return SagaTransited.CreateError(t.Exception as Exception ?? new TimeoutException(), domainEventMetadata);
 
-                return new SagaTransited(Saga.CommandsToDispatch.ToArray(), domainEventMetadata);
+                var sagaTransited = new SagaTransited(Saga.CommandsToDispatch.ToArray(), domainEventMetadata);
+                Saga.ClearCommandsToDispatch();
+
+                return sagaTransited;
             });
         }
 

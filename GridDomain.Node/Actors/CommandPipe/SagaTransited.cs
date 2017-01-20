@@ -17,9 +17,9 @@ namespace GridDomain.Node.Actors.CommandPipe
             Error = error;
         }
 
-        public static SagaTransited CreateError(Exception ex)
+        public static SagaTransited CreateError(Exception ex, IMessageMetadata metadata = null)
         {
-            return new SagaTransited(null,null,ex);
+            return new SagaTransited(null,metadata,ex);
         }
     }
 }

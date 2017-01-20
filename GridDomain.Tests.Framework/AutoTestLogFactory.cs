@@ -1,6 +1,7 @@
 using Akka.Remote.Transport;
 using GridDomain.Logging;
 using Serilog;
+using Serilog.Events;
 using ILogger = GridDomain.Logging.ILogger;
 
 namespace GridDomain.Tests.Framework
@@ -13,10 +14,10 @@ namespace GridDomain.Tests.Framework
             return new SerilogLogger(GetConfiguration().CreateLogger()).ForContext("className", className);
         }
 
-        private LoggerConfiguration GetConfiguration()
+        private static LoggerConfiguration GetConfiguration()
         {
             return new LoggerConfiguration().WriteTo.RollingFile(".\\GridDomainLogs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt")
-            .WriteTo.Console();
+                                            .WriteTo.Console(LogEventLevel.Verbose);
         }
     }
 }

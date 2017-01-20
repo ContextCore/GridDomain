@@ -294,7 +294,6 @@
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
-    <Compile Include="Configuration\Akka\LogVerbosity.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultExceptionPolicy.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />

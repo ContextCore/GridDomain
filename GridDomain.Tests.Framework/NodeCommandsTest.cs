@@ -32,13 +32,17 @@ namespace GridDomain.Tests.Framework
 
     public abstract class NodeCommandsTest : TestKit
     {
-        protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
+        protected static readonly AkkaConfiguration AkkaConf;
         protected GridDomainNode GridNode;
       
-        private readonly Stopwatch _watch = new Stopwatch();
         protected virtual bool ClearDataOnStart { get; } = false;
         protected virtual bool CreateNodeOnEachTest { get; } = false;
 
+        static NodeCommandsTest()
+        {
+            LogManager.SetLoggerFactory(new AutoTestLogFactory());
+            AkkaConf = new AutoTestAkkaConfiguration();
+        }
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
             ClearDataOnStart = clearDataOnStart;
@@ -108,7 +112,6 @@ namespace GridDomain.Tests.Framework
 
         protected virtual async Task Start()
         {
-            LogManager.SetLoggerFactory(new AutoTestLogFactory());
 
             var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             if (ClearDataOnStart)

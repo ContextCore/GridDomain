@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.Tests.Framework;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit

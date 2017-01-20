@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
 
@@ -17,26 +19,26 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
 
         [OneTimeSetUp]
-        public void When_publishing_start_message()
+        public async Task When_publishing_start_message()
         {
-            _startMessage = (GotTiredEvent)
-               new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid())
-                   .CloneWithSaga(Guid.NewGuid());
+            _startMessage = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            _coffeMadeEvent = (CoffeMadeEvent)
-                new CoffeMadeEvent(_startMessage.FavoriteCoffeMachineId, _startMessage.PersonId)
-                    .CloneWithSaga(_startMessage.SagaId);
+            _coffeMadeEvent = new CoffeMadeEvent(_startMessage.FavoriteCoffeMachineId, _startMessage.PersonId,null,_startMessage.SagaId);
 
-            _reStartEvent = (GotTiredEvent)
-                new GotTiredEvent(Guid.NewGuid(),_startMessage.LovelySofaId, Guid.NewGuid())
-                    .CloneWithSaga(_startMessage.SagaId);
+            _reStartEvent = new GotTiredEvent(Guid.NewGuid(),_startMessage.LovelySofaId, Guid.NewGuid(), _startMessage.SagaId);
 
-            GridNode.Transport.Publish(_startMessage);
-            GridNode.Transport.Publish(_coffeMadeEvent);
-            GridNode.Transport.Publish(_reStartEvent);
+            await GridNode.NewDebugWaiter().Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                          .Create()
+                          .SendToSaga(_startMessage);
 
-            Thread.Sleep(3000);
-         
+            await GridNode.NewDebugWaiter().Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                          .Create()
+                          .SendToSaga(_coffeMadeEvent);
+
+            await GridNode.NewDebugWaiter().Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                          .Create()
+                          .SendToSaga(_reStartEvent);
+
             _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
         }
 

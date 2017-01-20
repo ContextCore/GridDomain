@@ -54,8 +54,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
-                await WaitForMessages(inbox, finalTimeout)
-                               .TimeoutAfter(finalTimeout);
+                await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
 
                 foreach (var type in _messageTypesToSubscribe)
                     _subscriber.Unsubscribe(inbox.Receiver,type);

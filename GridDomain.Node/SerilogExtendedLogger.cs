@@ -14,7 +14,6 @@ namespace GridDomain.Node
         /// </summary>
         public SerilogExtendedLogger()
         {
-          
             Receive<Error>(m => WithSerilog(logger => SetContextFromLogEvent(logger, m).Error(m.Cause, GetFormat(m.Message), GetArgs(m.Message))));
             Receive<Warning>(m => WithSerilog(logger => SetContextFromLogEvent(logger, m).Warn(GetFormat(m.Message), GetArgs(m.Message))));
             Receive<Info>(m => WithSerilog(logger => SetContextFromLogEvent(logger, m).Info(GetFormat(m.Message), GetArgs(m.Message))));

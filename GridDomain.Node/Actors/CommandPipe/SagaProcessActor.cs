@@ -24,34 +24,28 @@ namespace GridDomain.Node.Actors.CommandPipe
         public SagaProcessActor(ISagaProcessorCatalog catalog)
         {
             _catalog = catalog;
-
+        
             Receive<Initialize>(i =>
             {
                 _commandExecutionActor = i.CommandExecutorActor;
                 Sender.Tell(Initialized.Instance);
-                Become(Working);
             });
-        }
-
-        private void Working()
-        {
             //results of one command execution
             Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
             {
                 c.Message.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
                          .ToChain()
-                         .ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
-                         .PipeTo(Self, Sender);
+                         .ContinueWith(t => new SagasProcessComplete(t.Result?.ToArray(), t.Exception, c.Metadata))
+                         .PipeTo(Self);
             });
             Receive<IMessageMetadataEnvelop<IFault>>(c =>
             {
-                ProcessSagas(c).ContinueWith(t => new SagasProcessComplete(t.Result.ToArray(), c.Metadata))
-                               .PipeTo(Self, Sender);
+                ProcessSagas(c).ContinueWith(t => new SagasProcessComplete(t.Result?.ToArray(), t.Exception, c.Metadata))
+                               .PipeTo(Self);
             });
 
             Receive<SagasProcessComplete>(m =>
             {
-               // Sender.Tell(m);
                 foreach (var command in m.ProducedCommands)
                     _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata));
             });

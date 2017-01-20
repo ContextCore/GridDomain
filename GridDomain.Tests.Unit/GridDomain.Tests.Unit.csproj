@@ -246,6 +246,7 @@
     <Compile Include="CommandsExecution\AsyncExecute_without_timeout_using_node_defaults.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
     <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />
+    <Compile Include="LogTest.cs" />
     <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
