@@ -145,21 +145,14 @@ namespace GridDomain.Tests.Framework
             GridNode.System.EventStream.Subscribe(inbox.Receiver, typeof(Akka.Event.Error));
             _additionalLogCancellationTokenSource = new CancellationTokenSource();
 
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 while (!_additionalLogCancellationTokenSource.IsCancellationRequested)
                 {
                     try
                     {
-                        var receiveAsync = inbox.ReceiveAsync(TimeSpan.FromMilliseconds(5));
-                        var log = await receiveAsync;
-                        if (!_startLogging || receiveAsync.IsCanceled)
-                            continue;
-
-                        if(log is Failure)
-                            Console.WriteLine((log as Failure).Exception);
-                        else
-                            Console.WriteLine(log);
+                        var log = inbox.Receive();
+                        Console.WriteLine(log);
                     }
                     catch (Exception ex)
                     {
