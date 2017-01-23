@@ -21,8 +21,6 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 
         protected override IMessageRouteMap CreateMap()
         {
-            var container = new UnityContainer();
-            container.Register(CreateConfiguration());
             return new SampleRouteMap();
         }
 

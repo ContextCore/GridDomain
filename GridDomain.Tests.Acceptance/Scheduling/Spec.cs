@@ -73,9 +73,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         protected override void OnNodeStarted()
         {
-            TypesForScalarDestructionHolder.Add(typeof(Money));
-            LogManager.SetLoggerFactory(new DefaultLoggerFactory());
-
+            Serilog.Log.Logger = new AutoTestLoggerConfiguration().CreateLogger();
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             _container = GridNode.Container;
             _quartzScheduler = _container.Resolve<IScheduler>();

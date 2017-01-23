@@ -24,8 +24,10 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tests.Framework.Configuration;
+using Helios.Util;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using Serilog;
 
 namespace GridDomain.Tests.Framework
 {
@@ -34,13 +36,15 @@ namespace GridDomain.Tests.Framework
     {
         protected static readonly AkkaConfiguration AkkaConf;
         protected GridDomainNode GridNode;
-      
+        private CancellationTokenSource _additionalLogCancellationTokenSource;
+        private bool _startLogging = true;
+
         protected virtual bool ClearDataOnStart { get; } = false;
         protected virtual bool CreateNodeOnEachTest { get; } = false;
 
         static NodeCommandsTest()
         {
-            LogManager.SetLoggerFactory(new AutoTestLogFactory());
+            Serilog.Log.Logger = new AutoTestLoggerConfiguration().CreateLogger();
             AkkaConf = new AutoTestAkkaConfiguration();
         }
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
@@ -92,7 +96,9 @@ namespace GridDomain.Tests.Framework
         protected override void AfterAll()
         {
             if (!CreateNodeOnEachTest) return;
+            _additionalLogCancellationTokenSource.Cancel();
             GridNode.Stop().Wait(Timeout);
+
             base.AfterAll();
         }
 
@@ -123,8 +129,64 @@ namespace GridDomain.Tests.Framework
             OnNodeStarted();
         }
 
-        protected virtual void OnNodeCreated() { }
-        protected virtual void OnNodeStarted() { }
+        protected virtual void OnNodeCreated()
+        {
+            
+        }
+
+        //NUnit3 runner has a weird problem not passing logs from actor-invoked console.WriteLine 
+        //to runner output. It is a hack to get logs from system
+        private void AttachAdditionalLog()
+        {
+            var inbox = Inbox.Create(GridNode.System);
+            GridNode.System.EventStream.Subscribe(inbox.Receiver, typeof(Akka.Event.Debug));
+            GridNode.System.EventStream.Subscribe(inbox.Receiver, typeof(Akka.Event.Info));
+            GridNode.System.EventStream.Subscribe(inbox.Receiver, typeof(Akka.Event.Warning));
+            GridNode.System.EventStream.Subscribe(inbox.Receiver, typeof(Akka.Event.Error));
+            _additionalLogCancellationTokenSource = new CancellationTokenSource();
+
+            Task.Run(async () =>
+            {
+                while (!_additionalLogCancellationTokenSource.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var receiveAsync = inbox.ReceiveAsync(TimeSpan.FromMilliseconds(5));
+                        var log = await receiveAsync;
+                        if (!_startLogging || receiveAsync.IsCanceled)
+                            continue;
+
+                        if(log is Failure)
+                            Console.WriteLine((log as Failure).Exception);
+                        else
+                            Console.WriteLine(log);
+                    }
+                    catch (Exception ex)
+                    {
+                        continue;
+                    }
+                }
+
+                GridNode?.System?.EventStream?.Unsubscribe(inbox.Receiver, typeof(Akka.Event.Debug));
+                GridNode?.System?.EventStream?.Unsubscribe(inbox.Receiver, typeof(Akka.Event.Info));
+                GridNode?.System?.EventStream?.Unsubscribe(inbox.Receiver, typeof(Akka.Event.Warning));
+                GridNode?.System?.EventStream?.Unsubscribe(inbox.Receiver, typeof(Akka.Event.Error));
+
+                inbox.Dispose();
+
+            }, _additionalLogCancellationTokenSource.Token);
+        }
+
+        protected void StartLog()
+        {
+            _startLogging = true;
+        }
+
+        protected virtual void OnNodeStarted()
+        {
+            AttachAdditionalLog();
+            StartLog();
+        }
         
         /// <summary>
         /// Loads aggregate using Sys actor system

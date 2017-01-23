@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -12,7 +13,7 @@ namespace GridDomain.Node.Actors
 {
     public class MessageHandlingActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage> where TMessage : class
     {
-        private readonly ILogger _log = LogManager.GetLogger();
+        private ILoggingAdapter _log = Context.GetLogger();
         private readonly ActorMonitor _monitor;
         protected readonly IPublisher Publisher;
 
@@ -31,7 +32,7 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 var message = (TMessage)msg.Message;
 
-                _log.Trace("Handler actor got message: {@Message}", msg);
+                _log.Debug("Handler actor got message: {@Message}", msg);
                 var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
 
                 Func<Task> handlerExecute;

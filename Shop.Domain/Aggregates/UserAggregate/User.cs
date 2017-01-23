@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
+using Serilog;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 
 namespace Shop.Domain.Aggregates.UserAggregate
 {
     public class User : Aggregate
     {
-        private ILogger _logger = LogManager.GetLogger();
+        private ILogger _logger = Log.Logger.ForContext<User>();
         public string Login { get; private set; }
         public IDictionary<Guid,PendingOrder> PendingOrders { get; } = new Dictionary<Guid, PendingOrder>();
         public Guid Account { get; private set; }
@@ -27,12 +28,12 @@ namespace Shop.Domain.Aggregates.UserAggregate
             Apply<PendingOrderCanceled>(e =>
             {
                 if (!PendingOrders.Remove(e.OrderId))
-                    _logger.Warn("Could not find pending order {order} to cancel",e.OrderId);
+                    _logger.Warning("Could not find pending order {order} to cancel",e.OrderId);
             });
             Apply<PendingOrderCompleted>(e =>
             {
                 if (!PendingOrders.Remove(e.OrderId))
-                    _logger.Warn("Could not find pending order {order} to complete", e.OrderId);
+                    _logger.Warning("Could not find pending order {order} to complete", e.OrderId);
             });
         }
 

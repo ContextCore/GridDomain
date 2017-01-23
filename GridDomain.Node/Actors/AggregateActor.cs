@@ -66,7 +66,7 @@ namespace GridDomain.Node.Actors
             {
                 var cmd = m.Message;
                 Monitor.IncrementMessagesReceived();
-                _log.Trace("{Aggregate} received a {@command}", State.Id, cmd);
+                _log.Debug("{Aggregate} received a {@command}", State.Id, cmd);
                 try
                 {
                     State = _handler.Execute((TAggregate) State, cmd);

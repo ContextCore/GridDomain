@@ -10,6 +10,7 @@ using GridDomain.EventSourcing.Adapters;
 using GridDomain.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Serilog;
 using Wire;
 
 namespace GridDomain.EventSourcing
@@ -57,7 +58,7 @@ namespace GridDomain.EventSourcing
         {
             JsonSerializerSettings = settings ?? GetDefaultSettings();
         }
-        private readonly ILogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = Log.Logger.ForContext<DomainSerializer>();
 
         // <summary>
         // Serializes the given object into a byte array

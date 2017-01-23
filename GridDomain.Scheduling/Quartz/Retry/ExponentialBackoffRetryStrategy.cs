@@ -1,6 +1,7 @@
 using System;
 using GridDomain.Logging;
 using Quartz;
+using Serilog;
 
 namespace GridDomain.Scheduling.Quartz.Retry
 {
@@ -8,7 +9,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
     {
         private const string Retries = "Retries";
         private readonly IRetrySettings _settings;
-        private readonly ILogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = Log.Logger.ForContext<ExponentialBackoffRetryStrategy>();
 
         public ExponentialBackoffRetryStrategy(IRetrySettings settings)
         {

@@ -9,6 +9,7 @@ using Akka.Persistence.Sql.Common.Journal;
 using Akka.Persistence.SqlServer.Journal;
 using Akka.Serialization;
 using GridDomain.Logging;
+using Serilog;
 
 namespace GridDomain.Node
 {
@@ -38,7 +39,7 @@ namespace GridDomain.Node
 
         }
         protected override string ByPersistenceIdSql { get; }
-        private readonly ILogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = Log.Logger.ForContext<SqlDomainJournal>();
 
         private async Task RetryAsync(Func<Task> act, int maxCount = 3) 
         {
@@ -53,7 +54,7 @@ namespace GridDomain.Node
                 catch (Exception e)
                 {
                     ex = e;
-                    _log.Warn(e, "Got error on trying to execute a sql journal method, will retry");
+                    _log.Warning(e, "Got error on trying to execute a sql journal method, will retry");
                 }
             } while (SqlAzureRetriableExceptionDetector.ShouldRetryOn(ex) && --maxCount > 0);
 
@@ -73,7 +74,7 @@ namespace GridDomain.Node
                 catch (Exception e)
                 {
                     ex = e;
-                    _log.Warn(e, "Got error on trying to execute a sql journal method, will retry");
+                    _log.Warning(e, "Got error on trying to execute a sql journal method, will retry");
                 }
             } while (SqlAzureRetriableExceptionDetector.ShouldRetryOn(ex) && --maxCount > 0);
             _log.Error(ex, "Got fatal error trying to execute a sql journal method");
@@ -95,7 +96,7 @@ namespace GridDomain.Node
                 catch (Exception e)
                 {
                     ex = e;
-                    _log.Warn(e, "Got error on trying to execute a sql journal method, will retry");
+                    _log.Warning(e, "Got error on trying to execute a sql journal method, will retry");
                 }
             } while (SqlAzureRetriableExceptionDetector.ShouldRetryOn(ex) && --maxCount > 0);
 

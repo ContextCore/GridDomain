@@ -24,11 +24,11 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         }
 
         [Test]
-        public void C_message_should_end_wait()
+        public async Task C_message_should_end_wait()
         {
             Publish(_messageC);
 
-            ExpectMsg(_messageC);
+            await ExpectMsg(_messageC);
         }
 
         [Test]
@@ -40,12 +40,12 @@ namespace GridDomain.Tests.Unit.MessageWaiting
 
 
         [Test]
-        public void A_and_B_message_should_end_wait()
+        public async Task A_and_B_message_should_end_wait()
         {
             Publish(_messageA,_messageB);
 
-            ExpectMsg(_messageA);
-            ExpectMsg(_messageB);
+            await ExpectMsg(_messageA);
+            await ExpectMsg(_messageB);
         }
     }
 }

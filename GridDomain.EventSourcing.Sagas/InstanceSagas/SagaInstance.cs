@@ -8,6 +8,7 @@ using Automatonymous;
 using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.Logging;
+using Serilog;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
@@ -28,7 +29,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public readonly Saga<TSagaData> Machine;
         private readonly SagaStateAggregate<TSagaData> _dataAggregate;
 
-        private static readonly ILogger Log = LogManager.GetLogger();
+        private static readonly ILogger Log = Serilog.Log.Logger.ForContext<SagaInstance<TSaga, TSagaData>>();
         
         private List<ICommand> _commandsToDispatch = new List<ICommand>();
         public IReadOnlyCollection<ICommand> CommandsToDispatch => _commandsToDispatch;
@@ -60,12 +61,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         {
             if (!string.IsNullOrEmpty(CurrentStateName)) return true;
 
-            Log.Warn("Started saga {Type} {Id} without initialization.", GetType().Name, dataAggregate.Id);
-            Log.Warn(_dataAggregate.Data == null ? "Saga data is empty" : "Current state name is not specified");
+            Log.Warning("Started saga {Type} {Id} without initialization.", GetType().Name, dataAggregate.Id);
+            Log.Warning(_dataAggregate.Data == null ? "Saga data is empty" : "Current state name is not specified");
 
             if (!logUninitializedState) return false;
 
-            Log.Warn("Saga will not process and only record incoming messages");
+            Log.Warning("Saga will not process and only record incoming messages");
             return false;
         }
 
@@ -74,13 +75,13 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             //Saga is not initialized
             if (_dataAggregate.Id == Guid.Empty)
             {
-                Log.Trace("Saga {Saga} id is empty and it received message {Message}", typeof(TSaga).Name,message);
+                Log.Verbose("Saga {Saga} id is empty and it received message {Message}", typeof(TSaga).Name,message);
                 return;
             }
 
             if (_dataAggregate.Data== null)
             {
-                Log.Trace("Saga {Saga} data is empty and it received message {Message}", typeof(TSaga).Name,message);
+                Log.Verbose("Saga {Saga} data is empty and it received message {Message}", typeof(TSaga).Name,message);
                 return;
             }
 

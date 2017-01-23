@@ -103,6 +103,10 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NMoneys, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -121,6 +125,10 @@
     </Reference>
     <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.File.3.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.NUnit, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.NUnit.0.1.1\lib\net461\Serilog.Sinks.NUnit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -150,7 +158,6 @@
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="AutoFix.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
-    <Compile Include="AutoTestLogFactory.cs" />
     <Compile Include="CannotCreateCommandHandlerExeption.cs" />
     <Compile Include="CannotCreateGenericType.cs" />
     <Compile Include="CannotFindRequestedEventException.cs" />
@@ -168,6 +175,7 @@
     <Compile Include="AggregateTest.cs" />
     <Compile Include="GuidComparer.cs" />
     <Compile Include="InMemoryEventRepository.cs" />
+    <Compile Include="LoggingConfigurationExtensions.cs" />
     <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />
     <Compile Include="PersistentChildsRecycleConfiguration.cs" />

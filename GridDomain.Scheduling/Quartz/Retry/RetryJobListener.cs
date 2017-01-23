@@ -2,6 +2,7 @@ using System;
 using GridDomain.Logging;
 using Quartz;
 using Quartz.Listener;
+using Serilog;
 
 namespace GridDomain.Scheduling.Quartz.Retry
 {
@@ -13,7 +14,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
             this._retryStrategy = retryStrategy;
         }
         public override string Name => "Retry";
-        private ILogger _logger = LogManager.GetLogger();
+        private readonly ILogger _logger = Serilog.Log.Logger.ForContext<RetryJobListener>();
 
         public override void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {
@@ -22,7 +23,10 @@ namespace GridDomain.Scheduling.Quartz.Retry
                 ITrigger trigger = this._retryStrategy.GetTrigger(context);
                 bool unscheduled = context.Scheduler.UnscheduleJob(context.Trigger.Key);
                 DateTimeOffset nextRunAt = context.Scheduler.ScheduleJob(context.JobDetail, trigger);
-                _logger.Warn("Restarting job {key}",context.JobDetail.Key.Name);
+                _logger.Warning("Restarting job {key}, unsheduling was {unscheduled}, next start time {nextRunAt}", 
+                                        context.JobDetail.Key.Name,
+                                        unscheduled,
+                                        nextRunAt);
             }
         }
         public override void JobToBeExecuted(IJobExecutionContext context)

@@ -8,6 +8,8 @@ using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Event;
+using Akka.Util;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
@@ -19,18 +21,55 @@ using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using Microsoft.Practices.Unity;
+using NUnit.Framework;
 using Ploeh.AutoFixture;
+using Debug = System.Diagnostics.Debug;
 
 namespace GridGomain.Tests.Stress
 {
+    class TestLogActor : ReceiveActor
+
+    {
+        private readonly ILoggingAdapter _log = Context.GetLogger();
+
+        public TestLogActor()
+        {
+            _log.Debug("actor created debug");
+            _log.Info("actor info");
+            _log.Error("actor error");
+            _log.Warning("actor warn");
+
+            Console.WriteLine("Hi from console");
+            Debug.Print("Try debug write");
+            StandardOutWriter.WriteLine("Hi from standart out writer");
+          
+            ReceiveAny(o =>
+            {
+                Console.WriteLine("Hi from console on receive");
+
+                _log.Debug("Debug: received " + o);
+                _log.Info("Info: received " + o);
+                _log.Error("Error: received " + o);
+                _log.Warning("Warning: received " + o);
+                Sender.Tell(o);
+            });
+        }
+
+    }
+
     public class Program
     {
-        [HandleProcessCorruptedStateExceptions]
+      
         public static void Main(params string[] args)
         {
-            RawCommandExecution(1, 1000, 20);
+            //RawCommandExecution(1, 1000, 20);
+
+            var system = ActorSystem.Create("test");
+            var actor = system.ActorOf(Props.Create(() => new TestLogActor()));
+            actor.Ask<string>("hi").Wait();
+
             Console.WriteLine("Sleeping");
-            Thread.Sleep(60);
+            Console.ReadKey();
         }
 
         private static void RawCommandExecution(int totalAggregateScenariosCount, int aggregateScenarioPackSize, int aggregateChangeAmount)

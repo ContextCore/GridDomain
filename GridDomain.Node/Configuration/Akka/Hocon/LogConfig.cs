@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Akka.Event;
+using Akka.Logger.Serilog;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
@@ -31,7 +32,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 stdout-loglevel = " + logLevel + @"
                 loglevel=" + logLevel;
             logConfig += @"
-                loggers=["""+typeof(SerilogExtendedLogger).AssemblyQualifiedShortName() + @"""]
+                loggers=["""+typeof(SerilogLogger).AssemblyQualifiedShortName() + @"""]
 
                 actor.debug {"+
 #if DEBUG

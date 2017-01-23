@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Logging;
 using GridDomain.Scheduling.Akka.Messages;
@@ -13,7 +14,7 @@ namespace GridDomain.Scheduling.Integration
         public const string RegistrationName = nameof(SchedulingActor);
 
         private readonly IScheduler _scheduler;
-        private readonly ILogger _logger = LogManager.GetLogger();
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
         public SchedulingActor(IScheduler scheduler)
         {
             _logger.Debug("Scheduling actor started at path {Path}",Self.Path);

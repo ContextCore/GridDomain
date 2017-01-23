@@ -23,21 +23,21 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         }
 
         [Test]
-        public void Should_end_on_A_and_C()
+        public async Task Should_end_on_A_and_C()
         {
             Publish(_messageA);
             Publish(_messageC);
-            ExpectMsg(_messageA,m => m.Id == _messageA.Id);
-            ExpectMsg(_messageC,m => m.Id == _messageC.Id);
+            await ExpectMsg(_messageA,m => m.Id == _messageA.Id);
+            await ExpectMsg(_messageC,m => m.Id == _messageC.Id);
         }
 
         [Test]
-        public void Should_end_on_B_and_C()
+        public async  Task Should_end_on_B_and_C()
         {
             Publish(_messageB);
             Publish(_messageC);
-            ExpectMsg(_messageB, m => m.Id == _messageB.Id);
-            ExpectMsg(_messageC, m => m.Id == _messageC.Id);
+            await ExpectMsg(_messageB, m => m.Id == _messageB.Id);
+            await ExpectMsg(_messageC, m => m.Id == _messageC.Id);
         }
 
         [Test]

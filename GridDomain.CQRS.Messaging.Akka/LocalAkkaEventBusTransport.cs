@@ -5,6 +5,7 @@ using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Logging;
+using Serilog;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
@@ -12,7 +13,7 @@ namespace GridDomain.CQRS.Messaging.Akka
     {
         private readonly EventStream _bus;
         public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
-        private readonly ILogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = Log.Logger.ForContext<LocalAkkaEventBusTransport>();
 
         public LocalAkkaEventBusTransport(ActorSystem system)
         {
@@ -36,7 +37,7 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Publish(object msg)
         {
-            _log.Trace("Publishing {@Message} to transport", msg);
+            _log.Verbose("Publishing {@Message} to transport", msg);
             _bus.Publish(msg);
             //for backward compability - a lot of legacy code publish bare messages and expect some results back
             //and new actors \ sagas work only with IMessageMetadataEnvelop
@@ -45,7 +46,7 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            _log.Trace("Publishing {@Message} to transport with metadata {@metadata}", msg, metadata);
+            _log.Verbose("Publishing {@Message} to transport with metadata {@metadata}", msg, metadata);
             _bus.Publish(MessageMetadataEnvelop.NewGeneric(msg,metadata));
         }
 

@@ -3,13 +3,13 @@ using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using GridDomain.Common;
 using GridDomain.Logging;
-using LogManager = GridDomain.Logging.LogManager;
+using Serilog;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
     public class DistributedPubSubTransport : IActorTransport
     {
-        private readonly ILogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = Log.Logger.ForContext< DistributedPubSubTransport>();
         private readonly IActorRef _transport;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
 
@@ -46,13 +46,13 @@ namespace GridDomain.CQRS.Messaging.Akka
             //TODO: replace wait with actor call
             var ack = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
             subscribeNotificationWaiter.Tell(ack);
-            _log.Trace("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
+            _log.Verbose("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
         }
 
         public void Publish(object msg)
         {
             var topic = msg.GetType().FullName;
-            _log.Trace("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(),topic);
+            _log.Verbose("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(),topic);
             _transport.Tell(new Publish(topic, msg));
         }
 

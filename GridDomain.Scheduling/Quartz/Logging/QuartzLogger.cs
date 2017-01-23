@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Logging;
+using Serilog;
 
 
 namespace GridDomain.Scheduling.Quartz.Logging
@@ -10,12 +11,12 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public QuartzLogger()
         {
-            _coreLogger = LogManager.GetLogger();
+            _coreLogger = Log.Logger.ForContext<QuartzLogger>();
         }
 
         public void LogSuccess(string jobName)
         {
-            _coreLogger.Trace("Job {JobName} sucessfully finished", jobName);
+            _coreLogger.Information("Job {JobName} sucessfully finished", jobName);
         }
 
         public void LogFailure(string jobName, Exception e)
@@ -25,12 +26,12 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void LogWarn(string jobName, string message)
         {
-            _coreLogger.Warn("Job {JobName} got a warning {Message}", jobName, message);
+            _coreLogger.Warning("Job {JobName} got a warning {Message}", jobName, message);
         }
 
         public void LogInfo(string jobName, string message)
         {
-            _coreLogger.Warn("Job {JobName} says: {Message}", jobName, message);
+            _coreLogger.Information("Job {JobName} says: {Message}", jobName, message);
         }
     }
 }

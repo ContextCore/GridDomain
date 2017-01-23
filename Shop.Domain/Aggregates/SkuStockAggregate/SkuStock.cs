@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
+using Serilog;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 
@@ -14,7 +15,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         public Guid SkuId { get; private set; }
         public int Quantity { get; private set; }
 
-        private readonly ILogger _logger = LogManager.GetLogger();
+        private readonly ILogger _logger = Log.Logger.ForContext<SkuStock>();
 
         public readonly IDictionary<Guid, Reservation> Reservations = new Dictionary<Guid, Reservation>();
 
@@ -61,7 +62,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             Reservation reservation;
             if (!Reservations.TryGetValue(reserveId, out reservation))
             {
-                _logger.Warn("Could not find expired reservation {reserve}", reserveId);
+                _logger.Warning("Could not find expired reservation {reserve}", reserveId);
                 return;
             }
             Quantity += reservation.Quantity;

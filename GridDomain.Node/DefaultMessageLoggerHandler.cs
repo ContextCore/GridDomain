@@ -9,10 +9,8 @@ namespace GridDomain.Node
                                                IHandler<ICommand>,
                                                IHandler<IFault>
     {
-        private static readonly ILogger Log = LogManager.GetLogger().ForContext("GridInternal", true);
         private Task Handle(object msg)
         {
-            Log.Trace("got message from transpot: {@msg}", msg);
             return Task.CompletedTask;
         }
 

@@ -1,41 +1,73 @@
+using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
+using Akka.Util;
 using GridDomain.Logging;
 using GridDomain.Tests.Unit.CommandsExecution;
+using NMoneys;
 using NUnit.Framework;
+using Serilog;
+using Debug = System.Diagnostics.Debug;
 
 namespace GridDomain.Tests.Unit
 {
+
+    class TestLogActor : ReceiveActor
+
+    {
+        private readonly ILoggingAdapter _log = Context.GetLogger();
+
+        public TestLogActor()
+        {
+            _log.Debug("actor created debug");
+            _log.Info("actor info");
+            _log.Error("actor error");
+            _log.Warning("actor warn");
+
+            Console.WriteLine("Hi from console");
+
+            ReceiveAny(o =>
+            {
+                Console.WriteLine("Hi from console on receive");
+
+                _log.Debug("Debug: received " + o);
+                _log.Info("Info: received " + o);
+                _log.Error("Error: received " + o);
+                _log.Warning("Warning: received " + o);
+                Sender.Tell(o);
+            });
+        }
+
+    }
+
+
     [TestFixture]
     public class LogTest : SampleDomainCommandExecutionTests
     {
         [Test]
-        public void ShouldLogFrom_method()
+        public async Task ShouldLog_from_gridNode_actor()
         {
-            var logger = LogManager.GetLogger();
-
-            logger.Info("test info");
-            logger.Debug("test debug");
-            logger.Trace("test trace");
-        }
-
-        class TestLogActor : ReceiveActor
-        {
-
-            public TestLogActor()
-            {
-                var log = Context.GetLogger();
-                log.Debug("actor created debug");
-                log.Info("actor info");
-                log.Error("actor error");
-                log.Warning("actor warn");
-            }
+            var actor = GridNode.System.ActorOf(Props.Create(() => new TestLogActor()),"testLoggingActor");
+            await actor.Ask<string>("ping");
+            Thread.Sleep(500);
         }
 
         [Test]
-        public void ShouldLog_from_actor()
+        public async Task ShouldLog_from_test_system_actor()
         {
-            var actor = GridNode.System.ActorOf(Props.Create(() => new TestLogActor()));
+            var actor = Sys.ActorOf(Props.Create(() => new TestLogActor()));
+            await actor.Ask<string>("ping");
+            Thread.Sleep(500);
+        }
+
+
+        [Test]
+        public void Should_simplify_Money_class()
+        {
+            Serilog.Log.Logger.Error(new InvalidOperationException("ohshitwaddap"), "MONEY TEST {@placeholder}", new { Money = new Money(123, CurrencyIsoCode.RUB) });
         }
     }
 }

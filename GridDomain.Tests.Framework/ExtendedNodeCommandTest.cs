@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Framework
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
             return  new GridDomainNode(CreateConfiguration(),CreateMap(),() => new [] {Sys}, 
-                (InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig()));
+                (InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig()));
         } 
 
         protected virtual async Task SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase

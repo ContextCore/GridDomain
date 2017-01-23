@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
+using Akka.Event;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
@@ -18,7 +19,8 @@ namespace GridDomain.Node.Actors
         protected Guid Id { get; }
         protected readonly ISnapshotsPersistencePolicy SnapshotsPolicy;
         protected readonly ActorMonitor Monitor;
-        protected readonly ILogger _log = LogManager.GetLogger();
+        protected ILoggingAdapter _log = Context.GetLogger();
+
         protected readonly IPublisher Publisher;
         private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }

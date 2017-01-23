@@ -17,6 +17,8 @@ using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Routing;
 using Microsoft.Practices.Unity;
+using Serilog;
+using Serilog.Core;
 
 namespace GridDomain.Node
 {
@@ -31,13 +33,12 @@ namespace GridDomain.Node
         public IActorRef CommandExecutor { get; private set; }
         private readonly IUnityContainer _container;
 
-        private ILogger _log = LogManager.GetLogger();
+        private ILogger _log = Serilog.Log.Logger.ForContext<CommandPipeBuilder>();
 
         public CommandPipeBuilder(ActorSystem system, IUnityContainer container)
         {
             _container = container;
             _system = system;
-          //  var logger = system.GetLogger()
         }
 
         /// <summary>

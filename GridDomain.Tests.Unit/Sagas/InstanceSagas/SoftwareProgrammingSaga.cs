@@ -6,12 +6,14 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
+using Serilog;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     public class SoftwareProgrammingSaga: Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
+        private ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingSaga>();
 
         private static ISagaDescriptor CreateDescriptor()
         {
@@ -35,8 +37,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                     var sagaData = context.Instance;
                     var domainEvent = context.Data;
                     sagaData.PersonId = domainEvent.SourceId;
-                    var soloLogger = LogManager.GetLogger();
-                    soloLogger.Trace("Hello trace string");
+                    Log.Verbose("Hello trace string");
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId,sagaData.CoffeeMachineId));
                 }).TransitionTo(MakingCoffee),
 

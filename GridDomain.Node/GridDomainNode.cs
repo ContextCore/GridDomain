@@ -28,6 +28,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
+using Serilog;
 using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
 namespace GridDomain.Node
@@ -41,7 +42,7 @@ namespace GridDomain.Node
             {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
 
-        private readonly ILogger _log = LogManager.GetLogger();
+        private readonly ILogger _log = Log.Logger.ForContext<GridDomainNode>();
         private readonly IMessageRouteMap _messageRouting;
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
@@ -195,7 +196,7 @@ namespace GridDomain.Node
             }
             catch (Exception ex)
             {
-                _log.Warn($"Got error on quartz scheduler shutdown:{ex}");
+                _log.Warning($"Got error on quartz scheduler shutdown:{ex}");
             }
 
             if (System != null)
