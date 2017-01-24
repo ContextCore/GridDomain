@@ -1,25 +1,30 @@
 using System;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
-    public class SagaTransited
+
+    public interface ISagaTransitCompleted : IMessageMetadataEnvelop
     {
-        public ICommand[] ProducedCommands { get; }
-        public IMessageMetadata Metadata { get; }
-        public Exception Error { get; }
+        
+    }
 
-        public SagaTransited(ICommand[] producedCommands, IMessageMetadata metadata, Exception error = null)
+    public class SagaTransited: MessageMetadataEnvelop<ICommand[]>, ISagaTransitCompleted
+    {
+        public SagaTransited(ICommand[] producedCommands, IMessageMetadata metadata, ProcessEntry sagaProcesEntry,Exception error = null) :base(producedCommands,metadata)
         {
-            ProducedCommands = producedCommands;
-            Metadata = metadata;
-            Error = error;
+            SagaProcessEntry = sagaProcesEntry;
         }
+        public ICommand[] ProducedCommands => Message;
+        public ProcessEntry SagaProcessEntry { get; }
+    }
 
-        public static SagaTransited CreateError(Exception ex, IMessageMetadata metadata = null)
+    public class SagaTransitFault : MessageMetadataEnvelop<IFault>, ISagaTransitCompleted
+    {
+        public SagaTransitFault(IFault fault, IMessageMetadata metadata) : base(fault, metadata)
         {
-            return new SagaTransited(null,metadata,ex);
         }
     }
 }

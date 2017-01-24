@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
@@ -11,6 +12,9 @@ using GridDomain.Tests.Unit.Sagas.InstanceSagas;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
+using Akka.Actor;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
@@ -19,7 +23,8 @@ namespace GridDomain.Tests.Unit.Metadata
     {
         private Guid SagaId;
         private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
-        private IMessageMetadataEnvelop<MakeCoffeCommand> _answer;
+        private IMessageMetadataEnvelop<ICommand> _answer;
+        private MakeCoffeCommand command; 
         private GotTiredEvent _gotTiredEvent;
         private MessageMetadata _gotTiredEventMetadata;
 
@@ -30,12 +35,11 @@ namespace GridDomain.Tests.Unit.Metadata
             _gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(),Guid.NewGuid(), SagaId);
             _gotTiredEventMetadata = new MessageMetadata(_gotTiredEvent.SourceId, BusinessDateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid());
 
-            var res = await GridNode.NewDebugWaiter()
-                                    .Expect<IMessageMetadataEnvelop<MakeCoffeCommand>>()
-                                    .Create()
-                                    .SendToSaga(_gotTiredEvent, _gotTiredEventMetadata);
+            GridNode.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
+            GridNode.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new []{ _gotTiredEvent }, _gotTiredEventMetadata));
 
-            _answer = res.MessageWithMetadata<MakeCoffeCommand>();
+            _answer = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
+            command = _answer.Message as MakeCoffeCommand;
         }
 
 
@@ -60,7 +64,7 @@ namespace GridDomain.Tests.Unit.Metadata
         [Test]
         public void Result_message_has_expected_value()
         {
-            Assert.AreEqual(_gotTiredEvent.PersonId, _answer.Message.PersonId);
+            Assert.AreEqual(_gotTiredEvent.PersonId, command.PersonId);
         }
 
         [Test]

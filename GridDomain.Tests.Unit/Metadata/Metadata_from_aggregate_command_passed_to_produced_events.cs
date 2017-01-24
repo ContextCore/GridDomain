@@ -70,7 +70,6 @@ namespace GridDomain.Tests.Unit.Metadata
             Assert.AreEqual(_command.Id, _answer.Metadata.CasuationId);
         }
 
-
         [Test]
         public void Result_metadata_has_correlation_id_same_as_command_metadata()
         {

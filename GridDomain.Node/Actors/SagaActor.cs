@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -39,8 +40,9 @@ namespace GridDomain.Node.Actors
         public TSaga Saga => _saga ?? (_saga = _producer.Create(State));
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly Dictionary<Type, string> _sagaIdFields;
-        private readonly ProcessEntry _sagaProducedEntry;
         private readonly ProcessEntry _exceptionOnTransit;
+        private ProcessEntry _stateChanged { get; }
+        private readonly ProcessEntry _sagaProducedCommand;
 
         private Guid GetSagaId(DomainEvent msg)
         {
@@ -64,6 +66,7 @@ namespace GridDomain.Node.Actors
             _producer = producer;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
+ 
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Command<IMessageMetadataEnvelop<DomainEvent>>(m =>
@@ -81,7 +84,7 @@ namespace GridDomain.Node.Actors
 
                 //block any other executing until saga completes transition
                 ProcessSaga(msg, metadata).PipeTo(Self,Sender);
-                BecomeStacked(() => SagaProcessWaiting(msg));
+                BecomeStacked(() => SagaProcessWaiting(msg, metadata));
 
             }, e => GetSagaId(e.Message) == Id);
 
@@ -94,36 +97,44 @@ namespace GridDomain.Node.Actors
 
                 //block any other executing until saga completes transition
                 ProcessSaga(fault, metadata).PipeTo(Self,Sender);
-                BecomeStacked(() => SagaProcessWaiting(fault));
+                BecomeStacked(() => SagaProcessWaiting(fault, metadata));
             }, fault => fault.Message.SagaId == Id);
 
-            _sagaProducedEntry = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name, SagaActorLiterals.CreatedFaultForSagaTransit, SagaActorLiterals.SagaTransitCasedAndError);
+            _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published","Saga changed state");
+            _sagaProducedCommand = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
         }
 
-        private void SagaProcessWaiting(object message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message">Usially it is domain event or fault</param>
+        /// <param name="messageMetadata"></param>
+        private void SagaProcessWaiting(object message, IMessageMetadata messageMetadata)
         {
             CommandAny(o =>
             {
                 o.Match()
                  .With<SagaTransited>(r =>
                  {
-                     if (r.Error == null)
-                     {
-                         PersistState(r.Metadata);
-                     }
-                     else
-                     {
-                         PublishError(message, r.Metadata, r.Error.UnwrapSingle());
-                     }
-
-                     //notify saga process actor that saga transit is done
-                     Sender.Tell(r);
-                     Stash.UnstashAll();
-                     UnbecomeStacked();
+                     PersistState(messageMetadata);
+                     NotifySenderAndResume(r);
+                 })
+                 .With<SagaTransitFault>(f =>
+                 {
+                     PublishError(f.Message.Message, messageMetadata, f.Message.Exception.UnwrapSingle());
+                     NotifySenderAndResume(f);
                  })
                  .Default(m => Stash.Stash());
             });
+        }
+
+        private void NotifySenderAndResume(object message)
+        {
+            //notify saga process actor that saga transit is done
+            Sender.Tell(message);
+            Stash.UnstashAll();
+            UnbecomeStacked();
         }
 
         private void PublishError(object message, IMessageMetadata messageMetadata, Exception exception)
@@ -138,16 +149,23 @@ namespace GridDomain.Node.Actors
             Publisher.Publish(fault, metadata);
         }
 
-        private Task<SagaTransited> ProcessSaga(object message, IMessageMetadata domainEventMetadata)
+        private Task<object> ProcessSaga(object message, IMessageMetadata domainEventMetadata)
         {
             //cast is need for dynamic call of Transit
             Task processSagaTask = (Saga as ISagaInstance).Transit((dynamic) message);
             return processSagaTask.ContinueWith(t =>
             {
-                if (t.IsFaulted)  return SagaTransited.CreateError(t.Exception, domainEventMetadata);
-                if (t.IsCanceled) return SagaTransited.CreateError(t.Exception as Exception ?? new TimeoutException(), domainEventMetadata);
+                if (t.IsCanceled || t.IsFaulted)
+                {
+                    Saga.ClearCommandsToDispatch();
+                    var exception = t.Exception as Exception ?? new TimeoutException();
+                    var fault = Fault.NewGeneric(message, exception, Id, typeof(TSaga));
+                    return (object)new SagaTransitFault(fault, domainEventMetadata);
+                }
 
-                var sagaTransited = new SagaTransited(Saga.CommandsToDispatch.ToArray(), domainEventMetadata);
+                var sagaTransited = new SagaTransited(Saga.CommandsToDispatch.ToArray(),
+                                                      domainEventMetadata,
+                                                      _sagaProducedCommand);
                 Saga.ClearCommandsToDispatch();
 
                 return sagaTransited;
@@ -163,18 +181,23 @@ namespace GridDomain.Node.Actors
             PersistAll(stateChangeEvents, 
             e =>
             {
-                var metadata = mutatorMessageMetadata.CreateChild(e.SourceId, 
-                                                                  new ProcessEntry(Self.Path.Name,
-                                                                                   "Saga state event published",
-                                                                                   "Saga changed state"));
-                Publisher.Publish(e, metadata);
                 NotifyPersistenceWatchers(new Persisted(e));
                 //should save snapshot only after all messages persisted as state was already modified by all of them
                 if(++persistedEvents == totalEvents)
-                    TrySaveSnapshot(stateChangeEvents);
-
+                    OnStatePersisted(stateChangeEvents, mutatorMessageMetadata);
             });
+
             State.ClearUncommittedEvents();
+        }
+
+        private void OnStatePersisted(DomainEvent[] stateChangeEvents, IMessageMetadata eventsMetadata)
+        {
+            foreach (var e in stateChangeEvents)
+            {
+                var metadata = eventsMetadata.CreateChild(e.SourceId,_stateChanged);
+                Publisher.Publish(e, metadata);
+            }
+            TrySaveSnapshot(stateChangeEvents);
         }
 
     }

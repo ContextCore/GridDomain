@@ -67,6 +67,7 @@ namespace GridDomain.Node.Actors
                 var cmd = m.Message;
                 Monitor.IncrementMessagesReceived();
                 _log.Debug("{Aggregate} received a {@command}", State.Id, cmd);
+
                 try
                 {
                     State = _handler.Execute((TAggregate) State, cmd);
@@ -74,7 +75,7 @@ namespace GridDomain.Node.Actors
                 catch (Exception ex)
                 {
                     WaitForFaultProcessedByHandlers(cmd, ex, m.Metadata);
-                    BecomeStacked(WaitingHandlersProcess);
+                    BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
                     return;
                 }
 
@@ -82,7 +83,7 @@ namespace GridDomain.Node.Actors
 
                 ProcessAsyncMethods(cmd, m.Metadata);
 
-                BecomeStacked(WaitingHandlersProcess);
+                BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
             });
           
         }
@@ -122,7 +123,7 @@ namespace GridDomain.Node.Actors
             State.ClearUncommittedEvents();
         }
 
-        private void WaitingHandlersProcess()
+        private void WaitingHandlersProcess(IMessageMetadata commandMetadata)
         {
             CommandAny(c =>
             {
@@ -131,12 +132,12 @@ namespace GridDomain.Node.Actors
                  {
                      foreach (var e in processComplete.DomainEvents)
                      {
-                         var eventMetadata = processComplete.Metadata.CreateChild(e.SourceId,_domainEventProcessEntry);
+                         var eventMetadata = commandMetadata.CreateChild(e.SourceId,_domainEventProcessEntry);
                          Publisher.Publish(e, eventMetadata);
                      }
 
                      if(processComplete.Fault != null)
-                         Publisher.Publish(processComplete.Fault, processComplete.Metadata);
+                         Publisher.Publish(processComplete.Fault, commandMetadata);
 
                      UnbecomeStacked();
                      Stash.UnstashAll();

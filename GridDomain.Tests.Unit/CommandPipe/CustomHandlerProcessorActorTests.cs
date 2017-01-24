@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             //TestActor as processor receives message for work
             ExpectMsg<MessageMetadataEnvelop<DomainEvent>>();
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should resend domain event to next step - saga actor - for processing
             ExpectMsg<MessageMetadataEnvelop<DomainEvent[]>>();
         }
@@ -62,9 +62,9 @@ namespace GridDomain.Tests.Unit.CommandPipe
             actor.Tell(msgA);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
 
             //but handlers will finish their work later in undefined sequence
             ExpectMsg<HandlerExecuted>();
@@ -97,9 +97,9 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
         }
 
         
@@ -131,9 +131,9 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
         }
 
         [Test]
@@ -148,7 +148,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             actor.Tell(msg);
 
             //processor did not run, but we received processing complete message
-            ExpectMsg<HandlersExecuted>();
+            ExpectMsg<AllHandlersCompleted>();
         }
     }
 }

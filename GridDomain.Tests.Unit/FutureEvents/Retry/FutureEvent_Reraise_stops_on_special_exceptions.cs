@@ -9,6 +9,7 @@ using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
@@ -23,15 +24,14 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
                 
             }
 
-
             class StopOnTestExceptionPolicy : IExceptionPolicy
             {
                 public bool ShouldContinue(Exception ex)
                 {
                     _policyCallNumber ++;
                     var domainException = ex.UnwrapSingle();
-                    if (domainException is TestScheduledException)
-                        return false;
+                    if (domainException is TestScheduledException) return false;
+
                     if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException)
                         return false;
 
@@ -53,15 +53,11 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",2);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",2);
 
-            var waiter =  GridNode.NewWaiter()
-                                  .Expect<JobFailed>()
-                                  .Create();
-
-            GridNode.Execute(_command);
-
-            var res = await waiter;
+            await GridNode.Prepare(command)
+                          .Expect<JobFailed>()
+                          .Execute();
 
             Thread.Sleep(5000);
 

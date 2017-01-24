@@ -24,6 +24,7 @@ namespace GridDomain.Node.Actors
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
         private readonly ActorMonitor _monitor;
         private readonly ILoggingAdapter Logger = Context.GetLogger();
+        private readonly ProcessEntry _forwardEntry;
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
@@ -33,6 +34,7 @@ namespace GridDomain.Node.Actors
         {
             _recycleConfiguration = recycleConfiguration;
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
+            _forwardEntry = new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded");
 
             Receive<ClearChilds>(m => Clear());
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
@@ -40,7 +42,7 @@ namespace GridDomain.Node.Actors
             {
                 ChildInfo knownChild;
 
-                messageWitMetadata.Metadata.History.Add(new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded"));
+                messageWitMetadata.Metadata.History.Add(_forwardEntry);
 
                 var childId = GetChildActorId(messageWitMetadata.Message);
                 var name = GetChildActorName(messageWitMetadata.Message);

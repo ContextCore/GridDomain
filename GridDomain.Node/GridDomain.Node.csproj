@@ -259,7 +259,7 @@
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\SagaProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\SagasProcessComplete.cs" />
     <Compile Include="Actors\CommandPipe\HandlersProcessActor.cs" />
-    <Compile Include="Actors\CommandPipe\HandlersExecuted.cs" />
+    <Compile Include="Actors\CommandPipe\AllHandlersCompleted.cs" />
     <Compile Include="Actors\CommandPipe\IDomainEventHandlersChain.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\AggregateProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\MessageProcessPolicy.cs" />

@@ -16,5 +16,7 @@ namespace GridDomain.Common
         public string Who { get; }
         public string Why { get; }
         public string What { get; }
+
+        public static ProcessEntry Empty { get; } = new ProcessEntry(null,null);
     }
 }

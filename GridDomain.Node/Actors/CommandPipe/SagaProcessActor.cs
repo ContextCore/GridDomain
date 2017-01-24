@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -24,41 +25,58 @@ namespace GridDomain.Node.Actors.CommandPipe
         public SagaProcessActor(ISagaProcessorCatalog catalog)
         {
             _catalog = catalog;
-        
+
             Receive<Initialize>(i =>
             {
                 _commandExecutionActor = i.CommandExecutorActor;
                 Sender.Tell(Initialized.Instance);
             });
             //results of one command execution
-            Receive<AllHandlersCompleted>(c =>
+            Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
             {
-                c.DomainEvents.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
+                c.Message.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
                          .ToChain()
-                         .ContinueWith(t => new SagasProcessComplete(t.Result?.ToArray(), t.Exception, c.Metadata))
-                         .PipeTo(Self);
+                         .ContinueWith(t =>
+                         {
+                             t.Result.ForEach(cmd => _commandExecutionActor.Tell(cmd));
+                         });
             });
+
             Receive<IMessageMetadataEnvelop<IFault>>(c =>
             {
-                ProcessSagas(c).ContinueWith(t => new SagasProcessComplete(t.Result?.ToArray(), t.Exception, c.Metadata))
-                               .PipeTo(Self);
+                ProcessSagas(c).ContinueWith(t =>
+                {
+                    t.Result.ForEach(cmd => _commandExecutionActor.Tell(cmd));
+                });
             });
 
             Receive<SagasProcessComplete>(m =>
             {
-                foreach (var command in m.ProducedCommands)
-                    _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata));
+                SendCommandForExecution(m);
             });
         }
 
-        private Task<IEnumerable<ICommand>> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
+        private void SendCommandForExecution(SagasProcessComplete m)
+        {
+            foreach (var command in m.ProducedCommands)
+                _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata.CreateChild(command.Id)));
+        }
+
+        private Task<IEnumerable<MessageMetadataEnvelop<ICommand>>> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
             IReadOnlyCollection<Processor> eventProcessors = _catalog.GetSagaProcessor(messageMetadataEnvelop.Message);
             if(!eventProcessors.Any())
-                 return Task.FromResult(Enumerable.Empty<ICommand>());
+                 return Task.FromResult(Enumerable.Empty<MessageMetadataEnvelop<ICommand>>());
 
-            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<SagaTransited>(messageMetadataEnvelop)))
-                       .ContinueWith(t => t.Result.SelectMany(c => c.ProducedCommands));
+            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))
+                       .ContinueWith(t => CreateCommandEnvelops(t.Result));
+        }
+
+        private static IEnumerable<MessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<ISagaTransitCompleted> messages)
+        {
+            return messages.OfType<SagaTransited>()
+                           .SelectMany(msg => msg.ProducedCommands.Select(c =>
+                            new MessageMetadataEnvelop<ICommand>(c, msg.Metadata.CreateChild(c.Id, msg.SagaProcessEntry))));
         }
     }
 }

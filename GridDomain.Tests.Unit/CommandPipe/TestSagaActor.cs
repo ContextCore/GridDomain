@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
             {
                 Task.Delay(sleep)
-                    .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata))
+                    .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty))
                     .PipeTo(Self, Sender);
             });
 

@@ -8,6 +8,7 @@ using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
@@ -34,19 +35,17 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
         public async Task Should_retry_on_exception()
         {
             //will retry 1 time
-            var _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",1);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",1);
 
-            var waiter =  GridNode.NewWaiter(TimeSpan.FromMinutes(1))
-                .Expect<JobFailed>()
-                .And<JobSucceeded>()
-                .And<TestErrorDomainEvent>()
-                .Create();
-
-            GridNode.Execute(_command);
+            var waiter = GridNode.Prepare(command)
+                                 .Expect<JobFailed>()
+                                 .And<JobSucceeded>()
+                                 .And<TestErrorDomainEvent>()
+                                 .Execute(TimeSpan.FromMinutes(1));
 
             var res = await waiter;
 
-            Assert.AreEqual(_command.Value, res.Message<TestErrorDomainEvent>().Value);
+            Assert.AreEqual(command.Value, res.Message<TestErrorDomainEvent>().Value);
         }
     }
 }
