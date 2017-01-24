@@ -357,7 +357,7 @@
     <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
     <Compile Include="Configuration\Composition\Container.cs" />
-    <Compile Include="Configuration\Composition\EmptyContainerConfig.cs" />
+    <Compile Include="Configuration\Composition\EmptyContainerConfiguration.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
     <Compile Include="ActorMessagesRouter.cs" />

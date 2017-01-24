@@ -12,7 +12,7 @@ using Quartz;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    public abstract class FutureEventsTest : ExtendedNodeCommandTest
+    public abstract class FutureEventsTest : NodeCommandsTest
     {
         protected IScheduler Scheduler;
 

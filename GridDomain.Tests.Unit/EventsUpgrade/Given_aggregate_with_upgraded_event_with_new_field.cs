@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     [TestFixture]
-    public class Given_aggregate_with_upgraded_event_with_new_field: ExtendedNodeCommandTest
+    public class Given_aggregate_with_upgraded_event_with_new_field: NodeCommandsTest
     {
         private Guid _balanceId;
         private BalanceAggregate _aggregate;
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
                 new BalanceChangedEvent_V1(5, _balanceId),
             };
 
-             await SaveInJournal<BalanceAggregate>(_balanceId, events);
+             await SaveToJournal<BalanceAggregate>(_balanceId, events);
              _aggregate = LoadAggregate<BalanceAggregate>(_balanceId);
         }
 

@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     [TestFixture]
     [Ignore("Under development")]
-    public class Future_events_upgraded_by_events_adapter : ExtendedNodeCommandTest
+    public class Future_events_upgraded_by_events_adapter :  NodeCommandsTest
     {
         class BalanceChanged_eventdapter1 : DomainEventAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
         {

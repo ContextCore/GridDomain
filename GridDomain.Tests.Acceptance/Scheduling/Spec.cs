@@ -35,7 +35,7 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
     [TestFixture]
-    public class Spec : ExtendedNodeCommandTest
+    public class Spec: NodeCommandsTest
     {
         private const string Name = "test";
         private const string Group = "test";
@@ -73,11 +73,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         protected override void OnNodeStarted()
         {
-            Serilog.Log.Logger = new AutoTestLoggerConfiguration().CreateLogger();
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             _container = GridNode.Container;
             _quartzScheduler = _container.Resolve<IScheduler>();
             _scheduler = GridNode.System.ActorOf(GridNode.System.DI().Props<SchedulingActor>());
+            base.OnNodeStarted();
         }
 
         [SetUp]

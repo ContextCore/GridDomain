@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(_sagaData, sagaId);
 
-            await SaveInJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId,sagaDataEvent);
+            await SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId,sagaDataEvent);
 
             Thread.Sleep(100);
             _coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid(), BusinessDateTime.UtcNow,sagaId);

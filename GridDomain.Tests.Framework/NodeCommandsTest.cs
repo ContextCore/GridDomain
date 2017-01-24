@@ -13,7 +13,9 @@ using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
@@ -23,7 +25,10 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Akka.Hocon;
+using GridDomain.Node.Configuration.Composition;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tools.Repositories;
 using Helios.Util;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
@@ -34,25 +39,50 @@ namespace GridDomain.Tests.Framework
 
     public abstract class NodeCommandsTest : TestKit
     {
-        protected static readonly AkkaConfiguration AkkaConf;
+        protected static readonly AkkaConfiguration AkkaConf = new AutoTestAkkaConfiguration();
         protected GridDomainNode GridNode;
         private CancellationTokenSource _additionalLogCancellationTokenSource;
         private bool _startLogging = true;
-
+        protected virtual bool LogOnStartup { get; } = false;
         protected virtual bool ClearDataOnStart { get; } = false;
         protected virtual bool CreateNodeOnEachTest { get; } = false;
+        protected virtual bool InMemory { get; } = true;
+        protected static readonly AkkaConfiguration AkkaCfg = new AutoTestAkkaConfiguration();
+        protected IPublisher Publisher => GridNode.Transport;
 
         static NodeCommandsTest()
         {
             Serilog.Log.Logger = new AutoTestLoggerConfiguration().CreateLogger();
-            AkkaConf = new AutoTestAkkaConfiguration();
         }
+
         protected NodeCommandsTest(string config, string name = null, bool clearDataOnStart = true) : base(config, name)
         {
             ClearDataOnStart = clearDataOnStart;
         }
+        protected NodeCommandsTest(bool inMemory = true, AkkaConfiguration cfg = null) : 
+            this( inMemory ? (cfg ?? AkkaCfg).ToStandAloneInMemorySystemConfig() : (cfg ?? AkkaCfg).ToStandAloneSystemConfig()
+                , AkkaCfg.Network.SystemName
+                , !inMemory)
+        {
+            InMemory = inMemory;
+        }
 
-        protected abstract TimeSpan Timeout { get; }
+        protected virtual GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
+        {
+            return new GridDomainNode(CreateConfiguration(), CreateMap(), () => new[] { Sys },
+                (InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig()));
+        }
+        protected virtual IContainerConfiguration CreateConfiguration()
+        {
+            return new EmptyContainerConfiguration();
+        }
+
+        protected virtual IMessageRouteMap CreateMap()
+        {
+            return new CustomRouteMap();
+        }
+
+        protected virtual TimeSpan Timeout { get; }
 
         [OneTimeTearDown]
         public async Task DeleteSystems()
@@ -63,35 +93,30 @@ namespace GridDomain.Tests.Framework
             await GridNode.Stop();
         }
 
-        protected IActorRef LookupAggregateActor<T>(Guid id) where T: IAggregate
+        protected async Task<IActorRef> LookupAggregateActor<T>(Guid id) where T: IAggregate
         {
            var name = AggregateActorName.New<T>(id).Name;
-           return ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/{name}");
-        }
-        protected IActorRef LookupAggregateHubActor<T>(string pooled) where T: IAggregate
-        {
-           return ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}");
+           return await ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/{name}");
         }
 
-        private IActorRef ResolveActor(string actorPath)
+        protected async Task<IActorRef> LookupAggregateHubActor<T>(string pooled) where T: IAggregate
         {
-            return GridNode.System.ActorSelection(actorPath)
-                                  .ResolveOne(Timeout)
-                                  .Result;
+           return await ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}");
         }
-
-        protected IActorRef LookupSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
+        
+        protected async Task<IActorRef> LookupSagaActor<TSaga,TData>(Guid id) where TData: ISagaState
         {
             var sagaName = AggregateActorName.New<SagaStateAggregate<TData>>(id).Name;
             var sagaType = typeof(TSaga).BeautyName();
 
-            return GetSagaActor(sagaType, sagaName);
+            return await ResolveActor($"akka://LocalSystem/user/{sagaType}/{sagaName}");
+        }
+        private async Task<IActorRef> ResolveActor(string actorPath, TimeSpan? timeout = null)
+        {
+            return await GridNode.System.ActorSelection(actorPath)
+                                        .ResolveOne(timeout ?? Timeout);
         }
 
-        private IActorRef GetSagaActor(string sagaType, string sagaName)
-        {
-            return ResolveActor($"akka://LocalSystem/user/{sagaType}/{sagaName}");
-        }
 
         protected override void AfterAll()
         {
@@ -118,7 +143,6 @@ namespace GridDomain.Tests.Framework
 
         protected virtual async Task Start()
         {
-
             var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             if (ClearDataOnStart)
                 TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
@@ -129,10 +153,7 @@ namespace GridDomain.Tests.Framework
             OnNodeStarted();
         }
 
-        protected virtual void OnNodeCreated()
-        {
-            
-        }
+        protected virtual void OnNodeCreated(){}
 
         //NUnit3 runner has a weird problem not passing logs from actor-invoked console.WriteLine 
         //to runner output. It is a hack to get logs from system
@@ -190,16 +211,11 @@ namespace GridDomain.Tests.Framework
         public virtual T LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var name = AggregateActorName.New<T>(id).ToString();
-            return LoadAggregate<T>(name).Result;
-        }
-
-        public async Task<T> LoadAggregate<T>(string name) where T : AggregateBase
-        {
-            var actor = await LoadActorByDI<AggregateActor<T>>(name);
+            var actor = LoadActor<AggregateActor<T>>(name).Result;
             return (T)actor.State;
         }
 
-        private async Task<T> LoadActorByDI<T>(string name) where T : ActorBase
+        private async Task<T> LoadActor<T>(string name) where T : ActorBase
         {
             var props = GridNode.System.DI().Props<T>();
            
@@ -212,24 +228,28 @@ namespace GridDomain.Tests.Framework
             return actor.UnderlyingActor;
         }
 
-        public TSagaState LoadSagaState<TSaga, TSagaState>(Guid id) where TSagaState : AggregateBase where TSaga : class, ISagaInstance
-        {
-            var name = AggregateActorName.New<TSagaState>(id).ToString();
-            var actor = LoadActorByDI<SagaActor<TSaga, TSagaState>>(name).Result;
-            return (TSagaState)actor.Saga.Data;
-        }
-        public SagaStateAggregate<TSagaState> LoadInstanceSagaState<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
+        public async Task<SagaStateAggregate<TSagaState>> LoadSaga<TSaga, TSagaState>(Guid id) where TSagaState : class, ISagaState
                                                                             where TSaga : Saga<TSagaState>
         {
-            return  LoadSagaState<ISagaInstance<TSaga,TSagaState>, SagaStateAggregate<TSagaState>>(id);
+            var name = AggregateActorName.New<SagaStateAggregate<TSagaState>>(id).ToString();
+            var actor = await LoadActor<SagaActor<ISagaInstance<TSaga, TSagaState>, SagaStateAggregate<TSagaState>>>(name);
+            return actor.Saga.Data;
         }
 
-        protected abstract GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf);
 
-
-        protected void SaveToJournal(params object[] messages)
+        protected virtual async Task SaveToJournal<TAggregate>(Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
         {
-            var persistenceExtension = Akka.Persistence.Persistence.Instance.Get(GridNode.System) ?? Akka.Persistence.Persistence.Instance.Apply(GridNode.System);
+            string persistId = AggregateActorName.New<TAggregate>(id).ToString();
+            var persistActor = GridNode.System.ActorOf(
+                Props.Create(() => new EventsRepositoryActor(persistId)), Guid.NewGuid().ToString());
+
+            foreach (var o in messages)
+                await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o));
+        }
+
+        protected void SaveToJournalDirectly(params object[] messages)
+        {
+            var persistenceExtension = Persistence.Instance.Get(GridNode.System) ?? Persistence.Instance.Apply(GridNode.System);
 
             var settings = persistenceExtension.Settings;
             var journal = persistenceExtension.JournalFor(null);
@@ -250,7 +270,7 @@ namespace GridDomain.Tests.Framework
         }
 
 
-        protected IEnumerable<object> LoadFromJournal(string persistenceId, int expectedCount)
+        protected IEnumerable<object> LoadFromJournalDirectly(string persistenceId, int expectedCount)
         {
             var persistenceExtension = Akka.Persistence.Persistence.Instance.Get(GridNode.System) ?? Akka.Persistence.Persistence.Instance.Apply(GridNode.System);
             var settings = persistenceExtension.Settings;

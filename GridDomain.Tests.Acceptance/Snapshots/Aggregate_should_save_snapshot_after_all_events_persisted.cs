@@ -88,7 +88,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                           .Expect<SampleAggregateCreatedEvent>()
                           .Execute();
 
-            var aggregateActorRef = LookupAggregateActor<SampleAggregate>(_aggregateId);
+            var aggregateActorRef = await LookupAggregateActor<SampleAggregate>(_aggregateId);
 
             aggregateActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
 

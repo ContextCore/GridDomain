@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Acceptance.Chronicles
             _sampleAggregateCreatedEvent = new SampleAggregateCreatedEvent("123", aggregateId);
             _sampleAggregateChangedEvent = new SampleAggregateChangedEvent("234", aggregateId);
 
-            SaveInJournal<SampleAggregate>(aggregateId, _sampleAggregateCreatedEvent, _sampleAggregateChangedEvent);
+            SaveToJournal<SampleAggregate>(aggregateId, _sampleAggregateCreatedEvent, _sampleAggregateChangedEvent);
 
             EventsReplayInfoHolder.ProcessedMessages[aggregateId] = new List<ProcessedHistory>();
 

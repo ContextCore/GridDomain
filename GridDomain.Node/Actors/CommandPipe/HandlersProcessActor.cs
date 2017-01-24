@@ -33,17 +33,17 @@ namespace GridDomain.Node.Actors.CommandPipe
                 var sender = Sender;
                 eventsToProcess.Select(e => SynhronizeHandlers(new MessageMetadataEnvelop<DomainEvent>(e, envelop.Metadata)))
                                .ToChain()
-                               .ContinueWith(t => new HandlersExecuted(envelop.Metadata, envelop.Message))
+                               .ContinueWith(t => new AllHandlersCompleted(envelop.Metadata, envelop.Message))
                                .PipeTo(Self, sender);
             });
 
             Receive<IMessageMetadataEnvelop<IFault>>(envelop =>
             {
-                SynhronizeHandlers(envelop).ContinueWith(t => new HandlersExecuted(envelop.Metadata, envelop.Message))
+                SynhronizeHandlers(envelop).ContinueWith(t => new AllHandlersCompleted(envelop.Metadata, envelop.Message))
                                            .PipeTo(Self, Sender);;
             });
 
-            Receive<HandlersExecuted>(m =>
+            Receive<AllHandlersCompleted>(m =>
             {
                 Sender.Tell(m); //notifying aggregate actor
 

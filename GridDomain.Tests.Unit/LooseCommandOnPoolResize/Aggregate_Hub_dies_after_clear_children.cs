@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.LooseCommandOnPoolResize
                           .Expect<SampleAggregateCreatedEvent>()
                           .Execute();
 
-            var aggregate = LookupAggregateActor<SampleAggregate>(cmd.AggregateId);
+            var aggregate = await LookupAggregateActor<SampleAggregate>(cmd.AggregateId);
             Watch(aggregate);
 
             ExpectMsg<Terminated>(t => t.ActorRef.Path == aggregate.Path, Timeout);
@@ -50,8 +50,8 @@ namespace GridDomain.Tests.Unit.LooseCommandOnPoolResize
             char pooledLetter = 'a';
             for (int n = 0; n < Environment.ProcessorCount; n++)
             {
-                var pooledHub = LookupAggregateHubActor<SampleAggregate>("$" + pooledLetter++);
-                pooledHub.Ask<HealthStatus>(new CheckHealth("123")).Wait();
+                var pooledHub = await LookupAggregateHubActor<SampleAggregate>("$" + pooledLetter++);
+                await pooledHub.Ask<HealthStatus>(new CheckHealth("123"));
             }
         }
 

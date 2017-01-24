@@ -36,9 +36,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                 new EventB(id, orderB)
             };
 
-            SaveToJournal(events);
+            SaveToJournalDirectly(events);
 
-            var loadedEvents = LoadFromJournal("testId", 2).ToArray();
+            var loadedEvents = LoadFromJournalDirectly("testId", 2).ToArray();
             var expectA = loadedEvents.OfType<EventA>().FirstOrDefault();
             var expectB = loadedEvents.OfType<EventB>().FirstOrDefault();
 

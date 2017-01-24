@@ -93,7 +93,7 @@ namespace GridDomain.Node.Actors
 
             var metadata = messageMetadata.CreateChild(cmd.Id, _domainEventProcessFailEntry);
 
-            _customHandlersActor.Ask<HandlersExecuted>(new MessageMetadataEnvelop<IFault>(fault,metadata))
+            _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault,metadata))
                                 .PipeTo(Self);
 
             Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
@@ -127,7 +127,7 @@ namespace GridDomain.Node.Actors
             CommandAny(c =>
             {
                 c.Match()
-                 .With<HandlersExecuted>(processComplete =>
+                 .With<AllHandlersCompleted>(processComplete =>
                  {
                      foreach (var e in processComplete.DomainEvents)
                      {
@@ -173,7 +173,7 @@ namespace GridDomain.Node.Actors
                          .With<FutureEventCanceledEvent>(m => Handle(m, eventCommonMetadata));
             }
 
-            _customHandlersActor.Ask<HandlersExecuted>(envelop)
+            _customHandlersActor.Ask<AllHandlersCompleted>(envelop)
                                 .PipeTo(Self);
         }
 

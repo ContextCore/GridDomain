@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Shop.Tests.Acceptance.UserFlows
 {
     [TestFixture]
-    public class User_buy_now : ExtendedNodeCommandTest
+    public class User_buy_now : NodeCommandsTest
     {
         protected override TimeSpan Timeout { get; }
         protected override IContainerConfiguration CreateConfiguration()

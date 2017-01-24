@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -22,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
 
         [OneTimeSetUp]
-        public void Test()
+        public async Task Test()
         {
             var saga = new SoftwareProgrammingSaga();
             var state = new SoftwareProgrammingSagaData(Guid.NewGuid(),saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
@@ -34,7 +35,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory);
             repo.Add(_sagaState);
 
-            _restoredState = LoadInstanceSagaState<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaState.Id);
+            _restoredState = await LoadSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaState.Id);
         }
          
         [Test]

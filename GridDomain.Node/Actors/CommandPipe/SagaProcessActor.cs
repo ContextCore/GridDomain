@@ -31,9 +31,9 @@ namespace GridDomain.Node.Actors.CommandPipe
                 Sender.Tell(Initialized.Instance);
             });
             //results of one command execution
-            Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
+            Receive<AllHandlersCompleted>(c =>
             {
-                c.Message.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
+                c.DomainEvents.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
                          .ToChain()
                          .ContinueWith(t => new SagasProcessComplete(t.Result?.ToArray(), t.Exception, c.Metadata))
                          .PipeTo(Self);

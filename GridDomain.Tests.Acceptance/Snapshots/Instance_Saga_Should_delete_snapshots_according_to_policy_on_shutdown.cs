@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Persistence;
 using GridDomain.Common;
@@ -46,7 +47,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         }
 
         [OneTimeSetUp]
-        public void Given_save_on_each_message_policy_and_keep_2_snapshots()
+        public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
             _sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(_sagaId, Guid.NewGuid(), Guid.NewGuid(), _sagaId);
@@ -59,7 +60,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             wait.Wait();
 
-            var sagaActorRef = LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaId);
+            var sagaActorRef = await LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(_sagaId);
 
             sagaActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
 

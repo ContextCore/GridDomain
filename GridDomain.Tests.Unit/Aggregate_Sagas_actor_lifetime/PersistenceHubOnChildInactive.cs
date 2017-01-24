@@ -1,4 +1,5 @@
 using Akka.Actor;
+using GridDomain.Node.Actors.CommandPipe;
 using NUnit.Framework;
 
 namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
@@ -28,6 +29,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         [Then]
         public void It_should_be_terminated()
         {
+            ExpectMsg<SagaTransited>();
             ExpectTerminated(_actorToWatch);
         }
 

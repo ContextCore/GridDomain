@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             return new BalanceRouteMap();
         }
 
-        protected override async Task SaveInJournal<TAggregate>(Guid id, params DomainEvent[] messages)
+        protected override async Task SaveToJournal<TAggregate>(Guid id, params DomainEvent[] messages)
         {
             using (var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))
             {

@@ -34,8 +34,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<MessageMetadataEnvelop<DomainEvent>>();
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<HandlersExecuted>();
-            //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<HandlersExecuted>();
+            //HandlersProcessActor should resend domain event to next step - saga actor - for processing
+            ExpectMsg<MessageMetadataEnvelop<DomainEvent[]>>();
         }
 
    

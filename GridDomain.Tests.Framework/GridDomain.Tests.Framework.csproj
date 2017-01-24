@@ -171,7 +171,6 @@
     <Compile Include="DomainEventsProductionSpecification.cs" />
     <Compile Include="EventsExtensions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
-    <Compile Include="ExtendedNodeCommandTest.cs" />
     <Compile Include="AggregateTest.cs" />
     <Compile Include="GuidComparer.cs" />
     <Compile Include="InMemoryEventRepository.cs" />
