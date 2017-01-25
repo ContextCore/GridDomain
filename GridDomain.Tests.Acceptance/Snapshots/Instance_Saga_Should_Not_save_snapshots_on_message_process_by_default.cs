@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                              BusinessDateTime.UtcNow,
                                                             _sagaId);
 
-            var waiterB = GridNode.NewWaiter(Timeout)
+            var waiterB = GridNode.NewWaiter(DefaultTimeout)
                                   .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                                   .Create();
 

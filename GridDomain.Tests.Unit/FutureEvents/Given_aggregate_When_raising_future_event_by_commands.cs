@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         private ScheduleEventInFutureCommand _testCommand;
         private FutureEventScheduledEvent _futureEventEnvelop;
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(10);
 
         [OneTimeSetUp]
 

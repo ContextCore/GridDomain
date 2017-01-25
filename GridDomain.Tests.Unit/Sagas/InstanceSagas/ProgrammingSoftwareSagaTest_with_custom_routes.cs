@@ -15,7 +15,6 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             return new CustomRoutesSoftwareProgrammingSagaMap();
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(2);
 
         protected override IContainerConfiguration CreateConfiguration()
         {

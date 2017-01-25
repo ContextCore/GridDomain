@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(10);
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 
            GridNode.Prepare(cmd)
                    .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId)
-                   .Execute(Timeout)
+                   .Execute(DefaultTimeout)
                    .Wait();
 
             await GridNode.Stop();
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                                  .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
                                  .Create();
 
-            waiter.Wait(Timeout);
+            waiter.Wait(DefaultTimeout);
 
             var repo = new AggregateRepository(new ActorSystemEventRepository(GridNode.System),GridNode.EventsAdaptersCatalog);
             var aggregate = repo.LoadAggregate<TestAggregate>(cmd.AggregateId);

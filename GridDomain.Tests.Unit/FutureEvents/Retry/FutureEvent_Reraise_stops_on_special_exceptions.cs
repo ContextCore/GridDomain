@@ -53,14 +53,13 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",2);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A",2);
 
             await GridNode.Prepare(command)
                           .Expect<JobFailed>()
                           .Execute();
-
-            Thread.Sleep(5000);
-
+            //waiting for policy call to determine should we retry failed job or not
+            Thread.Sleep(1000);
             // job was not retried and policy was not called
             Assert.AreEqual(1, _policyCallNumber);
         }

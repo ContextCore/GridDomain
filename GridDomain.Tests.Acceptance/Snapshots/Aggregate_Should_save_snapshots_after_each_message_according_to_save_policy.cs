@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                 );
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(10);
+        protected override TimeSpan DefaultTimeout { get; } = TimeSpan.FromMinutes(10);
 
         [OneTimeSetUp]
         public async Task Given_default_policy()

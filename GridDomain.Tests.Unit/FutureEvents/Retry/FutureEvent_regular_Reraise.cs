@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
                                  .Expect<JobFailed>()
                                  .And<JobSucceeded>()
                                  .And<TestErrorDomainEvent>()
-                                 .Execute(TimeSpan.FromMinutes(1));
+                                 .Execute();
 
             var res = await waiter;
 

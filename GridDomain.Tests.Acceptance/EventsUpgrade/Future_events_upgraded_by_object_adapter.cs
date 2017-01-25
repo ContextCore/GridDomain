@@ -53,11 +53,11 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
             await GridNode.Prepare(saveOldEventCommand)
                           .Expect<FutureEventScheduledEvent>()
-                          .Execute(Timeout);
+                          .Execute(DefaultTimeout);
 
-            await GridNode.NewWaiter(Timeout).Expect<BalanceChangedEvent_V1>().Create();
+            await GridNode.NewWaiter(DefaultTimeout).Expect<BalanceChangedEvent_V1>().Create();
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
+        protected override TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(10);
     }
 }

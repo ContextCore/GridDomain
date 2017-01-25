@@ -82,7 +82,7 @@ namespace GridDomain.Tests.Framework
             return new CustomRouteMap();
         }
 
-        protected virtual TimeSpan Timeout { get; }
+        protected virtual TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(3);
 
         [OneTimeTearDown]
         public async Task DeleteSystems()
@@ -114,7 +114,7 @@ namespace GridDomain.Tests.Framework
         private async Task<IActorRef> ResolveActor(string actorPath, TimeSpan? timeout = null)
         {
             return await GridNode.System.ActorSelection(actorPath)
-                                        .ResolveOne(timeout ?? Timeout);
+                                        .ResolveOne(timeout ?? DefaultTimeout);
         }
 
 
@@ -122,7 +122,7 @@ namespace GridDomain.Tests.Framework
         {
             if (!CreateNodeOnEachTest) return;
             _additionalLogCancellationTokenSource.Cancel();
-            GridNode.Stop().Wait(Timeout);
+            GridNode.Stop().Wait(DefaultTimeout);
 
             base.AfterAll();
         }
@@ -174,6 +174,8 @@ namespace GridDomain.Tests.Framework
                     {
                         var log = inbox.Receive();
                         Console.WriteLine(log);
+                        TestContext.Out.WriteLine(log);
+                        TestContext.Progress.WriteLine(log);
                     }
                     catch (Exception ex)
                     {
@@ -222,7 +224,7 @@ namespace GridDomain.Tests.Framework
             var actor = ActorOfAsTestActorRef<T>(props, name);
 
             await actor.Ask<RecoveryCompleted>(NotifyOnPersistenceEvents.Instance)
-                       .TimeoutAfter(Timeout,$"Cannot load actor {typeof(T)}, id = {name}")
+                       .TimeoutAfter(DefaultTimeout,$"Cannot load actor {typeof(T)}, id = {name}")
                        .ConfigureAwait(false);
 
             return actor.UnderlyingActor;

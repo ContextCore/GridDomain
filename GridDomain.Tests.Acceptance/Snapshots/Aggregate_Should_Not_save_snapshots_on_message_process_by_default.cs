@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var cmd = new CreateSampleAggregateCommand(_initialParameter, _aggregateId);
             await GridNode.Prepare(cmd)
                           .Expect<SampleAggregateCreatedEvent>()
-                          .Execute(Timeout);
+                          .Execute(DefaultTimeout);
 
             //checking "time-out" rule for policy, snapshots should be saved once on second command
             Thread.Sleep(1000);

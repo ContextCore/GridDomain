@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
 
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(3);
 
         [Then]
         public void Envelop_ids_are_different()

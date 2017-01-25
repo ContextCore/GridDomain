@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
     [TestFixture]
     public class Reraising_future_event : FutureEventsTest_InMemory
     {
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(20);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(20);
 
         [Test]
         public async Task  Given_aggregate_When_reraising_future_event_Then_it_fires_in_time()

@@ -26,6 +26,6 @@ namespace GridDomain.Tests.Unit.FutureEvents
             Assert.LessOrEqual(now.Second - aggregate.ProcessedTime.Second, 1);
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(3);
     }
 }

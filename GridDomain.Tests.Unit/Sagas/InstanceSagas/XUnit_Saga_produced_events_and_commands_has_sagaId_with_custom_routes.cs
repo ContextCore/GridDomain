@@ -1,7 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -11,34 +12,28 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
-using Akka.Actor;
-using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 {
     [TestFixture]
-    public class Saga_produced_events_and_commands_has_sagaId : SoftwareProgrammingInstanceSagaTest
+    public class XUnit_Saga_produced_events_and_commands_has_sagaId_with_custom_routes : ProgrammingSoftwareSagaTest_with_custom_routes
     {
-        public Saga_produced_events_and_commands_has_sagaId() : base(true)
-        {
 
-        }
-
-        public Saga_produced_events_and_commands_has_sagaId(bool inMemory) : base(inMemory)
+        public XUnit_Saga_produced_events_and_commands_has_sagaId_with_custom_routes() : base(true)
         {
 
         }
 
         [Test]
         public void When_dispatch_command_than_command_should_have_right_sagaId()
-        {
+        { 
             var domainEvent = new GotTiredEvent(Guid.NewGuid());
 
             GridNode.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
-            GridNode.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new []{domainEvent},
+            GridNode.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] { domainEvent },
                                                                                        MessageMetadata.Empty));
 
-            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true,TimeSpan.FromMinutes(10));
+            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
             var command = sagaCompleteMsg.Message;
 
             Assert.AreEqual(domainEvent.SagaId, command.SagaId);
@@ -48,16 +43,17 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [Test]
         public async Task When_raise_saga_than_saga_created_event_should_have_right_sagaId()
         {
-            var domainEvent = new GotTiredEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid());
+            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
 
             var waitResults = await GridNode.NewDebugWaiter()
                                             .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                             .Create()
-                                            .SendToSaga(domainEvent);
+                                            .SendToSaga(gotTiredEvent);
 
-            Assert.AreEqual(domainEvent.SagaId, waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>().SagaId);
+            var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
+
+            Assert.AreEqual(gotTiredEvent.PersonId, expectedCreatedEvent.SagaId);
         }
 
-        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(5);
     }
 }

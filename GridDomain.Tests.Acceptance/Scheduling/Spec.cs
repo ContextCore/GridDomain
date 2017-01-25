@@ -111,7 +111,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                                                 typeof(ScheduledCommandSuccessfullyProcessed),
                                                 id ?? Guid.Empty,
                                                 checkField,
-                                                timeout ?? Timeout);
+                                                timeout ?? DefaultTimeout);
         }
 
         
@@ -185,7 +185,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
             _scheduler.Ask<Scheduled>(new ScheduleCommand(failCommand, new ScheduleKey(Guid.Empty, Name, Group), 
                                                           options))
-                      .Wait(Timeout);
+                      .Wait(DefaultTimeout);
 
             GridNode.NewWaiter(TimeSpan.FromSeconds(5)).Expect<JobFailed>().Create().Wait();
             //should fail first 3 times and execute on forth
@@ -207,7 +207,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, Timeout)));
+                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, DefaultTimeout)));
             }
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -219,8 +219,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
         {
             var testMessage = new SuccessCommand(Name);
-            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5, Timeout)));
-            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1, Timeout)));
+            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5, DefaultTimeout)));
+            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1, DefaultTimeout)));
 
             Throttle.Assert(() => Assert.True(ResultHolder.Count == 1), minTimeout: TimeSpan.FromSeconds(2));
         }
@@ -235,13 +235,13 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testCommand = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, Timeout)));
+                _scheduler.Tell(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, DefaultTimeout)));
             }
             foreach (var failTask in failTasks)
             {
                 var text = failTask.ToString(CultureInfo.InvariantCulture);
                 var failTaskCommand = new FailCommand();
-                _scheduler.Tell(new ScheduleCommand(failTaskCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(failTask, Timeout)));
+                _scheduler.Tell(new ScheduleCommand(failTaskCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(failTask, DefaultTimeout)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -264,7 +264,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, Timeout)));
+                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, DefaultTimeout)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -291,7 +291,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, Timeout)));
+                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task, DefaultTimeout)));
             }
 
             _quartzScheduler.Shutdown(false);
@@ -302,6 +302,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Throttle.Assert(() => ResultHolder.Contains(taskIds));
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(7);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(7);
     }
 }

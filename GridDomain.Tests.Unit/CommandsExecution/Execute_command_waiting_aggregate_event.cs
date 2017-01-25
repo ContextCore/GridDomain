@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var waiter = GridNode.NewWaiter(Timeout)
+            var waiter = GridNode.NewWaiter(DefaultTimeout)
                                  .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                  .Create();
 

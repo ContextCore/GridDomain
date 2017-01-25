@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [OneTimeSetUp]
         public async Task When_publishing_start_message()
         {
-            var anyMessagePublisher = GridNode.NewDebugWaiter(Timeout)
+            var anyMessagePublisher = GridNode.NewDebugWaiter(DefaultTimeout)
                                               .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                               .Create();
 

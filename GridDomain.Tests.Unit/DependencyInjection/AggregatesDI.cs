@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
 
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(10);
 
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {

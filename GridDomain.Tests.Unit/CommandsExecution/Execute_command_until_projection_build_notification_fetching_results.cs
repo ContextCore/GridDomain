@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 
            _results = await GridNode.Prepare(_syncCommand)
                                     .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
-                                    .Execute(Timeout);
+                                    .Execute(DefaultTimeout);
 
             _changedEvent = _results.Message<AggregateChangedEventNotification>();
 

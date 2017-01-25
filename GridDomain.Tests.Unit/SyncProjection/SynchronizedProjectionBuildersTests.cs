@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.SyncProjection
     {
         private Dictionary<Guid, DomainEvent[]> _eventsPerAggregate;
 
-        protected override TimeSpan Timeout => TimeSpan.FromMinutes(1);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromMinutes(1);
 
         [OneTimeSetUp]
         public async Task When_execute_many_commands_for_create_and_update()

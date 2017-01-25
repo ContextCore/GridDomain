@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             _results = await GridNode.Prepare(cmd)
                                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                                      .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                                     .Execute(Timeout);
+                                     .Execute(DefaultTimeout);
         }
 
         [Then]

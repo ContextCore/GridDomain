@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Unit.LooseCommandOnPoolResize
             var aggregate = await LookupAggregateActor<SampleAggregate>(cmd.AggregateId);
             Watch(aggregate);
 
-            ExpectMsg<Terminated>(t => t.ActorRef.Path == aggregate.Path, Timeout);
+            ExpectMsg<Terminated>(t => t.ActorRef.Path == aggregate.Path, DefaultTimeout);
             ExpectNoMsg(TimeSpan.FromSeconds(5));
 
             //wait until next clear childs message
@@ -55,6 +55,6 @@ namespace GridDomain.Tests.Unit.LooseCommandOnPoolResize
             }
         }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
+        protected override TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(30);
     }
 }

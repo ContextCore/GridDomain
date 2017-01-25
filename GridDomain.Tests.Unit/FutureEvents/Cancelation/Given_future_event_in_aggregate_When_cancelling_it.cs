@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
                                                      .Message<FutureEventCanceledEvent>();
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(5);
 
         [Then]
         public async Task Cancelation_event_has_same_id_as_future_event()

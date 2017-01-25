@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
         [OneTimeSetUp]
         public void When_publishing_start_message()
         {
-            GridNode.NewDebugWaiter(Timeout)
+            GridNode.NewDebugWaiter(DefaultTimeout)
                     .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                     .Create()
                     .SendToSaga(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId))

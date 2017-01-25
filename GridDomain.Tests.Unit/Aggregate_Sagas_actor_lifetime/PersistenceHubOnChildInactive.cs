@@ -29,8 +29,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         [Then]
         public void It_should_be_terminated()
         {
-            ExpectMsg<SagaTransited>();
-            ExpectTerminated(_actorToWatch);
+            FishForMessage<Terminated>(m => m.ActorRef.Path == _actorToWatch.Path);
         }
 
         public PersistenceHubOnChildInactive(PersistentHubTestsStatus.PersistenceCase @case) : base(@case)

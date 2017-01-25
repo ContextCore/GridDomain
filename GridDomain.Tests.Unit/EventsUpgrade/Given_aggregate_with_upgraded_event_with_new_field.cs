@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
              _aggregate = LoadAggregate<BalanceAggregate>(_balanceId);
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(5);
 
         [Test]
         public void Then_it_should_process_old_and_new_event()

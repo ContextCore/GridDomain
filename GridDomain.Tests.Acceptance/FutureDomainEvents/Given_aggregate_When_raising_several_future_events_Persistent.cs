@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
                                      .Execute()).Message<FutureEventOccuredEvent>();
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(10);
 
         [Then]
         public void Envelop_ids_are_different()

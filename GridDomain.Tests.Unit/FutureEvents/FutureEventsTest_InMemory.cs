@@ -8,6 +8,6 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
         }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(1);
+        protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(1);
     }
 }

@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private SagaStateAggregate<SoftwareProgrammingSagaData> _restoredState;
         public Instance_saga_Should_recover_from_snapshot() : base(false) { }
 
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(3);
+        protected override TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(3);
 
         [OneTimeSetUp]
         public async Task Test()

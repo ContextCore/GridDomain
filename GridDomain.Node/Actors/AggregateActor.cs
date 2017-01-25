@@ -132,12 +132,15 @@ namespace GridDomain.Node.Actors
                  {
                      foreach (var e in processComplete.DomainEvents)
                      {
-                         var eventMetadata = commandMetadata.CreateChild(e.SourceId,_domainEventProcessEntry);
+                         var eventMetadata = commandMetadata.CreateChild(e.SourceId, _domainEventProcessEntry);
                          Publisher.Publish(e, eventMetadata);
                      }
 
-                     if(processComplete.Fault != null)
-                         Publisher.Publish(processComplete.Fault, commandMetadata);
+                     if (processComplete.Fault != null)
+                     {
+                         var faultMetadata = commandMetadata.CreateChild(commandMetadata.MessageId, _domainEventProcessFailEntry);
+                         Publisher.Publish(processComplete.Fault, faultMetadata);
+                     }
 
                      UnbecomeStacked();
                      Stash.UnstashAll();
