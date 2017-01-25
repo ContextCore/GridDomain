@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.MessageWaiting
+namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-    [TestFixture]
-
+   
     public class AkkaWaiter_messages_test_A_and_B : AkkaWaiterTest
     {
         private string _messageA = "et";
@@ -24,32 +23,32 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             return task;
         }
 
-        [Test]
+        [Fact]
         public void Condition_wait_end_should_be_true_on_A_and_B()
         {
             var sampleObjectsReceived = new object[] { _messageA, _messageB };
             Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
-        [Test]
+        [Fact]
         public void Condition_wait_end_should_be_false_on_A()
         {
             var sampleObjectsReceived = new object[] { _messageA };
             Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
-        [Test]
+        [Fact]
         public void Condition_wait_end_should_be_false_on_B()
         {
             var sampleObjectsReceived = new object[] { _messageB };
             Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
-        [Test]
-        public void A_and_B_should_be_received()
+        [Fact]
+        public async Task A_and_B_should_be_received()
         {
-            ExpectMsg(_messageB);
-            ExpectMsg(_messageA);
+            await ExpectMsg(_messageB);
+            await ExpectMsg(_messageA);
         }
 
   

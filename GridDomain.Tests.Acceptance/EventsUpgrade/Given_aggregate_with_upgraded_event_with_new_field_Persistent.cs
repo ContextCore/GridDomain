@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             using (var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))
             {
                 var persistId = AggregateActorName.New<BalanceAggregate>(id).Name;
-                eventsRepo.Save(persistId, messages);
+                await eventsRepo.Save(persistId, messages);
             }
         }
         

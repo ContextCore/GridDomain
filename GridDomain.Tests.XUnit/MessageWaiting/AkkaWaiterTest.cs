@@ -5,19 +5,19 @@ using Akka.Actor;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.MessageWaiting
+namespace GridDomain.Tests.XUnit.MessageWaiting
 {
 
-    public abstract class AkkaWaiterTest
+    public abstract class AkkaWaiterTest : IDisposable
     {
         private LocalAkkaEventBusTransport _transport;
         private ActorSystem _actorSystem;
         private Task<IWaitResults> _results;
 
-        [SetUp]
-        public void Configure()
+        //Configure()
+        protected AkkaWaiterTest() 
         {
             _actorSystem = ActorSystem.Create("test");
             _transport = new LocalAkkaEventBusTransport(_actorSystem);
@@ -27,13 +27,12 @@ namespace GridDomain.Tests.Unit.MessageWaiting
 
         protected abstract Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter);
 
-        [TearDown]
-        public void Clear()
+        public void Dispose()
         {
             _actorSystem.Terminate().Wait();
         }
 
-        protected AkkaMessageLocalWaiter Waiter { get; private set; }
+        protected AkkaMessageLocalWaiter Waiter { get;  }
         
 
         protected void Publish(params object[] messages)
@@ -47,7 +46,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             await _results;
 
             filter = filter ?? (t => true);
-            Assert.AreEqual(msg, _results.Result.All.OfType<T>().FirstOrDefault(t =>filter(t)));
+            Assert.Equal(msg, _results.Result.All.OfType<T>().FirstOrDefault(t =>filter(t)));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class
@@ -55,7 +54,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             if (!_results.Wait(timeout ?? DefaultTimeout))
                 return;
 
-            var e = Assert.Throws<TimeoutException>(() => ExpectMsg(msg));
+            var e = Assert.ThrowsAsync<TimeoutException>(() => ExpectMsg(msg));
         }
 
         public TimeSpan DefaultTimeout { get;} = TimeSpan.FromMilliseconds(50);

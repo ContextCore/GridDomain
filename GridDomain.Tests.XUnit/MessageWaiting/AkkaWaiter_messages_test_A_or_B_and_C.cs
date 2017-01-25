@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.MessageWaiting
+namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-    [TestFixture]
+   
     public class AkkaWaiter_messages_test_A_or_B_and_C : AkkaWaiterTest
     {
         private readonly Message _messageA = new Message("A");
@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                         .Create();
         }
 
-        [Test]
+        [Fact]
         public async Task Should_end_on_A_and_C()
         {
             Publish(_messageA);
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             await ExpectMsg(_messageC,m => m.Id == _messageC.Id);
         }
 
-        [Test]
+        [Fact]
         public async  Task Should_end_on_B_and_C()
         {
             Publish(_messageB);
@@ -40,21 +40,21 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             await ExpectMsg(_messageC, m => m.Id == _messageC.Id);
         }
 
-        [Test]
+        [Fact]
         public void Condition_wait_end_should_be_true_on_B_and_C()
         {
             var sampleObjectsReceived = new object[] { _messageB, _messageC };
             Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
-        [Test]
+        [Fact]
         public void Should_not_end_on_C()
         {
             Publish(_messageC);
             ExpectNoMsg();
         }
 
-        [Test]
+        [Fact]
         public void Should_not_end_on_B()
         {
             Publish(_messageB);

@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.MessageWaiting
+namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-    [TestFixture]
+   
     public class AkkaWaiter_messages_test_A_and_B_or_C_and_D : AkkaWaiterTest
     {
         private readonly Message _messageA = new Message("A");
@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                          .Create();
         }
 
-        [Test]
+        [Fact]
         public async Task Should_end_on_A_and_B_and_D()
         {
             Publish(_messageA, _messageB, _messageD);
@@ -31,14 +31,14 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             await ExpectMsg(_messageD, m => m.Id == _messageD.Id);
         }
 
-        [Test]
+        [Fact]
         public void Condition_wait_end_should_be_true_on_A_and_B_and_D()
         {
             var sampleObjectsReceived = new object[] { _messageA, _messageB, _messageD };
             Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
-        [Test]
+        [Fact]
         public void Should_not_end_on_C_and_A()
         {
             Publish(_messageC, _messageA);
@@ -47,14 +47,14 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             ExpectNoMsg();
         }
 
-        [Test]
+        [Fact]
         public void Condition_wait_end_should_be_false_on_A_and_C()
         {
             var sampleObjectsReceived = new object[] { _messageA, _messageC };
             Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
    
-        [Test]
+        [Fact]
         public void Should_not_end_on_D_and_B()
         {
             Publish(_messageB, _messageD);
@@ -62,7 +62,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             ExpectNoMsg();
         }
 
-        [Test]
+        [Fact]
         public async Task Should_end_on_C_and_D()
         {
             Publish(_messageC, _messageD);

@@ -240,6 +240,22 @@
       <HintPath>..\packages\Wire.0.8.1\lib\net45\Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.assert, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.core, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandPipe\CommandExecutorActorTests.cs" />
@@ -356,17 +372,6 @@
     <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
     <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_waits_for_faults.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C_and_D.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B_and_C.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B_and_C_or_D.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B_or_C.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_message_test_filtered_message.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_One_Message_Test.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_or_B.cs" />
-    <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
-    <Compile Include="MessageWaiting\Message.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
@@ -474,6 +479,7 @@
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
     <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
+    <Compile Include="XUnit_logTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

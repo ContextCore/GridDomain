@@ -1,15 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Akka.TestKit.NUnit3;
+using Akka.TestKit.Xunit;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.MessageWaiting
+namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-    [TestFixture]
+   
 
     public class AkkaWaiter_messages_test_A_or_B : TestKit
     {
@@ -20,9 +20,10 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private LocalAkkaEventBusTransport _transport;
         private Task<IWaitResults> _received;
 
-        [SetUp]
-        public void Given_waiter_subscribed_for_one_of_two_messages()
+        //Given_waiter_subscribed_for_one_of_two_messages
+        public AkkaWaiter_messages_test_A_or_B()
         {
+            
             _transport = new LocalAkkaEventBusTransport(Sys);
             _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10));
             _waiter.Expect<string>()
@@ -30,18 +31,18 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             _received = _waiter.Start(TimeSpan.FromSeconds(1));
         }
 
-        [Test]
+        [Fact]
         public void When_publish_one_of_subscribed_message_Then_wait_is_over_And_message_received()
         {
             _transport.Publish(_testmsgBool);
-            Assert.AreEqual(_testmsgBool, _received.Result.All.OfType<bool>().First());
+            Assert.Equal(_testmsgBool, _received.Result.All.OfType<bool>().First());
         }
 
-        [Test]
+        [Fact]
         public void When_publish_other_of_subscribed_message_Then_wait_is_over_And_message_received()
         {
             _transport.Publish(_testmsgString);
-            Assert.AreEqual(_testmsgString, _received.Result.Message<string>());
+            Assert.Equal(_testmsgString, _received.Result.Message<string>());
         }
     }
 }

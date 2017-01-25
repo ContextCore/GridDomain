@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.MessageWaiting
+namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-    [TestFixture]
+   
     public class AkkaWaiter_messages_test_A_and_B_or_C : AkkaWaiterTest
     {
         private string _messageA;
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                          .Create();
         }
 
-        [Test]
+        [Fact]
         public async Task C_message_should_end_wait()
         {
             Publish(_messageC);
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             await ExpectMsg(_messageC);
         }
 
-        [Test]
+        [Fact]
         public void A_message_should_not_end_wait()
         {
             Publish(_messageA);
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         }
 
 
-        [Test]
+        [Fact]
         public async Task A_and_B_message_should_end_wait()
         {
             Publish(_messageA,_messageB);

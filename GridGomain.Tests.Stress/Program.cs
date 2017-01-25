@@ -84,7 +84,7 @@ namespace GridGomain.Tests.Stress
                 cmdJournal.ExecuteNonQuery();
 
                 var sqlText1 = @"TRUNCATE TABLE Snapshots";
-                var cmdSnapshots = new SqlCommand(sqlText, connection);
+                var cmdSnapshots = new SqlCommand(sqlText1, connection);
                 cmdSnapshots.ExecuteNonQuery();
             }
 
@@ -184,12 +184,10 @@ namespace GridGomain.Tests.Stress
             using (var connection = new SqlConnection(dbCfg.Persistence.JournalConnectionString))
             {
                 connection.Open();
-                var sqlText = @"TRUNCATE TABLE Journal";
-                var cmdJournal = new SqlCommand(sqlText, connection);
+                var cmdJournal = new SqlCommand(@"TRUNCATE TABLE Journal", connection);
                 cmdJournal.ExecuteNonQuery();
 
-                var sqlText1 = @"TRUNCATE TABLE Snapshots";
-                var cmdSnapshots = new SqlCommand(sqlText, connection);
+                var cmdSnapshots = new SqlCommand(@"TRUNCATE TABLE Snapshots", connection);
                 cmdSnapshots.ExecuteNonQuery();
             }
             return dbCfg;
