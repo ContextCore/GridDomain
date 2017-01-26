@@ -22,12 +22,12 @@ namespace GridDomain.Tests.Framework
         }
 
   
-        public async Task<IWaitResults> SendToSaga(DomainEvent message, Guid sagaId, IMessageMetadata metadata=null)
+        public async Task<IWaitResults> SendToSagas(DomainEvent message, Guid sagaId, IMessageMetadata metadata=null)
         {
-            return await SendToSaga(message.CloneWithSaga(sagaId), metadata);
+            return await SendToSagas(message.CloneWithSaga(sagaId), metadata);
         }
 
-        public async Task<IWaitResults> SendToSaga(DomainEvent message, IMessageMetadata metadata = null)
+        public async Task<IWaitResults> SendToSagas(DomainEvent message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();
 

@@ -11,15 +11,9 @@ namespace GridDomain.Tests.XUnit.Sagas
     {
         protected override IMessageRouteMap RouteMap { get; } = new CustomRoutesSoftwareProgrammingSagaMap();
 
-        protected override IContainerConfiguration ContainerConfiguration
-        {
-            get
-            {
-            return new CustomContainerConfiguration(
-                            c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                            c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,
-                            SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>());
-            }
-        }
+        protected override IContainerConfiguration ContainerConfiguration => 
+            new SagaConfiguration<CustomRoutesSoftwareProgrammingSaga,
+                                  SoftwareProgrammingSagaData,
+                                  CustomRoutesSoftwareProgrammingSagaFactory>(CustomRoutesSoftwareProgrammingSaga.Descriptor);
     }
 }

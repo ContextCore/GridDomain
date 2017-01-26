@@ -132,9 +132,10 @@
     <Compile Include="MessageWaiting\AkkaWaiter_message_test_filtered_message.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_One_Message_Test.cs" />
     <Compile Include="MessageWaiting\Message.cs" />
-    <Compile Include="NodeCommandsTest.cs" />
+    <Compile Include="NodeTestKit.cs" />
     <Compile Include="NodeTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sagas\CommandPipeDebugExtensions.cs" />
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomEvent.cs" />
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSaga.cs" />
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="SampleDomain\SampleAggregatesCommandHandler.cs" />
     <Compile Include="SampleDomain\SampleDomainContainerConfiguration.cs" />
     <Compile Include="SampleDomain\SampleRouteMap.cs" />
+    <Compile Include="TestKitExtensions.cs" />
     <Compile Include="XUnitAutoTestLoggerConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>

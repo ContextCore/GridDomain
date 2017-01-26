@@ -8,10 +8,10 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
 {
-    class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
+    public class CustomRoutesSoftwareProgrammingSaga : Saga<SoftwareProgrammingSagaData>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
-        private ILogger Log = Serilog.Log.ForContext<CustomRoutesSoftwareProgrammingSaga>();
+        private readonly ILogger _log = Log.ForContext<CustomRoutesSoftwareProgrammingSaga>();
 
         private static SagaDescriptor CreateDescriptor()
         {
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
                     var sagaData = context.Instance;
                     var domainEvent = context.Data;
                     sagaData.PersonId = domainEvent.SourceId;
-                    Log.Verbose("Hello trace string");
+                    _log.Verbose("Hello trace string");
                     Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
                 })
                  .TransitionTo(MakingCoffee));

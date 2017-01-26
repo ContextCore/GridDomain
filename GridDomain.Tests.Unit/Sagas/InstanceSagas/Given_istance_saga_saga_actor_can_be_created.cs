@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             await GridNode.NewDebugWaiter()
                           .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                           .Create()
-                          .SendToSaga(msg);
+                          .SendToSagas(msg);
 
             var sagaActor = LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);

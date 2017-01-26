@@ -29,15 +29,15 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             await GridNode.NewDebugWaiter().Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                           .Create()
-                          .SendToSaga(_startMessage);
+                          .SendToSagas(_startMessage);
 
             await GridNode.NewDebugWaiter().Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                           .Create()
-                          .SendToSaga(_coffeMadeEvent);
+                          .SendToSagas(_coffeMadeEvent);
 
             await GridNode.NewDebugWaiter().Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                           .Create()
-                          .SendToSaga(_reStartEvent);
+                          .SendToSagas(_reStartEvent);
 
             _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(_startMessage.SagaId);
         }

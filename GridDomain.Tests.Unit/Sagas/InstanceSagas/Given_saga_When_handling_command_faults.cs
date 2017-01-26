@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             await GridNode.NewDebugWaiter(TimeSpan.FromMinutes(10))
                           .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
                           .Create()
-                          .SendToSaga(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
+                          .SendToSagas(_coffeMakeFailedEvent, new MessageMetadata(_coffeMakeFailedEvent.SourceId));
 
             Thread.Sleep(1000);
             _sagaDataAggregate = LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);

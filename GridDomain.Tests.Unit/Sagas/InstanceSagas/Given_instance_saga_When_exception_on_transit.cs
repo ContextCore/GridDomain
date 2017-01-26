@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var results = await GridNode.NewDebugWaiter()
                                         .Expect<IFault<CoffeMakeFailedEvent>>()
                                         .Create()
-                                        .SendToSaga(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId), sagaId);
+                                        .SendToSagas(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId), sagaId);
 
             _fault = results.Message<IFault<CoffeMakeFailedEvent>>();
         }

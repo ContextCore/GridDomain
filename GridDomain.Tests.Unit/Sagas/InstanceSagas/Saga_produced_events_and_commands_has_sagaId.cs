@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var waitResults = await GridNode.NewDebugWaiter()
                                             .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                             .Create()
-                                            .SendToSaga(domainEvent);
+                                            .SendToSagas(domainEvent);
 
             Assert.AreEqual(domainEvent.SagaId, waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>().SagaId);
         }

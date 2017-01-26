@@ -48,7 +48,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
             var waitResults = await GridNode.NewDebugWaiter()
                                             .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                             .Create()
-                                            .SendToSaga(gotTiredEvent);
+                                            .SendToSagas(gotTiredEvent);
 
             var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 

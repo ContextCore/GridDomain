@@ -27,6 +27,7 @@ namespace GridDomain.Tests.XUnit
         private bool ClearDataOnStart => !InMemory;
         private bool InMemory { get; } = true;
         public string Name => AkkaConfig.Network.SystemName;
+        
         public TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(3);
 
         public string GetConfig()

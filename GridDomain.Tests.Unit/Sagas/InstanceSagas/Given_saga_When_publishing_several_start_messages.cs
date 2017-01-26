@@ -25,14 +25,14 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
                                               .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                                               .Create();
 
-            await anyMessagePublisher.SendToSaga(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId));
+            await anyMessagePublisher.SendToSagas(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), SagaId));
 
             (await LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaId))
                              .Tell(NotifyOnPersistenceEvents.Instance);
 
             secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId);
 
-            anyMessagePublisher.SendToSaga(secondStartMessage);
+            anyMessagePublisher.SendToSagas(secondStartMessage);
 
             FishForMessage<Persisted>(m => true );
 
