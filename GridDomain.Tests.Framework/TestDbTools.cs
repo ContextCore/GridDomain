@@ -1,7 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Linq;
 using GridDomain.Node.Configuration.Akka;
-using GridDomain.Node.Configuration.Persistence;
 
 namespace GridDomain.Tests.Framework
 {
@@ -9,26 +8,9 @@ namespace GridDomain.Tests.Framework
     {
         public static void ClearData(IAkkaDbConfiguration akkaConf)
         {
-            ClearWriteAkkaDb(akkaConf);
-        }
-
-        public static void ClearData(IDbConfiguration conf)
-        {
-            //Delete(conf.ReadModelConnectionString, "TransactionHistories");
-            //Delete(conf.ReadModelConnectionString, "BusinessBalances");
-        }
-
-        public static void ClearData(IDbConfiguration conf, IAkkaDbConfiguration akkaConf)
-        {
-            ClearData(conf);
-            ClearData(akkaConf);
-        }
-
-        private static void ClearWriteAkkaDb(IAkkaDbConfiguration akkaConf)
-        {
             Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
             Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"), akkaConf.JournalTableName,
-                akkaConf.MetadataTableName);
+                                                                             akkaConf.MetadataTableName);
         }
 
         private static void Truncate(string connection, params string[] tableNames)

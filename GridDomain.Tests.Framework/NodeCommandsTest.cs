@@ -145,7 +145,7 @@ namespace GridDomain.Tests.Framework
         {
             var autoTestGridDomainConfiguration = new AutoTestLocalDbConfiguration();
             if (ClearDataOnStart)
-                TestDbTools.ClearData(autoTestGridDomainConfiguration, AkkaConf.Persistence);
+                TestDbTools.ClearData(AkkaConf.Persistence);
 
             GridNode = CreateGridDomainNode(AkkaConf);
             OnNodeCreated();

@@ -441,7 +441,7 @@
     <Compile Include="CommandsExecution\When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout.cs" />
     <Compile Include="CommandsExecution\When_execute_command_causing_an_aggregate_error.cs" />
     <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
-    <Compile Include="CommandsExecution\SampleDomainContainerConfiguration.cs" />
+    <Compile Include="SampleDomain\SampleDomainContainerConfiguration.cs" />
     <Compile Include="CommandsExecution\When_execute_command_without_expectations.cs" />
     <Compile Include="CommandsExecution\When_execute_command_Then_aggregate_Should_persist_changed.cs" />
     <Compile Include="CommandsExecution\InMemorySampleDomainTests.cs" />

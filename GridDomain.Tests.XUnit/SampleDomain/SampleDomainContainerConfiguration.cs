@@ -1,11 +1,10 @@
 using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Unit.SampleDomain;
-using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
+using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.XUnit.SampleDomain
 {
     public class SampleDomainContainerConfiguration : IContainerConfiguration
     {
