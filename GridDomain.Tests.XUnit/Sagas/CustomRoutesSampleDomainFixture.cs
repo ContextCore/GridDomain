@@ -9,11 +9,16 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class CustomRoutesSampleDomainFixture : NodeTestFixture
     {
-        protected override IMessageRouteMap RouteMap { get; } = new CustomRoutesSoftwareProgrammingSagaMap();
+        private readonly IMessageRouteMap _routeMap1 = new CustomRoutesSoftwareProgrammingSagaMap();
 
-        protected override IContainerConfiguration ContainerConfiguration => 
-            new SagaConfiguration<CustomRoutesSoftwareProgrammingSaga,
-                                  SoftwareProgrammingSagaData,
-                                  CustomRoutesSoftwareProgrammingSagaFactory>(CustomRoutesSoftwareProgrammingSaga.Descriptor);
+        protected override IMessageRouteMap CreateRouteMap()
+        {
+            return _routeMap1;
+        }
+
+        protected override IContainerConfiguration CreateContainerConfiguration()
+            => new SagaConfiguration<CustomRoutesSoftwareProgrammingSaga,
+                SoftwareProgrammingSagaData,
+                CustomRoutesSoftwareProgrammingSagaFactory>(CustomRoutesSoftwareProgrammingSaga.Descriptor);
     }
 }

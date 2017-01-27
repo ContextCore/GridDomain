@@ -9,10 +9,18 @@ namespace GridDomain.Tests.XUnit
 {
     public class SampleDomainFixture : NodeTestFixture
     {
-        protected override IContainerConfiguration ContainerConfiguration { get; } =
-            new SampleDomainContainerConfiguration();
+        private readonly IContainerConfiguration _containerConfiguration1 = new SampleDomainContainerConfiguration();
+        private readonly IMessageRouteMap _routeMap1 = new SampleRouteMap();
 
-        protected override IMessageRouteMap RouteMap { get; } = new SampleRouteMap();
+        protected override IContainerConfiguration CreateContainerConfiguration()
+        {
+            return _containerConfiguration1;
+        }
+
+        protected override IMessageRouteMap CreateRouteMap()
+        {
+            return _routeMap1;
+        }
     }
     
 }

@@ -12,16 +12,27 @@ using GridDomain.Tests.Framework.Configuration;
 
 namespace GridDomain.Tests.XUnit
 {
-    public abstract class NodeTestFixture : IDisposable
+    public class NodeTestFixture : IDisposable
     {
         public static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
 
         private GridDomainNode _node;
-        public GridDomainNode GridNode => _node ?? (_node = CreateNode());
+        public GridDomainNode Node => _node ?? CreateNode();
 
-        public ActorSystem ExternalSystem { get; set; }
-        protected abstract IContainerConfiguration ContainerConfiguration { get; }
-        protected abstract IMessageRouteMap RouteMap { get; }
+        public ActorSystem System { get; set; }
+
+        private readonly IContainerConfiguration _containerConfiguration;
+        private readonly IMessageRouteMap _routeMap;
+
+        protected virtual IContainerConfiguration CreateContainerConfiguration()
+        {
+            return _containerConfiguration;
+        }
+
+        protected virtual IMessageRouteMap CreateRouteMap()
+        {
+            return _routeMap;
+        }
 
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
@@ -33,9 +44,14 @@ namespace GridDomain.Tests.XUnit
         public string GetConfig()
         {
             return InMemory ? AkkaConfig.ToStandAloneInMemorySystemConfig() : 
-                AkkaConfig.ToStandAloneSystemConfig();
+                              AkkaConfig.ToStandAloneSystemConfig();
         }
 
+        public NodeTestFixture(IContainerConfiguration containerConfiguration = null, IMessageRouteMap map = null)
+        {
+            _routeMap = map;
+            _containerConfiguration = containerConfiguration;
+        }
 
         private GridDomainNode CreateNode()
         {
@@ -44,18 +60,23 @@ namespace GridDomain.Tests.XUnit
 
             var quartzConfig = InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig();
 
-            var node = new GridDomainNode(ContainerConfiguration, 
-                                          RouteMap, 
-                                          () => new[] { ExternalSystem ?? ActorSystem.Create(Name, GetConfig()) },
+            var node = new GridDomainNode(_containerConfiguration ?? CreateContainerConfiguration(),
+                                          _routeMap ?? CreateRouteMap(), 
+                                          () => new[] { System ?? ActorSystem.Create(Name, GetConfig()) },
                                           quartzConfig);
-
+            _node = node;
+            OnNodeCreated();
             node.Start().Wait();
             return node;
         }
 
+        protected virtual void OnNodeCreated()
+        {
+            
+        }
         public void Dispose()
         {
-            GridNode.Stop().Wait(DefaultTimeout);
+            Node.Stop().Wait(DefaultTimeout);
         }
     }
 }
