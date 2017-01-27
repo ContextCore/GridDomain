@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
+namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
 {
     public class TestDomainEvent : DomainEvent
     {

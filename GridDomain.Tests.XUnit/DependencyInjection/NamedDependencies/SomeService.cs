@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Unit.DependencyInjection.NamedDependencies
+namespace GridDomain.Tests.XUnit.DependencyInjection.NamedDependencies
 {
     public class SomeService
     {

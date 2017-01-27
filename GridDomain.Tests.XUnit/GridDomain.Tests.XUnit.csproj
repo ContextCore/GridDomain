@@ -38,6 +38,10 @@
       <HintPath>..\packages\Akka.DI.Core.1.1.3\lib\net45\Akka.DI.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.DI.Unity, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Unity.1.1.0\lib\net45\Akka.DI.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Persistence, Version=1.1.3.32, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.1.3.32-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
@@ -129,6 +133,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemDebugExtensions.cs" />
+    <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestAggregatesCommandHandler.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestCommand.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestDependencyImplementation.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestDomainEvent.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestRouteMap.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\NamedActorA.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\NamedActorB.cs" />
+    <Compile Include="DependencyInjection\NamedDependencies\SomeService.cs" />
     <Compile Include="EventsUpgrade\BalanceChangedDomainEventAdapter1.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater1.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater2.cs" />

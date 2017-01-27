@@ -1,15 +1,15 @@
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using Akka.TestKit.NUnit3;
+using Akka.TestKit.Xunit2;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.NamedDependencies
+namespace GridDomain.Tests.XUnit.DependencyInjection.NamedDependencies
 {
-    [TestFixture]
+    
     public class AggregateNamedDependenciesTest : TestKit
     {
-        [Then]
+        [Fact]
         public void Actors_should_resolve_named_dependencies()
         {
             var container = new UnityContainer();
@@ -22,8 +22,8 @@ namespace GridDomain.Tests.Unit.DependencyInjection.NamedDependencies
             var actorA = ActorOfAsTestActorRef<NamedActorA>(Sys.DI().Props<NamedActorA>());
             var actorB = ActorOfAsTestActorRef<NamedActorB>(Sys.DI().Props<NamedActorB>());
 
-            Assert.AreEqual("A",actorA.UnderlyingActor.Dep.Name);
-            Assert.AreEqual("B",actorB.UnderlyingActor.Dep.Name);
+            Assert.Equal("A",actorA.UnderlyingActor.Dep.Name);
+            Assert.Equal("B",actorB.UnderlyingActor.Dep.Name);
         }
     }
 }

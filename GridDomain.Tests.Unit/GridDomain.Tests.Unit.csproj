@@ -304,11 +304,6 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
     <Compile Include="CommandsExecution\When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller.cs" />
     <Compile Include="DateTimeSpec.cs" />
-    <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
-    <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
-    <Compile Include="DependencyInjection\NamedDependencies\NamedActorA.cs" />
-    <Compile Include="DependencyInjection\NamedDependencies\NamedActorB.cs" />
-    <Compile Include="DependencyInjection\NamedDependencies\SomeService.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
@@ -381,7 +376,6 @@
     <Compile Include="CommandsExecution\When_execute_command_Then_produced_event_are_available_for_projection_builders.cs" />
     <Compile Include="CommandsExecution\When_aggregate_raise_async_events.cs" />
     <Compile Include="CompositionRootTests.cs" />
-    <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />
     <Compile Include="SampleDomain\Commands\AsyncFaultWithOneEventCommand.cs" />
@@ -412,13 +406,6 @@
     <Compile Include="SampleDomain\Commands\ChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateCreatedEvent.cs" />
     <Compile Include="SampleDomain\SampleRouteMap.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestAggregatesCommandHandler.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestCommand.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestDependencyImplementation.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestDomainEvent.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestRouteMap.cs" />
     <Compile Include="FutureEvents\FutureEventsTest.cs" />
     <Compile Include="FutureEvents\FutureEventsTest_InMemory.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestAggregate.cs" />
