@@ -6,7 +6,7 @@ using GridDomain.CQRS;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
+
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;

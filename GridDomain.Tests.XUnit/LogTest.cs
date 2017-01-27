@@ -1,17 +1,21 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
-
+using Akka.Util;
+using GridDomain.Logging;
+using GridDomain.Tests.XUnit.CommandsExecution;
 using NMoneys;
-using NUnit.Framework;
+using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
-    public class XUnit_logTest : SampleDomainCommandExecutionTests
+
+    public class LogTest : SampleDomainCommandExecutionTests
     {
 
         class TestLogActor : ReceiveActor
@@ -19,9 +23,8 @@ namespace GridDomain.Tests.Unit
         {
             private readonly ILoggingAdapter _log = Context.GetLogger();
 
-            public TestLogActor(ITestOutputHelper helper)
+            public TestLogActor()
             {
-                helper.WriteLine("Hi from xunit");
                 _log.Debug("actor created debug");
                 _log.Info("actor info");
                 _log.Error("actor error");
@@ -32,7 +35,7 @@ namespace GridDomain.Tests.Unit
                 ReceiveAny(o =>
                 {
                     Console.WriteLine("Hi from console on receive");
-                    helper.WriteLine("Hi from xunit on message receive");
+
                     _log.Debug("Debug: received " + o);
                     _log.Info("Info: received " + o);
                     _log.Error("Error: received " + o);
@@ -42,19 +45,14 @@ namespace GridDomain.Tests.Unit
             }
 
         }
-
-        private readonly ITestOutputHelper _helper;
-
-        public XUnit_logTest(ITestOutputHelper  helper)
+        public LogTest(ITestOutputHelper output) : base(output)
         {
-            _helper = helper;
-            Start();
         }
 
         [Fact]
         public async Task ShouldLog_from_gridNode_actor()
         {
-            var actor = GridNode.System.ActorOf(Props.Create(() => new TestLogActor(_helper)), "testLoggingActor");
+            var actor = Node.System.ActorOf(Props.Create(() => new TestLogActor()),"testLoggingActor");
             await actor.Ask<string>("ping");
             Thread.Sleep(500);
         }
@@ -62,7 +60,7 @@ namespace GridDomain.Tests.Unit
         [Fact]
         public async Task ShouldLog_from_test_system_actor()
         {
-            var actor = Sys.ActorOf(Props.Create(() => new TestLogActor(_helper)));
+            var actor = Sys.ActorOf(Props.Create(() => new TestLogActor()));
             await actor.Ask<string>("ping");
             Thread.Sleep(500);
         }

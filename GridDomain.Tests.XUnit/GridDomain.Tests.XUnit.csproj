@@ -133,6 +133,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemDebugExtensions.cs" />
+    <Compile Include="CommandsExecution\AsyncExecute_without_timeout.cs" />
+    <Compile Include="CommandsExecution\AsyncExecute_without_timeout_using_node_defaults.cs" />
+    <Compile Include="CommandsExecution\Async_execute_dont_wait.cs" />
+    <Compile Include="CommandsExecution\Async_execution_dont_block_aggregate.cs" />
+    <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
+    <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
+    <Compile Include="CommandsExecution\CommandWaiter_waits_for_faults.cs" />
+    <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
+    <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
+    <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
+    <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
+    <Compile Include="CommandsExecution\When_aggregate_raise_async_events.cs" />
+    <Compile Include="CommandsExecution\When_async_method_called_Then_domainEvents_are_persisted.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_causing_an_aggregate_error.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_Then_aggregate_Should_persist_changed.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_Then_produced_event_are_available_for_projection_builders.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_without_expectations.cs" />
+    <Compile Include="CommandsExecution\When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout.cs" />
+    <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />
+    <Compile Include="CommandsExecution\When_executing_command_domainEvents_Should_have_sagaId.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
@@ -178,6 +199,7 @@
     <Compile Include="EventsUpgrade\Nested_property_upgrade_with_custom_constructor.cs" />
     <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
+    <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C.cs" />

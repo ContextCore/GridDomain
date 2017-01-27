@@ -1,13 +1,9 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Tests.Unit.SampleDomain;
-using GridDomain.Tests.Unit.SampleDomain.Events;
-using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;
-using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    [TestFixture]
+  
 
     public class When_executing_commands_waiting_for_faults_from_projection_builder : CommandWaiter_waits_for_faults<MessageHandleException>
     {

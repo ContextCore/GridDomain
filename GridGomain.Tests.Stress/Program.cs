@@ -16,7 +16,6 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.SampleDomain;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;

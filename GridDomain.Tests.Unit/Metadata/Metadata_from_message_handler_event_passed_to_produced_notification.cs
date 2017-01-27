@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.CommandsExecution;
+
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders;

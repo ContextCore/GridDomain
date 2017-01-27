@@ -264,9 +264,6 @@
     <Compile Include="CommandPipe\SagaProcessorActorTests.cs" />
     <Compile Include="CommandPipe\TestCommand.cs" />
     <Compile Include="CommandPipe\TestSagaActor.cs" />
-    <Compile Include="CommandsExecution\AsyncExecute_without_timeout_using_node_defaults.cs" />
-    <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
-    <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
@@ -283,7 +280,6 @@
     <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
-    <Compile Include="CommandsExecution\AsyncExecute_without_timeout.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
@@ -302,7 +298,6 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHub_children_lifetime_test.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\InstanceSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
-    <Compile Include="CommandsExecution\When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
@@ -316,11 +311,6 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="AssertEx.cs" />
-    <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
-    <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
-    <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
-    <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
-    <Compile Include="CommandsExecution\CommandWaiter_waits_for_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
@@ -369,12 +359,6 @@
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
-    <Compile Include="CommandsExecution\When_executing_command_domainEvents_Should_have_sagaId.cs" />
-    <Compile Include="CommandsExecution\When_async_method_called_Then_domainEvents_are_persisted.cs" />
-    <Compile Include="CommandsExecution\Async_execution_dont_block_aggregate.cs" />
-    <Compile Include="CommandsExecution\Async_execute_dont_wait.cs" />
-    <Compile Include="CommandsExecution\When_execute_command_Then_produced_event_are_available_for_projection_builders.cs" />
-    <Compile Include="CommandsExecution\When_aggregate_raise_async_events.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />
@@ -386,13 +370,7 @@
     <Compile Include="SampleDomain\ProjectionBuilders\FaultyCreateProjectionBuilder.cs" />
     <Compile Include="SampleDomain\SampleAggregateException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
-    <Compile Include="CommandsExecution\When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout.cs" />
-    <Compile Include="CommandsExecution\When_execute_command_causing_an_aggregate_error.cs" />
-    <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
     <Compile Include="SampleDomain\SampleDomainContainerConfiguration.cs" />
-    <Compile Include="CommandsExecution\When_execute_command_without_expectations.cs" />
-    <Compile Include="CommandsExecution\When_execute_command_Then_aggregate_Should_persist_changed.cs" />
-    <Compile Include="CommandsExecution\InMemorySampleDomainTests.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateChangedEvent.cs" />

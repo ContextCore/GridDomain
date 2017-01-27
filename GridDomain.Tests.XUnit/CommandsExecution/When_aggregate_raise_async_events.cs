@@ -1,22 +1,22 @@
 using System;
 using System.Linq;
 using System.Threading;
-using GridDomain.Tests.Unit.SampleDomain;
-using NUnit.Framework;
+using GridDomain.Tests.XUnit.SampleDomain;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    [TestFixture]
+  
     public class When_aggregate_raise_async_events
     {
-        [Then]
+       [Fact]
         public void It_places_continuation_in_uncommited_async_events_collection()
         {
             var aggregate = WhenRaiseAsyncEvents();
-            Assert.AreEqual(1, aggregate.GetAsyncUncomittedEvents().Count);
+            Assert.Equal(1, aggregate.GetAsyncUncomittedEvents().Count);
         }
 
-        [Then]
+       [Fact]
         public void Nothing_is_applied_to_aggregate_on_async_finish()
         {
             var aggregate = WhenRaiseAsyncEvents();
@@ -32,14 +32,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         }
 
 
-        [Then]
+       [Fact]
         public void Then_it_results_can_be_applied_to_aggregate()
         {
             var aggregate = WhenRaiseAsyncEvents();
             var asyncEvents = aggregate.GetAsyncUncomittedEvents().First();
             Thread.Sleep(1500);
             aggregate.FinishAsyncExecution(asyncEvents.InvocationId);
-            Assert.AreEqual("42", aggregate.Value);
+            Assert.Equal("42", aggregate.Value);
         }
 
     }

@@ -6,7 +6,7 @@ using Akka.Actor;
 using Akka.Event;
 using Akka.Util;
 using GridDomain.Logging;
-using GridDomain.Tests.Unit.CommandsExecution;
+
 using NMoneys;
 using NUnit.Framework;
 using Serilog;

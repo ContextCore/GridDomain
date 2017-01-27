@@ -1,14 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.Unit.SampleDomain;
-using GridDomain.Tests.Unit.SampleDomain.Commands;
-using GridDomain.Tests.Unit.SampleDomain.Events;
-using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    [TestFixture]
+  
     public class When_execute_command_Then_aggregate_Should_persist_changed : SampleDomainCommandExecutionTests
     {
         protected override bool CreateNodeOnEachTest { get; } = true;
@@ -22,32 +18,32 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             
         }
 
-        [Then]
+       [Fact]
         public async Task Sync_method_should_change_aggregate()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
 
-            await GridNode.Prepare(syncCommand)
+            await Node.Prepare(syncCommand)
                           .Expect<SampleAggregateChangedEvent>()
                           .Execute();
 
             //to finish persistence
-            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+            var aggregate = this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Value);
         }
 
-        [Then]
+       [Fact]
         public async Task Async_method_should_change_aggregate()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
 
-            await GridNode.Prepare(syncCommand)
+            await Node.Prepare(syncCommand)
                           .Expect<SampleAggregateChangedEvent>()
                           .Execute();
 
             //to finish persistence
-            var aggregate = LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.AreEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+            var aggregate = this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Value);
         }
     }
 }

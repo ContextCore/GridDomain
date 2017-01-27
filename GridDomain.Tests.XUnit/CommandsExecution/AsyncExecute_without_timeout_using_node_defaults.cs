@@ -4,13 +4,10 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Unit.SampleDomain.Commands;
-using GridDomain.Tests.Unit.SampleDomain.Events;
-using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    [TestFixture]
+  
     public class AsyncExecute_without_timeout_using_node_defaults : SampleDomainCommandExecutionTests
     {
         protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
@@ -19,12 +16,12 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                 new InMemoryQuartzConfig(), TimeSpan.FromMilliseconds(100));
         }
 
-        [Then]
+       [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
-            await GridNode.Prepare(syncCommand)
+            await Node.Prepare(syncCommand)
                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
                 .Execute()
                 .ShouldThrow<TimeoutException>();
