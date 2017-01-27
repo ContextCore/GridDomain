@@ -2,13 +2,13 @@
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.Tests.XUnit.SampleDomain;
 using Newtonsoft.Json;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.Serialization
+namespace GridDomain.Tests.XUnit.Serialization
 {
-    [TestFixture]
+  
     public class JsonSerializationSettings_can_be_overriden_by_user 
     {
 
@@ -16,10 +16,11 @@ namespace GridDomain.Tests.Unit.Serialization
         {
             
         }
-        [Test]
+
+        [Fact]
         public async Task When_settings_are_customized_it_is_used_by_grid_node()
         {
-            var node = new GridDomainNode(CustomContainerConfiguration.Empty(),new BalanceRouteMap(), () => ActorSystem.Create("test"));
+            var node = new GridDomainNode(CustomContainerConfiguration.Empty(),new SampleRouteMap(), () => ActorSystem.Create("test"));
             await node.Start();
 
             var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(node.System);
@@ -27,7 +28,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
             var serializer = new DomainEventsJsonAkkaSerializer(node.System as ExtendedActorSystem);
 
-            Assert.IsInstanceOf<MyJsonSettings>(serializer.Serializer.Value.JsonSerializerSettings);
+            Assert.IsAssignableFrom<MyJsonSettings>(serializer.Serializer.Value.JsonSerializerSettings);
         }
     }
 }

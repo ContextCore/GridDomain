@@ -296,11 +296,6 @@
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\TestState.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaContainerConfiguration.cs" />
     <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
-    <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
-    <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
-    <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
-    <Compile Include="Serialization\Instance_sagas_state_aggregates_should_be_serialize_and_deserialize.cs" />
-    <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
@@ -364,9 +359,6 @@
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="AssertEx.cs" />
-    <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
-    <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
-    <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />

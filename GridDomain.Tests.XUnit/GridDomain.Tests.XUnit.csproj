@@ -86,8 +86,16 @@
       <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NMoneys, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -188,10 +196,18 @@
     <Compile Include="SampleDomain\SampleAggregatesCommandHandler.cs" />
     <Compile Include="SampleDomain\SampleDomainContainerConfiguration.cs" />
     <Compile Include="SampleDomain\SampleRouteMap.cs" />
+    <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
+    <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
+    <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
+    <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
+    <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
+    <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
+    <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="TestKitExtensions.cs" />
     <Compile Include="XUnitAutoTestLoggerConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
