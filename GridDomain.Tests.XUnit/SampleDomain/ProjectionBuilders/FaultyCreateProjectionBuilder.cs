@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
@@ -8,7 +9,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
     {
         public Task Handle(SampleAggregateCreatedEvent msg)
         {
-            throw new SampleAggregateException();
+            throw new FaultyProjectionBuilderException();
         }
+    }
+
+    public class FaultyProjectionBuilderException : Exception
+    {
     }
 }

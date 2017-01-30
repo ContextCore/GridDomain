@@ -22,9 +22,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
             await Node.Prepare(syncCommand)
-                          .Expect<SampleAggregateChangedEvent>()
-                          .Execute(TimeSpan.FromMilliseconds(500))
-                          .ShouldThrow<TimeoutException>();
+                      .Expect<SampleAggregateChangedEvent>()
+                      .Execute(TimeSpan.FromMilliseconds(500))
+                      .ShouldThrow<TimeoutException>();
 
         }
     }

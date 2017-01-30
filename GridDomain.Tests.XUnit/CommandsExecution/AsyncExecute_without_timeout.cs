@@ -25,7 +25,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                  .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
                                  .Execute(TimeSpan.FromMilliseconds(100));
 
-            await waiter.ShouldThrow<TimeoutException>();
+           await Assert.ThrowsAsync<TimeoutException>(() => waiter);
         }
 
         public AsyncExecute_without_timeout(ITestOutputHelper output) : base(output)

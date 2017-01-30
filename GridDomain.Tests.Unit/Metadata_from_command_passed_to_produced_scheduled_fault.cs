@@ -12,7 +12,7 @@ using GridDomain.Tests.Unit.FutureEvents;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit.Metadata
+namespace GridDomain.Tests.Unit
 {
     [TestFixture]
     class Metadata_from_command_passed_to_produced_scheduled_fault : FutureEventsTest_InMemory

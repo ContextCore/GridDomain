@@ -154,6 +154,7 @@
     <Compile Include="CommandsExecution\When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout.cs" />
     <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />
     <Compile Include="CommandsExecution\When_executing_command_domainEvents_Should_have_sagaId.cs" />
+    <Compile Include="CommandsExecution\XUnitAssertExtensions.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />

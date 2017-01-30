@@ -9,26 +9,23 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-   
-
     public class AkkaWaiter_messages_test_A_or_B : TestKit
     {
-        private AkkaMessageLocalWaiter _waiter;
         private string _testmsgString = "testMsg";
         private bool _testmsgBool = true;
 
-        private LocalAkkaEventBusTransport _transport;
-        private Task<IWaitResults> _received;
+        private readonly LocalAkkaEventBusTransport _transport;
+        private readonly Task<IWaitResults> _received;
 
         //Given_waiter_subscribed_for_one_of_two_messages
         public AkkaWaiter_messages_test_A_or_B()
         {
-            
             _transport = new LocalAkkaEventBusTransport(Sys);
-            _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10));
-            _waiter.Expect<string>()
-                   .Or<bool?>();
-            _received = _waiter.Start(TimeSpan.FromSeconds(1));
+
+            _received = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10))
+                                    .Expect<string>()
+                                    .Or<bool?>()
+                                    .Create();
         }
 
         [Fact]

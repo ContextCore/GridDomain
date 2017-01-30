@@ -1,22 +1,20 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.Unit.Sagas.InstanceSagas;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using NUnit.Framework;
-using Akka.Actor;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Unit.Metadata
+namespace GridDomain.Tests.Unit
 {
     [TestFixture]
     class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest

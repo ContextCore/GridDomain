@@ -13,12 +13,8 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    public class CommandWaiter_waits_for_faults<TProcessException> : NodeTestKit
+    public class CommandWaiter_waits_for_faults<TProcessException> : NodeTestKit, IClassFixture<SampleDomainContainerConfiguration>
     {
-        public CommandWaiter_waits_for_faults(ITestOutputHelper output) : base(output, 
-            new NodeTestFixture(new SampleDomainContainerConfiguration(), new SampleRouteMap()))
-        {
-        }
 
         public CommandWaiter_waits_for_faults(ITestOutputHelper helper, NodeTestFixture fixture):base(helper, fixture)
         {
@@ -104,9 +100,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             //will throw exception in aggregate and in message handler
             var syncCommand = new AsyncFaultWithOneEventCommand(50, Guid.NewGuid());
             var res = await Node.Prepare(syncCommand)
-                                    .Expect<AggregateChangedEventNotification>()
-                                    .Or<IFault<SampleAggregateChangedEvent>>()
-                                    .Execute(false);
+                                .Expect<AggregateChangedEventNotification>()
+                                .Or<IFault<SampleAggregateChangedEvent>>()
+                                .Execute(false);
 
             Assert.NotNull(res.Message<IFault<AsyncFaultWithOneEventCommand>>());
         }

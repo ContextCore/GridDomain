@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-  
     public class AsyncExecute_without_timeout_using_node_defaults : NodeTestKit
     {
        [Fact]
@@ -22,9 +21,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
             await Node.Prepare(syncCommand)
-                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                .Execute()
-                .ShouldThrow<TimeoutException>();
+                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                      .Execute()
+                      .ShouldThrow<TimeoutException>();
         }
 
         public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(output, CreateFixture())

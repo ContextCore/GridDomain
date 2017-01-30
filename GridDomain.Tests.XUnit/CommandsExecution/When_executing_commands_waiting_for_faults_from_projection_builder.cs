@@ -13,7 +13,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
     public class When_executing_commands_waiting_for_faults_from_projection_builder : CommandWaiter_waits_for_faults<MessageHandleException>
     {
         public When_executing_commands_waiting_for_faults_from_projection_builder(ITestOutputHelper output) : base(output, 
-            new NodeTestFixture(new SampleDomainContainerConfiguration(), CreateMap()))
+                             new NodeTestFixture(new SampleDomainContainerConfiguration(), CreateMap()))
         {
         }
 

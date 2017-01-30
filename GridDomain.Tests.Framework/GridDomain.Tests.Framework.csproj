@@ -172,7 +172,7 @@
     <Compile Include="Any.cs" />
     <Compile Include="AnyMessageExpectBuilder.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
-    <Compile Include="AssertEx.cs" />
+    <Compile Include="NUnitAssertEx.cs" />
     <Compile Include="AutoFix.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="CannotCreateCommandHandlerExeption.cs" />

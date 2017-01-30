@@ -272,6 +272,7 @@
     <Compile Include="Metadata_from_command_passed_to_produced_scheduled_event.cs" />
     <Compile Include="Metadata_from_command_passed_to_produced_scheduled_fault.cs" />
     <Compile Include="Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
+    <Compile Include="NUnitAssertEx.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
