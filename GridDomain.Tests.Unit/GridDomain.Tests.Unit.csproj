@@ -264,28 +264,22 @@
     <Compile Include="CommandPipe\SagaProcessorActorTests.cs" />
     <Compile Include="CommandPipe\TestCommand.cs" />
     <Compile Include="CommandPipe\TestSagaActor.cs" />
-    <Compile Include="LogTest.cs" />
-    <Compile Include="Metadata\MessageMetadata_inheritance_Tests.cs" />
-    <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
-    <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
-    <Compile Include="Metadata\Metadata_from_async_aggregate_command_passed_to_produced_events.cs" />
-    <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_fault.cs" />
-    <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_notification.cs" />
-    <Compile Include="Metadata\Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
-    <Compile Include="Metadata\Metadata_from_command_passed_to_produced_scheduled_event.cs" />
-    <Compile Include="Metadata\Metadata_from_command_passed_to_produced_scheduled_fault.cs" />
-    <Compile Include="Metadata\Metadata_from_unscheduled_job_passed_produced_command.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
+    <Compile Include="Metadata_from_command_passed_to_produced_scheduled_event.cs" />
+    <Compile Include="Metadata_from_command_passed_to_produced_scheduled_fault.cs" />
+    <Compile Include="Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\TestState.cs" />
+    <Compile Include="Sagas\InstanceSagas\SampleDomainCommandExecutionTests.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaContainerConfiguration.cs" />
     <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
+    <Compile Include="SyncProjection\InMemorySampleDomainTests.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
@@ -310,7 +304,6 @@
     <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
-    <Compile Include="AssertEx.cs" />
     <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
     <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
@@ -398,7 +391,6 @@
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
     <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
-    <Compile Include="XUnit_logTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

@@ -1,7 +1,7 @@
+using GridDomain.Tests.Framework;
 using NMoneys;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.XunitTestOutput;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit

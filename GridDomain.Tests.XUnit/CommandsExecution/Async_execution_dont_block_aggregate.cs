@@ -2,11 +2,16 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.XUnit.SampleDomain;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
   
-    class Async_execution_dont_block_aggregate : SampleDomainCommandExecutionTests
+    public class Async_execution_dont_block_aggregate : SampleDomainCommandExecutionTests
     {
        
        [Fact]
@@ -29,6 +34,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             Assert.Equal(syncCommand.Parameter.ToString(), sampleAggregate.Value);
             var waitResults = await asyncCommandTask;
             Assert.Equal(asyncCommand.Parameter.ToString(), waitResults.Message<SampleAggregateChangedEvent>().Value);
+        }
+
+        public Async_execution_dont_block_aggregate(ITestOutputHelper output) : base(output)
+        {
         }
     }
 }

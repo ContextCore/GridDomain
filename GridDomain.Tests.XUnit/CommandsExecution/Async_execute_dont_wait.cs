@@ -2,6 +2,7 @@ using System;
 using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
@@ -12,9 +13,13 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public void Async_execute_dont_wait_for_command_finish()
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
-            GridNode.Execute(syncCommand);
+            Node.Execute(syncCommand);
             var aggregate = this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.NotEqual(syncCommand.Parameter, aggregate.Value);
+            Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+        }
+
+        public Async_execute_dont_wait(ITestOutputHelper output) : base(output)
+        {
         }
     }
 }

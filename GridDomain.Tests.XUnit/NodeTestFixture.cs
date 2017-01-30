@@ -39,7 +39,7 @@ namespace GridDomain.Tests.XUnit
         private bool InMemory { get; } = true;
         public string Name => AkkaConfig.Network.SystemName;
         
-        public TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(3);
+        public TimeSpan DefaultTimeout { get; }
 
         public string GetConfig()
         {
@@ -47,10 +47,11 @@ namespace GridDomain.Tests.XUnit
                               AkkaConfig.ToStandAloneSystemConfig();
         }
 
-        public NodeTestFixture(IContainerConfiguration containerConfiguration = null, IMessageRouteMap map = null)
+        public NodeTestFixture(IContainerConfiguration containerConfiguration = null, IMessageRouteMap map = null, TimeSpan? defaultTimeout = null)
         {
             _routeMap = map;
             _containerConfiguration = containerConfiguration;
+            DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(3);
         }
 
         private GridDomainNode CreateNode()

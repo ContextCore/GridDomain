@@ -1,21 +1,17 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
-using Akka.Util;
-using GridDomain.Logging;
-using GridDomain.Tests.XUnit.CommandsExecution;
+using Akka.TestKit.Xunit2;
 using NMoneys;
-using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.XUnit
 {
 
-    public class LogTest : SampleDomainCommandExecutionTests
+    public class LogTest : TestKit
     {
 
         class TestLogActor : ReceiveActor
@@ -43,16 +39,17 @@ namespace GridDomain.Tests.Unit
                     Sender.Tell(o);
                 });
             }
-
         }
-        public LogTest(ITestOutputHelper output) : base(output)
+
+        public LogTest(ITestOutputHelper output)
         {
+           Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
 
         [Fact]
         public async Task ShouldLog_from_gridNode_actor()
         {
-            var actor = Node.System.ActorOf(Props.Create(() => new TestLogActor()),"testLoggingActor");
+            var actor = Sys.ActorOf(Props.Create(() => new TestLogActor()),"testLoggingActor");
             await actor.Ask<string>("ping");
             Thread.Sleep(500);
         }

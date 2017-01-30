@@ -1,12 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.SampleDomain;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
   
     public class When_execute_command_causing_an_aggregate_error : SampleDomainCommandExecutionTests
     {
-       [Fact]
+        public When_execute_command_causing_an_aggregate_error(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Fact]
         public async Task Given_sync_aggregate_method_Then_execute_throws_exception_from_aggregate()
         {
             var syncCommand = new AlwaysFaultCommand(Guid.NewGuid());

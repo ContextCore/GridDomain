@@ -1,11 +1,12 @@
 ﻿using System;
+using Serilog;
 using Serilog.Configuration;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Serilog.Sinks.XunitTestOutput
+namespace GridDomain.Tests.Framework
 {
     /// <summary>
     /// Adds the WriteTo.XunitTestOutput(output) extension method to <see cref="LoggerConfiguration"/>.

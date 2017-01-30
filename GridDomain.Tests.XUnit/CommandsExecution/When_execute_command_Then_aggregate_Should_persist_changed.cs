@@ -1,24 +1,22 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
+using GridDomain.Tests.XUnit.SampleDomain;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
   
     public class When_execute_command_Then_aggregate_Should_persist_changed : SampleDomainCommandExecutionTests
     {
-        protected override bool CreateNodeOnEachTest { get; } = true;
-
-        public When_execute_command_Then_aggregate_Should_persist_changed(bool v):base(v)
+        public When_execute_command_Then_aggregate_Should_persist_changed(ITestOutputHelper output) : base(output)
         {
         }
 
-        public When_execute_command_Then_aggregate_Should_persist_changed()
-        {
-            
-        }
-
-       [Fact]
+        [Fact]
         public async Task Sync_method_should_change_aggregate()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());

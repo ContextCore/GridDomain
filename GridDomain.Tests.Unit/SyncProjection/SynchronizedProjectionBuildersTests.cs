@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
-
 using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
 using NUnit.Framework;

@@ -2,14 +2,22 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
   
     public class Execute_command_waiting_aggregate_event : SampleDomainCommandExecutionTests
     {
+        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : base(output)
+        {
+        }
 
-       [Fact]
+        [Fact]
         public async Task CommandWaiter_Should_wait_until_aggregate_event()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
@@ -28,11 +36,11 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var waiter = GridNode.NewWaiter(DefaultTimeout)
-                                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                                 .Create();
+            var waiter =  Node.NewWaiter()
+                              .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                              .Create();
 
-            GridNode.Execute(cmd);
+            Node.Execute(cmd);
             var res = await waiter;
             
             Assert.Equal(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);

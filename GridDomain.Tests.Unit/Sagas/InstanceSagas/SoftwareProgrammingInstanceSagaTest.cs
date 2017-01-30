@@ -2,7 +2,6 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
-
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 
 namespace GridDomain.Tests.Unit.Sagas.InstanceSagas

@@ -1,15 +1,21 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using AggregateChangedEventNotification = GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders.AggregateChangedEventNotification;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
   
     public class When_execute_command_Then_produced_event_are_available_for_projection_builders: SampleDomainCommandExecutionTests
     {
+        public When_execute_command_Then_produced_event_are_available_for_projection_builders(ITestOutputHelper output) : base(output)
+        {
+        }
 
-       [Fact]
+        [Fact]
         public async Task Async_method_should_produce_messages_for_projection_builders()
         {
             var cmd = new AsyncMethodCommand(42, Guid.NewGuid());

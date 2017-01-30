@@ -3,13 +3,28 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.SampleDomain;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    public class CommandWaiter_waits_for_faults<TProcessException> : SampleDomainCommandExecutionTests
+    public class CommandWaiter_waits_for_faults<TProcessException> : NodeTestKit
     {
+        public CommandWaiter_waits_for_faults(ITestOutputHelper output) : base(output, 
+            new NodeTestFixture(new SampleDomainContainerConfiguration(), new SampleRouteMap()))
+        {
+        }
 
-       [Fact]
+        public CommandWaiter_waits_for_faults(ITestOutputHelper helper, NodeTestFixture fixture):base(helper, fixture)
+        {
+        }
+
+        [Fact]
         public async Task When_expected_fault_from_projection_group_call_received_it_contains_error()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
@@ -19,7 +34,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                                                                    f.Processor == typeof(OddFaultyMessageHandler))
                                 .Execute(null,false);
 
-            Assert.IsInstanceOf<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
+            Assert.IsAssignableFrom<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
         }
 
        [Fact]
@@ -32,7 +47,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                                                                        f.Processor == typeof(OddFaultyMessageHandler))
                                     .Execute(null,false);
 
-            Assert.IsInstanceOf<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
+            Assert.IsAssignableFrom<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
         }
 
 
@@ -45,7 +60,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                     .Or<IFault>(f => (f.Message as DomainEvent)?.SourceId == syncCommand.AggregateId)
                                     .Execute(false);
 
-            Assert.IsInstanceOf<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
+            Assert.IsAssignableFrom<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
         }
 
 

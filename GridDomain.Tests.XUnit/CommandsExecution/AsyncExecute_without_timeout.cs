@@ -4,17 +4,18 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
   
     public class AsyncExecute_without_timeout : SampleDomainCommandExecutionTests
     {
-        protected override GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
-        {
-            return new GridDomainNode(CreateConfiguration(),CreateMap(), () => new[]{akkaConf.CreateInMemorySystem() },
-                new InMemoryQuartzConfig());
-        }
+      
 
        [Fact]
         public async Task CommandWaiter_throws_exception_after_wait_with_only_default_timeout()
@@ -25,6 +26,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                  .Execute(TimeSpan.FromMilliseconds(100));
 
             await waiter.ShouldThrow<TimeoutException>();
+        }
+
+        public AsyncExecute_without_timeout(ITestOutputHelper output) : base(output)
+        {
         }
     }
 }

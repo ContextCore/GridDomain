@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.Tests.Framework;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.Framework
 {
     public static class AssertEx
     {

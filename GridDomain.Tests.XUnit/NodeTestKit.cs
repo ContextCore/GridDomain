@@ -21,21 +21,6 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit
 {
-   //public abstract class NodeCommandsTest : TestKit
-   //{
-   //    public NodeCommandsTest(ITestOutputHelper helper):base(new NodeTestFixture(CreateConfiguration(),CreateMap()))
-   //    {
-   //        
-   //    }
-   //    protected virtual void OnNodeCreated()
-   //    {
-   //       // GridNode.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
-   //    }
-   //
-   //    protected abstract IContainerConfiguration CreateConfiguration();
-   //
-   //    protected abstract IMessageRouteMap CreateMap();
-   //}
 
     public abstract class NodeTestKit : TestKit
     {
