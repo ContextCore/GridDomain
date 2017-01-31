@@ -8,10 +8,10 @@ namespace GridDomain.Tests.XUnit
 {
     public class XUnitAutoTestLoggerConfiguration : LoggerConfiguration
     {
-        public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output)
+        public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose)
         {
             WriteTo.XunitTestOutput(output);
-            MinimumLevel.Is(LogEventLevel.Verbose);
+            MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new {r.Amount,r.CurrencyCode });
         }
     }

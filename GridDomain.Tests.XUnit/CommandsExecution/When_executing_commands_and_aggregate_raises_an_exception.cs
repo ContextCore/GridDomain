@@ -13,61 +13,24 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-    public class CommandWaiter_waits_for_faults<TProcessException> : NodeTestKit, IClassFixture<SampleDomainContainerConfiguration>
+    //different fixtures from static method ? 
+    public class When_executing_commands_and_aggregate_raises_an_exception: NodeTestKit, IClassFixture<SampleDomainFixture>
     {
 
-        public CommandWaiter_waits_for_faults(ITestOutputHelper helper, NodeTestFixture fixture):base(helper, fixture)
+        public When_executing_commands_and_aggregate_raises_an_exception(ITestOutputHelper helper, SampleDomainFixture fixture):base(helper, fixture)
         {
         }
 
-        [Fact]
-        public async Task When_expected_fault_from_projection_group_call_received_it_contains_error()
-        {
-            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var res = await Node.Prepare(syncCommand)
-                                .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-                                .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId && 
-                                                                                   f.Processor == typeof(OddFaultyMessageHandler))
-                                .Execute(null,false);
-
-            Assert.IsAssignableFrom<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
-        }
-
-       [Fact]
-        public async Task When_expected_fault_from_projection_group_task_received_it_contains_error()
-        {
-            var syncCommand = new LongOperationCommand(8, Guid.NewGuid());
-            var res = await Node.Prepare(syncCommand)
-                                    .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-                                    .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId &&
-                                                                                       f.Processor == typeof(OddFaultyMessageHandler))
-                                    .Execute(null,false);
-
-            Assert.IsAssignableFrom<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
-        }
-
-
-       [Fact]
-        public async Task When_expecting_generic_fault_without_processor_received_fault_contains_error()
-        {
-            var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var res = await Node.Prepare(syncCommand)
-                                    .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-                                    .Or<IFault>(f => (f.Message as DomainEvent)?.SourceId == syncCommand.AggregateId)
-                                    .Execute(false);
-
-            Assert.IsAssignableFrom<TProcessException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
-        }
-
+      
 
        [Fact]
         public async Task When_does_not_expect_fault_and_it_accures_wait_times_out()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             await Node.Prepare(syncCommand)
-                          .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
-                          .Execute(TimeSpan.FromMilliseconds(50))
-                          .ShouldThrow<TimeoutException>();
+                      .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
+                      .Execute(TimeSpan.FromMilliseconds(50))
+                      .ShouldThrow<TimeoutException>();
         }
 
 

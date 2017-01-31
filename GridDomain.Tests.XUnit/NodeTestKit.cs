@@ -16,6 +16,7 @@ using GridDomain.Tests.XUnit.EventsUpgrade;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
 using Microsoft.Practices.Unity;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,9 +27,9 @@ namespace GridDomain.Tests.XUnit
     {
         private NodeTestFixture NodeTestFixture { get;}
         protected GridDomainNode Node => NodeTestFixture.Node;
-        protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture): base(fixture.GetConfig(), fixture.Name)
+        protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture, LogEventLevel level = LogEventLevel.Information): base(fixture.GetConfig(), fixture.Name)
         {
-            Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+            Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(output,level).CreateLogger();
             NodeTestFixture = fixture;
             NodeTestFixture.System = Sys;
         }
@@ -38,4 +39,6 @@ namespace GridDomain.Tests.XUnit
         {
         }
     }
+
+
 }

@@ -48,11 +48,11 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         private object AdditionalLogs(LogLevel verbosity)
         {
             return verbosity == LogLevel.DebugLevel
-                ? @"autoreceive = on
-                    lifecycle = on
-                    receive = on
-                    router-misconfiguration = on
-                    event-stream = on"
+                ? @"#autoreceive = on
+                    #lifecycle = on
+                    #receive = on
+                    #router-misconfiguration = on
+                    #event-stream = on"
                 : "";
         }
     }

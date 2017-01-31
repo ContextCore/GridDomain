@@ -1,6 +1,7 @@
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.XUnit.SampleDomain;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,17 +10,36 @@ namespace GridDomain.Tests.XUnit
 {
     public class SampleDomainFixture : NodeTestFixture
     {
-        private readonly IContainerConfiguration _containerConfiguration1 = new SampleDomainContainerConfiguration();
-        private readonly IMessageRouteMap _routeMap1 = new SampleRouteMap();
-
-        protected override IContainerConfiguration CreateContainerConfiguration()
+        private SampleDomainFixture(IContainerConfiguration config = null, IMessageRouteMap map = null)
+            :base(ContainerConfiguration(config), Map(map))
         {
-            return _containerConfiguration1;
+            
+        }
+        public SampleDomainFixture(): this(null,null)
+        {
+            
         }
 
-        protected override IMessageRouteMap CreateRouteMap()
+        private static IMessageRouteMap Map(IMessageRouteMap map)
         {
-            return _routeMap1;
+            if (map == null) return new SampleRouteMap();
+            return new CompositeRouteMap(map, new SampleRouteMap());
+        }
+
+        private static IContainerConfiguration ContainerConfiguration(IContainerConfiguration config)
+        {
+            if(config == null) return new SampleDomainContainerConfiguration();
+            return new CustomContainerConfiguration(new SampleDomainContainerConfiguration(), new SampleDomainContainerConfiguration());
+        }
+
+        public static SampleDomainFixture WithMap(IMessageRouteMap map)
+        {
+            return new SampleDomainFixture(null,map);
+        }
+
+        public static SampleDomainFixture WithConfig(IContainerConfiguration config)
+        {
+            return new SampleDomainFixture(config);
         }
     }
     

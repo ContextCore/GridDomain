@@ -139,7 +139,8 @@
     <Compile Include="CommandsExecution\Async_execution_dont_block_aggregate.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
-    <Compile Include="CommandsExecution\CommandWaiter_waits_for_faults.cs" />
+    <Compile Include="CommandsExecution\Given_executing_commands_with_faulty_from_projection_builder.cs" />
+    <Compile Include="CommandsExecution\When_executing_commands_and_aggregate_raises_an_exception.cs" />
     <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
     <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="CommandsExecution\When_execute_command_Then_produced_event_are_available_for_projection_builders.cs" />
     <Compile Include="CommandsExecution\When_execute_command_without_expectations.cs" />
     <Compile Include="CommandsExecution\When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout.cs" />
-    <Compile Include="CommandsExecution\When_executing_commands_waiting_for_faults_from_projection_builder.cs" />
     <Compile Include="CommandsExecution\When_executing_command_domainEvents_Should_have_sagaId.cs" />
     <Compile Include="CommandsExecution\XUnitAssertExtensions.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />

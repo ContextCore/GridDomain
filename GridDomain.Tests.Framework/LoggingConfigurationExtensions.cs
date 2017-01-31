@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Helios.Util;
 using NMoneys;
 using Serilog;
@@ -7,13 +8,16 @@ namespace GridDomain.Tests.Framework
 { 
     public class AutoTestLoggerConfiguration : LoggerConfiguration
     {
-        public AutoTestLoggerConfiguration()
+        public AutoTestLoggerConfiguration(bool filterAkkaMessages = true)
         {
             WriteTo.RollingFile("P:\\GridDomain\\Logs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt");
             WriteTo.Console();
             WriteTo.NUnitOutput();
             MinimumLevel.Is(LogEventLevel.Verbose);
             Destructure.ByTransforming<Money>(r => new { Amount = r.Amount, Currency = r.CurrencyCode });
+
+
+          //  Filter.ByExcluding(e => e.MessageTemplate.Text.Contains(""))
         }
     }
 }
