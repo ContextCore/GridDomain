@@ -7,7 +7,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
-using GridDomain.Tests.Unit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandPipe

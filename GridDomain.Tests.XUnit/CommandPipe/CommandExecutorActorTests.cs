@@ -5,7 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
-using GridDomain.Tests.Unit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandPipe

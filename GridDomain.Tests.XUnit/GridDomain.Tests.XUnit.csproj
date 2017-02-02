@@ -58,6 +58,10 @@
       <HintPath>..\packages\Akka.TestKit.1.1.3\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.2.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.TestKit.Xunit2, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.TestKit.Xunit2.1.1.2\lib\net45\Akka.TestKit.Xunit2.dll</HintPath>
       <Private>True</Private>
@@ -65,6 +69,10 @@
     <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
+    </Reference>
+    <Reference Include="Automatonymous.Visualizer, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Automatonymous.Visualizer.3.3.0\lib\net452\Automatonymous.Visualizer.dll</HintPath>
     </Reference>
     <Reference Include="Helios, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Helios.2.1.2\lib\net45\Helios.dll</HintPath>
@@ -96,6 +104,10 @@
     </Reference>
     <Reference Include="NMoneys, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
@@ -233,6 +245,46 @@
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaMap.cs" />
     <Compile Include="Sagas\CustomRoutesSampleDomainFixture.cs" />
+    <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaMap.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_instance_saga_When_exception_on_transit.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_handling_command_faults.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_A.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_saga_with_custom_message_mappings_When_extracting_descriptor.cs" />
+    <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
+    <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest_with_custom_routes.cs" />
+    <Compile Include="Sagas\InstanceSagas\Recovery\Given_instance_saga_When_recovering.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaActorTests\TestState.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
+    <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId.cs" />
+    <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
+    <Compile Include="Sagas\InstanceSagas\SampleDomainCommandExecutionTests.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingInstanceSagaTest.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaContainerConfiguration.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaData.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_when_hydrating.cs" />
+    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
+    <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoToWorkCommand.cs" />
@@ -340,10 +392,6 @@
     <ProjectReference Include="..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
       <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>
       <Name>GridDomain.Tests.Framework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj">
-      <Project>{E6496D95-7FF7-4783-BD06-6D15B67600FA}</Project>
-      <Name>GridDomain.Tests.Unit</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
       <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
