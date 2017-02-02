@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.TestKit.NUnit3;
+using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Tests.Unit.SampleDomain.Commands;
-using Moq;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.CommandPipe
+namespace GridDomain.Tests.XUnit.CommandPipe
 {
-    [TestFixture]
-    class CommandExecutorActorTests : TestKit
+   
+    public class CommandExecutorActorTests : TestKit
     {
-        [Test]
+       [Fact]
         public void CommandExecutor_routes_command_by_its_type()
         {
             var catalog = new AggregateProcessorCatalog();
@@ -40,7 +35,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             }
         }
 
-        [Test]
+       [Fact]
         public void CommandExecutor_does_not_support_command_inheritance()
         {
             var catalog = new AggregateProcessorCatalog();

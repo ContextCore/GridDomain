@@ -4,7 +4,7 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node.Actors;
 
-namespace GridDomain.Tests.Unit.CommandPipe
+namespace GridDomain.Tests.XUnit.CommandPipe
 {
     class EchoSleepActor : ReceiveActor
     {

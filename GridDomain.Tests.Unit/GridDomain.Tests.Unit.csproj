@@ -258,12 +258,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandPipe\CommandExecutorActorTests.cs" />
-    <Compile Include="CommandPipe\CustomHandlerProcessorActorTests.cs" />
-    <Compile Include="CommandPipe\EchoSleepActor.cs" />
-    <Compile Include="CommandPipe\SagaProcessorActorTests.cs" />
-    <Compile Include="CommandPipe\TestCommand.cs" />
-    <Compile Include="CommandPipe\TestSagaActor.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />

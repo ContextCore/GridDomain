@@ -133,6 +133,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemDebugExtensions.cs" />
+    <Compile Include="CommandPipe\CommandExecutorActorTests.cs" />
+    <Compile Include="CommandPipe\CustomHandlerProcessorActorTests.cs" />
+    <Compile Include="CommandPipe\EchoSleepActor.cs" />
+    <Compile Include="CommandPipe\SagaProcessorActorTests.cs" />
+    <Compile Include="CommandPipe\TestCommand.cs" />
+    <Compile Include="CommandPipe\TestSagaActor.cs" />
     <Compile Include="CommandsExecution\AsyncExecute_without_timeout.cs" />
     <Compile Include="CommandsExecution\AsyncExecute_without_timeout_using_node_defaults.cs" />
     <Compile Include="CommandsExecution\Async_execute_dont_wait.cs" />

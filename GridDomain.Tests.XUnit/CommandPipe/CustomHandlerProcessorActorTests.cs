@@ -1,24 +1,20 @@
 using System;
-using System.Threading;
-using Akka;
 using Akka.Actor;
-using Akka.TestKit.NUnit3;
+using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
-using GridDomain.Tests.Unit.SampleDomain.Commands;
 using GridDomain.Tests.Unit.SampleDomain.Events;
-using NUnit.Framework;
-using NUnit.Framework.Internal;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.CommandPipe
+namespace GridDomain.Tests.XUnit.CommandPipe
 {
-    [TestFixture]
-    class CustomHandlerProcessorActorTests : TestKit
+   
+    public class CustomHandlerProcessorActorTests : TestKit
     {
-        [Test]
+       [Fact]
         public void CustomHandlerProcessor_routes_events_by_type()
         {
             var catalog = new CustomHandlersProcessCatalog();
@@ -40,7 +36,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
    
 
-        [Test]
+       [Fact]
         public void All_async_handlers_performs_in_parralel()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
@@ -71,7 +67,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<HandlerExecuted>();
         }
 
-        [Test]
+       [Fact]
         public void All_sync_handlers_performs_one_after_one()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
@@ -103,7 +99,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         }
 
         
-        [Test]
+       [Fact]
         public void Sync_and_async_handlers_performs_independent()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
@@ -136,7 +132,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
         }
 
-        [Test]
+       [Fact]
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
             var catalog = new CustomHandlersProcessCatalog();

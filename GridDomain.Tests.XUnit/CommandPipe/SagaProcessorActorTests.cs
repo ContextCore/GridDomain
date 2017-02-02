@@ -1,24 +1,22 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.TestKit.NUnit3;
+using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Tests.Unit.SampleDomain.Events;
-using NUnit.Framework;
-using NUnit.Framework.Internal;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.CommandPipe
+namespace GridDomain.Tests.XUnit.CommandPipe
 {
-    [TestFixture]
-    class SagaProcessorActorTests : TestKit
+   
+    public class SagaProcessorActorTests : TestKit
     {
 
-        [Test]
+       [Fact]
         public async Task SagaProcessor_routes_events_by_type()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
@@ -43,7 +41,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
         }
 
-        [Test]
+       [Fact]
         public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
@@ -65,7 +63,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         }
 
 
-        [Test]
+       [Fact]
         public async Task All_Sagas_performs_in_parralel_and_results_from_all_sagas_are_gathered()
         {
             var testSagaActorA = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
