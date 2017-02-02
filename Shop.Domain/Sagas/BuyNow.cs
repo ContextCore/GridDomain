@@ -87,10 +87,7 @@ namespace Shop.Domain.Sagas
                 {
                     Dispatch(new PayForOrderCommand(state.AccountId, domainEvent.TotalPrice, state.OrderId));
                 }),
-                When(OrderWasReserved).Then(ctx =>
-                {
-                    int a = 1;
-                } ).TransitionTo(Paying));
+                When(OrderWasReserved).TransitionTo(Paying));
 
 
             During(Paying,

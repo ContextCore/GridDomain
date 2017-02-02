@@ -20,14 +20,13 @@ namespace GridDomain.Tests.Unit
     class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest
     {
         private Guid SagaId;
-        private SagaStateAggregate<SoftwareProgrammingSagaData> _sagaDataAggregate;
         private IMessageMetadataEnvelop<ICommand> _answer;
         private MakeCoffeCommand command; 
         private GotTiredEvent _gotTiredEvent;
         private MessageMetadata _gotTiredEventMetadata;
 
         [OneTimeSetUp]
-        public async Task When_publishing_start_message()
+        public void When_publishing_start_message()
         {
             SagaId = Guid.NewGuid();
             _gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(),Guid.NewGuid(), SagaId);

@@ -14,10 +14,10 @@ namespace GridDomain.Tests.XUnit
 {
     public static class TestKitExtensions
     {
-        public static T LoadAggregate<T>(this TestKit kit, Guid id) where T : AggregateBase
+        public static async Task<T> LoadAggregate<T>(this TestKit kit, Guid id) where T : AggregateBase
         {
             var name = AggregateActorName.New<T>(id).ToString();
-            var actor = kit.LoadActor<AggregateActor<T>>(name).Result;
+            var actor = await kit.LoadActor<AggregateActor<T>>(name);
             return (T)actor.State;
         }
 

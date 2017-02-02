@@ -53,11 +53,11 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
-        public void Should_end_on_B_and_C()
+        public async Task Should_end_on_B_and_C()
         {
             Publish(_messageC,_messageB);
-            ExpectMsg(_messageC, m => m.Id == _messageC.Id);
-            ExpectMsg(_messageB, m => m.Id == _messageB.Id);
+            await ExpectMsg(_messageC, m => m.Id == _messageC.Id);
+            await ExpectMsg(_messageB, m => m.Id == _messageB.Id);
         }
 
         [Fact]

@@ -34,9 +34,9 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas.Transitions
 
         
         [Then]
-        public async Task Transition_raises_an_error()
+        public void Transition_raises_an_error()
         {
-            Assert.ThrowsAsync<SagaTransitionException>(async () => await When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance));
+           Assert.ThrowsAsync<SagaTransitionException>(async () => await When_apply_known_but_not_mapped_event_in_state(_given.SagaInstance));
         }
     }
 }

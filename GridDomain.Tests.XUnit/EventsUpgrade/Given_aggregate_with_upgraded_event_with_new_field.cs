@@ -33,8 +33,8 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
                 new BalanceChangedEvent_V1(5, balanceId),
             };
 
-              await Node.System.SaveToJournal<BalanceAggregate>(balanceId, events);
-             var aggregate = this.LoadAggregate<BalanceAggregate>(balanceId);
+             await Node.System.SaveToJournal<BalanceAggregate>(balanceId, events);
+             var aggregate = await this.LoadAggregate<BalanceAggregate>(balanceId);
 
             //Then_it_should_process_old_and_new_event()
             Assert.Equal(15, aggregate.Amount);

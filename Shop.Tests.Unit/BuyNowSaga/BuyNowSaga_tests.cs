@@ -158,7 +158,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
         }
 
         [Test]
-        public async Task Given_reserving_state_When_order_total_calculated_and__order_item_added_Then_state_is_changed()
+        public void Given_reserving_state_When_order_total_calculated_and__order_item_added_Then_state_is_changed()
         {
             var scenario = NewScenario();
 

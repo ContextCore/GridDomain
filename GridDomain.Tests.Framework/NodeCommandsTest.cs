@@ -177,9 +177,9 @@ namespace GridDomain.Tests.Framework
                         TestContext.Out.WriteLine(log);
                         TestContext.Progress.WriteLine(log);
                     }
-                    catch (Exception ex)
+                    catch 
                     {
-                        continue;
+                        //inentionally left blank
                     }
                 }
 

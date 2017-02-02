@@ -240,7 +240,6 @@
     <Compile Include="Actors\IPersistenceEntityActorMaintainanceMessage.cs" />
     <Compile Include="Actors\MessageHandlingStatuses.cs" />
     <Compile Include="Actors\Persisted.cs" />
-    <Compile Include="Actors\CannotCreateChildException.cs" />
     <Compile Include="Actors\CannotFindRouteException.cs" />
     <Compile Include="Actors\CheckHealth.cs" />
     <Compile Include="Actors\ChildInfo.cs" />
@@ -249,7 +248,6 @@
     <Compile Include="Actors\EachMessageSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourcedActor.cs" />
     <Compile Include="Actors\HealthStatus.cs" />
-    <Compile Include="Actors\InvalidChildIdException.cs" />
     <Compile Include="Actors\ISnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />

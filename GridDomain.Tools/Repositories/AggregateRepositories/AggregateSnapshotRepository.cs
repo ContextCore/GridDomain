@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Persistence;
 using GridDomain.Common;
@@ -41,7 +42,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                            }).ToArray();
         }
 
-        public void Add<T>(T aggregate) where T : IAggregate
+        public async Task Add<T>(T aggregate) where T : IAggregate
         {
             var serializer = new DomainSerializer();
 
@@ -55,7 +56,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                     Snapshot = serializer.ToBinary(snapshot),
                     Timestamp = BusinessDateTime.UtcNow
                 };
-                repo.Save(item.PersistenceId,item);
+                await repo.Save(item.PersistenceId,item);
             }
         }
     }

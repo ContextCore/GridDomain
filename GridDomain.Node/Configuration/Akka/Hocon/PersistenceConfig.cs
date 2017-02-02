@@ -2,7 +2,6 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class PersistenceConfig : IAkkaConfig
     {
-        private readonly AkkaConfiguration _akka;
         private readonly IAkkaConfig _journalConfig;
         private readonly IAkkaConfig _snapshotsConfig;
 

@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit.Sagas.InstanceSagas
 
             secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), SagaId);
 
-            anyMessagePublisher.SendToSagas(secondStartMessage);
+            await anyMessagePublisher.SendToSagas(secondStartMessage);
 
             FishForMessage<Persisted>(m => true );
 

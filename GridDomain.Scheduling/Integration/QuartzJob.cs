@@ -162,7 +162,7 @@ namespace GridDomain.Scheduling.Integration
             {
                 return Deserialize<IMessageMetadata>(bytes, _serializer);
             }
-            catch (Exception ex)
+            catch 
             {
                 return MessageMetadata.Empty;
             }

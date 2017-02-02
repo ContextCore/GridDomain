@@ -33,7 +33,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                 .Execute();
 
             _changedEvent = _results.Message<AggregateChangedEventNotification>();
-
+            _aggregate = await this.LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
         //Results_contains_received_messages()
              Assert.NotEmpty(_results.All);
         //Results_contains_requested_message()

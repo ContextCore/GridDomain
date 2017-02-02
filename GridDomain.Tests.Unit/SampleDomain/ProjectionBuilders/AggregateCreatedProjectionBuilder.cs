@@ -18,7 +18,6 @@ namespace GridDomain.Tests.Unit.SampleDomain.ProjectionBuilders
             watch.Start();
         }
 
-        private int number = 0;
         private readonly IPublisher _publisher;
         public static int ProjectionGroupHashCode { get; set; }
 

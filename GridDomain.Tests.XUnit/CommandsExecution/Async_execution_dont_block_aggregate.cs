@@ -29,7 +29,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                          .Expect<SampleAggregateChangedEvent>()
                          .Execute();
 
-            var sampleAggregate = this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            var sampleAggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
 
             Assert.Equal(syncCommand.Parameter.ToString(), sampleAggregate.Value);
             var waitResults = await asyncCommandTask;

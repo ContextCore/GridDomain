@@ -9,7 +9,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
     public class AkkaWaiter_messages_test_A_and_B_or_C : AkkaWaiterTest
     {
         private string _messageA;
-        private char _messageB;
+        private char _messageB = 'd';
         private int _messageC;
 
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
