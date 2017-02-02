@@ -15,20 +15,17 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 {
     public class AsyncExecute_without_timeout_using_node_defaults : NodeTestKit
     {
-       [Fact]
+        [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()
         {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
-
-            await Node.Prepare(syncCommand)
-                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+            await Node.Prepare(new LongOperationCommand(1000, Guid.NewGuid()))
+                      .Expect<SampleAggregateChangedEvent>()
                       .Execute()
                       .ShouldThrow<TimeoutException>();
         }
 
-        public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(output, CreateFixture())
-        {
-        }
+        public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output)
+            : base(output, CreateFixture()) {}
 
         private static NodeTestFixture CreateFixture()
         {

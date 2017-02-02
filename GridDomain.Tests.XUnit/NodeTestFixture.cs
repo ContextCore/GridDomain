@@ -64,7 +64,8 @@ namespace GridDomain.Tests.XUnit
             var node = new GridDomainNode(_containerConfiguration ?? CreateContainerConfiguration(),
                                           _routeMap ?? CreateRouteMap(), 
                                           () => new[] { System ?? ActorSystem.Create(Name, GetConfig()) },
-                                          quartzConfig);
+                                          quartzConfig,
+                                          DefaultTimeout);
             _node = node;
             OnNodeCreated();
             node.Start().Wait();

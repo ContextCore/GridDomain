@@ -70,7 +70,7 @@ namespace GridDomain.Tests.Framework
         protected virtual GridDomainNode CreateGridDomainNode(AkkaConfiguration akkaConf)
         {
             return new GridDomainNode(CreateConfiguration(), CreateMap(), () => new[] { Sys },
-                (InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig()));
+                (InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig()), TimeSpan.FromSeconds(10));
         }
         protected virtual IContainerConfiguration CreateConfiguration()
         {
