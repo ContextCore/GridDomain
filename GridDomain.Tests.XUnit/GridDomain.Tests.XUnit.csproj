@@ -289,6 +289,7 @@
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="TestKitExtensions.cs" />
+    <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
     <Compile Include="XUnitAutoTestLoggerConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>

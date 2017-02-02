@@ -382,8 +382,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_A.cs" />
     <Compile Include="ThenAttribute.cs" />
-    <Compile Include="Tools\Repositories\EventPersistenceActor_Tests.cs" />
-    <Compile Include="Tools\Repositories\Test_event_repositoty_tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

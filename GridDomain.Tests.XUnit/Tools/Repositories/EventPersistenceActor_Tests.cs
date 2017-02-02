@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using Akka.Actor;
-using Akka.TestKit.NUnit3;
+using Akka.TestKit.Xunit2;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.Tools.Repositories
+namespace GridDomain.Tests.XUnit.Tools.Repositories
 {
-    [TestFixture]
     public class EventPersistenceActor_Tests : TestKit
     {
 
@@ -15,47 +14,51 @@ namespace GridDomain.Tests.Unit.Tools.Repositories
         {
             
         }
-        [Test]
+       [Fact]
+
         public void When_actor_is_created_it_does_not_send_anything()
         {
-            var actor = CreateActor("1");
+            CreateActor("1");
             ExpectNoMsg(500);
         }
 
-        [Test]
+       [Fact]
         public void When_actor_is_created_and_asked_for_load_response_is_empty()
         {
             var actor = CreateActor("1");
-            var res = LoadEvents("1");
-            CollectionAssert.IsEmpty(res.Events);
+            var res = LoadEvents(actor);
+            Assert.Empty(res.Events);
         }
 
-        [Test]
+       [Fact]
         public void When_actor_is_created_and_asked_for_load_response_contains_persisteneId()
         {
             var actor = CreateActor("1");
-            var res = LoadEvents("1");
-            Assert.AreEqual("1",res.PersistenceId);
+            var res = LoadEvents(actor);
+            Assert.Equal("1",res.PersistenceId);
         }
 
-        [Test]
+       [Fact]
         public void When_acor_receives_persist_request_it_responses_with_initial_persisted_payload()
         {
             var actor = CreateActor("2");
             var payload = "123";
             var persisted = Save(actor, payload);
-            Assert.AreEqual(payload, persisted.Payload);
+            Assert.Equal(payload, persisted.Payload);
         }
 
-        [Test]
+       [Fact]
         public void When_acor_receives_persist_request_it_persist_payload()
         {
             var actor = CreateActor("2");
             var payload = "123";
             Save(actor, payload);
+            actor.Tell(PoisonPill.Instance);
 
-            var loaded = LoadEvents("2");
-            Assert.AreEqual(payload, loaded.Events.FirstOrDefault());
+            actor = CreateActor("2");
+            var loaded = LoadEvents(actor);
+
+            Assert.Equal(payload, loaded.Events.FirstOrDefault());
         }
 
         private IActorRef CreateActor(string persistenceId)
@@ -63,9 +66,8 @@ namespace GridDomain.Tests.Unit.Tools.Repositories
             return Sys.ActorOf(Props.Create(() => new EventsRepositoryActor(persistenceId)));
         }
 
-        private EventsRepositoryActor.Loaded LoadEvents(string persistenceId)
+        private EventsRepositoryActor.Loaded LoadEvents(IActorRef actor)
         {
-            var actor = CreateActor(persistenceId);
             var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load()).Result;
             return res;
         }
