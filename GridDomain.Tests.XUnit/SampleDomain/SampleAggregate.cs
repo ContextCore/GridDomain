@@ -20,7 +20,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
             public Guid Id { get; set; }
             public int Version { get; set; }
-            public string Value { get; set; }
+            public string Value { get; }
         }
 
         public static SampleAggregate FromSnapshot(IMemento memento)

@@ -287,6 +287,7 @@
     <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
+    <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="TestKitExtensions.cs" />
     <Compile Include="XUnitAutoTestLoggerConfiguration.cs" />
   </ItemGroup>

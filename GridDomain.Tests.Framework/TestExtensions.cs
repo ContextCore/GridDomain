@@ -4,9 +4,7 @@ using System.Linq;
 
 namespace GridDomain.Tests.Framework
 {
-
-
-    public static class AutoFix
+    public static class TestExtensions
     {
         private static readonly Random Rnd = new Random();
 
@@ -36,6 +34,20 @@ namespace GridDomain.Tests.Framework
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+        public static bool IsIncreasing<TElem>(this IList<TElem> elements, Func<TElem, int> valueSelector)
+        {
+            var firstElement = elements.FirstOrDefault();
+            if (firstElement == null) return false;
+
+            var prevElement = valueSelector(firstElement);
+            foreach (var element in elements)
+            {
+                var currentValue = valueSelector(element);
+                if (currentValue < prevElement) return false;
+                prevElement = currentValue;
+            }
+            return true;
         }
     }
 }

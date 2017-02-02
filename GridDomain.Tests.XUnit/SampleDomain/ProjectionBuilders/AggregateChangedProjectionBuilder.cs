@@ -7,17 +7,15 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
 {
     public class AggregateChangedProjectionBuilder : IHandler<SampleAggregateChangedEvent>
     {
-        public static int ProjectionGroupHashCode;
         private static readonly Stopwatch Watch = new Stopwatch();
         static AggregateChangedProjectionBuilder()
         {
             Watch.Start();
         }
-        private int _number;
+
         public virtual Task Handle(SampleAggregateChangedEvent msg)
         {
-            msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
-            msg.History.SequenceNumber = ++_number;
+            msg.History.SequenceNumber = int.Parse(msg.Value);
             msg.History.ElapsedTicksFromAppStart = Watch.ElapsedTicks;
             return Task.CompletedTask;
         }

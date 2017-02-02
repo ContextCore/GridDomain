@@ -18,10 +18,8 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
 
         public Task Handle(SampleAggregateCreatedEvent msg)
         {
-            msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
-            msg.History.SequenceNumber = ++number;
+            msg.History.SequenceNumber = int.Parse(msg.Value);
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
-            msg.History.HandlerName = this.GetType().Name;
             return Task.CompletedTask;
         }
     }

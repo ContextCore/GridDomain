@@ -173,7 +173,7 @@
     <Compile Include="AnyMessageExpectBuilder.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="NUnitAssertEx.cs" />
-    <Compile Include="AutoFix.cs" />
+    <Compile Include="TestExtensions.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="CannotCreateCommandHandlerExeption.cs" />
     <Compile Include="CannotCreateGenericType.cs" />

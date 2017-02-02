@@ -28,9 +28,8 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
 
         public virtual Task Handle(SampleAggregateCreatedEvent msg, IMessageMetadata metadata)
         {
-            msg.History.ProjectionGroupHashCode = ProjectionGroupHashCode;
+            msg.History.SequenceNumber = int.Parse(msg.Value);
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
-            msg.History.HandlerName = this.GetType().Name;
 
             var notificationMetadata = MessageMetadata.CreateFrom(msg.SourceId,
                                                       metadata,
