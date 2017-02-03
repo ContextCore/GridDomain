@@ -7,21 +7,21 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Tests.Unit.FutureEvents;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using GridDomain.Tests.XUnit.FutureEvents;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
+using Xunit;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.XUnit.Metadata
 {
-    [TestFixture]
-    class Metadata_from_command_passed_to_produced_scheduled_event : FutureEventsTest_InMemory
+    
+    public class Metadata_from_command_passed_to_produced_scheduled_event : FutureEventsTest_InMemory
     {
         private IMessageMetadataEnvelop<TestDomainEvent> _answer;
         private ScheduleEventInFutureCommand _command;
         private IMessageMetadata _commandMetadata;
         private IMessageMetadataEnvelop<JobSucceeded> _jobSucced;
 
-        [OneTimeSetUp]
+      [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
             _command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(20), Guid.NewGuid(), "12");
@@ -36,56 +36,56 @@ namespace GridDomain.Tests.Unit
             _jobSucced = res.MessageWithMetadata<JobSucceeded>();
         }
 
-        [Test]
+        [Fact]
         public void Result_contains_metadata()
         {
             Assert.NotNull(_answer.Metadata);
         }
 
-        [Test]
+        [Fact]
         public void Result_contains_message()
         {
             Assert.NotNull(_answer.Message);
         }
 
-        [Test]
+        [Fact]
         public void Result_message_has_expected_type()
         {
-            Assert.IsInstanceOf<TestDomainEvent>(_answer.Message);
+            Assert.IsAssignableFrom<TestDomainEvent>(_answer.Message);
         }
 
-        [Test]
+        [Fact]
         public void Result_message_has_expected_id()
         {
-            Assert.AreEqual(_command.AggregateId, _answer.Message.SourceId);
+           Assert.Equal(_command.AggregateId, _answer.Message.SourceId);
         }
 
-        [Test]
+        [Fact]
         public void Result_metadata_has_command_id_as_casuation_id()
         {
-            Assert.AreEqual((_jobSucced.Message.Message as ICommand)?.Id, _answer.Metadata.CasuationId);
+           Assert.Equal((_jobSucced.Message.Message as ICommand)?.Id, _answer.Metadata.CasuationId);
         }
 
-        [Test]
+        [Fact]
         public void Result_metadata_has_correlation_id_same_as_command_metadata()
         {
-            Assert.AreEqual(_commandMetadata.CorrelationId, _answer.Metadata.CorrelationId);
+           Assert.Equal(_commandMetadata.CorrelationId, _answer.Metadata.CorrelationId);
         }
 
-        [Test]
+        [Fact]
         public void Result_metadata_has_processed_history_filled_from_aggregate()
         {
-            Assert.AreEqual(1, _answer.Metadata.History?.Steps.Count);
+           Assert.Equal(1, _answer.Metadata.History?.Steps.Count);
         }
 
-        [Test]
+        [Fact]
         public void Result_metadata_has_processed_correct_filled_history_step()
         {
             var step = _answer.Metadata.History.Steps.First();
 
-            Assert.AreEqual(AggregateActorName.New<TestAggregate>(_command.AggregateId).Name, step.Who);
-            Assert.AreEqual(AggregateActor<TestAggregate>.CommandExecutionCreatedAnEvent, step.Why);
-            Assert.AreEqual(AggregateActor<TestAggregate>.PublishingEvent, step.What);
+           Assert.Equal(AggregateActorName.New<TestAggregate>(_command.AggregateId).Name, step.Who);
+           Assert.Equal(AggregateActor<TestAggregate>.CommandExecutionCreatedAnEvent, step.Why);
+           Assert.Equal(AggregateActor<TestAggregate>.PublishingEvent, step.What);
         }
     }
 }

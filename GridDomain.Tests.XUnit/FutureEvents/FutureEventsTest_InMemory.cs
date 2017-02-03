@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.XUnit.FutureEvents
 {
     public class FutureEventsTest_InMemory : FutureEventsTest
     {

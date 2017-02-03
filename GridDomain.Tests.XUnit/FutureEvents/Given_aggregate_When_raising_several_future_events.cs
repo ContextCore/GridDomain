@@ -3,19 +3,18 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    [TestFixture]
+    
     public class Given_aggregate_When_raising_several_future_events : FutureEventsTest
     {
         private FutureEventOccuredEvent _eventA;
         private FutureEventOccuredEvent _eventB;
         private Guid _aggregateId;
 
-        [OneTimeSetUp]
+      [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()
         {
             _aggregateId = Guid.NewGuid();
@@ -36,13 +35,13 @@ namespace GridDomain.Tests.Unit.FutureEvents
 
         protected override TimeSpan DefaultTimeout => TimeSpan.FromSeconds(3);
 
-        [Then]
+       [Fact]
         public void Envelop_ids_are_different()
         {
             Assert.AreNotEqual(_eventA.FutureEventId, _eventB.FutureEventId);
         }
 
-        [Then]
+       [Fact]
         public void Envelop_id_not_equal_to_aggregate_id()
         {
             Assert.True(_eventA.Id != _aggregateId && _aggregateId !=  _eventB.Id);

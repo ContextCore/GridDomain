@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
+namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
     public class TestScheduledException : Exception
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    [TestFixture]
+    
     public class Raising_future_events_too_late : FutureEventsTest
     {
         public Raising_future_events_too_late(bool inMemory) : base(inMemory)
@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         }
 
 
-        [Test]
+        [Fact]
         public async Task Given_aggregate_When_raising_future_event_in_past_Then_it_fires_immediatly()
         {
             var scheduledTime = DateTime.Now.AddSeconds(-5);

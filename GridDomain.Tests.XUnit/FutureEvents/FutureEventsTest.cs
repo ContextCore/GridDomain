@@ -6,11 +6,11 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using Quartz;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.XUnit.FutureEvents
 {
     public abstract class FutureEventsTest : NodeCommandsTest
     {

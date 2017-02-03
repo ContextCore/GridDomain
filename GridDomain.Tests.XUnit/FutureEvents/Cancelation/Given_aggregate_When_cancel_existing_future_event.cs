@@ -3,19 +3,19 @@ using System.Linq;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
+using Xunit;
 
-namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
+namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 {
-    [TestFixture]
+    
     public class Given_aggregate_When_cancel_existing_future_event
     {
         private TestAggregate _aggregate;
         private FutureEventScheduledEvent _futureEventA;
         private FutureEventScheduledEvent _futureEvent_out_of_criteria;
 
-        [SetUp]
+        [Fact]
         public void When_cancel_existing_scheduled_future_event()
         {
             _aggregate = new TestAggregate(Guid.NewGuid());
@@ -31,27 +31,27 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
             _aggregate.CancelFutureEvents(testValue);
         }
 
-        [Then]
+       [Fact]
         public void Cancelation_event_is_produced()
         {
             var cancelEvent = _aggregate.GetEvent<FutureEventCanceledEvent>();
-            Assert.AreEqual(_futureEventA.Id, cancelEvent.FutureEventId);
+           Assert.Equal(_futureEventA.Id, cancelEvent.FutureEventId);
         }
 
-        [Then]
+       [Fact]
         public void Only_predicate_satisfying_events_are_canceled()
         {
             var cancelEvent = _aggregate.GetEvents<FutureEventCanceledEvent>();
             Assert.True(cancelEvent.All(e => e.FutureEventId != _futureEvent_out_of_criteria.Id));
         }
 
-        [Then]
+       [Fact]
         public void Canceled_event_cannot_be_raised()
         {
             _aggregate.ClearEvents();
             Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(_futureEventA.Id,Guid.NewGuid()));
             var anyEvents = _aggregate.GetEvents<DomainEvent>();
-            CollectionAssert.IsEmpty(anyEvents);
+            Assert.Empty(anyEvents);
         }
     }
 }

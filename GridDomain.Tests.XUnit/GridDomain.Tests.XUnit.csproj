@@ -110,6 +110,10 @@
       <HintPath>..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Quartz, Version=2.4.1.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.2.4.1\lib\net40\Quartz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
       <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
       <Private>True</Private>
@@ -230,6 +234,29 @@
     <Compile Include="EventsUpgrade\Nested_property_upgrade_with_custom_constructor.cs" />
     <Compile Include="EventsUpgrade\Upgrade_object_in_property.cs" />
     <Compile Include="EventsUpgrade\VersionedTypeNameTests.cs" />
+    <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
+    <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
+    <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest.cs" />
+    <Compile Include="FutureEvents\FutureEventsTest_InMemory.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_commands.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
+    <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_by_method_call.cs" />
+    <Compile Include="FutureEvents\Given_different_aggregates_future_events_Should_be_processed_independently.cs" />
+    <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\ScheduleEventInFutureCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestAggregate.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestAggregatesCommandHandler.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestDomainEvent.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestRouteMap.cs" />
+    <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />
+    <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
+    <Compile Include="FutureEvents\Reraising_future_event.cs" />
+    <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
+    <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
@@ -246,6 +273,8 @@
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_events.cs" />
     <Compile Include="Metadata\Metadata_from_aggregate_command_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_async_aggregate_command_passed_to_produced_events.cs" />
+    <Compile Include="Metadata\Metadata_from_command_passed_to_produced_scheduled_event.cs" />
+    <Compile Include="Metadata\Metadata_from_command_passed_to_produced_scheduled_fault.cs" />
     <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_notification.cs" />
     <Compile Include="Metadata\Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
@@ -348,6 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="job_scheduling_data_2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -3,17 +3,16 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
-using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Unit.FutureEvents.Retry
+namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
-    [TestFixture]
+    
     public class FutureEvent_Reraise_stops_on_special_exceptions : FutureEventsTest_InMemory
     {
 
@@ -49,7 +48,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
       
         }
 
-        [Test]
+        [Fact]
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
@@ -61,7 +60,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
             //waiting for policy call to determine should we retry failed job or not
             Thread.Sleep(1000);
             // job was not retried and policy was not called
-            Assert.AreEqual(1, _policyCallNumber);
+           Assert.Equal(1, _policyCallNumber);
         }
     }
 }

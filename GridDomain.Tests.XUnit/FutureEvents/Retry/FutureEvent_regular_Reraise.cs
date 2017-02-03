@@ -1,18 +1,17 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
-using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Unit.FutureEvents.Retry
+namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
-    [TestFixture]
+    
     public class FutureEvent_regular_Reraise : FutureEventsTest_InMemory
     {
 
@@ -31,7 +30,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
       
         }
 
-        [Test]
+        [Fact]
         public async Task Should_retry_on_exception()
         {
             //will retry 1 time
@@ -45,7 +44,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
             var res = await waiter;
 
-            Assert.AreEqual(command.Value, res.Message<TestErrorDomainEvent>().Value);
+           Assert.Equal(command.Value, res.Message<TestErrorDomainEvent>().Value);
         }
     }
 }

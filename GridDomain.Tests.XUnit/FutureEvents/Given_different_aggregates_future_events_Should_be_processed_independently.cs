@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    [TestFixture]
+    
     public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest_InMemory
     {
         private FutureEventOccuredEvent _eventA;
@@ -16,7 +15,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         private ScheduleEventInFutureCommand _commandA;
         private ScheduleEventInFutureCommand _commandB;
 
-        [OneTimeSetUp]
+      [Fact]
         public async Task Raising_several_future_events_for_different_aggregates()
         {
             _commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
@@ -33,22 +32,22 @@ namespace GridDomain.Tests.Unit.FutureEvents
                                      .Message<FutureEventOccuredEvent>();
         }
 
-        [Then]
+       [Fact]
         public void Future_event_ids_are_different()
         {
             Assert.AreNotEqual(_eventA.FutureEventId, _eventB.FutureEventId);
         }
 
-        [Then]
+       [Fact]
         public void EventA_is_result_of_commandA()
         {
-            Assert.AreEqual(_eventA.SourceId, _commandA.AggregateId);
+           Assert.Equal(_eventA.SourceId, _commandA.AggregateId);
         }
 
-        [Then]
+       [Fact]
         public void EventB_is_result_of_commandB()
         {
-            Assert.AreEqual(_eventB.SourceId, _commandB.AggregateId);
+           Assert.Equal(_eventB.SourceId, _commandB.AggregateId);
         }
     }
 }
