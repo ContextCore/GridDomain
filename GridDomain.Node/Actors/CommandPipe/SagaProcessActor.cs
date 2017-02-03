@@ -72,6 +72,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                        .ContinueWith(t => CreateCommandEnvelops(t.Result));
         }
 
+    
         private static IEnumerable<MessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<ISagaTransitCompleted> messages)
         {
             return messages.OfType<SagaTransited>()

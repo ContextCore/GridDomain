@@ -149,7 +149,7 @@ namespace GridDomain.Node.Actors
             Publisher.Publish(fault, metadata);
         }
 
-        private Task<object> ProcessSaga(object message, IMessageMetadata domainEventMetadata)
+        private Task<ISagaTransitCompleted> ProcessSaga(object message, IMessageMetadata domainEventMetadata)
         {
             //cast is need for dynamic call of Transit
             Task processSagaTask = (Saga as ISagaInstance).Transit((dynamic) message);
@@ -160,7 +160,7 @@ namespace GridDomain.Node.Actors
                     Saga.ClearCommandsToDispatch();
                     var exception = t.Exception as Exception ?? new TimeoutException();
                     var fault = Fault.NewGeneric(message, exception, Id, typeof(TSaga));
-                    return (object)new SagaTransitFault(fault, domainEventMetadata);
+                    return (ISagaTransitCompleted)new SagaTransitFault(fault, domainEventMetadata);
                 }
 
                 var sagaTransited = new SagaTransited(Saga.CommandsToDispatch.ToArray(),

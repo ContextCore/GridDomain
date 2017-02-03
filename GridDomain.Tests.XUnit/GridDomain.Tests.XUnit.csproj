@@ -106,12 +106,24 @@
       <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph.Data, Version=3.6.61114.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph.Graphviz, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Graphviz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QuickGraph.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -236,6 +248,7 @@
     <Compile Include="Metadata\Metadata_from_async_aggregate_command_passed_to_produced_events.cs" />
     <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_fault.cs" />
     <Compile Include="Metadata\Metadata_from_message_handler_event_passed_to_produced_notification.cs" />
+    <Compile Include="Metadata\Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
     <Compile Include="NodeTestKit.cs" />
     <Compile Include="NodeTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -245,46 +258,35 @@
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaMap.cs" />
     <Compile Include="Sagas\CustomRoutesSampleDomainFixture.cs" />
-    <Compile Include="Sagas\InstanceSagas\CreateSagaGraph.cs" />
-    <Compile Include="Sagas\InstanceSagas\CustomEvent.cs" />
-    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSaga.cs" />
-    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="Sagas\InstanceSagas\CustomRoutesSoftwareProgrammingSagaMap.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_instance_saga_When_exception_on_transit.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_istance_saga_saga_actor_can_be_created.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_extracting_descriptor.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_handling_command_faults.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_any_of_start_messages.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_several_start_messages.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_again.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_A.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_When_publishing_start_message_B.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_saga_with_custom_message_mappings_When_extracting_descriptor.cs" />
-    <Compile Include="Sagas\InstanceSagas\Given_uninitialized_saga_When_processing_messages.cs" />
-    <Compile Include="Sagas\InstanceSagas\ProgrammingSoftwareSagaTest_with_custom_routes.cs" />
-    <Compile Include="Sagas\InstanceSagas\Recovery\Given_instance_saga_When_recovering.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSaga.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaActorTests\TestState.cs" />
-    <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
-    <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId.cs" />
-    <Compile Include="Sagas\InstanceSagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
-    <Compile Include="Sagas\InstanceSagas\SampleDomainCommandExecutionTests.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingInstanceSagaTest.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSaga.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaContainerConfiguration.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaData.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_and_message_received_when_hydrating.cs" />
-    <Compile Include="Sagas\InstanceSagas\Transitions\Given_created_event_when_hydrating.cs" />
-    <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
+    <Compile Include="Sagas\CreateSagaGraph.cs" />
+    <Compile Include="Sagas\Given_instance_saga_When_exception_on_transit.cs" />
+    <Compile Include="Sagas\Given_istance_saga_saga_actor_can_be_created.cs" />
+    <Compile Include="Sagas\Given_saga_When_extracting_descriptor.cs" />
+    <Compile Include="Sagas\Given_saga_When_handling_command_faults.cs" />
+    <Compile Include="Sagas\Given_saga_When_publishing_any_of_start_messages.cs" />
+    <Compile Include="Sagas\Given_saga_When_publishing_several_start_messages.cs" />
+    <Compile Include="Sagas\Given_saga_When_publishing_start_again.cs" />
+    <Compile Include="Sagas\Given_saga_When_publishing_start_message_A.cs" />
+    <Compile Include="Sagas\Given_saga_When_publishing_start_message_B.cs" />
+    <Compile Include="Sagas\Given_saga_with_custom_message_mappings_When_extracting_descriptor.cs" />
+    <Compile Include="Sagas\Given_uninitialized_saga_When_processing_messages.cs" />
+    <Compile Include="Sagas\ProgrammingSoftwareSagaTest_with_custom_routes.cs" />
+    <Compile Include="Sagas\Recovery\Given_instance_saga_When_recovering.cs" />
+    <Compile Include="Sagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
+    <Compile Include="Sagas\SagaActorTests\AsyncLongRunningSaga.cs" />
+    <Compile Include="Sagas\SagaActorTests\AsyncLongRunningSagaFactory.cs" />
+    <Compile Include="Sagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
+    <Compile Include="Sagas\SagaActorTests\TestState.cs" />
+    <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId.cs" />
+    <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingInstanceSagaTest.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingSagaFixture.cs" />
+    <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga.cs" />
+    <Compile Include="Sagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
+    <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
+    <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
+    <Compile Include="Sagas\Transitions\Given_created_and_message_received_when_hydrating.cs" />
+    <Compile Include="Sagas\Transitions\Given_created_event_when_hydrating.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoToWorkCommand.cs" />
@@ -302,8 +304,8 @@
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaContainerConfiguration.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaData.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\UndefinedCoffeMachineException.cs" />
-    <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
     <Compile Include="SampleDomainFixture.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />

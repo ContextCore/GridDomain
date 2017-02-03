@@ -265,8 +265,14 @@
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="Metadata_from_command_passed_to_produced_scheduled_event.cs" />
     <Compile Include="Metadata_from_command_passed_to_produced_scheduled_fault.cs" />
-    <Compile Include="Metadata_from_saga_received_event_passed_to_produced_commands.cs" />
     <Compile Include="NUnitAssertEx.cs" />
+    <Compile Include="Sagas\InstanceSagas\SagaDataAggregateCommandsHandlerDummy.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSaga.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaContainerConfiguration.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaData.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
+    <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
+    <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
     <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />

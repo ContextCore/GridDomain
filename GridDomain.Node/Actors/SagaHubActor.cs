@@ -62,7 +62,7 @@ namespace GridDomain.Node.Actors
 
         protected override void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
         {
-            knownChild.Ref.Ask<SagaTransited>(message).PipeTo(Sender, Self);
+            knownChild.Ref.Ask<ISagaTransitCompleted>(message).PipeTo(Sender, Self);
         }
     }
 }

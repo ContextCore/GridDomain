@@ -1,45 +1,26 @@
+using System;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Node.Configuration.Akka;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.XUnit.SampleDomain;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit
 {
     public class SampleDomainFixture : NodeTestFixture
     {
-        private SampleDomainFixture(IContainerConfiguration config = null, IMessageRouteMap map = null)
-            :base(ContainerConfiguration(config), Map(map))
-        {
-            
-        }
-        public SampleDomainFixture(): this(null,null)
+        public SampleDomainFixture(IContainerConfiguration config = null, IMessageRouteMap map = null, TimeSpan? timeout=null)
+            :base(config, map, timeout)
         {
             
         }
 
-        private static IMessageRouteMap Map(IMessageRouteMap map)
+        protected override IContainerConfiguration CreateContainerConfiguration()
         {
-            if (map == null) return new SampleRouteMap();
-            return new CompositeRouteMap(map, new SampleRouteMap());
+            return new SampleDomainContainerConfiguration();
         }
 
-        private static IContainerConfiguration ContainerConfiguration(IContainerConfiguration config)
+        protected override IMessageRouteMap CreateRouteMap()
         {
-            if(config == null) return new SampleDomainContainerConfiguration();
-            return new CustomContainerConfiguration(new SampleDomainContainerConfiguration(), new SampleDomainContainerConfiguration());
-        }
-
-        public static SampleDomainFixture WithMap(IMessageRouteMap map)
-        {
-            return new SampleDomainFixture(null,map);
-        }
-
-        public static SampleDomainFixture WithConfig(IContainerConfiguration config)
-        {
-            return new SampleDomainFixture(config);
+            return new SampleRouteMap();
         }
     }
     
