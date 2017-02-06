@@ -22,19 +22,15 @@ namespace GridDomain.Tests.XUnit.DependencyInjection
 
         class DINodeFixture : NodeTestFixture
         {
-            protected override IContainerConfiguration CreateContainerConfiguration()
+            public DINodeFixture()
             {
-                return new CustomContainerConfiguration(c =>
-                {
-                    c.RegisterType<ITestDependency, TestDependencyImplementation>();
-                    c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
-                    c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
-                });
-            }
-
-            protected override IMessageRouteMap CreateRouteMap()
-            {
-                return new TestRouteMap();
+                Add(new CustomContainerConfiguration(c =>
+                                                     {
+                                                         c.RegisterType<ITestDependency, TestDependencyImplementation>();
+                                                         c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
+                                                         c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
+                                                     }));
+                Add(new TestRouteMap());
             }
         }
     }

@@ -7,28 +7,26 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    
     public class Reraising_future_event : FutureEventsTest
     {
-
         [Fact]
-        public async Task  Given_aggregate_When_reraising_future_event_Then_it_fires_in_time()
+        public async Task Given_aggregate_When_reraising_future_event_Then_it_fires_in_time()
         {
             var aggregateId = Guid.NewGuid();
 
-            var testCommand = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId,"test value");
+            await Node.Prepare(new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), aggregateId, "test value"))
+                      .Expect<TestDomainEvent>()
+                      .Execute();
 
-            await Node.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
+            var reraiseTime = DateTime.Now.AddSeconds(0.5);
 
-            var reraiseTime = DateTime.Now.AddSeconds(1);
+            await Node.Prepare(new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value"))
+                      .Expect<TestDomainEvent>()
+                      .Execute();
 
-            testCommand = new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value");
+            var aggregate = await this.LoadAggregate<FutureEventsAggregate>(aggregateId);
 
-            await Node.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
-
-            var aggregate = await this.LoadAggregate<TestAggregate>(aggregateId);
-
-            Assert.True(reraiseTime.Second - aggregate.ProcessedTime.Second <=  1);
+            Assert.True(reraiseTime.Second - aggregate.ProcessedTime.Second <= 1);
         }
 
         public Reraising_future_event(ITestOutputHelper output) : base(output) {}

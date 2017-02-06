@@ -17,6 +17,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
+        public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
+    : base(output, new Reraise_fixture()) { }
+
         class TwoFastRetriesSettings : InMemoryRetrySettings
         {
             public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10), new StopOnTestExceptionPolicy()) {}
@@ -43,24 +46,21 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
         {
             public Reraise_fixture()
             {
-                var cfg =
-                    new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
+                var cfg =  new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
                 Add(cfg);
             }
         }
-
-        public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
-            : base(output, new Reraise_fixture()) {}
 
         [Fact]
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A", 2);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.3), Guid.NewGuid(), "test value A", 2);
 
             await Node.Prepare(command)
                       .Expect<JobFailed>()
-                      .Execute();
+                      .Execute(TimeSpan.FromSeconds(100));
+
             //waiting for policy call to determine should we retry failed job or not
             Thread.Sleep(1000);
             // job was not retried and policy was not called

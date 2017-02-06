@@ -21,19 +21,16 @@ namespace GridDomain.Node.Actors
         protected readonly ActorMonitor Monitor;
         protected ILoggingAdapter _log = Context.GetLogger();
 
-        protected readonly IPublisher Publisher;
         private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }
         public IAggregate State { get; protected set; }
 
         public EventSourcedActor(IConstructAggregates aggregateConstructor,
-                                 ISnapshotsPersistencePolicy policy,
-                                 IPublisher publisher)
+                                 ISnapshotsPersistencePolicy policy)
         {
             PersistenceId = Self.Path.Name;
             SnapshotsPolicy = policy;
             _aggregateConstructor = aggregateConstructor;
-            Publisher = publisher;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = (AggregateBase)aggregateConstructor.Build(typeof(T), Id, null);
             Monitor = new ActorMonitor(Context, typeof(T).Name);

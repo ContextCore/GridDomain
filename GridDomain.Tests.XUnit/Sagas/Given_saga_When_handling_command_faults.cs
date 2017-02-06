@@ -20,18 +20,10 @@ namespace GridDomain.Tests.XUnit.Sagas
 
         class FaultyAggregateFixture : SoftwareProgrammingSagaFixture
         {
-            protected override IContainerConfiguration CreateContainerConfiguration()
+            public FaultyAggregateFixture()
             {
-                return new CustomContainerConfiguration(c => base.CreateContainerConfiguration()
-                                                                 .Register(c),
-                    c => c.RegisterAggregate<HomeAggregate, HomeAggregateHandler>());
-            }
-
-            protected override IMessageRouteMap CreateRouteMap()
-            {
-                return new CustomRouteMap(r => base.CreateRouteMap()
-                                                   .Register(r),
-                    r => r.RegisterAggregate(HomeAggregateHandler.Descriptor));
+                Add(new CustomContainerConfiguration(c => c.RegisterAggregate<HomeAggregate, HomeAggregateHandler>()));
+                Add(new CustomRouteMap(r => r.RegisterAggregate(HomeAggregateHandler.Descriptor)));
             }
         }
 
@@ -50,7 +42,10 @@ namespace GridDomain.Tests.XUnit.Sagas
             await Sys.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
             Thread.Sleep(100);
-            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid(), BusinessDateTime.UtcNow, sagaId);
+            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),
+                                                                Guid.NewGuid(),
+                                                                BusinessDateTime.UtcNow,
+                                                                sagaId);
 
             await Node.NewDebugWaiter(TimeSpan.FromMinutes(10))
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(

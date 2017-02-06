@@ -43,6 +43,7 @@ namespace GridDomain.Node.Actors
         private readonly ProcessEntry _exceptionOnTransit;
         private ProcessEntry _stateChanged { get; }
         private readonly ProcessEntry _sagaProducedCommand;
+        private readonly IPublisher _publisher;
 
         private Guid GetSagaId(DomainEvent msg)
         {
@@ -60,9 +61,9 @@ namespace GridDomain.Node.Actors
                          ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                          IConstructAggregates aggregatesConstructor)
                             :base(aggregatesConstructor,
-                                  snapshotsPersistencePolicy,
-                                  publisher)
+                                  snapshotsPersistencePolicy)
         {
+            _publisher = publisher;
             _producer = producer;
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
@@ -146,7 +147,7 @@ namespace GridDomain.Node.Actors
 
             var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
 
-            Publisher.Publish(fault, metadata);
+            _publisher.Publish(fault, metadata);
         }
 
         private Task<ISagaTransitCompleted> ProcessSaga(object message, IMessageMetadata domainEventMetadata)
@@ -195,7 +196,7 @@ namespace GridDomain.Node.Actors
             foreach (var e in stateChangeEvents)
             {
                 var metadata = eventsMetadata.CreateChild(e.SourceId,_stateChanged);
-                Publisher.Publish(e, metadata);
+                _publisher.Publish(e, metadata);
             }
             TrySaveSnapshot(stateChangeEvents);
         }

@@ -74,6 +74,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Automatonymous.Visualizer.3.3.0\lib\net452\Automatonymous.Visualizer.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Helios, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Helios.2.1.2\lib\net45\Helios.dll</HintPath>
       <Private>True</Private>
@@ -246,11 +254,11 @@
     <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleEventInFutureCommand.cs" />
-    <Compile Include="FutureEvents\Infrastructure\TestAggregate.cs" />
-    <Compile Include="FutureEvents\Infrastructure\TestAggregatesCommandHandler.cs" />
+    <Compile Include="FutureEvents\Infrastructure\FutureEventsAggregate.cs" />
+    <Compile Include="FutureEvents\Infrastructure\FutureEventsAggregatesCommandHandler.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
-    <Compile Include="FutureEvents\Infrastructure\TestRouteMap.cs" />
+    <Compile Include="FutureEvents\Infrastructure\FutureEventsRouteMap.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />
     <Compile Include="FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="FutureEvents\Reraising_future_event.cs" />

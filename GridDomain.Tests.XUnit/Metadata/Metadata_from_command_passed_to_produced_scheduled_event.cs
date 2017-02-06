@@ -47,11 +47,11 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = answer.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<TestAggregate>(command.AggregateId)
+            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId)
                                            .Name,
                          step.Who);
-            Assert.Equal(AggregateActor<TestAggregate>.CommandExecutionCreatedAnEvent, step.Why);
-            Assert.Equal(AggregateActor<TestAggregate>.PublishingEvent, step.What);
+            Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandExecutionCreatedAnEvent, step.Why);
+            Assert.Equal(AggregateActor<FutureEventsAggregate>.PublishingEvent, step.What);
         }
 
         public Metadata_from_command_passed_to_produced_scheduled_event(ITestOutputHelper output) : base(output) {}

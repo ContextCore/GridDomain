@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
   
     public class When_execute_command_without_expectations : SampleDomainCommandExecutionTests
     {
-       [Fact]
+        [Fact]
         public async Task Aggregate_will_apply_events_later_than_command_execution_finish()
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());

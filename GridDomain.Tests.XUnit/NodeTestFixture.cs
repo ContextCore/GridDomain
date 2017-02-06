@@ -10,6 +10,8 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
+using Serilog;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.XUnit
 {
@@ -19,12 +21,12 @@ namespace GridDomain.Tests.XUnit
 
         private GridDomainNode _node;
         public GridDomainNode Node => _node ?? CreateNode();
-
         public ActorSystem System { get; set; }
 
         private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();
         private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
 
+       
         protected void Add(IMessageRouteMap map)
         {
             _routeMap.Add(map);
@@ -33,16 +35,6 @@ namespace GridDomain.Tests.XUnit
         protected void Add(IContainerConfiguration config)
         {
             _containerConfiguration.Add(config);
-        }
-
-        protected virtual IContainerConfiguration CreateContainerConfiguration()
-        {
-            return new CustomContainerConfiguration(_containerConfiguration.ToArray());
-        }
-
-        protected virtual IMessageRouteMap CreateRouteMap()
-        {
-            return new CompositeRouteMap(_routeMap.ToArray());
         }
 
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
@@ -75,16 +67,15 @@ namespace GridDomain.Tests.XUnit
 
             var quartzConfig = InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig();
 
-            var node = new GridDomainNode(CreateContainerConfiguration(),
-                                          CreateRouteMap(), 
-                                          () => new[] { System ?? ActorSystem.Create(Name, GetConfig()) },
-                                          quartzConfig,
-                                          DefaultTimeout);
-            _node = node;
+            _node = new GridDomainNode(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
+                                       new CompositeRouteMap(_routeMap.ToArray()), 
+                                       () => new[] { System ?? ActorSystem.Create(Name, GetConfig()) },
+                                       quartzConfig,
+                                       DefaultTimeout);
             OnNodeCreated();
-            node.Start().Wait();
+            _node.Start().Wait();
             OnNodeStarted();
-            return node;
+            return _node;
         }
 
         protected virtual void OnNodeCreated()

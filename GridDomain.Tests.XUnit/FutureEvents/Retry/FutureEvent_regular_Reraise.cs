@@ -14,25 +14,21 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
-    public class FutureEvent_regular_Reraise : FutureEventsTest
+    public class FutureEvent_regular_Reraise : NodeTestKit
     {
+        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, new ReraiseTestFixture()) { }
+
+
         class TwoFastRetriesSettings : InMemoryRetrySettings
         {
             public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10)) {}
         }
 
-
         class ReraiseTestFixture : FutureEventsFixture
         {
-            protected override IMessageRouteMap CreateRouteMap()
+            public ReraiseTestFixture()
             {
-                return base.CreateRouteMap();
-            }
-
-            protected override IContainerConfiguration CreateContainerConfiguration()
-            {
-                return new CustomContainerConfiguration(c => c.Register(base.CreateContainerConfiguration()),
-               c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
+                Add(new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings())));
             }
         }
 
@@ -55,6 +51,5 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                    .Value);
         }
 
-        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output) {}
     }
 }

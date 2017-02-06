@@ -11,7 +11,6 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 {
     public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest
     {
-
         [Fact]
         public async Task When_raising_future_event()
         {
@@ -19,26 +18,26 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
             var waitResults = await Node.Prepare(testCommand)
-                                            .Expect<FutureEventScheduledEvent>()
-                                            .And<TestDomainEvent>()
-                                            .Execute();
+                                        .Expect<FutureEventScheduledEvent>()
+                                        .And<TestDomainEvent>()
+                                        .Execute();
 
             var futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
             var producedEvent = waitResults.Message<TestDomainEvent>();
 
-            var aggregate = await this.LoadAggregate<TestAggregate>(testCommand.AggregateId);
+            var aggregate = await this.LoadAggregate<FutureEventsAggregate>(testCommand.AggregateId);
 
-        //Future_event_fires_in_time()
+            //Future_event_fires_in_time()
             Assert.True(scheduledTime.Second - aggregate.ProcessedTime.Second <= 1);
-        //Future_event_applies_to_aggregate()
+            //Future_event_applies_to_aggregate()
             Assert.Equal(producedEvent.Value, aggregate.Value);
-        //Future_event_envelop_has_id_different_from_aggregate()
-            Assert.NotEqual(futureEventEnvelop.Id, Guid.Parse(aggregate.Value));
-        //Future_event_sourceId_is_aggregate_id()
+            //Future_event_envelop_has_id_different_from_aggregate()
+            Assert.NotEqual(futureEventEnvelop.Id, aggregate.Id);
+            //Future_event_sourceId_is_aggregate_id()
             Assert.Equal(futureEventEnvelop.SourceId, aggregate.Id);
-        //Future_event_payload_is_aggregate_original_event()
+            //Future_event_payload_is_aggregate_original_event()
             Assert.Equal(((TestDomainEvent) futureEventEnvelop.Event).Id, producedEvent.Id);
-        //Future_event_contains_data_from_command()
+            //Future_event_contains_data_from_command()
             Assert.Equal(testCommand.Value, producedEvent.Value);
         }
 

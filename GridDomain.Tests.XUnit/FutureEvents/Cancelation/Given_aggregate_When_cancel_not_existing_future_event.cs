@@ -13,7 +13,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
         [Fact]
         public void When_cancel_existing_scheduled_future_event()
         {
-            var aggregate = new TestAggregate(Guid.NewGuid());
+            var aggregate = new FutureEventsAggregate(Guid.NewGuid());
             var testValue = "value D";
 
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);

@@ -50,11 +50,11 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = schedulingCommandFault.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<TestAggregate>(command.AggregateId)
+            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId)
                                            .Name,
                 step.Who);
-            Assert.Equal(AggregateActor<TestAggregate>.CommandRaisedAnError, step.Why);
-            Assert.Equal(AggregateActor<TestAggregate>.CreatedFault, step.What);
+            Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandRaisedAnError, step.Why);
+            Assert.Equal(AggregateActor<FutureEventsAggregate>.CreatedFault, step.What);
         }
 
         public Metadata_from_command_passed_to_produced_scheduled_fault(ITestOutputHelper output) : base(output) {}

@@ -12,22 +12,18 @@ namespace GridDomain.Tests.XUnit.Sagas
     {
         public SoftwareProgrammingSagaFixture(IContainerConfiguration config = null, IMessageRouteMap map = null, TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
+            Add(CreateConfiguration());
+            Add(new SoftwareProgrammingSagaRoutes());
+            Add(new SampleDomainContainerConfiguration());
         }
 
-        protected override IContainerConfiguration CreateContainerConfiguration()
+        private static  IContainerConfiguration CreateConfiguration()
         {
-            var baseConf = new SampleDomainContainerConfiguration();
             return new CustomContainerConfiguration(
                 c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                c => c.Register(baseConf),
                 c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,
                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()
                 );
-        }
-
-        protected override IMessageRouteMap CreateRouteMap()
-        {
-            return  new SoftwareProgrammingSagaRoutes();
         }
     }
 }

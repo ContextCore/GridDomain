@@ -13,22 +13,20 @@ namespace GridDomain.Tests.XUnit.Sagas
     {
         class CustomRoutesFixture : NodeTestFixture
         {
-            protected override IMessageRouteMap CreateRouteMap()
+            public CustomRoutesFixture()
             {
-                return new CustomRoutesSoftwareProgrammingSagaMap();
-            }
-
-            protected override IContainerConfiguration CreateContainerConfiguration()
-            {
-                return new CustomContainerConfiguration(
-                    c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                    c => c.Register(new SampleDomainContainerConfiguration()),
-                    c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>,
-                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()
-                    );
+                Add(new CustomRoutesSoftwareProgrammingSagaMap());
+                var cfg =
+                    new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
+                        c => c.RegisterAggregate
+                                <SagaStateAggregate<SoftwareProgrammingSagaData>,
+                                    SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>());
+                Add(cfg);
+                Add(new SampleDomainContainerConfiguration());
             }
         }
 
-        public ProgrammingSoftwareSagaTest_with_custom_routes(ITestOutputHelper output) : base(output,new CustomRoutesFixture()) {}
+        public ProgrammingSoftwareSagaTest_with_custom_routes(ITestOutputHelper output)
+            : base(output, new CustomRoutesFixture()) {}
     }
 }

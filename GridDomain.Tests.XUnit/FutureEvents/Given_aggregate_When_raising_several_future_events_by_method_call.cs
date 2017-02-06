@@ -14,7 +14,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
       [Fact]
         public void When_scheduling_future_event()
         {
-            var aggregate = new TestAggregate(Guid.NewGuid());
+            var aggregate = new FutureEventsAggregate(Guid.NewGuid());
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400),"value D");
             aggregate.ClearEvents();
       //Then_raising_event_with_wrong_id_throws_an_error()

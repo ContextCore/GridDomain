@@ -47,17 +47,12 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
                 Node.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
             }
 
-            protected override IContainerConfiguration CreateContainerConfiguration()
+            public EventsUpgradeFixture()
             {
-                return
-                    new CustomContainerConfiguration(
+                Add(new CustomContainerConfiguration(
                         c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>(),
-                        c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()));
-            }
-
-            protected override IMessageRouteMap CreateRouteMap()
-            {
-                return new BalanceRouteMap();
+                        c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig())));
+                Add(new BalanceRouteMap());
             }
         }
 

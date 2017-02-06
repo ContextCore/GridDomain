@@ -4,11 +4,11 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
-    public class TestRouteMap : IMessageRouteMap
+    public class FutureEventsRouteMap : IMessageRouteMap
     {
         public async Task Register(IMessagesRouter router)
         {
-           await router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
+           await router.RegisterAggregate(FutureEventsAggregatesCommandHandler.Descriptor);
         }
     }
 }

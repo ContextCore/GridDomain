@@ -25,13 +25,13 @@ namespace GridDomain.Tests.XUnit
 
     public abstract class NodeTestKit : TestKit
     {
-        private NodeTestFixture NodeTestFixture { get;}
-        protected GridDomainNode Node => NodeTestFixture.Node;
-        protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture, LogEventLevel level = LogEventLevel.Information): base(fixture.GetConfig(), fixture.Name)
+        private NodeTestFixture Fixture { get;}
+        protected GridDomainNode Node => Fixture.Node;
+        protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture, LogEventLevel level = LogEventLevel.Warning): base(fixture.GetConfig(), fixture.Name)
         {
             Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(output,level).CreateLogger();
-            NodeTestFixture = fixture;
-            NodeTestFixture.System = Sys;
+            Fixture = fixture;
+            Fixture.System = Sys;
         }
 
         //do not kill Akka system on each test run

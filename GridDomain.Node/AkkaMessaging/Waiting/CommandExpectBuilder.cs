@@ -45,7 +45,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public async Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
             Or<IMessageMetadataEnvelop<IFault<TCommand>>>(f => f.Message.Message.Id == _command.Id);
-            Or<IMessageMetadataEnvelop<Fault<TCommand>>>(f => f.Message.Message.Id == _command.Id);
+           // Or<IMessageMetadataEnvelop<Fault<TCommand>>>(f => f.Message.Message.Id == _command.Id);
 
             var task = _waiter.Start(timeout);
 

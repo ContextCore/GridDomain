@@ -16,22 +16,16 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 {
     internal class FutureEventsFixture : NodeTestFixture
     {
-        public IScheduler Scheduler;
-
+        public FutureEventsFixture()
+        {
+            Add(new CustomContainerConfiguration(c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
+            Add(new FutureEventsRouteMap());
+        }
         protected override void OnNodeStarted()
         {
-            Scheduler = Node.Container.Resolve<IScheduler>();
-            Scheduler.Clear();
-        }
-
-        protected override IContainerConfiguration CreateContainerConfiguration()
-        {
-            return new CustomContainerConfiguration(c => c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>());
-        }
-
-        protected override IMessageRouteMap CreateRouteMap()
-        {
-            return new TestRouteMap();
+            var scheduler = Node.Container.Resolve<IScheduler>();
+            scheduler.Clear();
+           
         }
     }
 

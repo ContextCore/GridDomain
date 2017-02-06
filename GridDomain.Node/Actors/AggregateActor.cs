@@ -36,6 +36,7 @@ namespace GridDomain.Node.Actors
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;
         private readonly ProcessEntry _domainEventProcessFailEntry;
+        private readonly IPublisher _publisher;
 
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
@@ -48,9 +49,9 @@ namespace GridDomain.Node.Actors
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor,
                               IActorRef customHandlersActor) : base(aggregateConstructor,
-                                                                                    snapshotsPersistencePolicy,
-                                                                                    publisher)
+                                                                    snapshotsPersistencePolicy)
         {
+            _publisher = publisher;
             _customHandlersActor = customHandlersActor;
             _schedulerActorRef = schedulerActorRef;
             _handler = handler;
@@ -97,7 +98,7 @@ namespace GridDomain.Node.Actors
             _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault,metadata))
                                 .PipeTo(Self);
 
-            Log.Error(ex, "{Aggregate} raised an expection {@Exception} while executing {@Command}", State.Id, ex, cmd);
+            Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", State.Id, ex, cmd);
         }
 
         private void PersistState(ICommand command, IMessageMetadata commandMetadata)
@@ -133,13 +134,13 @@ namespace GridDomain.Node.Actors
                      foreach (var e in processComplete.DomainEvents)
                      {
                          var eventMetadata = commandMetadata.CreateChild(e.SourceId, _domainEventProcessEntry);
-                         Publisher.Publish(e, eventMetadata);
+                         _publisher.Publish(e, eventMetadata);
                      }
 
                      if (processComplete.Fault != null)
                      {
                          var faultMetadata = commandMetadata.CreateChild(commandMetadata.MessageId, _domainEventProcessFailEntry);
-                         Publisher.Publish(processComplete.Fault, faultMetadata);
+                         _publisher.Publish(processComplete.Fault, faultMetadata);
                      }
 
                      UnbecomeStacked();

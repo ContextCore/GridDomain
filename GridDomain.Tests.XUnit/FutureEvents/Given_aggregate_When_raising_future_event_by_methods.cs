@@ -14,7 +14,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
         {
             var testCommand = new ScheduleEventInFutureCommand(DateTime.Now, Guid.NewGuid(), "test value");
 
-            var aggregate = new TestAggregate(testCommand.AggregateId);
+            var aggregate = new FutureEventsAggregate(testCommand.AggregateId);
             aggregate.ScheduleInFuture(testCommand.RaiseTime, testCommand.Value);
 
             var futureEventEnvelop = aggregate.GetEvent<FutureEventScheduledEvent>();
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             //Future_event_applies_to_aggregate()
             Assert.Equal(producedEvent.Value, aggregate.Value);
             //Future_event_envelop_has_id_different_from_aggregate()
-            Assert.NotEqual(futureEventEnvelop.Id, Guid.Parse(aggregate.Value));
+            Assert.NotEqual(futureEventEnvelop.Id, aggregate.Id);
             //Future_event_sourceId_is_aggregate_id()
             Assert.Equal(futureEventEnvelop.SourceId, aggregate.Id);
             //Future_event_payload_is_aggregate_original_event()

@@ -4,12 +4,12 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
-    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
-                                                IAggregateCommandsHandlerDescriptor
+    public class FutureEventsAggregatesCommandHandler : AggregateCommandsHandler<FutureEventsAggregate>,
+                                                        IAggregateCommandsHandlerDescriptor
 
     {
-        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new TestAggregatesCommandHandler();
-        public TestAggregatesCommandHandler() : base()
+        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new FutureEventsAggregatesCommandHandler();
+        public FutureEventsAggregatesCommandHandler()
         {
             Map<ScheduleEventInFutureCommand>(c => c.AggregateId,
                                              (c, a) => a.ScheduleInFuture(c.RaiseTime, c.Value));
@@ -26,6 +26,6 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             this.MapFutureEvents();
         }
 
-        public Type AggregateType => typeof(TestAggregate);
+        public Type AggregateType => typeof(FutureEventsAggregate);
     }
 }

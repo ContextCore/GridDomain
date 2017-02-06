@@ -3,12 +3,12 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
-    public class TestAggregate : Aggregate
+    public class FutureEventsAggregate : Aggregate
     {
-        private TestAggregate(Guid id):base(id)
+        private FutureEventsAggregate(Guid id):base(id)
         {
         }
-        public  TestAggregate(Guid id, string initialValue =""):this(id)
+        public  FutureEventsAggregate(Guid id, string initialValue =""):this(id)
         {
             Value = initialValue;
         }

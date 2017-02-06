@@ -11,7 +11,7 @@ namespace GridDomain.Tests.XUnit.Serialization
         private TestAggregate _restoredAggregate;
         private TestAggregate _aggregate;
 
-        internal class TestAggregate : Aggregate
+        private class TestAggregate : Aggregate
         {
             public int Value { get; private set; }
 
