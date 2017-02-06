@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Actors
 {
-    class HealthStatus
+    public class HealthStatus
     {
         public string Payload { get; }
 

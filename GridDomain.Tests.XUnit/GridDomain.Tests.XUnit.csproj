@@ -165,6 +165,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemDebugExtensions.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\AggregateHub_children_lifetime_tests.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\IPersistentActorTestsInfrastructure.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubFixture.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
+    <Compile Include="Aggregate_Sagas_actor_lifetime\SagaHub_children_lifetime_tests.cs" />
     <Compile Include="CommandPipe\CommandExecutorActorTests.cs" />
     <Compile Include="CommandPipe\CustomHandlerProcessorActorTests.cs" />
     <Compile Include="CommandPipe\EchoSleepActor.cs" />
@@ -263,6 +268,7 @@
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
+    <Compile Include="LoggingActor.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />

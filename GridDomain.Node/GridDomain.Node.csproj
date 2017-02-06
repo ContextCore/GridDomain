@@ -238,7 +238,6 @@
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\ISagaProcessorCatalog.cs" />
     <Compile Include="Actors\CommandPipe\Processor.cs" />
     <Compile Include="Actors\IPersistenceEntityActorMaintainanceMessage.cs" />
-    <Compile Include="Actors\LoggingActor.cs" />
     <Compile Include="Actors\MessageHandlingStatuses.cs" />
     <Compile Include="Actors\Persisted.cs" />
     <Compile Include="Actors\CannotFindRouteException.cs" />

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Dispatch;
 using Akka.Event;
 using Serilog;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.Tests.Framework
 {
-    public class SerilogLogger : ReceiveActor, IRequiresMessageQueue<ILoggerMessageQueueSemantics>
+ 
+
+    public class SerilogLoggerActor : ReceiveActor, IRequiresMessageQueue<ILoggerMessageQueueSemantics>
     {
-        private readonly ILogger _logger;
+        private ILogger _logger = Log.Logger;
 
         private static string GetFormat(object message)
         {
@@ -56,10 +55,8 @@ namespace GridDomain.Node.Actors
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogLogger"/> class.
         /// </summary>
-        public SerilogLogger()
+        public SerilogLoggerActor()
         {
-          //  _logger = logger;
-
             Receive<Error>(m => Handle(m));
             Receive<Warning>(m => Handle(m));
             Receive<Info>(m => Handle(m));
@@ -68,7 +65,9 @@ namespace GridDomain.Node.Actors
             {
                 Context.GetLogger().Info("SerilogLogger started");
                 Sender.Tell(new LoggerInitialized());
+                m.LoggingBus.Subscribe(Self, typeof(LogEvent));
             });
         }
     }
+
 }

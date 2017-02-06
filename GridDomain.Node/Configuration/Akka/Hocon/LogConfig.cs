@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Akka.Event;
 using Akka.Logger.Serilog;
@@ -6,7 +7,6 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class LogConfig : IAkkaConfig
     {
-        private readonly bool _includeConfig;
 
         private readonly Dictionary<LogLevel, string> _akkaLogLevels = new Dictionary<LogLevel, string>
         {
@@ -17,11 +17,15 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         };
 
         private readonly LogLevel _verbosity;
+        private readonly Type _logActorType;
+        private readonly bool _includeConfig;
 
-        public LogConfig(LogLevel verbosity, bool includeConfig = true)
+
+        public LogConfig(LogLevel verbosity, bool includeConfig = true, Type logActorType = null)
         {
             _verbosity = verbosity;
             _includeConfig = includeConfig;
+            _logActorType = logActorType ?? typeof(SerilogLogger);
         }
 
         public string Build()
@@ -32,7 +36,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                 stdout-loglevel = " + logLevel + @"
                 loglevel=" + logLevel;
             logConfig += @"
-                loggers=["""+typeof(SerilogLogger).AssemblyQualifiedShortName() + @"""]
+                loggers=["""+_logActorType.AssemblyQualifiedShortName() + @"""]
 
                 actor.debug {"+AdditionalLogs(_verbosity)+ @" 
                       unhandled = on
@@ -44,6 +48,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
             return logConfig;
         }
+
 
         private object AdditionalLogs(LogLevel verbosity)
         {

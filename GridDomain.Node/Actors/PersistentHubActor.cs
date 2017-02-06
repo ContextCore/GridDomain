@@ -119,18 +119,5 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorStopped();
             Logger.Debug("{ActorHub} was stopped", Self.Path);
         }
-
-        protected override SupervisorStrategy SupervisorStrategy()
-        {
-            return new OneForOneStrategy(
-                10,
-                TimeSpan.FromSeconds(60),
-                x =>
-                {
-                    if (x is NotSupportedException)
-                        return Directive.Stop;
-                    return Directive.Restart;
-                });
-        }
     }
 }

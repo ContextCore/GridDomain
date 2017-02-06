@@ -172,6 +172,8 @@
     <Compile Include="Any.cs" />
     <Compile Include="AnyMessageExpectBuilder.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
+    <Compile Include="LoggerActorDummy.cs" />
+    <Compile Include="LoggingActor.cs" />
     <Compile Include="NUnitAssertEx.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />

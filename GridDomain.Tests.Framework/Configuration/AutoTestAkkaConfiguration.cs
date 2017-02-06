@@ -8,8 +8,9 @@ namespace GridDomain.Tests.Framework.Configuration
     {
         public AutoTestAkkaConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
             : base(new AutoTestAkkaNetworkAddress(),
-                new AutoTestAkkaDbConfiguration(),
-                verbosity)
+                   new AutoTestAkkaDbConfiguration(),
+                   verbosity,
+                   typeof(LoggerActorDummy))
         {
         }
     }
