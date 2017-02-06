@@ -4,50 +4,36 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    
-    public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest_InMemory
+    public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest
     {
-        private FutureEventOccuredEvent _eventA;
-        private FutureEventOccuredEvent _eventB;
-        private ScheduleEventInFutureCommand _commandA;
-        private ScheduleEventInFutureCommand _commandB;
-
-      [Fact]
+        [Fact]
         public async Task Raising_several_future_events_for_different_aggregates()
         {
-            _commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
-            _commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
-         
-            _eventA = (await GridNode.Prepare(_commandA)
-                                   .Expect<FutureEventOccuredEvent>()
-                                   .Execute())
-                                   .Message<FutureEventOccuredEvent>();
+            var commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
+            var commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
 
-            _eventB = (await GridNode.Prepare(_commandB)
-                                     .Expect<FutureEventOccuredEvent>()
-                                     .Execute())
-                                     .Message<FutureEventOccuredEvent>();
+            var eventA = (await Node.Prepare(commandA)
+                                    .Expect<FutureEventOccuredEvent>()
+                                    .Execute()).Message<FutureEventOccuredEvent>();
+
+            var eventB = (await Node.Prepare(commandB)
+                                    .Expect<FutureEventOccuredEvent>()
+                                    .Execute()).Message<FutureEventOccuredEvent>();
+
+            //Future_event_ids_are_different()
+            Assert.NotEqual(eventA.FutureEventId, eventB.FutureEventId);
+            //EventA_is_result_of_commandA()
+            Assert.Equal(eventA.SourceId, commandA.AggregateId);
+            //EventB_is_result_of_commandB()
+            Assert.Equal(eventB.SourceId, commandB.AggregateId);
         }
 
-       [Fact]
-        public void Future_event_ids_are_different()
-        {
-            Assert.AreNotEqual(_eventA.FutureEventId, _eventB.FutureEventId);
-        }
-
-       [Fact]
-        public void EventA_is_result_of_commandA()
-        {
-           Assert.Equal(_eventA.SourceId, _commandA.AggregateId);
-        }
-
-       [Fact]
-        public void EventB_is_result_of_commandB()
-        {
-           Assert.Equal(_eventB.SourceId, _commandB.AggregateId);
-        }
+        public Given_different_aggregates_future_events_Should_be_processed_independently(ITestOutputHelper output)
+            : base(output) {}
     }
 }

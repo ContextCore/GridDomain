@@ -9,50 +9,34 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using Quartz;
+using Serilog.Events;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    public abstract class FutureEventsTest : NodeCommandsTest
+    internal class FutureEventsFixture : NodeTestFixture
     {
-        protected IScheduler Scheduler;
+        public IScheduler Scheduler;
 
-        protected FutureEventsTest(bool inMemory) : base(inMemory)
+        protected override void OnNodeStarted()
         {
-
-        }
-
-        protected override IContainerConfiguration CreateConfiguration()
-        {
-            return new CustomContainerConfiguration(
-                c => c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>(),
-                c => c.RegisterInstance(CreateQuartzConfig()));
-        }
-
-        protected override IMessageRouteMap CreateMap()
-        {
-            return new TestRouteMap();
-        }
-
-
-        protected override async Task Start()
-        {
-            await base.Start();
-            Scheduler = GridNode.Container.Resolve<IScheduler>();
+            Scheduler = Node.Container.Resolve<IScheduler>();
             Scheduler.Clear();
         }
 
-        protected virtual IQuartzConfig CreateQuartzConfig()
+        protected override IContainerConfiguration CreateContainerConfiguration()
         {
-            return InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig();
+            return new CustomContainerConfiguration(c => c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>());
         }
 
-        protected async Task<TestAggregate> RaiseFutureEventInTime(DateTime scheduledTime)
+        protected override IMessageRouteMap CreateRouteMap()
         {
-            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
-
-            await GridNode.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
-
-            return LoadAggregate<TestAggregate>(testCommand.AggregateId);
+            return new TestRouteMap();
         }
+    }
+
+    public class FutureEventsTest : NodeTestKit
+    {
+        public FutureEventsTest(ITestOutputHelper output) : base(output, new FutureEventsFixture()) {}
     }
 }

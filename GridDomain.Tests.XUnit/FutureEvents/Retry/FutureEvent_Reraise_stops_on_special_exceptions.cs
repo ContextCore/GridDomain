@@ -9,19 +9,17 @@ using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
+using Serilog.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
-    
-    public class FutureEvent_Reraise_stops_on_special_exceptions : FutureEventsTest_InMemory
+    public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
-
         class TwoFastRetriesSettings : InMemoryRetrySettings
         {
-            public TwoFastRetriesSettings():base(2,TimeSpan.FromMilliseconds(10),new StopOnTestExceptionPolicy())
-            {
-                
-            }
+            public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10), new StopOnTestExceptionPolicy()) {}
 
             class StopOnTestExceptionPolicy : IExceptionPolicy
             {
@@ -41,26 +39,32 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 
         private static int _policyCallNumber;
 
-        protected override IContainerConfiguration CreateConfiguration()
+        private class Reraise_fixture : FutureEventsFixture
         {
-            return new CustomContainerConfiguration(c => c.Register(base.CreateConfiguration()),
-                                                    c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
-      
+            public Reraise_fixture()
+            {
+                var cfg =
+                    new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
+                Add(cfg);
+            }
         }
+
+        public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
+            : base(output, new Reraise_fixture()) {}
 
         [Fact]
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A",2);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A", 2);
 
-            await GridNode.Prepare(command)
-                          .Expect<JobFailed>()
-                          .Execute();
+            await Node.Prepare(command)
+                      .Expect<JobFailed>()
+                      .Execute();
             //waiting for policy call to determine should we retry failed job or not
             Thread.Sleep(1000);
             // job was not retried and policy was not called
-           Assert.Equal(1, _policyCallNumber);
+            Assert.Equal(1, _policyCallNumber);
         }
     }
 }

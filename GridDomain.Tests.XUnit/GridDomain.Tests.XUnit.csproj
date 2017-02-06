@@ -238,7 +238,6 @@
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
     <Compile Include="FutureEvents\FutureEventsTest.cs" />
-    <Compile Include="FutureEvents\FutureEventsTest_InMemory.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_commands.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
