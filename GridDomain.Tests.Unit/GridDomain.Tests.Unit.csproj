@@ -266,7 +266,6 @@
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\InstanceSagas\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\InstanceSagas\UndefinedCoffeMachineException.cs" />
-    <Compile Include="Types_should_be_deserializable.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\TestPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\AggregatePersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\IPersistentActorTestsInfrastructure.cs" />
@@ -278,7 +277,6 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHub_children_lifetime_test.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\Infrastructure\InstanceSagaPersistedHub_Infrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\UnknownCaseException.cs" />
-    <Compile Include="DateTimeSpec.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
@@ -295,7 +293,6 @@
     <Compile Include="SampleDomain\Commands\CreateAndChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
-    <Compile Include="CompositionRootTests.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />
     <Compile Include="SampleDomain\Commands\AsyncFaultWithOneEventCommand.cs" />
@@ -320,7 +317,6 @@
     <Compile Include="SampleDomain\Commands\ChangeSampleAggregateCommand.cs" />
     <Compile Include="SampleDomain\Events\SampleAggregateCreatedEvent.cs" />
     <Compile Include="SampleDomain\SampleRouteMap.cs" />
-    <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThenAttribute.cs" />
   </ItemGroup>

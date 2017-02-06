@@ -11,14 +11,14 @@ using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Framework;
-using GridDomain.Tests.Unit.Sagas.InstanceSagas;
-using GridDomain.Tests.Unit.SampleDomain;
-using NUnit.Framework;
+using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.XUnit.SampleDomain;
 using Ploeh.AutoFixture;
+using Xunit;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.XUnit
 {
-    [TestFixture]
+    
     public class Types_should_be_deserializable : TypesDeserializationTest
     {
         protected override IEnumerable<Type> ExcludeTypes
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit
         {
             
         }
-        [Test]
+       [Fact]
         public void Generic_domain_classes_should_be_deserializable()
         {
             CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>),
@@ -49,13 +49,13 @@ namespace GridDomain.Tests.Unit
                             );
         }
 
-        [Test]
+       [Fact]
         public void MessageMetadata_classes_should_be_deserializable()
         {
             CheckAll<object>(typeof(MessageMetadata));
         }
 
-        [Test]
+       [Fact]
         public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
         {
             CheckAll<object>(typeof(ExecutionOptions),
@@ -63,19 +63,19 @@ namespace GridDomain.Tests.Unit
                              typeof(ScheduleKey));
         }
        
-        [Test]
+       [Fact]
         public void Aggregates_from_all_assemblies_should_be_deserializable()
         {
             CheckAllChildrenOf<IAggregate>(AllAssemblies);
         }
 
-        [Test]
+       [Fact]
         public void DomainEvents_from_all_assemblies_should_be_deserializable()
         {
             CheckAllChildrenOf<DomainEvent>(AllAssemblies);
         }
 
-        [Test]
+       [Fact]
         public void Commands_from_all_assemblies_should_be_deserializable()
         {
             CheckAllChildrenOf<ICommand>(AllAssemblies);

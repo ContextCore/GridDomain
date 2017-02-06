@@ -3,15 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node;
-using GridDomain.Scheduling;
-using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
+using Xunit;
 
 namespace GridDomain.Tests.Framework
 {
@@ -95,10 +89,10 @@ namespace GridDomain.Tests.Framework
             {
                 AddFailedTypes(sb, failedTypes);
                 AddOkTypes(sb, okTypes);
-                Assert.Fail(sb.ToString());
+                Assert.True(false,sb.ToString());
             }
             AddOkTypes(sb, okTypes);
-            Assert.Pass(sb.ToString());
+            Assert.True(true,sb.ToString());
         }
 
         private static void AddFailedTypes(StringBuilder sb, List<RestoreResult> failedTypes)

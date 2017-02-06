@@ -5,7 +5,7 @@ using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.XUnit
 {
     public class GridNodeContainerTests : CompositionRootTests
     {

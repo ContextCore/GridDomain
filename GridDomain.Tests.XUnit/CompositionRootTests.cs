@@ -8,22 +8,23 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Framework.Configuration;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using Xunit;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.XUnit
 {
-    [TestFixture]
     public abstract class CompositionRootTests
     {
-        [TestCase(TransportMode.Standalone)]
+        [Theory]
+        [InlineData(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
             var container = CreateContainer(transportMode, new LocalDbConfiguration());
             ResolveAll(container);
         }
 
-        
-        [TestCase(TransportMode.Standalone)]
+
+        [Theory]
+        [InlineData(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
             var createContainer = Task.Run(()=>CreateContainer(transportMode, new LocalDbConfiguration()));
@@ -80,7 +81,7 @@ namespace GridDomain.Tests.Unit
                 builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name} : {error.Value}");
             }
 
-            Assert.Fail("Can not resolve registrations: \r\n " + builder);
+            Assert.True(false,"Can not resolve registrations: \r\n " + builder);
         }
 
         protected readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
