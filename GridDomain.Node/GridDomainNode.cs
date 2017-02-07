@@ -59,7 +59,6 @@ namespace GridDomain.Node
         private IMessageWaiterFactory _waiterFactory;
         private ICommandExecutor _commandExecutor;
         internal CommandPipeBuilder Pipe;
-        private readonly LoggerConfiguration _logConfig;
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
@@ -70,26 +69,17 @@ namespace GridDomain.Node
 
         public GridDomainNode(IContainerConfiguration configuration,
                               IMessageRouteMap messageRouting,
-                              Func<ActorSystem> actorSystemFactory,
-                              TimeSpan? defaultTimeout =null) : this(configuration, messageRouting, () => new [] { actorSystemFactory()}, null, defaultTimeout)
-        {
-        }
-
-        public GridDomainNode(IContainerConfiguration configuration,
-                              IMessageRouteMap messageRouting,
                               Func<ActorSystem[]> actorSystemFactory,
                               IQuartzConfig quartzConfig = null, 
                               TimeSpan? defaultTimeout = null,
-                              LoggerConfiguration logConfig = null)
+                              ILogger logger = null)
         {
-            _logConfig = logConfig ?? new DefaultLoggerConfiguration();
+            _log = (logger ?? new DefaultLoggerConfiguration().CreateLogger()).ForContext<GridDomainNode>();
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting);
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
-
-            _log = _logConfig.CreateLogger().ForContext<GridDomainNode>();
         }
 
         private void OnSystemTermination()
@@ -193,12 +183,11 @@ namespace GridDomain.Node
 
             _log.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
-            Container?.Dispose();
 
             try
             {
                 if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false)
-                        _quartzScheduler.Shutdown();
+                    _quartzScheduler.Shutdown();
             }
             catch (Exception ex)
             {
@@ -210,6 +199,8 @@ namespace GridDomain.Node
                 await System.Terminate();
                 System.Dispose();
             }
+
+            Container?.Dispose();
 
             _log.Debug("GridDomain node {Id} stopped",Id);
         }

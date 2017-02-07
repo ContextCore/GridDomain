@@ -14,14 +14,12 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
     //different fixtures from static method ? 
-    public class When_executing_commands_and_aggregate_raises_an_exception: NodeTestKit, IClassFixture<SampleDomainFixture>
+    public class When_executing_commands_and_aggregate_raises_an_exception: NodeTestKit
     {
 
-        public When_executing_commands_and_aggregate_raises_an_exception(ITestOutputHelper helper, SampleDomainFixture fixture):base(helper, fixture)
+        public When_executing_commands_and_aggregate_raises_an_exception(ITestOutputHelper helper):base(helper, new SampleDomainFixture())
         {
         }
-
-      
 
        [Fact]
         public async Task When_does_not_expect_fault_and_it_accures_wait_times_out()

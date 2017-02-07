@@ -53,9 +53,9 @@ namespace GridDomain.Tests.XUnit
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogLogger"/> class.
         /// </summary>
-        public SerilogLoggerActor(LoggerConfiguration config)
+        public SerilogLoggerActor(ILogger logger)
         {
-            _logger = config.CreateLogger();
+            _logger = logger;
 
             Receive<Error>(m => Handle(m));
             Receive<Warning>(m => Handle(m));

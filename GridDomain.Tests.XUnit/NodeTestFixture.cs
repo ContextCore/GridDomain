@@ -89,9 +89,10 @@ namespace GridDomain.Tests.XUnit
             var extSystem = (ExtendedActorSystem) System;
             var xUnitAutoTestLoggerConfiguration = new XUnitAutoTestLoggerConfiguration(Output, LogEventLevel.Verbose);
             LocalLogger = xUnitAutoTestLoggerConfiguration.CreateLogger();
+
             var logger =
                 extSystem.SystemActorOf(
-                    Props.Create(() => new SerilogLoggerActor(xUnitAutoTestLoggerConfiguration)),
+                    Props.Create(() => new SerilogLoggerActor(LocalLogger)),
                     "node-log-test");
 
             await logger.Ask<LoggerInitialized>(new InitializeLogger(System.EventStream));

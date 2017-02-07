@@ -28,7 +28,8 @@ namespace GridDomain.Scheduling
             container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings());
 
             container.RegisterType<ISchedulerFactory, SchedulerFactory>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
+            container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(),
+                                               new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
 
             container.RegisterInstance(_quartzConfig);
             container.RegisterType<IQuartzLogger, QuartzLogger>();
@@ -38,6 +39,10 @@ namespace GridDomain.Scheduling
             container.RegisterType<ILoggingJobListener, LoggingJobListener>();
             container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
 
+            container.RegisterType<IRetrySettings, InMemoryRetrySettings>();
+            container.RegisterType<IRetryStrategy, ExponentialBackoffRetryStrategy>();
+            container.RegisterType<RetryJobListener>();
+            
             container.RegisterType<IWebUiConfig, WebUiConfig>();
             container.RegisterType<IWebUiWrapper, WebUiWrapper>();
         }

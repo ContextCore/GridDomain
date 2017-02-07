@@ -20,17 +20,20 @@ namespace GridDomain.Scheduling.Quartz
         private readonly IJobFactory _jobFactory;
         private static readonly object _locker = new object();
         private IScheduler _current;
+        bool _disposing = false;
+        private readonly ILogger _log;
+        private readonly RetryJobListener _retryJobListener;
+
         public SchedulerFactory(
-            IQuartzConfig config,
-            ILoggingSchedulerListener loggingSchedulerListener,
-            ILoggingJobListener loggingJobListener,
-            IJobFactory jobFactory,
-            IRetrySettings retrySettings,
-            ILogger log
-            )
+                    IQuartzConfig config,
+                    ILoggingSchedulerListener loggingSchedulerListener,
+                    ILoggingJobListener loggingJobListener,
+                    RetryJobListener retryJobListener,
+                    IJobFactory jobFactory,
+                    ILogger log)
         {
+            _retryJobListener = retryJobListener;
             _log = log;
-            _retrySettings = retrySettings;
             _config = config;
             _loggingSchedulerListener = loggingSchedulerListener;
             _loggingJobListener = loggingJobListener;
@@ -58,6 +61,8 @@ namespace GridDomain.Scheduling.Quartz
 
         private IScheduler Create(string name)
         {
+            _log.Information("Creating new scheduler instance");
+
             var properties = _config.Settings;
 
             properties["quartz.scheduler.instanceId"] = "AUTO";
@@ -67,16 +72,13 @@ namespace GridDomain.Scheduling.Quartz
             }
 
             var stdSchedulerFactory = new StdSchedulerFactory(properties);
-
             stdSchedulerFactory.Initialize();
+
             var scheduler = stdSchedulerFactory.GetScheduler();
             scheduler.JobFactory = _jobFactory;
             scheduler.ListenerManager.AddSchedulerListener(_loggingSchedulerListener);
             scheduler.ListenerManager.AddJobListener(_loggingJobListener);
-
-            IRetryStrategy retryStrategy = new ExponentialBackoffRetryStrategy(_retrySettings, _log);
-            IJobListener retryListener = new RetryJobListener(retryStrategy, _log);
-            scheduler.ListenerManager.AddJobListener(retryListener, GroupMatcher<JobKey>.AnyGroup());
+            scheduler.ListenerManager.AddJobListener(_retryJobListener);
 
             try
             {
@@ -93,9 +95,7 @@ namespace GridDomain.Scheduling.Quartz
             
             return scheduler;
         }
-        bool _disposing = false;
-        private readonly IRetrySettings _retrySettings;
-        private readonly ILogger _log;
+
 
         public void Dispose()
         {

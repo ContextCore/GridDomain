@@ -41,6 +41,6 @@ namespace GridDomain.Tests.XUnit
         }
 
         //do not kill Akka system on each test run
-        protected override void AfterAll() {}
+       // protected override void AfterAll() {}
     }
 }

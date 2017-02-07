@@ -29,6 +29,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 public bool ShouldContinue(Exception ex)
                 {
                     _policyCallNumber ++;
+                    _policyCallNumberChanged.SetResult(1);
                     var domainException = ex.UnwrapSingle();
                     if (domainException is TestScheduledException) return false;
 
@@ -40,6 +41,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
             }
         }
 
+        private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
         private static int _policyCallNumber;
 
         private class Reraise_fixture : FutureEventsFixture
@@ -59,10 +61,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 
             await Node.Prepare(command)
                       .Expect<JobFailed>()
-                      .Execute(TimeSpan.FromSeconds(100));
+                      .Execute(TimeSpan.FromSeconds(10));
 
             //waiting for policy call to determine should we retry failed job or not
-            Thread.Sleep(1000);
+            await _policyCallNumberChanged.Task;
             // job was not retried and policy was not called
             Assert.Equal(1, _policyCallNumber);
         }

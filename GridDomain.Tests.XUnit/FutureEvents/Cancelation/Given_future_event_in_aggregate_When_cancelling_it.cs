@@ -30,13 +30,15 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             var futureEventCancelation = (await Node.Prepare(cancelFutureEventCommand)
                                                     .Expect<FutureEventCanceledEvent>()
                                                     .Execute()).Message<FutureEventCanceledEvent>();
+
             //Cancelation_event_has_same_id_as_future_event()
             Assert.Equal(futureEventEnvelop.Id, futureEventCancelation.FutureEventId);
             //Scheduler_does_not_contain_job_for_future_event()
             var scheduler = Node.Container.Resolve<IScheduler>();
+
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             var scheduleKey = AggregateActor<FutureEventsAggregate>.CreateScheduleKey(futureEventEnvelop.Id,
                 testCommand.AggregateId,
                 "");

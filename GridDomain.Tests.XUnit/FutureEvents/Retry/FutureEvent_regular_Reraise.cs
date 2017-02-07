@@ -18,17 +18,15 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
     {
         public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, new ReraiseTestFixture()) { }
 
-
-        class TwoFastRetriesSettings : InMemoryRetrySettings
-        {
-            public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10)) {}
-        }
-
         class ReraiseTestFixture : FutureEventsFixture
         {
             public ReraiseTestFixture()
             {
                 Add(new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings())));
+            }
+            class TwoFastRetriesSettings : InMemoryRetrySettings
+            {
+                public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10)) { }
             }
         }
 
@@ -36,19 +34,18 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
         public async Task Should_retry_on_exception()
         {
             //will retry 1 time
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A", 1);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A", 1);
 
             var waiter = Node.Prepare(command)
                              .Expect<JobFailed>()
                              .And<JobSucceeded>()
                              .And<TestErrorDomainEvent>()
-                             .Execute();
+                             .Execute(TimeSpan.FromSeconds(10));
 
             var res = await waiter;
+            var actual = res.Message<TestErrorDomainEvent>().Value;
 
-            Assert.Equal(command.Value,
-                res.Message<TestErrorDomainEvent>()
-                   .Value);
+            Assert.Equal(command.Value,actual);
         }
 
     }

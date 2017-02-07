@@ -26,14 +26,12 @@ namespace GridDomain.Scheduling.Quartz.Retry
                 bool unscheduled = context.Scheduler.UnscheduleJob(context.Trigger.Key);
                 DateTimeOffset nextRunAt = context.Scheduler.ScheduleJob(context.JobDetail, trigger);
                 _logger.Warning("Restarting job {key}, unsheduling was {unscheduled}, next start time {nextRunAt}", 
-                                        context.JobDetail.Key.Name,
-                                        unscheduled,
-                                        nextRunAt);
+                                context.JobDetail.Key.Name,
+                                unscheduled,
+                                nextRunAt);
             }
         }
-        public override void JobToBeExecuted(IJobExecutionContext context)
-        {
-        }
+
         private static bool JobFailed(JobExecutionException jobException)
         {
             return jobException != null;

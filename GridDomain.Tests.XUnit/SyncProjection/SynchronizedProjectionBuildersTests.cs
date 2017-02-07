@@ -19,8 +19,8 @@ namespace GridDomain.Tests.XUnit.SyncProjection
         [Fact]
         public async Task When_execute_many_commands_for_create_and_update()
         {
-            var totalAggregates = 10;
-            var eachAggregateChanges = 20;
+            var totalAggregates = 5;
+            var eachAggregateChanges = 5;
 
             var createCommands = Enumerable.Range(0, totalAggregates)
                                            .Select(r => new CreateSampleAggregateCommand(0, Guid.NewGuid()))
