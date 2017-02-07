@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
@@ -20,15 +22,26 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
     : base(output, new Reraise_fixture()) { }
 
-        class TwoFastRetriesSettings : InMemoryRetrySettings
+        private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
+        private static int _policyCallNumber;
+
+        private class Reraise_fixture : FutureEventsFixture
         {
-            public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10), new StopOnTestExceptionPolicy()) {}
+            protected override NodeSettings CreateNodeSettings()
+            {
+                var settings = base.CreateNodeSettings();
+                //TwoFastRetriesSettings();
+                settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, 
+                                                                            TimeSpan.FromMilliseconds(10), 
+                                                                            new StopOnTestExceptionPolicy());
+                return settings;
+            }
 
             class StopOnTestExceptionPolicy : IExceptionPolicy
             {
                 public bool ShouldContinue(Exception ex)
                 {
-                    _policyCallNumber ++;
+                    _policyCallNumber++;
                     _policyCallNumberChanged.SetResult(1);
                     var domainException = ex.UnwrapSingle();
                     if (domainException is TestScheduledException) return false;
@@ -38,18 +51,6 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 
                     return true;
                 }
-            }
-        }
-
-        private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
-        private static int _policyCallNumber;
-
-        private class Reraise_fixture : FutureEventsFixture
-        {
-            public Reraise_fixture()
-            {
-                var cfg =  new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
-                Add(cfg);
             }
         }
 

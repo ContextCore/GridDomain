@@ -28,12 +28,36 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
 using Serilog;
-using IUnityContainer = Microsoft.Practices.Unity.IUnityContainer;
 
 namespace GridDomain.Node
 {
+    
+    public class NodeSettings
+    {
+        public IContainerConfiguration Configuration { get; } = new EmptyContainerConfiguration();
+        public IMessageRouteMap MessageRouting { get; } = new EmptyRouteMap();
+        public Func<ActorSystem[]> ActorSystemFactory { get; } = () => new[] {ActorSystem.Create("defaultSystem")};
+
+        public ILogger Log { get; set; } = new DefaultLoggerConfiguration().CreateLogger()
+                                                                           .ForContext<GridDomainNode>();
+        public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig();
+        public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings();
+
+        public NodeSettings(IContainerConfiguration configuration=null,
+                            IMessageRouteMap messageRouting = null,
+                            Func<ActorSystem[]> actorSystemFactory = null)
+        {
+            ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
+            MessageRouting = messageRouting ?? MessageRouting;
+            Configuration = configuration ?? Configuration;
+        }
+    }
+
+
     public class GridDomainNode : IGridDomainNode
     {
         private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
@@ -42,49 +66,30 @@ namespace GridDomain.Node
             {TransportMode.Standalone, typeof (LocalSystemBusRoutingActor)},
             {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
-
-        private readonly ILogger _log;
-        private readonly IMessageRouteMap _messageRouting;
+        
         private TransportMode _transportMode;
-        public ActorSystem[] Systems;
+        private ActorSystem[] Systems;
 
         private Quartz.IScheduler _quartzScheduler;
-
-        private readonly IContainerConfiguration _configuration;
-        private readonly IQuartzConfig _quartzConfig;
-        private readonly Func<ActorSystem[]> _actorSystemFactory;
-
-        bool _stopping = false;
-        public TimeSpan DefaultTimeout { get; }
         private IMessageWaiterFactory _waiterFactory;
         private ICommandExecutor _commandExecutor;
         internal CommandPipeBuilder Pipe;
-
+        bool _stopping = false;
+        public NodeSettings Settings { get; }
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
-        public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
+        private AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
         public IActorTransport Transport { get; private set; }
-
         public ActorSystem System { get; private set; }
-        public IActorRef EventBusForwarder { get; private set; }
+        private IActorRef EventBusForwarder { get; set; }
 
-        public GridDomainNode(IContainerConfiguration configuration,
-                              IMessageRouteMap messageRouting,
-                              Func<ActorSystem[]> actorSystemFactory,
-                              IQuartzConfig quartzConfig = null, 
-                              TimeSpan? defaultTimeout = null,
-                              ILogger logger = null)
+        public GridDomainNode(NodeSettings settings)
         {
-            _log = (logger ?? new DefaultLoggerConfiguration().CreateLogger()).ForContext<GridDomainNode>();
-            _actorSystemFactory = actorSystemFactory;
-            _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
-            _configuration = configuration;
-            _messageRouting = new CompositeRouteMap(messageRouting);
-            DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
+            Settings = settings;
         }
 
         private void OnSystemTermination()
         {
-            _log.Debug("grid node Actor system terminated");
+            Settings.Log.Debug("grid node Actor system terminated");
         }
 
         public IUnityContainer Container { get; private set; }
@@ -96,7 +101,7 @@ namespace GridDomain.Node
             _stopping = false;
 
             Container = new UnityContainer();
-            Systems = _actorSystemFactory.Invoke();
+            Systems = Settings.ActorSystemFactory.Invoke();
             
             System = Systems.First();
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
@@ -104,16 +109,21 @@ namespace GridDomain.Node
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System.RegisterOnTermination(OnSystemTermination);
 
-            ConfigureContainer(Container, _quartzConfig, System);
+            IUnityContainer unityContainer = Container;
+            unityContainer.Register(new GridNodeContainerConfiguration(System,
+                                                                       _transportMode,
+                                                                       Settings));
+
+            unityContainer.Register(Settings.Configuration);
 
             Pipe = Container.Resolve<CommandPipeBuilder>();
-            await _messageRouting.Register(Pipe);
+            await Settings.MessageRouting.Register(Pipe);
 
             Transport = Container.Resolve<IActorTransport>();
 
             _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
-            _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
+            _waiterFactory   = Container.Resolve<IMessageWaiterFactory>();
 
             EventBusForwarder = System.ActorOf(Props.Create(() => new EventBusForwarder(Transport)),nameof(EventBusForwarder));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
@@ -131,8 +141,7 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-            _log.Debug("Launching GridDomain node {Id}",Id);
-
+            Settings.Log.Debug("Launching GridDomain node {Id}",Id);
 
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props,nameof(GridNodeController));
@@ -142,10 +151,8 @@ namespace GridDomain.Node
                 RoutingActorType = RoutingActorType[_transportMode]
             });
 
-            _log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+            Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
-
-
 
         private void RegisterCustomAggregateSnapshots()
         {
@@ -162,26 +169,11 @@ namespace GridDomain.Node
             }
         }
 
-
-        private void ConfigureContainer(IUnityContainer unityContainer,
-                                        IQuartzConfig quartzConfig,
-                                        ActorSystem actorSystem)
-        {
-
-            unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
-                                                                       _transportMode,
-                                                                       quartzConfig,
-                                                                       DefaultTimeout,
-                                                                       _log));
-
-            unityContainer.Register(_configuration);
-        }
-
         public async Task Stop()
         {
             if (_stopping) return;
 
-            _log.Debug("GridDomain node {Id} is stopping", Id);
+            Settings.Log.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
 
             try
@@ -191,7 +183,7 @@ namespace GridDomain.Node
             }
             catch (Exception ex)
             {
-                _log.Warning($"Got error on quartz scheduler shutdown:{ex}");
+                Settings.Log.Warning($"Got error on quartz scheduler shutdown:{ex}");
             }
 
             if (System != null)
@@ -202,7 +194,7 @@ namespace GridDomain.Node
 
             Container?.Dispose();
 
-            _log.Debug("GridDomain node {Id} stopped",Id);
+            Settings.Log.Debug("GridDomain node {Id} stopped",Id);
         }
 
         public void Execute(params ICommand[] commands)
@@ -217,7 +209,7 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return _waiterFactory.NewWaiter(defaultTimeout ?? DefaultTimeout);
+            return _waiterFactory.NewWaiter(defaultTimeout ?? Settings.DefaultTimeout);
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand

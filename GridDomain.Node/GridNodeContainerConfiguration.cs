@@ -26,23 +26,28 @@ namespace GridDomain.Node
         private readonly IQuartzConfig _config;
         private readonly TimeSpan _defaultCommandExecutionTimeout;
         private readonly ILogger _log;
+        private readonly IRetrySettings _quartzJobRetrySettings;
 
         public GridNodeContainerConfiguration(ActorSystem actorSystem,
                                               TransportMode transportMode,
-                                              IQuartzConfig config,
-                                              TimeSpan defaultCommandExecutionTimeout,
-                                              ILogger log)
+                                              NodeSettings settings)
         {
-            _log = log;
-            _config = config;
-            _defaultCommandExecutionTimeout = defaultCommandExecutionTimeout;
+            _log = settings.Log;
+            _config = settings.QuartzConfig;
+            _defaultCommandExecutionTimeout = settings.DefaultTimeout;
+            _quartzJobRetrySettings = settings.QuartzJobRetrySettings;
             _transportMode = transportMode;
             _actorSystem = actorSystem;
         }
 
         public void Register(IUnityContainer container)
         {
-            RegisterScheduler(container);
+            new QuartzSchedulerConfiguration(_config).Register(container);
+            var inMemoryRetrySettings = new InMemoryRetrySettings(5,
+                                                                  TimeSpan.FromMinutes(10),
+                                                                  new DefaultExceptionPolicy());
+
+            container.RegisterInstance<IRetrySettings>(inMemoryRetrySettings);
 
             //TODO: replace with config
             IActorTransport transport;
@@ -69,12 +74,15 @@ namespace GridDomain.Node
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
             container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default ??
                                                                                       new DefaultAppInsightsConfiguration());
+
             container.RegisterInstance<IPerformanceCountersConfiguration>(PerformanceCountersConfigSection.Default ??
                                                                                               new DefaultPerfCountersConfiguration());
 
             container.RegisterInstance(_actorSystem);
 
             _actorSystem.AddDependencyResolver(new UnityDependencyResolver(container, _actorSystem));
+
+            container.RegisterInstance(_quartzJobRetrySettings);
             var persistentScheduler = _actorSystem.ActorOf(_actorSystem.DI().Props<SchedulingActor>(), nameof(SchedulingActor));
             container.RegisterInstance(SchedulingActor.RegistrationName, persistentScheduler);
 
@@ -92,15 +100,6 @@ namespace GridDomain.Node
             unityContainer.RegisterInstance(pipeBuilder);
 
             return new AkkaCommandPipeExecutor(actorSystem, actorTransport, commandExecutorActor, defaultTimeout);
-        }
-
-
-        private void RegisterScheduler(IUnityContainer container)
-        {
-            container.Register(new QuartzSchedulerConfiguration(_config ?? new InMemoryQuartzConfig()));
-            container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings(5,
-                                                                                 TimeSpan.FromMinutes(10),
-                                                                                 new DefaultExceptionPolicy()));
         }
     }
 }

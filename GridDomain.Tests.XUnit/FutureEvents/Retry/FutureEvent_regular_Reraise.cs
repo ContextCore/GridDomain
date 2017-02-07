@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Integration;
@@ -20,13 +21,12 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 
         class ReraiseTestFixture : FutureEventsFixture
         {
-            public ReraiseTestFixture()
+            protected override NodeSettings CreateNodeSettings()
             {
-                Add(new CustomContainerConfiguration(c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings())));
-            }
-            class TwoFastRetriesSettings : InMemoryRetrySettings
-            {
-                public TwoFastRetriesSettings() : base(2, TimeSpan.FromMilliseconds(10)) { }
+                var nodeSettings = base.CreateNodeSettings();
+                //Two fast retries
+                nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, TimeSpan.FromMilliseconds(10));
+                return nodeSettings;
             }
         }
 

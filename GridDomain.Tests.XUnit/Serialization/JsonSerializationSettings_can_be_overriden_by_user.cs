@@ -25,12 +25,9 @@ namespace GridDomain.Tests.XUnit.Serialization
         [Fact]
         public async Task When_settings_are_customized_it_is_used_by_grid_node()
         {
-            var node = new GridDomainNode(CustomContainerConfiguration.Empty(),
-                                          new SampleRouteMap(),
-                                          () => new [] { ActorSystem.Create("test")},
-                                          new InMemoryQuartzConfig(),
-                                          null,
-                                          _logger);
+            var settings = new NodeSettings() {Log = _logger};
+
+            var node = new GridDomainNode(settings);
 
             await node.Start();
 

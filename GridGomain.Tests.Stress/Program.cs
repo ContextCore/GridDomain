@@ -97,7 +97,8 @@ namespace GridGomain.Tests.Stress
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var node = new GridDomainNode(cfg, new SampleRouteMap(), actorSystemFactory);
+            var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
+            var node = new GridDomainNode(settings);
 
             node.Start().Wait();
 
@@ -170,7 +171,8 @@ namespace GridGomain.Tests.Stress
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var node = new GridDomainNode(cfg, new SampleRouteMap(), actorSystemFactory);
+            var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
+            var node = new GridDomainNode(settings);
 
             node.Start().Wait();
             return node;

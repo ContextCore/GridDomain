@@ -63,26 +63,36 @@ namespace GridDomain.Tests.XUnit
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(3);
         }
 
-        private async Task<GridDomainNode> CreateNode()
+        protected virtual async Task<GridDomainNode> CreateNode()
         {
             if (ClearDataOnStart)
                 TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
 
-            var quartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig();
 
             await CreateLogger();
 
-            _node = new GridDomainNode(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
-                                       new CompositeRouteMap(_routeMap.ToArray()),
-                                       () => new[] {System ?? ActorSystem.Create(Name, GetConfig())},
-                                       quartzConfig,
-                                       DefaultTimeout,
-                                       LocalLogger);
+            var settings = CreateNodeSettings();
+
+            _node = new GridDomainNode(settings);
+
             OnNodeCreated();
             await _node.Start();
             OnNodeStarted();
 
             return _node;
+        }
+
+        protected virtual NodeSettings CreateNodeSettings()
+        {
+            var settings = new NodeSettings(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
+                new CompositeRouteMap(_routeMap.ToArray()),
+                () => new[] {System ?? ActorSystem.Create(Name, GetConfig())})
+                           {
+                               QuartzConfig =  InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
+                               DefaultTimeout = DefaultTimeout,
+                               Log = LocalLogger
+                           };
+            return settings;
         }
 
         private async Task CreateLogger()

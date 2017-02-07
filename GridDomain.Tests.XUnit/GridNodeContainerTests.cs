@@ -1,8 +1,6 @@
-using System;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Scheduling.Quartz;
 using Microsoft.Practices.Unity;
 using Serilog;
 using Xunit.Abstractions;
@@ -25,9 +23,7 @@ namespace GridDomain.Tests.XUnit
             var actorSystem = ActorSystemBuilders[mode]();
             container.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                   mode,
-                                                                  new InMemoryQuartzConfig(),
-                                                                  TimeSpan.FromSeconds(10),
-                                                                  _logger));
+                                                                  new NodeSettings()));
             actorSystem.Terminate();
             return container;
         }
