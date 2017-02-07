@@ -50,7 +50,7 @@ namespace GridDomain.Node.Actors
                 catch (Exception ex)
                 {
                     //for case when handler cannot create its task
-                    Self.Tell(new HandlerExecuted(msg, ex));
+                    Self.Tell(new HandlerExecuted(msg, ex), Sender);
                 }
                 
                 
@@ -63,12 +63,14 @@ namespace GridDomain.Node.Actors
                     PublishFault(res.ProcessingMessage, res.Error);
             });
         }
-    
-    
 
+
+        private int publishFaultCount = 0;
         protected virtual void PublishFault(IMessageMetadataEnvelop msg, Exception ex)
         {
-            _log.Error(ex, "Handler actor raised an error on message process: {@Message}", msg);
+            _log.Error(ex, "Handler actor raised an error on message process: {@Message}. Count: {count}",
+                msg,
+                ++publishFaultCount);
 
             var metadata = msg.Metadata.CreateChild(Guid.Empty, FaltProcessEntry);
 

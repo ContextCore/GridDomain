@@ -70,7 +70,6 @@ namespace GridDomain.Node
             var aggregateHubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
 
             var aggregateActor = CreateActor(aggregateHubType,
-                                             NoRouter.Instance,
                                              aggregateHubType.BeautyName());
 
             var processor = new Processor(aggregateActor);
@@ -87,7 +86,7 @@ namespace GridDomain.Node
         {
             var sagaActorType = typeof(SagaHubActor<,>).MakeGenericType(sagaDescriptor.SagaType,sagaDescriptor.StateType);
 
-            var sagaActor = CreateActor(sagaActorType, NoRouter.Instance, name ?? sagaDescriptor.StateMachineType.BeautyName());
+            var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName());
             var processor = new Processor(sagaActor);
 
             foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
@@ -107,15 +106,18 @@ namespace GridDomain.Node
                                                                            where TMessage : DomainEvent
         {
             var handlerActorType = typeof(MessageHandlingActor<TMessage, THandler>);
-            var handlerActor = CreateActor(handlerActorType, NoRouter.Instance, handlerActorType.BeautyName());
+            var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());
 
             _handlersCatalog.Add<TMessage>(new Processor(handlerActor,new MessageProcessPolicy(sync)));
             return Task.CompletedTask;
         }
 
-        private IActorRef CreateActor(Type actorType, RouterConfig routeConfig, string actorName)
+        private IActorRef CreateActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
-            var handleActorProps =_system.DI().Props(actorType).WithRouter(routeConfig);
+            var handleActorProps =_system.DI().Props(actorType);
+            if (routeConfig != null)
+                handleActorProps = handleActorProps.WithRouter(routeConfig);
+
             var handleActor = _system.ActorOf(handleActorProps, actorName);
             return handleActor;
         }

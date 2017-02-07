@@ -15,15 +15,13 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
   
     public class AsyncExecute_without_timeout : SampleDomainCommandExecutionTests
     {
-      
-
        [Fact]
         public async Task CommandWaiter_throws_exception_after_wait_with_only_default_timeout()
         {
             var syncCommand = new LongOperationCommand(1000,Guid.NewGuid());
             var waiter =Node.Prepare(syncCommand)
-                                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
-                                 .Execute(TimeSpan.FromMilliseconds(100));
+                            .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                            .Execute(TimeSpan.FromMilliseconds(100));
 
            await Assert.ThrowsAsync<TimeoutException>(() => waiter);
         }
