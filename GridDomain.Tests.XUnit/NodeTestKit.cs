@@ -30,6 +30,7 @@ namespace GridDomain.Tests.XUnit
     {
         private NodeTestFixture Fixture { get; }
         protected GridDomainNode Node => Fixture.Node;
+        protected ILogger LocalLogger => Fixture.LocalLogger;
 
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture)
             : base(fixture.GetConfig(), fixture.Name)

@@ -11,6 +11,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 {
@@ -22,10 +23,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         private LocalAkkaEventBusTransport _localAkkaEventBusTransport;
 
 
-        public Saga_actor_should_execute_async_sagas_with_block()
+        public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output)
         {
+            var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
             var producer = new SagaProducer<ISagaInstance<AsyncLongRunningSaga, TestState>>(AsyncLongRunningSaga.Descriptor);
-            producer.RegisterAll<AsyncLongRunningSagaFactory, TestState>(new AsyncLongRunningSagaFactory());
+            producer.RegisterAll<AsyncLongRunningSagaFactory, TestState>(new AsyncLongRunningSagaFactory(logger));
             _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             _localAkkaEventBusTransport.Subscribe(typeof(object),TestActor);
 

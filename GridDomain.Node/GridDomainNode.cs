@@ -7,6 +7,7 @@ using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
+using Akka.Event;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
@@ -42,7 +43,7 @@ namespace GridDomain.Node
             {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
         };
 
-        private readonly ILogger _log = Log.Logger.ForContext<GridDomainNode>();
+        private readonly ILogger _log;
         private readonly IMessageRouteMap _messageRouting;
         private TransportMode _transportMode;
         public ActorSystem[] Systems;
@@ -58,7 +59,7 @@ namespace GridDomain.Node
         private IMessageWaiterFactory _waiterFactory;
         private ICommandExecutor _commandExecutor;
         internal CommandPipeBuilder Pipe;
-
+        private readonly LoggerConfiguration _logConfig;
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
@@ -78,13 +79,17 @@ namespace GridDomain.Node
                               IMessageRouteMap messageRouting,
                               Func<ActorSystem[]> actorSystemFactory,
                               IQuartzConfig quartzConfig = null, 
-                              TimeSpan? defaultTimeout = null)
+                              TimeSpan? defaultTimeout = null,
+                              LoggerConfiguration logConfig = null)
         {
+            _logConfig = logConfig ?? new DefaultLoggerConfiguration();
             _actorSystemFactory = actorSystemFactory;
             _quartzConfig = quartzConfig ?? new InMemoryQuartzConfig();
             _configuration = configuration;
             _messageRouting = new CompositeRouteMap(messageRouting);
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
+
+            _log = _logConfig.CreateLogger().ForContext<GridDomainNode>();
         }
 
         private void OnSystemTermination()
@@ -102,8 +107,8 @@ namespace GridDomain.Node
 
             Container = new UnityContainer();
             Systems = _actorSystemFactory.Invoke();
+            
             System = Systems.First();
-
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
@@ -176,7 +181,8 @@ namespace GridDomain.Node
             unityContainer.Register(new GridNodeContainerConfiguration(actorSystem,
                                                                        _transportMode,
                                                                        quartzConfig,
-                                                                       DefaultTimeout));
+                                                                       DefaultTimeout,
+                                                                       _log));
 
             unityContainer.Register(_configuration);
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.Event;
 using Akka.Routing;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -33,12 +34,13 @@ namespace GridDomain.Node
         public IActorRef CommandExecutor { get; private set; }
         private readonly IUnityContainer _container;
 
-        private ILogger _log = Serilog.Log.Logger.ForContext<CommandPipeBuilder>();
+        private readonly ILoggingAdapter _log;
 
         public CommandPipeBuilder(ActorSystem system, IUnityContainer container)
         {
             _container = container;
             _system = system;
+            _log = system.Log;
         }
 
         /// <summary>

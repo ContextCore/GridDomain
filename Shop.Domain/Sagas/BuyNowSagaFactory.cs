@@ -1,5 +1,6 @@
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using Serilog;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Shop.Domain.DomainServices.PriceCalculator;
 
@@ -10,15 +11,17 @@ namespace Shop.Domain.Sagas
         ISagaFactory<ISagaInstance<BuyNow, BuyNowData>, SkuPurchaseOrdered>
     {
         private readonly IPriceCalculator _priceCalculator;
+        private readonly ILogger _log;
 
-        public BuyNowSagaFactory(IPriceCalculator priceCalculator)
+        public BuyNowSagaFactory(IPriceCalculator priceCalculator, ILogger log)
         {
+            _log = log;
             _priceCalculator = priceCalculator;
         }
 
         public ISagaInstance<BuyNow, BuyNowData> Create(SagaStateAggregate<BuyNowData> message)
         {
-            return SagaInstance.New(new BuyNow(_priceCalculator), message);
+            return SagaInstance.New(new BuyNow(_priceCalculator), message, _log);
 
         }
 

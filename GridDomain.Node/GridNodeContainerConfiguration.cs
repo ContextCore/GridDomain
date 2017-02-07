@@ -15,6 +15,7 @@ using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
+using Serilog;
 
 namespace GridDomain.Node
 {
@@ -24,12 +25,15 @@ namespace GridDomain.Node
         private readonly TransportMode _transportMode;
         private readonly IQuartzConfig _config;
         private readonly TimeSpan _defaultCommandExecutionTimeout;
+        private readonly ILogger _log;
 
         public GridNodeContainerConfiguration(ActorSystem actorSystem,
                                               TransportMode transportMode,
                                               IQuartzConfig config,
-                                              TimeSpan defaultCommandExecutionTimeout)
+                                              TimeSpan defaultCommandExecutionTimeout,
+                                              ILogger log)
         {
+            _log = log;
             _config = config;
             _defaultCommandExecutionTimeout = defaultCommandExecutionTimeout;
             _transportMode = transportMode;
@@ -53,6 +57,8 @@ namespace GridDomain.Node
                 default:
                     throw new ArgumentException(nameof(_transportMode));
             }
+
+            container.RegisterInstance<ILogger>(_log);
 
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);

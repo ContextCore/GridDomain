@@ -28,7 +28,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                 !sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
                 null);
 
-            var saga = SagaInstance.New(softwareProgrammingSaga, sagaDataAggregate);
+            var saga = SagaInstance.New(softwareProgrammingSaga, sagaDataAggregate, LocalLogger);
             await saga.Transit(coffeMadeEvent);
             //No exception is raised
         }
@@ -44,6 +44,8 @@ namespace GridDomain.Tests.XUnit.Sagas
             Assert.Null(sagaDataAggregate.Data);
         }
 
-        public Given_uninitialized_saga_When_processing_messages(ITestOutputHelper helper) : base(helper) {}
+        public Given_uninitialized_saga_When_processing_messages(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }

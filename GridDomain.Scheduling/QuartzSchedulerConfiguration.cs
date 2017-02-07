@@ -9,6 +9,7 @@ using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
 using Quartz;
 using Quartz.Spi;
+using Serilog;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling 
@@ -29,7 +30,7 @@ namespace GridDomain.Scheduling
             container.RegisterType<ISchedulerFactory, SchedulerFactory>(new ContainerControlledLifetimeManager());
             container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>().GetScheduler()));
 
-            container.RegisterInstance<IQuartzConfig>(_quartzConfig);
+            container.RegisterInstance(_quartzConfig);
             container.RegisterType<IQuartzLogger, QuartzLogger>();
             container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();

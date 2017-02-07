@@ -6,10 +6,14 @@ namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class LoggingJobListener : ILoggingJobListener
     {
-        private readonly ILogger _log = Log.Logger.ForContext<LoggingJobListener>();
+        private readonly ILogger _log;
 
         public string Name => GetType().Name;
 
+        public LoggingJobListener(ILogger log)
+        {
+            _log = log.ForContext<LoggingJobListener>();
+        }
         public void JobToBeExecuted(IJobExecutionContext context)
         {
             _log.Debug("Job {JobKey} is about to be executed", context.JobDetail.Key);

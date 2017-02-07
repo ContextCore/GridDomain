@@ -11,6 +11,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
+using Serilog;
 using Serilog.Events;
 using Xunit.Abstractions;
 
@@ -25,7 +26,7 @@ namespace GridDomain.Tests.XUnit
         public GridDomainNode Node => _node ?? CreateNode().Result;
 
         public ActorSystem System { get; set; }
-
+        public ILogger LocalLogger { get; private set; }
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
         private bool InMemory { get; } = true;
@@ -86,10 +87,11 @@ namespace GridDomain.Tests.XUnit
         private async Task CreateLogger()
         {
             var extSystem = (ExtendedActorSystem) System;
+            var xUnitAutoTestLoggerConfiguration = new XUnitAutoTestLoggerConfiguration(Output, LogEventLevel.Verbose);
+            LocalLogger = xUnitAutoTestLoggerConfiguration.CreateLogger();
             var logger =
                 extSystem.SystemActorOf(
-                    Props.Create(
-                        () => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogEventLevel.Verbose))),
+                    Props.Create(() => new SerilogLoggerActor(xUnitAutoTestLoggerConfiguration)),
                     "node-log-test");
 
             await logger.Ask<LoggerInitialized>(new InitializeLogger(System.EventStream));

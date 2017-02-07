@@ -9,11 +9,12 @@ namespace GridDomain.Scheduling.Quartz.Retry
     {
         private const string Retries = "Retries";
         private readonly IRetrySettings _settings;
-        private readonly ILogger _log = Log.Logger.ForContext<ExponentialBackoffRetryStrategy>();
+        private readonly ILogger _log;
 
-        public ExponentialBackoffRetryStrategy(IRetrySettings settings)
+        public ExponentialBackoffRetryStrategy(IRetrySettings settings, ILogger log)
         {
-            this._settings = settings;
+            _settings = settings;
+            _log = log.ForContext<ExponentialBackoffRetryStrategy>();
         }
         public bool ShouldRetry(IJobExecutionContext context, JobExecutionException e)
         {

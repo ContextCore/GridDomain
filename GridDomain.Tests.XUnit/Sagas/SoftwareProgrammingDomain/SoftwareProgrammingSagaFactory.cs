@@ -1,6 +1,7 @@
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
@@ -9,9 +10,16 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
              ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
     {
+        private readonly ILogger _log;
+
+        public SoftwareProgrammingSagaFactory(ILogger log)
+        {
+            _log = log;
+        }
+
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
-           return SagaInstance.New(new SoftwareProgrammingSaga(), message);
+           return SagaInstance.New(new SoftwareProgrammingSaga(), message, _log);
         }
 
         public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)

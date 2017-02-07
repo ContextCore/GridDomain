@@ -8,12 +8,21 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using Serilog.Core;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas.Recovery
 {
     public class Given_instance_saga_When_recovering
     {
+        private readonly Logger _logger;
+
+        public Given_instance_saga_When_recovering(ITestOutputHelper output)
+        {
+            _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+        }
+
         [Fact]
         public async Task Given_instance_saga_When_recovering_from_creation()
         {
@@ -28,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
 
             data.ApplyEvents(eventsToReplay);
 
-            var sagaInstance = SagaInstance.New(saga, data);
+            var sagaInstance = SagaInstance.New(saga, data, _logger);
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());

@@ -9,12 +9,14 @@ namespace GridDomain.Scheduling.Quartz.Retry
     public class RetryJobListener : JobListenerSupport
     {
         private readonly IRetryStrategy _retryStrategy;
-        public RetryJobListener(IRetryStrategy retryStrategy)
+        public RetryJobListener(IRetryStrategy retryStrategy, ILogger log)
         {
-            this._retryStrategy = retryStrategy;
+            _retryStrategy = retryStrategy;
+            _logger = log.ForContext<RetryJobListener>();
+
         }
         public override string Name => "Retry";
-        private readonly ILogger _logger = Serilog.Log.Logger.ForContext<RetryJobListener>();
+        private readonly ILogger _logger;
 
         public override void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {

@@ -58,7 +58,6 @@ namespace GridDomain.EventSourcing
         {
             JsonSerializerSettings = settings ?? GetDefaultSettings();
         }
-        private readonly ILogger _log = Log.Logger.ForContext<DomainSerializer>();
 
         // <summary>
         // Serializes the given object into a byte array

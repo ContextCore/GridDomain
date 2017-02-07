@@ -323,7 +323,6 @@
     <Compile Include="Sagas\SoftwareProgrammingInstanceSagaTest.cs" />
     <Compile Include="Sagas\SoftwareProgrammingSagaFixture.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga.cs" />
-    <Compile Include="Sagas\Transitions\Given_AutomatonymousSagas_When_apply_known_but_not_mapped_event_in_state.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\Transitions\Given_created_and_message_received_when_hydrating.cs" />

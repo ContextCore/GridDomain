@@ -3,16 +3,22 @@ using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
    
     public class Given_AutomatonymousSaga_When_invalid_Transitions
     {
-        private readonly Given_AutomatonymousSaga _given = new Given_AutomatonymousSaga(m => m.Sleeping);
+        private readonly Given_AutomatonymousSaga _given;
 
         private class WrongMessage
         {
+        }
+
+        public Given_AutomatonymousSaga_When_invalid_Transitions(ITestOutputHelper output)
+        {
+             _given = new Given_AutomatonymousSaga(m => m.Sleeping, new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
         }
 
         private static async Task When_execute_invalid_transaction(ISagaInstance sagaInstance)

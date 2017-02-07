@@ -6,8 +6,12 @@ namespace GridDomain.Scheduling.Quartz.Logging
 {
     public class LoggingSchedulerListener : ILoggingSchedulerListener
     {
-        private readonly ILogger _log = Log.Logger.ForContext<LoggingSchedulerListener>();
+        private readonly ILogger _log;
 
+        public LoggingSchedulerListener(ILogger log)
+        {
+            _log = log.ForContext<LoggingSchedulerListener>();
+        }
         public void JobScheduled(ITrigger trigger)
         {
             _log.Verbose("Job {JobKey} scheduled for next execution {NextFireTime}", trigger.JobKey, trigger.GetNextFireTimeUtc());

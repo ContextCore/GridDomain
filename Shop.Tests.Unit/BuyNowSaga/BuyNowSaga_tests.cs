@@ -8,6 +8,7 @@ using GridDomain.Tests.Framework;
 using KellermanSoftware.CompareNetObjects;
 using NMoneys;
 using NUnit.Framework;
+using Serilog;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
@@ -80,7 +81,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
 
         private SagaScenario<BuyNow, BuyNowData, BuyNowSagaFactory> NewScenario()
         {
-            var factory = new BuyNowSagaFactory(_inMemoryPriceCalculator);
+            var factory = new BuyNowSagaFactory(_inMemoryPriceCalculator,Log.Logger);
             var scenario = SagaScenario<BuyNow, BuyNowData, BuyNowSagaFactory>.New(BuyNow.Descriptor, factory);
             return scenario;
         }

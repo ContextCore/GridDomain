@@ -173,7 +173,6 @@
     <Compile Include="AnyMessageExpectBuilder.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="LoggerActorDummy.cs" />
-    <Compile Include="LoggingActor.cs" />
     <Compile Include="NUnitAssertEx.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
@@ -195,7 +194,6 @@
     <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="LoggerConfigurationXunitTestOutputExtensions.cs" />
     <Compile Include="LoggingConfigurationExtensions.cs" />
-    <Compile Include="NodeCommandsTest.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />
     <Compile Include="PersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
