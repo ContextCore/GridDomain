@@ -76,7 +76,8 @@ namespace GridDomain.Tests.XUnit
                                        new CompositeRouteMap(_routeMap.ToArray()),
                                        () => new[] {System ?? ActorSystem.Create(Name, GetConfig())},
                                        quartzConfig,
-                                       DefaultTimeout);
+                                       DefaultTimeout,
+                                       LocalLogger);
             OnNodeCreated();
             await _node.Start();
             OnNodeStarted();

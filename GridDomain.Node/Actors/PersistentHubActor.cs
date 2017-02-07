@@ -59,7 +59,7 @@ namespace GridDomain.Node.Actors
                 knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                 SendMessageToChild(knownChild, messageWitMetadata);
 
-                Logger.Debug("Message {@msg} sent to {isknown} child {id}",
+                Logger.Debug("Message {msg} sent to {isknown} child {id}",
                               messageWitMetadata,
                               childWasCreated ? "known" : "new",
                               childId);
@@ -95,7 +95,6 @@ namespace GridDomain.Node.Actors
         protected override bool AroundReceive(Receive receive, object message)
         {
             _monitor.IncrementMessagesReceived();
-            Logger.Debug("{ActorHub} pre-receive {@message}", Self.Path, message);
             return base.AroundReceive(receive, message);
         }
 

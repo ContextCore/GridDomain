@@ -9,7 +9,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
         public TimeSpan BackoffBaseInterval { get; }
         public IExceptionPolicy ErrorActions { get; }
 
-        public InMemoryRetrySettings(int maxRetries = 5, TimeSpan? baseInterval = null, IExceptionPolicy errorActions = null)
+        public InMemoryRetrySettings(int maxRetries = 3, TimeSpan? baseInterval = null, IExceptionPolicy errorActions = null)
         {
             ErrorActions = errorActions;
             MaxRetries = maxRetries;

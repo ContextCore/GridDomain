@@ -36,8 +36,8 @@ namespace GridDomain.Scheduling
             container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();
             
-            container.RegisterType<ILoggingJobListener, LoggingJobListener>();
-            container.RegisterType<ILoggingSchedulerListener, LoggingSchedulerListener>();
+            container.RegisterType<LoggingJobListener>();
+            container.RegisterType<LoggingSchedulerListener>();
 
             container.RegisterType<IRetrySettings, InMemoryRetrySettings>();
             container.RegisterType<IRetryStrategy, ExponentialBackoffRetryStrategy>();

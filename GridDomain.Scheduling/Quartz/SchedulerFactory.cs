@@ -15,8 +15,8 @@ namespace GridDomain.Scheduling.Quartz
     public class SchedulerFactory : ISchedulerFactory, IDisposable
     {
         private readonly IQuartzConfig _config;
-        private readonly ILoggingSchedulerListener _loggingSchedulerListener;
-        private readonly ILoggingJobListener _loggingJobListener;
+        private readonly LoggingSchedulerListener _loggingSchedulerListener;
+        private readonly LoggingJobListener _loggingJobListener;
         private readonly IJobFactory _jobFactory;
         private static readonly object _locker = new object();
         private IScheduler _current;
@@ -26,8 +26,8 @@ namespace GridDomain.Scheduling.Quartz
 
         public SchedulerFactory(
                     IQuartzConfig config,
-                    ILoggingSchedulerListener loggingSchedulerListener,
-                    ILoggingJobListener loggingJobListener,
+                    LoggingSchedulerListener loggingSchedulerListener,
+                    LoggingJobListener loggingJobListener,
                     RetryJobListener retryJobListener,
                     IJobFactory jobFactory,
                     ILogger log)
@@ -77,8 +77,8 @@ namespace GridDomain.Scheduling.Quartz
             var scheduler = stdSchedulerFactory.GetScheduler();
             scheduler.JobFactory = _jobFactory;
             scheduler.ListenerManager.AddSchedulerListener(_loggingSchedulerListener);
-            scheduler.ListenerManager.AddJobListener(_loggingJobListener);
-            scheduler.ListenerManager.AddJobListener(_retryJobListener);
+            scheduler.ListenerManager.AddJobListener(_loggingJobListener, GroupMatcher<JobKey>.AnyGroup());
+            scheduler.ListenerManager.AddJobListener(_retryJobListener, GroupMatcher<JobKey>.AnyGroup());
 
             try
             {

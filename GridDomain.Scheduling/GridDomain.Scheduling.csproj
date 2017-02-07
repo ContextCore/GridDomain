@@ -159,8 +159,6 @@
     <Compile Include="Integration\JobCompleted.cs" />
     <Compile Include="Quartz\InMemoryQuartzConfig.cs" />
     <Compile Include="Quartz\JobFactory.cs" />
-    <Compile Include="Quartz\Logging\ILoggingJobListener.cs" />
-    <Compile Include="Quartz\Logging\ILoggingSchedulerListener.cs" />
     <Compile Include="Quartz\IQuartzConfig.cs" />
     <Compile Include="Quartz\Logging\IQuartzLogger.cs" />
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />

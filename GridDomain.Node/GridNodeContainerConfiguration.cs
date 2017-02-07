@@ -81,7 +81,6 @@ namespace GridDomain.Node
             var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
 
-
             var executor = ConfigureCommandPipe(_actorSystem, transport, container, _defaultCommandExecutionTimeout).Result;
             container.RegisterInstance(executor);
         }
@@ -98,7 +97,7 @@ namespace GridDomain.Node
 
         private void RegisterScheduler(IUnityContainer container)
         {
-            container.Register(new QuartzSchedulerConfiguration(_config ?? new PersistedQuartzConfig()));
+            container.Register(new QuartzSchedulerConfiguration(_config ?? new InMemoryQuartzConfig()));
             container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings(5,
                                                                                  TimeSpan.FromMinutes(10),
                                                                                  new DefaultExceptionPolicy()));

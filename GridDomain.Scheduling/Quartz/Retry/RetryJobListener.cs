@@ -9,27 +9,24 @@ namespace GridDomain.Scheduling.Quartz.Retry
     public class RetryJobListener : JobListenerSupport
     {
         private readonly IRetryStrategy _retryStrategy;
+        private readonly ILogger _logger;
+
         public RetryJobListener(IRetryStrategy retryStrategy, ILogger log)
         {
             _retryStrategy = retryStrategy;
             _logger = log.ForContext<RetryJobListener>();
-
         }
+
         public override string Name => "Retry";
-        private readonly ILogger _logger;
 
         public override void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {
-            if (JobFailed(jobException) && this._retryStrategy.ShouldRetry(context, jobException))
-            {
-                ITrigger trigger = this._retryStrategy.GetTrigger(context);
-                bool unscheduled = context.Scheduler.UnscheduleJob(context.Trigger.Key);
-                DateTimeOffset nextRunAt = context.Scheduler.ScheduleJob(context.JobDetail, trigger);
-                _logger.Warning("Restarting job {key}, unsheduling was {unscheduled}, next start time {nextRunAt}", 
-                                context.JobDetail.Key.Name,
-                                unscheduled,
-                                nextRunAt);
-            }
+            _logger.Debug("Deciding if job {job} should be retried", context.JobDetail.Key);
+            if (!JobFailed(jobException) || !_retryStrategy.ShouldRetry(context, jobException)) return;
+
+            ITrigger trigger = _retryStrategy.GetTrigger(context);
+            context.Scheduler.UnscheduleJob(context.Trigger.Key);
+            context.Scheduler.ScheduleJob(context.JobDetail, trigger);
         }
 
         private static bool JobFailed(JobExecutionException jobException)

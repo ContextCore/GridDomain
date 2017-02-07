@@ -4,7 +4,7 @@ using Serilog;
 
 namespace GridDomain.Scheduling.Quartz.Logging
 {
-    public class LoggingJobListener : ILoggingJobListener
+    public class LoggingJobListener : IJobListener
     {
         private readonly ILogger _log;
 

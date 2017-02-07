@@ -4,7 +4,7 @@ using Serilog;
 
 namespace GridDomain.Scheduling.Quartz.Logging
 {
-    public class LoggingSchedulerListener : ILoggingSchedulerListener
+    public class LoggingSchedulerListener : ISchedulerListener
     {
         private readonly ILogger _log;
 
@@ -14,7 +14,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
         }
         public void JobScheduled(ITrigger trigger)
         {
-            _log.Verbose("Job {JobKey} scheduled for next execution {NextFireTime}", trigger.JobKey, trigger.GetNextFireTimeUtc());
+            _log.Verbose("Job {JobKey} scheduled for execution {NextFireTime}", trigger.JobKey, trigger.StartTimeUtc);
         }
 
         public void JobUnscheduled(TriggerKey triggerKey)
@@ -24,7 +24,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void TriggerFinalized(ITrigger trigger)
         {
-            _log.Verbose("Trigger {TriggerKey}  for job {JobKey} finalized and won`t fire again", trigger.Key,trigger.JobKey );
+            _log.Verbose("Trigger {TriggerKey} for job {JobKey} finalized and won`t fire again", trigger.Key,trigger.JobKey );
         }
 
         public void TriggerPaused(TriggerKey triggerKey)

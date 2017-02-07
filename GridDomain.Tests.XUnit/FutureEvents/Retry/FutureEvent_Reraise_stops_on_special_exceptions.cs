@@ -61,10 +61,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 
             await Node.Prepare(command)
                       .Expect<JobFailed>()
-                      .Execute(TimeSpan.FromSeconds(10));
+                      .Execute();
 
             //waiting for policy call to determine should we retry failed job or not
-            await _policyCallNumberChanged.Task;
+            await _policyCallNumberChanged.Task.TimeoutAfter(TimeSpan.FromSeconds(10));
             // job was not retried and policy was not called
             Assert.Equal(1, _policyCallNumber);
         }

@@ -1,3 +1,6 @@
+using System;
+using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Tests.Framework;
 using NMoneys;
 using Serilog;
@@ -13,6 +16,9 @@ namespace GridDomain.Tests.XUnit
             WriteTo.XunitTestOutput(output);
             MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new {r.Amount,r.CurrencyCode });
+            Destructure.ByTransforming<Exception>(r => new {Type = r.GetType(), r.StackTrace });
+            Destructure.ByTransforming<IMessageMetadata>(r => new {r.CasuationId, r.CorrelationId });
+            Destructure.ByTransforming<ICommand>(r => new {r.Id});
         }
     }
 }

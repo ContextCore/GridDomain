@@ -40,7 +40,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                              .Expect<JobFailed>()
                              .And<JobSucceeded>()
                              .And<TestErrorDomainEvent>()
-                             .Execute(TimeSpan.FromSeconds(10));
+                             .Execute(TimeSpan.FromMinutes(1));
 
             var res = await waiter;
             var actual = res.Message<TestErrorDomainEvent>().Value;

@@ -38,16 +38,13 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Publish(object msg)
         {
-            _log.Debug("Publishing {@Message} to transport", msg);
-            _bus.Publish(msg);
-            //for backward compability - a lot of legacy code publish bare messages and expect some results back
-            //and new actors \ sagas work only with IMessageMetadataEnvelop
+           // _log.Debug("Publishing {Message} to transport", msg);
             Publish(msg, MessageMetadata.Empty);
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            _log.Debug("Publishing {@Message} to transport with metadata {@metadata}", msg, metadata);
+         //   _log.Debug("Publishing {Message} to transport with metadata", msg);
             _bus.Publish(MessageMetadataEnvelop.NewGeneric(msg,metadata));
         }
 

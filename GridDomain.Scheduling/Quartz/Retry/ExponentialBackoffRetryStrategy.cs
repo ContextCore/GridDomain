@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Common;
 using GridDomain.Logging;
 using Quartz;
 using Serilog;
@@ -21,7 +22,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
             if (e?.InnerException != null && !_settings.ErrorActions.ShouldContinue(e.InnerException))
             {
                 _log.Debug("Job {Key} will not be retried due to special error encoured: {error}",
-                    context.JobDetail.Key.Name, e.InnerException);
+                    context.JobDetail.Key.Name, e.InnerException.GetType());
                 return false;
             }
 
@@ -43,7 +44,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
             TimeSpan backoff = new TimeSpan(this._settings.BackoffBaseInterval.Ticks * factor);
 
             ITrigger trigger = TriggerBuilder.Create()
-                                             .StartAt(DateTimeOffset.UtcNow + backoff)
+                                             .StartAt(BusinessDateTime.UtcNow + backoff)
                                              .WithSimpleSchedule(x => x.WithRepeatCount(0))
                                              .WithIdentity(context.Trigger.Key)
                                              .ForJob(context.JobDetail)
