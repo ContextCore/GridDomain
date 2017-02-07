@@ -9,37 +9,29 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-    public class AkkaWaiter_messages_test_A_or_B : TestKit
+    public class AkkaWaiter_messages_test_A_or_B : AkkaWaiterTest
     {
-        private string _testmsgString = "testMsg";
-        private bool _testmsgBool = true;
-
-        private readonly LocalAkkaEventBusTransport _transport;
-        private readonly Task<IWaitResults> _received;
-
-        //Given_waiter_subscribed_for_one_of_two_messages
-        public AkkaWaiter_messages_test_A_or_B()
+        protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-            _transport = new LocalAkkaEventBusTransport(Sys);
-
-            _received = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(10))
-                                    .Expect<string>()
-                                    .Or<bool?>()
-                                    .Create();
+           return waiter.Expect<string>()
+                        .Or<char>()
+                        .Create();
         }
 
         [Fact]
-        public void When_publish_one_of_subscribed_message_Then_wait_is_over_And_message_received()
+        public async Task When_publish_one_of_subscribed_message_Then_wait_is_over_And_message_received()
         {
-            _transport.Publish(_testmsgBool);
-            Assert.Equal(_testmsgBool, _received.Result.All.OfType<bool>().First());
+            var msg = 'a';
+            Publish(msg);
+            await ExpectMsg(msg);
         }
 
         [Fact]
-        public void When_publish_other_of_subscribed_message_Then_wait_is_over_And_message_received()
+        public async Task When_publish_other_of_subscribed_message_Then_wait_is_over_And_message_received()
         {
-            _transport.Publish(_testmsgString);
-            Assert.Equal(_testmsgString, _received.Result.Message<string>());
+            var msg = "testMsg";
+            Publish(msg);
+            await ExpectMsg(msg);
         }
     }
 }

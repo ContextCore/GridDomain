@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -9,7 +10,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-
     public abstract class AkkaWaiterTest : IDisposable
     {
         private LocalAkkaEventBusTransport _transport;
@@ -17,7 +17,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         private Task<IWaitResults> _results;
 
         //Configure()
-        protected AkkaWaiterTest() 
+        protected AkkaWaiterTest()
         {
             _actorSystem = ActorSystem.Create("test");
             _transport = new LocalAkkaEventBusTransport(_actorSystem);
@@ -29,16 +29,16 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         public void Dispose()
         {
-            _actorSystem.Terminate().Wait();
+            _actorSystem.Terminate()
+                        .Wait();
         }
 
-        protected AkkaMessageLocalWaiter Waiter { get;  }
-        
+        protected AkkaMessageLocalWaiter Waiter { get; }
 
         protected void Publish(params object[] messages)
         {
-            foreach(var msg in messages)
-              _transport.Publish(msg);
+            foreach (var msg in messages)
+                _transport.Publish(msg);
         }
 
         protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
@@ -46,7 +46,11 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             await _results;
 
             filter = filter ?? (t => true);
-            Assert.Equal(msg, _results.Result.All.OfType<T>().FirstOrDefault(t =>filter(t)));
+            Assert.Equal(msg,
+                _results.Result.All.OfType<IMessageMetadataEnvelop>()
+                        .Select(m => m.Message)
+                        .OfType<T>()
+                        .FirstOrDefault(t => filter(t)));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class
@@ -57,11 +61,11 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             var e = Assert.ThrowsAsync<TimeoutException>(() => ExpectMsg(msg));
         }
 
-        public TimeSpan DefaultTimeout { get;} = TimeSpan.FromMilliseconds(50);
+        public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(50);
 
         protected void ExpectNoMsg()
         {
-           ExpectNoMsg<object>(null);
+            ExpectNoMsg<object>(null);
         }
     }
 }

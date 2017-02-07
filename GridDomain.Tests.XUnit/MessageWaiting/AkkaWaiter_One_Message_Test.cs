@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -51,7 +53,13 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         [Fact]
         public void Message_is_included_in_all_results()
         {
-            Assert.Contains(_testmsg, _results.Result.All);
+            Assert.Contains(_testmsg, _results.Result.All.OfType<IMessageMetadataEnvelop>().Select(m => m.Message));
+        }
+
+        [Fact]
+        public void Message_is_included_in_results_with_metadata()
+        {
+            Assert.Contains(_testmsg, _results.Result.MessageWithMetadata<string>().Message);
         }
     }
 }
