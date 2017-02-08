@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(20), Guid.NewGuid(), "12");
+            var command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12");
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
             var res = await Node.Prepare(command, commandMetadata)
@@ -49,7 +49,7 @@ namespace GridDomain.Tests.XUnit.Metadata
 
             Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId)
                                            .Name,
-                         step.Who);
+                                            step.Who);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandExecutionCreatedAnEvent, step.Why);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.PublishingEvent, step.What);
         }

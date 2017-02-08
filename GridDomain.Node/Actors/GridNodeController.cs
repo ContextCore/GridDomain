@@ -22,9 +22,7 @@ namespace GridDomain.Node.Actors
         }
       
         public class Start
-        {
-            public Type RoutingActorType;
-        }
+        {}
 
         public class Started
         {

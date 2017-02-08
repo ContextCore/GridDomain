@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.Tests.XUnit.SampleDomain;
 using Xunit;
 
@@ -17,10 +18,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         }
 
        [Fact]
-        public void Nothing_is_applied_to_aggregate_on_async_finish()
+        public async Task Nothing_is_applied_to_aggregate_on_async_finish()
         {
             var aggregate = WhenRaiseAsyncEvents();
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
             Assert.Null(aggregate.Value);
         }
 
@@ -33,11 +34,11 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 
 
        [Fact]
-        public void Then_it_results_can_be_applied_to_aggregate()
+        public async Task Then_it_results_can_be_applied_to_aggregate()
         {
             var aggregate = WhenRaiseAsyncEvents();
             var asyncEvents = aggregate.GetAsyncUncomittedEvents().First();
-            Thread.Sleep(1500);
+            await Task.Delay(1500);
             aggregate.FinishAsyncExecution(asyncEvents.InvocationId);
             Assert.Equal("42", aggregate.Value);
         }

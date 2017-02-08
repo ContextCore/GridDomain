@@ -14,11 +14,14 @@ namespace GridDomain.Tests.XUnit
         public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose)
         {
             WriteTo.XunitTestOutput(output);
+            Enrich.FromLogContext();
+            Enrich.WithThreadId();
             MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new {r.Amount,r.CurrencyCode });
             Destructure.ByTransforming<Exception>(r => new {Type = r.GetType(), r.StackTrace });
             Destructure.ByTransforming<IMessageMetadata>(r => new {r.CasuationId, r.CorrelationId });
             Destructure.ByTransforming<ICommand>(r => new {r.Id});
+            //Destructure.ByTransforming<IMessageMetadataEnvelop>(r => new {r.Id});
         }
     }
 }

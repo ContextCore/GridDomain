@@ -64,16 +64,18 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
         public void LongExecute(int sleepMiliseconds)
         {
-            Thread.Sleep(sleepMiliseconds);
-            ChangeState(sleepMiliseconds);
+            var task = Task.Delay(sleepMiliseconds)
+                           .ContinueWith(t => new SampleAggregateChangedEvent(sleepMiliseconds.ToString(), Id));
+
+            RaiseEventAsync(task);
         }
 
         private Task<DomainEvent[]> CreateEventsTask(int param, TimeSpan sleepTime)
         {
             var timeSpan = sleepTime;
-            var eventTask = Task.Run(() =>
+            var eventTask = Task.Run(async () =>
             {
-                Thread.Sleep(timeSpan);
+                await Task.Delay(timeSpan);
                 return new DomainEvent[] { new SampleAggregateChangedEvent(param.ToString(), Id)};
             });
             return eventTask;
@@ -82,9 +84,9 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         private Task<SampleAggregateChangedEvent> CreateEventTask(int param, TimeSpan sleepTime)
         {
             var timeSpan = sleepTime;
-            var eventTask = Task.Run(() =>
+            var eventTask = Task.Run(async () =>
             {
-                Thread.Sleep(timeSpan);
+                await Task.Delay(timeSpan);
                 return new SampleAggregateChangedEvent(param.ToString(), Id);
             });
             return eventTask;

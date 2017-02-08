@@ -28,16 +28,15 @@ namespace GridDomain.Tests.XUnit
 {
     public abstract class NodeTestKit : TestKit
     {
-        private NodeTestFixture Fixture { get; }
-        protected GridDomainNode Node => Fixture.Node;
-        protected ILogger LocalLogger => Fixture.LocalLogger;
+        private readonly Lazy<Task<GridDomainNode>> _lazyNode;
+        protected GridDomainNode Node => _lazyNode.Value.Result;
 
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture)
-            : base(fixture.GetConfig(), fixture.Name)
+                            : base(fixture.GetConfig(), fixture.Name)
         {
-            Fixture = fixture;
-            Fixture.System = Sys;
-            Fixture.Output = output;
+            fixture.System = Sys;
+            fixture.Output = output;
+            _lazyNode = new Lazy<Task<GridDomainNode>>(async () => await fixture.CreateNode().ConfigureAwait(false));
         }
 
         //do not kill Akka system on each test run

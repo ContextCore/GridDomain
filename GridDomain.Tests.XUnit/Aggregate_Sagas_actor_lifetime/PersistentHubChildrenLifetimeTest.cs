@@ -24,21 +24,21 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
             HubRef = actorOfAsTestActorRef.Ref;
         }
 
-        private void When_hub_creates_a_child()
+        private async Task When_hub_creates_a_child()
         {
             HubRef.Tell(Infrastructure.ChildCreateMessage);
-            Thread.Sleep(200);
+            await Task.Delay(200);
         }
 
-        private void And_it_is_not_active_until_lifetime_period_is_expired()
+        private async Task And_it_is_not_active_until_lifetime_period_is_expired()
         {
-            Thread.Sleep(3000);
+            await Task.Delay(3000);
         }
 
-        private void And_command_for_child_is_sent()
+        private async Task And_command_for_child_is_sent()
         {
             HubRef.Tell(Infrastructure.ChildActivateMessage);
-            Thread.Sleep(200);
+            await Task.Delay(200);
         }
 
         private readonly PersistentHubActor Hub;
@@ -53,13 +53,13 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
         [Fact]
         public async Task When_child_has_activity_while_living_Then_it_should_exist()
         {
-            When_hub_creates_a_child();
+            await When_hub_creates_a_child();
             var initialTimeToLife = Child.ExpiresAt;
 
             //TODO: replace sleep with dateTime manipulations via DateTimeFacade
-            Thread.Sleep(200);
+            await Task.Delay(200);
 
-            And_command_for_child_is_sent();
+            await And_command_for_child_is_sent();
             //Hub_should_contains_child()
             Assert.True(Hub.Children.ContainsKey(Infrastructure.ChildId));
             //Child_lifeTime_should_be_prolongated()
@@ -70,10 +70,10 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
         }
 
         [Fact]
-        public void PersistenceHubOnChildCreation()
+        public async Task PersistenceHubOnChildCreation()
         {
             //When_Hub_creates_a_child()
-            When_hub_creates_a_child();
+            await When_hub_creates_a_child();
             //Time_to_life_is_set_and_can_differs_by_check_time()
             Assert.True(Child.ExpiresAt - BusinessDateTime.UtcNow >= Hub.ChildMaxInactiveTime - Hub.ChildClearPeriod);
             //Hub_should_contains_child()
@@ -83,12 +83,12 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
         }
 
         [Fact]
-        public void When_child_became_inactive_too_long()
+        public async Task When_child_became_inactive_too_long()
         {
-            When_hub_creates_a_child();
+            await When_hub_creates_a_child();
             var actorToWatch = Child.Ref;
             Watch(actorToWatch);
-            And_it_is_not_active_until_lifetime_period_is_expired();
+            await And_it_is_not_active_until_lifetime_period_is_expired();
             //It_should_be_removed_from_hub()
             Assert.False(Hub.Children.ContainsKey(Infrastructure.ChildId));
             //It_should_be_terminated()
@@ -98,9 +98,9 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
         [Fact]
         public async Task When_child_revives()
         {
-            When_hub_creates_a_child();
-            And_it_is_not_active_until_lifetime_period_is_expired();
-            And_command_for_child_is_sent();
+            await When_hub_creates_a_child();
+            await And_it_is_not_active_until_lifetime_period_is_expired();
+            await And_command_for_child_is_sent();
             //It_should_be_restored_after_command_execution()
             var payload = "child ping";
             Assert.Equal(payload, (await PingChild(payload)).Payload);

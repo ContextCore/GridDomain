@@ -1,3 +1,4 @@
+using System;
 using GridDomain.Logging;
 using Quartz;
 using Serilog;
@@ -10,8 +11,11 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public LoggingSchedulerListener(ILogger log)
         {
-            _log = log.ForContext<LoggingSchedulerListener>();
+            _log = log.ForContext("ListenerHash", GetHashCode())
+                ;
+            _log.Verbose("Created scheduler listener {ListenerHash}");
         }
+
         public void JobScheduled(ITrigger trigger)
         {
             _log.Verbose("Job {JobKey} scheduled for execution {NextFireTime}", trigger.JobKey, trigger.StartTimeUtc);
@@ -89,27 +93,31 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulerStarted()
         {
-            _log.Verbose("Scheduler started");
+            _log.Verbose("Scheduler listener started at thread {Thread} with stack: {Stack}", 
+                         Environment.CurrentManagedThreadId,
+                         Environment.StackTrace);
         }
 
         public void SchedulerStarting()
         {
-            _log.Verbose("Scheduler starting");
+            _log.Verbose("Scheduler listener {ListenerHash} starting");
         }
 
         public void SchedulerShutdown()
         {
-            _log.Verbose("Scheduler shut down");
+            _log.Verbose("Scheduler listener {ListenerHash} shut down");
         }
 
         public void SchedulerShuttingdown()
         {
-            _log.Verbose("Scheduler shutting down");
+            _log.Verbose("Scheduler listener {ListenerHash} shutting down");
         }
 
         public void SchedulingDataCleared()
         {
-            _log.Verbose("Scheduling data cleared");
+            _log.Verbose("Scheduling data cleared. Thread {Thread} Stack {Stack}",
+                         Environment.CurrentManagedThreadId,
+                         Environment.StackTrace);
         }
     }
 }

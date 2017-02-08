@@ -38,7 +38,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
             var scheduleKey = AggregateActor<FutureEventsAggregate>.CreateScheduleKey(futureEventEnvelop.Id,
                 testCommand.AggregateId,
                 "");

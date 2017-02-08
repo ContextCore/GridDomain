@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.Tests.Framework;
 using Xunit;
@@ -22,11 +23,11 @@ namespace GridDomain.Tests.XUnit
         }
 
        [Fact]
-        public void When_DefaultDateTimeStrategy_is_used_Then_DateTimeNow_should_differ_in_different_calls()
+        public async Task When_DefaultDateTimeStrategy_is_used_Then_DateTimeNow_should_differ_in_different_calls()
         {
             DateTimeStrategyHolder.Current = new DefaultDateTimeStrategy();
             var firstTime = BusinessDateTime.Now;
-            Thread.Sleep(5);
+            await Task.Delay(5);
             var secondTime = BusinessDateTime.Now;
             Assert.NotEqual(firstTime,secondTime);
         }

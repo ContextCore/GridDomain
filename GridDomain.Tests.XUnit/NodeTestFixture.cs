@@ -13,26 +13,25 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using Serilog;
 using Serilog.Events;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit
 {
     public class NodeTestFixture : IDisposable
     {
-        public static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
+        private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
 
-        private GridDomainNode _node;
-
-        public GridDomainNode Node => _node ?? CreateNode().Result;
-
+        public GridDomainNode Node { get; private set; }
         public ActorSystem System { get; set; }
-        public ILogger LocalLogger { get; private set; }
+        private ILogger LocalLogger { get; set; }
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
         private bool InMemory { get; } = true;
         public string Name => AkkaConfig.Network.SystemName;
         private TimeSpan DefaultTimeout { get; }
         public ITestOutputHelper Output { get; set; }
+
         private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();
         private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
 
@@ -63,23 +62,22 @@ namespace GridDomain.Tests.XUnit
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(3);
         }
 
-        protected virtual async Task<GridDomainNode> CreateNode()
+        public async Task<GridDomainNode> CreateNode()
         {
             if (ClearDataOnStart)
                 TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
-
 
             await CreateLogger();
 
             var settings = CreateNodeSettings();
 
-            _node = new GridDomainNode(settings);
+            Node = new GridDomainNode(settings);
 
             OnNodeCreated();
-            await _node.Start();
+            await Node.Start();
             OnNodeStarted();
 
-            return _node;
+            return Node;
         }
 
         protected virtual NodeSettings CreateNodeSettings()

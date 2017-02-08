@@ -59,7 +59,6 @@ namespace GridDomain.Scheduling.Integration
         {
             try
             {
-                _logger.Debug("Scheduling job {Task}", key);
                 var job = jobFactory();
                 var trigger = TriggerBuilder.Create()
                                             .WithIdentity(job.Key.Name, job.Key.Group)
@@ -69,7 +68,6 @@ namespace GridDomain.Scheduling.Integration
                                             .Build();
 
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
-                _logger.Debug("Scheduled job {Task} at {Time}", key, fireTime);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
 
             }

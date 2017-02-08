@@ -54,7 +54,7 @@ namespace GridDomain.Tests.XUnit
         {
             var actor = Sys.ActorOf(Props.Create(() => new TestLogActor()),"testLoggingActor");
             await actor.Ask<string>("ping");
-            Thread.Sleep(500);
+            await Task.Delay(500);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace GridDomain.Tests.XUnit
         {
             var actor = Sys.ActorOf(Props.Create(() => new TestLogActor()));
             await actor.Ask<string>("ping");
-            Thread.Sleep(500);
+            await Task.Delay(500);
         }
 
 

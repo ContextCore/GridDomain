@@ -60,13 +60,6 @@ namespace GridDomain.Node
 
     public class GridDomainNode : IGridDomainNode
     {
-        private static readonly IDictionary<TransportMode, Type> RoutingActorType = new Dictionary
-            <TransportMode, Type>
-        {
-            {TransportMode.Standalone, typeof (LocalSystemBusRoutingActor)},
-            {TransportMode.Cluster, typeof (ClusterSystemRouterActor)}
-        };
-        
         private TransportMode _transportMode;
         private ActorSystem[] Systems;
 
@@ -146,10 +139,7 @@ namespace GridDomain.Node
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props,nameof(GridNodeController));
 
-            await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start
-            {
-                RoutingActorType = RoutingActorType[_transportMode]
-            });
+            await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start);
 
             Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }

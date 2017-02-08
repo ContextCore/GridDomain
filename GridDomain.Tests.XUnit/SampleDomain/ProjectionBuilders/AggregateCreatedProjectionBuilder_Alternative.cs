@@ -7,19 +7,16 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
 {
     public class AggregateCreatedProjectionBuilder_Alternative : IHandler<SampleAggregateCreatedEvent>
     {
-        private static Stopwatch watch = new Stopwatch();
+        private static readonly Stopwatch Watch = new Stopwatch();
         static AggregateCreatedProjectionBuilder_Alternative()
         {
-            watch.Start();
+            Watch.Start();
         }
-
-        private int number = 0;
-        public static int ProjectionGroupHashCode { get; set; }
 
         public Task Handle(SampleAggregateCreatedEvent msg)
         {
             msg.History.SequenceNumber = int.Parse(msg.Value);
-            msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
+            msg.History.ElapsedTicksFromAppStart = Watch.ElapsedTicks;
             return Task.CompletedTask;
         }
     }

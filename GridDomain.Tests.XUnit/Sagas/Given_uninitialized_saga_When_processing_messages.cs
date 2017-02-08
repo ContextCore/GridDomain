@@ -18,7 +18,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid(),null,Guid.NewGuid());
 
             Node.Transport.Publish(coffeMadeEvent);
-            Thread.Sleep(200);
+            await Task.Delay(200);
             var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(coffeMadeEvent.SagaId);
             Assert.Null(sagaDataAggregate.Data);
         }

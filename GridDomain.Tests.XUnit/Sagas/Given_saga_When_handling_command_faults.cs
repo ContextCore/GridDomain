@@ -41,7 +41,7 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             await Sys.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
-            Thread.Sleep(100);
+            await Task.Delay(100);
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),
                                                                 Guid.NewGuid(),
                                                                 BusinessDateTime.UtcNow,
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                       .Create()
                       .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
 
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
             var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
             //Saga_should_be_in_correct_state_after_fault_handling()
             Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaDataAggregate.Data.CurrentStateName);

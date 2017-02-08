@@ -59,7 +59,7 @@ namespace GridDomain.Node.Actors
                 knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                 SendMessageToChild(knownChild, messageWitMetadata);
 
-                Logger.Debug("Message {msg} sent to {isknown} child {id}",
+                Logger.Debug("Message {@msg} sent to {isknown} child {id}",
                               messageWitMetadata,
                               childWasCreated ? "known" : "new",
                               childId);

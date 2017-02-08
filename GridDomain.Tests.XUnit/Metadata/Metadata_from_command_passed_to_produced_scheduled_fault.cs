@@ -20,13 +20,13 @@ namespace GridDomain.Tests.XUnit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "12", 1);
+            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12", 1);
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
             var res = await Node.Prepare(command, commandMetadata)
                                 .Expect<JobFailed>()
                                 .And<IFault<RaiseScheduledDomainEventCommand>>()
-                                .Execute(TimeSpan.FromSeconds(30), false);
+                                .Execute(null, false);
 
             var schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
             var jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();

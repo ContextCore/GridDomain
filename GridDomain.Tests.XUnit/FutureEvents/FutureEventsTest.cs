@@ -25,7 +25,6 @@ namespace GridDomain.Tests.XUnit.FutureEvents
         {
             var scheduler = Node.Container.Resolve<IScheduler>();
             scheduler.Clear();
-           
         }
     }
 
