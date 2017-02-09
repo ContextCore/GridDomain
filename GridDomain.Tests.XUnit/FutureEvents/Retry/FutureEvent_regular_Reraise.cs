@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
+    [Collection("FutureEvents")]
     public class FutureEvent_regular_Reraise : NodeTestKit
     {
         public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, new ReraiseTestFixture()) { }

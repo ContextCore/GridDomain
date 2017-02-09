@@ -7,7 +7,7 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    
+    [Collection("FutureEvents")]
     public class Given_aggregate_When_raising_several_future_events_by_method_call
     {
 

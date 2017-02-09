@@ -11,8 +11,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public LoggingSchedulerListener(ILogger log)
         {
-            _log = log.ForContext("ListenerHash", GetHashCode())
-                ;
+            _log = log.ForContext("ListenerHash", GetHashCode());
             _log.Verbose("Created scheduler listener {ListenerHash}");
         }
 
@@ -93,9 +92,8 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulerStarted()
         {
-            _log.Verbose("Scheduler listener started at thread {Thread} with stack: {Stack}", 
-                         Environment.CurrentManagedThreadId,
-                         Environment.StackTrace);
+            _log.Verbose("Scheduler listener started at thread {Thread}.", 
+                         Environment.CurrentManagedThreadId);
         }
 
         public void SchedulerStarting()
@@ -115,9 +113,8 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulingDataCleared()
         {
-            _log.Verbose("Scheduling data cleared. Thread {Thread} Stack {Stack}",
-                         Environment.CurrentManagedThreadId,
-                         Environment.StackTrace);
+            _log.Verbose("Scheduling data cleared.{hash} Thread {Thread}.",
+                         GetHashCode(),Environment.CurrentManagedThreadId);
         }
     }
 }

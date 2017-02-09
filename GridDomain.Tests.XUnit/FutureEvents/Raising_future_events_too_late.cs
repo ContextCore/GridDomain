@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-
+    [Collection("FutureEvents")]
     public class Raising_future_events_too_late : FutureEventsTest
     {
         [Fact]

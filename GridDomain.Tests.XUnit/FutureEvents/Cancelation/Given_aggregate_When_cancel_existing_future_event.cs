@@ -8,6 +8,7 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 {
+    [Collection("FutureEvents")]
     public class Given_aggregate_When_cancel_existing_future_event
     {
         [Fact]

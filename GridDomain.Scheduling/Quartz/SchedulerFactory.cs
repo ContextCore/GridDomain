@@ -60,6 +60,8 @@ namespace GridDomain.Scheduling.Quartz
             var properties = _config.Settings;
 
             properties["quartz.scheduler.instanceId"] = "AUTO";
+            properties["quartz.threadPool.threadCount"] = "1";
+
             if (name != null)
             {
                 properties["quartz.scheduler.instanceName"] = name;

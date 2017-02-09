@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
@@ -18,19 +20,24 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit
 {
+
     public class NodeTestFixture : IDisposable
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
-
         public GridDomainNode Node { get; private set; }
         public ActorSystem System { get; set; }
-        private ILogger LocalLogger { get; set; }
+        protected ILogger LocalLogger { get; set; }
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
         private bool InMemory { get; } = true;
         public string Name => AkkaConfig.Network.SystemName;
         private TimeSpan DefaultTimeout { get; }
         public ITestOutputHelper Output { get; set; }
+
+        public void Dispose()
+        {
+            Node.Stop().Wait();
+        }
 
         private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();
         private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
@@ -110,10 +117,6 @@ namespace GridDomain.Tests.XUnit
         protected virtual void OnNodeCreated() {}
         protected virtual void OnNodeStarted() {}
 
-        public void Dispose()
-        {
-            Node.Stop()
-                .Wait(DefaultTimeout);
-        }
+
     }
 }

@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
+    [Collection("FutureEvents")]
     public class Reraising_future_event : FutureEventsTest
     {
         [Fact]

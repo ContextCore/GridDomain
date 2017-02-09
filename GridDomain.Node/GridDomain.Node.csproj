@@ -290,7 +290,6 @@
     <Compile Include="DomainEventsJsonSerializationExtension.cs" />
     <Compile Include="DomainEventsJsonSerializationExtensionProvider.cs" />
     <Compile Include="DomainEventsJsonSerializationExtensions.cs" />
-    <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
     <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\SagaActor.cs" />
@@ -304,9 +303,7 @@
     <Compile Include="AkkaMessaging\Routing\CreateActorRouteMessage.cs" />
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
-    <Compile Include="AkkaMessaging\Routing\ClusterSystemRouterActor.cs" />
     <Compile Include="AkkaMessaging\Routing\DublicateRoutesException.cs" />
-    <Compile Include="AkkaMessaging\Routing\LocalSystemBusRoutingActor.cs" />
     <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
     <Compile Include="AkkaMessaging\Routing\AkkaRouteBuilder.cs" />
     <Compile Include="AkkaMessaging\CannotFindCorrelationProperty.cs" />
@@ -316,7 +313,6 @@
     <Compile Include="AkkaMessaging\IncorrectTypeOfCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\InvalidHandlerType.cs" />
     <Compile Include="Actors\MessageHandlingActor.cs" />
-    <Compile Include="Actors\BusRoutingActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />
@@ -324,11 +320,6 @@
     <Compile Include="Configuration\Akka\Hocon\InMemoryJournalConfig.cs" />
     <Compile Include="Configuration\Composition\CustomContainerConfiguration.cs" />
     <Compile Include="DefaultMessageLoggerHandler.cs" />
-    <Compile Include="EventChronicles\EventsReplayActor.cs" />
-    <Compile Include="EventChronicles\IEventsChronicle.cs" />
-    <Compile Include="EventChronicles\Play.cs" />
-    <Compile Include="EventChronicles\PlayFinished.cs" />
-    <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
     <Compile Include="DomainEventsJsonAkkaSerializer.cs" />
@@ -358,7 +349,6 @@
     <Compile Include="Configuration\Composition\EmptyContainerConfiguration.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
-    <Compile Include="ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlAzureRetriableExceptionDetector.cs" />

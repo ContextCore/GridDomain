@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
+    [Collection("FutureEvents")]
     public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest
     {
         [Fact]

@@ -11,12 +11,14 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
+using Serilog;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
+    [Collection("FutureEvents")]
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
@@ -33,14 +35,26 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 //TwoFastRetriesSettings();
                 settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, 
                                                                             TimeSpan.FromMilliseconds(10), 
-                                                                            new StopOnTestExceptionPolicy());
+                                                                            new StopOnTestExceptionPolicy(LocalLogger));
                 return settings;
             }
 
             class StopOnTestExceptionPolicy : IExceptionPolicy
             {
+                private readonly ILogger _log;
+
+                public StopOnTestExceptionPolicy(ILogger log)
+                {
+                    _log = log;
+                }
+
                 public bool ShouldContinue(Exception ex)
                 {
+                    _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
+                                      GetHashCode(),
+                                      Thread.CurrentThread.ManagedThreadId,
+                                      Environment.CurrentManagedThreadId);
+
                     _policyCallNumber++;
                     _policyCallNumberChanged.SetResult(1);
                     var domainException = ex.UnwrapSingle();

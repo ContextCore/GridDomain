@@ -139,7 +139,7 @@ namespace GridDomain.Node
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props,nameof(GridNodeController));
 
-            await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start);
+            await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
 
             Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
