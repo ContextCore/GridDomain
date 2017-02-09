@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    [Collection("FutureEvents")]
+    
     public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest
     {
         [Fact]

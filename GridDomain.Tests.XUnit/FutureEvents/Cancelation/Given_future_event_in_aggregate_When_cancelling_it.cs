@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 {
-    [Collection("FutureEvents")]
+    
     public class Given_future_event_in_aggregate_When_cancelling_it : FutureEventsTest
     {
         [Fact]

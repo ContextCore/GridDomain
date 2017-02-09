@@ -14,7 +14,7 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling 
 {
-    public class QuartzSchedulerConfiguration : IContainerConfiguration
+    public class QuartzSchedulerConfiguration: IContainerConfiguration
     {
         private readonly IQuartzConfig _quartzConfig;
 
@@ -25,15 +25,20 @@ namespace GridDomain.Scheduling
 
         public void Register(IUnityContainer container)
         {
+            container.RegisterType<QuartzSchedulerFactory>();
+            container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(),
+                                               new InjectionFactory(x =>
+                                                        { var factory = x.Resolve<QuartzSchedulerFactory>();
+                                                          factory.Initialize(_quartzConfig.Settings);
+                                                          factory.GetScheduler();
+                                                          return factory.GetScheduler(_quartzConfig.Name);
+                                                        }
+                                                        ));
 
-            container.RegisterType<ISchedulerFactory, SchedulerFactory>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IScheduler>(new InjectionFactory(x => x.Resolve<ISchedulerFactory>()
-                                                                          .GetScheduler("FutureEventsScheduler")));
-
-            container.RegisterInstance(_quartzConfig);
             container.RegisterType<IQuartzLogger, QuartzLogger>();
             container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();
+            container.RegisterInstance<IQuartzConfig>(_quartzConfig);
 
             container.RegisterInstance<IRetrySettings>(new InMemoryRetrySettings());
             container.RegisterType<IRetryStrategy, ExponentialBackoffRetryStrategy>();

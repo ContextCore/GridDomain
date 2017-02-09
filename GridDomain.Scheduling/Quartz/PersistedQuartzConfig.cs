@@ -22,5 +22,7 @@ namespace GridDomain.Scheduling.Quartz
             ["quartz.dataSource.default.provider"] = "SqlServer-20",
             ["quartz.scheduler.instanceId"] = "AUTO"
         };
+
+        public string Name { get; }
     }
 }

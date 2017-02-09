@@ -6,5 +6,6 @@ namespace GridDomain.Scheduling.Quartz
     public interface IQuartzConfig
     {
         NameValueCollection Settings { get; }
+        string Name { get; }
     }
 }

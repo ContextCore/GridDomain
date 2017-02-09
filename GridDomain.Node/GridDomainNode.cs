@@ -15,49 +15,20 @@ using Akka.Serialization;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
-using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Scheduling.Quartz;
-using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
-using Serilog;
 
 namespace GridDomain.Node
 {
-    
-    public class NodeSettings
-    {
-        public IContainerConfiguration Configuration { get; } = new EmptyContainerConfiguration();
-        public IMessageRouteMap MessageRouting { get; } = new EmptyRouteMap();
-        public Func<ActorSystem[]> ActorSystemFactory { get; } = () => new[] {ActorSystem.Create("defaultSystem")};
-
-        public ILogger Log { get; set; } = new DefaultLoggerConfiguration().CreateLogger()
-                                                                           .ForContext<GridDomainNode>();
-        public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(10);
-        public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig();
-        public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings();
-
-        public NodeSettings(IContainerConfiguration configuration=null,
-                            IMessageRouteMap messageRouting = null,
-                            Func<ActorSystem[]> actorSystemFactory = null)
-        {
-            ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
-            MessageRouting = messageRouting ?? MessageRouting;
-            Configuration = configuration ?? Configuration;
-        }
-    }
-
-
     public class GridDomainNode : IGridDomainNode
     {
         private TransportMode _transportMode;

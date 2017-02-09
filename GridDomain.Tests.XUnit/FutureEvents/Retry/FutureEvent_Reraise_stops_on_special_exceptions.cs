@@ -18,7 +18,6 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Retry
 {
-    [Collection("FutureEvents")]
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
