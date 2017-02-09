@@ -25,13 +25,21 @@ namespace GridDomain.Scheduling
 
         public void Register(IUnityContainer container)
         {
+
             container.RegisterType<QuartzSchedulerFactory>();
+
+            //hard initialization to get named instance of IScheduler
+            //Quartz keeps static list of all schedulers so we need to be sure 
+            //our current scheduler is created from scratch with specified name
+
             container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(),
                                                new InjectionFactory(x =>
-                                                        { var factory = x.Resolve<QuartzSchedulerFactory>();
+                                                       {
+                                                          var factory = x.Resolve<QuartzSchedulerFactory>();
                                                           factory.Initialize(_quartzConfig.Settings);
-                                                          factory.GetScheduler();
-                                                          return factory.GetScheduler(_quartzConfig.Name);
+                                                          var scheduler = factory.GetScheduler();
+                                                          scheduler.Start();
+                                                          return scheduler;
                                                         }
                                                         ));
 
