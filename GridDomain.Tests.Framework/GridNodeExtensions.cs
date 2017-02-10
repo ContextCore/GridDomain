@@ -28,10 +28,27 @@ namespace GridDomain.Tests.Framework
                return await repo.LoadAggregate<TAggregate>(id);
            }
        }
-       
-       public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
-       {
-           await node.System.SaveToJournal<TAggregate>(id, messages);
-       }
+    
+        public static async Task<object[]> LoadFromJournal(this GridDomainNode node, string id)
+        {
+            using (var repo = new ActorSystemJournalRepository(node.System))
+            {
+                return await repo.Load(id);
+            }
+        }
+
+        public static async Task SaveToJournal(this GridDomainNode node, string id, params object[] messages)
+        {
+            using (var repo = new ActorSystemJournalRepository(node.System, false))
+            {
+                await repo.Save(id, messages);
+            }
+        }
+
+        public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
+        {
+            var name = AggregateActorName.New<TAggregate>(id).Name;
+            await node.SaveToJournal(name, messages);
+        }
     }
 }

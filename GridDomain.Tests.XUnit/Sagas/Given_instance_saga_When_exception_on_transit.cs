@@ -27,7 +27,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                            };
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
-            await Sys.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
+            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
             var results = await Node.NewDebugWaiter(TimeSpan.FromDays(1))
                                     .Expect<IFault<CoffeMakeFailedEvent>>()

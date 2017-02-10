@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -8,7 +9,9 @@ using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
+using GridDomain.Tests.XUnit.EventsUpgrade;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
@@ -22,35 +25,30 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
     {
        
         [Fact]
-        public void Future_event_is_upgraded_by_event_adapter()
+        public async Task Future_event_is_upgraded_by_event_adapter()
         {
             var saveOldEventCommand = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true);
 
-            Node.Prepare(saveOldEventCommand)
-                .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
-                .Execute()
-                .Wait();
+            await Node.Prepare(saveOldEventCommand)
+                      .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
+                      .Execute();
 
-            Node.NewWaiter()
-                .Expect<BalanceChangedEvent_V1>()
-                .Create()
-                .Wait();
+            await Node.NewWaiter()
+                      .Expect<BalanceChangedEvent_V1>()
+                      .Create();
         }
 
-        class BalanceChanged_eventdapter1 : DomainEventAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
-        {
-            public override IEnumerable<BalanceChangedEvent_V1> ConvertEvent(BalanceChangedEvent_V0 evt)
-            {
-                yield return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
-            }
-        }
+   
 
-        class EventAdaptersFixture : NodeTestFixture
+        class EventAdaptersFixture : BalanceFixture
         {
             public EventAdaptersFixture()
             {
-                Add(CreateConfiguration());
-                Add(new BalanceRouteMap());
+                Add(new CustomContainerConfiguration(
+                    c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
+                    c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
+                            new PersistentChildsRecycleConfiguration(TimeSpan.FromMilliseconds(100),
+                                TimeSpan.FromMilliseconds(50)))));
             }
 
             protected override void OnNodeCreated()
@@ -58,16 +56,12 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                 Node.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
             }
 
-            private IContainerConfiguration CreateConfiguration()
+            class BalanceChanged_eventdapter1 : DomainEventAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
             {
-                return
-                    new CustomContainerConfiguration(
-                        c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>(),
-                        c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
-                        c =>
-                            c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                                new PersistentChildsRecycleConfiguration(TimeSpan.FromMilliseconds(100),
-                                    TimeSpan.FromMilliseconds(50))));
+                public override IEnumerable<BalanceChangedEvent_V1> ConvertEvent(BalanceChangedEvent_V0 evt)
+                {
+                    yield return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
+                }
             }
         }
 

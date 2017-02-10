@@ -38,8 +38,5 @@ namespace GridDomain.Tests.XUnit
             fixture.Output = output;
             _lazyNode = new Lazy<Task<GridDomainNode>>(fixture.CreateNode);
         }
-        
-        //do not kill Akka system on each test run
-       // protected override void AfterAll() {}
     }
 }

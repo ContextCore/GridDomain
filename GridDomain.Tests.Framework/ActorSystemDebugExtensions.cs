@@ -37,26 +37,6 @@ namespace GridDomain.Tests.Framework
             return await system.ActorSelection(actorPath).ResolveOne(timeout ?? TimeSpan.FromSeconds(3));
         }
 
-        public static async Task<object[]> LoadFromJournal(this ActorSystem system,string id)
-        {
-            using (var repo = new ActorSystemJournalRepository(system))
-            {
-                return await repo.Load(id);
-            }
-        }
-
-        public static async Task SaveToJournal(this ActorSystem system, string id, params object[] messages)
-        {
-            using (var repo = new ActorSystemJournalRepository(system))
-            {
-                await repo.Save(id, messages);
-            }
-        }
-
-        public static async Task SaveToJournal<TAggregate>(this ActorSystem system, Guid id, params DomainEvent[] messages) where TAggregate : AggregateBase
-        {
-            var name = AggregateActorName.New<TAggregate>(id).Name;
-            await system.SaveToJournal(name, messages);
-        }
+     
     }
 }

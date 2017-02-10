@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -28,7 +29,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
     public class ActorSystemJournalRepository : IRepository<object>
     {
-        private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(1000);
+        private static readonly TimeSpan Timeout = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(10);
         private readonly ActorSystem _system;
 
         public ActorSystemJournalRepository(ActorSystem config, bool requireJsonSerializer = true)
@@ -51,10 +52,19 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         public async Task Save(string id, params object[] messages)
         {
             var persistActor = CreateEventsPersistActor(id);
+            try
+            {
+                foreach (var o in messages)
+                    await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout);
+            }
+            finally
+            {
+                await TerminateActor(persistActor);
+            }
+        }
 
-            foreach (var o in messages)
-                await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout);
-
+        private async Task TerminateActor(IActorRef persistActor)
+        {
             var inbox = Inbox.Create(_system);
 
             inbox.Watch(persistActor);
@@ -63,24 +73,30 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
             if (!(terminated is Terminated))
                 throw new InvalidOperationException();
-
         }
-
+        
         private IActorRef CreateEventsPersistActor(string id)
         {
             var props = Props.Create(() => new EventsRepositoryActor(id));
-            var persistActor = _system.ActorOf(props, Guid.NewGuid().ToString());
+            var persistActor = _system.ActorOf(props, "Test_events_persist_actor_"+ Guid.NewGuid());
             return persistActor;
         }
 
         public async Task<object[]> Load(string id)
         {
             var persistActor = CreateEventsPersistActor(id);
-            //load actor will notify caller automatically when it will load all events
-            var msg =  await persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(),Timeout);
-            persistActor.Tell(PoisonPill.Instance);
-            return msg.Events.Cast<DomainEvent>().ToArray();
-       }
+            try
+            {
+                //load actor will notify caller automatically when it will load all events
+                var msg = await persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(), Timeout);
+                return msg.Events.Cast<DomainEvent>()
+                          .ToArray();
+            }
+            finally
+            {
+                await TerminateActor(persistActor);
+            }
+        }
 
         public void Dispose()
         {

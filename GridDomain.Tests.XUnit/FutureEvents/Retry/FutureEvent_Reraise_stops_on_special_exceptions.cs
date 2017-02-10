@@ -34,7 +34,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 //TwoFastRetriesSettings();
                 settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, 
                                                                             TimeSpan.FromMilliseconds(10), 
-                                                                            new StopOnTestExceptionPolicy(LocalLogger));
+                                                                            new StopOnTestExceptionPolicy(Logger));
                 return settings;
             }
 

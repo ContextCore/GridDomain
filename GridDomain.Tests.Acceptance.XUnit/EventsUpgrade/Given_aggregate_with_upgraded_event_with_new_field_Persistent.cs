@@ -14,6 +14,7 @@ using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Microsoft.Practices.Unity;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
@@ -21,36 +22,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
    
     public class Given_aggregate_with_upgraded_event_with_new_field_Persistent: Given_aggregate_with_upgraded_event_with_new_field
     {
-
-        class Fixture : NodeTestFixture
+        public Given_aggregate_with_upgraded_event_with_new_field_Persistent(ITestOutputHelper helper):
+            base(helper, new EventsUpgradeFixture {InMemory = false})
         {
-            public Fixture() 
-            {
-                Add(new CustomContainerConfiguration(
-                    c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
-                Add(new BalanceRouteMap());
-                InMemory = false;
-            }
+            
         }
-
-        //protected override async Task SaveToJournal<TAggregate>(Guid id, params DomainEvent[] messages)
-        //{
-        //    using (var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))
-        //    {
-        //        var persistId = AggregateActorName.New<BalanceAggregate>(id).Name;
-        //        await eventsRepo.Save(persistId, messages);
-        //    }
-        //}
-        
-
-        //public override T LoadAggregate<T>(Guid id)
-        //{
-        //    var eventsRepo = ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(),Node.EventsAdaptersCatalog);
-        //    using (var repo = new AggregateRepository(eventsRepo))
-        //    {
-        //       return repo.LoadAggregate<T>(id);
-        //    }
-        //}
-        public Given_aggregate_with_upgraded_event_with_new_field_Persistent(ITestOutputHelper output) : base(output) {}
     }
 }

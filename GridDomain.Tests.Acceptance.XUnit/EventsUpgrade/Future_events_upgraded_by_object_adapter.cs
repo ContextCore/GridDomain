@@ -3,15 +3,20 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
+using GridDomain.Tests.XUnit.EventsUpgrade;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.XUnit.FutureEvents;
 using Microsoft.Practices.Unity;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,37 +27,44 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
         [Fact]
         public async Task Future_event_is_upgraded_by_json_adapter()
         {
-            var saveOldEventCommand = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true);
+            var res = await Node.Prepare(new ChangeBalanceInFuture(1, 
+                                                         Guid.NewGuid(), 
+                                                         BusinessDateTime.Now.AddSeconds(0.5),
+                                                         false))
+                                .Expect<BalanceChangedEvent_V1>()
+                                .Execute();
 
-            await Node.Prepare(saveOldEventCommand)
-                      .Expect<FutureEventScheduledEvent>()
-                      .Execute();
-
-            await Node.NewWaiter().Expect<BalanceChangedEvent_V1>().Create();
+            Assert.Equal(101, res.Message<BalanceChangedEvent_V1>().AmountChange);
         }
 
-        class FutureEventsAdapterFixture : FutureEventsFixture
+        class FutureEventsAdapterFixture : BalanceFixture
         {
             public FutureEventsAdapterFixture()
             {
-                Add(new CustomContainerConfiguration(
-                    c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>(),
-                    c =>
-                        c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                            new PersistentChildsRecycleConfiguration(TimeSpan.FromMilliseconds(100),
-                                TimeSpan.FromMilliseconds(50)))));
-                Add(new BalanceRouteMap());
+                Add(
+                    new CustomContainerConfiguration(
+                        c =>
+                            c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
+                                new PersistentChildsRecycleConfiguration(TimeSpan.FromMilliseconds(100),
+                                    TimeSpan.FromMilliseconds(50)))));
+
+                LogLevel = LogEventLevel.Information;
             }
 
             protected override void OnNodeCreated()
             {
-                base.OnNodeCreated();
-                Node.EventsAdaptersCatalog.Register(new BalanceChanged_objectAdapter1());
+                Node.EventsAdaptersCatalog.Register(new IncreaseBy100Adapter());
+            }
+            class IncreaseBy100Adapter : ObjectAdapter<decimal, decimal>
+            {
+                public override decimal Convert(decimal evt)
+                {
+                    return evt + 100;
+                }
             }
         }
 
-      
-
-        public Future_events_upgraded_by_object_adapter(ITestOutputHelper output) : base(output, new FutureEventsAdapterFixture()) {}
+        public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
+            : base(output, new FutureEventsAdapterFixture()) {}
     }
 }
