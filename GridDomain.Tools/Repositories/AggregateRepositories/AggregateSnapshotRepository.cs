@@ -28,11 +28,11 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             _writeString = akkaWriteDbConnectionString;
         }
 
-        public AggregateVersion<T>[] Load<T>(Guid id) where T:IAggregate
+        public async Task<AggregateVersion<T>[]> Load<T>(Guid id) where T:IAggregate
         {
             var serializer = new DomainSerializer();
             using (var repo = new RawSnapshotsRepository(_writeString))
-                return repo.Load(AggregateActorName.New<T>(id).Name)
+                return (await repo.Load(AggregateActorName.New<T>(id).Name))
                            .Select(s =>
                            {
                                var memento = (IMemento)serializer.FromBinary(s.Snapshot, typeof(IMemento));

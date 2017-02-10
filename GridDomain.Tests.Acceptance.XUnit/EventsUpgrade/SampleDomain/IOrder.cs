@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade.SampleDomain
 {
     internal interface IOrder
     {

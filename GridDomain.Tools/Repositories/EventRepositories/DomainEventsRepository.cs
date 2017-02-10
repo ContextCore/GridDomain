@@ -40,10 +40,10 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             await  _rawDataRepo.Save(id, journalEntries.ToArray());
         }
 
-        public DomainEvent[] Load(string id)
+        public async Task<DomainEvent[]> Load(string id)
         {
             return
-                _rawDataRepo.Load(id)
+                (await _rawDataRepo.Load(id))
                             .Select(d =>
                             {
                                 try

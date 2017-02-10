@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade.SampleDomain
 {
     class BookOrder_V2 : IOrder
     {

@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Xunit;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GridDomain.Tests.XUnit")]
+[assembly: AssemblyTitle("GridDomain.Tests.Acceptance.XUnit")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("GridDomain.Tests.XUnit")]
+[assembly: AssemblyProduct("GridDomain.Tests.Acceptance.XUnit")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +20,7 @@ using Xunit;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("46cc4be2-93be-4807-9b1a-7a10dfea29af")]
+[assembly: Guid("c2552609-5e29-4187-8d6a-e2f5d82bff35")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,7 +34,3 @@ using Xunit;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance.XUnit")]
-//[assembly: CollectionBehavior(MaxParallelThreads = 2)]
-//[assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly,DisableTestParallelization = true)]
-

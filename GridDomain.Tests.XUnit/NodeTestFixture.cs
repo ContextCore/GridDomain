@@ -29,7 +29,7 @@ namespace GridDomain.Tests.XUnit
         protected ILogger LocalLogger { get; set; }
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
-        private bool InMemory { get; } = true;
+        protected bool InMemory { get; set; } = true;
         public string Name => AkkaConfig.Network.SystemName;
         private TimeSpan DefaultTimeout { get; }
         public ITestOutputHelper Output { get; set; }

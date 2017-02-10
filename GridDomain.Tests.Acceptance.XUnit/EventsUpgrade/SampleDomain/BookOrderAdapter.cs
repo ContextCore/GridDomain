@@ -1,6 +1,6 @@
 using GridDomain.EventSourcing.Adapters;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
+namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade.SampleDomain
 {
     class BookOrderAdapter : ObjectAdapter<BookOrder_V1, BookOrder_V2>
     {

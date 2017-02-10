@@ -167,6 +167,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorSystemDebugExtensions.cs" />
     <Compile Include="AggregateCommandsTest.cs" />
     <Compile Include="AggregateDebugExtensions.cs" />
     <Compile Include="Any.cs" />

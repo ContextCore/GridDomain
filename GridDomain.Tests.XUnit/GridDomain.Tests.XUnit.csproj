@@ -168,7 +168,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorSystemDebugExtensions.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\AggregateHub_children_lifetime_tests.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\IPersistentActorTestsInfrastructure.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubFixture.cs" />

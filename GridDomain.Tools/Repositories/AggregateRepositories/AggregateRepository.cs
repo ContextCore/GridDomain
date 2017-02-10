@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
@@ -28,11 +29,11 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             aggr.ClearUncommittedEvents();
         }
 
-        public T LoadAggregate<T>(Guid id) where T : AggregateBase
+        public async Task<T> LoadAggregate<T>(Guid id) where T : AggregateBase
         {
             var agr = Aggregate.Empty<T>(id);
             var persistId = AggregateActorName.New<T>(id).ToString();
-            var events = _eventRepository.Load(persistId);
+            var events = await _eventRepository.Load(persistId);
             foreach(var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e)))
                 ((IAggregate)agr).ApplyEvent(e);
             return agr;

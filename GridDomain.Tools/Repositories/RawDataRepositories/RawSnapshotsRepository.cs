@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,13 +36,13 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public SnapshotItem[] Load(string id)
+        public async Task<SnapshotItem[]> Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
-                return context.Snapshots.Where(j => j.PersistenceId == id)
+                return await context.Snapshots.Where(j => j.PersistenceId == id)
                               .OrderBy(i => i.SequenceNr)
-                              .ToArray();
+                              .ToArrayAsync();
             }
         }
 

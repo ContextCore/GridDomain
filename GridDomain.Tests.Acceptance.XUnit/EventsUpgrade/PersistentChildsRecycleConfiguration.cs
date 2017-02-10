@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Node.Actors;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade
+namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 {
     internal class PersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
     {

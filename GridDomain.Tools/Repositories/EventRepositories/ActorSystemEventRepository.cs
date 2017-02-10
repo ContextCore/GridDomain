@@ -9,15 +9,32 @@ using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tools.Repositories.EventRepositories
 {
-    public class ActorSystemEventRepository : IRepository<DomainEvent>
+    public class ActorSystemEventRepository : ActorSystemJournalRepository,
+                                              IRepository<DomainEvent>
+    {
+        public ActorSystemEventRepository(ActorSystem config) : base(config) {}
+        public Task Save(string id, params DomainEvent[] messages)
+        {
+            return base.Save(id, messages);
+        }
+
+        public async Task<DomainEvent[]> Load(string id)
+        {
+            var objects = await base.Load(id);
+            return objects.Cast<DomainEvent>()
+                          .ToArray();
+        }
+    }
+
+    public class ActorSystemJournalRepository : IRepository<object>
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(1000);
         private readonly ActorSystem _system;
 
-        public ActorSystemEventRepository(ActorSystem config)
+        public ActorSystemJournalRepository(ActorSystem config, bool requireJsonSerializer = true)
         {
             var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(config);
-            if (ext == null)
+            if (ext == null && requireJsonSerializer)
                 throw new ArgumentNullException(nameof(ext),
                     $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
@@ -28,19 +45,25 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         {
             var actorSystem = conf.CreateSystem();
             actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);
-
             return new ActorSystemEventRepository(actorSystem);
         }
 
-
-        public async Task Save(string id, params DomainEvent[] messages)
+        public async Task Save(string id, params object[] messages)
         {
             var persistActor = CreateEventsPersistActor(id);
 
             foreach (var o in messages)
                 await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout);
 
+            var inbox = Inbox.Create(_system);
+
+            inbox.Watch(persistActor);
             persistActor.Tell(PoisonPill.Instance);
+            var terminated = await inbox.ReceiveAsync();
+
+            if (!(terminated is Terminated))
+                throw new InvalidOperationException();
+
         }
 
         private IActorRef CreateEventsPersistActor(string id)
@@ -50,18 +73,17 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             return persistActor;
         }
 
-        public DomainEvent[] Load(string id)
+        public async Task<object[]> Load(string id)
         {
             var persistActor = CreateEventsPersistActor(id);
             //load actor will notify caller automatically when it will load all events
-            var msg = persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(),Timeout).Result;
+            var msg =  await persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(),Timeout);
             persistActor.Tell(PoisonPill.Instance);
             return msg.Events.Cast<DomainEvent>().ToArray();
        }
 
         public void Dispose()
         {
-
         }
     }
 }
