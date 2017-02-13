@@ -127,14 +127,4 @@ namespace GridDomain.Node.Actors
             Logger.Debug("{ActorHub} was stopped", Self.Path);
         }
     }
-
-    public class ShutdownChild
-    {
-        public ShutdownChild(Guid childId)
-        {
-            ChildId = childId;
-        }
-
-        public Guid ChildId { get; }
-    }
 }

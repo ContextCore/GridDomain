@@ -228,7 +228,9 @@
     <Compile Include="Actors\CannotGetSagaFromMessage.cs" />
     <Compile Include="Actors\CommandPipe\Initialize.cs" />
     <Compile Include="Actors\CommandPipe\Initialized.cs" />
+    <Compile Include="Actors\CommandPipe\ISagaTransitCompleted.cs" />
     <Compile Include="Actors\CommandPipe\SagaTransited.cs" />
+    <Compile Include="Actors\CommandPipe\SagaTransitFault.cs" />
     <Compile Include="Actors\HandlerExecuted.cs" />
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExeption.cs" />
     <Compile Include="Actors\CommandPipe\CommandExecutionActor.cs" />
@@ -263,6 +265,7 @@
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\MessageProcessPolicy.cs" />
     <Compile Include="Actors\CommandPipe\TypeCatalog.cs" />
     <Compile Include="Actors\SagaActorLiterals.cs" />
+    <Compile Include="Actors\ShutdownChild.cs" />
     <Compile Include="Actors\SnapshotsPersistencePolicy.cs" />
     <Compile Include="AkkaCommandPipeExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />

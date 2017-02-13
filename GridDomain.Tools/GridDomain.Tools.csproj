@@ -96,6 +96,7 @@
   <ItemGroup>
     <Compile Include="Repositories\AggregateRepositories\AggregateSnapshotRepository.cs" />
     <Compile Include="Repositories\AggregateRepositories\AggregateVersion.cs" />
+    <Compile Include="Repositories\EventRepositories\ActorSystemJournalRepository.cs" />
     <Compile Include="Repositories\EventRepositories\DomainEventsRepository.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\PersistanceFailureException.cs" />

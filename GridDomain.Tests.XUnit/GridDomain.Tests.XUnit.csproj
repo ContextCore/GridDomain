@@ -217,6 +217,7 @@
     <Compile Include="DependencyInjection\NamedDependencies\NamedActorB.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\SomeService.cs" />
     <Compile Include="EventsUpgrade\BalanceChangedDomainEventAdapter1.cs" />
+    <Compile Include="EventsUpgrade\BalanceFixture.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater1.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater2.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater3.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_aggregate_When_cancel_not_existing_future_event.cs" />
     <Compile Include="FutureEvents\Cancelation\Given_future_event_in_aggregate_When_cancelling_it.cs" />
+    <Compile Include="FutureEvents\FutureEventsFixture.cs" />
     <Compile Include="FutureEvents\FutureEventsTest.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_commands.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_future_event_by_methods.cs" />
@@ -271,7 +273,7 @@
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
-    <Compile Include="LoggingActor.cs" />
+    <Compile Include="SerilogLoggerActor.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
@@ -370,6 +372,7 @@
     <Compile Include="SampleDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder_Alternative.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\EvenFaultyMessageHandler.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\FaultyCreateProjectionBuilder.cs" />
+    <Compile Include="SampleDomain\ProjectionBuilders\FaultyProjectionBuilderException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\MessageHandleException.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\OddFaultyMessageHandler.cs" />
     <Compile Include="SampleDomain\ProjectionBuilders\SampleProjectionBuilder.cs" />
@@ -382,7 +385,7 @@
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_sagaId_and_createdTime.cs" />
-    <Compile Include="Serialization\Instance_sagas_should_be_serialize_and_deserialize.cs" />
+    <Compile Include="Serialization\Saga_state_aggregate_should_be_serializable.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />

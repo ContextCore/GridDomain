@@ -7,33 +7,19 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.EventsUpgrade;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
 using GridDomain.Tests.XUnit.FutureEvents;
-using Microsoft.Practices.Unity;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 {
-    public static class TestFixtureExtensions
-    {
-        public static void InitFastRecycle(this NodeTestFixture fixture, TimeSpan? clearPeriod = null, TimeSpan? maxInactiveTime = null)
-        {
-            fixture.Add(new CustomContainerConfiguration(
-            c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                    new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(100),
-                        maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
-        }
-    }
     public class Future_events_upgraded_by_object_adapter : NodeTestKit
     {
         [Fact]

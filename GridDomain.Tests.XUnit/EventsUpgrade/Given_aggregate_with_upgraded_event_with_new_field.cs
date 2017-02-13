@@ -3,10 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
-using GridDomain.Node;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
@@ -54,22 +51,6 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
             {
                 Node.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
             }
-        }
-    }
-
-    public class BalanceFixture : NodeTestFixture
-    {
-        public BalanceFixture()
-        {
-            Add(new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
-            Add(new BalanceRouteMap());
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
-            var nodeSettings = base.CreateNodeSettings();
-            nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(1,null,new NeverRetryExceptionPolicy());
-            return nodeSettings;
         }
     }
 }

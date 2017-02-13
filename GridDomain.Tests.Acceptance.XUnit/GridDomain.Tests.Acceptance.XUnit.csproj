@@ -120,13 +120,14 @@
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Given_aggregate_with_upgraded_event_with_new_field_Persistent.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal.cs" />
-    <Compile Include="EventsUpgrade\GridNode_upgrade_events_by_json_adapters_when_loading_aggregate.cs" />
+    <Compile Include="EventsUpgrade\GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BookOrderAdapter.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BookOrder_V1.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\BookOrder_V2.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\EventA.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\EventB.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\IOrder.cs" />
+    <Compile Include="EventsUpgrade\TestFixtureExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

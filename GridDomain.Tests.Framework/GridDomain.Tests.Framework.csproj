@@ -194,7 +194,7 @@
     <Compile Include="GuidComparer.cs" />
     <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="LoggerConfigurationXunitTestOutputExtensions.cs" />
-    <Compile Include="LoggingConfigurationExtensions.cs" />
+    <Compile Include="AutoTestLoggerConfiguration.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />
     <Compile Include="PersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -204,7 +204,7 @@
     <Compile Include="TestDateTimeStrategy.cs" />
     <Compile Include="TestDbTools.cs" />
     <Compile Include="TypesDeserializationTest.cs" />
-    <Compile Include="XUnitTestOutput.cs" />
+    <Compile Include="XUnitTestOutputSink.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

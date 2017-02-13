@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
@@ -11,9 +10,5 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
         {
             throw new FaultyProjectionBuilderException();
         }
-    }
-
-    public class FaultyProjectionBuilderException : Exception
-    {
     }
 }

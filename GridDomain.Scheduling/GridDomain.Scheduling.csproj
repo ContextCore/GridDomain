@@ -154,6 +154,7 @@
     <Compile Include="Quartz\Retry\InMemoryRetrySettings.cs" />
     <Compile Include="Quartz\Retry\IRetrySettings.cs" />
     <Compile Include="Quartz\Retry\IRetryStrategy.cs" />
+    <Compile Include="Quartz\Retry\NeverRetryExceptionPolicy.cs" />
     <Compile Include="Quartz\Retry\RetryJobListener.cs" />
     <Compile Include="QuartzSchedulerConfiguration.cs" />
     <Compile Include="Integration\JobCompleted.cs" />
@@ -167,7 +168,7 @@
     <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\PersistedQuartzConfig.cs" />
     <Compile Include="Quartz\Logging\QuartzLogger.cs" />
-    <Compile Include="Quartz\SchedulerFactory.cs" />
+    <Compile Include="Quartz\QuartzSchedulerFactory.cs" />
     <Compile Include="Integration\QuartzJob.cs" />
     <Compile Include="Akka\Messages\Unschedule.cs" />
     <Compile Include="Integration\SchedulingActor.cs" />
