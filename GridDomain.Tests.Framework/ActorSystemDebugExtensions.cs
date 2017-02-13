@@ -17,12 +17,12 @@ namespace GridDomain.Tests.Framework
         public static async Task<IActorRef> LookupAggregateActor<T>(this ActorSystem system, Guid id) where T : IAggregate
         {
             var name = AggregateActorName.New<T>(id).Name;
-            return await system.ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}/{name}");
+            return await system.ResolveActor($"akka://LocalSystem/user/{typeof(T).Name}_Hub/{name}");
         }
 
-        public static async Task<IActorRef> LookupAggregateHubActor<T>(this ActorSystem system, string pooled) where T : IAggregate
+        public static async Task<IActorRef> LookupAggregateHubActor<T>(this ActorSystem system) where T : IAggregate
         {
-            return await system.ResolveActor($"akka://LocalSystem/user/Aggregate_{typeof(T).Name}");
+            return await system.ResolveActor($"akka://LocalSystem/user/{typeof(T).Name}_Hub");
         }
 
         public static async Task<IActorRef> LookupSagaActor<TSaga, TData>(this ActorSystem system, Guid id) where TData : ISagaState

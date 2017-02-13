@@ -9,4 +9,12 @@ namespace GridDomain.Scheduling.Quartz.Retry
             return true;
         }
     }
+
+    public class NeverRetryExceptionPolicy : IExceptionPolicy
+    {
+        public bool ShouldContinue(Exception ex)
+        {
+            return false;
+        }
+    }
 }

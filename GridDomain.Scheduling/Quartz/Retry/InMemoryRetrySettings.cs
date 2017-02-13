@@ -14,7 +14,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
             ErrorActions = errorActions;
             MaxRetries = maxRetries;
             BackoffBaseInterval = baseInterval ?? TimeSpan.FromMinutes(20);
-            ErrorActions = errorActions ?? new AlwaysRetryExceptionPolicy();
+            ErrorActions = errorActions ?? new NeverRetryExceptionPolicy();
         }
     }
 }

@@ -43,11 +43,6 @@ namespace GridDomain.Node
         public void Register(IUnityContainer container)
         {
             new QuartzSchedulerConfiguration(_config).Register(container);
-            var inMemoryRetrySettings = new InMemoryRetrySettings(5,
-                                                                  TimeSpan.FromMinutes(10),
-                                                                  new DefaultExceptionPolicy());
-
-            container.RegisterInstance<IRetrySettings>(inMemoryRetrySettings);
 
             //TODO: replace with config
             IActorTransport transport;

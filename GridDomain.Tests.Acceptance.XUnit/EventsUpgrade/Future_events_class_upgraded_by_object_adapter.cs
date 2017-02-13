@@ -16,12 +16,13 @@ using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
 using Microsoft.Practices.Unity;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 {
-    public class Future_events_upgraded_by_events_adapter : NodeTestKit
+    public class Future_events_class_upgraded_by_object_adapter : NodeTestKit
     {
        
         [Fact]
@@ -30,12 +31,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
             var saveOldEventCommand = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true);
 
             await Node.Prepare(saveOldEventCommand)
-                      .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == saveOldEventCommand.AggregateId)
-                      .Execute();
-
-            await Node.NewWaiter()
                       .Expect<BalanceChangedEvent_V1>()
-                      .Create();
+                      .Execute();
         }
 
    
@@ -44,11 +41,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
         {
             public EventAdaptersFixture()
             {
-                Add(new CustomContainerConfiguration(
-                    c => c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig()),
-                    c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                            new PersistentChildsRecycleConfiguration(TimeSpan.FromMilliseconds(100),
-                                TimeSpan.FromMilliseconds(50)))));
+                this.InitFastRecycle();
+                InMemory = false;
+                LogLevel = LogEventLevel.Information;
             }
 
             protected override void OnNodeCreated()
@@ -56,15 +51,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                 Node.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
             }
 
-            class BalanceChanged_eventdapter1 : DomainEventAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
+            class BalanceChanged_eventdapter1: ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
             {
-                public override IEnumerable<BalanceChangedEvent_V1> ConvertEvent(BalanceChangedEvent_V0 evt)
+                public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V0 evt)
                 {
-                    yield return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
+                    return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
                 }
             }
         }
 
-        public Future_events_upgraded_by_events_adapter(ITestOutputHelper output) : base(output, new EventAdaptersFixture()) {}
+        public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output) : base(output,
+            new EventAdaptersFixture() {InMemory = false}) {}
     }
 }

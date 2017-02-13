@@ -116,8 +116,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="EventsUpgrade\Future_events_upgraded_by_events_adapter.cs" />
+    <Compile Include="EventsUpgrade\Future_events_class_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Given_aggregate_with_upgraded_event_with_new_field_Persistent.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal.cs" />

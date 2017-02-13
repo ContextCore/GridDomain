@@ -44,12 +44,12 @@ namespace GridDomain.Tests.XUnit
           return new XUnitAutoTestLoggerConfiguration(helper, LogLevel);
         } 
      
-        protected void Add(IMessageRouteMap map)
+        public void Add(IMessageRouteMap map)
         {
             _routeMap.Add(map);
         }
 
-        protected void Add(IContainerConfiguration config)
+        public void Add(IContainerConfiguration config)
         {
             _containerConfiguration.Add(config);
         }

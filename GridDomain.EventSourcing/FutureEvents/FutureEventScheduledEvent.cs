@@ -8,7 +8,7 @@ namespace GridDomain.EventSourcing.FutureEvents
         public DateTime RaiseTime { get;}
         public DomainEvent Event { get;}
 
-        public FutureEventScheduledEvent(Guid id, Guid sourceId, DateTime raiseTime, DomainEvent @event, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+        public FutureEventScheduledEvent(Guid id, Guid sourceId, DateTime raiseTime, DomainEvent @event, DateTime? createdTime = null, Guid? sagaId = null) : base(sourceId, createdTime, sagaId)
         {
             Id = id;
             RaiseTime = raiseTime;

@@ -70,7 +70,7 @@ namespace GridDomain.Node
             var aggregateHubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
 
             var aggregateActor = CreateActor(aggregateHubType,
-                                             aggregateHubType.BeautyName());
+                                             descriptor.AggregateType.BeautyName() + "_Hub");
 
             var processor = new Processor(aggregateActor);
 
@@ -86,7 +86,7 @@ namespace GridDomain.Node
         {
             var sagaActorType = typeof(SagaHubActor<,>).MakeGenericType(sagaDescriptor.SagaType,sagaDescriptor.StateType);
 
-            var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName());
+            var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
             var processor = new Processor(sagaActor);
 
             foreach (var acceptMsg in sagaDescriptor.AcceptMessages)

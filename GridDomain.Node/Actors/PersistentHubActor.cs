@@ -11,7 +11,6 @@ using GridDomain.Logging;
 
 namespace GridDomain.Node.Actors
 {
-    //TODO: think about replace with ConsistentHashingPool - need to deal with persistence 
     /// <summary>
     /// Any child should be terminated by ShutdownRequest message
     /// </summary>
@@ -36,7 +35,8 @@ namespace GridDomain.Node.Actors
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
             _forwardEntry = new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded");
 
-            Receive<ClearChilds>(m => Clear());
+            Receive<ClearChildren>(m => Clear());
+            Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Receive<IMessageMetadataEnvelop>(messageWitMetadata =>
             {
@@ -80,15 +80,23 @@ namespace GridDomain.Node.Actors
                                            .ToArray();
            foreach (var childId in childsToTerminate)
            {
-                //TODO: wait for child termination
-               Children[childId].Ref.Tell(GracefullShutdownRequest.Instance);
-               Children.Remove(childId);
+               //TODO: wait for child termination
+               ShutdownChild(childId);
            }
 
-           Logger.Debug("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
+            Logger.Debug("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
         }
 
-        public class ClearChilds
+        private void ShutdownChild(Guid childId)
+        {
+            ChildInfo childInfo;
+            if (!Children.TryGetValue(childId, out childInfo))
+                return;
+            childInfo.Ref.Tell(GracefullShutdownRequest.Instance);
+            Children.Remove(childId);
+        }
+
+        public class ClearChildren
         {
         }
 
@@ -110,7 +118,7 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementActorStarted();
             Logger.Debug("{ActorHub} is going to start", Self.Path);
-            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChilds(), Self);
+            Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod, ChildClearPeriod, Self, new ClearChildren(), Self);
         }
 
         protected override void PostStop()
@@ -118,5 +126,15 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorStopped();
             Logger.Debug("{ActorHub} was stopped", Self.Path);
         }
+    }
+
+    public class ShutdownChild
+    {
+        public ShutdownChild(Guid childId)
+        {
+            ChildId = childId;
+        }
+
+        public Guid ChildId { get; }
     }
 }

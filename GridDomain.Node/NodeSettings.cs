@@ -20,8 +20,8 @@ namespace GridDomain.Node
                                                                            .ForContext<GridDomainNode>();
         public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(10);
         public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig();
-        public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings();
-
+        public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings(5, TimeSpan.FromMinutes(10), new DefaultExceptionPolicy());
+      
         public NodeSettings(IContainerConfiguration configuration=null,
                             IMessageRouteMap messageRouting = null,
                             Func<ActorSystem[]> actorSystemFactory = null)
