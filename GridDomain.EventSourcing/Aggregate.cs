@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing

@@ -14,8 +14,7 @@ namespace GridDomain.Tests.Framework
             WriteTo.Console();
             WriteTo.NUnitOutput();
             MinimumLevel.Is(LogEventLevel.Verbose);
-            Destructure.ByTransforming<Money>(r => new { Amount = r.Amount, Currency = r.CurrencyCode });
-
+            Destructure.ByTransforming<Money>(r => new { r.Amount, Currency = r.CurrencyCode });
 
           //  Filter.ByExcluding(e => e.MessageTemplate.Text.Contains(""))
         }

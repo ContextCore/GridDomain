@@ -129,7 +129,6 @@ namespace GridDomain.Node
                     m => factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
             }
         }
-
         public async Task Stop()
         {
             if (_stopping) return;
@@ -176,6 +175,11 @@ namespace GridDomain.Node
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return _commandExecutor.Prepare(cmd, metadata);
+        }
+
+        public void Dispose()
+        {
+            Stop().Wait();
         }
     }
 }

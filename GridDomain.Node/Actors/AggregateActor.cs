@@ -236,7 +236,7 @@ namespace GridDomain.Node.Actors
                                                                                  nameof(DomainEvent.SourceId)),
                                                     metadata);
 
-            _schedulerActorRef.Tell(scheduleEvent);
+           _schedulerActorRef.Tell(scheduleEvent);
         }
 
         public static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid aggregateId, string description)

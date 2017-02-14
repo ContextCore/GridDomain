@@ -26,7 +26,15 @@ namespace GridDomain.Tests.XUnit
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
         public GridDomainNode Node { get; private set; }
-        public ActorSystem System { get; set; }
+
+        private ActorSystem _system;
+
+        public ActorSystem System
+        {
+            private get { return _system ?? (_system = ActorSystem.Create(Name, GetConfig())); }
+            set { _system = value; }
+        }
+
         protected ILogger Logger { get; set; }
         private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
@@ -61,7 +69,8 @@ namespace GridDomain.Tests.XUnit
 
         public NodeTestFixture(IContainerConfiguration containerConfiguration = null,
                                IMessageRouteMap map = null,
-                               TimeSpan? defaultTimeout = null)
+                               TimeSpan? defaultTimeout = null,
+                               ITestOutputHelper helper = null)
         {
             if (map != null)
                 Add(map);
@@ -69,7 +78,7 @@ namespace GridDomain.Tests.XUnit
                 Add(containerConfiguration);
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
-
+            Output = helper;
         }
 
         public async Task<GridDomainNode> CreateNode()
@@ -93,7 +102,7 @@ namespace GridDomain.Tests.XUnit
         {
             var settings = new NodeSettings(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
                 new CompositeRouteMap(_routeMap.ToArray()),
-                () => new[] {System ?? ActorSystem.Create(Name, GetConfig())})
+                () => new[] {System})
                            {
                                QuartzConfig =  InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
