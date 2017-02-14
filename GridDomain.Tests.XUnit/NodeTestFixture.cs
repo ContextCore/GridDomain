@@ -36,11 +36,11 @@ namespace GridDomain.Tests.XUnit
         }
 
         protected ILogger Logger { get; set; }
-        private AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
+        public AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
         public bool InMemory { get; set; } = true;
         public string Name => AkkaConfig.Network.SystemName;
-        private TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(3);
+        internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(3);
         public ITestOutputHelper Output { get; set; }
 
         private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();

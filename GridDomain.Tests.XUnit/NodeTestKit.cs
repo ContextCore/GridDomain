@@ -29,14 +29,16 @@ namespace GridDomain.Tests.XUnit
     public abstract class NodeTestKit : TestKit
     {
         private readonly Lazy<Task<GridDomainNode>> _lazyNode;
+        protected readonly NodeTestFixture Fixture;
         protected GridDomainNode Node => _lazyNode.Value.Result;
 
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture)
                             : base(fixture.GetConfig(), fixture.Name)
         {
-            fixture.System = Sys;
-            fixture.Output = output;
-            _lazyNode = new Lazy<Task<GridDomainNode>>(fixture.CreateNode);
+            Fixture = fixture;
+            Fixture.System = Sys;
+            Fixture.Output = output;
+            _lazyNode = new Lazy<Task<GridDomainNode>>(Fixture.CreateNode);
         }
     }
 }

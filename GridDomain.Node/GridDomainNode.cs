@@ -41,7 +41,7 @@ namespace GridDomain.Node
         bool _stopping = false;
         public NodeSettings Settings { get; }
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
-        private AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
+        public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
         public IActorTransport Transport { get; private set; }
         public ActorSystem System { get; private set; }
         private IActorRef EventBusForwarder { get; set; }

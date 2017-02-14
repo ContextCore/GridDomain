@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Actors
 {
-    class GracefullShutdownRequest
+    public class GracefullShutdownRequest
     {
         private GracefullShutdownRequest()
         {
