@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
-    public class Instance_saga_Should_recover_from_snapshot : SoftwareProgrammingInstanceSagaTest
+    public class Instance_saga_Should_recover_from_snapshot : NodeTestKit
     {
         [Fact]
         public async Task Test()
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             sagaState.RememberEvent(saga.CoffeReady, state, new object());
             sagaState.ClearEvents();
 
-            var repo = new AggregateSnapshotRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString,
+            var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                 Node.AggregateFromSnapshotsFactory);
             await repo.Add(sagaState);
 
@@ -36,6 +36,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.Equal(sagaState.Data.CurrentStateName, restoredState.Data.CurrentStateName);
         }
 
-        public Instance_saga_Should_recover_from_snapshot(ITestOutputHelper helper) : base(helper) {}
+        public Instance_saga_Should_recover_from_snapshot(ITestOutputHelper helper) : base(helper,
+            new SoftwareProgrammingSagaFixture {InMemory = false}) {}
     }
 }

@@ -19,7 +19,7 @@ using Serilog;
 
 namespace GridDomain.Node
 {
-    internal class GridNodeContainerConfiguration : IContainerConfiguration
+    public class GridNodeContainerConfiguration : IContainerConfiguration
     {
         private readonly ActorSystem _actorSystem;
         private readonly TransportMode _transportMode;

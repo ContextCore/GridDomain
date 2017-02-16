@@ -5,10 +5,9 @@ namespace GridDomain.Node.Actors
 {
     public interface ISnapshotsPersistencePolicy
     {
-        void MarkActivity(DateTime? lastActivityTime = default(DateTime?));
-        bool ShouldSave(params object[] stateChanges);
+        bool ShouldSave();
         SnapshotSelectionCriteria GetSnapshotsToDelete();
+        void MarkEventsProduced(int amount);
         void MarkSnapshotApplied(SnapshotMetadata metadata);
-        void MarkSnapshotSaved(SnapshotMetadata metadata);
     }
 }

@@ -165,7 +165,8 @@ namespace GridDomain.Node.Actors
 
         private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata eventCommonMetadata)
         {
-            TrySaveSnapshot(events);
+            SnapshotsPolicy.MarkEventsProduced(events.Length);
+            TrySaveSnapshot();
             var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, eventCommonMetadata);
 
             foreach (var e in events)

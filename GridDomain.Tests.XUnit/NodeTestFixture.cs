@@ -124,9 +124,18 @@ namespace GridDomain.Tests.XUnit
 
             await logActor.Ask<LoggerInitialized>(new InitializeLogger(System.EventStream));
         }
+        public event EventHandler OnNodeStartedEvent = delegate { };
+        public event EventHandler OnNodeCreatedEvent = delegate { };
 
-        protected virtual void OnNodeCreated() {}
-        protected virtual void OnNodeStarted() {}
+        protected virtual void OnNodeCreated()
+        {
+            OnNodeCreatedEvent.Invoke(this, new EventArgs());
+        }
+
+        protected virtual void OnNodeStarted()
+        {
+            OnNodeCreatedEvent.Invoke(this, new EventArgs());
+        }
 
         public void Dispose()
         {

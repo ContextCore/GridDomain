@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var snapshots =
                 await
-                    new AggregateSnapshotRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString,
+                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                         Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, snapshots.Length);
@@ -61,6 +61,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         }
 
         public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
-            : base(output, new SampleDomainFixture().InitSampleAggregateEachMessageSnapshots()) {}
+            : base(output, new SampleDomainFixture { InMemory = false }.InitSampleAggregateSnapshots()) { } 
     }
 }

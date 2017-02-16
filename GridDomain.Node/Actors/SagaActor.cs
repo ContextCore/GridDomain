@@ -193,12 +193,13 @@ namespace GridDomain.Node.Actors
 
         private void OnStatePersisted(DomainEvent[] stateChangeEvents, IMessageMetadata eventsMetadata)
         {
+            SnapshotsPolicy.MarkEventsProduced(stateChangeEvents.Length);
             foreach (var e in stateChangeEvents)
             {
                 var metadata = eventsMetadata.CreateChild(e.SourceId,_stateChanged);
                 _publisher.Publish(e, metadata);
             }
-            TrySaveSnapshot(stateChangeEvents);
+            TrySaveSnapshot();
         }
 
     }

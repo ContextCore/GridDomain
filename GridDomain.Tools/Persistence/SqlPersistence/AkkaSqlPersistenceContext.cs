@@ -14,34 +14,9 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             System.Data.Entity.Database.SetInitializer<AkkaSqlPersistenceContext>(null);
         }
 
-        public AkkaSqlPersistenceContext()
-            : base("Name=SqlJournal")
-        {
-        }
-
         public AkkaSqlPersistenceContext(string connectionString)
             : base(connectionString)
         {
-        }
-
-        public AkkaSqlPersistenceContext(string connectionString, System.Data.Entity.Infrastructure.DbCompiledModel model)
-            : base(connectionString, model)
-        {
-        }
-
-        public AkkaSqlPersistenceContext(System.Data.Common.DbConnection existingConnection, bool contextOwnsConnection)
-            : base(existingConnection, contextOwnsConnection)
-        {
-        }
-
-        public AkkaSqlPersistenceContext(System.Data.Common.DbConnection existingConnection, System.Data.Entity.Infrastructure.DbCompiledModel model, bool contextOwnsConnection)
-            : base(existingConnection, model, contextOwnsConnection)
-        {
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
         }
 
         public bool IsSqlParameterNull(System.Data.SqlClient.SqlParameter param)

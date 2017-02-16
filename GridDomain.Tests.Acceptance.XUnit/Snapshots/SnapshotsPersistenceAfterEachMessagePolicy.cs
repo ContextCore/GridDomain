@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     class SnapshotsPersistenceAfterEachMessagePolicy : SnapshotsPersistencePolicy
     {
-        public SnapshotsPersistenceAfterEachMessagePolicy(int eventsToStore = 5) : base(TimeSpan.FromSeconds(1000), 1, eventsToStore)
+        public SnapshotsPersistenceAfterEachMessagePolicy(int eventsToStore = 5) : base(1, eventsToStore)
         {
 
         }

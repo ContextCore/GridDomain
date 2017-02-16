@@ -4,11 +4,13 @@ using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.TestKit.TestActors;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -25,11 +27,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     {
         class SagaSnapshotsFixture : SoftwareProgrammingSagaFixture
         {
-            private readonly SnapshotsPersistencePolicy _snapshotsPersistencePolicy =
-                new SnapshotsPersistencePolicy(TimeSpan.FromMinutes(10), 1, 2);
-
             public SagaSnapshotsFixture()
             {
+                InMemory = false;
                 Add(
                     new CustomContainerConfiguration(
                         c =>
@@ -38,8 +38,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                                     .Instance
                                     <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
                                         SoftwareProgrammingSaga.Descriptor,
-                                        () => _snapshotsPersistencePolicy))));
-                Console.WriteLine(_snapshotsPersistencePolicy.ToPropsString());
+                                        () => new SnapshotsPersistencePolicy(1, 2)))));
+
+            }
+
+            protected override void OnNodeStarted()
+            {
+                //supress errors raised by commands not reaching aggregates
+                var nullActor = Node.System.ActorOf(BlackHoleActor.Props);
+                Node.Pipe.SagaProcessor.Tell(new Initialize(nullActor));
             }
         }
 
@@ -54,18 +61,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaStartEvent);
 
-
-            var sagaActorRef =
-                await Node.System.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
-
-            sagaActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
-
             var sagaContinueEventA = new CoffeMakeFailedEvent(sagaId,
-                sagaStartEvent.PersonId,
-                BusinessDateTime.UtcNow,
-                sagaId);
+                                                              sagaStartEvent.PersonId,
+                                                              BusinessDateTime.UtcNow,
+                                                              sagaId);
 
-            var sagaContinueEventB = new SleptWellEvent(sagaId, sagaStartEvent.LovelySofaId, sagaId);
 
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
@@ -73,35 +73,28 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaContinueEventA);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
-                          e => (e.Message as SleptWellEvent)?.SourceId == sagaId)
-                      .Create()
-                      .SendToSagas(sagaContinueEventB);
+            await Node.System.KillSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
 
-
-            Watch(sagaActorRef);
-            sagaActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
-
-            FishForMessage<Terminated>(m => true);
-            await Task.Delay(1000);
             var snapshots =
                 await
-                    new AggregateSnapshotRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString,
+                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                         Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
 
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             // Restored_aggregates_should_have_same_ids()
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
-            //Last_Snapshots_should_have_coding_state_from_last_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding),
-                snapshots.Last()
-                         .Aggregate.Data.CurrentStateName);
+           
             // First_Snapshots_should_have_coding_state_from_first_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping),
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
                 snapshots.First()
                          .Aggregate.Data.CurrentStateName);
+
+            //Last_Snapshots_should_have_coding_state_from_last_event()
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping),
+                snapshots.Last()
+                         .Aggregate.Data.CurrentStateName);
+
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

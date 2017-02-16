@@ -30,7 +30,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                 new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
                                                   TestActor,
                                                   transport,
-                                                  new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(1),1,5),
+                                                  new SnapshotsPersistencePolicy(1,5),
                                                   new AggregateFactory(), TestActor
                                                   )),
                 AggregateActorName.New<HomeAggregate>(command.Id).Name );

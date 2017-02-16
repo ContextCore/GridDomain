@@ -47,7 +47,6 @@ namespace GridDomain.Node.Actors
             Command<SaveSnapshotSuccess>(s =>
             {
                 NotifyPersistenceWatchers(s);
-                SnapshotsPolicy.MarkSnapshotSaved(s.Metadata);
             });
 
             Command<NotifyOnPersistenceEvents>(c =>
@@ -62,7 +61,6 @@ namespace GridDomain.Node.Actors
             Recover<DomainEvent>(e =>
             {
                 State.ApplyEvent(e);
-                SnapshotsPolicy.MarkActivity(e.CreatedTime);
             });
 
             Recover<SnapshotOffer>(offer =>
@@ -78,9 +76,9 @@ namespace GridDomain.Node.Actors
             });
         }
 
-        protected bool TrySaveSnapshot(params object[] stateChange)
+        protected bool TrySaveSnapshot()
         {
-            var shouldSave = SnapshotsPolicy.ShouldSave(stateChange);
+            var shouldSave = SnapshotsPolicy.ShouldSave();
             if (shouldSave)
                 SaveSnapshot(State.GetSnapshot());
             return shouldSave;

@@ -62,6 +62,10 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             RaiseEvent(new SampleAggregateChangedEvent(value, Id));
         }
 
+        public void IncreaseParameter(int value)
+        {
+            RaiseEvent(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
+        }
         public void LongExecute(int sleepMiliseconds)
         {
             var task = Task.Delay(sleepMiliseconds)

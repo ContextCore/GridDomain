@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low : NodeTestKit
     {
         public Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low(ITestOutputHelper output)
-            : base(output, new SampleDomainFixture().InitSampleAggregateEachMessageSnapshots()) {}
+            : base(output, new SampleDomainFixture { InMemory = false }.InitSampleAggregateSnapshots()) {}
 
         [Fact]
         public async Task Given_timeout_only_default_policy()
@@ -41,12 +41,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Expect<SampleAggregateChangedEvent>()
                       .Execute();
 
+
             await Task.Delay(TimeSpan.FromSeconds(1));
+            await Node.System.KillAggregate<SampleAggregate>(aggregateId);
 
             var snapshots =
                 await
-                    new AggregateSnapshotRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString,
+                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                         Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
+
             //Snapshots_should_be_saved_one_time()
             Assert.Equal(1, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()

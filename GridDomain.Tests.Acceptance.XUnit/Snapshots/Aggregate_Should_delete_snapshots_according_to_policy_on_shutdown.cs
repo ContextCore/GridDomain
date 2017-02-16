@@ -6,7 +6,9 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.CommandsExecution;
@@ -14,6 +16,7 @@ using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,19 +25,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         private readonly int[] _parameters = new int[5];
-
-        class SnapshotsPerisstencePolicyFixture : SampleDomainFixture
-        {
-            public SnapshotsPerisstencePolicyFixture()
-            {
-                Add(
-                    new CustomContainerConfiguration(
-                        new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                            () => new SnapshotsPersistencePolicy(TimeSpan.FromSeconds(10), 1, 2),
-                            SampleAggregate.FromSnapshot)));
-                InMemory = false;
-            }
-        }
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
@@ -55,12 +45,13 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Watch(aggregateActorRef);
             aggregateActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
 
-            FishForMessage<Terminated>(m => true, TimeSpan.FromMinutes(10));
+            FishForMessage<Terminated>(m => true,DefaultTimeOut);
 
             var snapshots =
                 await
-                    new AggregateSnapshotRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString,
+                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                         Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
+
             //Only_2_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()
@@ -87,6 +78,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         }
 
         public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output, new SnapshotsPerisstencePolicyFixture()) {}
+            : base(output, new SampleDomainFixture {InMemory = false}.InitSampleAggregateSnapshots(2)) {}
+
+      
     }
 }

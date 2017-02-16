@@ -11,6 +11,7 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
+using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
@@ -29,16 +30,17 @@ namespace GridDomain.Tests.XUnit
     public abstract class NodeTestKit : TestKit
     {
         private readonly Lazy<Task<GridDomainNode>> _lazyNode;
-        protected readonly NodeTestFixture Fixture;
         protected GridDomainNode Node => _lazyNode.Value.Result;
-
+        protected readonly AkkaConfiguration AkkaConfig;
+        protected readonly TimeSpan DefaultTimeOut;
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture)
                             : base(fixture.GetConfig(), fixture.Name)
         {
-            Fixture = fixture;
-            Fixture.System = Sys;
-            Fixture.Output = output;
-            _lazyNode = new Lazy<Task<GridDomainNode>>(Fixture.CreateNode);
+            fixture.System = Sys;
+            fixture.Output = output;
+            AkkaConfig = fixture.AkkaConfig;
+            DefaultTimeOut = fixture.DefaultTimeout;
+            _lazyNode = new Lazy<Task<GridDomainNode>>(fixture.CreateNode);
         }
     }
 }

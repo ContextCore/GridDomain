@@ -9,30 +9,25 @@ namespace GridDomain.Node.Actors
 
     public class SnapshotsPersistencePolicy : ISnapshotsPersistencePolicy
     {
-        private int _messagesProduced;
         private long _lastSequenceNumber;
         private readonly int _eventsToKeep;
-        private DateTime _lastActivityTime;
-        private readonly TimeSpan _sleepTime;
         private readonly int _saveOnEach;
 
-        public SnapshotsPersistencePolicy(TimeSpan sleepTime, int saveOnEach=2, int eventsToKeep = 10)
+        public SnapshotsPersistencePolicy(int saveOnEach=1, int eventsToKeep = 10)
         {
             _saveOnEach = saveOnEach;
-            _sleepTime = sleepTime;
             _eventsToKeep = eventsToKeep;
-            MarkActivity();
         }
 
         public SnapshotSelectionCriteria GetSnapshotsToDelete()
         {
-            var persistenceId = Math.Max(_lastSequenceNumber - _eventsToKeep + 1, 0);
+            var persistenceId = Math.Max(_lastSequenceNumber - _eventsToKeep, 0);
             return new SnapshotSelectionCriteria(persistenceId);
         }
 
-        public void MarkSnapshotSaved(SnapshotMetadata metadata)
+        public void MarkEventsProduced(int amount)
         {
-            _lastSequenceNumber = metadata.SequenceNr;
+            _lastSequenceNumber += amount;
         }
 
         public void MarkSnapshotApplied(SnapshotMetadata metadata)
@@ -40,24 +35,9 @@ namespace GridDomain.Node.Actors
             _lastSequenceNumber = metadata.SequenceNr;
         }
 
-        public bool ShouldSave(params object[] stateChanges)
+        public bool ShouldSave()
         {
-            if (!stateChanges.Any()) return false;
-
-            _messagesProduced += stateChanges.Length;
-
-            var now = BusinessDateTime.UtcNow;
-
-            if ((_messagesProduced % _saveOnEach == 0) || now -_lastActivityTime > _sleepTime)
-                return true;
-
-            MarkActivity();
-            return false;
-        }
-
-        public void MarkActivity(DateTime? lastActivityTime = null)
-        {
-            _lastActivityTime = lastActivityTime ?? BusinessDateTime.UtcNow;
+            return _lastSequenceNumber % _saveOnEach == 0;
         }
     }
 }
