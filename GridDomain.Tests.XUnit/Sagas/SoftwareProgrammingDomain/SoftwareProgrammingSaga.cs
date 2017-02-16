@@ -63,13 +63,13 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         }
 
         public Event<GotTiredEvent>      GotTired      { get; private set; } 
-        public Event<CoffeMadeEvent>      CoffeReady      { get; private set; }
+        public Event<CoffeMadeEvent>      CoffeReady   { get; private set; }
         public Event<SleptWellEvent>     SleptWell     { get; private set; } 
         public Event<Fault<GoSleepCommand>>     SleptBad     { get; private set; } 
         public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
 
         public State Coding       { get; private set; }
         public State MakingCoffee { get; private set; }
-        public State Sleeping  { get; private set; }
+        public State Sleeping     { get; private set; }
     }
 }

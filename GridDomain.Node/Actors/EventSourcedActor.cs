@@ -6,7 +6,9 @@ using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
+using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
@@ -19,7 +21,7 @@ namespace GridDomain.Node.Actors
         protected Guid Id { get; }
         protected readonly ISnapshotsPersistencePolicy SnapshotsPolicy;
         protected readonly ActorMonitor Monitor;
-        protected ILoggingAdapter _log = Context.GetLogger();
+        protected readonly ILoggingAdapter _log = Context.GetLogger();
 
         private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }
@@ -47,6 +49,7 @@ namespace GridDomain.Node.Actors
             Command<SaveSnapshotSuccess>(s =>
             {
                 NotifyPersistenceWatchers(s);
+                SnapshotsPolicy.MarkSnapshotSaved(BusinessDateTime.UtcNow);
             });
 
             Command<NotifyOnPersistenceEvents>(c =>
@@ -56,6 +59,7 @@ namespace GridDomain.Node.Actors
                     waiter.Tell(RecoveryCompleted.Instance);
 
                  _persistenceWatchers.Add(waiter);
+                Sender.Tell(SubscribeAck.Instance);
             });
 
             Recover<DomainEvent>(e =>
@@ -78,7 +82,7 @@ namespace GridDomain.Node.Actors
 
         protected bool TrySaveSnapshot()
         {
-            var shouldSave = SnapshotsPolicy.ShouldSave();
+            var shouldSave = SnapshotsPolicy.ShouldSave(BusinessDateTime.UtcNow);
             if (shouldSave)
                 SaveSnapshot(State.GetSnapshot());
             return shouldSave;

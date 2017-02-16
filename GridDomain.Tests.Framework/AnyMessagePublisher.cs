@@ -35,5 +35,13 @@ namespace GridDomain.Tests.Framework
 
             return await task;
         }
+        public async Task<IWaitResults> SendToSagas(IFault message, IMessageMetadata metadata = null)
+        {
+            var task = _waiter.Start();
+
+            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<IFault>(message, metadata ?? MessageMetadata.Empty));
+
+            return await task;
+        }
     }
 }

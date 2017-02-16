@@ -134,7 +134,7 @@ namespace GridDomain.Tests.XUnit
 
         protected virtual void OnNodeStarted()
         {
-            OnNodeCreatedEvent.Invoke(this, new EventArgs());
+            OnNodeStartedEvent.Invoke(this, new EventArgs());
         }
 
         public void Dispose()

@@ -4,13 +4,17 @@ using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
+using GridDomain.Tests.XUnit.Sagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
@@ -20,22 +24,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     public class Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy : NodeTestKit
     {
-        class SagaFixture : SampleDomainFixture
-        {
-            public SagaFixture()
-            {
-                InMemory = false;
-                Add(
-                    new CustomContainerConfiguration(
-                        c =>
-                            c.Register(
-                                SagaConfiguration
-                                    .Instance
-                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
-                                        SoftwareProgrammingSaga.Descriptor,
-                                        () => new EachMessageSnapshotsPersistencePolicy()))));
-            }
-        }
+        public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
+      : base(output, new SoftwareProgrammingSagaFixture { InMemory = false }
+                                          .IgnoreCommands()
+                                          .InitSoftwareProgrammingSagaSnapshots(5, TimeSpan.FromMilliseconds(5), 2))
+        { }
 
         [Fact]
         public async Task Given_default_policy()
@@ -55,6 +48,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaContinueEvent);
 
+            var sagaContinueEventB = new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
+                new Exception(), typeof(object), sagaId, BusinessDateTime.Now);
+
+            await Node.NewDebugWaiter()
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                      .Create()
+                      .SendToSagas(sagaContinueEventB);
+
             //saving snapshot
             await Task.Delay(200);
 
@@ -65,23 +66,24 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                             sagaStartEvent.SagaId);
 
             //saving on each message, maximum on each command
-            //Snapshots_should_be_saved_two_times()
+            //Snapshots_should_be_saved_two_times
+            //4 events in total, two saves of snapshots due to policy saves on each two events
             Assert.Equal(2, snapshots.Length);
-            //Restored_saga_state_should_have_correct_ids()
-            Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
-            //First_snapshot_should_have_state_from_first_event()
+            //First_snapshot_should_have_state_from_first_event
             Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
                 snapshots.First()
                          .Aggregate.Data.CurrentStateName);
             //Last_snapshot_should_have_parameters_from_last_command()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping),
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding),
                 snapshots.Last()
                          .Aggregate.Data.CurrentStateName);
+
+            //Restored_saga_state_should_have_correct_ids
+            Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
 
-        public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
-            : base(output, new SagaFixture()) {}
+  
     }
 }

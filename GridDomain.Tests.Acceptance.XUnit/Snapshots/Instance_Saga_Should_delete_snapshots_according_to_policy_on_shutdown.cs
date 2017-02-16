@@ -12,6 +12,7 @@ using GridDomain.Logging;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.Sagas;
@@ -25,30 +26,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     public class Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
-        class SagaSnapshotsFixture : SoftwareProgrammingSagaFixture
-        {
-            public SagaSnapshotsFixture()
-            {
-                InMemory = false;
-                Add(
-                    new CustomContainerConfiguration(
-                        c =>
-                            c.Register(
-                                SagaConfiguration
-                                    .Instance
-                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
-                                        SoftwareProgrammingSaga.Descriptor,
-                                        () => new SnapshotsPersistencePolicy(1, 2)))));
-
-            }
-
-            protected override void OnNodeStarted()
-            {
-                //supress errors raised by commands not reaching aggregates
-                var nullActor = Node.System.ActorOf(BlackHoleActor.Props);
-                Node.Pipe.SagaProcessor.Tell(new Initialize(nullActor));
-            }
-        }
+        public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
+            : base(output,
+                new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2)
+                                                                     .IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
@@ -62,9 +43,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .SendToSagas(sagaStartEvent);
 
             var sagaContinueEventA = new CoffeMakeFailedEvent(sagaId,
-                                                              sagaStartEvent.PersonId,
-                                                              BusinessDateTime.UtcNow,
-                                                              sagaId);
+                sagaStartEvent.PersonId,
+                BusinessDateTime.UtcNow,
+                sagaId);
 
 
             await Node.NewDebugWaiter()
@@ -84,7 +65,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.Equal(2, snapshots.Length);
             // Restored_aggregates_should_have_same_ids()
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
-           
+
             // First_Snapshots_should_have_coding_state_from_first_event()
             Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
                 snapshots.First()
@@ -98,8 +79,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
-
-        public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output, new SagaSnapshotsFixture()) {}
     }
 }

@@ -25,7 +25,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         private readonly int[] _parameters = new int[5];
-
+        public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
+    : base(output, new SampleDomainFixture { InMemory = false }.InitSampleAggregateSnapshots(2)) { }
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
@@ -77,8 +78,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             }
         }
 
-        public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output, new SampleDomainFixture {InMemory = false}.InitSampleAggregateSnapshots(2)) {}
+
 
       
     }

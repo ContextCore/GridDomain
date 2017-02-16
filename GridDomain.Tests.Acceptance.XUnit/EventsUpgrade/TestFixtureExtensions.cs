@@ -1,5 +1,7 @@
 using System;
+using Akka.TestKit.TestActors;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Acceptance.XUnit.Snapshots;
 using GridDomain.Tests.Framework;
@@ -7,6 +9,7 @@ using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.SampleDomain;
 using Microsoft.Practices.Unity;
+using Akka.Actor;
 
 namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 {
@@ -30,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
             return fixture;
         }
 
-        public static NodeTestFixture InitSoftwareProgrammingSagaSnapshots(this NodeTestFixture fixture, int keep = 1)
+        public static NodeTestFixture InitSoftwareProgrammingSagaSnapshots(this NodeTestFixture fixture, int keep = 1, TimeSpan? maxSaveFrequency = null, int saveOnEach = 1)
         {
             fixture.Add(
                    new CustomContainerConfiguration(
@@ -40,7 +43,18 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                    .Instance
                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
                                        SoftwareProgrammingSaga.Descriptor,
-                                       () => new SnapshotsPersistencePolicy(1, keep)))));
+                                       () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
+            return fixture;
+        }
+
+        public static NodeTestFixture IgnoreCommands(this NodeTestFixture fixture)
+        {
+            fixture.OnNodeStartedEvent += (sender, e) => {
+                //supress errors raised by commands not reaching aggregates
+                var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
+                fixture.Node.Pipe.SagaProcessor.Ask<Initialized>(new Initialize(nullActor)).Wait();
+            };
+
             return fixture;
         }
     }

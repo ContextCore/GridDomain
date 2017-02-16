@@ -3,7 +3,10 @@ using System.Linq;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
+using Akka.Actor;
+using Akka.Persistence;
 using GridDomain.Common;
+using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -20,8 +23,14 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
-    public class Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low : NodeTestKit
+    public class Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy : NodeTestKit
     {
+        public Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
+         : base(output, new SoftwareProgrammingSagaFixture { InMemory = false }
+                             .InitSoftwareProgrammingSagaSnapshots(2, TimeSpan.FromSeconds(10))
+                             .IgnoreCommands())
+        { }
+
         [Fact]
         public async Task Given_default_policy()
         {
@@ -33,38 +42,38 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaStartEvent, sagaId);
 
+            //wait some time, allowing first snapshots to be saved
+            await Task.Delay(200);
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId,
-                                                             sagaStartEvent.PersonId,
-                                                             BusinessDateTime.UtcNow);
+                                                          sagaStartEvent.PersonId,
+                                                          BusinessDateTime.UtcNow);
 
+            //send text event
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                       .Create()
                       .SendToSagas(sagaContinueEvent, sagaId);
 
-
-
-            //saving snapshot
-            //await Task.Delay(200);
+            //wait some time, second snapshots should not be saved due to max frequency in snapshotting policy
+            await Task.Delay(200);
 
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                         Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
-                            sagaStartEvent.SagaId);
+                             sagaId);
 
-            //Snapshot_should_be_saved_one_time()
+            //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);
-            //Restored_saga_state_should_have_correct_ids()
+            //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
-            //Snapshot_should_have_parameters_from_second_command()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping),
+            //Snapshot_should_have_parameters_from_first_event
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
                         snapshots.First().Aggregate.Data.CurrentStateName);
-            //All_snapshots_should_not_have_uncommited_events()
+            //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
 
-        public Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low(ITestOutputHelper output)
-            : base(output, new SoftwareProgrammingSagaFixture{InMemory = false}.InitSoftwareProgrammingSagaSnapshots(1)) { }
+     
     }
 }
