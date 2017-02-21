@@ -32,7 +32,7 @@ namespace GridDomain.Node.Actors
                 _monitor.IncrementMessagesReceived();
                 var message = (TMessage)msg.Message;
 
-                _log.Debug("Handler actor got message: {@Message}", msg);
+             //   _log.Debug("Handler actor got message: {Message}", msg);
                 var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
 
                 Func<Task> handlerExecute;

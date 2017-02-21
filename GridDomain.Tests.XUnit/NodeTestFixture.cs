@@ -35,7 +35,7 @@ namespace GridDomain.Tests.XUnit
             set { _system = value; }
         }
 
-        protected ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
         public AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
         public bool InMemory { get; set; } = true;

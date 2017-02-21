@@ -5,10 +5,9 @@ namespace GridDomain.Node.Actors
 {
     public interface ISnapshotsPersistencePolicy
     {
-        bool ShouldSave(DateTime? now=null);
-        SnapshotSelectionCriteria GetSnapshotsToDelete();
-        void MarkEventsProduced(int amount);
-        void MarkSnapshotApplied(SnapshotMetadata metadata);
-        void MarkSnapshotSaved(DateTime? saveTime=null);
+        bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate);
+        void MarkSnapshotApplied(long sequenceNr);
+        void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime=null);
+        bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null);
     }
 }

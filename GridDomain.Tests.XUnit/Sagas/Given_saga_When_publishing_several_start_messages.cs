@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             await anyMessagePublisher.SendToSagas(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId));
 
-            var actorRef = await Sys.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+            var actorRef = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
             actorRef.Tell(NotifyOnPersistenceEvents.Instance);
 
             var secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId);

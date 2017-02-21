@@ -31,22 +31,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
             var aggregateId = Guid.NewGuid();
-            var cmd = new CreateSampleAggregateCommand(1, aggregateId);
 
-            await Node.Prepare(cmd)
+            await Node.Prepare(new CreateSampleAggregateCommand(1, aggregateId))
                       .Expect<SampleAggregateCreatedEvent>()
                       .Execute();
 
-            var aggregateActorRef = await Node.System.LookupAggregateActor<SampleAggregate>(aggregateId);
-
-            aggregateActorRef.Tell(new NotifyOnPersistenceEvents(TestActor), TestActor);
-
             await Task.WhenAll(ChangeSeveralTimes(5, aggregateId));
 
-            Watch(aggregateActorRef);
-            aggregateActorRef.Tell(GracefullShutdownRequest.Instance, TestActor);
+            await Task.Delay(5000);
 
-            FishForMessage<Terminated>(m => true,DefaultTimeOut);
+            await Node.KillAggregate<SampleAggregate>(aggregateId);
 
             var snapshots =
                 await
@@ -71,9 +65,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             for (var cmdNum = 0; cmdNum < changeNumber; cmdNum++)
             {
                 _parameters[cmdNum] = cmdNum;
-                var changeCmd = new ChangeSampleAggregateCommand(cmdNum, aggregateId);
-                yield return Node.Prepare(changeCmd)
-                                 .Expect<SampleAggregateChangedEvent>(e => e.Value == changeCmd.Parameter.ToString())
+                yield return Node.Prepare(new ChangeSampleAggregateCommand(cmdNum, aggregateId))
+                                 .Expect<SampleAggregateChangedEvent>()
                                  .Execute();
             }
         }

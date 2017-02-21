@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaContinueEventA);
 
-            await Node.System.KillSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+            await Node.KillSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
 
             var snapshots =
                 await

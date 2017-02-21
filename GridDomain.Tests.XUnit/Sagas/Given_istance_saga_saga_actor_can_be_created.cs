@@ -40,7 +40,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                           .Create()
                           .SendToSagas(msg);
 
-            var sagaActor = Sys.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
+            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);
         }
 

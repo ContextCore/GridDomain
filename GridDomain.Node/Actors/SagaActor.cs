@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Event;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
 using Akka.Persistence;
@@ -142,7 +143,7 @@ namespace GridDomain.Node.Actors
         {
             var processorType = _producer.Descriptor.StateMachineType;
 
-            _log.Error(exception, "Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
+            Log.Error(exception, "Saga {saga} {id} raised an error on {@message}", processorType, Id, message);
             var fault = Fault.NewGeneric(message, exception, Id, processorType);
 
             var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
@@ -193,7 +194,7 @@ namespace GridDomain.Node.Actors
 
         private void OnStatePersisted(DomainEvent[] stateChangeEvents, IMessageMetadata eventsMetadata)
         {
-            SnapshotsPolicy.MarkEventsProduced(stateChangeEvents.Length);
+         //   SnapshotsPolicy.MarkEventsProduced(stateChangeEvents.Length);
             foreach (var e in stateChangeEvents)
             {
                 var metadata = eventsMetadata.CreateChild(e.SourceId,_stateChanged);

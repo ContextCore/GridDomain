@@ -59,9 +59,9 @@ namespace GridDomain.Node.Actors
                 knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
                 SendMessageToChild(knownChild, messageWitMetadata);
 
-                Logger.Debug("Message {@msg} sent to {isknown} child {id}",
+                Logger.Debug("Message {msg} sent to {isknown} child {id}",
                               messageWitMetadata,
-                              childWasCreated ? "known" : "new",
+                              childWasCreated ? "new" : "known",
                               childId);
             });
         }
@@ -92,6 +92,7 @@ namespace GridDomain.Node.Actors
             ChildInfo childInfo;
             if (!Children.TryGetValue(childId, out childInfo))
                 return;
+
             childInfo.Ref.Tell(GracefullShutdownRequest.Instance);
             Children.Remove(childId);
         }

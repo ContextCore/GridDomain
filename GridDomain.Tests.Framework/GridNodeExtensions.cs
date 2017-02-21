@@ -1,10 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using CommonDomain;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
+using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tools.Repositories;
@@ -17,7 +21,7 @@ namespace GridDomain.Tests.Framework
     {
         public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
-            return new DebugLocalWaiter(node.Pipe, node.System, node.Transport,timeout ??  node.Settings.DefaultTimeout);
+            return new DebugLocalWaiter(node.Pipe, node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout);
         }
 
        public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, Guid id) where TAggregate : AggregateBase
@@ -49,6 +53,61 @@ namespace GridDomain.Tests.Framework
         {
             var name = AggregateActorName.New<TAggregate>(id).Name;
             await node.SaveToJournal(name, messages);
+        }
+
+        public static async Task<IActorRef> LookupAggregateActor<T>(this GridDomainNode node, Guid id, TimeSpan? timeout = null) where T : IAggregate
+        {
+            var name = AggregateActorName.New<T>(id).Name;
+            return await node.ResolveActor($"akka://LocalSystem/user/{typeof(T).Name}_Hub/{name}",timeout);
+        }
+
+        public static async Task<IActorRef> LookupAggregateHubActor<T>(this GridDomainNode node, TimeSpan? timeout = null) where T : IAggregate
+        {
+            return await node.ResolveActor($"akka://LocalSystem/user/{typeof(T).Name}_Hub",timeout);
+        }
+
+        public static async Task KillAggregate<TAggregate>(this GridDomainNode node, Guid id, TimeSpan? timeout = null) where TAggregate : Aggregate
+        {
+            var aggregateHubActor = await node.LookupAggregateHubActor<TAggregate>(timeout);
+            var aggregateActor = await node.LookupAggregateActor<TAggregate>(id, timeout);
+
+            using (var inbox = Inbox.Create(node.System))
+            {
+                inbox.Watch(aggregateActor);
+                aggregateHubActor.Tell(new ShutdownChild(id));
+                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.Settings.DefaultTimeout);
+            }
+        }
+
+        public static async Task KillSaga<TSaga, TSagaData>(this GridDomainNode node, Guid id, TimeSpan? timeout = null) where TSagaData : ISagaState
+        {
+            var sagaHub = await node.LookupSagaHubActor<TSaga>(timeout);
+            var saga = await node.LookupSagaActor<TSaga, TSagaData>(id, timeout);
+
+            using (var inbox = Inbox.Create(node.System))
+            {
+                inbox.Watch(saga);
+                sagaHub.Tell(new ShutdownChild(id));
+                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.Settings.DefaultTimeout);
+            }
+        }
+
+        public static async Task<IActorRef> LookupSagaActor<TSaga, TData>(this GridDomainNode node, Guid id, TimeSpan? timeout = null) where TData : ISagaState
+        {
+            var sagaName = AggregateActorName.New<SagaStateAggregate<TData>>(id).Name;
+            var sagaType = typeof(TSaga).BeautyName();
+            return await node.ResolveActor($"akka://LocalSystem/user/{sagaType}_Hub/{sagaName}", timeout);
+        }
+
+        public static async Task<IActorRef> LookupSagaHubActor<TSaga>(this GridDomainNode node, TimeSpan? timeout = null)
+        {
+            var sagaType = typeof(TSaga).BeautyName();
+            return await node.ResolveActor($"akka://LocalSystem/user/{sagaType}_Hub", timeout);
+        }
+
+        public static async Task<IActorRef> ResolveActor(this GridDomainNode node, string actorPath, TimeSpan? timeout = null)
+        {
+            return await node.System.ActorSelection(actorPath).ResolveOne(timeout ?? node.Settings.DefaultTimeout);
         }
     }
 }

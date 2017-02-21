@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
 
             await Task.Delay(TimeSpan.FromSeconds(1));
-            await Node.System.KillAggregate<SampleAggregate>(aggregateId);
+            await Node.KillAggregate<SampleAggregate>(aggregateId);
 
             var snapshots =
                 await

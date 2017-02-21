@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Event;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
 using CommonDomain.Core;
@@ -67,7 +68,7 @@ namespace GridDomain.Node.Actors
             {
                 var cmd = m.Message;
                 Monitor.IncrementMessagesReceived();
-                _log.Debug("{Aggregate} received a {@command}", State.Id, cmd);
+                Log.Debug("{Aggregate} received a {@command}", State.Id, cmd);
 
                 try
                 {
@@ -165,7 +166,6 @@ namespace GridDomain.Node.Actors
 
         private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata eventCommonMetadata)
         {
-            SnapshotsPolicy.MarkEventsProduced(events.Length);
             TrySaveSnapshot();
             var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, eventCommonMetadata);
 

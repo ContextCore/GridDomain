@@ -19,20 +19,24 @@ namespace GridDomain.Node.Actors
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         protected Guid Id { get; }
-        protected readonly ISnapshotsPersistencePolicy SnapshotsPolicy;
+        private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         protected readonly ActorMonitor Monitor;
-        protected readonly ILoggingAdapter _log = Context.GetLogger();
 
         private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }
         public IAggregate State { get; protected set; }
 
+        private int _terminateWaitCount = 3;
+        private readonly TimeSpan _terminateWaitPeriod = TimeSpan.FromSeconds(1);
+
+
         public EventSourcedActor(IConstructAggregates aggregateConstructor,
                                  ISnapshotsPersistencePolicy policy)
         {
-            PersistenceId = Self.Path.Name;
-            SnapshotsPolicy = policy;
+            _snapshotsPolicy = policy;
             _aggregateConstructor = aggregateConstructor;
+
+            PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = (AggregateBase)aggregateConstructor.Build(typeof(T), Id, null);
             Monitor = new ActorMonitor(Context, typeof(T).Name);
@@ -40,7 +44,6 @@ namespace GridDomain.Node.Actors
             Command<GracefullShutdownRequest>(req =>
             {
                 Monitor.IncrementMessagesReceived();
-                DeleteSnapshots(SnapshotsPolicy.GetSnapshotsToDelete());
                 Become(Terminating);
             });
 
@@ -49,7 +52,7 @@ namespace GridDomain.Node.Actors
             Command<SaveSnapshotSuccess>(s =>
             {
                 NotifyPersistenceWatchers(s);
-                SnapshotsPolicy.MarkSnapshotSaved(BusinessDateTime.UtcNow);
+                _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr, BusinessDateTime.UtcNow);
             });
 
             Command<NotifyOnPersistenceEvents>(c =>
@@ -69,23 +72,20 @@ namespace GridDomain.Node.Actors
 
             Recover<SnapshotOffer>(offer =>
             {
-                SnapshotsPolicy.MarkSnapshotApplied(offer.Metadata);
+                _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
                 State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
             });
 
             Recover<RecoveryCompleted>(message =>
             {
-                _log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                 NotifyPersistenceWatchers(message);
             });
         }
 
         protected bool TrySaveSnapshot()
         {
-            var shouldSave = SnapshotsPolicy.ShouldSave(BusinessDateTime.UtcNow);
-            if (shouldSave)
-                SaveSnapshot(State.GetSnapshot());
-            return shouldSave;
+            return _snapshotsPolicy.TrySave(() => SaveSnapshot(State.GetSnapshot()), SnapshotSequenceNr, BusinessDateTime.UtcNow);
         }
 
         protected void NotifyPersistenceWatchers(object msg)
@@ -96,9 +96,32 @@ namespace GridDomain.Node.Actors
 
         private void Terminating()
         {
-            //for case when we in process of saving snapshot or events
-            Command<DeleteSnapshotsSuccess>(s => DeferAsync(new object(), o => StopNow(s)));
-            Command<DeleteSnapshotsFailure>(s => DeferAsync(new object(), o => StopNow(s)));
+             
+             //for case when we in process of saving snapshot or events
+             Command<DeleteSnapshotsSuccess>(s => StopNow(s));
+             Command<DeleteSnapshotsFailure>(s => StopNow(s));
+             Command<GracefullShutdownRequest>(s =>
+                                               {
+                                                   if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
+                                                   {
+                                                       Log.Debug("started snapshots delete");
+                                                       return;
+                                                   }   
+
+                                                   Log.Debug("Unsaved snapshots found");
+                                                   if (--_terminateWaitCount < 0) return;
+
+                                                   Log.Debug("Will retry to delete snapshots in {time}, times left:{times}",
+                                                       _terminateWaitPeriod,
+                                                       _terminateWaitCount);
+
+                                                   Context.System.Scheduler.ScheduleTellOnce(_terminateWaitPeriod,
+                                                       Self,
+                                                       GracefullShutdownRequest.Instance,
+                                                       Self);
+                                               }); 
+            //start terminateion process
+            Self.Tell(GracefullShutdownRequest.Instance);     
         }
 
         private void StopNow(object s)

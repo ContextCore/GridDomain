@@ -5,26 +5,22 @@ namespace GridDomain.Node.Actors
 {
     public class NoSnapshotsPersistencePolicy : ISnapshotsPersistencePolicy
     {
-        public bool ShouldSave(DateTime? now = null)
+        public bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate)
         {
             return false;
         }
 
-        public SnapshotSelectionCriteria GetSnapshotsToDelete()
-        {
-            return new SnapshotSelectionCriteria(0);
-        }
-
-        public void MarkEventsProduced(int amount)
+        public void MarkSnapshotApplied(long sequenceNr)
         {
         }
 
-        public void MarkSnapshotApplied(SnapshotMetadata metadata)
+        public void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null)
         {
         }
 
-        public void MarkSnapshotSaved(DateTime? saveTime = null)
+        public bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null)
         {
+            return false;
         }
     }
 }

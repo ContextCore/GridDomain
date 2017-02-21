@@ -23,11 +23,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                         maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
         }
 
-        public static NodeTestFixture InitSampleAggregateSnapshots(this NodeTestFixture fixture, int keep =1 , TimeSpan? sleep=null)
+        public static NodeTestFixture InitSampleAggregateSnapshots(this NodeTestFixture fixture, int keep = 1 , TimeSpan? maxSaveFrequency=null)
         {
             fixture.Add(
                 new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                    () => new SnapshotsPersistencePolicy(1,keep),
+                    () => new SnapshotsPersistencePolicy(1,keep, maxSaveFrequency) {Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()},
                     SampleAggregate.FromSnapshot));
 
             return fixture;
