@@ -180,8 +180,6 @@
     <Compile Include="Scheduling\SchedulerSerializerTests.cs" />
     <Compile Include="Scheduling\NodeSchedulerTests.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />
-    <Compile Include="Scheduling\TestHelpers\FailIfPlannedCommand.cs" />
-    <Compile Include="Scheduling\TestHelpers\PlanFailuresCommand.cs" />
     <Compile Include="Scheduling\TestHelpers\PlannedFailureException.cs" />
     <Compile Include="Scheduling\TestHelpers\ResultHolder.cs" />
     <Compile Include="Scheduling\TestHelpers\SuccessCommand.cs" />

@@ -107,6 +107,21 @@ namespace GridDomain.Node.Actors
             _sagaProducedCommand = new ProcessEntry(Self.Path.Name, SagaActorLiterals.PublishingCommand, SagaActorLiterals.SagaProducedACommand);
         }
 
+        protected override void Terminating()
+        {
+            Command<IMessageMetadataEnvelop<DomainEvent>>(m =>
+                                                          {
+                                                              Self.Tell(CancelShutdownRequest.Instance);
+                                                              Stash.Stash();
+                                                          });
+            Command<IMessageMetadataEnvelop<IFault>>(m =>
+                                                     {
+                                                         Self.Tell(CancelShutdownRequest.Instance);
+                                                         Stash.Stash();
+                                                     });
+            base.Terminating();
+        }
+
         /// <summary>
         /// 
         /// </summary>

@@ -90,6 +90,16 @@ namespace GridDomain.Node.Actors
           
         }
 
+        protected override void Terminating()
+        {
+            Command<IMessageMetadataEnvelop<ICommand>>(c =>
+                                                       {
+                                                           Self.Tell(CancelShutdownRequest.Instance);
+                                                           Stash.Stash();
+                                                       });
+            base.Terminating();
+        }
+
         private void WaitForFaultProcessedByHandlers(ICommand cmd, Exception ex, IMessageMetadata messageMetadata)
         {
             var fault = Fault.NewGeneric(cmd, ex, cmd.SagaId, typeof(TAggregate));

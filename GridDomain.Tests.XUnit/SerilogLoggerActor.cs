@@ -14,7 +14,7 @@ namespace GridDomain.Tests.XUnit
         private static string GetFormat(object message)
         {
             var logMessage = message as LogMessage;
-            return logMessage != null ? logMessage.Format : "{Message}";
+            return logMessage != null ? logMessage.Format : "Thread:{Thread} Source:{LogSource} Actor:{Actor} {Message}";
         }
         private static object[] GetArgs(object message)
         {
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit
 
         private ILogger GetLogger(LogEvent logEvent)
         {
-            return _logger.ForContext("SourceContext", Context.Sender.Path)
+            return _logger.ForContext("Actor", Context.Sender.Path)
                           .ForContext("Timestamp", logEvent.Timestamp)
                           .ForContext("LogSource", logEvent.LogSource)
                           .ForContext("Thread", logEvent.Thread.ManagedThreadId.ToString().PadLeft(4, '0'));

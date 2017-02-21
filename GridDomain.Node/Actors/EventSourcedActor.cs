@@ -21,7 +21,6 @@ namespace GridDomain.Node.Actors
         protected Guid Id { get; }
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         protected readonly ActorMonitor Monitor;
-
         private readonly IConstructAggregates _aggregateConstructor;
         public override string PersistenceId { get; }
         public IAggregate State { get; protected set; }
@@ -44,7 +43,7 @@ namespace GridDomain.Node.Actors
             Command<GracefullShutdownRequest>(req =>
             {
                 Monitor.IncrementMessagesReceived();
-                Become(Terminating);
+                BecomeStacked(Terminating);
             });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
@@ -94,12 +93,18 @@ namespace GridDomain.Node.Actors
                 watcher.Tell(new Persisted(msg));
         }
 
-        private void Terminating()
+        protected virtual void Terminating()
         {
-             
              //for case when we in process of saving snapshot or events
              Command<DeleteSnapshotsSuccess>(s => StopNow(s));
              Command<DeleteSnapshotsFailure>(s => StopNow(s));
+             Command<CancelShutdownRequest>(s =>
+                                            {
+                                                UnbecomeStacked();
+                                                Stash.UnstashAll();
+                                                Log.Info("Aborting shutdown, will resume activity");
+                                            });
+
              Command<GracefullShutdownRequest>(s =>
                                                {
                                                    if (_snapshotsPolicy.TryDelete(DeleteSnapshots))

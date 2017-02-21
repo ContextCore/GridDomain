@@ -12,21 +12,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             Id = id;
         }
 
-        private int timeToOkResponse;
+        private int _timeToOkResponse;
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {
-            timeToOkResponse = 5;
+            _timeToOkResponse = 5;
         }
 
         public void Apply(ScheduledCommandProcessingFailed @event)
         {
-            timeToOkResponse--;
-        }
-
-        public void Apply(ScheduledCommandProcessingFailuresPlanned @event)
-        {
-            timeToOkResponse = @event.FailTimes;
+            _timeToOkResponse--;
         }
 
         public void Apply(TestEvent @event)
