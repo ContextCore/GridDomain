@@ -58,12 +58,12 @@ namespace GridDomain.Tests.Framework
         public static async Task<IActorRef> LookupAggregateActor<T>(this GridDomainNode node, Guid id, TimeSpan? timeout = null) where T : IAggregate
         {
             var name = AggregateActorName.New<T>(id).Name;
-            return await node.ResolveActor($"akka://LocalSystem/user/{typeof(T).Name}_Hub/{name}",timeout);
+            return await node.ResolveActor($"{typeof(T).Name}_Hub/{name}",timeout);
         }
 
         public static async Task<IActorRef> LookupAggregateHubActor<T>(this GridDomainNode node, TimeSpan? timeout = null) where T : IAggregate
         {
-            return await node.ResolveActor($"akka://LocalSystem/user/{typeof(T).Name}_Hub",timeout);
+            return await node.ResolveActor($"{typeof(T).Name}_Hub",timeout);
         }
 
         public static async Task KillAggregate<TAggregate>(this GridDomainNode node, Guid id, TimeSpan? timeout = null) where TAggregate : Aggregate
@@ -96,18 +96,18 @@ namespace GridDomain.Tests.Framework
         {
             var sagaName = AggregateActorName.New<SagaStateAggregate<TData>>(id).Name;
             var sagaType = typeof(TSaga).BeautyName();
-            return await node.ResolveActor($"akka://LocalSystem/user/{sagaType}_Hub/{sagaName}", timeout);
+            return await node.ResolveActor($"{sagaType}_Hub/{sagaName}", timeout);
         }
 
         public static async Task<IActorRef> LookupSagaHubActor<TSaga>(this GridDomainNode node, TimeSpan? timeout = null)
         {
             var sagaType = typeof(TSaga).BeautyName();
-            return await node.ResolveActor($"akka://LocalSystem/user/{sagaType}_Hub", timeout);
+            return await node.ResolveActor($"{sagaType}_Hub", timeout);
         }
 
         public static async Task<IActorRef> ResolveActor(this GridDomainNode node, string actorPath, TimeSpan? timeout = null)
         {
-            return await node.System.ActorSelection(actorPath).ResolveOne(timeout ?? node.Settings.DefaultTimeout);
+            return await node.System.ActorSelection("akka://LocalSystem/user/" + actorPath).ResolveOne(timeout ?? node.Settings.DefaultTimeout);
         }
     }
 }

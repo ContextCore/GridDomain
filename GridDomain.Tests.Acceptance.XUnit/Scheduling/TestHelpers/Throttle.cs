@@ -40,6 +40,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             {
                 Thread.Sleep(minTimeout);
             }
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 try

@@ -63,15 +63,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             Throttle.AssertInTime(() => ResultHolder.Contains(taskIds));
         }
 
-        [Fact]
-        public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
-        {
-            var testMessage = new SuccessCommand(Name);
-            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
-            _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
-
-            Throttle.AssertInTime(() => Assert.True(ResultHolder.Count == 1), minTimeout: TimeSpan.FromSeconds(2));
-        }
 
         [Fact]
         public void When_some_of_scheduled_jobs_fail_System_still_executes_others()

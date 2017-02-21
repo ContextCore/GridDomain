@@ -176,6 +176,7 @@
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduling\SchedulerActorTests.cs" />
+    <Compile Include="Scheduling\SchedulerFixture.cs" />
     <Compile Include="Scheduling\SchedulerSerializerTests.cs" />
     <Compile Include="Scheduling\NodeSchedulerTests.cs" />
     <Compile Include="Scheduling\TestHelpers\FailCommand.cs" />

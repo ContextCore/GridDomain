@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             Id = id;
         }
 
-        public int timeToOkResponse;
+        private int timeToOkResponse;
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {
@@ -45,24 +45,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             Thread.Sleep(timeout);
             ResultHolder.Add(taskId, taskId);
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
-        }
-
-        public void PlanFailures(int times)
-        {
-            RaiseEvent(new ScheduledCommandProcessingFailuresPlanned(Id,times));
-        }
-
-        public void FailIfPlanned(TimeSpan timeout)
-        {
-            Thread.Sleep(timeout);
-
-            if(timeToOkResponse == 0)
-                RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
-            var ex = new PlannedFailureException(timeToOkResponse);
-
-            RaiseEvent(new ScheduledCommandProcessingFailed(Id,ex));
-
-            throw ex;
         }
 
         public void Failure(TimeSpan timeout)

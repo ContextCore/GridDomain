@@ -16,14 +16,9 @@ namespace GridDomain.Node.Configuration.Composition
             configuration.Register(container);
         }
 
-        public static void Register<TConfiguration>(this IUnityContainer container) where TConfiguration: IContainerConfiguration, new()
-        {
-            new TConfiguration().Register(container);
-        }
-
         public static void RegisterAggregate<TAggregate, TCommandsHandler>(this IUnityContainer container) where TCommandsHandler : ICommandAggregateLocator<TAggregate>, IAggregateCommandsHandler<TAggregate> where TAggregate : AggregateBase
         {
-            Register<AggregateConfiguration<TAggregate, TCommandsHandler>>(container);
+            new AggregateConfiguration<TAggregate, TCommandsHandler>().Register(container);
         }
     }
 }

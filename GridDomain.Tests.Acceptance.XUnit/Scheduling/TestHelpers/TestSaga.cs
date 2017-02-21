@@ -23,14 +23,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 
         public State Started { get; set; }
 
-        public static ISagaDescriptor Descriptor
+        static TestSaga()
         {
-            get
-            {
-                var descriptor = SagaDescriptor.CreateDescriptor<TestSaga, TestSagaState>();
-                descriptor.AddStartMessage<TestSagaState>();
-                return descriptor;
-            }
+            var descriptor = SagaDescriptor.CreateDescriptor<TestSaga, TestSagaState>();
+            descriptor.AddStartMessage<TestSagaStartMessage>();
+            descriptor.AddAcceptedMessage(typeof(TestEvent));
+            Descriptor = descriptor;
         }
+        public static ISagaDescriptor Descriptor { get; }
+       
     }
 }

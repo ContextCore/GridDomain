@@ -32,14 +32,15 @@ namespace GridDomain.Tests.XUnit
         private readonly Lazy<Task<GridDomainNode>> _lazyNode;
         protected GridDomainNode Node => _lazyNode.Value.Result;
         protected readonly AkkaConfiguration AkkaConfig;
-        protected readonly TimeSpan DefaultTimeOut;
+        protected NodeTestFixture Fixture { get; }
+
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture)
                             : base(fixture.GetConfig(), fixture.Name)
         {
-            fixture.System = Sys;
-            fixture.Output = output;
+            Fixture = fixture;
+            Fixture.System = Sys;
+            Fixture.Output = output;
             AkkaConfig = fixture.AkkaConfig;
-            DefaultTimeOut = fixture.DefaultTimeout;
             _lazyNode = new Lazy<Task<GridDomainNode>>(fixture.CreateNode);
         }
     }
