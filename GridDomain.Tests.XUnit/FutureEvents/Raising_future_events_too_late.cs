@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
+using GridDomain.Scheduling.Integration;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Serilog.Events;
@@ -21,6 +22,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 
             await Node.Prepare(testCommand)
                       .Expect<TestDomainEvent>()
+                      .And<JobSucceeded>()
                       .Execute();
 
             var aggregate = await Node.LoadAggregate<FutureEventsAggregate>(testCommand.AggregateId);

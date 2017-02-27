@@ -16,11 +16,10 @@ namespace GridDomain.Tests.XUnit.Sagas
         public async Task When_publishing_start_message()
         {
             Guid sagaId = Guid.NewGuid();
-            Node.NewDebugWaiter()
-                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                .Create()
-                .SendToSagas(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId))
-                .Wait();
+            await Node.NewDebugWaiter()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                      .Create()
+                      .SendToSagas(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId));
 
             var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
             //Saga_data_is_not_null()

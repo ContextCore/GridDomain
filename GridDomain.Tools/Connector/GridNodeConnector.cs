@@ -30,7 +30,7 @@ namespace GridDomain.Tools.Connector
                                  TimeSpan? defaultTimeout = null)
         {
             _serverAddress = serverAddress;
-            _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(30);
+            _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
             _conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
         }
 

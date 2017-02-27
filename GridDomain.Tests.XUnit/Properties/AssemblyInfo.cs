@@ -37,4 +37,4 @@ using Xunit;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance.XUnit")]
 //[assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly,DisableTestParallelization = true)]
-
+[assembly: CollectionBehavior(MaxParallelThreads = 4)]

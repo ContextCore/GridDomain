@@ -35,7 +35,7 @@ namespace GridDomain.Tests.XUnit.GridConsole
            
             await _serverNode.Start();
             
-            _connector = new GridNodeConnector(serverConfig.Network,null,TimeSpan.FromSeconds(5));
+            _connector = new GridNodeConnector(serverConfig.Network);
 
             await _connector.Connect();
             //Console_commands_are_executed_by_remote_node()
