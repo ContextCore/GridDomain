@@ -336,7 +336,6 @@
     <Compile Include="Sagas\Transitions\Given_created_event_when_hydrating.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoSleepCommand.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\GoToWorkCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Commands\MakeCoffeCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Events\CoffeMadeEvent.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Events\CoffeMakeFailedEvent.cs" />

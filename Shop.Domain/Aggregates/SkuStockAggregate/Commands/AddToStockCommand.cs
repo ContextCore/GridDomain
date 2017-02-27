@@ -5,15 +5,14 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
 {
     public class AddToStockCommand : Command
     {
-        public AddToStockCommand(Guid stockId, Guid skuId, int quantity, string batchArticle)
+        public AddToStockCommand(Guid stockId, Guid skuId, int quantity, string batchArticle):base(stockId)
         {
-            StockId = stockId;
             SkuId = skuId;
             Quantity = quantity;
             BatchArticle = batchArticle;
         }
 
-        public Guid StockId { get; }  
+        public Guid StockId => AggregateId;
         public Guid SkuId { get; }  
         public int Quantity{ get; }  
         public string BatchArticle { get; }

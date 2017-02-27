@@ -5,13 +5,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain.Commands
 {
     public class CreateSampleAggregateCommand : Command
     {
-        public CreateSampleAggregateCommand(int parameter, Guid aggregateId)
+        public CreateSampleAggregateCommand(int parameter, Guid aggregateId):base(aggregateId)
         {
             Parameter = parameter;
-            AggregateId = aggregateId;
         }
 
-        public Guid AggregateId { get; }
         public int Parameter { get; }
     }
 }

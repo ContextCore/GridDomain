@@ -44,7 +44,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaStartEvent);
 
-            var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+           //var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+           //saga.Tell(NotifyOnPersistenceEvents.Instance);
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
@@ -56,18 +57,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var sagaContinueEventB = new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
                 new Exception(), typeof(object), sagaId, BusinessDateTime.Now);
 
-            FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
-
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                       .Create()
                       .SendToSagas(sagaContinueEventB);
 
-            
-            await saga.Ask<SubscribeAck>(NotifyOnPersistenceEvents.Instance);
-            FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
-            //saving snapshot
-            //await Task.Delay(200);
+
+         //   FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
+
+            await Task.Delay(500);
 
             var snapshots =
                 await

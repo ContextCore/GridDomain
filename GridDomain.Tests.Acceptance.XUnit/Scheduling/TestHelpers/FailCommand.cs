@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
     {
         public TimeSpan Timeout { get; }
 
-        public FailCommand(TimeSpan timeout = default(TimeSpan))
+        public FailCommand(TimeSpan timeout = default(TimeSpan)):base(Guid.NewGuid())
         {
             Timeout = timeout;
         }

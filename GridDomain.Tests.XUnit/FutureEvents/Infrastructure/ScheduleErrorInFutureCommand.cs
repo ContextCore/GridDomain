@@ -5,15 +5,12 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
     public class ScheduleErrorInFutureCommand : Command
     {
-        public ScheduleErrorInFutureCommand(DateTime raiseTime, Guid aggregateId, string value, int succedOnRetryNum)
+        public ScheduleErrorInFutureCommand(DateTime raiseTime, Guid aggregateId, string value, int succedOnRetryNum):base(aggregateId)
         {
             RaiseTime = raiseTime;
-            AggregateId = aggregateId;
             Value = value;
             SuccedOnRetryNum = succedOnRetryNum;
         }
-
-        public Guid AggregateId { get; }
         public DateTime RaiseTime { get; }
         public string Value { get; }
         public int SuccedOnRetryNum { get;}

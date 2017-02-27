@@ -109,7 +109,7 @@ namespace GridDomain.Node.Actors
             _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault,metadata))
                                 .PipeTo(Self);
 
-            Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", State.Id, ex, cmd);
+            Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, ex, cmd);
         }
 
         private void PersistState(ICommand command, IMessageMetadata commandMetadata)

@@ -5,11 +5,10 @@ namespace Shop.Domain.Aggregates.OrderAggregate.Commands
 {
     public class OrderCommand : Command
     {
-        public Guid OrderId { get; }
+        public Guid OrderId => AggregateId;
 
-        public OrderCommand(Guid orderId)
+        public OrderCommand(Guid orderId):base(orderId)
         {
-            OrderId = orderId;
         }
     }
 }

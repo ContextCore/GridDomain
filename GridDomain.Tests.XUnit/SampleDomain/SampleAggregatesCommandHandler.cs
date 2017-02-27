@@ -46,11 +46,9 @@ namespace GridDomain.Tests.XUnit.SampleDomain
     public class IncreaseSampleAggregateCommand:Command
     {
         public int Value { get; }
-        public Guid AggregateId { get; }
 
-        public IncreaseSampleAggregateCommand(int value, Guid id)
+        public IncreaseSampleAggregateCommand(int value, Guid aggregateId):base(aggregateId)
         {
-            AggregateId = id;
             Value = value;
         }
     }

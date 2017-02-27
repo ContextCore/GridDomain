@@ -39,7 +39,10 @@ namespace GridDomain.Tests.XUnit
 
         class FakeCommand : Command
         {
-            
+            public FakeCommand():base(Guid.NewGuid())
+            {
+                
+            } 
         }
        [Fact]
         public void Generic_domain_classes_should_be_deserializable()

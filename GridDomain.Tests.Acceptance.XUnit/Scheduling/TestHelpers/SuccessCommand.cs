@@ -1,3 +1,4 @@
+using System;
 using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
@@ -6,7 +7,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
     {
         public string Text { get; private set; }
 
-        public SuccessCommand(string text)
+        public SuccessCommand(string text) : base(Guid.NewGuid())
         {
             Text = text;
         }

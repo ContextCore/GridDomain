@@ -6,12 +6,11 @@ namespace Shop.Domain.Aggregates.UserAggregate.Commands
     public class BuySkuNowCommand: Command
     {
         public Guid SkuId { get; }
-        public Guid UserId { get; }
+        public Guid UserId => AggregateId;
         public int Quantity { get; }
 
-        public BuySkuNowCommand(Guid userId, Guid skuId, int quantity)
+        public BuySkuNowCommand(Guid userId, Guid skuId, int quantity):base(userId)
         {
-            UserId = userId;
             SkuId = skuId;
             Quantity = quantity;
         }

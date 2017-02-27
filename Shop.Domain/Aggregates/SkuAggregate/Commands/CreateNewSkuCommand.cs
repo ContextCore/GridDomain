@@ -12,14 +12,13 @@ namespace Shop.Domain.Aggregates.SkuAggregate.Commands
     {
         public string Name { get; }
         public string Article { get; }
-        public Guid SkuId { get; }
+        public Guid SkuId => AggregateId;
         public Money Price { get; }
 
-        public CreateNewSkuCommand(string name, string article,Guid skuId, Money price)
+        public CreateNewSkuCommand(string name, string article,Guid skuId, Money price):base(skuId)
         {
             Name = name;
             Article = article;
-            SkuId = skuId;
             Price = price;
         }
     }

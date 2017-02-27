@@ -5,12 +5,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
     public class CancelFutureEventCommand : Command
     {
-        public CancelFutureEventCommand(Guid aggregateId, string value)
+        public CancelFutureEventCommand(Guid aggregateId, string value):base(aggregateId)
         {
-            AggregateId = aggregateId;
             Value = value;
         }
-        public Guid AggregateId { get; }
         public string Value { get; }
     }
 }

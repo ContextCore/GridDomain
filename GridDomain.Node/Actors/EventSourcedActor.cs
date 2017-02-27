@@ -103,6 +103,7 @@ namespace GridDomain.Node.Actors
                                                 UnbecomeStacked();
                                                 Stash.UnstashAll();
                                                 Log.Info("Aborting shutdown, will resume activity");
+                                                Sender.Tell(ShutdownCanceled.Instance);
                                             });
 
              Command<GracefullShutdownRequest>(s =>
@@ -161,5 +162,14 @@ namespace GridDomain.Node.Actors
         {
             Monitor.IncrementActorRestarted();
         }
+    }
+
+    public class ShutdownCanceled
+    {
+        private ShutdownCanceled()
+        {
+            
+        }
+        public static ShutdownCanceled Instance { get; } = new ShutdownCanceled();
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
@@ -8,13 +9,14 @@ using Akka.Event;
 using Akka.Monitoring;
 using GridDomain.Common;
 using GridDomain.Logging;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
     /// <summary>
     /// Any child should be terminated by ShutdownRequest message
     /// </summary>
-    public abstract class PersistentHubActor: ReceiveActor
+    public abstract class PersistentHubActor: ReceiveActor, IWithUnboundedStash
     {
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
@@ -24,6 +26,7 @@ namespace GridDomain.Node.Actors
         private readonly ActorMonitor _monitor;
         private readonly ILoggingAdapter Logger = Context.GetLogger();
         private readonly ProcessEntry _forwardEntry;
+        public IStash Stash { get; set; }
 
         protected abstract string GetChildActorName(object message);
         protected abstract Guid GetChildActorId(object message);
@@ -34,9 +37,28 @@ namespace GridDomain.Node.Actors
             _recycleConfiguration = recycleConfiguration;
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
             _forwardEntry = new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded");
-
+            
+            Receive<Terminated>(t =>
+                                {
+                                    AggregateActorName name;
+                                    if (!AggregateActorName.TryParse(t.ActorRef.Path.Name, out name))
+                                        return;
+                                    Children.Remove(name.Id);
+                                    //continue to process any remaining messages
+                                    //for example when we are trying to resume terminating child with no success
+                                    Stash.UnstashAll();
+                                });
             Receive<ClearChildren>(m => Clear());
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
+            Receive<ShutdownCanceled>(m =>
+                                      {
+                                          AggregateActorName name;
+                                          if (!AggregateActorName.TryParse(Sender.Path.Name, out name))
+                                              return;
+                                          //child was resumed from planned shutdown
+                                          Children[name.Id].Terminating = false;
+                                          Stash.UnstashAll();
+                                      });
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Receive<IMessageMetadataEnvelop>(messageWitMetadata =>
             {
@@ -53,6 +75,16 @@ namespace GridDomain.Node.Actors
                     childWasCreated = true;
                     knownChild = CreateChild(messageWitMetadata, name);
                     Children[childId] = knownChild;
+                    Context.Watch(knownChild.Ref);
+                }
+                else
+                {
+                    //terminating a child is quite long operation due to snapshots saving
+                    //it is cheaper to resume child than wait for it termination and create rom scratch
+                    if (knownChild.Terminating)
+                        Stash.Stash();
+
+                    knownChild.Ref.Tell(CancelShutdownRequest.Instance);
                 }
 
                 knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
@@ -78,23 +110,19 @@ namespace GridDomain.Node.Actors
            var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt)
                                            .Select(ch => ch.Key)
                                            .ToArray();
-           foreach (var childId in childsToTerminate)
-           {
-               //TODO: wait for child termination
-               ShutdownChild(childId);
-           }
 
-            Logger.Debug("Clear childs process finished, removed {childsToTerminate} childs", childsToTerminate.Length);
+           foreach (var childId in childsToTerminate)
+               ShutdownChild(childId);
+
+           Logger.Debug("Clear childs process finished, removing {childsToTerminate} childs", childsToTerminate.Length);
         }
 
         private void ShutdownChild(Guid childId)
         {
             ChildInfo childInfo;
-            if (!Children.TryGetValue(childId, out childInfo))
-                return;
-
+            if (!Children.TryGetValue(childId, out childInfo)) return;
             childInfo.Ref.Tell(GracefullShutdownRequest.Instance);
-            Children.Remove(childId);
+            childInfo.Terminating = true;
         }
 
         public class ClearChildren
@@ -127,5 +155,6 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorStopped();
             Logger.Debug("{ActorHub} was stopped", Self.Path);
         }
+
     }
 }

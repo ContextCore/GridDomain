@@ -5,13 +5,12 @@ namespace Shop.Domain.Aggregates.UserAggregate.Commands
 {
     public class CompletePendingOrderCommand : Command
     {
-        public CompletePendingOrderCommand(Guid userId, Guid orderId)
+        public CompletePendingOrderCommand(Guid userId, Guid orderId):base(orderId)
         {
             UserId = userId;
-            OrderId = orderId;
         }
 
         public Guid UserId { get; }
-        public Guid OrderId { get; }
+        public Guid OrderId => AggregateId;
     }
 }

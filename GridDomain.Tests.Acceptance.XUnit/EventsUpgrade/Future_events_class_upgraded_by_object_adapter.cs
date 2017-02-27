@@ -35,15 +35,13 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                       .Execute();
         }
 
-   
-
         class EventAdaptersFixture : BalanceFixture
         {
             public EventAdaptersFixture()
             {
                 this.InitFastRecycle();
                 InMemory = false;
-                LogLevel = LogEventLevel.Information;
+                LogLevel = LogEventLevel.Debug;
             }
 
             protected override void OnNodeCreated()
