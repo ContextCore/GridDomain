@@ -11,17 +11,13 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
         public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new FutureEventsAggregatesCommandHandler();
         public FutureEventsAggregatesCommandHandler()
         {
-            Map<ScheduleEventInFutureCommand>(c => c.AggregateId,
-                                             (c, a) => a.ScheduleInFuture(c.RaiseTime, c.Value));
+            Map<ScheduleEventInFutureCommand>((c, a) => a.ScheduleInFuture(c.RaiseTime, c.Value));
 
-            Map<ScheduleErrorInFutureCommand>(c => c.AggregateId,
-                                            (c, a) => a.ScheduleErrorInFuture(c.RaiseTime, c.Value, c.SuccedOnRetryNum));
+            Map<ScheduleErrorInFutureCommand>((c, a) => a.ScheduleErrorInFuture(c.RaiseTime, c.Value, c.SuccedOnRetryNum));
 
-            Map<CancelFutureEventCommand>(c => c.AggregateId,
-                                          (c, a) => a.CancelFutureEvents(c.Value));
+            Map<CancelFutureEventCommand>((c, a) => a.CancelFutureEvents(c.Value));
 
-            Map<ScheduleErrorInFutureCommand>(c => c.AggregateId,
-                                              (c, a) => a.ScheduleErrorInFuture(c.RaiseTime,c.Value, c.SuccedOnRetryNum));
+            Map<ScheduleErrorInFutureCommand>((c, a) => a.ScheduleErrorInFuture(c.RaiseTime,c.Value, c.SuccedOnRetryNum));
 
             this.MapFutureEvents();
         }

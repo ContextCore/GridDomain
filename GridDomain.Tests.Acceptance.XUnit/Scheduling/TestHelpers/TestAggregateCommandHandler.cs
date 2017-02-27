@@ -6,9 +6,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
     {
         public TestAggregateCommandHandler()
         {
-            Map<SuccessCommand>(cmd => cmd.Id, (cmd, agg) => agg.Success(cmd.Text));
-            Map<TimeoutCommand>(cmd => cmd.Id, (cmd, agg) => agg.LongTime(cmd.Text, cmd.Timeout));
-            Map<FailCommand>(cmd => cmd.Id, (cmd, agg) => agg.Failure(cmd.Timeout));
+            Map<SuccessCommand>((cmd, agg) => agg.Success(cmd.Text));
+            Map<TimeoutCommand>((cmd, agg) => agg.LongTime(cmd.Text, cmd.Timeout));
+            Map<FailCommand>((cmd, agg) => agg.Failure(cmd.Timeout));
         }
     }
 }

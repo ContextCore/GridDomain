@@ -8,8 +8,7 @@ namespace GridDomain.CQRS.Messaging
     {
         public static void MapFutureEvents<TAggregate>(this AggregateCommandsHandler<TAggregate> handler) where TAggregate : Aggregate
         {
-            handler.Map<RaiseScheduledDomainEventCommand>(c => c.AggregateId,
-                                                         (c, a) => a.RaiseScheduledEvent(c.FutureEventId, c.Id));
+            handler.Map<RaiseScheduledDomainEventCommand>((c, a) => a.RaiseScheduledEvent(c.FutureEventId, c.Id));
         }
     }
 }

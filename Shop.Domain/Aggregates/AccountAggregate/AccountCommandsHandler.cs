@@ -5,16 +5,13 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 {
     public class AccountCommandsHandler : AggregateCommandsHandler<Account>
     {
-        public AccountCommandsHandler() : base()
+        public AccountCommandsHandler()
         {
-            Map<CreateAccountCommand>(cmd => cmd.AccountId,
-                   cmd => new Account(cmd.AccountId, cmd.UserId, cmd.Number));
+            Map<CreateAccountCommand>(cmd => new Account(cmd.AccountId, cmd.UserId, cmd.Number));
 
-            Map<ReplenishAccountByCardCommand>(cmd => cmd.AccountId,
-                (cmd, agr) => agr.Replenish(cmd.Amount, cmd.Id));
+            Map<ReplenishAccountByCardCommand>((cmd, agr) => agr.Replenish(cmd.Amount, cmd.Id));
 
-            Map<PayForOrderCommand>(cmd => cmd.AccountId,
-                (cmd, agr) => agr.Withdraw(cmd.Amount, cmd.Id));
+            Map<PayForOrderCommand>((cmd, agr) => agr.Withdraw(cmd.Amount, cmd.Id));
         }
     }
 }

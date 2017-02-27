@@ -8,17 +8,13 @@ namespace Shop.Domain.Aggregates.UserAggregate
 
         public UserCommandsHandler(IDefaultStockProvider stockProvider)
         {
-            Map<CreateUserCommand>(c => c.UserId,
-                                   c => new User(c.UserId,c.Login,c.AccountId));
+            Map<CreateUserCommand>(c => new User(c.UserId,c.Login,c.AccountId));
 
-            Map<CompletePendingOrderCommand>(c => c.UserId,
-                                            (c,a) => a.CompleteOrder(c.OrderId) );
+            Map<CompletePendingOrderCommand>((c,a) => a.CompleteOrder(c.OrderId) );
 
-            Map<BuySkuNowCommand>(c => c.UserId,
-                                 (c,a) => a.BuyNow(c.SkuId,c.Quantity, stockProvider));
+            Map<BuySkuNowCommand>((c,a) => a.BuyNow(c.SkuId,c.Quantity, stockProvider));
 
-            Map<CancelPendingOrderCommand>(c => c.UserId,   
-                                          (c,a) => a.CancelOrder(c.OrderId));
+            Map<CancelPendingOrderCommand>((c,a) => a.CancelOrder(c.OrderId));
         }
     }
 }

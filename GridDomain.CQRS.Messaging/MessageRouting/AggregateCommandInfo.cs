@@ -5,12 +5,11 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     public class AggregateCommandInfo
     {
         public Type CommandType { get; }
-        public string AggregateIdPropertyName { get; }
+        public string AggregateIdPropertyName { get; } = nameof(ICommand.AggregateId);
 
-        public AggregateCommandInfo(Type command, string aggregateIdPropertyName)
+        public AggregateCommandInfo(Type command)
         {
             CommandType = command;
-            AggregateIdPropertyName = aggregateIdPropertyName;
         }
     }
 }

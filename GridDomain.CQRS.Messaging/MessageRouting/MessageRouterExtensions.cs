@@ -28,7 +28,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             var descriptor = new AggregateCommandsHandlerDescriptor<TAggregate>();
             foreach (var info in handler.RegisteredCommands)
-                descriptor.RegisterCommand(info.CommandType, info.AggregateIdPropertyName);
+                descriptor.RegisterCommand(info.CommandType);
 
             return router.RegisterAggregate(descriptor);
         }

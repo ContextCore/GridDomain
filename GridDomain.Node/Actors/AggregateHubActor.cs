@@ -1,7 +1,6 @@
 using System;
 using CommonDomain.Core;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
@@ -9,20 +8,19 @@ namespace GridDomain.Node.Actors
     
     public class AggregateHubActor<TAggregate> : PersistentHubActor where TAggregate : AggregateBase
     {
-        private readonly ICommandAggregateLocator<TAggregate> _locator;
         private readonly Type _actorType;
 
-        public AggregateHubActor(ICommandAggregateLocator<TAggregate> locator, IPersistentChildsRecycleConfiguration conf):base(conf,typeof(TAggregate).Name)
+        public AggregateHubActor(IPersistentChildsRecycleConfiguration conf):base(conf,typeof(TAggregate).Name)
         {
             _actorType = typeof(AggregateActor<TAggregate>);
-            _locator = locator;
         }
 
         protected override string GetChildActorName(object message)
         {
-            if (message is ICommand)
+            var command = message as ICommand;
+            if (command != null)
             {
-                return AggregateActorName.New<TAggregate>(_locator.GetAggregateId(message as ICommand))
+                return AggregateActorName.New<TAggregate>(command.AggregateId)
                                          .ToString();
             }
             return null;
@@ -31,11 +29,7 @@ namespace GridDomain.Node.Actors
         protected override Guid GetChildActorId(object message)
         {
             var command = message as ICommand;
-            if (command != null)
-            {
-                return _locator.GetAggregateId(command);
-            }
-            return Guid.Empty;
+            return command?.AggregateId ?? Guid.Empty;
         }
 
         protected override Type GetChildActorType(object message)

@@ -9,17 +9,13 @@ namespace Shop.Domain.Aggregates.OrderAggregate
         private const string OrdersSequenceName = "OrdersSequence";
         public OrderCommandsHandler(ISequenceProvider sequenceProvider)
         {
-            Map<CreateOrderCommand>(c => c.OrderId,
-                                   c => new Order(c.OrderId, sequenceProvider.GetNext(OrdersSequenceName), c.UserId));
+            Map<CreateOrderCommand>(c => new Order(c.OrderId, sequenceProvider.GetNext(OrdersSequenceName), c.UserId));
 
-            Map<AddItemToOrderCommand>(c => c.OrderId,
-                                      (c,a) => a.AddItem(c.SkuId, c.Quantity, c.TotalPrice));
+            Map<AddItemToOrderCommand>((c,a) => a.AddItem(c.SkuId, c.Quantity, c.TotalPrice));
 
-            Map<CalculateOrderTotalCommand>(c => c.OrderId,
-                                      (c, a) => a.CalculateTotal());
+            Map<CalculateOrderTotalCommand>((c, a) => a.CalculateTotal());
 
-            Map<CompleteOrderCommand>(c => c.OrderId,
-                                      (c,a) => a.Complete());
+            Map<CompleteOrderCommand>((c,a) => a.Complete());
 
         }
     }

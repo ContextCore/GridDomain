@@ -15,8 +15,7 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
         public TestAggregatesCommandHandler(IUnityContainer unityContainer) : base()
         {
             _locator = unityContainer;
-            Map<TestCommand>(c => c.AggregateId,
-                            (c, a) => a.Execute(c.Parameter, _locator.Resolve<ITestDependency>()));
+            Map<TestCommand>((c, a) => a.Execute(c.Parameter, _locator.Resolve<ITestDependency>()));
         }
 
         public Type AggregateType => typeof(TestAggregate);

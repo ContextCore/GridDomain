@@ -10,8 +10,7 @@ namespace Shop.Domain.Aggregates.SkuAggregate
     {
         public SkuCommandsHandler(ISequenceProvider provider)
         {
-            Map<CreateNewSkuCommand>(c => c.SkuId,
-                c => new Sku(c.SkuId,c.Name,c.Article, (int)provider.GetNext("Sku"), c.Price));
+            Map<CreateNewSkuCommand>(c => new Sku(c.SkuId,c.Name,c.Article, (int)provider.GetNext("Sku"), c.Price));
         }
     }
 }

@@ -18,47 +18,27 @@ namespace GridDomain.Node.Configuration.Composition
 {
 
 
-    public class AggregateConfiguration<TAggregate, TCommandAggregateLocator> :
-        AggregateConfiguration<TAggregate, TCommandAggregateLocator, TCommandAggregateLocator> 
-        where TAggregate : AggregateBase where TCommandAggregateLocator : ICommandAggregateLocator<TAggregate>, IAggregateCommandsHandler<TAggregate>
+    public class AggregateConfiguration<TAggregate, TAggregateCommandsHandler> : IContainerConfiguration
+        where TAggregate : AggregateBase where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
     {
-        public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy, IConstructAggregates snapshotsFactory) : base(snapshotsPolicy,snapshotsFactory)
-        {
-            
-        }
-
-        public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy, Func<IMemento,TAggregate> snapshotsFactory) : base(snapshotsPolicy, 
+        public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy=null, Func<IMemento,TAggregate> snapshotsFactory=null) : this(snapshotsPolicy, 
                                                                                                            new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory))
         {
 
         }
 
-
-        public AggregateConfiguration() : base(null,null)
-        {
-
-        }
-    }
-
-    public class AggregateConfiguration<TAggregate, TCommandAggregateLocator, TAggregateCommandsHandler>:
-                     IContainerConfiguration
-                     where TCommandAggregateLocator : ICommandAggregateLocator<TAggregate>
-                     where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
-                     where TAggregate : AggregateBase
-    {
-        private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
-        private readonly IConstructAggregates _factory;
-
-        public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null, IConstructAggregates snapshotsFactory = null)
+        private AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null, IConstructAggregates snapshotsFactory = null)
         {
             _factory = snapshotsFactory ?? new AggregateFactory();
             _snapshotsPolicyFactory = snapshotsPolicy ?? (() => new NoSnapshotsPersistencePolicy());
         }
 
+        private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
+        private readonly IConstructAggregates _factory;
+
         public void Register(IUnityContainer container)
         {
             container.RegisterType<AggregateHubActor<TAggregate>>();
-            container.RegisterType<ICommandAggregateLocator<TAggregate>, TCommandAggregateLocator>();
             container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
 
             var aggregateRegistrationName = typeof(TAggregate).Name;

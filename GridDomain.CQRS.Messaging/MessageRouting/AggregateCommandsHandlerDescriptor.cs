@@ -5,15 +5,14 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateCommandsHandlerDescriptor<T> : IAggregateCommandsHandlerDescriptor
     {
-  
-        public void RegisterCommand<TCommand>(string property)
+        public void RegisterCommand<TCommand>()
         {
-            _registrations.Add(new AggregateCommandInfo(typeof(TCommand), property));
+            RegisterCommand(typeof(TCommand));
         }
 
-        public void RegisterCommand(Type type,string property)
+        public void RegisterCommand(Type type)
         {
-            _registrations.Add(new AggregateCommandInfo(type, property));
+            _registrations.Add(new AggregateCommandInfo(type));
         }
 
         private readonly List<AggregateCommandInfo> _registrations = new List<AggregateCommandInfo>();

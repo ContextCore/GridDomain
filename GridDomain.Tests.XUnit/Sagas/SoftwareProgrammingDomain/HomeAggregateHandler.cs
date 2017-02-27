@@ -8,7 +8,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
     {
         public HomeAggregateHandler()
         {
-            Map<GoSleepCommand>(c => c.Id, (c,a) => a.Sleep(c.SofaId));
+            Map<GoSleepCommand>((c,a) => a.Sleep(c.SofaId));
         }
 
         public Type AggregateType => typeof(HomeAggregate);

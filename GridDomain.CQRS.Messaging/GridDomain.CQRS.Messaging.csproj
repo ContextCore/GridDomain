@@ -125,7 +125,6 @@
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
     <Compile Include="MessageRouting\IAggregateCommandsHandlerDescriptor.cs" />
-    <Compile Include="MessageRouting\ICommandAggregateLocator.cs" />
     <Compile Include="MessageRouting\IHandlerBuilder.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
     <Compile Include="MessageRouting\IRouteBuilder.cs" />

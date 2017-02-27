@@ -12,9 +12,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 {
     public class Execute_command_waiting_aggregate_event : SampleDomainCommandExecutionTests
     {
-        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : base(output)
-        {
-        }
+        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : base(output) {}
 
         [Fact]
         public async Task CommandWaiter_Should_wait_until_aggregate_event()
@@ -22,37 +20,39 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
             var res = await Node.Prepare(cmd)
-                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                                    .Execute();
+                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                .Execute();
 
             var msg = res.Message<SampleAggregateChangedEvent>();
 
             Assert.Equal(cmd.Parameter.ToString(), msg.Value);
         }
-        
-       [Fact]
+
+        [Fact]
         public async Task MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var waiter =  Node.NewWaiter()
-                              .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                              .Create();
+            var waiter = Node.NewWaiter()
+                             .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                             .Create();
 
             Node.Execute(cmd);
             var res = await waiter;
-            
-            Assert.Equal(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);
+
+            Assert.Equal(cmd.Parameter.ToString(),
+                res.Message<SampleAggregateChangedEvent>()
+                   .Value);
         }
 
-       [Fact]
+        [Fact]
         public async Task After_wait_ends_aggregate_should_be_changed()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
             var res = await Node.Prepare(cmd)
-                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                                    .Execute();
+                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                .Execute();
 
             var msg = res.Message<SampleAggregateChangedEvent>();
 
@@ -65,24 +65,24 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
             await Node.Prepare(cmd)
-                          .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                          .Execute(TimeSpan.FromMilliseconds(100))
-                          .ShouldThrow<TimeoutException>();
+                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                      .Execute(TimeSpan.FromMilliseconds(100))
+                      .ShouldThrow<TimeoutException>();
         }
-
 
         [Fact]
         public async Task After_wait_of_async_command_aggregate_should_be_changed()
         {
-            var cmd = new AsyncMethodCommand(42, Guid.NewGuid(),Guid.NewGuid(),TimeSpan.FromMilliseconds(50));
+            var cmd = new AsyncMethodCommand(42, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromMilliseconds(50));
 
             var res = await Node.Prepare(cmd)
-                                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                                    .Execute();
+                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                .Execute();
 
-            Assert.Equal(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);
+            Assert.Equal(cmd.Parameter.ToString(),
+                res.Message<SampleAggregateChangedEvent>()
+                   .Value);
         }
-
 
         [Fact]
         public async Task CommandWaiter_will_wait_for_all_of_expected_message()
