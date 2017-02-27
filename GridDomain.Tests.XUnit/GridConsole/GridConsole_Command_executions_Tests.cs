@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.GridConsole
         public async Task Given_existing_GridNode()
         {
             var container = new UnityContainer();
-            var sampleDomainContainerConfiguration = new SampleDomainContainerConfiguration();
+           var sampleDomainContainerConfiguration = new SampleDomainContainerConfiguration();
             container.Register(sampleDomainContainerConfiguration);
            
             var serverConfig = new TestGridNodeConfiguration();
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.XUnit.GridConsole
             _serverNode = new GridDomainNode(settings);
            
             await _serverNode.Start();
-
+            
             _connector = new GridNodeConnector(serverConfig.Network,null,TimeSpan.FromSeconds(5));
 
             await _connector.Connect();

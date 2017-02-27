@@ -5,7 +5,7 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class AggregateActorName
     {
-        private static readonly string Separator = "_";
+        private static readonly string Separator = ":";
 
         internal AggregateActorName(Type aggregateType, Guid id)
         {
@@ -34,8 +34,6 @@ namespace GridDomain.Node.AkkaMessaging
         public static bool TryParseId(string value, out Guid id)
         {
             var parts = value.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2)
-                throw new BadNameFormatException();
 
             return Guid.TryParse(parts[1], out id);
         }

@@ -7,12 +7,9 @@ namespace GridDomain.EventSourcing.FutureEvents
     {
         public Guid FutureEventId { get; }
 
-        public Guid AggregateId { get; }
-
-        public RaiseScheduledDomainEventCommand(Guid futureEventId, Guid aggregateId, Guid id):base(id)
+        public RaiseScheduledDomainEventCommand(Guid futureEventId, Guid aggregateId, Guid id):base(id,aggregateId)
         {
             FutureEventId = futureEventId;
-            AggregateId = aggregateId;
         }
     }
 }

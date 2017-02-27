@@ -24,18 +24,16 @@ namespace GridDomain.Tests.XUnit.Serialization
         {
             public JsonFixture()
             {
-                OnNodeCreatedEvent += JsonFixture_OnNodeCreatedEvent;
-            }
-
-            private void JsonFixture_OnNodeCreatedEvent(object sender, System.EventArgs e)
-            {
-                var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(Node.System);
-                ext.Settings = new MyJsonSettings();
+                OnNodeStartedEvent += (sender, args) =>
+                                      {
+                                          var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(Node.System);
+                                          ext.Settings = new MyJsonSettings();
+                                      };
             }
         }
 
         [Fact]
-        public async Task When_settings_are_customized_it_is_used_by_grid_node()
+        public void When_settings_are_customized_it_is_used_by_grid_node()
         {
             var serializer = new DomainEventsJsonAkkaSerializer(Node.System as ExtendedActorSystem);
 

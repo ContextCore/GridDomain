@@ -25,9 +25,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
             {
                 var nodeSettings = base.CreateNodeSettings();
                 //Two fast retries
-                nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, TimeSpan.FromMilliseconds(10));
+                nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, TimeSpan.FromMilliseconds(10),new DefaultExceptionPolicy());
                 return nodeSettings;
             }
+
         }
 
         [Fact]
@@ -40,7 +41,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                              .Expect<JobFailed>()
                              .And<JobSucceeded>()
                              .And<TestErrorDomainEvent>()
-                             .Execute(TimeSpan.FromSeconds(10));
+                             .Execute();
 
             var res = await waiter;
             var actual = res.Message<TestErrorDomainEvent>().Value;

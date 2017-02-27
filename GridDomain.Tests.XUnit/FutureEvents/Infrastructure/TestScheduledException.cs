@@ -6,7 +6,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
     {
         public int RetriesToSucceed { get; }
 
-        public TestScheduledException(int retriesToSucceed):base($"Intentional test exception was reised, retry {retriesToSucceed} times to succeed")
+        public TestScheduledException(int retriesToSucceed):base($"Intentional test exception was raised, retry {retriesToSucceed} times to succeed")
         {
             RetriesToSucceed = retriesToSucceed;
         }
