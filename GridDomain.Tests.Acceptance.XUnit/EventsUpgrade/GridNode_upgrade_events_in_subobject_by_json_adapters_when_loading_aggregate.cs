@@ -36,9 +36,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 
         class EventsUpgradeFixture : SampleDomainFixture
         {
-            protected override void OnNodeCreated()
+            public EventsUpgradeFixture()
             {
-                Node.EventsAdaptersCatalog.Register(new String01Adapter());
+                OnNodeCreatedEvent += (sender, args) =>
+                     Node.EventsAdaptersCatalog.Register(new String01Adapter());
             }
 
             class String01Adapter : ObjectAdapter<string, string>

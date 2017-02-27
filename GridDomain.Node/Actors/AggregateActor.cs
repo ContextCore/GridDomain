@@ -68,7 +68,7 @@ namespace GridDomain.Node.Actors
             {
                 var cmd = m.Message;
                 Monitor.IncrementMessagesReceived();
-                Log.Debug("{Aggregate} received a {@command}", State.Id, cmd);
+                Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
 
                 try
                 {

@@ -7,7 +7,8 @@ namespace GridDomain.Node.Actors
     {
         public bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate)
         {
-            return false;
+            deleteDelegate(SnapshotSelectionCriteria.None);
+            return true;
         }
 
         public void MarkSnapshotApplied(long sequenceNr)
@@ -20,7 +21,7 @@ namespace GridDomain.Node.Actors
 
         public bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null)
         {
-            return false;
+            return true;
         }
     }
 }

@@ -127,12 +127,12 @@ namespace GridDomain.Tests.XUnit
         public event EventHandler OnNodeStartedEvent = delegate { };
         public event EventHandler OnNodeCreatedEvent = delegate { };
 
-        protected virtual void OnNodeCreated()
+        protected void OnNodeCreated()
         {
             OnNodeCreatedEvent.Invoke(this, new EventArgs());
         }
 
-        protected virtual void OnNodeStarted()
+        protected void OnNodeStarted()
         {
             OnNodeStartedEvent.Invoke(this, new EventArgs());
         }

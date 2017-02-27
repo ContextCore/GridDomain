@@ -42,6 +42,7 @@ namespace GridDomain.Node.Actors
 
             Command<GracefullShutdownRequest>(req =>
             {
+                Log.Debug("{Actor} received shutdown request", PersistenceId);
                 Monitor.IncrementMessagesReceived();
                 BecomeStacked(Terminating);
             });
@@ -108,7 +109,7 @@ namespace GridDomain.Node.Actors
 
              Command<GracefullShutdownRequest>(s =>
                                                {
-                                                   if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
+                                                    if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
                                                    {
                                                        Log.Debug("started snapshots delete");
                                                        return;

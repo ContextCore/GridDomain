@@ -22,9 +22,13 @@ namespace GridDomain.Tests.XUnit.Serialization
 
         class JsonFixture : SampleDomainFixture
         {
-            protected override void OnNodeCreated()
+            public JsonFixture()
             {
-                base.OnNodeCreated();
+                OnNodeCreatedEvent += JsonFixture_OnNodeCreatedEvent;
+            }
+
+            private void JsonFixture_OnNodeCreatedEvent(object sender, System.EventArgs e)
+            {
                 var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(Node.System);
                 ext.Settings = new MyJsonSettings();
             }

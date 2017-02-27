@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                 .Expect<BalanceChangedEvent_V1>()
                                 .Execute();
 
-            //event should be modified by json object adapter, chaning its Amount
+            //event should be modified by json object adapter, changing its Amount
             Assert.Equal(101, res.Message<BalanceChangedEvent_V1>().AmountChange);
         }
 
@@ -43,12 +43,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
             public FutureEventsAdapterFixture()
             {
                this.InitFastRecycle();
+               OnNodeCreatedEvent += (sender, args) =>
+               Node.EventsAdaptersCatalog.Register(new IncreaseBy100Adapter());
             }
 
-            protected override void OnNodeCreated()
-            {
-                Node.EventsAdaptersCatalog.Register(new IncreaseBy100Adapter());
-            }
             class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>
             {
                 public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V1 evt)

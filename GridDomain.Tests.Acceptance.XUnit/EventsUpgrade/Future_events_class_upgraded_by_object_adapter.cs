@@ -24,7 +24,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 {
     public class Future_events_class_upgraded_by_object_adapter : NodeTestKit
     {
-       
+        public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output) : base(output,
+                                                             new EventAdaptersFixture() { InMemory = false })
+        { }
+
         [Fact]
         public async Task Future_event_is_upgraded_by_event_adapter()
         {
@@ -42,11 +45,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                 this.InitFastRecycle();
                 InMemory = false;
                 LogLevel = LogEventLevel.Debug;
-            }
-
-            protected override void OnNodeCreated()
-            {
-                Node.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
+                OnNodeCreatedEvent += (sender, args) =>
+                                       Node.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
             }
 
             class BalanceChanged_eventdapter1: ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
@@ -58,7 +58,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
             }
         }
 
-        public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output) : base(output,
-            new EventAdaptersFixture() {InMemory = false}) {}
+
     }
 }

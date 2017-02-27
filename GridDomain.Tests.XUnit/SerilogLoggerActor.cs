@@ -14,7 +14,7 @@ namespace GridDomain.Tests.XUnit
         private static string GetFormat(object message)
         {
             var logMessage = message as LogMessage;
-            return logMessage != null ? logMessage.Format : "Thread:{Thread} Source:{LogSource} Actor:{Actor} {Message}";
+            return logMessage != null ? logMessage.Format : "Thread:{Thread} Source:{LogSource} {Message}";
         }
         private static object[] GetArgs(object message)
         {

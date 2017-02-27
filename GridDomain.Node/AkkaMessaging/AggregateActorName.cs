@@ -30,48 +30,14 @@ namespace GridDomain.Node.AkkaMessaging
             var id = Guid.Parse(value.Replace(aggregateType.BeautyName() + Separator, ""));
             return new AggregateActorName(aggregateType, id);
         }
-        public static bool TryParse<T>(string value, out AggregateActorName name)
-        {
-            var aggregateType = typeof(T);
-            Guid id;
-            if (!Guid.TryParse(value.Replace(aggregateType.BeautyName() + Separator, ""), out id))
-            {
-                name = null;
-                return false;
-            }
-            name = new AggregateActorName(aggregateType, id);
-            return true;
-        }
 
-        public static AggregateActorName ParseDynamic(string value)
+        public static bool TryParseId(string value, out Guid id)
         {
             var parts = value.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 2)
                 throw new BadNameFormatException();
 
-            var type = Type.GetType(parts[0]);
-            if (type == null)
-                throw new CannotFindIdTypeException();
-
-            Guid id;
-            if (!Guid.TryParse(parts[1], out id))
-                throw new IdParseException();
-
-            return new AggregateActorName(type, id);
-        }
-
-        public static bool TryParse(string value, out AggregateActorName name)
-        {
-            try
-            {
-                name = ParseDynamic(value);
-                return true;
-            }
-            catch
-            {
-                name = null;
-                return false;
-            }
+            return Guid.TryParse(parts[1], out id);
         }
 
         public override string ToString()

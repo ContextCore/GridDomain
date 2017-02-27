@@ -42,8 +42,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 
         class ObjectsUpgradeFixture : NodeTestFixture
         {
-            protected override void OnNodeCreated()
+            public ObjectsUpgradeFixture()
             {
+                OnNodeCreatedEvent += (sender, args) =>
                 Node.EventsAdaptersCatalog.Register(new BookOrderAdapter());
             }
         }

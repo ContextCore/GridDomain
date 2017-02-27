@@ -12,11 +12,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
         {
             Add(new CustomContainerConfiguration(c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
             Add(new FutureEventsRouteMap());
-        }
-        protected override void OnNodeStarted()
-        {
-            var scheduler = Node.Container.Resolve<IScheduler>();
-            scheduler.Clear();
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }
     }
 }

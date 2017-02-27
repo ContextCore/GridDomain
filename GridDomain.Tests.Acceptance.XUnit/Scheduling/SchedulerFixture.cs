@@ -18,6 +18,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
         {
             Add(new SchedulerContainerConfiguration());
             Add(new TestRouter());
+
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<Quartz.IScheduler>()
+                                                        .Clear();
         }
 
         protected override NodeSettings CreateNodeSettings()
@@ -26,12 +29,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             settings.QuartzJobRetrySettings = new InMemoryRetrySettings(4, TimeSpan.Zero);
             return settings;
         }
-
-        protected override void OnNodeStarted()
-        {
-            var scheduler = Node.Container.Resolve<Quartz.IScheduler>();
-            scheduler.Clear();
-        }
+      
 
         class SchedulerContainerConfiguration : IContainerConfiguration
         {

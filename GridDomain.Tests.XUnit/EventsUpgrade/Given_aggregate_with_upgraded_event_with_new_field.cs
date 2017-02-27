@@ -47,9 +47,11 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
 
         protected class EventsUpgradeFixture : BalanceFixture
         {
-            protected override void OnNodeCreated()
+            public EventsUpgradeFixture()
             {
+                OnNodeStartedEvent += (sender, args) =>
                 Node.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
+
             }
         }
     }

@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
         {
             fixture.Add(new CustomContainerConfiguration(
                 c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                    new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(100),
+                    new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
                         maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
         }
 

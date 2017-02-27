@@ -2,6 +2,8 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
+using Microsoft.Practices.Unity;
+using Quartz;
 
 namespace GridDomain.Tests.XUnit.EventsUpgrade
 {
@@ -11,6 +13,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
         {
             Add(new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
             Add(new BalanceRouteMap());
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }
 
         protected override NodeSettings CreateNodeSettings()
