@@ -307,8 +307,6 @@
     <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
     <Compile Include="AkkaMessaging\Routing\DublicateRoutesException.cs" />
-    <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
-    <Compile Include="AkkaMessaging\Routing\AkkaRouteBuilder.cs" />
     <Compile Include="AkkaMessaging\CannotFindCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\CreateHandlerRouteMessage.cs" />
     <Compile Include="AkkaMessaging\DefaultHandlerActorTypeFactory.cs" />
