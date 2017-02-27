@@ -6,6 +6,8 @@ using Serilog.Events;
 
 namespace GridDomain.Tests.Framework
 { 
+
+
     public class AutoTestLoggerConfiguration : LoggerConfiguration
     {
         public AutoTestLoggerConfiguration(bool filterAkkaMessages = true)

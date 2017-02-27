@@ -11,30 +11,29 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Serialization
 {
-    public class JsonSerializationSettings_can_be_overriden_by_user
+    public class JsonSerializationSettings_can_be_overriden_by_user: NodeTestKit
     {
-        private Logger _logger;
-
         class MyJsonSettings : JsonSerializerSettings {}
 
-        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output)
+        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output):
+            base(output, new JsonFixture())
         {
-            _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+        }
+
+        class JsonFixture : SampleDomainFixture
+        {
+            protected override void OnNodeCreated()
+            {
+                base.OnNodeCreated();
+                var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(Node.System);
+                ext.Settings = new MyJsonSettings();
+            }
         }
 
         [Fact]
         public async Task When_settings_are_customized_it_is_used_by_grid_node()
         {
-            var settings = new NodeSettings() {Log = _logger};
-
-            var node = new GridDomainNode(settings);
-
-            await node.Start();
-
-            var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(node.System);
-            ext.Settings = new MyJsonSettings();
-
-            var serializer = new DomainEventsJsonAkkaSerializer(node.System as ExtendedActorSystem);
+            var serializer = new DomainEventsJsonAkkaSerializer(Node.System as ExtendedActorSystem);
 
             Assert.IsAssignableFrom<MyJsonSettings>(serializer.Serializer.Value.JsonSerializerSettings);
         }

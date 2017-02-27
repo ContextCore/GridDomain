@@ -22,10 +22,10 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             _eventRepository = eventRepository;
         }
 
-        public void Save<T>(T aggr) where T : IAggregate
+        public async Task Save<T>(T aggr) where T : IAggregate
         {
             var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
-            _eventRepository.Save(persistId, aggr.GetUncommittedEvents().Cast<DomainEvent>().ToArray());
+            await _eventRepository.Save(persistId, aggr.GetUncommittedEvents().Cast<DomainEvent>().ToArray());
             aggr.ClearUncommittedEvents();
         }
 

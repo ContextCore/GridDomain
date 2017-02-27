@@ -6,6 +6,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.Node;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tools.Connector
@@ -13,32 +14,32 @@ namespace GridDomain.Tools.Connector
     /// <summary>
     /// GridNodeConnector is used to connect to remote node and delegate commands execution
     /// </summary>
-    public class GridNodeConnector : IGridDomainNode, IDisposable
+    public class GridNodeConnector : IGridDomainNode
     {
-        private readonly ActorSystem _consoleSystem;
-        public IActorRef EventBusForwarder;
-        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(30);
-        private ICommandExecutor _busCommandExecutor;
-        private readonly IAkkaNetworkAddress _serverAddress;
-        private MessageWaiterFactory _waiterFactory;
-        
+        private readonly AkkaConfiguration _conf;
 
-        public GridNodeConnector(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
+        private readonly TimeSpan _defaultTimeout;
+        private readonly IAkkaNetworkAddress _serverAddress;
+
+        private ICommandExecutor _commandExecutor;
+        private MessageWaiterFactory _waiterFactory;
+        private ActorSystem _consoleSystem;
+
+        public GridNodeConnector(IAkkaNetworkAddress serverAddress, 
+                                 AkkaConfiguration clientConfiguration = null,
+                                 TimeSpan? defaultTimeout = null)
         {
             _serverAddress = serverAddress;
-
-            var conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
-
-            _consoleSystem = conf.CreateInMemorySystem();
-            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
+            _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(30);
+            _conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
         }
 
-        public async Task<IActorRef> GetActor(ActorSelection selection)
+        private async Task<IActorRef> GetActor(ActorSelection selection)
         {
-            return await selection.ResolveOne(NodeControllerResolveTimeout);
+            return await selection.ResolveOne(_defaultTimeout);
         }
 
-        public ActorSelection GetSelection(string relativePath)
+        private ActorSelection GetSelection(string relativePath)
         {
             var actorPath = $"{_serverAddress.ToRootSelectionPath()}/{relativePath}";
 
@@ -47,17 +48,21 @@ namespace GridDomain.Tools.Connector
 
         public async Task Connect()
         {
-            EventBusForwarder = await GetActor(GetSelection(nameof(EventBusForwarder)));
+            if (_consoleSystem != null) return;
 
-            var defaultTimeout = TimeSpan.FromSeconds(30);
+            _consoleSystem = _conf.CreateInMemorySystem();
+            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
+
+            var eventBusForwarder = await GetActor(GetSelection(nameof(ActorTransportProxy)));
 
             var transportBridge = new RemoteAkkaEventBusTransport(
                                                 new LocalAkkaEventBusTransport(_consoleSystem),
-                                                EventBusForwarder,
-                                                defaultTimeout);
+                                                eventBusForwarder,
+                                                _defaultTimeout);
 
-            //_busCommandExecutor = new AkkaCommmandPipeExecutor();
-            _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, defaultTimeout);
+            var commandExecutionActor = await GetActor(GetSelection(nameof(CommandExecutionActor)));
+            _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem, transportBridge, commandExecutionActor,_defaultTimeout);
+            _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
       
         public void Dispose()
@@ -67,12 +72,12 @@ namespace GridDomain.Tools.Connector
 
         public void Execute(params ICommand[] commands)
         {
-            _busCommandExecutor.Execute(commands);
+            _commandExecutor.Execute(commands);
         }
 
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
-            _busCommandExecutor.Execute(command, metadata);
+            _commandExecutor.Execute(command, metadata);
         }
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
@@ -82,7 +87,7 @@ namespace GridDomain.Tools.Connector
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
-            return _busCommandExecutor.Prepare(cmd, metadata);
+            return _commandExecutor.Prepare(cmd, metadata);
         }
     }
 }

@@ -106,7 +106,7 @@
     <Compile Include="IActorSubscriber.cs" />
     <Compile Include="IActorTransport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Remote\EventBusForwarder.cs" />
+    <Compile Include="Remote\ActorTransportProxy.cs" />
     <Compile Include="Remote\Publish.cs" />
     <Compile Include="Remote\PublishAck.cs" />
     <Compile Include="Remote\PublishMany.cs" />

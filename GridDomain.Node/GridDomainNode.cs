@@ -44,7 +44,7 @@ namespace GridDomain.Node
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
         public IActorTransport Transport { get; private set; }
         public ActorSystem System { get; private set; }
-        private IActorRef EventBusForwarder { get; set; }
+        private IActorRef ActorTransportProxy { get; set; }
 
         public GridDomainNode(NodeSettings settings)
         {
@@ -89,7 +89,7 @@ namespace GridDomain.Node
             _commandExecutor = Container.Resolve<ICommandExecutor>();
             _waiterFactory   = Container.Resolve<IMessageWaiterFactory>();
 
-            EventBusForwarder = System.ActorOf(Props.Create(() => new EventBusForwarder(Transport)),nameof(EventBusForwarder));
+            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 

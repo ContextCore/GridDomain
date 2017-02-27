@@ -204,6 +204,8 @@
     <Compile Include="Snapshots\Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy.cs" />
     <Compile Include="Snapshots\Instance_Saga_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\SnapshotsPersistenceAfterEachMessagePolicy.cs" />
+    <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
+    <Compile Include="Tools\Given_persisted_aggreate_It_can_be_loaded_and_saved.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">

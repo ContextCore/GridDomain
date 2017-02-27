@@ -5,7 +5,7 @@ using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
-    internal class CommandExecutionActor : ReceiveActor
+    public class CommandExecutionActor : ReceiveActor
     {
         private readonly IAggregateProcessorCatalog _aggregateCatalog;
 

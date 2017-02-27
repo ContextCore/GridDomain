@@ -3,8 +3,11 @@ using System.Linq;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
+using Akka.Actor;
+using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -41,6 +44,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaStartEvent);
 
+            var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
             await Node.NewDebugWaiter()
@@ -51,13 +56,18 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var sagaContinueEventB = new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
                 new Exception(), typeof(object), sagaId, BusinessDateTime.Now);
 
+            FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
+
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                       .Create()
                       .SendToSagas(sagaContinueEventB);
 
+            
+            await saga.Ask<SubscribeAck>(NotifyOnPersistenceEvents.Instance);
+            FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
             //saving snapshot
-            await Task.Delay(200);
+            //await Task.Delay(200);
 
             var snapshots =
                 await

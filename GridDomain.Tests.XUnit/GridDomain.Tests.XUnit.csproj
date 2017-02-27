@@ -272,6 +272,8 @@
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
+    <Compile Include="GridConsole\GridConsole_Command_executions_Tests.cs" />
+    <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="SerilogLoggerActor.cs" />
     <Compile Include="LogTest.cs" />
