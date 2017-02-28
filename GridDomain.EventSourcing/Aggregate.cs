@@ -13,17 +13,17 @@ namespace GridDomain.EventSourcing
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
 
-        private Func<DomainEvent[], Task> _persistDelegate;
+        internal Func<DomainEvent[], Task> PersistDelegate;
 
         protected async Task Emit(params DomainEvent[] evt) {
 
-            await _persistDelegate(evt);
+            await PersistDelegate(evt);
             foreach(var e in evt)
                 RaiseEvent(e);
         }
 
         public void RegisterPersistenceCallBack(Func<DomainEvent[], Task> persistDelegate) {
-            _persistDelegate = persistDelegate;
+            PersistDelegate = persistDelegate;
         }
 
         // Only for simple implementation 

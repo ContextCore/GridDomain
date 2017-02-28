@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors
 
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
-            State =  aggregateConstructor.Build(typeof(T), Id, null);
+            State = aggregateConstructor.Build(typeof(T), Id, null);
 
             ((Aggregate) State).RegisterPersistenceCallBack(e =>
                                                             {

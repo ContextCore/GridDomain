@@ -19,14 +19,14 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         }
 
         public static Task RegisterAggregate<TAggregate, TCommandHandler>(this IMessagesRouter router)
-            where TAggregate : AggregateBase where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
+            where TAggregate : Aggregate where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
             return RegisterAggregate(router, new TCommandHandler());
         }
 
         public static Task RegisterAggregate<TAggregate>(this IMessagesRouter router,
                                                          AggregateCommandsHandler<TAggregate> handler)
-            where TAggregate : AggregateBase
+            where TAggregate : Aggregate
         {
             var descriptor = new AggregateCommandsHandlerDescriptor<TAggregate>();
             foreach (var info in handler.RegisteredCommands) descriptor.RegisterCommand(info.CommandType);

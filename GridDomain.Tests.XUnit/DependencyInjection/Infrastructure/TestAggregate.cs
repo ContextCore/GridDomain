@@ -1,15 +1,15 @@
 using System;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
 {
-    public class TestAggregate : AggregateBase
+    public class TestAggregate : Aggregate
     {
         public string Value;
 
-        private TestAggregate(Guid id)
+        private TestAggregate(Guid id):base(id)
         {
-            Id = id;
         }
 
         public void Execute(int number, ITestDependency d)

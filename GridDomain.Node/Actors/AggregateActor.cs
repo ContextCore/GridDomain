@@ -78,7 +78,8 @@ namespace GridDomain.Node.Actors
                                // .With<Status.Failure>()
                             .With<IAggregate>(newState =>
                                               {
-                                                  CommandSuccess(commandEnvelop, newState);
+                                                  State = newState;
+                                                  CommandSuccess(commandEnvelop);
 
                                                   UnbecomeStacked();
                                                   BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
@@ -93,15 +94,12 @@ namespace GridDomain.Node.Actors
             WaitForFaultProcessedByHandlers(commandEnvelop.Message, f.Exception, commandEnvelop.Metadata);
         }
 
-        private void CommandSuccess(IMessageMetadataEnvelop<ICommand> commandEnvelop, IAggregate newState)
+        private void CommandSuccess(IMessageMetadataEnvelop<ICommand> commandEnvelop)
         {
-            State = newState;
-
-            var uncommittedEvents =
-                State.GetUncommittedEvents()
-                     .Cast<DomainEvent>()
-                     .Select(e => e.CloneWithSaga(commandEnvelop.Message.SagaId))
-                     .ToArray();
+            var uncommittedEvents =  State.GetUncommittedEvents()
+                                          .Cast<DomainEvent>()
+                                          .Select(e => e.CloneWithSaga(commandEnvelop.Message.SagaId))
+                                          .ToArray();
 
             State.ClearUncommittedEvents();
             var eventsMetadata = commandEnvelop.Metadata.CreateChild(Id, _domainEventProcessEntry);
