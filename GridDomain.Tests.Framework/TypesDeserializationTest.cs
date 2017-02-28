@@ -65,13 +65,10 @@ namespace GridDomain.Tests.Framework
                     var obj = createMethodInfo.Invoke(null, new object[] {Fixture});
                     string difference;
 
-                    if (Checker.IsRestorable(obj, out difference))
-                        okTypes.Add(new RestoreResult {Type = constructedType});
-                    else
-                        failedTypes.Add(new RestoreResult {Difference = difference, Type = constructedType});
+                    if (Checker.IsRestorable(obj, out difference)) okTypes.Add(new RestoreResult {Type = constructedType});
+                    else failedTypes.Add(new RestoreResult {Difference = difference, Type = constructedType});
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     failedTypes.Add(new RestoreResult {Exception = ex, Type = type});
                 }
             }
@@ -121,10 +118,7 @@ namespace GridDomain.Tests.Framework
             sb.AppendLine();
 
 
-            foreach (var res in failedTypes)
-            {
-                sb.AppendLine(res.Type.Name);
-            }
+            foreach (var res in failedTypes) { sb.AppendLine(res.Type.Name); }
         }
 
         private class RestoreResult

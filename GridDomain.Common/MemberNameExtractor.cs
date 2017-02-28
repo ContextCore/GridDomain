@@ -22,19 +22,14 @@ namespace GridDomain.Common
             if (memberExpression != null)
             {
                 var memberInfo = memberExpression.Member as PropertyInfo;
-                if (memberInfo != null)
-                    return memberInfo.Name;
+                if (memberInfo != null) return memberInfo.Name;
                 var fieldIngo = memberExpression.Member as FieldInfo;
 
-                if (fieldIngo != null)
-                    return fieldIngo.Name;
+                if (fieldIngo != null) return fieldIngo.Name;
             }
 
             var methodCallExpression = property.Body as MethodCallExpression;
-            if (methodCallExpression != null)
-            {
-                return methodCallExpression.Method.Name;
-            }
+            if (methodCallExpression != null) { return methodCallExpression.Method.Name; }
 
             throw new ArgumentException("Cannot extract name from expression");
         }
@@ -56,8 +51,7 @@ namespace GridDomain.Common
             }
 
             var memberInfo = memberExpression.Member as PropertyInfo;
-            if (memberInfo == null)
-                throw new ArgumentException("Cannot find property while extracting name from expressiom");
+            if (memberInfo == null) throw new ArgumentException("Cannot find property while extracting name from expressiom");
             return memberInfo.Name;
         }
     }

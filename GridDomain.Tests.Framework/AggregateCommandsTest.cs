@@ -23,8 +23,7 @@ namespace GridDomain.Tests.Framework
         protected virtual THandler CreateCommandsHandler()
         {
             var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo == null)
-                throw new CannotCreateCommandHandlerExeption();
+            if (constructorInfo == null) throw new CannotCreateCommandHandlerExeption();
 
             return (THandler) constructorInfo.Invoke(null);
         }
@@ -33,8 +32,7 @@ namespace GridDomain.Tests.Framework
         {
             CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
 
-            foreach (var cmd in command)
-                Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+            foreach (var cmd in command) Aggregate = CommandsHandler.Execute(Aggregate, cmd);
 
             return ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
         }
@@ -58,8 +56,7 @@ namespace GridDomain.Tests.Framework
             GivenEvents = given.ToArray();
             Aggregate.ApplyEvents(GivenEvents);
 
-            foreach (var cmd in command)
-                Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+            foreach (var cmd in command) Aggregate = CommandsHandler.Execute(Aggregate, cmd);
 
             ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
@@ -83,8 +80,7 @@ namespace GridDomain.Tests.Framework
         protected string CollectDebugInfo(params ICommand[] commands)
         {
             var sb = new StringBuilder();
-            foreach (var cmd in commands)
-                sb.AppendLine($"Command: {cmd.ToPropsString()}");
+            foreach (var cmd in commands) sb.AppendLine($"Command: {cmd.ToPropsString()}");
 
             AddEventInfo("Given events", GivenEvents, sb);
             AddEventInfo("Produced events", ProducedEvents, sb);

@@ -24,12 +24,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
-            if (RetriesToSucceed == 0)
-                RaiseEvent(new TestDomainEvent(testValue, Id), raiseTime);
+            if (RetriesToSucceed == 0) RaiseEvent(new TestDomainEvent(testValue, Id), raiseTime);
             else
-            {
-                RaiseEvent(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
-            }
+            { RaiseEvent(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime); }
         }
 
         public void CancelFutureEvents(string likeValue)
@@ -45,8 +42,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         private void Apply(TestErrorDomainEvent e)
         {
-            if (RetriesToSucceed == null)
-                RetriesToSucceed = e.SuccedOnRetryNum;
+            if (RetriesToSucceed == null) RetriesToSucceed = e.SuccedOnRetryNum;
 
             if (RetriesToSucceed == 0)
             {

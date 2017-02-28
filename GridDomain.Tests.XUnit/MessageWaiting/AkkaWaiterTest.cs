@@ -38,8 +38,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         protected void Publish(params object[] messages)
         {
-            foreach (var msg in messages)
-                _transport.Publish(msg);
+            foreach (var msg in messages) _transport.Publish(msg);
         }
 
         protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
@@ -56,8 +55,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class
         {
-            if (!_results.Wait(timeout ?? DefaultTimeout))
-                return;
+            if (!_results.Wait(timeout ?? DefaultTimeout)) return;
 
             var e = Assert.ThrowsAsync<TimeoutException>(() => ExpectMsg(msg));
         }

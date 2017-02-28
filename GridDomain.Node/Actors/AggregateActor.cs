@@ -55,8 +55,7 @@ namespace GridDomain.Node.Actors
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
 
-                                                           try
-                                                           {
+                                                           try {
                                                                State = _handler.Execute((TAggregate) State, cmd);
                                                            }
                                                            catch (Exception ex)
@@ -108,8 +107,7 @@ namespace GridDomain.Node.Actors
                 e =>
                 {
                     //should save snapshot only after all messages persisted as state was already modified by all of them
-                    if (++persistedEvents == totalEvents)
-                        OnCommandEventsPersisted(events, eventsMetadata);
+                    if (++persistedEvents == totalEvents) OnCommandEventsPersisted(events, eventsMetadata);
 
                     NotifyPersistenceWatchers(e);
                 });

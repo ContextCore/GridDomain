@@ -74,12 +74,10 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             var machineEvent = Machine.GetMachineEvent(message);
 
-            try
-            {
+            try {
                 await Machine.RaiseEvent(_dataAggregate.Data, machineEvent, message);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw new SagaTransitionException(message, _dataAggregate.Data, ex);
             }
 

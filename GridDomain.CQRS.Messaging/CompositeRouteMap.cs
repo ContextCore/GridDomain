@@ -14,10 +14,7 @@ namespace GridDomain.CQRS.Messaging
 
         public async Task Register(IMessagesRouter router)
         {
-            foreach (var messageRouteMap in _maps)
-            {
-                await messageRouteMap.Register(router);
-            }
+            foreach (var messageRouteMap in _maps) { await messageRouteMap.Register(router); }
         }
     }
 }

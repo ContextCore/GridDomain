@@ -22,8 +22,7 @@ namespace Shop.Domain.Aggregates.UserAggregate
                 e => { PendingOrders[e.OrderId] = new PendingOrder(e.OrderId, e.SkuId, e.Quantity, e.StockId); });
             Apply<PendingOrderCanceled>(e =>
                                         {
-                                            if (!PendingOrders.Remove(e.OrderId))
-                                                _logger.Warning("Could not find pending order {order} to cancel", e.OrderId);
+                                            if (!PendingOrders.Remove(e.OrderId)) _logger.Warning("Could not find pending order {order} to cancel", e.OrderId);
                                         });
             Apply<PendingOrderCompleted>(e =>
                                          {

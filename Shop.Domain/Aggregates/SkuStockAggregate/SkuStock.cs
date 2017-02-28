@@ -82,8 +82,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
 
         public void Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
         {
-            if (Quantity < quantity)
-                throw new OutOfStockException(quantity, Quantity);
+            if (Quantity < quantity) throw new OutOfStockException(quantity, Quantity);
 
             Reservation oldReservation;
             var quantityToReserve = quantity;

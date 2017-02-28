@@ -11,8 +11,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             return await Assert.ThrowsAsync<TEx>(async () =>
                                                        {
-                                                           try
-                                                           {
+                                                           try {
                                                                await t;
                                                            }
                                                            catch (Exception ex)
@@ -20,8 +19,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
                                                                var exception = ex.UnwrapSingle();
                                                                Assert.IsAssignableFrom<TEx>(exception);
 
-                                                               if (predicate != null && !predicate((TEx) exception))
-                                                                   throw new InvalidExceptionReceivedException();
+                                                               if (predicate != null && !predicate((TEx) exception)) throw new InvalidExceptionReceivedException();
                                                                throw exception;
                                                            }
                                                        });

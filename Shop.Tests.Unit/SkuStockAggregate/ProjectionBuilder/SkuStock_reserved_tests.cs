@@ -29,8 +29,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_history_containes_rows_for_added_and_reserved_events()
         {
-            using (var context = ContextFactory())
-                Assert.AreEqual(3, context.StockHistory.Count());
+            using (var context = ContextFactory()) Assert.AreEqual(3, context.StockHistory.Count());
         }
 
         [Test]
@@ -41,8 +40,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3);
                 if (history != null) return;
 
-                foreach (var hist in context.StockHistory)
-                    Console.WriteLine(hist.ToPropsString());
+                foreach (var hist in context.StockHistory) Console.WriteLine(hist.ToPropsString());
                 Assert.Fail("Cannot find history");
             }
         }
@@ -71,8 +69,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_reserve_row_is_added()
         {
-            using (var context = ContextFactory())
-                Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
+            using (var context = ContextFactory()) Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
         }
 
         [Test]

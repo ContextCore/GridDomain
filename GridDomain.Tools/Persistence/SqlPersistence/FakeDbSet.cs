@@ -71,10 +71,8 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public override TEntity Find(params object[] keyValues)
         {
-            if (_primaryKeys == null)
-                throw new ArgumentException("No primary keys defined");
-            if (keyValues.Length != _primaryKeys.Length)
-                throw new ArgumentException("Incorrect number of keys passed to Find method");
+            if (_primaryKeys == null) throw new ArgumentException("No primary keys defined");
+            if (keyValues.Length != _primaryKeys.Length) throw new ArgumentException("Incorrect number of keys passed to Find method");
 
             var keyQuery = this.AsQueryable();
             keyQuery = keyValues.Select((t, i) => i)
@@ -99,10 +97,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
         {
             if (entities == null) throw new ArgumentNullException("entities");
             var items = entities.ToList();
-            foreach (var entity in items)
-            {
-                _data.Add(entity);
-            }
+            foreach (var entity in items) { _data.Add(entity); }
             return items;
         }
 

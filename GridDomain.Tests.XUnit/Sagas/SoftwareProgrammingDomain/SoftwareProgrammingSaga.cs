@@ -30,8 +30,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             During(MakingCoffee,
                 When(CoffeNotAvailable).Then(context =>
                                              {
-                                                 if (context.Data.CoffeMachineId == Guid.Empty)
-                                                     throw new UndefinedCoffeMachineException();
+                                                 if (context.Data.CoffeMachineId == Guid.Empty) throw new UndefinedCoffeMachineException();
 
                                                  Dispatch(new GoSleepCommand(context.Data.ForPersonId,
                                                      context.Instance.SofaId));

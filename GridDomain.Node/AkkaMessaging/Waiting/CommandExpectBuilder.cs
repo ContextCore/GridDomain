@@ -39,16 +39,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             if (!failOnAnyFault) return res;
             var faults = res.All.OfType<IMessageMetadataEnvelop>().Select(env => env.Message).OfType<IFault>().ToArray();
-            if (faults.Any())
-                throw new AggregateException(faults.Select(f => f.Exception));
+            if (faults.Any()) throw new AggregateException(faults.Select(f => f.Exception));
 
             return res;
         }
 
         public new ICommandExpectBuilder And<TMsg>(Predicate<TMsg> filter = null)
         {
-            if (filter != null)
-            {
+            if (filter != null) {
                 base.And(filter);
             }
             else
@@ -61,8 +59,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public new ICommandExpectBuilder Or<TMsg>(Predicate<TMsg> filter = null)
         {
-            if (filter != null)
-            {
+            if (filter != null) {
                 base.Or(filter);
             }
             else
@@ -90,8 +87,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public new ICommandExpectBuilder And(Type type, Func<object, bool> filter = null)
         {
-            if (filter != null)
-            {
+            if (filter != null) {
                 base.And(type, filter);
             }
             else

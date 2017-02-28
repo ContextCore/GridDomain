@@ -44,8 +44,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public Event<TMessage> GetMachineEvent<TMessage>(TMessage message)
         {
             Event ev;
-            if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev))
-                throw new UnbindedMessageReceivedException(message, typeof(TMessage));
+            if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev)) throw new UnbindedMessageReceivedException(message, typeof(TMessage));
             return (Event<TMessage>) ev;
         }
     }

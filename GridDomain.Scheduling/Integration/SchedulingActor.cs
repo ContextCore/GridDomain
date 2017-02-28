@@ -71,8 +71,7 @@ namespace GridDomain.Scheduling.Integration
             catch (JobPersistenceException e)
             {
                 _logger.Error(e, "Error while scheduled job {Task}", key);
-                if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException))
-                {
+                if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException)) {
                     Sender.Tell(new AlreadyScheduled(key));
                 }
             }

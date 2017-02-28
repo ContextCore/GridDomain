@@ -9,8 +9,7 @@ namespace GridDomain.Common
         {
             if (aggregateException == null) return null;
 
-            if (aggregateException.InnerExceptions.Count > 1)
-                return aggregateException;
+            if (aggregateException.InnerExceptions.Count > 1) return aggregateException;
 
             return aggregateException.InnerExceptions.First().UnwrapSingle();
         }

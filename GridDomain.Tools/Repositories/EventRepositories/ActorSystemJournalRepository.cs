@@ -30,11 +30,9 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             var persistActor = CreateEventsPersistActor(id);
             try
             {
-                foreach (var o in messages)
-                    await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout);
+                foreach (var o in messages) await persistActor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(o), Timeout);
             }
-            finally
-            {
+            finally {
                 await TerminateActor(persistActor);
             }
         }
@@ -48,8 +46,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                 var msg = await persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(), Timeout);
                 return msg.Events.Cast<DomainEvent>().ToArray();
             }
-            finally
-            {
+            finally {
                 await TerminateActor(persistActor);
             }
         }
@@ -71,8 +68,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             persistActor.Tell(PoisonPill.Instance);
             var terminated = await inbox.ReceiveAsync();
 
-            if (!(terminated is Terminated))
-                throw new InvalidOperationException();
+            if (!(terminated is Terminated)) throw new InvalidOperationException();
         }
 
         private IActorRef CreateEventsPersistActor(string id)

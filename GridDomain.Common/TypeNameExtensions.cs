@@ -13,8 +13,7 @@ namespace GridDomain.Common
         /// <returns></returns>
         public static string BeautyName(this Type type)
         {
-            if (!type.IsGenericType)
-                return type.Name;
+            if (!type.IsGenericType) return type.Name;
 
             var typeName = type.Name.Split('`')[0];
 

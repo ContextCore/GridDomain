@@ -80,12 +80,10 @@ namespace GridGomain.Tests.Stress
                     Enumerable.Range(0, aggregateScenarioPackSize)
                               .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
                               .ToArray();
-                try
-                {
+                try {
                     Task.WhenAll(tasks).Wait();
                 }
-                catch
-                {
+                catch {
                     timeoutedCommads += tasks.Count(t => t.IsCanceled || t.IsFaulted);
                 }
 

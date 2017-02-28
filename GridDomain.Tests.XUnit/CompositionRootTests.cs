@@ -42,8 +42,7 @@ namespace GridDomain.Tests.XUnit
         public void Container_can_be_disposed(TransportMode transportMode)
         {
             var createContainer = Task.Run(() => CreateContainer(transportMode, new LocalDbConfiguration()));
-            if (!createContainer.Wait(TimeSpan.FromSeconds(5)))
-                throw new TimeoutException("Container creation took to much time");
+            if (!createContainer.Wait(TimeSpan.FromSeconds(5))) throw new TimeoutException("Container creation took to much time");
 
             var container = createContainer.Result;
 
@@ -60,8 +59,7 @@ namespace GridDomain.Tests.XUnit
             }
 
 
-            if (!Task.Run(() => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
-                throw new TimeoutException("Container dispose took too much time");
+            if (!Task.Run(() => container.Dispose()).Wait(TimeSpan.FromSeconds(5))) throw new TimeoutException("Container dispose took too much time");
 
             Console.WriteLine("Container disposed");
         }
@@ -79,8 +77,7 @@ namespace GridDomain.Tests.XUnit
                     container.Resolve(reg.RegisteredType, reg.Name);
                     Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     errors[reg] = ex;
                 }
             }
@@ -89,8 +86,7 @@ namespace GridDomain.Tests.XUnit
             if (!errors.Any()) return;
 
             var builder = new StringBuilder();
-            foreach (var error in errors.Take(5))
-            {
+            foreach (var error in errors.Take(5)) {
                 builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name} : {error.Value}");
             }
 

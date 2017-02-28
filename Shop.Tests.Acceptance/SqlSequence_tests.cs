@@ -50,8 +50,7 @@ namespace Shop.Tests.Acceptance
                         cmd.Connection = connection;
                         cmd.ExecuteNonQuery();
                     }
-                    catch
-                    {
+                    catch {
                         Console.WriteLine("error was occured while deleting sequence " + sequence);
                     }
                 }

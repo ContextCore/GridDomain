@@ -18,11 +18,9 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
         {
             var i = int.Parse(msg.Value);
 
-            if (i%8 == 0)
-                return Task.Run(() => { throw new MessageHandleException(msg); });
+            if (i%8 == 0) return Task.Run(() => { throw new MessageHandleException(msg); });
 
-            if (i%2 == 0)
-                throw new MessageHandleException(msg);
+            if (i%2 == 0) throw new MessageHandleException(msg);
 
             _publisher.Publish(new AggregateChangedEventNotification {AggregateId = msg.SourceId});
 

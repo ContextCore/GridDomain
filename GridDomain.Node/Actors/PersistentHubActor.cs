@@ -113,8 +113,7 @@ namespace GridDomain.Node.Actors
             var childsToTerminate =
                 Children.Where(c => now > c.Value.ExpiresAt && !c.Value.Terminating).Select(ch => ch.Key).ToArray();
 
-            foreach (var childId in childsToTerminate)
-                ShutdownChild(childId);
+            foreach (var childId in childsToTerminate) ShutdownChild(childId);
 
             Logger.Debug("Clear childs process finished, removing {childsToTerminate} childs", childsToTerminate.Length);
         }

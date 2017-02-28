@@ -27,8 +27,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 
         public void Sleep(Guid sofaId)
         {
-            if (sofaId == Guid.Empty)
-                throw new CantFindSofaException();
+            if (sofaId == Guid.Empty) throw new CantFindSofaException();
 
             RaiseEvent(new Slept(sofaId));
         }

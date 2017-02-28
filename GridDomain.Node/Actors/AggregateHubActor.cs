@@ -17,10 +17,7 @@ namespace GridDomain.Node.Actors
         protected override string GetChildActorName(object message)
         {
             var command = message as ICommand;
-            if (command != null)
-            {
-                return AggregateActorName.New<TAggregate>(command.AggregateId).ToString();
-            }
+            if (command != null) { return AggregateActorName.New<TAggregate>(command.AggregateId).ToString(); }
             return null;
         }
 

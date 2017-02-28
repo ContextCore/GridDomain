@@ -47,16 +47,14 @@ namespace GridDomain.Node.Actors.CommandPipe
 
         private void SendCommandForExecution(SagasProcessComplete m)
         {
-            foreach (var command in m.ProducedCommands)
-                _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata.CreateChild(command.Id)));
+            foreach (var command in m.ProducedCommands) _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata.CreateChild(command.Id)));
         }
 
         private Task<IEnumerable<MessageMetadataEnvelop<ICommand>>> ProcessSagas(
             IMessageMetadataEnvelop messageMetadataEnvelop)
         {
             var eventProcessors = _catalog.Get(messageMetadataEnvelop.Message);
-            if (!eventProcessors.Any())
-                return Task.FromResult(Enumerable.Empty<MessageMetadataEnvelop<ICommand>>());
+            if (!eventProcessors.Any()) return Task.FromResult(Enumerable.Empty<MessageMetadataEnvelop<ICommand>>());
 
             return
                 Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))

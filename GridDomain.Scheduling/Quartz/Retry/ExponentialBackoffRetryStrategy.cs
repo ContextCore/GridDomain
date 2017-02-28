@@ -65,10 +65,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
         {
             var retries = 0;
             object o;
-            if (context.JobDetail.JobDataMap.TryGetValue(Retries, out o) && o is int)
-            {
-                retries = (int) o;
-            }
+            if (context.JobDetail.JobDataMap.TryGetValue(Retries, out o) && o is int) { retries = (int) o; }
             return retries;
         }
     }

@@ -75,8 +75,7 @@ namespace GridDomain.Tests.Framework
         {
             List<DomainEvent> events;
             var sourceId = guid;
-            if (!_aggregates.TryGetValue(sourceId, out events))
-                _aggregates[sourceId] = events = new List<DomainEvent>();
+            if (!_aggregates.TryGetValue(sourceId, out events)) _aggregates[sourceId] = events = new List<DomainEvent>();
             return events;
         }
 

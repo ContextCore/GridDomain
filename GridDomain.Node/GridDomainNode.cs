@@ -111,8 +111,7 @@ namespace GridDomain.Node
                 var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
                 ActorMonitoringExtension.RegisterMonitor(System, monitor);
             }
-            if (perfCountersConfig.IsEnabled)
-            {
+            if (perfCountersConfig.IsEnabled) {
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
@@ -154,11 +153,9 @@ namespace GridDomain.Node
 
             try
             {
-                if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false)
-                    _quartzScheduler.Shutdown();
+                if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false) _quartzScheduler.Shutdown();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 Settings.Log.Warning($"Got error on quartz scheduler shutdown:{ex}");
             }
 

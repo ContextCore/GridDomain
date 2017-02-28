@@ -51,8 +51,7 @@ namespace GridDomain.Node.Actors
             Command<NotifyOnPersistenceEvents>(c =>
                                                {
                                                    var waiter = c.Waiter ?? Sender;
-                                                   if (IsRecoveryFinished)
-                                                       waiter.Tell(RecoveryCompleted.Instance);
+                                                   if (IsRecoveryFinished) waiter.Tell(RecoveryCompleted.Instance);
 
                                                    _persistenceWatchers.Add(waiter);
                                                    Sender.Tell(SubscribeAck.Instance);
@@ -86,8 +85,7 @@ namespace GridDomain.Node.Actors
 
         protected void NotifyPersistenceWatchers(object msg)
         {
-            foreach (var watcher in _persistenceWatchers)
-                watcher.Tell(new Persisted(msg));
+            foreach (var watcher in _persistenceWatchers) watcher.Tell(new Persisted(msg));
         }
 
         protected virtual void Terminating()

@@ -29,8 +29,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             where TAggregate : AggregateBase
         {
             var descriptor = new AggregateCommandsHandlerDescriptor<TAggregate>();
-            foreach (var info in handler.RegisteredCommands)
-                descriptor.RegisterCommand(info.CommandType);
+            foreach (var info in handler.RegisteredCommands) descriptor.RegisterCommand(info.CommandType);
 
             return router.RegisterAggregate(descriptor);
         }

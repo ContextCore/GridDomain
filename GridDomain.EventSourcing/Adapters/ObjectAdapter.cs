@@ -32,17 +32,13 @@ namespace GridDomain.EventSourcing.Adapters
             object value;
             //prevent infinite recursion
             var removed = serializer.Converters.Remove(this);
-            try
-            {
-                value = serializer.Deserialize(reader);
-            }
+            try { value = serializer.Deserialize(reader); }
             finally
             {
                 if (removed) serializer.Converters.Add(this);
             }
 
-            if (value is TFrom)
-                return ConvertAny(value);
+            if (value is TFrom) return ConvertAny(value);
 
             return value;
         }

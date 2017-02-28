@@ -17,8 +17,7 @@ namespace GridDomain.EventSourcing.Sagas
         {
             var type = data.GetType();
             Func<object, TSaga> factory;
-            if (!_factories.TryGetValue(type, out factory))
-                throw new CannotFindFactoryForSagaCreation(typeof(TSaga), data);
+            if (!_factories.TryGetValue(type, out factory)) throw new CannotFindFactoryForSagaCreation(typeof(TSaga), data);
 
             return factory.Invoke(data);
         }
@@ -35,8 +34,7 @@ namespace GridDomain.EventSourcing.Sagas
             foreach (var startMessageType in Descriptor.StartMessages)
             {
                 var expectedFactoryType = typeof(ISagaFactory<,>).MakeGenericType(typeof(TSaga), startMessageType);
-                if (!expectedFactoryType.IsInstanceOfType(factory))
-                    throw new FactoryNotSupportStartMessageException(factory.GetType(), startMessageType);
+                if (!expectedFactoryType.IsInstanceOfType(factory)) throw new FactoryNotSupportStartMessageException(factory.GetType(), startMessageType);
 
                 //TODO: think how to avoid dynamic call and call method need by message
                 Register(startMessageType, msg => (TSaga) dynamicfactory.Create((dynamic) msg));
@@ -52,8 +50,7 @@ namespace GridDomain.EventSourcing.Sagas
 
         private void Register(Type dataType, Func<object, TSaga> factory)
         {
-            if (_factories.ContainsKey(dataType))
-                throw new FactoryAlreadyRegisteredException(dataType);
+            if (_factories.ContainsKey(dataType)) throw new FactoryAlreadyRegisteredException(dataType);
 
             _factories[dataType] = factory.Invoke;
         }

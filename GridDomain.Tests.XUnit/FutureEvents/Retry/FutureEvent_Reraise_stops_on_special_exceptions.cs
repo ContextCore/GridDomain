@@ -55,8 +55,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                     var domainException = ex.UnwrapSingle();
                     if (domainException is TestScheduledException) return false;
 
-                    if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException)
-                        return false;
+                    if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException) return false;
 
                     return true;
                 }

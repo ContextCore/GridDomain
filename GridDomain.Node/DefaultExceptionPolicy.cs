@@ -9,11 +9,9 @@ namespace GridDomain.Node
     {
         public bool ShouldContinue(Exception ex)
         {
-            if (ex.UnwrapSingle() is NullReferenceException)
-                return false;
+            if (ex.UnwrapSingle() is NullReferenceException) return false;
 
-            if (ex.UnwrapSingle() is ScheduledEventNotFoundException)
-                return false;
+            if (ex.UnwrapSingle() is ScheduledEventNotFoundException) return false;
 
             return true;
         }

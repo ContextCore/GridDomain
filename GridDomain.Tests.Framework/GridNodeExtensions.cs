@@ -25,27 +25,17 @@ namespace GridDomain.Tests.Framework
         public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, Guid id)
             where TAggregate : AggregateBase
         {
-            using (var eventsRepo = new ActorSystemEventRepository(node.System))
-            using (var repo = new AggregateRepository(eventsRepo))
-            {
-                return await repo.LoadAggregate<TAggregate>(id);
-            }
+            using (var eventsRepo = new ActorSystemEventRepository(node.System)) using (var repo = new AggregateRepository(eventsRepo)) { return await repo.LoadAggregate<TAggregate>(id); }
         }
 
         public static async Task<object[]> LoadFromJournal(this GridDomainNode node, string id)
         {
-            using (var repo = new ActorSystemJournalRepository(node.System))
-            {
-                return await repo.Load(id);
-            }
+            using (var repo = new ActorSystemJournalRepository(node.System)) { return await repo.Load(id); }
         }
 
         public static async Task SaveToJournal(this GridDomainNode node, string id, params object[] messages)
         {
-            using (var repo = new ActorSystemJournalRepository(node.System, false))
-            {
-                await repo.Save(id, messages);
-            }
+            using (var repo = new ActorSystemJournalRepository(node.System, false)) { await repo.Save(id, messages); }
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)

@@ -23,8 +23,7 @@ namespace GridDomain.EventSourcing
         {
             Func<IMemento, IAggregate> factory;
 
-            if (_creators.TryGetValue(type, out factory))
-                return factory.Invoke(snapshot);
+            if (_creators.TryGetValue(type, out factory)) return factory.Invoke(snapshot);
 
             return base.BuildFromSnapshot(type, id, snapshot);
         }

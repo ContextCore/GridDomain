@@ -95,8 +95,7 @@ namespace GridDomain.Node.Actors
             var type = msg.GetType();
             string fieldName;
 
-            if (_sagaIdFields.TryGetValue(type, out fieldName))
-                return (Guid) type.GetProperty(fieldName).GetValue(msg);
+            if (_sagaIdFields.TryGetValue(type, out fieldName)) return (Guid) type.GetProperty(fieldName).GetValue(msg);
 
             return msg.SagaId;
         }
@@ -194,8 +193,7 @@ namespace GridDomain.Node.Actors
                 {
                     NotifyPersistenceWatchers(new Persisted(e));
                     //should save snapshot only after all messages persisted as state was already modified by all of them
-                    if (++persistedEvents == totalEvents)
-                        OnStatePersisted(stateChangeEvents, mutatorMessageMetadata);
+                    if (++persistedEvents == totalEvents) OnStatePersisted(stateChangeEvents, mutatorMessageMetadata);
                 });
 
             State.ClearUncommittedEvents();

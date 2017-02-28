@@ -21,8 +21,7 @@ namespace GridDomain.EventSourcing
         protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {
             var aggregate = snapshot as IAggregate;
-            if (aggregate == null)
-                throw new InvalidDefaultMementoException(type, id, snapshot);
+            if (aggregate == null) throw new InvalidDefaultMementoException(type, id, snapshot);
             aggregate.ClearUncommittedEvents();
             return aggregate;
         }
@@ -34,8 +33,7 @@ namespace GridDomain.EventSourcing
                 new[] {typeof(Guid)},
                 null);
 
-            if (constructor == null)
-                throw new ConventionBasedConstructorNotFound();
+            if (constructor == null) throw new ConventionBasedConstructorNotFound();
 
             return constructor.Invoke(new object[] {id}) as IAggregate;
         }

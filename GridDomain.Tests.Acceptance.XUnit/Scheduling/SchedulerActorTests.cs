@@ -127,8 +127,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
             var tasksToRemoveTaskIds = tasksToRemove.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
-            foreach (var taskId in tasksToRemoveTaskIds)
-            {
+            foreach (var taskId in tasksToRemoveTaskIds) {
                 _scheduler.Tell(new Unschedule(new ScheduleKey(Guid.Empty, taskId, taskId)));
             }
 

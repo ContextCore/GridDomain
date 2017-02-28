@@ -22,10 +22,8 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
 
         public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
         {
-            if (oldVersion)
-                RaiseEvent(new BalanceChangedEvent_V0(number, Id), when);
-            else
-                RaiseEvent(new BalanceChangedEvent_V1(number, Id), when);
+            if (oldVersion) RaiseEvent(new BalanceChangedEvent_V0(number, Id), when);
+            else RaiseEvent(new BalanceChangedEvent_V1(number, Id), when);
         }
 
         private void Apply(AggregateCreatedEvent e)

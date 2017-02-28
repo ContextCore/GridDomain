@@ -36,17 +36,14 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
             if (versionedTypeParts.Length == 1) //does not contain version
                 return new VersionedTypeName(shortTypeName, defaultVersion);
 
-            if (versionedTypeParts.Length != 2)
-                throw new VersionedTypeParseExeption(shortTypeName);
+            if (versionedTypeParts.Length != 2) throw new VersionedTypeParseExeption(shortTypeName);
 
             var typeName = versionedTypeParts[0];
-            if (string.IsNullOrEmpty(typeName))
-                throw new EmptyTypeNameException(versionedTypeParts);
+            if (string.IsNullOrEmpty(typeName)) throw new EmptyTypeNameException(versionedTypeParts);
 
             var versionString = versionedTypeParts[1];
             var version = 0;
-            if (!int.TryParse(versionString, out version))
-                throw new CantParseVersionNumberExpection(versionString);
+            if (!int.TryParse(versionString, out version)) throw new CantParseVersionNumberExpection(versionString);
 
             return new VersionedTypeName(typeName, version);
         }

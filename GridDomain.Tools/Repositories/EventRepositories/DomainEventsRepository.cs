@@ -50,8 +50,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                                                                 return _serializer.FromBinary(d.Payload,
                                                                     Type.GetType(d.Manifest));
                                                             }
-                                                            catch (NullReferenceException ex)
-                                                            {
+                                                            catch (NullReferenceException ex) {
                                                                 throw new PersistanceFailureException(d, ex);
                                                             }
                                                         }).Cast<DomainEvent>().ToArray();

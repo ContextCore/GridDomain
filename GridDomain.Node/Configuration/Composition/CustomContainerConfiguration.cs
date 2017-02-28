@@ -21,8 +21,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void Register(IUnityContainer container)
         {
-            foreach (var reg in _registrations)
-                reg.Invoke(container);
+            foreach (var reg in _registrations) reg.Invoke(container);
         }
 
         public static CustomContainerConfiguration Empty()

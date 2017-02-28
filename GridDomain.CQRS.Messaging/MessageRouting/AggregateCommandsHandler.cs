@@ -23,8 +23,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public override Func<ICommand, TAggregate, TAggregate> Get(ICommand command)
         {
             var handler = base.Get(command);
-            if (handler == null)
-                throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
+            if (handler == null) throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
             return handler;
         }
 

@@ -46,8 +46,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_history_new_row_is_added()
         {
-            using (var context = ContextFactory())
-                Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, (long) 2));
+            using (var context = ContextFactory()) Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, (long) 2));
         }
 
         [Test]

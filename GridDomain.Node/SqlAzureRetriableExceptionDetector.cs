@@ -88,10 +88,7 @@ namespace GridDomain.Node
                 return false;
             }
 
-            if (ex is TimeoutException)
-            {
-                return true;
-            }
+            if (ex is TimeoutException) { return true; }
 
             return false;
         }

@@ -53,8 +53,7 @@ namespace GridDomain.Tests.XUnit.SyncProjection
             //all change events for one aggregate should be processed synchroniously, one-by-one, according to their 
             //sequence numbers
 
-            foreach (var oneAggregateEvents in eventsPerAggregate.Values)
-            {
+            foreach (var oneAggregateEvents in eventsPerAggregate.Values) {
                 oneAggregateEvents.IsIncreasing(h => h.History.SequenceNumber);
             }
         }

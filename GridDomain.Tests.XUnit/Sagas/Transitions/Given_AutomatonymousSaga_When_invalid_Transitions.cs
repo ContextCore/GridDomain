@@ -26,8 +26,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private async Task SwallowException(Func<Task> act)
         {
-            try
-            {
+            try {
                 await act();
             }
             catch

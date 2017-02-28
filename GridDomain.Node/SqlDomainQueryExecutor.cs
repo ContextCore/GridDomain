@@ -77,8 +77,7 @@ namespace GridDomain.Node
             Exception ex;
             do
             {
-                try
-                {
+                try {
                     return await act();
                 }
                 catch (Exception e)

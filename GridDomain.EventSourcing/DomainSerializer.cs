@@ -57,12 +57,10 @@ namespace GridDomain.EventSourcing
             using (var reader = new StreamReader(stream, Encoding.Unicode))
             {
                 var jsonString = reader.ReadToEnd();
-                if (string.IsNullOrEmpty(jsonString))
-                    return null;
+                if (string.IsNullOrEmpty(jsonString)) return null;
 
                 var deserializeObject = JsonConvert.DeserializeObject(jsonString, settings ?? JsonSerializerSettings);
-                if (deserializeObject == null)
-                    throw new SerializationException("json string: " + jsonString);
+                if (deserializeObject == null) throw new SerializationException("json string: " + jsonString);
 
                 return deserializeObject;
             }
@@ -74,8 +72,7 @@ namespace GridDomain.EventSourcing
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
             {
                 var jProperty = base.CreateProperty(member, memberSerialization);
-                if (jProperty.Writable)
-                    return jProperty;
+                if (jProperty.Writable) return jProperty;
 
                 jProperty.Writable = IsPropertyWithSetter(member);
 

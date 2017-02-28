@@ -17,10 +17,8 @@ namespace Shop.Infrastructure
             {
                 sequenceName = sequenceName ?? GlobalSequenceName;
                 long nextNumber;
-                if (_sequences.TryGetValue(sequenceName, out nextNumber))
-                    ++nextNumber;
-                else
-                    nextNumber = 1;
+                if (_sequences.TryGetValue(sequenceName, out nextNumber)) ++nextNumber;
+                else nextNumber = 1;
 
                 _sequences[sequenceName] = nextNumber;
                 return nextNumber;

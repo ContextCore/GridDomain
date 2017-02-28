@@ -21,18 +21,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
             using (
                 var repo =
                     new AggregateRepository(ActorSystemJournalRepository.New(new AutoTestAkkaConfiguration(),
-                        new EventsAdaptersCatalog())))
-            {
-                await repo.Save(aggregate);
-            }
+                        new EventsAdaptersCatalog()))) {
+                            await repo.Save(aggregate);
+                        }
 
             using (
                 var repo =
                     new AggregateRepository(ActorSystemJournalRepository.New(new AutoTestAkkaConfiguration(),
-                        new EventsAdaptersCatalog())))
-            {
-                aggregate = await repo.LoadAggregate<SampleAggregate>(aggregate.Id);
-            }
+                        new EventsAdaptersCatalog()))) {
+                            aggregate = await repo.LoadAggregate<SampleAggregate>(aggregate.Id);
+                        }
 
             //Aggregate_has_correct_id()
             Assert.Equal(aggregateId, aggregate.Id);

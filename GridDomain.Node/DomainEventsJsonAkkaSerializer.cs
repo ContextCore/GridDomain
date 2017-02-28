@@ -19,12 +19,10 @@ namespace GridDomain.Node
                                                             throw new ArgumentNullException(nameof(ext),
                                                                 $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
-                                                        if (ext.Settings != null)
-                                                            return new DomainSerializer(ext.Settings);
+                                                        if (ext.Settings != null) return new DomainSerializer(ext.Settings);
 
                                                         var settings = DomainSerializer.GetDefaultSettings();
-                                                        foreach (var c in ext.Converters)
-                                                            settings.Converters.Add(c);
+                                                        foreach (var c in ext.Converters) settings.Converters.Add(c);
 
                                                         return new DomainSerializer(settings);
                                                     });

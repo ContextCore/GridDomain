@@ -18,8 +18,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             Assert.Throws<ScheduledEventNotFoundException>(
                 () => aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid()));
             //Then_raising_event_with_wrong_id_does_not_produce_new_events()
-            try
-            {
+            try {
                 aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid());
             }
             catch

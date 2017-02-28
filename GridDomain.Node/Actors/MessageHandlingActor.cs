@@ -39,10 +39,8 @@ namespace GridDomain.Node.Actors
                                                  var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
 
                                                  Func<Task> handlerExecute;
-                                                 if (handlerWithMetadata != null)
-                                                     handlerExecute = () => handlerWithMetadata.Handle(message, msg.Metadata);
-                                                 else
-                                                     handlerExecute = () => handler.Handle(message);
+                                                 if (handlerWithMetadata != null) handlerExecute = () => handlerWithMetadata.Handle(message, msg.Metadata);
+                                                 else handlerExecute = () => handler.Handle(message);
 
                                                  try
                                                  {
@@ -63,8 +61,7 @@ namespace GridDomain.Node.Actors
             Receive<HandlerExecuted>(res =>
                                      {
                                          Sender.Tell(res);
-                                         if (res.Error != null)
-                                             PublishFault(res.ProcessingMessage, res.Error);
+                                         if (res.Error != null) PublishFault(res.ProcessingMessage, res.Error);
                                      });
         }
 
@@ -91,8 +88,7 @@ namespace GridDomain.Node.Actors
                .With<ISourcedEvent>(e => sagaId = e.SagaId)
                .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
 
-            if (sagaId.HasValue)
-                return sagaId.Value;
+            if (sagaId.HasValue) return sagaId.Value;
 
             throw new CannotGetSagaFromMessage(msg);
         }

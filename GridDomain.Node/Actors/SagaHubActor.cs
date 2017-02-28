@@ -41,8 +41,7 @@ namespace GridDomain.Node.Actors
             string fieldName;
             var type = message.GetType();
 
-            if (_acceptMessagesSagaIds.TryGetValue(type, out fieldName))
-                childActorId = (Guid) type.GetProperty(fieldName).GetValue(message);
+            if (_acceptMessagesSagaIds.TryGetValue(type, out fieldName)) childActorId = (Guid) type.GetProperty(fieldName).GetValue(message);
             else
             {
                 //try to search by inheritance

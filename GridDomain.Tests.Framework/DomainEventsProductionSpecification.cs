@@ -18,8 +18,7 @@ namespace GridDomain.Tests.Framework
             var domainEvents = Given().ToList();
             if (domainEvents.Any())
             {
-                foreach (var e in domainEvents)
-                    Aggregate.ApplyEvent(e);
+                foreach (var e in domainEvents) Aggregate.ApplyEvent(e);
 
                 ClearUncommittedEvents();
             }

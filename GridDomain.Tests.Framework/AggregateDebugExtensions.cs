@@ -9,8 +9,7 @@ namespace GridDomain.Tests.Framework
     {
         public static void ApplyEvents(this IAggregate aggregate, params DomainEvent[] events)
         {
-            foreach (var e in events)
-                aggregate.ApplyEvent(e);
+            foreach (var e in events) aggregate.ApplyEvent(e);
         }
 
         public static void ClearEvents(this IAggregate aggregate)
@@ -32,8 +31,7 @@ namespace GridDomain.Tests.Framework
         public static TEvent GetEvent<TEvent>(this IAggregate aggregate) where TEvent : DomainEvent
         {
             var @event = aggregate.GetUncommittedEvents().OfType<TEvent>().FirstOrDefault();
-            if (@event == null)
-                throw new CannotFindRequestedEventException();
+            if (@event == null) throw new CannotFindRequestedEventException();
             return @event;
         }
     }

@@ -154,10 +154,7 @@ namespace GridDomain.Tests.Framework
                 compareLogic.Config.ExpectedName = events.Expected.GetType().Name;
                 var comparisonResult = compareLogic.Compare(events.Expected, events.Produced);
 
-                if (!comparisonResult.AreEqual)
-                {
-                    Assert.Fail(comparisonResult.DifferencesString);
-                }
+                if (!comparisonResult.AreEqual) { Assert.Fail(comparisonResult.DifferencesString); }
             }
         }
 

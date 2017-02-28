@@ -75,8 +75,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 
             return faultProcessors.Select(p =>
                                           {
-                                              if (p.Policy.IsSynchronious)
-                                                  return p.ActorRef.Ask<HandlerExecuted>(messageMetadataEnvelop);
+                                              if (p.Policy.IsSynchronious) return p.ActorRef.Ask<HandlerExecuted>(messageMetadataEnvelop);
 
                                               p.ActorRef.Tell(messageMetadataEnvelop);
                                               return Task.CompletedTask;

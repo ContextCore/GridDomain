@@ -56,8 +56,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                       unhandled = on
                 }";
 
-            if (_includeConfig)
-                logConfig += @"
+            if (_includeConfig) logConfig += @"
                 log-config-on-start = on";
 
             return logConfig;

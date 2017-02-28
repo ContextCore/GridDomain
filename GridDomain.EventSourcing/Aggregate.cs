@@ -80,12 +80,10 @@ namespace GridDomain.EventSourcing
             AsyncEventsInProgress eventsInProgress;
 
             if (!_asyncEventsResults.TryGetValue(invocationId, out eventsInProgress)) return;
-            if (!eventsInProgress.ResultProducer.IsCompleted)
-                throw new NotFinishedAsyncMethodResultsRequestedException();
+            if (!eventsInProgress.ResultProducer.IsCompleted) throw new NotFinishedAsyncMethodResultsRequestedException();
             _asyncEventsResults.Remove(invocationId);
 
-            foreach (var @event in eventsInProgress.ResultProducer.Result)
-                RaiseEvent(@event);
+            foreach (var @event in eventsInProgress.ResultProducer.Result) RaiseEvent(@event);
         }
 
         #endregion
@@ -103,8 +101,7 @@ namespace GridDomain.EventSourcing
         public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent e;
-            if (!FutureEvents.TryGetValue(futureEventId, out e))
-                throw new ScheduledEventNotFoundException(futureEventId);
+            if (!FutureEvents.TryGetValue(futureEventId, out e)) throw new ScheduledEventNotFoundException(futureEventId);
 
             RaiseEvent(e.Event);
             RaiseEvent(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
@@ -118,11 +115,9 @@ namespace GridDomain.EventSourcing
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
             var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
-            if (criteia != null)
-                eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
+            if (criteia != null) eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
-                RaiseEvent(e);
+            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray()) RaiseEvent(e);
         }
 
         private void Apply(FutureEventScheduledEvent e)

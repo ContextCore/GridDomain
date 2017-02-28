@@ -10,8 +10,7 @@ namespace GridDomain.Node
                                                                                            EventsAdaptersCatalog
                                                                                                eventAdapters)
         {
-            if (system == null)
-                throw new ArgumentNullException(nameof(system));
+            if (system == null) throw new ArgumentNullException(nameof(system));
 
             var ext =
                 (DomainEventsJsonSerializationExtension)

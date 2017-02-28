@@ -45,8 +45,7 @@ namespace GridDomain.Node
 
             var processor = new Processor(aggregateActor);
 
-            foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
-            {
+            foreach (var aggregateCommandInfo in descriptor.RegisteredCommands) {
                 _aggregatesCatalog.Add(aggregateCommandInfo.CommandType, processor);
             }
 
@@ -60,10 +59,7 @@ namespace GridDomain.Node
             var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
             var processor = new Processor(sagaActor);
 
-            foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
-            {
-                _sagaCatalog.Add(acceptMsg.MessageType, processor);
-            }
+            foreach (var acceptMsg in sagaDescriptor.AcceptMessages) { _sagaCatalog.Add(acceptMsg.MessageType, processor); }
 
             return Task.CompletedTask;
         }
@@ -110,8 +106,7 @@ namespace GridDomain.Node
         private IActorRef CreateActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
             var handleActorProps = _system.DI().Props(actorType);
-            if (routeConfig != null)
-                handleActorProps = handleActorProps.WithRouter(routeConfig);
+            if (routeConfig != null) handleActorProps = handleActorProps.WithRouter(routeConfig);
 
             var handleActor = _system.ActorOf(handleActorProps, actorName);
             return handleActor;

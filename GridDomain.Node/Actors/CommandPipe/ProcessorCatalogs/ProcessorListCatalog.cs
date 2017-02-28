@@ -17,10 +17,8 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
         public override void Add(Type type, List<Processor> processor)
         {
             List<Processor> list;
-            if (Catalog.TryGetValue(type, out list))
-                list.AddRange(processor);
-            else
-                base.Add(type, processor);
+            if (Catalog.TryGetValue(type, out list)) list.AddRange(processor);
+            else base.Add(type, processor);
         }
 
         public void Add(Type type, Processor processor)

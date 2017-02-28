@@ -74,8 +74,7 @@ namespace GridDomain.Scheduling.Integration
 
         private void WithErrorHandling(object processingMessage, IMessageMetadata messageMetadata, JobKey key, Action act)
         {
-            try
-            {
+            try {
                 act();
             }
             catch (Exception e)
@@ -93,8 +92,7 @@ namespace GridDomain.Scheduling.Integration
         {
             var key = GetScheduleKey(jobDataMap);
             var options = GetExecutionOptions(jobDataMap, jobKey.Name);
-            if (options.SuccesEventType == null)
-                throw new Exception("options do not have SuccessEventType for key " + key);
+            if (options.SuccesEventType == null) throw new Exception("options do not have SuccessEventType for key " + key);
 
             Predicate<object> isExpected = o => true;
             //we should work with legacy jobs having only ExecutionOptions, not ExtendedExecutionOptions 
@@ -123,8 +121,7 @@ namespace GridDomain.Scheduling.Integration
                          .Expect(options.SuccesEventType, o => isExpected(o))
                          .Execute(options.Timeout);
 
-            if (!task.Wait(options.Timeout))
-                throw new ScheduledCommandWasNotConfirmedException(command);
+            if (!task.Wait(options.Timeout)) throw new ScheduledCommandWasNotConfirmedException(command);
 
             _quartzLogger.LogSuccess(jobKey.Name);
 
@@ -141,12 +138,10 @@ namespace GridDomain.Scheduling.Integration
         private IMessageMetadata SafeGetMetadata(JobDataMap jobDataMap)
         {
             var bytes = jobDataMap[MetadataKey] as byte[];
-            try
-            {
+            try {
                 return Deserialize<IMessageMetadata>(bytes, _serializer);
             }
-            catch
-            {
+            catch {
                 return MessageMetadata.Empty;
             }
         }
@@ -217,8 +212,7 @@ namespace GridDomain.Scheduling.Integration
         private ExecutionOptions GetExecutionOptions(JobDataMap jobDatMap, string jobName)
         {
             var bytes = jobDatMap[ExecutionOptionsKey] as byte[];
-            try
-            {
+            try {
                 return Deserialize<ExtendedExecutionOptions>(bytes);
             }
             catch (Exception ex)

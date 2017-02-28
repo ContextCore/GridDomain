@@ -82,11 +82,9 @@ namespace GridDomain.Tests.Framework
 
         public SagaScenario<TSaga, TData, TFactory> Run()
         {
-            if (SagaStateAggregate != null)
-                SagaInstance = SagaProducer.Create(SagaStateAggregate);
+            if (SagaStateAggregate != null) SagaInstance = SagaProducer.Create(SagaStateAggregate);
 
-            foreach (var evt in ReceivedEvents.Where(e => SagaProducer.KnownDataTypes.Contains(e.GetType())))
-                SagaInstance = SagaProducer.Create(evt);
+            foreach (var evt in ReceivedEvents.Where(e => SagaProducer.KnownDataTypes.Contains(e.GetType()))) SagaInstance = SagaProducer.Create(evt);
 
             //When
 
@@ -141,8 +139,7 @@ namespace GridDomain.Tests.Framework
         private static TFactory CreateSagaFactory()
         {
             var constructorInfo = typeof(TFactory).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo == null)
-                throw new CannotCreateCommandHandlerExeption();
+            if (constructorInfo == null) throw new CannotCreateCommandHandlerExeption();
 
             return (TFactory) constructorInfo.Invoke(null);
         }

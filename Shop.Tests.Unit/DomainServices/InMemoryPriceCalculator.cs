@@ -13,8 +13,7 @@ namespace Shop.Tests.Unit.DomainServices
         public Task<Money> CalculatePrice(Guid skuId, int quantity)
         {
             Money skuPrice;
-            if (!_skuPrices.TryGetValue(skuId, out skuPrice))
-                throw new SkuPriceNotFoundException(skuId);
+            if (!_skuPrices.TryGetValue(skuId, out skuPrice)) throw new SkuPriceNotFoundException(skuId);
 
             return Task.FromResult(skuPrice*quantity);
         }

@@ -15,10 +15,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
         {
             maxTimeout = maxTimeout == default(TimeSpan) ? TimeSpan.FromSeconds(5) : maxTimeout;
             var cancellationToken = new CancellationTokenSource(maxTimeout).Token;
-            if (minTimeout != default(TimeSpan))
-            {
-                Thread.Sleep(minTimeout);
-            }
+            if (minTimeout != default(TimeSpan)) { Thread.Sleep(minTimeout); }
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -39,10 +36,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
         {
             maxTimeout = maxTimeout == default(TimeSpan) ? TimeSpan.FromSeconds(5) : maxTimeout;
             var cancellationToken = new CancellationTokenSource(maxTimeout).Token;
-            if (minTimeout != default(TimeSpan))
-            {
-                Thread.Sleep(minTimeout);
-            }
+            if (minTimeout != default(TimeSpan)) { Thread.Sleep(minTimeout); }
 
             while (!cancellationToken.IsCancellationRequested)
             {
