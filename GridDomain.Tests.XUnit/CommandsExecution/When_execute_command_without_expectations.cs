@@ -4,6 +4,7 @@ using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using Xunit;
 using Xunit.Abstractions;
+using GridDomain.CQRS;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {

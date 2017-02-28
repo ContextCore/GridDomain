@@ -70,11 +70,6 @@ namespace GridDomain.Tools.Connector
             _consoleSystem.Dispose();
         }
 
-        public void Execute(params ICommand[] commands)
-        {
-            _commandExecutor.Execute(commands);
-        }
-
         public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
             _commandExecutor.Execute(command, metadata);

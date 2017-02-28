@@ -156,12 +156,7 @@ namespace GridDomain.Node
             Settings.Log.Debug("GridDomain node {Id} stopped",Id);
         }
 
-        public void Execute(params ICommand[] commands)
-        {
-            _commandExecutor.Execute(commands);
-        }
-
-        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        public void Execute<T>(T command, IMessageMetadata metadata=null) where T : ICommand
         {
             _commandExecutor.Execute(command, metadata);
         }

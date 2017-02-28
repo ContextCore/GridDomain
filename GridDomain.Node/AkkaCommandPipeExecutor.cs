@@ -26,15 +26,6 @@ namespace GridDomain.Node
             _commandExecutorActor = commandExecutorActor;
         }
 
-        public void Execute(params ICommand[] commands)
-        {
-            foreach (var cmd in commands)
-            {
-                var metadata = MessageMetadata.Empty.CreateChild(cmd.Id, ExecuteMetadataEntry);
-                Execute(cmd, metadata);
-            }
-        }
-
         public void Execute<T>(T command, IMessageMetadata metadata = null) where T : ICommand
         {
             _commandExecutorActor.Tell(new MessageMetadataEnvelop<ICommand>(command, metadata));

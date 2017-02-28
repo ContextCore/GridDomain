@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="CommandExecutorExtensions.cs" />
     <Compile Include="CommandExpectBuilderExtensions.cs" />
     <Compile Include="Fault.cs" />
     <Compile Include="ICommand.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="ICommandWaiter.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IExpectBuilder.cs" />
-    <Compile Include="IExpectedCommandExecutor.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="IFault.cs" />
     <Compile Include="IHandlerWithMetadata.cs" />

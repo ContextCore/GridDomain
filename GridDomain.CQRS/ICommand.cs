@@ -6,7 +6,6 @@ namespace GridDomain.CQRS
     {
         Guid Id { get; }
         Guid SagaId { get; }
-
         Guid AggregateId { get; }
     }
 }
