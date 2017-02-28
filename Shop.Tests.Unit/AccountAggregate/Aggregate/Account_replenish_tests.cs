@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
@@ -23,13 +24,13 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
         private Money _initialAmount;
 
         [OneTimeSetUp]
-        public void When_account_replenish()
+        public async Task When_account_replenish()
         {
             Init();
             _command = new ReplenishAccountByCardCommand(Aggregate.Id, new Money(12), "xxx123");
             _initialAmount = Aggregate.Amount;
 
-            Execute(_command);
+            await Execute(_command);
         }
 
         protected override IEnumerable<DomainEvent> Expected()

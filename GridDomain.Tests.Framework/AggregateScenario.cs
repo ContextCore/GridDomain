@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -86,7 +87,8 @@ namespace GridDomain.Tests.Framework
         public AggregateScenario<TAggregate, TCommandsHandler> Run()
         {
             //When
-            foreach (var cmd in GivenCommands) Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+            foreach (var cmd in GivenCommands)
+                Aggregate = CommandsHandler.ExecuteAsync(Aggregate, cmd).Result;
 
             //Then
             ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();

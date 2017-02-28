@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
@@ -23,12 +24,12 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         }
 
         [OneTimeSetUp]
-        public void When_adding_stock()
+        public async Task When_adding_stock()
         {
             Init();
             _initialStock = Aggregate.Quantity;
             _command = new TakeFromStockCommand(Aggregate.Id, 10);
-            Execute(_command);
+            await Execute(_command);
         }
 
         protected override IEnumerable<DomainEvent> Expected()
@@ -43,11 +44,11 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         }
 
         [Test]
-        public void When_take_too_many_should_throw_exception()
+        public async Task When_take_too_many_should_throw_exception()
         {
             var command = new TakeFromStockCommand(Aggregate.Id, 100);
 
-            Assert.Throws<OutOfStockException>(() => Execute(command));
+            await Execute(command).ShouldThrow<OutOfStockException>();
         }
     }
 }

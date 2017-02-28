@@ -63,6 +63,14 @@
     <Compile Include="AggregateSnapshottingFactory.cs" />
     <Compile Include="AggregatesSnapshotsFactory.cs" />
     <Compile Include="CannotFindAggregateCreatorBySnapshotException.cs" />
+    <Compile Include="CommonDomain\AggregateBase.cs" />
+    <Compile Include="CommonDomain\ConventionEventRouter.cs" />
+    <Compile Include="CommonDomain\ExtensionMethods.cs" />
+    <Compile Include="CommonDomain\HandlerForDomainEventNotFoundException.cs" />
+    <Compile Include="CommonDomain\IAggregate.cs" />
+    <Compile Include="CommonDomain\IConstructAggregates.cs" />
+    <Compile Include="CommonDomain\IRouteEvents.cs" />
+    <Compile Include="CommonDomain\RegistrationEventRouter.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
     <Compile Include="Adapters\DomainEventAdapter.cs" />

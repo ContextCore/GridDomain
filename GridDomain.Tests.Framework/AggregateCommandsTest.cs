@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -28,24 +29,25 @@ namespace GridDomain.Tests.Framework
             return (THandler) constructorInfo.Invoke(null);
         }
 
-        protected DomainEvent[] ExecuteCommand(params ICommand[] command)
+        protected async Task<DomainEvent[]> ExecuteCommand(params ICommand[] command)
         {
             CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
 
-            foreach (var cmd in command) Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+            foreach (var cmd in command)
+                Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
 
             return ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
         }
 
-        protected void Execute(params ICommand[] command)
+        protected async Task Execute(params ICommand[] command)
         {
             ExpectedEvents = Expected().ToArray();
-            var events = ExecuteCommand(command);
+            var events = await ExecuteCommand(command);
             Console.WriteLine(CollectDebugInfo(command));
             EventsExtensions.CompareEvents(ExpectedEvents, events);
         }
 
-        protected void RunScenario(IEnumerable<DomainEvent> given,
+        protected async Task RunScenario(IEnumerable<DomainEvent> given,
                                    IEnumerable<DomainEvent> expected,
                                    params ICommand[] command)
         {
@@ -56,7 +58,8 @@ namespace GridDomain.Tests.Framework
             GivenEvents = given.ToArray();
             Aggregate.ApplyEvents(GivenEvents);
 
-            foreach (var cmd in command) Aggregate = CommandsHandler.Execute(Aggregate, cmd);
+            foreach (var cmd in command)
+                Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
 
             ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka;
 using Akka.Actor;
+using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.Common;
@@ -55,22 +56,57 @@ namespace GridDomain.Node.Actors
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
 
-                                                           try {
-                                                               State = _handler.Execute((TAggregate) State, cmd);
-                                                           }
-                                                           catch (Exception ex)
-                                                           {
-                                                               WaitForFaultProcessedByHandlers(cmd, ex, m.Metadata);
-                                                               BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
-                                                               return;
-                                                           }
+                                                           _handler.ExecuteAsync((TAggregate) State, cmd)
+                                                                   .PipeTo(Self);
 
-                                                           PersistState(cmd, m.Metadata);
-
-                                                           ProcessAsyncMethods(cmd, m.Metadata);
-
-                                                           BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
+                                                           BecomeStacked(() => WaitingForCommandExecution(m));
                                                        });
+        }
+
+        private void WaitingForCommandExecution(IMessageMetadataEnvelop<ICommand> commandEnvelop)
+        {
+            CommandAny(c =>
+                       {
+                           c.Match()
+                            .With<Failure>(f =>
+                                           {
+                                               CommandError(commandEnvelop, f);
+
+                                               UnbecomeStacked();
+                                               BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
+                                           })
+                               // .With<Status.Failure>()
+                            .With<IAggregate>(newState =>
+                                              {
+                                                  CommandSuccess(commandEnvelop, newState);
+
+                                                  UnbecomeStacked();
+                                                  BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
+                                                  Stash.UnstashAll();
+                                              })
+                            .Default(o => Stash.Stash());
+                       });
+        }
+
+        private void CommandError(IMessageMetadataEnvelop<ICommand> commandEnvelop, Failure f)
+        {
+            WaitForFaultProcessedByHandlers(commandEnvelop.Message, f.Exception, commandEnvelop.Metadata);
+        }
+
+        private void CommandSuccess(IMessageMetadataEnvelop<ICommand> commandEnvelop, IAggregate newState)
+        {
+            State = newState;
+
+            var uncommittedEvents =
+                State.GetUncommittedEvents()
+                     .Cast<DomainEvent>()
+                     .Select(e => e.CloneWithSaga(commandEnvelop.Message.SagaId))
+                     .ToArray();
+
+            State.ClearUncommittedEvents();
+            var eventsMetadata = commandEnvelop.Metadata.CreateChild(Id, _domainEventProcessEntry);
+            OnCommandEventsPersisted(uncommittedEvents, eventsMetadata);
+           
         }
 
         protected override void Terminating()
@@ -94,98 +130,79 @@ namespace GridDomain.Node.Actors
             Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, ex, cmd);
         }
 
-        private void PersistState(ICommand command, IMessageMetadata commandMetadata)
-        {
-            var events =
-                State.GetUncommittedEvents().Cast<DomainEvent>().Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
-
-            var totalEvents = events.Length;
-            var persistedEvents = 0;
-            var eventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
-
-            PersistAll(events,
-                e =>
-                {
-                    //should save snapshot only after all messages persisted as state was already modified by all of them
-                    if (++persistedEvents == totalEvents) OnCommandEventsPersisted(events, eventsMetadata);
-
-                    NotifyPersistenceWatchers(e);
-                });
-
-            State.ClearUncommittedEvents();
-        }
+        //private void PersistState(ICommand command, IMessageMetadata commandMetadata)
+        //{
+        //    var events =
+        //        State.GetUncommittedEvents().Cast<DomainEvent>().Select(e => e.CloneWithSaga(command.SagaId)).ToArray();
+        //
+        //    var totalEvents = events.Length;
+        //    var persistedEvents = 0;
+        //    var eventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
+        //
+        //    PersistAll(events,
+        //        e =>
+        //        {
+        //         
+        //        });
+        //
+        //    State.ClearUncommittedEvents();
+        //}
+        
 
         private void WaitingHandlersProcess(IMessageMetadata commandMetadata)
         {
-            CommandAny(c =>
-                       {
-                           c.Match().With<AllHandlersCompleted>(processComplete =>
-                                                                {
-                                                                    foreach (var e in processComplete.DomainEvents)
-                                                                    {
-                                                                        var eventMetadata =
-                                                                            commandMetadata.CreateChild(e.SourceId,
-                                                                                _domainEventProcessEntry);
-                                                                        _publisher.Publish(e, eventMetadata);
-                                                                    }
+            CommandAny(c =>{
+                            c.Match()
+                             .With<AllHandlersCompleted>(m =>
+                                                         {
+                                                             OnHandlersFinish(commandMetadata, m);
 
-                                                                    if (processComplete.Fault != null)
-                                                                    {
-                                                                        var faultMetadata =
-                                                                            commandMetadata.CreateChild(
-                                                                                commandMetadata.MessageId,
-                                                                                _domainEventProcessFailEntry);
-                                                                        _publisher.Publish(processComplete.Fault,
-                                                                            faultMetadata);
-                                                                    }
+                                                             UnbecomeStacked();
+                                                             Stash.UnstashAll();
+                                                         })
+                            //  .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d => { FinishAsyncInvoke(d); })
+                             .Default(o => Stash.Stash());
+                     });
+        }
 
-                                                                    UnbecomeStacked();
-                                                                    Stash.UnstashAll();
-                                                                }).With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
-                                                                                                                      {
-                                                                                                                          var
-                                                                                                                              m
-                                                                                                                                  =
-                                                                                                                                  d
-                                                                                                                                      .Message;
-                                                                                                                          Monitor
-                                                                                                                              .IncrementMessagesReceived
-                                                                                                                              ();
-                                                                                                                          if
-                                                                                                                              (
-                                                                                                                              m
-                                                                                                                                  .Exception
-                                                                                                                              != null)
-                                                                                                                          {
-                                                                                                                              WaitForFaultProcessedByHandlers
-                                                                                                                                  (m
-                                                                                                                                      .Command,
-                                                                                                                                      m
-                                                                                                                                          .Exception,
-                                                                                                                                      d
-                                                                                                                                          .Metadata);
-                                                                                                                              return;
-                                                                                                                          }
+       // private void FinishAsyncInvoke(IMessageMetadataEnvelop<AsyncEventsReceived> d)
+       // {
+       //     var m = d.Message;
+       //     Monitor.IncrementMessagesReceived();
+       //     if (m.Exception != null)
+       //     {
+       //         WaitForFaultProcessedByHandlers(m.Command, m.Exception, d.Metadata);
+       //         return;
+       //     }
+       //
+       //     (State as Aggregate).FinishAsyncExecution(m.InvocationId);
+       //     //PersistState(m.Command, d.Metadata);
+       // }
 
-                                                                                                                          (State
-                                                                                                                              as
-                                                                                                                              Aggregate)
-                                                                                                                              .FinishAsyncExecution
-                                                                                                                              (m
-                                                                                                                                  .InvocationId);
-                                                                                                                          PersistState
-                                                                                                                              (m
-                                                                                                                                  .Command,
-                                                                                                                                  d
-                                                                                                                                      .Metadata);
-                                                                                                                      })
-                            .Default(o => Stash.Stash());
-                       });
+        private void OnHandlersFinish(IMessageMetadata commandMetadata, AllHandlersCompleted processComplete)
+        {
+            foreach (var e in processComplete.DomainEvents)
+            {
+                var eventMetadata = commandMetadata.CreateChild(e.SourceId, _domainEventProcessEntry);
+                _publisher.Publish(e, eventMetadata);
+            }
+
+            if (processComplete.Fault == null) return;
+
+            var faultMetadata = commandMetadata.CreateChild(commandMetadata.MessageId, _domainEventProcessFailEntry);
+            _publisher.Publish(processComplete.Fault, faultMetadata);
+        }
+
+        protected override void OnEventPersisted(DomainEvent[] events)
+        {
+            foreach (var e in events)
+                NotifyPersistenceWatchers(e);
         }
 
         private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata eventCommonMetadata)
         {
             TrySaveSnapshot();
+
             var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, eventCommonMetadata);
 
             foreach (var e in events)

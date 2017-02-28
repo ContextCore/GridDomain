@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
@@ -23,12 +24,12 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         }
 
         [OneTimeSetUp]
-        public void When_adding_stock()
+        public async Task When_adding_stock()
         {
             Init();
             _initialStock = Aggregate.Quantity;
             _command = new AddToStockCommand(Aggregate.Id, _skuId, 10, "test batch");
-            Execute(_command);
+            await Execute(_command);
         }
 
         protected override IEnumerable<DomainEvent> Expected()
@@ -47,7 +48,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         {
             var command = new AddToStockCommand(Aggregate.Id, _skuId, -10, "test batch");
 
-            Assert.Throws<ArgumentException>(() => Execute(command));
+            Assert.ThrowsAsync<ArgumentException>(async () => await Execute(command));
         }
 
         [Test]
@@ -55,7 +56,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         {
             var command = new AddToStockCommand(Aggregate.Id, Guid.NewGuid(), 10, "test batch");
 
-            Assert.Throws<InvalidSkuAddException>(() => Execute(command));
+            Assert.ThrowsAsync<InvalidSkuAddException>(async () => await Execute(command));
         }
     }
 }

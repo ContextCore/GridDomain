@@ -23,10 +23,10 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
         [Test]
         public void When_creating_order_with_negative_number_it_throws_exception()
         {
-            Assert.Throws<NegativeOrderNumberException>(() =>
+            Assert.ThrowsAsync<NegativeOrderNumberException>(async () =>
                                                         {
                                                             var cmd = new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid());
-                                                            Execute(cmd);
+                                                            await Execute(cmd);
                                                         });
         }
     }

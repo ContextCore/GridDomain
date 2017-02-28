@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
@@ -15,11 +16,11 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         private CreateSkuStockCommand _command;
 
         [OneTimeSetUp]
-        public void When_creating_stock()
+        public async Task When_creating_stock()
         {
             Init();
             _command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), 10, "test batch", TimeSpan.FromMinutes(1));
-            Execute(_command);
+            await Execute(_command);
         }
 
         protected override IEnumerable<DomainEvent> Expected()

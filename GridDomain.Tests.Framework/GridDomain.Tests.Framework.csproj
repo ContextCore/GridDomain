@@ -192,7 +192,6 @@
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="AggregateTest.cs" />
     <Compile Include="GuidComparer.cs" />
-    <Compile Include="InMemoryEventRepository.cs" />
     <Compile Include="LoggerConfigurationXunitTestOutputExtensions.cs" />
     <Compile Include="AutoTestLoggerConfiguration.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />

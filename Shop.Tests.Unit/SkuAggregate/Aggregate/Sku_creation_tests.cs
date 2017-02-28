@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
@@ -27,11 +28,11 @@ namespace Shop.Tests.Unit.SkuAggregate.Aggregate
         }
 
         [Test]
-        public void When_creating_new_sku()
+        public async Task When_creating_new_sku()
         {
             Init();
             _cmd = new CreateNewSkuCommand("testSku", "tesstArticle", Aggregate.Id, new Money(100));
-            Execute(_cmd);
+            await Execute(_cmd);
         }
     }
 }

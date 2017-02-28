@@ -34,26 +34,26 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
         [Test]
         public void Order_should_throw_exñeption_on_item_add_with_negative_money()
         {
-            Assert.Throws<InvalidMoneyException>(() =>
+            Assert.ThrowsAsync<InvalidMoneyException>(async () =>
                                                  {
                                                      var cmd = new AddItemToOrderCommand(Aggregate.Id,
                                                          Guid.NewGuid(),
                                                          20,
                                                          new Money(-123));
-                                                     Execute(cmd);
+                                                     await Execute(cmd);
                                                  });
         }
 
         [Test]
         public void Order_should_throw_exñeption_on_item_add_with_negative_quantity()
         {
-            Assert.Throws<InvalidQuantityException>(() =>
+            Assert.ThrowsAsync<InvalidQuantityException>(async () =>
                                                     {
                                                         var cmd = new AddItemToOrderCommand(Aggregate.Id,
                                                             Guid.NewGuid(),
                                                             -1,
                                                             new Money(123));
-                                                        Execute(cmd);
+                                                        await Execute(cmd);
                                                     });
         }
     }

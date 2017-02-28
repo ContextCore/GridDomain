@@ -13,6 +13,19 @@ namespace GridDomain.EventSourcing
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
 
+        private Func<DomainEvent[], Task> _persistDelegate;
+
+        protected async Task Emit(params DomainEvent[] evt) {
+
+            await _persistDelegate(evt);
+            foreach(var e in evt)
+                RaiseEvent(e);
+        }
+
+        public void RegisterPersistenceCallBack(Func<DomainEvent[], Task> persistDelegate) {
+            _persistDelegate = persistDelegate;
+        }
+
         // Only for simple implementation 
         Guid IMemento.Id
         {
@@ -89,6 +102,8 @@ namespace GridDomain.EventSourcing
         #endregion
 
         #region FutureEvents
+
+      
 
         protected Aggregate(Guid id)
         {

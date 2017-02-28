@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
@@ -14,13 +15,13 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
     public class Account_withdrawal_tests : AggregateCommandsTest<Account, AccountCommandsHandler>
     {
         [SetUp]
-        public void When_account_withdrawal()
+        public async Task When_account_withdrawal()
         {
             Init();
             _initialAmount = Aggregate.Amount;
 
             _command = new PayForOrderCommand(Aggregate.Id, new Money(12), Guid.NewGuid());
-            Execute(_command);
+            await Execute(_command);
         }
 
         protected override IEnumerable<DomainEvent> Given()

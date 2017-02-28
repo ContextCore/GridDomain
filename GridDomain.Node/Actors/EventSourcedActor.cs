@@ -9,6 +9,7 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
+using Helios.Concurrency;
 
 namespace GridDomain.Node.Actors
 {
@@ -22,6 +23,11 @@ namespace GridDomain.Node.Actors
 
         private int _terminateWaitCount = 3;
 
+        protected virtual void OnEventPersisted(DomainEvent[] events)
+        {
+            
+        }
+
         public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
@@ -29,7 +35,21 @@ namespace GridDomain.Node.Actors
 
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
-            State = (AggregateBase) aggregateConstructor.Build(typeof(T), Id, null);
+            State =  aggregateConstructor.Build(typeof(T), Id, null);
+
+            ((Aggregate) State).RegisterPersistenceCallBack(e =>
+                                                            {
+                                                                var taskCompletionSource = new TaskCompletionSource();
+                                                                PersistAll(e,
+                                                                    o =>
+                                                                    {
+                                                                        OnEventPersisted(e);
+                                                                        taskCompletionSource.Complete();
+                                                                    });
+
+                                                                return taskCompletionSource.Task;
+                                                            });
+
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 
             Command<GracefullShutdownRequest>(req =>
