@@ -1,9 +1,7 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
@@ -15,6 +13,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     public class Aggregate_Should_Not_save_snapshots_on_message_process_by_default : NodeTestKit
     {
+        public Aggregate_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper output)
+            : base(output, new SampleDomainFixture {InMemory = false}) {}
+
         [Fact]
         public async Task Given_timeout_only_default_policy()
         {
@@ -45,8 +46,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //Snapshots_should_be_saved_one_time()
             Assert.Equal(0, snapshots.Length);
         }
-
-        public Aggregate_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper output) : base(output, 
-            new SampleDomainFixture() {InMemory = false}) {}
     }
 }

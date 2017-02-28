@@ -15,12 +15,10 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             _connectionString = connectionString;
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() {}
+
         public async Task Save(string id, params SnapshotItem[] messages)
         {
-
             foreach (var m in messages)
                 m.PersistenceId = id;
 
@@ -32,7 +30,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         }
 
         /// <summary>
-        /// Oldest first, order by sequence number ascending
+        ///     Oldest first, order by sequence number ascending
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -41,10 +39,9 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
                 return await context.Snapshots.Where(j => j.PersistenceId == id)
-                              .OrderBy(i => i.SequenceNr)
-                              .ToArrayAsync();
+                                    .OrderBy(i => i.SequenceNr)
+                                    .ToArrayAsync();
             }
         }
-
     }
 }

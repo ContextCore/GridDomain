@@ -11,33 +11,16 @@ namespace GridDomain.Tests.Framework
 {
     public abstract class TypesDeserializationTest
     {
+        private readonly HashSet<Type> _excludes;
         protected ObjectDeserializationChecker Checker = new ObjectDeserializationChecker();
         protected Fixture Fixture;
-        private readonly HashSet<Type> _excludes;
-
-        protected abstract Assembly[] AllAssemblies { get; }
-        protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
-        protected Type[] TypesCache { get; }
-        
-        protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
-        {
-            var allTypes =
-                assembly.SelectMany(a => a.GetTypes())
-                        .Where(t => typeof(T).IsAssignableFrom(t) 
-                                &&  t.IsClass 
-                                && !t.IsAbstract 
-                                && !t.IsInterface
-                                &&  t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
-                        .Distinct();
-
-            CheckAll<T>(allTypes.ToArray());
-        }
 
         protected TypesDeserializationTest()
         {
             TypesCache = AllAssemblies.SelectMany(a => a.GetTypes())
-                                      .SelectMany( t => t.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).Union(new [] {t}))
-                                      .Where(t => t!=null)
+                                      .SelectMany(t => t.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic)
+                                                        .Union(new[] {t}))
+                                      .Where(t => t != null)
                                       .Distinct()
                                       .ToArray();
 
@@ -46,41 +29,50 @@ namespace GridDomain.Tests.Framework
             Fixture = new Fixture();
         }
 
-        class RestoreResult
+        protected abstract Assembly[] AllAssemblies { get; }
+        protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
+        protected Type[] TypesCache { get; }
+
+        protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
         {
-            public string Difference;
-            public Exception Exception;
-            public Type Type;
+            var allTypes = assembly.SelectMany(a => a.GetTypes())
+                                   .Where(
+                                       t =>
+                                           typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface
+                                           && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
+                                               .Any())
+                                   .Distinct();
+
+            CheckAll<T>(allTypes.ToArray());
         }
 
         protected void CheckAll<T>(params Type[] types)
         {
             var failedTypes = new List<RestoreResult>();
             var okTypes = new List<RestoreResult>();
-            
+
             foreach (var type in types.Where(t => !_excludes.Contains(t)))
             {
                 try
                 {
                     var constructedType = type;
 
-                    var createMethodInfo =
-                        typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
-                            new[] {typeof(ISpecimenBuilder)}).MakeGenericMethod(constructedType);
+                    var createMethodInfo = typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
+                        new[] {typeof(ISpecimenBuilder)})
+                                                                  .MakeGenericMethod(constructedType);
 
 
                     var obj = createMethodInfo.Invoke(null, new object[] {Fixture});
                     string difference;
 
                     if (Checker.IsRestorable(obj, out difference))
-                        okTypes.Add(new RestoreResult { Type = constructedType });
+                        okTypes.Add(new RestoreResult {Type = constructedType});
                     else
-                        failedTypes.Add(new RestoreResult { Difference = difference, Type = constructedType });
-
+                        failedTypes.Add(new RestoreResult {Difference = difference, Type = constructedType});
                 }
                 catch (Exception ex)
                 {
-                    failedTypes.Add(new RestoreResult {Exception = ex, Type = type });
+                    failedTypes.Add(new RestoreResult {Exception = ex, Type = type});
                 }
             }
 
@@ -89,10 +81,10 @@ namespace GridDomain.Tests.Framework
             {
                 AddFailedTypes(sb, failedTypes);
                 AddOkTypes(sb, okTypes);
-                Assert.True(false,sb.ToString());
+                Assert.True(false, sb.ToString());
             }
             AddOkTypes(sb, okTypes);
-            Assert.True(true,sb.ToString());
+            Assert.True(true, sb.ToString());
         }
 
         private static void AddFailedTypes(StringBuilder sb, List<RestoreResult> failedTypes)
@@ -118,7 +110,6 @@ namespace GridDomain.Tests.Framework
                     sb.AppendLine(res.Exception.ToString());
                 }
             }
-
         }
 
         private static void AddOkTypes(StringBuilder sb, List<RestoreResult> failedTypes)
@@ -134,6 +125,13 @@ namespace GridDomain.Tests.Framework
             {
                 sb.AppendLine(res.Type.Name);
             }
+        }
+
+        private class RestoreResult
+        {
+            public string Difference;
+            public Exception Exception;
+            public Type Type;
         }
     }
 }

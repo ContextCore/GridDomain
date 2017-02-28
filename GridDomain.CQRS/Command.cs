@@ -13,30 +13,22 @@ namespace GridDomain.CQRS
             AggregateId = aggregateId;
         }
 
-        protected Command(Guid id, Guid aggregateId, Guid sagaId) : this(id, aggregateId, sagaId, BusinessDateTime.UtcNow)
-        {
-        }
+        protected Command(Guid id, Guid aggregateId, Guid sagaId) : this(id, aggregateId, sagaId, BusinessDateTime.UtcNow) {}
 
-        protected Command(Guid id, Guid aggregateId, DateTime time) : this(id, aggregateId, Guid.Empty, time)
-        {
-        }
+        protected Command(Guid id, Guid aggregateId, DateTime time) : this(id, aggregateId, Guid.Empty, time) {}
 
-        protected Command(Guid id, Guid aggregateId) : this(id, aggregateId, BusinessDateTime.UtcNow)
-        {
-        }
+        protected Command(Guid id, Guid aggregateId) : this(id, aggregateId, BusinessDateTime.UtcNow) {}
 
-        protected Command(Guid aggregateId) : this(Guid.NewGuid(), aggregateId)
-        {
-        }
+        protected Command(Guid aggregateId) : this(Guid.NewGuid(), aggregateId) {}
 
         public DateTime Time { get; private set; }
-        public Guid Id { get; private set;}
+        public Guid Id { get; }
         public Guid SagaId { get; private set; }
-        public Guid AggregateId { get; private set; }
+        public Guid AggregateId { get; }
 
         public Command CloneWithSaga(Guid sagaId)
         {
-            var copy = (Command)MemberwiseClone();
+            var copy = (Command) MemberwiseClone();
             copy.SagaId = sagaId;
             return copy;
         }

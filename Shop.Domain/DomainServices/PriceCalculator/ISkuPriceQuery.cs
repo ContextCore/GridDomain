@@ -4,8 +4,5 @@ using NMoneys;
 
 namespace Shop.Domain.DomainServices.PriceCalculator
 {
-    public interface ISkuPriceQuery : ISingleQuery<Guid, Money>
-    {
-        
-    }
+    public interface ISkuPriceQuery : ISingleQuery<Guid, Money> {}
 }

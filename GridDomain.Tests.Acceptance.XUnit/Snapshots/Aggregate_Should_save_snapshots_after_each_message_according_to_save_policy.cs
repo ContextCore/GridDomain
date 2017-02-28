@@ -2,13 +2,10 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
@@ -20,6 +17,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     public class Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy : NodeTestKit
     {
+        public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
+            : base(output, new SampleDomainFixture {InMemory = false}.InitSampleAggregateSnapshots()) {}
+
         [Fact]
         public async Task Given_default_policy()
         {
@@ -50,17 +50,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //First_snapshot_should_have_parameters_from_first_command()
             Assert.Equal(initialParameter.ToString(),
                 snapshots.First()
-                          .Aggregate.Value);
+                         .Aggregate.Value);
             //Second_snapshot_should_have_parameters_from_second_command()
             Assert.Equal(changedParameter.ToString(),
                 snapshots.Skip(1)
-                          .First()
-                          .Aggregate.Value);
+                         .First()
+                         .Aggregate.Value);
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
-
-        public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
-            : base(output, new SampleDomainFixture { InMemory = false }.InitSampleAggregateSnapshots()) { } 
     }
 }

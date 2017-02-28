@@ -1,12 +1,11 @@
+using System.Data.Entity;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
     public class FakeAkkaSqlPersistenceContext : IAkkaSqlPersistenceContext
     {
-        public System.Data.Entity.DbSet<JournalItem> Journal { get; set; }
-        public System.Data.Entity.DbSet<Metadata> Metadatas { get; set; }
-        public System.Data.Entity.DbSet<SnapshotItem> Snapshots { get; set; }
-
         public FakeAkkaSqlPersistenceContext()
         {
             Journal = new FakeDbSet<JournalItem>("PersistenceId", "SequenceNr");
@@ -15,31 +14,33 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
         }
 
         public int SaveChangesCount { get; private set; }
+        public DbSet<JournalItem> Journal { get; set; }
+        public DbSet<Metadata> Metadatas { get; set; }
+        public DbSet<SnapshotItem> Snapshots { get; set; }
+
         public int SaveChanges()
         {
             ++SaveChangesCount;
             return 1;
         }
 
-        public System.Threading.Tasks.Task<int> SaveChangesAsync()
+        public Task<int> SaveChangesAsync()
         {
             ++SaveChangesCount;
-            return System.Threading.Tasks.Task<int>.Factory.StartNew(() => 1);
+            return Task<int>.Factory.StartNew(() => 1);
         }
 
-        public System.Threading.Tasks.Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken)
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             ++SaveChangesCount;
-            return System.Threading.Tasks.Task<int>.Factory.StartNew(() => 1, cancellationToken);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
+            return Task<int>.Factory.StartNew(() => 1, cancellationToken);
         }
 
         public void Dispose()
         {
             Dispose(true);
         }
+
+        protected virtual void Dispose(bool disposing) {}
     }
 }

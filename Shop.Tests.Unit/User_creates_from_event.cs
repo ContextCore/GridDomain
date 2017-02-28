@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NUnit.Framework;
@@ -29,6 +25,12 @@ namespace Shop.Tests.Unit
         }
 
         [Test]
+        public void User_receives_account()
+        {
+            Assert.AreEqual(_createdEvent.Account, Aggregate.Account);
+        }
+
+        [Test]
         public void User_receives_id()
         {
             Assert.AreEqual(_createdEvent.Id, Aggregate.Id);
@@ -39,13 +41,5 @@ namespace Shop.Tests.Unit
         {
             Assert.AreEqual(_createdEvent.Login, Aggregate.Login);
         }
-
-        [Test]
-        public void User_receives_account()
-        {
-            Assert.AreEqual(_createdEvent.Account, Aggregate.Account);
-        }
-
-    
     }
 }

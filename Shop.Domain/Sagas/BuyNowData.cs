@@ -1,7 +1,5 @@
 ﻿using System;
-using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using NMoneys;
 
 namespace Shop.Domain.Sagas
 {
@@ -13,8 +11,6 @@ namespace Shop.Domain.Sagas
             Id = id;
         }
 
-        public Guid Id { get; }
-        public string CurrentStateName { get; set; }
         public Guid UserId { get; set; }
         public Guid SkuId { get; set; }
         public Guid AccountId { get; set; }
@@ -23,5 +19,8 @@ namespace Shop.Domain.Sagas
         public int Quantity { get; set; }
         public Guid ReserveId { get; set; }
         public int OrderWarReservedStatus { get; set; }
+
+        public Guid Id { get; }
+        public string CurrentStateName { get; set; }
     }
 }

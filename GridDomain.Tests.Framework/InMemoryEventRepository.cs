@@ -37,10 +37,9 @@ namespace GridDomain.Tests.Framework
             return GetById<TAggregate>(Bucket.Default, id, 0);
         }
 
-        public TAggregate GetById<TAggregate>(string bucketId, Guid id, int version)
-            where TAggregate : class, IAggregate
+        public TAggregate GetById<TAggregate>(string bucketId, Guid id, int version) where TAggregate : class, IAggregate
         {
-            var aggregate = _aggregateFactory.Build(typeof (TAggregate), id, null);
+            var aggregate = _aggregateFactory.Build(typeof(TAggregate), id, null);
 
             Hydrate(aggregate);
 
@@ -52,11 +51,16 @@ namespace GridDomain.Tests.Framework
             Save(Bucket.Default, aggregate, commitId, updateHeaders);
         }
 
-        public void Save(string bucketId, IAggregate aggregate, Guid commitId,
-            Action<IDictionary<string, object>> updateHeaders)
+        public void Save(string bucketId,
+                         IAggregate aggregate,
+                         Guid commitId,
+                         Action<IDictionary<string, object>> updateHeaders)
         {
-            ProducedEvents.AddRange(aggregate.GetUncommittedEvents().Cast<DomainEvent>());
-            GetOrAddEventList(aggregate.Id).AddRange(aggregate.GetUncommittedEvents().Cast<DomainEvent>());
+            ProducedEvents.AddRange(aggregate.GetUncommittedEvents()
+                                             .Cast<DomainEvent>());
+            GetOrAddEventList(aggregate.Id)
+                .AddRange(aggregate.GetUncommittedEvents()
+                                   .Cast<DomainEvent>());
         }
 
         public void Dispose()
@@ -81,7 +85,8 @@ namespace GridDomain.Tests.Framework
 
         private void Hydrate(IAggregate aggregate)
         {
-            GetOrAddEventList(aggregate.Id).ForEach(aggregate.ApplyEvent);
+            GetOrAddEventList(aggregate.Id)
+                .ForEach(aggregate.ApplyEvent);
             aggregate.ClearUncommittedEvents();
         }
     }

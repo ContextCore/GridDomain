@@ -4,14 +4,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Core;
-using GridDomain.Common;
 using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing
 {
-    public class Aggregate : AggregateBase, IMemento
+    public class Aggregate : AggregateBase,
+                             IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
+
+        // Only for simple implementation 
+        Guid IMemento.Id
+        {
+            get { return Id; }
+            set { Id = value; }
+        }
+
+        int IMemento.Version
+        {
+            get { return Version; }
+            set { Version = value; }
+        }
+
         public static T Empty<T>(Guid id) where T : IAggregate
         {
             return Factory.Build<T>(id);
@@ -21,9 +35,18 @@ namespace GridDomain.EventSourcing
         {
             Register(action);
         }
+
+        protected override IMemento GetSnapshot()
+        {
+            return this;
+        }
+
         #region AsyncMethods
+
         //keep track of all invocation to be sure only aggregate-initialized async events can be applied
-        private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
+        private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults =
+            new Dictionary<Guid, AsyncEventsInProgress>();
+
         private readonly HashSet<AsyncEventsInProgress> _asyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
 
         public void ClearAsyncUncomittedEvents()
@@ -36,11 +59,12 @@ namespace GridDomain.EventSourcing
             return _asyncUncomittedEvents;
         }
 
-        public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } = new Dictionary<Guid, FutureEventScheduledEvent>();
+        public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } =
+            new Dictionary<Guid, FutureEventScheduledEvent>();
 
         public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
         {
-            var entityToArrayTask = eventProducer.ContinueWith(t => new DomainEvent[] { t.Result });
+            var entityToArrayTask = eventProducer.ContinueWith(t => new DomainEvent[] {t.Result});
             RaiseEventAsync(entityToArrayTask);
         }
 
@@ -65,7 +89,9 @@ namespace GridDomain.EventSourcing
         }
 
         #endregion
+
         #region FutureEvents
+
         protected Aggregate(Guid id)
         {
             Id = id;
@@ -91,11 +117,12 @@ namespace GridDomain.EventSourcing
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
-            var eventsToCancel = FutureEvents.Values.Where(fe => (fe.Event is TEvent));
+            var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
             if (criteia != null)
                 eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
+            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id))
+                                            .ToArray())
                 RaiseEvent(e);
         }
 
@@ -122,23 +149,5 @@ namespace GridDomain.EventSourcing
         }
 
         #endregion
-
-        // Only for simple implementation 
-        Guid IMemento.Id
-        {
-            get { return Id; }
-            set { Id = value; }
-        }
-
-        int IMemento.Version
-        {
-            get { return Version; }
-            set { Version = value; }
-        }
-
-        protected override IMemento GetSnapshot()
-        {
-            return this;
-        }
     }
 }

@@ -15,40 +15,84 @@ namespace GridDomain.Tests.Framework
         private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};
 
         private static readonly ComparisonConfig DateCreatedAndSagaId_IgnoreConfig = new ComparisonConfig
-        {
-            MembersToIgnore = new[]
-            {
-                nameof(DomainEvent.CreatedTime),
-                nameof(DomainEvent.SagaId)
-            }.ToList(),
-            CustomComparers = new List<BaseTypeComparer>() { new GuidComparer(RootComparerFactory.GetRootComparer()) },
-            DoublePrecision = 0.0001
-        };
+                                                                                     {
+                                                                                         MembersToIgnore
+                                                                                             =
+                                                                                             new[]
+                                                                                             {
+                                                                                                 nameof
+                                                                                                     (DomainEvent
+                                                                                                     .CreatedTime),
+                                                                                                 nameof
+                                                                                                     (DomainEvent
+                                                                                                     .SagaId)
+                                                                                             }
+                                                                                             .ToList(),
+                                                                                         CustomComparers
+                                                                                             =
+                                                                                             new List
+                                                                                             <
+                                                                                             BaseTypeComparer
+                                                                                             >
+                                                                                             {
+                                                                                                 new GuidComparer
+                                                                                                     (RootComparerFactory
+                                                                                                     .GetRootComparer
+                                                                                                     ())
+                                                                                             },
+                                                                                         DoublePrecision
+                                                                                             = 0.0001
+                                                                                     };
 
         private static readonly ComparisonConfig DateCreated_IgnoreConfig = new ComparisonConfig
-        {
-            MembersToIgnore = new[]
-            {
-                nameof(Command.Time),
-                nameof(Command.Id)
-            }.ToList(),
-            CustomComparers = new List<BaseTypeComparer>()
-            {
-                new GuidComparer(RootComparerFactory.GetRootComparer()),
-                new DateTimeComparer(RootComparerFactory.GetRootComparer())
-            },
-            DoublePrecision = 0.0001
-        };
+                                                                            {
+                                                                                MembersToIgnore =
+                                                                                    new[]
+                                                                                    {
+                                                                                        nameof(
+                                                                                            Command
+                                                                                            .Time),
+                                                                                        nameof(
+                                                                                            Command
+                                                                                            .Id)
+                                                                                    }
+                                                                                    .ToList(),
+                                                                                CustomComparers =
+                                                                                    new List
+                                                                                    <BaseTypeComparer>
+                                                                                    {
+                                                                                        new GuidComparer
+                                                                                            (RootComparerFactory
+                                                                                            .GetRootComparer
+                                                                                            ()),
+                                                                                        new DateTimeComparer
+                                                                                            (RootComparerFactory
+                                                                                            .GetRootComparer
+                                                                                            ())
+                                                                                    },
+                                                                                DoublePrecision = 0.0001
+                                                                            };
 
         private static readonly ComparisonConfig IgnoreStateNameConfig = new ComparisonConfig
-        {
-            MembersToIgnore = new[]
-            {
-                nameof(ISagaState.CurrentStateName),
-            }.ToList(),
-            CustomComparers = new List<BaseTypeComparer>() { new GuidComparer(RootComparerFactory.GetRootComparer()) },
-            DoublePrecision = 0.0001
-        };
+                                                                         {
+                                                                             MembersToIgnore =
+                                                                                 new[]
+                                                                                 {
+                                                                                     nameof(
+                                                                                         ISagaState
+                                                                                         .CurrentStateName)
+                                                                                 }.ToList(),
+                                                                             CustomComparers =
+                                                                                 new List
+                                                                                 <BaseTypeComparer>
+                                                                                 {
+                                                                                     new GuidComparer
+                                                                                         (RootComparerFactory
+                                                                                         .GetRootComparer
+                                                                                         ())
+                                                                                 },
+                                                                             DoublePrecision = 0.0001
+                                                                         };
 
         /// <summary>
         ///     Compare events ignoring creation date
@@ -74,22 +118,17 @@ namespace GridDomain.Tests.Framework
             CompareByLogic(expected, published, logic ?? new CompareLogic(DateCreated_IgnoreConfig));
         }
 
-        public static void CompareState<T>(T expected,
-                                           T published,
-                                           CompareLogic logic = null)
+        public static void CompareState<T>(T expected, T published, CompareLogic logic = null)
         {
-            CompareByLogic<T>(new[] {expected}, new []{published}, logic ?? new CompareLogic());
-        }
-        public static void CompareStateWithoutName<T>(T expected,
-                                        T published,
-                                        CompareLogic logic = null)
-        {
-            CompareByLogic<T>(new[] { expected }, new[] { published }, logic ?? new CompareLogic(IgnoreStateNameConfig));
+            CompareByLogic(new[] {expected}, new[] {published}, logic ?? new CompareLogic());
         }
 
-        private static void CompareByLogic<T>(IEnumerable<T> expected1, 
-                                              IEnumerable<T> published2,
-                                              CompareLogic compareLogic)
+        public static void CompareStateWithoutName<T>(T expected, T published, CompareLogic logic = null)
+        {
+            CompareByLogic(new[] {expected}, new[] {published}, logic ?? new CompareLogic(IgnoreStateNameConfig));
+        }
+
+        private static void CompareByLogic<T>(IEnumerable<T> expected1, IEnumerable<T> published2, CompareLogic compareLogic)
         {
             var expected = expected1.ToArray();
             var published = published2.ToArray();
@@ -111,8 +150,10 @@ namespace GridDomain.Tests.Framework
 
             foreach (var events in eventPairs)
             {
-                compareLogic.Config.ActualName = events.Produced.GetType().Name;
-                compareLogic.Config.ExpectedName = events.Expected.GetType().Name;
+                compareLogic.Config.ActualName = events.Produced.GetType()
+                                                       .Name;
+                compareLogic.Config.ExpectedName = events.Expected.GetType()
+                                                         .Name;
                 var comparisonResult = compareLogic.Compare(events.Expected, events.Produced);
 
                 if (!comparisonResult.AreEqual)

@@ -1,57 +1,105 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
-    public class FakeDbSet<TEntity> : System.Data.Entity.DbSet<TEntity>, IQueryable, System.Collections.Generic.IEnumerable<TEntity>, System.Data.Entity.Infrastructure.IDbAsyncEnumerable<TEntity> where TEntity : class
+    public class FakeDbSet<TEntity> : DbSet<TEntity>,
+                                      IQueryable,
+                                      IEnumerable<TEntity>,
+                                      IDbAsyncEnumerable<TEntity> where TEntity : class
     {
-        private readonly System.Reflection.PropertyInfo[] _primaryKeys;
-        private readonly System.Collections.ObjectModel.ObservableCollection<TEntity> _data;
+        private readonly ObservableCollection<TEntity> _data;
+        private readonly PropertyInfo[] _primaryKeys;
         private readonly IQueryable _query;
 
         public FakeDbSet()
         {
-            _data = new System.Collections.ObjectModel.ObservableCollection<TEntity>();
+            _data = new ObservableCollection<TEntity>();
             _query = _data.AsQueryable();
         }
 
         public FakeDbSet(params string[] primaryKeys)
         {
-            _primaryKeys = typeof(TEntity).GetProperties().Where(x => primaryKeys.Contains(x.Name)).ToArray();
-            _data = new System.Collections.ObjectModel.ObservableCollection<TEntity>();
+            _primaryKeys = typeof(TEntity).GetProperties()
+                                          .Where(x => primaryKeys.Contains(x.Name))
+                                          .ToArray();
+            _data = new ObservableCollection<TEntity>();
             _query = _data.AsQueryable();
+        }
+
+        public override ObservableCollection<TEntity> Local
+        {
+            get { return _data; }
+        }
+
+        IDbAsyncEnumerator<TEntity> IDbAsyncEnumerable<TEntity>.GetAsyncEnumerator()
+        {
+            return new FakeDbAsyncEnumerator<TEntity>(_data.GetEnumerator());
+        }
+
+        IEnumerator<TEntity> IEnumerable<TEntity>.GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        Type IQueryable.ElementType
+        {
+            get { return _query.ElementType; }
+        }
+
+        Expression IQueryable.Expression
+        {
+            get { return _query.Expression; }
+        }
+
+        IQueryProvider IQueryable.Provider
+        {
+            get { return new FakeDbAsyncQueryProvider<TEntity>(_query.Provider); }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _data.GetEnumerator();
         }
 
         public override TEntity Find(params object[] keyValues)
         {
             if (_primaryKeys == null)
-                throw new System.ArgumentException("No primary keys defined");
+                throw new ArgumentException("No primary keys defined");
             if (keyValues.Length != _primaryKeys.Length)
-                throw new System.ArgumentException("Incorrect number of keys passed to Find method");
+                throw new ArgumentException("Incorrect number of keys passed to Find method");
 
             var keyQuery = this.AsQueryable();
-            keyQuery = keyValues
-                .Select((t, i) => i)
-                .Aggregate(keyQuery,
-                    (current, x) =>
-                        current.Where(entity => _primaryKeys[x].GetValue(entity, null).Equals(keyValues[x])));
+            keyQuery = keyValues.Select((t, i) => i)
+                                .Aggregate(keyQuery,
+                                    (current, x) => current.Where(entity => _primaryKeys[x].GetValue(entity, null)
+                                                                                           .Equals(keyValues[x])));
 
             return keyQuery.SingleOrDefault();
         }
 
-        public override System.Threading.Tasks.Task<TEntity> FindAsync(System.Threading.CancellationToken cancellationToken, params object[] keyValues)
+        public override Task<TEntity> FindAsync(CancellationToken cancellationToken, params object[] keyValues)
         {
-            return System.Threading.Tasks.Task<TEntity>.Factory.StartNew(() => Find(keyValues), cancellationToken);
+            return Task<TEntity>.Factory.StartNew(() => Find(keyValues), cancellationToken);
         }
 
-        public override System.Threading.Tasks.Task<TEntity> FindAsync(params object[] keyValues)
+        public override Task<TEntity> FindAsync(params object[] keyValues)
         {
-            return System.Threading.Tasks.Task<TEntity>.Factory.StartNew(() => Find(keyValues));
+            return Task<TEntity>.Factory.StartNew(() => Find(keyValues));
         }
 
-        public override System.Collections.Generic.IEnumerable<TEntity> AddRange(System.Collections.Generic.IEnumerable<TEntity> entities)
+        public override IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
         {
-            if (entities == null) throw new System.ArgumentNullException("entities");
+            if (entities == null) throw new ArgumentNullException("entities");
             var items = entities.ToList();
             foreach (var entity in items)
             {
@@ -62,68 +110,33 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public override TEntity Add(TEntity item)
         {
-            if (item == null) throw new System.ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException("item");
             _data.Add(item);
             return item;
         }
 
         public override TEntity Remove(TEntity item)
         {
-            if (item == null) throw new System.ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException("item");
             _data.Remove(item);
             return item;
         }
 
         public override TEntity Attach(TEntity item)
         {
-            if (item == null) throw new System.ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException("item");
             _data.Add(item);
             return item;
         }
 
         public override TEntity Create()
         {
-            return System.Activator.CreateInstance<TEntity>();
+            return Activator.CreateInstance<TEntity>();
         }
 
         public override TDerivedEntity Create<TDerivedEntity>()
         {
-            return System.Activator.CreateInstance<TDerivedEntity>();
-        }
-
-        public override System.Collections.ObjectModel.ObservableCollection<TEntity> Local
-        {
-            get { return _data; }
-        }
-
-        System.Type IQueryable.ElementType
-        {
-            get { return _query.ElementType; }
-        }
-
-        System.Linq.Expressions.Expression IQueryable.Expression
-        {
-            get { return _query.Expression; }
-        }
-
-        IQueryProvider IQueryable.Provider
-        {
-            get { return new FakeDbAsyncQueryProvider<TEntity>(_query.Provider); }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return _data.GetEnumerator();
-        }
-
-        System.Collections.Generic.IEnumerator<TEntity> System.Collections.Generic.IEnumerable<TEntity>.GetEnumerator()
-        {
-            return _data.GetEnumerator();
-        }
-
-        System.Data.Entity.Infrastructure.IDbAsyncEnumerator<TEntity> System.Data.Entity.Infrastructure.IDbAsyncEnumerable<TEntity>.GetAsyncEnumerator()
-        {
-            return new FakeDbAsyncEnumerator<TEntity>(_data.GetEnumerator());
+            return Activator.CreateInstance<TDerivedEntity>();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
     {
         public async Task Register(IMessagesRouter router)
         {
-           await router.RegisterAggregate(FutureEventsAggregatesCommandHandler.Descriptor);
+            await router.RegisterAggregate(FutureEventsAggregatesCommandHandler.Descriptor);
         }
     }
 }

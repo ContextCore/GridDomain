@@ -5,8 +5,6 @@ namespace GridDomain.Tests.XUnit.SampleDomain.Commands
 {
     public class AlwaysFaultCommand : Command
     {
-        public AlwaysFaultCommand(Guid aggregateId):base(aggregateId)
-        {
-        }
+        public AlwaysFaultCommand(Guid aggregateId) : base(aggregateId) {}
     }
 }

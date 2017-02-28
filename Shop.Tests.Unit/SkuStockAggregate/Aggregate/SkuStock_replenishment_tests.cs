@@ -10,7 +10,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
     [TestFixture]
-    class SkuStock_replenishment_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
+    internal class SkuStock_replenishment_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
     {
         private AddToStockCommand _command;
         private readonly Guid _skuId = Guid.NewGuid();
@@ -18,8 +18,8 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new SkuStockCreated(Aggregate.Id,  _skuId,50,TimeSpan.FromMilliseconds(100));
-            yield return new StockAdded(Aggregate.Id, 10,"test batch 2");
+            yield return new SkuStockCreated(Aggregate.Id, _skuId, 50, TimeSpan.FromMilliseconds(100));
+            yield return new StockAdded(Aggregate.Id, 10, "test batch 2");
         }
 
         [OneTimeSetUp]
@@ -49,6 +49,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 
             Assert.Throws<ArgumentException>(() => Execute(command));
         }
+
         [Test]
         public void When_add_sku_not_belonging_to_stock_should_throw_exception()
         {

@@ -9,6 +9,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                                               IRepository<DomainEvent>
     {
         public ActorSystemEventRepository(ActorSystem config) : base(config) {}
+
         public Task Save(string id, params DomainEvent[] messages)
         {
             return base.Save(id, messages);

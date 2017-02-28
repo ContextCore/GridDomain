@@ -16,9 +16,9 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-   
     public class Saga_produced_events_and_commands_has_sagaId : SoftwareProgrammingInstanceSagaTest
     {
+        public Saga_produced_events_and_commands_has_sagaId(ITestOutputHelper helper) : base(helper) {}
 
         [Fact]
         public void When_dispatch_command_than_command_should_have_right_sagaId()
@@ -26,10 +26,9 @@ namespace GridDomain.Tests.XUnit.Sagas
             var domainEvent = new GotTiredEvent(Guid.NewGuid());
 
             Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
-            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new []{domainEvent},
-                                                                                       MessageMetadata.Empty));
+            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {domainEvent}, MessageMetadata.Empty));
 
-            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true,TimeSpan.FromMinutes(10));
+            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true, TimeSpan.FromMinutes(10));
             var command = sagaCompleteMsg.Message;
 
             Assert.Equal(domainEvent.SagaId, command.SagaId);
@@ -39,16 +38,16 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task When_raise_saga_than_saga_created_event_should_have_right_sagaId()
         {
-            var domainEvent = new GotTiredEvent(Guid.NewGuid(),Guid.NewGuid(),Guid.NewGuid());
+            var domainEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             var waitResults = await Node.NewDebugWaiter()
-                                            .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                                            .Create()
-                                            .SendToSagas(domainEvent);
+                                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                                        .Create()
+                                        .SendToSagas(domainEvent);
 
-            Assert.Equal(domainEvent.SagaId, waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>().SagaId);
+            Assert.Equal(domainEvent.SagaId,
+                waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                           .SagaId);
         }
-
-        public Saga_produced_events_and_commands_has_sagaId(ITestOutputHelper helper) : base(helper) {}
     }
 }

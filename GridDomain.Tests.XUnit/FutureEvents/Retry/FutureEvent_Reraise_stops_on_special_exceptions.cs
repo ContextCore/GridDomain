@@ -5,14 +5,10 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
-using Microsoft.Practices.Unity;
 using Serilog;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,7 +17,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
-    : base(output, new Reraise_fixture()) { }
+            : base(output, new Reraise_fixture()) {}
 
         private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
         private static int _policyCallNumber;
@@ -32,13 +28,13 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
             {
                 var settings = base.CreateNodeSettings();
                 //TwoFastRetriesSettings();
-                settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2, 
-                                                                            TimeSpan.FromMilliseconds(10), 
-                                                                            new StopOnTestExceptionPolicy(Logger));
+                settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2,
+                    TimeSpan.FromMilliseconds(10),
+                    new StopOnTestExceptionPolicy(Logger));
                 return settings;
             }
 
-            class StopOnTestExceptionPolicy : IExceptionPolicy
+            private class StopOnTestExceptionPolicy : IExceptionPolicy
             {
                 private readonly ILogger _log;
 
@@ -50,9 +46,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 public bool ShouldContinue(Exception ex)
                 {
                     _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
-                                      GetHashCode(),
-                                      Thread.CurrentThread.ManagedThreadId,
-                                      Environment.CurrentManagedThreadId);
+                        GetHashCode(),
+                        Thread.CurrentThread.ManagedThreadId,
+                        Environment.CurrentManagedThreadId);
 
                     _policyCallNumber++;
                     _policyCallNumberChanged.SetResult(1);

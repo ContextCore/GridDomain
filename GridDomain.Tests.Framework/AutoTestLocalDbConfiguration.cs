@@ -1,5 +1,4 @@
-﻿using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Persistence;
+﻿using GridDomain.Node.Configuration.Persistence;
 
 namespace GridDomain.Tests.Framework
 {

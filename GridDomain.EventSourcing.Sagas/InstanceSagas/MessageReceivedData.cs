@@ -7,6 +7,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Message = message;
             SagaData = data;
         }
+
         public object Message { get; }
         public TSagaData SagaData { get; }
     }

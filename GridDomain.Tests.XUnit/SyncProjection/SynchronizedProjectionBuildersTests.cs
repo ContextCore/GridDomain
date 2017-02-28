@@ -1,21 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.EventSourcing;
-using GridDomain.Tests.XUnit.CommandsExecution;
-using Xunit;
-using Xunit.Abstractions;
 using GridDomain.CQRS;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.SyncProjection
 {
     public class SynchronizedProjectionBuildersTests : SampleDomainCommandExecutionTests
     {
+        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task When_execute_many_commands_for_create_and_update()
         {
@@ -25,13 +25,15 @@ namespace GridDomain.Tests.XUnit.SyncProjection
             var createCommands = Enumerable.Range(0, totalAggregates)
                                            .Select(r => new CreateSampleAggregateCommand(0, Guid.NewGuid()))
                                            .ToArray();
-            
+
             var aggregateIds = createCommands.Select(c => c.AggregateId)
                                              .ToArray();
 
-            var updateCommands = createCommands.SelectMany(c => 
-                                 Enumerable.Range(0, eachAggregateChanges)
-                                           .Select(r => new ChangeSampleAggregateCommand(r, aggregateIds.RandomElement())));
+            var updateCommands = createCommands.SelectMany(c => Enumerable.Range(0, eachAggregateChanges)
+                                                                          .Select(
+                                                                              r =>
+                                                                                  new ChangeSampleAggregateCommand(r,
+                                                                                      aggregateIds.RandomElement())));
 
             createCommands.Shuffle();
 
@@ -61,7 +63,5 @@ namespace GridDomain.Tests.XUnit.SyncProjection
                 oneAggregateEvents.IsIncreasing(h => h.History.SequenceNumber);
             }
         }
-
-        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : base(output) {}
     }
 }

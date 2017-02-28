@@ -1,16 +1,15 @@
 using System;
 using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using Akka.Actor;
 
 namespace GridDomain.Tests.Framework
 {
-    public class AnyMessagePublisher 
+    public class AnyMessagePublisher
     {
         private readonly CommandPipeBuilder _commandPipe;
         private readonly LocalMessagesWaiter<AnyMessagePublisher> _waiter;
@@ -21,8 +20,7 @@ namespace GridDomain.Tests.Framework
             _commandPipe = commandPipe;
         }
 
-  
-        public async Task<IWaitResults> SendToSagas(DomainEvent message, Guid sagaId, IMessageMetadata metadata=null)
+        public async Task<IWaitResults> SendToSagas(DomainEvent message, Guid sagaId, IMessageMetadata metadata = null)
         {
             return await SendToSagas(message.CloneWithSaga(sagaId), metadata);
         }
@@ -31,10 +29,12 @@ namespace GridDomain.Tests.Framework
         {
             var task = _waiter.Start();
 
-            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] { message }, metadata ?? MessageMetadata.Empty));
+            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {message},
+                metadata ?? MessageMetadata.Empty));
 
             return await task;
         }
+
         public async Task<IWaitResults> SendToSagas(IFault message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();

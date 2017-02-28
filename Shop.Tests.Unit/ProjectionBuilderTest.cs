@@ -5,29 +5,28 @@ using NUnit.Framework;
 
 namespace Shop.Tests.Unit
 {
-    public class ProjectionBuilderTest<TContext, TBuilder> where TContext:DbContext
+    public class ProjectionBuilderTest<TContext, TBuilder> where TContext : DbContext
     {
-        protected DbContextOptions<TContext> Options;
-        protected TBuilder ProjectionBuilder { get; set; }
-        protected  Func<TContext> ContextFactory { get; set; }
         private static readonly Random Random = new Random();
-        private string DatabaseName;
+        private readonly string DatabaseName;
+        protected DbContextOptions<TContext> Options;
 
         protected ProjectionBuilderTest(string dbName = null)
         {
-            DatabaseName = dbName ?? this.GetType().BeautyName() + Random.Next();
-            
+            DatabaseName = dbName ?? GetType()
+                .BeautyName() + Random.Next();
         }
+
+        protected TBuilder ProjectionBuilder { get; set; }
+        protected Func<TContext> ContextFactory { get; set; }
 
         [OneTimeSetUp]
         public void Generate_db_options()
         {
-            Options = new DbContextOptionsBuilder<TContext>()
-                                             .UseInMemoryDatabase(DatabaseName)
-                                             .Options;
+            Options = new DbContextOptionsBuilder<TContext>().UseInMemoryDatabase(DatabaseName)
+                                                             .Options;
 
             Console.WriteLine($"Generated options for test in-memory db '{DatabaseName}'");
-        } 
-
+        }
     }
 }

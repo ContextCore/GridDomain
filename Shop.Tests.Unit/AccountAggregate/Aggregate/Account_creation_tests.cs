@@ -10,7 +10,7 @@ using Shop.Domain.Aggregates.AccountAggregate.Events;
 namespace Shop.Tests.Unit.AccountAggregate.Aggregate
 {
     [TestFixture]
-    public class Account_creation_tests : AggregateCommandsTest<Account,AccountCommandsHandler>
+    public class Account_creation_tests : AggregateCommandsTest<Account, AccountCommandsHandler>
     {
         private CreateAccountCommand _command;
 
@@ -18,15 +18,13 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
         public void When_creating_account()
         {
             Init();
-            _command = new CreateAccountCommand(Aggregate.Id,Guid.NewGuid(),123);
+            _command = new CreateAccountCommand(Aggregate.Id, Guid.NewGuid(), 123);
             Execute(_command);
         }
 
         protected override IEnumerable<DomainEvent> Expected()
         {
-            yield return new AccountCreated(_command.AccountId,
-                                                 _command.UserId,
-                                                 _command.Number);
+            yield return new AccountCreated(_command.AccountId, _command.UserId, _command.Number);
         }
 
         [Test]

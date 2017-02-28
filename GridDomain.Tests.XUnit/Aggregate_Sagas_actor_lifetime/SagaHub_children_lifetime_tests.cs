@@ -14,9 +14,8 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
 {
     public class SagaHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {
-        public SagaHub_children_lifetime_tests(ITestOutputHelper output) :
-            base(output, new PersistentHubFixture(new InstanceSagaPersistedHubInfrastructure()))
-        { }
+        public SagaHub_children_lifetime_tests(ITestOutputHelper output)
+            : base(output, new PersistentHubFixture(new InstanceSagaPersistedHubInfrastructure())) {}
 
         internal class InstanceSagaPersistedHubInfrastructure : IPersistentActorTestsInfrastructure
         {
@@ -27,18 +26,20 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
                 var gotTired = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId);
                 var coffeMadeEvent = new CoffeMadeEvent(gotTired.FavoriteCoffeMachineId, gotTired.PersonId, null, sagaId);
 
-                ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired,
-                                                                             new MessageMetadata(gotTired.SourceId));
+                ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, new MessageMetadata(gotTired.SourceId));
 
                 ChildActivateMessage = new MessageMetadataEnvelop<DomainEvent>(coffeMadeEvent,
-                                                                               new MessageMetadata(coffeMadeEvent.SourceId));
-
+                    new MessageMetadata(coffeMadeEvent.SourceId));
             }
+
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
-                return system.DI().Props<
-                    SagaHubActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                                 SagaStateAggregate<SoftwareProgrammingSagaData>>>();
+                return system.DI()
+                             .Props
+                    <
+                        SagaHubActor
+                            <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+                                SagaStateAggregate<SoftwareProgrammingSagaData>>>();
             }
 
             public object ChildCreateMessage { get; }

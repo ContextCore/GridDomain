@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing.Adapters
     public interface IEventAdaptersCatalog
     {
         /// <summary>
-        /// All types should form a chain 
+        ///     All types should form a chain
         /// </summary>
         /// <typeparam name="TFrom"></typeparam>
         /// <typeparam name="TTo"></typeparam>

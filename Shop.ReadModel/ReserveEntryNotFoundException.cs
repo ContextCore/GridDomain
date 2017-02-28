@@ -4,11 +4,11 @@ namespace Shop.ReadModel
 {
     public class ReserveEntryNotFoundException : Exception
     {
-        public Guid ReserveId { get; }
-
         public ReserveEntryNotFoundException(Guid reserveId)
         {
             ReserveId = reserveId;
         }
+
+        public Guid ReserveId { get; }
     }
 }

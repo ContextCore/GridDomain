@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GridDomain.CQRS.Messaging.MessageRouting;
+﻿using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
@@ -16,7 +11,7 @@ using Shop.Infrastructure;
 namespace Shop.Tests.Unit.SkuAggregate.Aggregate
 {
     [TestFixture]
-    class Sku_creation_tests : AggregateCommandsTest<Sku,SkuCommandsHandler>
+    internal class Sku_creation_tests : AggregateCommandsTest<Sku, SkuCommandsHandler>
     {
         private static readonly InMemorySequenceProvider SequenceProvider = new InMemorySequenceProvider();
         private CreateNewSkuCommand _cmd;
@@ -25,18 +20,18 @@ namespace Shop.Tests.Unit.SkuAggregate.Aggregate
         {
             return new SkuCommandsHandler(SequenceProvider);
         }
-        
+
+        protected override IEnumerable<DomainEvent> Expected()
+        {
+            yield return new SkuCreated(Aggregate.Id, _cmd.Name, _cmd.Article, 1, new Money(100));
+        }
+
         [Test]
         public void When_creating_new_sku()
         {
             Init();
             _cmd = new CreateNewSkuCommand("testSku", "tesstArticle", Aggregate.Id, new Money(100));
             Execute(_cmd);
-        }
-
-        protected override IEnumerable<DomainEvent> Expected()
-        {
-            yield return new SkuCreated(Aggregate.Id,_cmd.Name,_cmd.Article,1, new Money(100));
         }
     }
 }

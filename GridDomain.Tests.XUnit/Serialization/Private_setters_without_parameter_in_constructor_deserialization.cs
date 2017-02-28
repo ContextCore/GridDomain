@@ -4,26 +4,21 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.Serialization
 {
-
     public class Private_setters_without_parameter_in_constructor_deserialization
     {
-        class TestClass
+        private class TestClass
         {
-            public Guid Id { get; }
-            public string Name { get;  }
-            public string Value { get; private set; }
-
             public TestClass(string name)
             {
                 Name = name;
                 Value = "1";
             }
 
+            private TestClass() {}
 
-            private TestClass()
-            {
-                
-            }
+            public Guid Id { get; }
+            public string Name { get; }
+            public string Value { get; private set; }
 
             public void ChangeValue(string value)
             {
@@ -37,7 +32,7 @@ namespace GridDomain.Tests.XUnit.Serialization
             var testClass = new TestClass("123");
             var data = JsonConvert.SerializeObject(testClass);
             var restoredData = JsonConvert.DeserializeObject<TestClass>(data);
-            Assert.Equal(testClass.Value,restoredData.Value);
+            Assert.Equal(testClass.Value, restoredData.Value);
         }
     }
 }

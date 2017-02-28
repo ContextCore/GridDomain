@@ -12,6 +12,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.FutureDomainEvents
 {
     public class Given_aggregate_When_raising_several_future_events_Persistent : FutureEventsTest
     {
+        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()
         {
@@ -32,7 +34,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.FutureDomainEvents
             //Envelop_id_not_equal_to_aggregate_id()
             Assert.True(eventA.Id != aggregateId && aggregateId != eventB.Id);
         }
-
-        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : base(output) {}
     }
 }

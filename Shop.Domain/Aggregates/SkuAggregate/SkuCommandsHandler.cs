@@ -1,6 +1,4 @@
-using System;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using Microsoft.Practices.Unity;
 using Shop.Domain.Aggregates.SkuAggregate.Commands;
 using Shop.Infrastructure;
 
@@ -10,7 +8,7 @@ namespace Shop.Domain.Aggregates.SkuAggregate
     {
         public SkuCommandsHandler(ISequenceProvider provider)
         {
-            Map<CreateNewSkuCommand>(c => new Sku(c.SkuId,c.Name,c.Article, (int)provider.GetNext("Sku"), c.Price));
+            Map<CreateNewSkuCommand>(c => new Sku(c.SkuId, c.Name, c.Article, (int) provider.GetNext("Sku"), c.Price));
         }
     }
 }

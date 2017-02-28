@@ -3,10 +3,10 @@ using GridDomain.CQRS;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
 {
-    public class ReserveStockCommand:Command
+    public class ReserveStockCommand : Command
     {
         public ReserveStockCommand(Guid stockId, Guid customerId, int quantity, DateTime? reservationStartTime = null)
-            :base(stockId)
+            : base(stockId)
         {
             CustomerId = customerId;
             Quantity = quantity;
@@ -14,8 +14,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
         }
 
         public int Quantity { get; }
-        public DateTime? ReservationStartTime { get;}
-        public Guid CustomerId { get;  }
+        public DateTime? ReservationStartTime { get; }
+        public Guid CustomerId { get; }
         public Guid StockId => AggregateId;
     }
 }

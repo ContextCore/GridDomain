@@ -2,7 +2,5 @@ using System;
 
 namespace GridDomain.Tests.Framework
 {
-    public class CannotCreateCommandHandlerExeption : Exception
-    {
-    }
+    public class CannotCreateCommandHandlerExeption : Exception {}
 }

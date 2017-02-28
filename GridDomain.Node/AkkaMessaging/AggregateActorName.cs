@@ -33,7 +33,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public static bool TryParseId(string value, out Guid id)
         {
-            var parts = value.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = value.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);
 
             return Guid.TryParse(parts[1], out id);
         }

@@ -11,21 +11,16 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-  
     public class CommandWaiter_results_tests : NodeTestKit
     {
-        private IWaitResults _results;
+        public CommandWaiter_results_tests(ITestOutputHelper output)
+            : base(output, new NodeTestFixture(new SampleDomainContainerConfiguration(), CreateMap())) {}
 
-        public CommandWaiter_results_tests(ITestOutputHelper output) : base(output,
-            new NodeTestFixture(new SampleDomainContainerConfiguration(), CreateMap()))
-        {
-        }
+        private IWaitResults _results;
 
         private static IMessageRouteMap CreateMap()
         {
-            var faultyHandlerMap =
-                new CustomRouteMap(
-                    r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
+            var faultyHandlerMap = new CustomRouteMap(r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
 
             return new CompositeRouteMap(faultyHandlerMap);
         }
@@ -36,17 +31,17 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var cmd = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
 
             _results = await Node.Prepare(cmd)
-                                     .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                                     .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                                     .Execute();
-       //Then_recieve_something()
+                                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                 .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
+                                 .Execute();
+            //Then_recieve_something()
             Assert.NotNull(_results);
-       //Then_recieve_non_empty_collection()
+            //Then_recieve_non_empty_collection()
             Assert.NotEmpty(_results.All);
-       //Then_recieved_collection_of_expected_messages()
-            Assert.True(_results.Message<SampleAggregateChangedEvent>() != null && 
-                        _results.Message<SampleAggregateCreatedEvent>() != null);
-       //Then_recieve_only_expected_messages()
+            //Then_recieved_collection_of_expected_messages()
+            Assert.True(_results.Message<SampleAggregateChangedEvent>() != null
+                        && _results.Message<SampleAggregateCreatedEvent>() != null);
+            //Then_recieve_only_expected_messages()
             Assert.True(_results.All.Count == 2);
         }
     }

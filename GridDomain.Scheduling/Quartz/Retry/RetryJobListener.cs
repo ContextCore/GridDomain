@@ -1,5 +1,3 @@
-using System;
-using GridDomain.Logging;
 using Quartz;
 using Quartz.Listener;
 using Serilog;
@@ -8,8 +6,8 @@ namespace GridDomain.Scheduling.Quartz.Retry
 {
     public class RetryJobListener : JobListenerSupport
     {
-        private readonly IRetryStrategy _retryStrategy;
         private readonly ILogger _logger;
+        private readonly IRetryStrategy _retryStrategy;
 
         public RetryJobListener(IRetryStrategy retryStrategy, ILogger log)
         {
@@ -24,7 +22,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
             _logger.Debug("Deciding if job {job} should be retried", context.JobDetail.Key);
             if (!JobFailed(jobException) || !_retryStrategy.ShouldRetry(context, jobException)) return;
 
-            ITrigger trigger = _retryStrategy.GetTrigger(context);
+            var trigger = _retryStrategy.GetTrigger(context);
             context.Scheduler.UnscheduleJob(context.Trigger.Key);
             context.Scheduler.ScheduleJob(context.JobDetail, trigger);
         }

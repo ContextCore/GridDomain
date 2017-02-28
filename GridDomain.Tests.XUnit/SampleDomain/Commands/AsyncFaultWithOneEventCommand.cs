@@ -5,7 +5,10 @@ namespace GridDomain.Tests.XUnit.SampleDomain.Commands
 {
     public class AsyncFaultWithOneEventCommand : Command
     {
-        public AsyncFaultWithOneEventCommand(int parameter, Guid aggregateId, Guid sagaId = default(Guid), TimeSpan? sleepTime = null) : base(Guid.NewGuid(), sagaId)
+        public AsyncFaultWithOneEventCommand(int parameter,
+                                             Guid aggregateId,
+                                             Guid sagaId = default(Guid),
+                                             TimeSpan? sleepTime = null) : base(Guid.NewGuid(), sagaId)
         {
             Parameter = parameter;
             AggregateId = aggregateId;

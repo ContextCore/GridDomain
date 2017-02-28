@@ -24,13 +24,6 @@ namespace Shop.Tests.Unit.SkuAggregate.ProjectionBuilder
         }
 
         [Test]
-        public void When_project_new_row_is_added()
-        {
-            using (var context = ContextFactory())
-                Assert.NotNull(context.Skus.Find(_message.SourceId));
-        }
-
-        [Test]
         public void When_project_all_fields_are_filled()
         {
             using (var context = ContextFactory())
@@ -47,7 +40,11 @@ namespace Shop.Tests.Unit.SkuAggregate.ProjectionBuilder
             }
         }
 
-
-
+        [Test]
+        public void When_project_new_row_is_added()
+        {
+            using (var context = ContextFactory())
+                Assert.NotNull(context.Skus.Find(_message.SourceId));
+        }
     }
 }

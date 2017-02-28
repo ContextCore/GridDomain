@@ -1,50 +1,54 @@
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.DI.Core;
-using Akka.Serialization;
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing;
-using GridDomain.Node.Actors;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using Microsoft.Practices.Unity;
-using Moq;
 using Xunit;
 using Xunit.Abstractions;
-using GridDomain.Scheduling.Quartz.Logging;
-using Quartz;
 using IScheduler = Quartz.IScheduler;
-using GridDomain.CQRS;
-using GridDomain.Tests.Framework;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
 {
-    public class NodeSchedulerTests: NodeTestKit
+    public class NodeSchedulerTests : NodeTestKit
     {
+        public NodeSchedulerTests(ITestOutputHelper output) : base(output, new SchedulerFixture())
+        {
+            ResultHolder.Clear();
+            _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor))
+                                                            .Result);
+        }
+
         private const string Name = "test";
         private const string Group = "test";
         private readonly Lazy<IActorRef> _schedulerActor;
         private IActorRef Scheduler => _schedulerActor.Value;
 
-        public NodeSchedulerTests(ITestOutputHelper output) : base(output, new SchedulerFixture())
-        {
-            ResultHolder.Clear();
-            _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor)).Result);
-        }
-
-        private ExtendedExecutionOptions CreateOptions(double seconds, TimeSpan? timeout=null,Guid? id=null, string checkField = null, int? retryCount = null, TimeSpan? repeatInterval = null)
+        private ExtendedExecutionOptions CreateOptions(double seconds,
+                                                       TimeSpan? timeout = null,
+                                                       Guid? id = null,
+                                                       string checkField = null,
+                                                       int? retryCount = null,
+                                                       TimeSpan? repeatInterval = null)
         {
             return new ExtendedExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
-                                                typeof(ScheduledCommandSuccessfullyProcessed),
-                                                id ?? Guid.Empty,
-                                                checkField,
-                                                timeout);
+                typeof(ScheduledCommandSuccessfullyProcessed),
+                id ?? Guid.Empty,
+                checkField,
+                timeout);
+        }
+
+        [Fact]
+        public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
+        {
+            var testMessage = new SuccessCommand(Name);
+            Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
+            Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
+
+            Throttle.AssertInTime(() => Assert.True(ResultHolder.Count == 1), TimeSpan.FromSeconds(2));
         }
 
         [Fact]
@@ -54,17 +58,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             var sched2 = Node.Container.Resolve<IScheduler>();
             var sched3 = Node.Container.Resolve<IScheduler>();
             Assert.True(sched1 == sched2 && sched2 == sched3);
-        }
-
-
-        [Fact]
-        public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
-        {
-            var testMessage = new SuccessCommand(Name);
-            Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
-            Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
-
-            Throttle.AssertInTime(() => Assert.True(ResultHolder.Count == 1), minTimeout: TimeSpan.FromSeconds(2));
         }
     }
 }

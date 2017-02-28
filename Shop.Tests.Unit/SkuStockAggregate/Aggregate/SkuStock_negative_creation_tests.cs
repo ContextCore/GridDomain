@@ -7,14 +7,14 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
     [TestFixture]
-    class SkuStock_negative_creation_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
+    internal class SkuStock_negative_creation_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
     {
         [Test]
         public void When_creating_stock_with_negative_number_error_is_raised()
         {
             Init();
-            var command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), -10, "test batch",TimeSpan.FromDays(1));
-            Assert.Throws<ArgumentException>( () => Execute(command));
+            var command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), -10, "test batch", TimeSpan.FromDays(1));
+            Assert.Throws<ArgumentException>(() => Execute(command));
         }
     }
 }

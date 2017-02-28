@@ -1,24 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Akka.Event;
 using Akka.Persistence;
 using GridDomain.Common;
-using GridDomain.EventSourcing;
 using Serilog;
 
 namespace GridDomain.Node.Actors
 {
     public class SnapshotsPersistencePolicy : ISnapshotsPersistencePolicy
     {
+        private readonly int _eventsToKeep;
+        private readonly TimeSpan? _maxSaveFrequency;
+        private readonly int _saveOnEach;
+        private long _lastSavedSnapshot;
         private long _lastSequenceNumber;
         private DateTime _savedAt;
-        private long _lastSavedSnapshot;
-        private readonly int _eventsToKeep;
-        private readonly int _saveOnEach;
-        private readonly TimeSpan? _maxSaveFrequency;
-
-        public ILogger Log { get; set; }
 
         public SnapshotsPersistencePolicy(int saveOnEach = 1,
                                           int eventsToKeep = 10,
@@ -31,9 +25,11 @@ namespace GridDomain.Node.Actors
             _savedAt = savedAt ?? DateTime.MinValue;
         }
 
+        public ILogger Log { get; set; }
+
         public bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null)
         {
-            bool saveIsInTime = (now ?? BusinessDateTime.UtcNow) - _savedAt >= _maxSaveFrequency;
+            var saveIsInTime = (now ?? BusinessDateTime.UtcNow) - _savedAt >= _maxSaveFrequency;
             _lastSequenceNumber = Math.Max(snapshotSequenceNr, _lastSequenceNumber);
 
             if (!saveIsInTime)
@@ -41,7 +37,7 @@ namespace GridDomain.Node.Actors
                 Log?.Debug("will not save snapshots due to time limitations");
                 return false;
             }
-            if (_lastSequenceNumber %_saveOnEach != 0)
+            if (_lastSequenceNumber%_saveOnEach != 0)
             {
                 Log?.Debug("will not save snapshots due to save on event count condition");
                 return false;

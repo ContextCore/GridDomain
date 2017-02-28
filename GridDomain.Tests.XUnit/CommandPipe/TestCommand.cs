@@ -4,7 +4,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
 {
-    class TestCommand : Command
+    internal class TestCommand : Command
     {
         public TestCommand(DomainEvent fromEvent) : base(Guid.NewGuid())
         {

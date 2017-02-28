@@ -15,14 +15,58 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
 {
     public class Aggregate_repository_tests_given_persisted_events
     {
+        private static readonly AutoTestAkkaConfiguration AutoTestAkkaConfiguration = new AutoTestAkkaConfiguration();
+
+        private static readonly string AkkaWriteDbConnectionString =
+            AutoTestAkkaConfiguration.Persistence.JournalConnectionString;
+
+        public static readonly object[] EventRepositories =
+        {
+            new object[]
+            {
+                ActorSystemJournalRepository.New(
+                    AutoTestAkkaConfiguration,
+                    new EventsAdaptersCatalog()),
+                new AggregateRepository(
+                    ActorSystemJournalRepository.New(
+                        new AutoTestAkkaConfiguration(),
+                        new EventsAdaptersCatalog()))
+            },
+            new object[]
+            {
+                ActorSystemJournalRepository.New(
+                    AutoTestAkkaConfiguration,
+                    new EventsAdaptersCatalog()),
+                AggregateRepository.New(
+                    AkkaWriteDbConnectionString)
+            },
+            new object[]
+            {
+                DomainEventsRepository.New(
+                    AkkaWriteDbConnectionString),
+                AggregateRepository.New(
+                    AkkaWriteDbConnectionString)
+            },
+            new object[]
+            {
+                DomainEventsRepository.New(
+                    AkkaWriteDbConnectionString),
+                new AggregateRepository(
+                    ActorSystemJournalRepository.New(
+                        new AutoTestAkkaConfiguration(),
+                        new EventsAdaptersCatalog()))
+            }
+        };
+
         private SampleAggregate _aggregate;
-        private Guid _sourceId;
-        private SampleAggregateCreatedEvent _createdEvent;
         private SampleAggregateChangedEvent _changedEvent;
+        private SampleAggregateCreatedEvent _createdEvent;
+        private Guid _sourceId;
 
         [Theory]
         [MemberData(nameof(EventRepositories))]
-        public async Task Given_only_aggregate_events_persisted_it_can_be_loaded(IRepository<DomainEvent> eventRepo, AggregateRepository aggrRepo)
+        public async Task Given_only_aggregate_events_persisted_it_can_be_loaded(IRepository<DomainEvent> eventRepo,
+                                                                                 AggregateRepository aggrRepo)
         {
             try
             {
@@ -30,7 +74,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
                 _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
                 _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
 
-                string persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
+                var persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId)
+                                                      .ToString();
                 await eventRepo.Save(persistenceId, _createdEvent, _changedEvent);
                 _aggregate = await aggrRepo.LoadAggregate<SampleAggregate>(_sourceId);
 
@@ -43,15 +88,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
                 aggrRepo.Dispose();
             }
         }
-        private static readonly AutoTestAkkaConfiguration AutoTestAkkaConfiguration = new AutoTestAkkaConfiguration();
-        private static readonly string AkkaWriteDbConnectionString = AutoTestAkkaConfiguration.Persistence.JournalConnectionString;
-
-        public static readonly object[] EventRepositories =
-        {
-            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration, new EventsAdaptersCatalog()), new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))},
-            new object[] { ActorSystemEventRepository.New(AutoTestAkkaConfiguration, new EventsAdaptersCatalog()), AggregateRepository.New(AkkaWriteDbConnectionString)},
-            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   AggregateRepository.New(AkkaWriteDbConnectionString)},
-            new object[] { DomainEventsRepository.New(AkkaWriteDbConnectionString),   new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog()))},
-        };
     }
 }

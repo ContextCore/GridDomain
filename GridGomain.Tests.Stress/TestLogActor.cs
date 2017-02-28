@@ -6,7 +6,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace GridGomain.Tests.Stress
 {
-    class TestLogActor : ReceiveActor
+    internal class TestLogActor : ReceiveActor
 
     {
         private readonly ILoggingAdapter _log = Context.GetLogger();
@@ -21,7 +21,7 @@ namespace GridGomain.Tests.Stress
             Console.WriteLine("Hi from console");
             Debug.Print("Try debug write");
             StandardOutWriter.WriteLine("Hi from standart out writer");
-          
+
             ReceiveAny(o =>
                        {
                            Console.WriteLine("Hi from console on receive");
@@ -33,6 +33,5 @@ namespace GridGomain.Tests.Stress
                            Sender.Tell(o);
                        });
         }
-
     }
 }

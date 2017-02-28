@@ -2,7 +2,5 @@
 
 namespace GridDomain.EventSourcing.Adapters
 {
-    internal class TypeNameNotFoundException : Exception
-    {
-    }
+    internal class TypeNameNotFoundException : Exception {}
 }

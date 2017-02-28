@@ -1,5 +1,4 @@
 using System;
-using GridDomain.Logging;
 using Quartz;
 using Serilog;
 
@@ -27,7 +26,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void TriggerFinalized(ITrigger trigger)
         {
-            _log.Verbose("Trigger {TriggerKey} for job {JobKey} finalized and won`t fire again", trigger.Key,trigger.JobKey );
+            _log.Verbose("Trigger {TriggerKey} for job {JobKey} finalized and won`t fire again", trigger.Key, trigger.JobKey);
         }
 
         public void TriggerPaused(TriggerKey triggerKey)
@@ -82,7 +81,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulerError(string msg, SchedulerException cause)
         {
-            _log.Error(cause, "Scheduler error {@message}",msg);
+            _log.Error(cause, "Scheduler error {@message}", msg);
         }
 
         public void SchedulerInStandbyMode()
@@ -92,8 +91,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulerStarted()
         {
-            _log.Verbose("Scheduler listener started at thread {Thread}.", 
-                         Environment.CurrentManagedThreadId);
+            _log.Verbose("Scheduler listener started at thread {Thread}.", Environment.CurrentManagedThreadId);
         }
 
         public void SchedulerStarting()
@@ -113,8 +111,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
 
         public void SchedulingDataCleared()
         {
-            _log.Verbose("Scheduling data cleared.{hash} Thread {Thread}.",
-                         GetHashCode(),Environment.CurrentManagedThreadId);
+            _log.Verbose("Scheduling data cleared.{hash} Thread {Thread}.", GetHashCode(), Environment.CurrentManagedThreadId);
         }
     }
 }

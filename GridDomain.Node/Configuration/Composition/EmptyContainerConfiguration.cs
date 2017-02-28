@@ -5,8 +5,6 @@ namespace GridDomain.Node.Configuration.Composition
 {
     internal class EmptyContainerConfiguration : IContainerConfiguration
     {
-        public void Register(IUnityContainer container)
-        {
-        }
+        public void Register(IUnityContainer container) {}
     }
 }

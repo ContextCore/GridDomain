@@ -1,16 +1,9 @@
 using System;
 using System.Linq;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
-using Akka.Actor;
-using Akka.Persistence;
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node.Actors;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -26,10 +19,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy : NodeTestKit
     {
         public Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
-         : base(output, new SoftwareProgrammingSagaFixture { InMemory = false }
-                             .InitSoftwareProgrammingSagaSnapshots(2, TimeSpan.FromSeconds(10))
-                             .IgnoreCommands())
-        { }
+            : base(
+                output,
+                new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2,
+                    TimeSpan.FromSeconds(10))
+                                                                     .IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -44,9 +38,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             //wait some time, allowing first snapshots to be saved
             await Task.Delay(200);
-            var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId,
-                                                          sagaStartEvent.PersonId,
-                                                          BusinessDateTime.UtcNow);
+            var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow);
 
             //send text event
             await Node.NewDebugWaiter()
@@ -60,8 +52,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
-                             sagaId);
+                        Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);
@@ -69,11 +60,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
             //Snapshot_should_have_parameters_from_first_event
             Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
-                        snapshots.First().Aggregate.Data.CurrentStateName);
+                snapshots.First()
+                         .Aggregate.Data.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
-
-     
     }
 }

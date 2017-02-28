@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
-using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
 using GridDomain.Common;
-using GridDomain.Logging;
-using Serilog;
 
 namespace GridDomain.CQRS.Messaging.Akka
 {
     public class LocalAkkaEventBusTransport : IActorTransport
     {
         private readonly EventStream _bus;
-        public readonly IDictionary<Type,List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
         private readonly ILoggingAdapter _log;
+        public readonly IDictionary<Type, List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
 
         public LocalAkkaEventBusTransport(ActorSystem system)
         {
@@ -23,12 +20,12 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Subscribe<TMessage>(IActorRef actor)
         {
-            Subscribe(typeof (TMessage), actor);
+            Subscribe(typeof(TMessage), actor);
         }
 
         public void Unsubscribe(IActorRef actor, Type topic)
         {
-            _bus.Unsubscribe(actor,topic);
+            _bus.Unsubscribe(actor, topic);
         }
 
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
@@ -38,14 +35,14 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Publish(object msg)
         {
-           // _log.Debug("Publishing {Message} to transport", msg);
+            // _log.Debug("Publishing {Message} to transport", msg);
             Publish(msg, MessageMetadata.Empty);
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-         //   _log.Debug("Publishing {Message} to transport with metadata", msg);
-            _bus.Publish(MessageMetadataEnvelop.NewGeneric(msg,metadata));
+            //   _log.Debug("Publishing {Message} to transport with metadata", msg);
+            _bus.Publish(MessageMetadataEnvelop.NewGeneric(msg, metadata));
         }
 
         public void Subscribe(Type messageType, IActorRef actor)

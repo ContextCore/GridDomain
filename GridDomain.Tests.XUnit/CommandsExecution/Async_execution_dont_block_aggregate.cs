@@ -12,6 +12,8 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 {
     public class Async_execution_dont_block_aggregate : SampleDomainCommandExecutionTests
     {
+        public Async_execution_dont_block_aggregate(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task When_async_method_is_called_other_commands_can_be_executed_before_async_results()
         {
@@ -34,7 +36,5 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var changedEvent = (await asyncCommandTask).Message<SampleAggregateChangedEvent>();
             Assert.Equal(asyncCommand.Parameter.ToString(), changedEvent.Value);
         }
-
-        public Async_execution_dont_block_aggregate(ITestOutputHelper output) : base(output) {}
     }
 }

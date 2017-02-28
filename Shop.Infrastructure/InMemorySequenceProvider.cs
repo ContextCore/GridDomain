@@ -3,13 +3,13 @@ using System.Collections.Generic;
 namespace Shop.Infrastructure
 {
     /// <summary>
-    /// Naive in-memory implementation for sequence provider
+    ///     Naive in-memory implementation for sequence provider
     /// </summary>
     public class InMemorySequenceProvider : ISequenceProvider
     {
-        private readonly Dictionary<string, long> _sequences = new Dictionary<string, long>();
-        private readonly object _locker = new object();
         public const string GlobalSequenceName = "global";
+        private readonly object _locker = new object();
+        private readonly Dictionary<string, long> _sequences = new Dictionary<string, long>();
 
         public long GetNext(string sequenceName = null)
         {

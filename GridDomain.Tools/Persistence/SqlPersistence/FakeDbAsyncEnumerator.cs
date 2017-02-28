@@ -1,11 +1,15 @@
+using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
-    public class FakeDbAsyncEnumerator<T> : System.Data.Entity.Infrastructure.IDbAsyncEnumerator<T>
+    public class FakeDbAsyncEnumerator<T> : IDbAsyncEnumerator<T>
     {
-        private readonly System.Collections.Generic.IEnumerator<T> _inner;
+        private readonly IEnumerator<T> _inner;
 
-        public FakeDbAsyncEnumerator(System.Collections.Generic.IEnumerator<T> inner)
+        public FakeDbAsyncEnumerator(IEnumerator<T> inner)
         {
             _inner = inner;
         }
@@ -15,9 +19,9 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             _inner.Dispose();
         }
 
-        public System.Threading.Tasks.Task<bool> MoveNextAsync(System.Threading.CancellationToken cancellationToken)
+        public Task<bool> MoveNextAsync(CancellationToken cancellationToken)
         {
-            return System.Threading.Tasks.Task.FromResult(_inner.MoveNext());
+            return Task.FromResult(_inner.MoveNext());
         }
 
         public T Current
@@ -25,7 +29,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             get { return _inner.Current; }
         }
 
-        object System.Data.Entity.Infrastructure.IDbAsyncEnumerator.Current
+        object IDbAsyncEnumerator.Current
         {
             get { return Current; }
         }

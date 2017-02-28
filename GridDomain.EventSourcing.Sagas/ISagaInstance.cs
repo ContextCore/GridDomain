@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommonDomain;
@@ -10,8 +9,8 @@ namespace GridDomain.EventSourcing.Sagas
     public interface ISagaInstance
     {
         IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
-        void ClearCommandsToDispatch();
         IAggregate Data { get; }
+        void ClearCommandsToDispatch();
         Task Transit<T>(T message) where T : class;
     }
 

@@ -4,9 +4,15 @@ using GridDomain.Common;
 
 namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
 {
-    class ProcessorListCatalog : TypeCatalog<List<Processor>,object>, IProcessorListCatalog
+    internal class ProcessorListCatalog : TypeCatalog<List<Processor>, object>,
+                                          IProcessorListCatalog
     {
         private static readonly List<Processor> EmptyProcessorList = new List<Processor>();
+
+        public new IReadOnlyCollection<Processor> Get(object evt)
+        {
+            return base.Get(evt) ?? EmptyProcessorList;
+        }
 
         public override void Add(Type type, List<Processor> processor)
         {
@@ -19,16 +25,12 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
 
         public void Add(Type type, Processor processor)
         {
-            Add(type, new List<Processor> { processor});
+            Add(type, new List<Processor> {processor});
         }
+
         public void Add<U>(Processor processor)
         {
             Add(typeof(U), processor);
-        }
-
-        public new IReadOnlyCollection<Processor> Get(object evt)
-        {
-            return base.Get(evt) ?? EmptyProcessorList;
         }
     }
 }

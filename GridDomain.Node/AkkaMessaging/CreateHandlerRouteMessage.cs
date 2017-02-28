@@ -19,7 +19,6 @@ namespace GridDomain.Node.AkkaMessaging
         public Type MessageType { get; }
         public Type HandlerType { get; }
 
-
         /// <summary>
         ///     Name of property in message to use as correlation id.
         ///     Property must be Guid type.
@@ -36,9 +35,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public static CreateHandlerRouteMessage New<TMessage, THandler>(string property) where THandler : IHandler<TMessage>
         {
-            return new CreateHandlerRouteMessage(typeof (TMessage), 
-                typeof (THandler), 
-                property);
+            return new CreateHandlerRouteMessage(typeof(TMessage), typeof(THandler), property);
         }
 
         private void Check()
@@ -52,17 +49,17 @@ namespace GridDomain.Node.AkkaMessaging
             var msgType = GetTypeWithoutMetadata(MessageType);
             var handlerType = typeof(IHandler<>).MakeGenericType(msgType);
             if (!handlerType.IsAssignableFrom(HandlerType))
-                 throw new InvalidHandlerType(HandlerType, MessageType);
+                throw new InvalidHandlerType(HandlerType, MessageType);
         }
 
         public static Type GetTypeWithoutMetadata(Type messageType)
         {
-            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) &&
-                messageType.IsGenericType &&
-                (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>) ||
-                 messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
+            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) && messageType.IsGenericType
+                && (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>)
+                    || messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
             {
-                return messageType.GetGenericArguments().First();
+                return messageType.GetGenericArguments()
+                                  .First();
             }
 
             return messageType;
@@ -77,7 +74,7 @@ namespace GridDomain.Node.AkkaMessaging
             var property = messageType.GetProperty(MessageCorrelationProperty);
             if (property == null)
                 throw new CannotFindCorrelationProperty(messageType, MessageCorrelationProperty);
-            if (property.PropertyType != typeof (Guid))
+            if (property.PropertyType != typeof(Guid))
                 throw new IncorrectTypeOfCorrelationProperty(messageType, MessageCorrelationProperty);
         }
     }

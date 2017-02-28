@@ -27,7 +27,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
                 Assert.AreEqual(3, context.StockHistory.Count());
-
         }
     }
 }

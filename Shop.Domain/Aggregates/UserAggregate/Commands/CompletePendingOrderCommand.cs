@@ -5,7 +5,7 @@ namespace Shop.Domain.Aggregates.UserAggregate.Commands
 {
     public class CompletePendingOrderCommand : Command
     {
-        public CompletePendingOrderCommand(Guid userId, Guid orderId):base(orderId)
+        public CompletePendingOrderCommand(Guid userId, Guid orderId) : base(orderId)
         {
             UserId = userId;
         }

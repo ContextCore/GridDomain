@@ -5,13 +5,14 @@ using GridDomain.Tests.XUnit.SampleDomain.Commands;
 
 namespace GridDomain.Tests.XUnit.SampleDomain
 {
-    public class SampleAggregatesCommandHandler: AggregateCommandsHandler<SampleAggregate>,
-                                                 IAggregateCommandsHandlerDescriptor
+    public class SampleAggregatesCommandHandler : AggregateCommandsHandler<SampleAggregate>,
+                                                  IAggregateCommandsHandlerDescriptor
 
     {
         //TODO: refactor to separate class
         public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new SampleAggregatesCommandHandler();
-        public SampleAggregatesCommandHandler() : base()
+
+        public SampleAggregatesCommandHandler()
         {
             Map<ChangeSampleAggregateCommand>((c, a) => a.ChangeState(c.Parameter));
             Map<IncreaseSampleAggregateCommand>((c, a) => a.IncreaseParameter(c.Value));
@@ -22,8 +23,8 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
             Map<LongOperationCommand>((c, a) => a.LongExecute(c.Parameter));
 
-            Map<AsyncMethodCommand>((c, a) => a.ChangeStateAsync(c.Parameter,c.SleepTime));
-                                    
+            Map<AsyncMethodCommand>((c, a) => a.ChangeStateAsync(c.Parameter, c.SleepTime));
+
             Map<AlwaysFaultCommand>((c, a) => a.RaiseException());
 
             Map<AlwaysFaultAsyncCommand>((c, a) => a.RaiseExceptionAsync(c.SleepTime));
@@ -34,13 +35,13 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         public Type AggregateType => typeof(SampleAggregate);
     }
 
-    public class IncreaseSampleAggregateCommand:Command
+    public class IncreaseSampleAggregateCommand : Command
     {
-        public int Value { get; }
-
-        public IncreaseSampleAggregateCommand(int value, Guid aggregateId):base(aggregateId)
+        public IncreaseSampleAggregateCommand(int value, Guid aggregateId) : base(aggregateId)
         {
             Value = value;
         }
+
+        public int Value { get; }
     }
 }

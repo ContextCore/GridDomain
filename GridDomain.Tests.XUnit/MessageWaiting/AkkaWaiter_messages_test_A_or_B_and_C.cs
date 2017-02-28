@@ -5,7 +5,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-   
     public class AkkaWaiter_messages_test_A_or_B_and_C : AkkaWaiterTest
     {
         private readonly Message _messageA = new Message("A");
@@ -13,13 +12,19 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
 
-
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
             return waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                        .Or<Message>(m => m.Id == _messageB.Id)
-                        .And<Message>(m => m.Id == _messageC.Id)
-                        .Create();
+                         .Or<Message>(m => m.Id == _messageB.Id)
+                         .And<Message>(m => m.Id == _messageC.Id)
+                         .Create();
+        }
+
+        [Fact]
+        public void Condition_wait_end_should_be_true_on_B_and_C()
+        {
+            var sampleObjectsReceived = new object[] {_messageB, _messageC};
+            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
         }
 
         [Fact]
@@ -27,12 +32,12 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         {
             Publish(_messageA);
             Publish(_messageC);
-            await ExpectMsg(_messageA,m => m.Id == _messageA.Id);
-            await ExpectMsg(_messageC,m => m.Id == _messageC.Id);
+            await ExpectMsg(_messageA, m => m.Id == _messageA.Id);
+            await ExpectMsg(_messageC, m => m.Id == _messageC.Id);
         }
 
         [Fact]
-        public async  Task Should_end_on_B_and_C()
+        public async Task Should_end_on_B_and_C()
         {
             Publish(_messageB);
             Publish(_messageC);
@@ -41,23 +46,16 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
-        public void Condition_wait_end_should_be_true_on_B_and_C()
+        public void Should_not_end_on_B()
         {
-            var sampleObjectsReceived = new object[] { _messageB, _messageC };
-            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+            Publish(_messageB);
+            ExpectNoMsg();
         }
 
         [Fact]
         public void Should_not_end_on_C()
         {
             Publish(_messageC);
-            ExpectNoMsg();
-        }
-
-        [Fact]
-        public void Should_not_end_on_B()
-        {
-            Publish(_messageB);
             ExpectNoMsg();
         }
     }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Automatonymous.Graphing;
 using Automatonymous.Visualizer;
@@ -8,15 +7,14 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-   
     public class CreateSagaGraph
     {
-        private readonly ITestOutputHelper _helper;
-
         public CreateSagaGraph(ITestOutputHelper helper)
         {
             _helper = helper;
         }
+
+        private readonly ITestOutputHelper _helper;
 
         [Fact]
         public void GetGraph()

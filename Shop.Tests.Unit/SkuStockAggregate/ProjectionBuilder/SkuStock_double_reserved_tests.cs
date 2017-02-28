@@ -16,8 +16,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             _stockCreatedEvent = new SkuStockCreated(Guid.NewGuid(), Guid.NewGuid(), 1, TimeSpan.FromDays(2));
             _stockAddedEvent = new StockAdded(_stockCreatedEvent.SourceId, 15, "test pack");
-            _stockReservedEvent = new StockReserved(_stockCreatedEvent.SourceId, Guid.NewGuid(), DateTime.Now.AddDays(1),
-                7);
+            _stockReservedEvent = new StockReserved(_stockCreatedEvent.SourceId, Guid.NewGuid(), DateTime.Now.AddDays(1), 7);
 
             ProjectionBuilder.Handle(_stockCreatedEvent);
             ProjectionBuilder.Handle(_stockAddedEvent);

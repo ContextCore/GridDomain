@@ -7,9 +7,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    
     public class Reraising_future_event : FutureEventsTest
     {
+        public Reraising_future_event(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task Given_aggregate_When_reraising_future_event_Then_it_fires_in_time()
         {
@@ -29,7 +30,5 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 
             Assert.True(reraiseTime.Second - aggregate.ProcessedTime.Second <= 1);
         }
-
-        public Reraising_future_event(ITestOutputHelper output) : base(output) {}
     }
 }

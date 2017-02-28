@@ -14,17 +14,23 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-   
     public class Given_istance_saga_saga_actor_can_be_created : SoftwareProgrammingInstanceSagaTest
     {
+        public Given_istance_saga_saga_actor_can_be_created(ITestOutputHelper helper) : base(helper) {}
+
         [Fact]
         public void Instance_saga_actor_can_be_created()
         {
-            var actorType = typeof(SagaActor<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                                                    SagaStateAggregate<SoftwareProgrammingSagaData>>);
+            var actorType =
+                typeof(
+                    SagaActor
+                        <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+                            SagaStateAggregate<SoftwareProgrammingSagaData>>);
 
-            var props = Node.System.DI().Props(actorType);
-            var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), Guid.NewGuid()).ToString();
+            var props = Node.System.DI()
+                            .Props(actorType);
+            var name =
+                new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);
             actor.Tell(new CheckHealth());
             ExpectMsg<HealthStatus>();
@@ -36,14 +42,12 @@ namespace GridDomain.Tests.XUnit.Sagas
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             await Node.NewDebugWaiter()
-                          .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                          .Create()
-                          .SendToSagas(msg);
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                      .Create()
+                      .SendToSagas(msg);
 
             var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);
         }
-
-        public Given_istance_saga_saga_actor_can_be_created(ITestOutputHelper helper) : base(helper) {}
     }
 }

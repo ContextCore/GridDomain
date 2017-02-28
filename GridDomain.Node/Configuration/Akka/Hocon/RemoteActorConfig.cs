@@ -1,17 +1,16 @@
 using System;
 using Akka.Serialization;
 using CommonDomain;
-using CommonDomain.Core;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     public abstract class RemoteActorConfig : IAkkaConfig
     {
+        private readonly bool _enforceIpVersion;
         private readonly string _host;
         private readonly int _port;
         private readonly string _publicHost;
-        private readonly bool _enforceIpVersion;
 
         private RemoteActorConfig(int port, string host, string publicHost, bool enforceIpVersion)
         {
@@ -21,14 +20,12 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             _port = port;
         }
 
-        protected RemoteActorConfig(IAkkaNetworkAddress config) : this(config.PortNumber, config.Host, config.PublicHost, config.EnforceIpVersion)
-        {
-        }
-
+        protected RemoteActorConfig(IAkkaNetworkAddress config)
+            : this(config.PortNumber, config.Host, config.PublicHost, config.EnforceIpVersion) {}
 
         public string Build()
         {
-            string messageSerialization = "";
+            var messageSerialization = "";
 
 #if DEBUG
             messageSerialization = @"# serialize-messages = on
@@ -36,10 +33,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 #endif
             var actorConfig = @"   
        actor {
-             "+messageSerialization+ @"
+             " + messageSerialization + @"
              serializers {
-                        wire = """+typeof(WireSerializer).AssemblyQualifiedShortName()+ @"""
-                        json = """+typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
+                        wire = """ + typeof(WireSerializer).AssemblyQualifiedShortName() + @"""
+                        json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
              serialization-bindings {
@@ -61,8 +58,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         private string BuildTransport(string hostName, string publicHostName, int port, bool enforceIpEnv)
         {
-            var transportString =
-                @"remote {
+            var transportString = @"remote {
                     log-remote-lifecycle-events = DEBUG
                     helios.tcp {
                                transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
@@ -70,7 +66,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                port = " + port + @"
                                hostname =  " + hostName + @"
                                public-hostname = " + publicHostName + @"
-                               enforce-ip-family = " + (enforceIpEnv ? "true":"false") + @"
+                               enforce-ip-family = " + (enforceIpEnv ? "true" : "false") + @"
                     }
             }";
             return transportString;

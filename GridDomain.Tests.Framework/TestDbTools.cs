@@ -10,18 +10,24 @@ namespace GridDomain.Tests.Framework
         public static async Task ClearData(IAkkaDbConfiguration akkaConf)
         {
             await Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
-            await Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"), akkaConf.JournalTableName,
-                                                                                  akkaConf.MetadataTableName);
+            await
+                Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"),
+                    akkaConf.JournalTableName,
+                    akkaConf.MetadataTableName);
         }
 
         private static async Task Truncate(string connection, params string[] tableNames)
         {
-           await ExecuteSql(connection, tableNames.Select(t => $"Truncate table {t}").ToArray());
+            await ExecuteSql(connection,
+                tableNames.Select(t => $"Truncate table {t}")
+                          .ToArray());
         }
 
         private static async Task Delete(string connection, params string[] tableNames)
         {
-           await ExecuteSql(connection, tableNames.Select(t => $"Delete from {t}").ToArray());
+            await ExecuteSql(connection,
+                tableNames.Select(t => $"Delete from {t}")
+                          .ToArray());
         }
 
         private static async Task ExecuteSql(string connection, params string[] sqlCommand)
@@ -37,6 +43,7 @@ namespace GridDomain.Tests.Framework
                 }
             }
         }
+
         public static async Task RecreateWriteDb(string eventStoreConnectionString)
         {
             using (var conn = new SqlConnection(eventStoreConnectionString))

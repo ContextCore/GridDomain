@@ -4,6 +4,8 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
 {
     public class VersionedTypeName
     {
+        public static readonly string VersionSeparator = "_V";
+
         private VersionedTypeName(string originalName, int version)
         {
             OriginalName = originalName;
@@ -16,7 +18,6 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
 
         public int Version { get; }
         public string OriginalName { get; }
-        public static readonly string VersionSeparator = "_V";
 
         public override string ToString()
         {
@@ -27,10 +28,10 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
         {
             return Parse(type.Name, defaultVersion);
         }
+
         public static VersionedTypeName Parse(string shortTypeName, int defaultVersion = 0)
         {
-            var versionedTypeParts = shortTypeName
-                .Split(new[] {VersionSeparator},StringSplitOptions.RemoveEmptyEntries);
+            var versionedTypeParts = shortTypeName.Split(new[] {VersionSeparator}, StringSplitOptions.RemoveEmptyEntries);
 
             if (versionedTypeParts.Length == 1) //does not contain version
                 return new VersionedTypeName(shortTypeName, defaultVersion);
@@ -43,10 +44,10 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
                 throw new EmptyTypeNameException(versionedTypeParts);
 
             var versionString = versionedTypeParts[1];
-            int version = 0;
-            if (!Int32.TryParse(versionString, out version))
+            var version = 0;
+            if (!int.TryParse(versionString, out version))
                 throw new CantParseVersionNumberExpection(versionString);
-          
+
             return new VersionedTypeName(typeName, version);
         }
     }

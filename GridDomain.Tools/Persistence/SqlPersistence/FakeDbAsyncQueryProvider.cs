@@ -1,9 +1,12 @@
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
-    public class FakeDbAsyncQueryProvider<TEntity> : System.Data.Entity.Infrastructure.IDbAsyncQueryProvider
+    public class FakeDbAsyncQueryProvider<TEntity> : IDbAsyncQueryProvider
     {
         private readonly IQueryProvider _inner;
 
@@ -12,34 +15,34 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             _inner = inner;
         }
 
-        public IQueryable CreateQuery(System.Linq.Expressions.Expression expression)
+        public IQueryable CreateQuery(Expression expression)
         {
             return new FakeDbAsyncEnumerable<TEntity>(expression);
         }
 
-        public IQueryable<TElement> CreateQuery<TElement>(System.Linq.Expressions.Expression expression)
+        public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             return new FakeDbAsyncEnumerable<TElement>(expression);
         }
 
-        public object Execute(System.Linq.Expressions.Expression expression)
+        public object Execute(Expression expression)
         {
             return _inner.Execute(expression);
         }
 
-        public TResult Execute<TResult>(System.Linq.Expressions.Expression expression)
+        public TResult Execute<TResult>(Expression expression)
         {
             return _inner.Execute<TResult>(expression);
         }
 
-        public System.Threading.Tasks.Task<object> ExecuteAsync(System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
+        public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
         {
-            return System.Threading.Tasks.Task.FromResult(Execute(expression));
+            return Task.FromResult(Execute(expression));
         }
 
-        public System.Threading.Tasks.Task<TResult> ExecuteAsync<TResult>(System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
+        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            return System.Threading.Tasks.Task.FromResult(Execute<TResult>(expression));
+            return Task.FromResult(Execute<TResult>(expression));
         }
     }
 }

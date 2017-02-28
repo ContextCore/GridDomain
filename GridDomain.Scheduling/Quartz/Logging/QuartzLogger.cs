@@ -1,7 +1,5 @@
 using System;
-using GridDomain.Logging;
 using Serilog;
-
 
 namespace GridDomain.Scheduling.Quartz.Logging
 {

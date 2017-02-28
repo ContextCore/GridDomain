@@ -5,6 +5,8 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
 {
     public class TestAggregate : AggregateBase
     {
+        public string Value;
+
         private TestAggregate(Guid id)
         {
             Id = id;
@@ -20,7 +22,5 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
         {
             Value = e.Value;
         }
-
-        public string Value;
     }
 }

@@ -16,7 +16,8 @@ namespace GridDomain.CQRS.ReadModel
         {
             using (var context = _contextFactory())
             {
-                context.Set<T>().Add(entity);
+                context.Set<T>()
+                       .Add(entity);
                 context.SaveChanges();
             }
         }
@@ -25,7 +26,8 @@ namespace GridDomain.CQRS.ReadModel
         {
             using (var context = _contextFactory())
             {
-                var entity = context.Set<T>().Find(id);
+                var entity = context.Set<T>()
+                                    .Find(id);
                 if (entity == null)
                     throw new CannotFindRecordException();
                 modificator(entity);

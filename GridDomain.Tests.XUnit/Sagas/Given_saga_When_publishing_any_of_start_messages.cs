@@ -12,10 +12,12 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class Given_saga_When_publishing_any_of_start_messages : SoftwareProgrammingInstanceSagaTest
     {
+        public Given_saga_When_publishing_any_of_start_messages(ITestOutputHelper helper) : base(helper) {}
+
         [Fact]
         public async Task When_publishing_start_message()
         {
-            Guid sagaId = Guid.NewGuid();
+            var sagaId = Guid.NewGuid();
             await Node.NewDebugWaiter()
                       .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
                       .Create()
@@ -27,7 +29,5 @@ namespace GridDomain.Tests.XUnit.Sagas
             // Saga_has_correct_id()
             Assert.Equal(sagaId, sagaData.Id);
         }
-
-        public Given_saga_When_publishing_any_of_start_messages(ITestOutputHelper helper) : base(helper) {}
     }
 }

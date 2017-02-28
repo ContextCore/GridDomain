@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
-using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
-using Akka.DI.Unity;
-using Akka.Event;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
-using Akka.Serialization;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -19,25 +13,29 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Akka.Messages;
-using GridDomain.Scheduling.Integration;
 using Microsoft.Practices.Unity;
+using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Node
 {
     public class GridDomainNode : IGridDomainNode
     {
+        private ICommandExecutor _commandExecutor;
+
+        private IScheduler _quartzScheduler;
+        private bool _stopping;
         private TransportMode _transportMode;
+        private IMessageWaiterFactory _waiterFactory;
+        internal CommandPipeBuilder Pipe;
         private ActorSystem[] Systems;
 
-        private Quartz.IScheduler _quartzScheduler;
-        private IMessageWaiterFactory _waiterFactory;
-        private ICommandExecutor _commandExecutor;
-        internal CommandPipeBuilder Pipe;
-        bool _stopping = false;
+        public GridDomainNode(NodeSettings settings)
+        {
+            Settings = settings;
+        }
+
         public NodeSettings Settings { get; }
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
         public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
@@ -45,9 +43,29 @@ namespace GridDomain.Node
         public ActorSystem System { get; private set; }
         private IActorRef ActorTransportProxy { get; set; }
 
-        public GridDomainNode(NodeSettings settings)
+        public IUnityContainer Container { get; private set; }
+
+        public Guid Id { get; } = Guid.NewGuid();
+
+        public void Execute<T>(T command, IMessageMetadata metadata = null) where T : ICommand
         {
-            Settings = settings;
+            _commandExecutor.Execute(command, metadata);
+        }
+
+        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return _waiterFactory.NewWaiter(defaultTimeout ?? Settings.DefaultTimeout);
+        }
+
+        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _commandExecutor.Prepare(cmd, metadata);
+        }
+
+        public void Dispose()
+        {
+            Stop()
+                .Wait();
         }
 
         private void OnSystemTermination()
@@ -55,27 +73,21 @@ namespace GridDomain.Node
             Settings.Log.Debug("grid node Actor system terminated");
         }
 
-        public IUnityContainer Container { get; private set; }
-
-        public Guid Id { get; } = Guid.NewGuid();
-
         public async Task Start()
         {
             _stopping = false;
 
             Container = new UnityContainer();
             Systems = Settings.ActorSystemFactory.Invoke();
-            
+
             System = Systems.First();
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System.RegisterOnTermination(OnSystemTermination);
 
-            IUnityContainer unityContainer = Container;
-            unityContainer.Register(new GridNodeContainerConfiguration(System,
-                                                                       _transportMode,
-                                                                       Settings));
+            var unityContainer = Container;
+            unityContainer.Register(new GridNodeContainerConfiguration(System, _transportMode, Settings));
 
             unityContainer.Register(Settings.Configuration);
 
@@ -84,11 +96,12 @@ namespace GridDomain.Node
 
             Transport = Container.Resolve<IActorTransport>();
 
-            _quartzScheduler = Container.Resolve<Quartz.IScheduler>();
+            _quartzScheduler = Container.Resolve<IScheduler>();
             _commandExecutor = Container.Resolve<ICommandExecutor>();
-            _waiterFactory   = Container.Resolve<IMessageWaiterFactory>();
+            _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
 
-            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
+            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),
+                nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
@@ -104,10 +117,11 @@ namespace GridDomain.Node
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
             }
 
-            Settings.Log.Debug("Launching GridDomain node {Id}",Id);
+            Settings.Log.Debug("Launching GridDomain node {Id}", Id);
 
-            var props = System.DI().Props<GridNodeController>();
-            var nodeController = System.ActorOf(props,nameof(GridNodeController));
+            var props = System.DI()
+                              .Props<GridNodeController>();
+            var nodeController = System.ActorOf(props, nameof(GridNodeController));
 
             await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
 
@@ -117,10 +131,18 @@ namespace GridDomain.Node
         private void RegisterCustomAggregateSnapshots()
         {
             var factories = Container.ResolveAll(typeof(IConstructAggregates))
-                .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
-                .Where(o => o.Type.IsGenericType && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
-                .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
-                .ToArray();
+                                     .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
+                                     .Where(
+                                         o =>
+                                             o.Type.IsGenericType
+                                             && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
+                                     .Select(o => new
+                                                  {
+                                                      AggregateType = o.Type.GetGenericArguments()
+                                                                       .First(),
+                                                      Constructor = o.Obj
+                                                  })
+                                     .ToArray();
 
             foreach (var factory in factories)
             {
@@ -128,6 +150,7 @@ namespace GridDomain.Node
                     m => factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
             }
         }
+
         public async Task Stop()
         {
             if (_stopping) return;
@@ -153,27 +176,7 @@ namespace GridDomain.Node
 
             Container?.Dispose();
 
-            Settings.Log.Debug("GridDomain node {Id} stopped",Id);
-        }
-
-        public void Execute<T>(T command, IMessageMetadata metadata=null) where T : ICommand
-        {
-            _commandExecutor.Execute(command, metadata);
-        }
-
-        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
-        {
-            return _waiterFactory.NewWaiter(defaultTimeout ?? Settings.DefaultTimeout);
-        }
-
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
-        {
-            return _commandExecutor.Prepare(cmd, metadata);
-        }
-
-        public void Dispose()
-        {
-            Stop().Wait();
+            Settings.Log.Debug("GridDomain node {Id} stopped", Id);
         }
     }
 }

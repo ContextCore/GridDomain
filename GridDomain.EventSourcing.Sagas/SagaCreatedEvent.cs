@@ -1,5 +1,4 @@
 using System;
-using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas
 {
@@ -12,5 +11,4 @@ namespace GridDomain.EventSourcing.Sagas
 
         public TState State { get; }
     }
-    
 }

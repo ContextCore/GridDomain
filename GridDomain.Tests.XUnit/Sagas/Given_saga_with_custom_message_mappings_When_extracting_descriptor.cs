@@ -28,26 +28,6 @@ namespace GridDomain.Tests.XUnit.Sagas
         }
 
         [Fact]
-        public void Descriptor_contains_message_start_saga()
-        {
-            var expected = new[] {typeof(GotTiredEvent), typeof(SleptWellEvent)};
-            Assert.Equal(expected, _descriptor.StartMessages.ToArray());
-        }
-
-        [Fact]
-        public void Descriptor_contains_saga_type()
-        {
-            Assert.Equal(typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>),
-                _descriptor.SagaType);
-        }
-
-        [Fact]
-        public void Descriptor_contains_saga_data_type()
-        {
-            Assert.Equal(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), _descriptor.StateType);
-        }
-
-        [Fact]
         public void Descriptor_contains_all_domain_event_types_from_saga()
         {
             var expectedEvents = new[]
@@ -56,12 +36,19 @@ namespace GridDomain.Tests.XUnit.Sagas
                                      typeof(CoffeMadeEvent),
                                      typeof(SleptWellEvent),
                                      typeof(CoffeMakeFailedEvent),
-                                     typeof(CustomEvent),
+                                     typeof(CustomEvent)
                                  };
 
             Assert.Equal(expectedEvents,
                 _descriptor.AcceptMessages.Select(m => m.MessageType)
                            .ToArray());
+        }
+
+        [Fact]
+        public void Descriptor_contains_message_start_saga()
+        {
+            var expected = new[] {typeof(GotTiredEvent), typeof(SleptWellEvent)};
+            Assert.Equal(expected, _descriptor.StartMessages.ToArray());
         }
 
         [Fact]
@@ -77,6 +64,19 @@ namespace GridDomain.Tests.XUnit.Sagas
                                  };
 
             Assert.Equal(_descriptor.AcceptMessages.Select(m => m.CorrelationField), expectedEvents);
+        }
+
+        [Fact]
+        public void Descriptor_contains_saga_data_type()
+        {
+            Assert.Equal(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), _descriptor.StateType);
+        }
+
+        [Fact]
+        public void Descriptor_contains_saga_type()
+        {
+            Assert.Equal(typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>),
+                _descriptor.SagaType);
         }
     }
 }

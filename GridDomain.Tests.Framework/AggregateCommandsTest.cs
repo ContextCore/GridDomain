@@ -7,16 +7,18 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Logging;
-using NUnit.Framework;
 
 namespace GridDomain.Tests.Framework
 {
-
-    public class AggregateCommandsTest<TAggregate, THandler>: AggregateTest<TAggregate>
-        where TAggregate : IAggregate
-        where THandler: class, IAggregateCommandsHandler<TAggregate>
+    public class AggregateCommandsTest<TAggregate, THandler> : AggregateTest<TAggregate> where TAggregate : IAggregate
+                                                                                         where THandler : class,
+                                                                                             IAggregateCommandsHandler
+                                                                                                 <TAggregate>
     {
         protected THandler CommandsHandler { get; private set; }
+
+        protected DomainEvent[] ExpectedEvents { get; private set; }
+        protected DomainEvent[] ProducedEvents { get; private set; }
 
         protected virtual THandler CreateCommandsHandler()
         {
@@ -31,7 +33,7 @@ namespace GridDomain.Tests.Framework
         {
             CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
 
-            foreach(var cmd in command)
+            foreach (var cmd in command)
                 Aggregate = CommandsHandler.Execute(Aggregate, cmd);
 
             return ProducedEvents = Aggregate.GetUncommittedEvents()
@@ -41,19 +43,20 @@ namespace GridDomain.Tests.Framework
 
         protected void Execute(params ICommand[] command)
         {
-            ExpectedEvents = Expected().ToArray();
+            ExpectedEvents = Expected()
+                .ToArray();
             var events = ExecuteCommand(command);
             Console.WriteLine(CollectDebugInfo(command));
-            EventsExtensions.CompareEvents(ExpectedEvents,events);
+            EventsExtensions.CompareEvents(ExpectedEvents, events);
         }
 
-        protected void RunScenario(IEnumerable<DomainEvent> given, 
-                                   IEnumerable<DomainEvent> expected, 
+        protected void RunScenario(IEnumerable<DomainEvent> given,
+                                   IEnumerable<DomainEvent> expected,
                                    params ICommand[] command)
         {
             CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
 
-            Aggregate = (TAggregate)aggregateFactory.Build(typeof(TAggregate), Guid.NewGuid(), null);
+            Aggregate = (TAggregate) aggregateFactory.Build(typeof(TAggregate), Guid.NewGuid(), null);
 
             GivenEvents = given.ToArray();
             Aggregate.ApplyEvents(GivenEvents);
@@ -69,8 +72,6 @@ namespace GridDomain.Tests.Framework
             EventsExtensions.CompareEvents(expected.ToArray(), ProducedEvents);
         }
 
-        protected DomainEvent[] ExpectedEvents { get; private set; }
-        protected DomainEvent[] ProducedEvents { get; private set; }
         private void AddEventInfo(string message, IEnumerable<DomainEvent> ev, StringBuilder builder)
         {
             builder.AppendLine();
@@ -78,18 +79,19 @@ namespace GridDomain.Tests.Framework
             builder.AppendLine();
             foreach (var e in ev)
             {
-                builder.AppendLine($"Event:{e.GetType().Name} : ");
+                builder.AppendLine($"Event:{e.GetType() .Name} : ");
                 builder.AppendLine(e.ToPropsString());
             }
             builder.AppendLine();
         }
+
         protected string CollectDebugInfo(params ICommand[] commands)
         {
             var sb = new StringBuilder();
-            foreach(var cmd in commands)
+            foreach (var cmd in commands)
                 sb.AppendLine($"Command: {cmd.ToPropsString()}");
 
-            AddEventInfo("Given events",    GivenEvents, sb);
+            AddEventInfo("Given events", GivenEvents, sb);
             AddEventInfo("Produced events", ProducedEvents, sb);
             AddEventInfo("Expected events", ExpectedEvents, sb);
 

@@ -12,10 +12,12 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class Given_saga_When_publishing_start_message_B : SoftwareProgrammingInstanceSagaTest
     {
+        public Given_saga_When_publishing_start_message_B(ITestOutputHelper helper) : base(helper) {}
+
         [Fact]
         public async Task When_publishing_start_message()
         {
-            SleptWellEvent startMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var startMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             Node.NewDebugWaiter()
                 .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
@@ -29,7 +31,5 @@ namespace GridDomain.Tests.XUnit.Sagas
             //Saga_has_correct_state()
             Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaData.Data.CurrentStateName);
         }
-
-        public Given_saga_When_publishing_start_message_B(ITestOutputHelper helper) : base(helper) {}
     }
 }

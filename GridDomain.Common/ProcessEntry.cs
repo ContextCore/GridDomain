@@ -4,7 +4,7 @@ namespace GridDomain.Common
 {
     public class ProcessEntry
     {
-        public ProcessEntry(string who, string what, string why = null, DateTime? @when = null)
+        public ProcessEntry(string who, string what, string why = null, DateTime? when = null)
         {
             Who = who;
             What = what;
@@ -17,6 +17,6 @@ namespace GridDomain.Common
         public string Why { get; }
         public string What { get; }
 
-        public static ProcessEntry Empty { get; } = new ProcessEntry(null,null);
+        public static ProcessEntry Empty { get; } = new ProcessEntry(null, null);
     }
 }

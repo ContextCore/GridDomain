@@ -9,12 +9,9 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-  
     public class CommandWaiter_picks_events_by_correlation_id_by_default : SampleDomainCommandExecutionTests
     {
-        public CommandWaiter_picks_events_by_correlation_id_by_default(ITestOutputHelper output) : base(output)
-        {
-        }
+        public CommandWaiter_picks_events_by_correlation_id_by_default(ITestOutputHelper output) : base(output) {}
 
         [Fact]
         public async Task Default_wait_for_event_matches_by_correlation_id_when_projection_builder_cares_about_metadata()
@@ -23,12 +20,14 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var commandB = new LongOperationCommand(10, Guid.NewGuid());
 
             Node.Execute(commandB);
-            var res =  await Node.Prepare(commandA)
-                                     .Expect<AggregateChangedEventNotification>()
-                                     .Execute(false);
-                              
+            var res = await Node.Prepare(commandA)
+                                .Expect<AggregateChangedEventNotification>()
+                                .Execute(false);
+
             //will pick right command by correlation Id
-            Assert.Equal(commandA.AggregateId, res.Message<AggregateChangedEventNotification>().AggregateId);
+            Assert.Equal(commandA.AggregateId,
+                res.Message<AggregateChangedEventNotification>()
+                   .AggregateId);
         }
     }
 }

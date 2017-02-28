@@ -1,37 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
-using Akka.Monitoring;
 using GridDomain.Common;
-using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
     /// <summary>
-    /// Any child should be terminated by ShutdownRequest message
+    ///     Any child should be terminated by ShutdownRequest message
     /// </summary>
     public abstract class PersistentHubActor : ReceiveActor,
                                                IWithUnboundedStash
     {
-        internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
-        private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
-        //TODO: replace with more efficient implementation
-        internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
-        internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
-        private readonly ActorMonitor _monitor;
-        private readonly ILoggingAdapter Logger = Context.GetLogger();
         private readonly ProcessEntry _forwardEntry;
-        public IStash Stash { get; set; }
-
-        protected abstract string GetChildActorName(object message);
-        protected abstract Guid GetChildActorId(object message);
-        protected abstract Type GetChildActorType(object message);
+        private readonly ActorMonitor _monitor;
+        private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
+        internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
+        private readonly ILoggingAdapter Logger = Context.GetLogger();
 
         protected PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {
@@ -52,7 +40,6 @@ namespace GridDomain.Node.Actors
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
             Receive<ShutdownCanceled>(m =>
                                       {
-                                          
                                           Guid id;
                                           if (!AggregateActorName.TryParseId(Sender.Path.Name, out id)) return;
                                           //child was resumed from planned shutdown
@@ -70,7 +57,7 @@ namespace GridDomain.Node.Actors
                                                  var childId = GetChildActorId(messageWitMetadata.Message);
                                                  var name = GetChildActorName(messageWitMetadata.Message);
 
-                                                 bool childWasCreated = false;
+                                                 var childWasCreated = false;
                                                  if (!Children.TryGetValue(childId, out knownChild))
                                                  {
                                                      childWasCreated = true;
@@ -106,6 +93,15 @@ namespace GridDomain.Node.Actors
                                              });
         }
 
+        //TODO: replace with more efficient implementation
+        internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
+        internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
+        public IStash Stash { get; set; }
+
+        protected abstract string GetChildActorName(object message);
+        protected abstract Guid GetChildActorId(object message);
+        protected abstract Type GetChildActorType(object message);
+
         protected virtual void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
         {
             knownChild.Ref.Tell(message);
@@ -132,8 +128,6 @@ namespace GridDomain.Node.Actors
             childInfo.Ref.Tell(GracefullShutdownRequest.Instance);
             childInfo.Terminating = true;
         }
-
-        public class ClearChildren {}
 
         protected override bool AroundReceive(Receive receive, object message)
         {
@@ -166,5 +160,7 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorStopped();
             Logger.Debug("{ActorHub} was stopped", Self.Path);
         }
+
+        public class ClearChildren {}
     }
 }

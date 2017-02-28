@@ -16,7 +16,7 @@ namespace GridDomain.Scheduling.Quartz
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return (IJob)_container.Resolve(bundle.JobDetail.JobType);
+            return (IJob) _container.Resolve(bundle.JobDetail.JobType);
         }
 
         public void ReturnJob(IJob job)

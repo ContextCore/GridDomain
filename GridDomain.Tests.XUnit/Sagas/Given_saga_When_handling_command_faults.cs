@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
@@ -18,7 +17,7 @@ namespace GridDomain.Tests.XUnit.Sagas
     {
         public Given_saga_When_handling_command_faults(ITestOutputHelper output) : base(output, new FaultyAggregateFixture()) {}
 
-        class FaultyAggregateFixture : SoftwareProgrammingSagaFixture
+        private class FaultyAggregateFixture : SoftwareProgrammingSagaFixture
         {
             public FaultyAggregateFixture()
             {
@@ -34,7 +33,11 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             var sagaData = new SoftwareProgrammingSagaData(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
                            {
-                               PersonId = Guid.NewGuid()
+                               PersonId
+                                   =
+                                   Guid
+                                   .NewGuid
+                                   ()
                            };
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
@@ -43,9 +46,9 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             await Task.Delay(100);
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),
-                                                                Guid.NewGuid(),
-                                                                BusinessDateTime.UtcNow,
-                                                                sagaId);
+                Guid.NewGuid(),
+                BusinessDateTime.UtcNow,
+                sagaId);
 
             await Node.NewDebugWaiter(TimeSpan.FromMinutes(10))
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(

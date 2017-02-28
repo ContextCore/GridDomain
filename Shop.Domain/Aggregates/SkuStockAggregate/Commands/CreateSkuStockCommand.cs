@@ -5,8 +5,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
 {
     public class CreateSkuStockCommand : Command
     {
-        public CreateSkuStockCommand(Guid stockId, Guid skuId, int quantity, string batchArticle, TimeSpan reserveTime):
-            base(stockId)
+        public CreateSkuStockCommand(Guid stockId, Guid skuId, int quantity, string batchArticle, TimeSpan reserveTime)
+            : base(stockId)
         {
             SkuId = skuId;
             Quantity = quantity;

@@ -1,4 +1,3 @@
-using GridDomain.Logging;
 using Quartz;
 using Serilog;
 
@@ -8,12 +7,14 @@ namespace GridDomain.Scheduling.Quartz.Logging
     {
         private readonly ILogger _log;
 
-        public string Name => GetType().Name;
-
         public LoggingJobListener(ILogger log)
         {
             _log = log.ForContext<LoggingJobListener>();
         }
+
+        public string Name => GetType()
+            .Name;
+
         public void JobToBeExecuted(IJobExecutionContext context)
         {
             _log.Debug("Job {JobKey} is about to be executed", context.JobDetail.Key);

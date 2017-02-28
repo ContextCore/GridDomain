@@ -5,13 +5,14 @@ using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
 
 namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
 {
-    public class BalanceAggregatesCommandHandler: AggregateCommandsHandler<BalanceAggregate>,
-                                                        IAggregateCommandsHandlerDescriptor
+    public class BalanceAggregatesCommandHandler : AggregateCommandsHandler<BalanceAggregate>,
+                                                   IAggregateCommandsHandlerDescriptor
 
     {
         //TODO: refactor to separate class
         public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new BalanceAggregatesCommandHandler();
-        public BalanceAggregatesCommandHandler() : base()
+
+        public BalanceAggregatesCommandHandler()
         {
             Map<ChangeBalanceCommand>((c, a) => a.ChangeState(c.Parameter));
 

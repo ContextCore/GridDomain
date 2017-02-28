@@ -7,10 +7,8 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 {
-    
     public class Given_aggregate_When_cancel_not_existing_future_event
     {
-
         [Fact]
         public void When_cancel_existing_scheduled_future_event()
         {

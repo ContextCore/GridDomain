@@ -1,6 +1,5 @@
 using System;
 using GridDomain.Common;
-using GridDomain.Logging;
 using Quartz;
 using Serilog;
 
@@ -9,8 +8,8 @@ namespace GridDomain.Scheduling.Quartz.Retry
     public class ExponentialBackoffRetryStrategy : IRetryStrategy
     {
         private const string Retries = "Retries";
-        private readonly IRetrySettings _settings;
         private readonly ILogger _log;
+        private readonly IRetrySettings _settings;
 
         public ExponentialBackoffRetryStrategy(IRetrySettings settings, ILogger log)
         {
@@ -28,34 +27,34 @@ namespace GridDomain.Scheduling.Quartz.Retry
                 return false;
             }
 
-            int retries = GetAlreadyPerformedRetries(context);
-            var shouldRetry = retries < this._settings.MaxRetries;
+            var retries = GetAlreadyPerformedRetries(context);
+            var shouldRetry = retries < _settings.MaxRetries;
 
             if (shouldRetry)
                 _log.Debug("Job {Key} will be retried, {retries} / {maxRetries}",
-                            context.JobDetail.Key.Name,
-                            retries,
-                            _settings.MaxRetries);
+                    context.JobDetail.Key.Name,
+                    retries,
+                    _settings.MaxRetries);
             else
                 _log.Debug("Job {Key} will not be retried, as retries limit was reached: {maxRetries}",
-                           context.JobDetail.Key.Name,
-                           _settings.MaxRetries);
+                    context.JobDetail.Key.Name,
+                    _settings.MaxRetries);
 
             return shouldRetry;
         }
 
         public ITrigger GetTrigger(IJobExecutionContext context)
         {
-            int retries = GetAlreadyPerformedRetries(context);
-            long factor = (long) Math.Pow(2, retries);
-            TimeSpan backoff = new TimeSpan(this._settings.BackoffBaseInterval.Ticks*factor);
+            var retries = GetAlreadyPerformedRetries(context);
+            var factor = (long) Math.Pow(2, retries);
+            var backoff = new TimeSpan(_settings.BackoffBaseInterval.Ticks*factor);
 
-            ITrigger trigger = TriggerBuilder.Create()
-                                             .StartAt(BusinessDateTime.UtcNow + backoff)
-                                             .WithSimpleSchedule(x => x.WithRepeatCount(0))
-                                             .WithIdentity(context.Trigger.Key)
-                                             .ForJob(context.JobDetail)
-                                             .Build();
+            var trigger = TriggerBuilder.Create()
+                                        .StartAt(BusinessDateTime.UtcNow + backoff)
+                                        .WithSimpleSchedule(x => x.WithRepeatCount(0))
+                                        .WithIdentity(context.Trigger.Key)
+                                        .ForJob(context.JobDetail)
+                                        .Build();
 
             context.JobDetail.JobDataMap[Retries] = ++retries;
             return trigger;
@@ -63,7 +62,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
 
         private static int GetAlreadyPerformedRetries(IJobExecutionContext context)
         {
-            int retries = 0;
+            var retries = 0;
             object o;
             if (context.JobDetail.JobDataMap.TryGetValue(Retries, out o) && o is int)
             {

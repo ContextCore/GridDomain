@@ -9,45 +9,28 @@ namespace GridDomain.Tests.XUnit.Tools.Repositories
 {
     public class EventPersistenceActor_Tests : TestKit
     {
+        public EventPersistenceActor_Tests() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig()) {}
 
-        public EventPersistenceActor_Tests():base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig())
+        private IActorRef CreateActor(string persistenceId)
         {
-            
-        }
-       [Fact]
-
-        public void When_actor_is_created_it_does_not_send_anything()
-        {
-            CreateActor("1");
-            ExpectNoMsg(500);
+            return Sys.ActorOf(Props.Create(() => new EventsRepositoryActor(persistenceId)));
         }
 
-       [Fact]
-        public void When_actor_is_created_and_asked_for_load_response_is_empty()
+        private EventsRepositoryActor.Loaded LoadEvents(IActorRef actor)
         {
-            var actor = CreateActor("1");
-            var res = LoadEvents(actor);
-            Assert.Empty(res.Events);
+            var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load())
+                           .Result;
+            return res;
         }
 
-       [Fact]
-        public void When_actor_is_created_and_asked_for_load_response_contains_persisteneId()
+        private EventsRepositoryActor.Persisted Save(IActorRef actor, object payload)
         {
-            var actor = CreateActor("1");
-            var res = LoadEvents(actor);
-            Assert.Equal("1",res.PersistenceId);
+            var persisted = actor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(payload))
+                                 .Result;
+            return persisted;
         }
 
-       [Fact]
-        public void When_acor_receives_persist_request_it_responses_with_initial_persisted_payload()
-        {
-            var actor = CreateActor("2");
-            var payload = "123";
-            var persisted = Save(actor, payload);
-            Assert.Equal(payload, persisted.Payload);
-        }
-
-       [Fact]
+        [Fact]
         public void When_acor_receives_persist_request_it_persist_payload()
         {
             var actor = CreateActor("2");
@@ -61,21 +44,36 @@ namespace GridDomain.Tests.XUnit.Tools.Repositories
             Assert.Equal(payload, loaded.Events.FirstOrDefault());
         }
 
-        private IActorRef CreateActor(string persistenceId)
+        [Fact]
+        public void When_acor_receives_persist_request_it_responses_with_initial_persisted_payload()
         {
-            return Sys.ActorOf(Props.Create(() => new EventsRepositoryActor(persistenceId)));
+            var actor = CreateActor("2");
+            var payload = "123";
+            var persisted = Save(actor, payload);
+            Assert.Equal(payload, persisted.Payload);
         }
 
-        private EventsRepositoryActor.Loaded LoadEvents(IActorRef actor)
+        [Fact]
+        public void When_actor_is_created_and_asked_for_load_response_contains_persisteneId()
         {
-            var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load()).Result;
-            return res;
+            var actor = CreateActor("1");
+            var res = LoadEvents(actor);
+            Assert.Equal("1", res.PersistenceId);
         }
 
-        private EventsRepositoryActor.Persisted Save(IActorRef actor, object payload)
+        [Fact]
+        public void When_actor_is_created_and_asked_for_load_response_is_empty()
         {
-            var persisted = actor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(payload)).Result;
-            return persisted;
+            var actor = CreateActor("1");
+            var res = LoadEvents(actor);
+            Assert.Empty(res.Events);
+        }
+
+        [Fact]
+        public void When_actor_is_created_it_does_not_send_anything()
+        {
+            CreateActor("1");
+            ExpectNoMsg(500);
         }
     }
 }

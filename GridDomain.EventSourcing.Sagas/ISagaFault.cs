@@ -8,8 +8,8 @@ namespace GridDomain.EventSourcing.Sagas
         IFault CommandFault { get; }
         object State { get; }
     }
-    public interface ISagaFault<out TState> : ISagaFault
-                                   where TState : IAggregate
+
+    public interface ISagaFault<out TState> : ISagaFault where TState : IAggregate
     {
         new TState State { get; }
     }

@@ -17,6 +17,7 @@ namespace GridDomain.Tests.XUnit.Metadata
 {
     public class Metadata_from_aggregate_command_passed_to_produced_events : SampleDomainCommandExecutionTests
     {
+        public Metadata_from_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) {}
         private IMessageMetadataEnvelop<SampleAggregateCreatedEvent> _answer;
         private CreateSampleAggregateCommand _command;
         private MessageMetadata _commandMetadata;
@@ -57,7 +58,5 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.Equal(AggregateActor<SampleAggregate>.CommandExecutionCreatedAnEvent, step.Why);
             Assert.Equal(AggregateActor<SampleAggregate>.PublishingEvent, step.What);
         }
-
-        public Metadata_from_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) {}
     }
 }

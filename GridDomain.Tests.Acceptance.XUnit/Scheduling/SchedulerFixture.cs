@@ -1,14 +1,12 @@
 using System;
-using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using Microsoft.Practices.Unity;
-using IScheduler = Quartz.IScheduler;
+using Quartz;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
 {
@@ -19,7 +17,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             Add(new SchedulerContainerConfiguration());
             Add(new TestRouter());
 
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<Quartz.IScheduler>()
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>()
                                                         .Clear();
         }
 
@@ -29,9 +27,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             settings.QuartzJobRetrySettings = new InMemoryRetrySettings(4, TimeSpan.Zero);
             return settings;
         }
-      
 
-        class SchedulerContainerConfiguration : IContainerConfiguration
+        private class SchedulerContainerConfiguration : IContainerConfiguration
         {
             public void Register(IUnityContainer container)
             {

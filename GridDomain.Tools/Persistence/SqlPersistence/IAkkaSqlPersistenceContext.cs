@@ -1,13 +1,18 @@
+using System;
+using System.Data.Entity;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-    public interface IAkkaSqlPersistenceContext : System.IDisposable
+    public interface IAkkaSqlPersistenceContext : IDisposable
     {
-        System.Data.Entity.DbSet<JournalItem> Journal { get; set; } // JournalEntry
-        System.Data.Entity.DbSet<Metadata> Metadatas { get; set; } // Metadata
-        System.Data.Entity.DbSet<SnapshotItem> Snapshots { get; set; } // Snapshots
+        DbSet<JournalItem> Journal { get; set; } // JournalEntry
+        DbSet<Metadata> Metadatas { get; set; } // Metadata
+        DbSet<SnapshotItem> Snapshots { get; set; } // Snapshots
 
         int SaveChanges();
-        System.Threading.Tasks.Task<int> SaveChangesAsync();
-        System.Threading.Tasks.Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

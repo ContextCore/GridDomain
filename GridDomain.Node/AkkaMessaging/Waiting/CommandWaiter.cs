@@ -14,29 +14,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public CommandWaiter(TCommand command,
                              IMessageMetadata commandMetadata,
-                             ActorSystem system, 
+                             ActorSystem system,
                              IActorTransport transport,
                              IActorRef executorActor,
-                             TimeSpan defaultTimeout):base(system,transport,defaultTimeout)
+                             TimeSpan defaultTimeout) : base(system, transport, defaultTimeout)
         {
             _expectBuilder = new CommandExpectBuilder<TCommand>(command, commandMetadata, executorActor, this);
         }
 
-        public override IExpectBuilder<Task<IWaitResults>> Expect<TMsg>(Predicate<TMsg> filter = null)
-        {
-             _expectBuilder.And(filter);
-            return _expectBuilder;
-        }
-
-        public override IExpectBuilder<Task<IWaitResults>> Expect(Type type, Func<object, bool> filter = null)
-        {
-             _expectBuilder.And(type, filter ?? (o => true));
-            return _expectBuilder;
-        }
-
         public Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
-            return _expectBuilder.Execute(timeout,failOnAnyFault);
+            return _expectBuilder.Execute(timeout, failOnAnyFault);
         }
 
         ICommandExpectBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
@@ -46,7 +34,19 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         ICommandExpectBuilder ICommandWaiter.Expect(Type type, Func<object, bool> filter)
         {
-          return _expectBuilder.And(type, filter);
+            return _expectBuilder.And(type, filter);
+        }
+
+        public override IExpectBuilder<Task<IWaitResults>> Expect<TMsg>(Predicate<TMsg> filter = null)
+        {
+            _expectBuilder.And(filter);
+            return _expectBuilder;
+        }
+
+        public override IExpectBuilder<Task<IWaitResults>> Expect(Type type, Func<object, bool> filter = null)
+        {
+            _expectBuilder.And(type, filter ?? (o => true));
+            return _expectBuilder;
         }
     }
 }

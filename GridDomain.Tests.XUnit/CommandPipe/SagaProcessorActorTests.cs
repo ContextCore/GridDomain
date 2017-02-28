@@ -12,70 +12,25 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
 {
-   
     public class SagaProcessorActorTests : TestKit
     {
-
-       [Fact]
-        public async Task SagaProcessor_routes_events_by_type()
-        {
-            var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
-
-            var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
-
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
-            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
-
-
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[] { new SampleAggregateCreatedEvent("1", Guid.NewGuid()) },
-                                                                MessageMetadata.Empty);
-
-            sagaProcessActor.Tell(msg);
-
-            //TestActor from testSagaActor processor receives message after work is done
-            ExpectMsg<SagaTransited>();
-            //SagaProcessActor should notify sender (TestActor) of initial messages that work is done
-            //ExpectMsg<SagasProcessComplete>();
-            //SagaProcessActor should send next step - command execution actor that new commands should be executed
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-        }
-
-       [Fact]
-        public async Task SagaProcessor_does_not_support_domain_event_inheritance()
-        {
-            var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
-            var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
-
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
-            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
-
-
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new [] { new DomainEvent(Guid.NewGuid())  },
-                                                                MessageMetadata.Empty);
-
-            sagaProcessActor.Tell(msg);
-
-            //saga processor did not run due to error, but we received processing complete message
-            //ExpectMsg<SagasProcessComplete>();
-            ExpectNoMsg(TimeSpan.FromSeconds(1));
-        }
-
-
-       [Fact]
+        [Fact]
         public async Task All_Sagas_performs_in_parralel_and_results_from_all_sagas_are_gathered()
         {
-            var testSagaActorA = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
+            var testSagaActorA =
+                Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
 
-            
 
-            var testSagaActorB = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor,
-                                                                                  e => new ICommand[] { new TestCommand(e), new TestCommand(e) },
-            
-                                                                                  TimeSpan.FromMilliseconds(50))));
+            var testSagaActorB =
+                Sys.ActorOf(
+                    Props.Create(
+                        () =>
+                            new TestSagaActor(TestActor,
+                                e => new ICommand[] {new TestCommand(e), new TestCommand(e)},
+                                TimeSpan.FromMilliseconds(50))));
 
-            var testSagaActorÑ = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
+            var testSagaActorÑ =
+                Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
 
             var catalog = new ProcessorListCatalog();
 
@@ -87,12 +42,14 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[]
-                                                                {
-                                                                    new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                                    new SampleAggregateChangedEvent("2", Guid.NewGuid())
-                                                                },
-                                                                MessageMetadata.Empty);
+            var msg =
+                new MessageMetadataEnvelop<DomainEvent[]>(
+                    new DomainEvent[]
+                    {
+                        new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                        new SampleAggregateChangedEvent("2", Guid.NewGuid())
+                    },
+                    MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 
@@ -111,5 +68,52 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
         }
 
+        [Fact]
+        public async Task SagaProcessor_does_not_support_domain_event_inheritance()
+        {
+            var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
+            var catalog = new ProcessorListCatalog();
+            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
+
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
+
+
+            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
+                MessageMetadata.Empty);
+
+            sagaProcessActor.Tell(msg);
+
+            //saga processor did not run due to error, but we received processing complete message
+            //ExpectMsg<SagasProcessComplete>();
+            ExpectNoMsg(TimeSpan.FromSeconds(1));
+        }
+
+        [Fact]
+        public async Task SagaProcessor_routes_events_by_type()
+        {
+            var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
+
+            var catalog = new ProcessorListCatalog();
+            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
+
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
+
+
+            var msg =
+                new MessageMetadataEnvelop<DomainEvent[]>(
+                    new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
+                    MessageMetadata.Empty);
+
+            sagaProcessActor.Tell(msg);
+
+            //TestActor from testSagaActor processor receives message after work is done
+            ExpectMsg<SagaTransited>();
+            //SagaProcessActor should notify sender (TestActor) of initial messages that work is done
+            //ExpectMsg<SagasProcessComplete>();
+            //SagaProcessActor should send next step - command execution actor that new commands should be executed
+            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
+        }
     }
 }

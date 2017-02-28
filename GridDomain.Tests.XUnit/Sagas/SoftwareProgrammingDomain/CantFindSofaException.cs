@@ -2,7 +2,5 @@ using System;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
-    public class CantFindSofaException : Exception
-    {
-    }
+    public class CantFindSofaException : Exception {}
 }

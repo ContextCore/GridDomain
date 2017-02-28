@@ -4,13 +4,13 @@ using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using Xunit;
 using Xunit.Abstractions;
-using GridDomain.CQRS;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-  
     public class When_execute_command_without_expectations : SampleDomainCommandExecutionTests
     {
+        public When_execute_command_without_expectations(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task Aggregate_will_apply_events_later_than_command_execution_finish()
         {
@@ -18,10 +18,6 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             Node.Execute(syncCommand);
             var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
             Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Value);
-        }
-
-        public When_execute_command_without_expectations(ITestOutputHelper output) : base(output)
-        {
         }
     }
 }

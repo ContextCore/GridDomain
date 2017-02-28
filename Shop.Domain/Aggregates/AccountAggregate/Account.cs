@@ -1,5 +1,4 @@
 using System;
-using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using NMoneys;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
@@ -8,18 +7,16 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 {
     public class Account : Aggregate
     {
-        public Guid UserId { get; private set; }
-        public Money Amount { get; private set; }
-        public int Number { get; private set; }
-
-        private Account(Guid id):base(id)
-        {
-        }
+        private Account(Guid id) : base(id) {}
 
         public Account(Guid id, Guid userId, int number) : this(id)
         {
             RaiseEvent(new AccountCreated(id, userId, number));
         }
+
+        public Guid UserId { get; private set; }
+        public Money Amount { get; private set; }
+        public int Number { get; private set; }
 
         private void Apply(AccountCreated e)
         {
@@ -38,7 +35,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
             Amount -= e.Amount;
         }
 
-        public void Replenish(Money m,Guid replenishSource)
+        public void Replenish(Money m, Guid replenishSource)
         {
             GuardNegativeMoney(m, "Cant replenish negative amount of money.");
             RaiseEvent(new AccountReplenish(Id, replenishSource, m));
@@ -53,10 +50,10 @@ namespace Shop.Domain.Aggregates.AccountAggregate
         public void Withdraw(Money m, Guid withdrawSource)
         {
             GuardNegativeMoney(m, "Cant withdrawal negative amount of money.");
-            if((Amount - m).IsNegative())
+            if ((Amount - m).IsNegative())
                 throw new NotEnoughMoneyException("Dont have enough money to pay for bill");
 
-            RaiseEvent(new AccountWithdrawal(Id, withdrawSource,m));
+            RaiseEvent(new AccountWithdrawal(Id, withdrawSource, m));
         }
     }
 }

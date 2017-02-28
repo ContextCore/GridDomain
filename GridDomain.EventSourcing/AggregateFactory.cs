@@ -29,8 +29,10 @@ namespace GridDomain.EventSourcing
 
         public IAggregate Build(Type type, Guid id)
         {
-            var constructor = type.GetConstructor(
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Guid)}, null);
+            var constructor = type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                null,
+                new[] {typeof(Guid)},
+                null);
 
             if (constructor == null)
                 throw new ConventionBasedConstructorNotFound();
@@ -40,7 +42,7 @@ namespace GridDomain.EventSourcing
 
         public T Build<T>(Guid id, IMemento snapshot = null) where T : IAggregate
         {
-            return (T) Build(typeof (T), id, snapshot);
+            return (T) Build(typeof(T), id, snapshot);
         }
     }
 }

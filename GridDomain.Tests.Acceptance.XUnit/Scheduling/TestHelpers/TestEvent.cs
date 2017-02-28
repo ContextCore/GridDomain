@@ -6,8 +6,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
     public class TestEvent : DomainEvent
     {
-        public TestEvent(Guid id) : base(id, BusinessDateTime.UtcNow, id)
-        {
-        }
+        public TestEvent(Guid id) : base(id, BusinessDateTime.UtcNow, id) {}
     }
 }

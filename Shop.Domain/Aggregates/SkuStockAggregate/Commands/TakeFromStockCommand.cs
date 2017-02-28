@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate.Commands
 {
-    public class TakeFromStockCommand:Command
+    public class TakeFromStockCommand : Command
     {
-        public TakeFromStockCommand(Guid stockId, int quantity):base(stockId)
+        public TakeFromStockCommand(Guid stockId, int quantity) : base(stockId)
         {
             Quantity = quantity;
         }

@@ -5,18 +5,18 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class ScheduleKey
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Group { get; private set; }
-        public string Description { get; private set; }
-
         public ScheduleKey(Guid id, string name, string group, string description = null)
         {
             Id = id == Guid.Empty ? Guid.NewGuid() : id;
             Name = name;
-            Group = @group;
+            Group = group;
             Description = description;
         }
+
+        public Guid Id { get; private set; }
+        public string Name { get; private set; }
+        public string Group { get; private set; }
+        public string Description { get; private set; }
 
         public static ScheduleKey For(Command cmd, Guid id = default(Guid), string group = null, string description = null)
         {

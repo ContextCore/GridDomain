@@ -5,7 +5,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate.Commands
 {
     public class AddItemToOrderCommand : OrderCommand
     {
-        public AddItemToOrderCommand(Guid orderId, Guid skuId, int quantity, Money totalPrice):base(orderId)
+        public AddItemToOrderCommand(Guid orderId, Guid skuId, int quantity, Money totalPrice) : base(orderId)
         {
             SkuId = skuId;
             Quantity = quantity;

@@ -15,9 +15,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Metadata
 {
-   
     public class Metadata_from_async_aggregate_command_passed_to_produced_events : SampleDomainCommandExecutionTests
     {
+        public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) {}
+
         private IMessageMetadataEnvelop<SampleAggregateChangedEvent> _answer;
         private AsyncMethodCommand _command;
         private MessageMetadata _commandMetadata;
@@ -51,13 +52,11 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.Equal(1, _answer.Metadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
-            Assert.Equal(AggregateActorName.New<SampleAggregate>(_command.AggregateId).Name, step.Who);
+            Assert.Equal(AggregateActorName.New<SampleAggregate>(_command.AggregateId)
+                                           .Name,
+                step.Who);
             Assert.Equal(AggregateActor<SampleAggregate>.CommandExecutionCreatedAnEvent, step.Why);
             Assert.Equal(AggregateActor<SampleAggregate>.PublishingEvent, step.What);
-        }
-
-        public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output)
-        {
         }
     }
 }

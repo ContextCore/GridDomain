@@ -23,7 +23,10 @@ namespace GridDomain.Tests.XUnit.Sagas
                 null,
                 startMessage.SagaId);
 
-            var reStartEvent = new GotTiredEvent(Guid.NewGuid(), startMessage.LovelySofaId, Guid.NewGuid(), startMessage.SagaId);
+            var reStartEvent = new GotTiredEvent(Guid.NewGuid(),
+                startMessage.LovelySofaId,
+                Guid.NewGuid(),
+                startMessage.SagaId);
 
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
@@ -40,7 +43,8 @@ namespace GridDomain.Tests.XUnit.Sagas
                       .Create()
                       .SendToSagas(reStartEvent);
 
-            var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);
+            var sagaDataAggregate =
+                await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);
             //Saga_state_should_be_correct()
             Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), sagaDataAggregate.Data.CurrentStateName);
             //Saga_data_contains_information_from_restart_message()

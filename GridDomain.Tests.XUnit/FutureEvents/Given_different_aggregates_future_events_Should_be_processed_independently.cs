@@ -9,9 +9,11 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    
     public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest
     {
+        public Given_different_aggregates_future_events_Should_be_processed_independently(ITestOutputHelper output)
+            : base(output) {}
+
         [Fact]
         public async Task Raising_several_future_events_for_different_aggregates()
         {
@@ -33,8 +35,5 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             //EventB_is_result_of_commandB()
             Assert.Equal(eventB.SourceId, commandB.AggregateId);
         }
-
-        public Given_different_aggregates_future_events_Should_be_processed_independently(ITestOutputHelper output)
-            : base(output) {}
     }
 }

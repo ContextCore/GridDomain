@@ -7,7 +7,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.Serialization
 {
-  
     public class Aggregate_Should_serializer_and_deserialize_by_json
     {
         private SampleAggregate _aggregate;
@@ -21,10 +20,11 @@ namespace GridDomain.Tests.XUnit.Serialization
             _aggregate.ClearEvents();
 
             var jsonString = JsonConvert.SerializeObject(_aggregate, DomainSerializer.GetDefaultSettings());
-            _restoredAggregate = JsonConvert.DeserializeObject<SampleAggregate>(jsonString,DomainSerializer.GetDefaultSettings());
-        // Values_should_be_equal()
+            _restoredAggregate = JsonConvert.DeserializeObject<SampleAggregate>(jsonString,
+                DomainSerializer.GetDefaultSettings());
+            // Values_should_be_equal()
             Assert.Equal(_aggregate.Value, _restoredAggregate.Value);
-      //Ids_should_be_equal()
+            //Ids_should_be_equal()
             Assert.Equal(_aggregate.Id, _restoredAggregate.Id);
         }
     }

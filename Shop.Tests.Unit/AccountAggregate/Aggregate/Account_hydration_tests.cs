@@ -11,8 +11,14 @@ using Shop.Domain.Aggregates.AccountAggregate.Events;
 namespace Shop.Tests.Unit.AccountAggregate.Aggregate
 {
     [TestFixture]
-    public class Account_hydration_tests: AggregateTest<Account>
+    public class Account_hydration_tests : AggregateTest<Account>
     {
+        [SetUp]
+        public void Given_account_with_initial_amount()
+        {
+            Init();
+        }
+
         private AccountCreated _created;
         private AccountReplenish _initialAmountEvent;
 
@@ -22,16 +28,25 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
             yield return _initialAmountEvent = new AccountReplenish(_created.SourceId, Guid.NewGuid(), new Money(100));
         }
 
-        [SetUp]
-        public void Given_account_with_initial_amount()
+        [Test]
+        public void After_replenish_amount_is_increased_hydration()
         {
-            Init();
+            var amount = new Money(123);
+            var replenishEvent = new AccountReplenish(_created.SourceId, Guid.NewGuid(), amount);
+            Aggregate.ApplyEvents(replenishEvent);
+
+            Assert.AreEqual(_initialAmountEvent.Amount + amount, Aggregate.Amount);
         }
 
         [Test]
-        public void Initial_amount_should_be_taken_from_replenish_event()
+        public void After_withdraw_amount_is_decreased_hydration()
         {
-            Assert.AreEqual(_initialAmountEvent.Amount, Aggregate.Amount);
+            var amount = new Money(12);
+            var withdrawEvent = new AccountWithdrawal(_created.SourceId, Guid.NewGuid(), amount);
+
+            Aggregate.ApplyEvents(withdrawEvent);
+
+            Assert.AreEqual(_initialAmountEvent.Amount - amount, Aggregate.Amount);
         }
 
         [Test]
@@ -41,30 +56,9 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
         }
 
         [Test]
-        public void After_replenish_amount_is_increased_hydration()
+        public void Initial_amount_should_be_taken_from_replenish_event()
         {
-            var amount = new Money(123);
-            var replenishEvent = new AccountReplenish(_created.SourceId, 
-                                                      Guid.NewGuid(),
-                                                      amount);
-            Aggregate.ApplyEvents(replenishEvent);
-
-            Assert.AreEqual(_initialAmountEvent.Amount + amount,
-                            Aggregate.Amount);
-        }
-
-        [Test]
-        public void After_withdraw_amount_is_decreased_hydration()
-        {
-            var amount = new Money(12);
-            var withdrawEvent = new AccountWithdrawal(_created.SourceId,
-                                                      Guid.NewGuid(),
-                                                      amount);
-
-            Aggregate.ApplyEvents(withdrawEvent);
-
-            Assert.AreEqual(_initialAmountEvent.Amount - amount,
-                            Aggregate.Amount);
+            Assert.AreEqual(_initialAmountEvent.Amount, Aggregate.Amount);
         }
     }
 }

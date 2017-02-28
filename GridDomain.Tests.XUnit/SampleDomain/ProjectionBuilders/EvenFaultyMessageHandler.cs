@@ -17,13 +17,10 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
         public Task Handle(SampleAggregateChangedEvent msg)
         {
             var i = int.Parse(msg.Value);
-            if (i % 2 == 1)
-                return Task.Run(() =>
-                {
-                    throw new MessageHandleException(msg);
-                });
+            if (i%2 == 1)
+                return Task.Run(() => { throw new MessageHandleException(msg); });
 
-            _publisher.Publish(new AggregateChangedEventNotification() { AggregateId = msg.SourceId });
+            _publisher.Publish(new AggregateChangedEventNotification {AggregateId = msg.SourceId});
             return Task.CompletedTask;
         }
     }

@@ -2,14 +2,13 @@ using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
 using GridDomain.Common;
-using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
     public class ActorMonitor
     {
-        private readonly IActorContext _context;
         private readonly string _actorGroupName;
+        private readonly IActorContext _context;
 
         public ActorMonitor(IActorContext context, string actorName = null)
         {
@@ -21,6 +20,7 @@ namespace GridDomain.Node.Actors
         {
             return $"{_context.System.Name}.{_actorGroupName}.{metricName}";
         }
+
         private void IncrementCounter(string akkaActorRestarts)
         {
             _context.IncrementCounter(GetCounterName(akkaActorRestarts));
@@ -34,13 +34,13 @@ namespace GridDomain.Node.Actors
 
         public void IncrementActorRestarted()
         {
-           // _context.IncrementActorRestart();
+            // _context.IncrementActorRestart();
             IncrementCounter(CounterNames.ActorRestarts);
         }
 
         public void IncrementActorStopped()
         {
-          //  _context.IncrementActorStopped();
+            //  _context.IncrementActorStopped();
             IncrementCounter(CounterNames.ActorsStopped);
         }
 

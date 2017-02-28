@@ -9,13 +9,9 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution
 {
-
-  
     public class When_executing_command_domainEvents_Should_have_sagaId : SampleDomainCommandExecutionTests
     {
-        public When_executing_command_domainEvents_Should_have_sagaId(ITestOutputHelper output) : base(output)
-        {
-        }
+        public When_executing_command_domainEvents_Should_have_sagaId(ITestOutputHelper output) : base(output) {}
 
         [Fact]
         public async Task When_async_method_finished_produced_events_has_sagaId_from_command()

@@ -10,9 +10,9 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         {
             Map<CreateSkuStockCommand>(c => new SkuStock(c.StockId, c.SkuId, c.Quantity, c.ReserveTime));
 
-            Map<AddToStockCommand>((c,a) => a.AddToToStock(c.Quantity,c.SkuId,c.BatchArticle));
+            Map<AddToStockCommand>((c, a) => a.AddToToStock(c.Quantity, c.SkuId, c.BatchArticle));
 
-            Map<TakeFromStockCommand>((c,a) => a.Take(c.Quantity));
+            Map<TakeFromStockCommand>((c, a) => a.Take(c.Quantity));
 
             Map<ReserveStockCommand>((c, a) => a.Reserve(c.CustomerId, c.Quantity, c.ReservationStartTime));
 

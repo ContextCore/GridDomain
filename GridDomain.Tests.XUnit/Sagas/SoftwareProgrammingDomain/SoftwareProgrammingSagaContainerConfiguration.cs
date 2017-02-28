@@ -6,9 +6,10 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaContainerConfiguration : IContainerConfiguration
     {
-        private readonly IContainerConfiguration _sagaConfiguration = SagaConfiguration.Instance<SoftwareProgrammingSaga,
-            SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+        private readonly IContainerConfiguration _sagaConfiguration =
+            SagaConfiguration.Instance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
                 SoftwareProgrammingSaga.Descriptor);
+
         public void Register(IUnityContainer container)
         {
             _sagaConfiguration.Register(container);

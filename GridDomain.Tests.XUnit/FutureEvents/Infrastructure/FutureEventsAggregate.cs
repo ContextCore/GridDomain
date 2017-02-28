@@ -5,18 +5,23 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
     public class FutureEventsAggregate : Aggregate
     {
-        private FutureEventsAggregate(Guid id):base(id)
-        {
-        }
-        public  FutureEventsAggregate(Guid id, string initialValue =""):this(id)
+        public string Value;
+
+        private FutureEventsAggregate(Guid id) : base(id) {}
+
+        public FutureEventsAggregate(Guid id, string initialValue = "") : this(id)
         {
             Value = initialValue;
         }
 
+        public int? RetriesToSucceed { get; private set; }
+        public DateTime ProcessedTime { get; private set; }
+
         public void ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            RaiseEvent(new TestDomainEvent(testValue,Id), raiseTime);
+            RaiseEvent(new TestDomainEvent(testValue, Id), raiseTime);
         }
+
         public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
             if (RetriesToSucceed == 0)
@@ -27,11 +32,11 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             }
         }
 
-
         public void CancelFutureEvents(string likeValue)
         {
-            base.CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
+            CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
+
         private void Apply(TestDomainEvent e)
         {
             Value = e.Value;
@@ -52,10 +57,5 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             RetriesToSucceed --;
             throw new TestScheduledException(RetriesToSucceed.Value + 1);
         }
-
-        public int? RetriesToSucceed { get; private set; }
-        public DateTime ProcessedTime { get; private set; }
-
-        public string Value;
     }
 }

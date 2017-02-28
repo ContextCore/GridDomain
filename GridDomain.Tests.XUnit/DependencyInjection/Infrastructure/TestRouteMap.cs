@@ -4,7 +4,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 
 namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
 {
-    class TestRouteMap : IMessageRouteMap
+    internal class TestRouteMap : IMessageRouteMap
     {
         public async Task Register(IMessagesRouter router)
         {

@@ -11,6 +11,7 @@ namespace GridDomain.EventSourcing
         ///     Gets the identifier of the source originating the event.
         /// </summary>
         Guid SourceId { get; }
+
         Guid SagaId { get; }
         DateTime CreatedTime { get; }
     }

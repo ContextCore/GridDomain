@@ -13,10 +13,47 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
         private readonly ILogger _log = Log.ForContext<CustomRoutesSoftwareProgrammingSaga>();
 
+        public CustomRoutesSoftwareProgrammingSaga()
+        {
+            During(Coding,
+                When(GotTired)
+                    .Then(context =>
+                          {
+                              var sagaData = context.Instance;
+                              var domainEvent = context.Data;
+                              sagaData.PersonId = domainEvent.SourceId;
+                              _log.Verbose("Hello trace string");
+                              Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
+                          })
+                    .TransitionTo(MakingCoffee));
+
+            During(MakingCoffee,
+                When(CoffeNotAvailable)
+                    .Then(context => Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId)))
+                    .TransitionTo(Sleeping),
+                When(CoffeReady)
+                    .TransitionTo(Coding));
+
+            During(Sleeping,
+                When(SleptWell)
+                    .Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
+                    .TransitionTo(Coding));
+        }
+
+        public Event<GotTiredEvent> GotTired { get; private set; }
+        public Event<CustomEvent> Custom { get; private set; }
+        public Event<CoffeMadeEvent> CoffeReady { get; private set; }
+        public Event<SleptWellEvent> SleptWell { get; private set; }
+        public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
+
+        public State Coding { get; private set; }
+        public State MakingCoffee { get; private set; }
+        public State Sleeping { get; private set; }
+
         private static SagaDescriptor CreateDescriptor()
         {
-            var descriptor = SagaDescriptor.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga,
-                                                             SoftwareProgrammingSagaData>();
+            var descriptor =
+                SagaDescriptor.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>();
 
             descriptor.AddStartMessage<GotTiredEvent>();
             descriptor.AddStartMessage<SleptWellEvent>();
@@ -31,42 +68,5 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
 
             return descriptor;
         }
-
-
-        public CustomRoutesSoftwareProgrammingSaga()
-        {
-            During(Coding,
-                When(GotTired).Then(context =>
-                {
-                    var sagaData = context.Instance;
-                    var domainEvent = context.Data;
-                    sagaData.PersonId = domainEvent.SourceId;
-                    _log.Verbose("Hello trace string");
-                    Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
-                })
-                 .TransitionTo(MakingCoffee));
-
-            During(MakingCoffee,
-                When(CoffeNotAvailable)
-                    .Then(context =>
-                        Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId)))
-                    .TransitionTo(Sleeping),
-                When(CoffeReady)
-                    .TransitionTo(Coding));
-
-            During(Sleeping,
-                When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
-                    .TransitionTo(Coding));
-        }
-
-        public Event<GotTiredEvent> GotTired { get; private set; }
-        public Event<CustomEvent> Custom { get; private set; }
-        public Event<CoffeMadeEvent> CoffeReady { get; private set; }
-        public Event<SleptWellEvent> SleptWell { get; private set; }
-        public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
-
-        public State Coding { get; private set; }
-        public State MakingCoffee { get; private set; }
-        public State Sleeping { get; private set; }
     }
 }

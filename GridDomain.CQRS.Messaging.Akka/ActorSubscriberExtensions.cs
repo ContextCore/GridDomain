@@ -6,7 +6,7 @@ namespace GridDomain.CQRS.Messaging.Akka
     {
         public static void Unsubscribe<T>(this IActorSubscriber subscriber, IActorRef actor)
         {
-            subscriber.Unsubscribe(actor,typeof(T));
+            subscriber.Unsubscribe(actor, typeof(T));
         }
     }
 }

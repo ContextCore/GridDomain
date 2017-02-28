@@ -1,6 +1,4 @@
 namespace GridDomain.CQRS
 {
-    public interface ISingleQuery<T> : IGenericQuery<T>
-    {
-    }
+    public interface ISingleQuery<T> : IGenericQuery<T> {}
 }

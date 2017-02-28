@@ -6,7 +6,6 @@ namespace Shop.Domain.Aggregates.AccountAggregate.Events
 {
     public class AccountAmountChanged : DomainEvent
     {
-
         protected AccountAmountChanged(Guid sourceId, Guid changeId, Money amount) : base(sourceId)
         {
             Amount = amount;

@@ -1,59 +1,76 @@
 using System;
+using Akka.Actor;
 using Akka.TestKit.TestActors;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.Acceptance.XUnit.Snapshots;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.SampleDomain;
 using Microsoft.Practices.Unity;
-using Akka.Actor;
 
 namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
 {
     public static class TestFixtureExtensions
     {
-        public static void InitFastRecycle(this NodeTestFixture fixture, TimeSpan? clearPeriod = null, TimeSpan? maxInactiveTime = null)
+        public static void InitFastRecycle(this NodeTestFixture fixture,
+                                           TimeSpan? clearPeriod = null,
+                                           TimeSpan? maxInactiveTime = null)
         {
-            fixture.Add(new CustomContainerConfiguration(
-                c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                    new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
-                        maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
+            fixture.Add(
+                new CustomContainerConfiguration(
+                    c =>
+                        c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
+                            new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
+                                maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
         }
 
-        public static NodeTestFixture InitSampleAggregateSnapshots(this NodeTestFixture fixture, int keep = 1 , TimeSpan? maxSaveFrequency=null)
+        public static NodeTestFixture InitSampleAggregateSnapshots(this NodeTestFixture fixture,
+                                                                   int keep = 1,
+                                                                   TimeSpan? maxSaveFrequency = null)
         {
             fixture.Add(
                 new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                    () => new SnapshotsPersistencePolicy(1,keep, maxSaveFrequency) {Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()},
+                    () =>
+                        new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
+                        {
+                            Log =
+                                fixture.Logger
+                                       .ForContext
+                                <SnapshotsPersistencePolicy>()
+                        },
                     SampleAggregate.FromSnapshot));
 
             return fixture;
         }
 
-        public static NodeTestFixture InitSoftwareProgrammingSagaSnapshots(this NodeTestFixture fixture, int keep = 1, TimeSpan? maxSaveFrequency = null, int saveOnEach = 1)
+        public static NodeTestFixture InitSoftwareProgrammingSagaSnapshots(this NodeTestFixture fixture,
+                                                                           int keep = 1,
+                                                                           TimeSpan? maxSaveFrequency = null,
+                                                                           int saveOnEach = 1)
         {
             fixture.Add(
-                   new CustomContainerConfiguration(
-                       c =>
-                           c.Register(
-                               SagaConfiguration
-                                   .Instance
-                                   <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
-                                       SoftwareProgrammingSaga.Descriptor,
-                                       () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
+                new CustomContainerConfiguration(
+                    c =>
+                        c.Register(
+                            SagaConfiguration
+                                .Instance
+                                <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+                                    SoftwareProgrammingSaga.Descriptor,
+                                    () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
             return fixture;
         }
 
         public static NodeTestFixture IgnoreCommands(this NodeTestFixture fixture)
         {
-            fixture.OnNodeStartedEvent += (sender, e) => {
-                //supress errors raised by commands not reaching aggregates
-                var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
-                fixture.Node.Pipe.SagaProcessor.Ask<Initialized>(new Initialize(nullActor)).Wait();
-            };
+            fixture.OnNodeStartedEvent += (sender, e) =>
+                                          {
+                                              //supress errors raised by commands not reaching aggregates
+                                              var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
+                                              fixture.Node.Pipe.SagaProcessor.Ask<Initialized>(new Initialize(nullActor))
+                                                     .Wait();
+                                          };
 
             return fixture;
         }

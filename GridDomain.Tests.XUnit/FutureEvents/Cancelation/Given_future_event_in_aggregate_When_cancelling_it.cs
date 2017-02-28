@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
@@ -13,9 +12,14 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 {
-    
     public class Given_future_event_in_aggregate_When_cancelling_it : NodeTestKit
     {
+        public Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output)
+            : base(output, new FutureEventsFixture()) {}
+
+        protected Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output, NodeTestFixture fixture)
+            : base(output, fixture) {}
+
         [Fact]
         public async Task When_raising_future_event()
         {
@@ -48,10 +52,5 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 
             Assert.False(scheduler.CheckExists(jobKey));
         }
-
-        public Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output) : base(output, new FutureEventsFixture()) {}
-
-        protected Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output, NodeTestFixture fixture):base(output, fixture)
-        { }
     }
 }

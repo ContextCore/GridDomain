@@ -2,7 +2,6 @@ using System;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
-using GridDomain.Logging;
 using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
@@ -12,12 +11,13 @@ namespace GridDomain.Scheduling.Integration
     public class SchedulingActor : ReceiveActor
     {
         public const string RegistrationName = nameof(SchedulingActor);
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         private readonly IScheduler _scheduler;
-        private readonly ILoggingAdapter _logger = Context.GetLogger();
+
         public SchedulingActor(IScheduler scheduler)
         {
-            _logger.Debug("Scheduling actor started at path {Path}",Self.Path);
+            _logger.Debug("Scheduling actor started at path {Path}", Self.Path);
             _scheduler = scheduler;
             Receive<ScheduleCommand>(message => Schedule(message));
             Receive<ScheduleMessage>(message => Schedule(message));
@@ -36,23 +36,21 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                _logger.Error(e,"Error while Unscheduled job {Task}", msg.Key);
-                Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
+                _logger.Error(e, "Error while Unscheduled job {Task}", msg.Key);
+                Sender.Tell(new Failure {Exception = e, Timestamp = BusinessDateTime.UtcNow});
             }
         }
 
         private void Schedule(ScheduleCommand message)
         {
             Schedule(() => QuartzJob.Create(message.Key, message.Command, message.CommandMetadata, message.Options),
-                           message.Options.RunAt, 
-                           message.Key);
+                message.Options.RunAt,
+                message.Key);
         }
 
         private void Schedule(ScheduleMessage message)
         {
-            Schedule(() => QuartzJob.Create(message.Key, message.Event, message.EventMetadata), 
-                           message.RunAt,
-                           message.Key);
+            Schedule(() => QuartzJob.Create(message.Key, message.Event, message.EventMetadata), message.RunAt, message.Key);
         }
 
         private void Schedule(Func<IJobDetail> jobFactory, DateTime runAt, ScheduleKey key)
@@ -69,11 +67,10 @@ namespace GridDomain.Scheduling.Integration
 
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));
-
             }
             catch (JobPersistenceException e)
             {
-                _logger.Error(e,"Error while scheduled job {Task}", key);
+                _logger.Error(e, "Error while scheduled job {Task}", key);
                 if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException))
                 {
                     Sender.Tell(new AlreadyScheduled(key));
@@ -81,8 +78,8 @@ namespace GridDomain.Scheduling.Integration
             }
             catch (Exception e)
             {
-                _logger.Error(e,"Error while scheduled job {Task}", key);
-                Sender.Tell(new Failure { Exception = e, Timestamp = BusinessDateTime.UtcNow });
+                _logger.Error(e, "Error while scheduled job {Task}", key);
+                Sender.Tell(new Failure {Exception = e, Timestamp = BusinessDateTime.UtcNow});
             }
         }
     }

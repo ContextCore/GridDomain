@@ -7,10 +7,10 @@ using GridDomain.Tools.Persistence.SqlPersistence;
 namespace GridDomain.Tools.Repositories.RawDataRepositories
 {
     /// <summary>
-    /// Class for reading \ writing data persisted in sql db with wire
-    /// Use only in emergency cases by own risk!
-    /// For example, when you have different versions of events with same type persisted
-    /// for different instance of one aggregate type.
+    ///     Class for reading \ writing data persisted in sql db with wire
+    ///     Use only in emergency cases by own risk!
+    ///     For example, when you have different versions of events with same type persisted
+    ///     for different instance of one aggregate type.
     /// </summary>
     public class RawJournalRepository : IRepository<JournalItem>
     {
@@ -21,9 +21,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             _connectionString = connectionString;
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() {}
 
         public async Task Save(string id, params JournalItem[] messages)
         {
@@ -37,14 +35,13 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             }
         }
 
-    
         public async Task<JournalItem[]> Load(string id)
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
                 return await context.Journal.Where(j => j.PersistenceId == id)
-                                            .OrderBy(j => j.SequenceNr)
-                                            .ToArrayAsync();
+                                    .OrderBy(j => j.SequenceNr)
+                                    .ToArrayAsync();
             }
         }
     }

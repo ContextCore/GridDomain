@@ -21,9 +21,7 @@ namespace GridDomain.Tests.XUnit
             var container = new UnityContainer();
 
             var actorSystem = ActorSystemBuilders[mode]();
-            container.Register(new GridNodeContainerConfiguration(actorSystem,
-                                                                  mode,
-                                                                  new NodeSettings()));
+            container.Register(new GridNodeContainerConfiguration(actorSystem, mode, new NodeSettings()));
             actorSystem.Terminate();
             return container;
         }

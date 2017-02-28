@@ -10,7 +10,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
     [TestFixture]
-    class SkuStock_take_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
+    internal class SkuStock_take_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
     {
         private TakeFromStockCommand _command;
         private readonly Guid _skuId = Guid.NewGuid();

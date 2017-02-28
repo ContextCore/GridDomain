@@ -2,9 +2,7 @@ using System;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
 using Newtonsoft.Json;
-using Ploeh.AutoFixture;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.Serialization

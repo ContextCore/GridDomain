@@ -2,7 +2,7 @@
 
 namespace GridDomain.Common
 {
-    class DefaultDateTimeStrategy : ICurrentDateTimeStrategy
+    internal class DefaultDateTimeStrategy : ICurrentDateTimeStrategy
     {
         public DateTime Now => DateTime.Now;
         public DateTime UtcNow => DateTime.UtcNow;

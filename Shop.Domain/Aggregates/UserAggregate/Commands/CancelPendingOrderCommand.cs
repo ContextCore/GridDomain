@@ -5,7 +5,7 @@ namespace Shop.Domain.Aggregates.UserAggregate.Commands
 {
     public class CancelPendingOrderCommand : Command
     {
-        public CancelPendingOrderCommand(Guid userId, Guid orderId):base(userId)
+        public CancelPendingOrderCommand(Guid userId, Guid orderId) : base(userId)
         {
             OrderId = orderId;
         }

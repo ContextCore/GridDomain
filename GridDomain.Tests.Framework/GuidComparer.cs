@@ -6,9 +6,7 @@ namespace GridDomain.Tests.Framework
 {
     public class GuidComparer : BaseTypeComparer
     {
-        public GuidComparer(RootComparer rootComparer) : base(rootComparer)
-        {
-        }
+        public GuidComparer(RootComparer rootComparer) : base(rootComparer) {}
 
         public override bool IsTypeMatch(Type type1, Type type2)
         {
@@ -23,13 +21,12 @@ namespace GridDomain.Tests.Framework
             if (guidA == Any.GUID || guidB == Any.GUID || guidA == guidB)
                 return;
 
-            parms.Result.Differences.Add(
-                new Difference()
-                {
-                    PropertyName = parms.BreadCrumb,
-                    Object1Value = guidA.ToString(),
-                    Object2Value = guidB.ToString()
-                });
+            parms.Result.Differences.Add(new Difference
+                                         {
+                                             PropertyName = parms.BreadCrumb,
+                                             Object1Value = guidA.ToString(),
+                                             Object2Value = guidB.ToString()
+                                         });
         }
     }
 }

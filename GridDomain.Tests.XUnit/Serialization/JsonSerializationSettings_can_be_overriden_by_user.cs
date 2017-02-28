@@ -1,26 +1,18 @@
-﻿using System.Threading.Tasks;
-using Akka.Actor;
+﻿using Akka.Actor;
 using GridDomain.Node;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.XUnit.SampleDomain;
 using Newtonsoft.Json;
-using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Serialization
 {
-    public class JsonSerializationSettings_can_be_overriden_by_user: NodeTestKit
+    public class JsonSerializationSettings_can_be_overriden_by_user : NodeTestKit
     {
-        class MyJsonSettings : JsonSerializerSettings {}
+        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output) : base(output, new JsonFixture()) {}
 
-        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output):
-            base(output, new JsonFixture())
-        {
-        }
+        private class MyJsonSettings : JsonSerializerSettings {}
 
-        class JsonFixture : SampleDomainFixture
+        private class JsonFixture : SampleDomainFixture
         {
             public JsonFixture()
             {

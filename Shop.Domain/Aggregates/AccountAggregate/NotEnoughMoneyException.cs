@@ -4,8 +4,6 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 {
     public class NotEnoughMoneyException : DomainException
     {
-        public NotEnoughMoneyException(string message):base(message)
-        {
-        }
+        public NotEnoughMoneyException(string message) : base(message) {}
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.EventSourcing;
@@ -9,25 +8,21 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 {
     public class SampleAggregate : Aggregate
     {
-        private class Snapshot : IMemento
-        {
-            public Snapshot(Guid id, int version, string value)
-            {
-                Id = id;
-                Version = version;
-                Value = value;
-            }
+        private SampleAggregate(Guid id) : base(id) {}
 
-            public Guid Id { get; set; }
-            public int Version { get; set; }
-            public string Value { get; }
+        public SampleAggregate(Guid id, string value) : this(id)
+        {
+            RaiseEvent(new SampleAggregateCreatedEvent(value, id));
         }
+
+        public string Value { get; private set; }
 
         public static SampleAggregate FromSnapshot(IMemento memento)
         {
             var snapshot = memento as Snapshot;
-            if(snapshot == null)
-                throw new InvalidOperationException("Sample aggregate can be restored only from memento with type " + typeof(Snapshot).Name );
+            if (snapshot == null)
+                throw new InvalidOperationException("Sample aggregate can be restored only from memento with type "
+                                                    + typeof(Snapshot).Name);
 
             var aggregate = new SampleAggregate(snapshot.Id, snapshot.Value) {Version = snapshot.Version};
             (aggregate as IAggregate).ClearUncommittedEvents();
@@ -36,19 +31,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
         protected override IMemento GetSnapshot()
         {
-            return new Snapshot(this.Id, this.Version, Value);
-        }
-
-        public string Value { get; private set; }
-
-        private SampleAggregate(Guid id) : base(id)
-        {
-            
-        }
-
-        public SampleAggregate(Guid id, string value):this(id)
-        {
-            RaiseEvent(new SampleAggregateCreatedEvent(value,id));
+            return new Snapshot(Id, Version, Value);
         }
 
         public void ChangeState(int number)
@@ -66,6 +49,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         {
             RaiseEvent(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
         }
+
         public void LongExecute(int sleepMiliseconds)
         {
             var task = Task.Delay(sleepMiliseconds)
@@ -78,10 +62,15 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         {
             var timeSpan = sleepTime;
             var eventTask = Task.Run(async () =>
-            {
-                await Task.Delay(timeSpan);
-                return new DomainEvent[] { new SampleAggregateChangedEvent(param.ToString(), Id)};
-            });
+                                           {
+                                               await Task.Delay(timeSpan);
+                                               return new DomainEvent[]
+                                                      {
+                                                          new SampleAggregateChangedEvent(
+                                                              param.ToString(),
+                                                              Id)
+                                                      };
+                                           });
             return eventTask;
         }
 
@@ -89,28 +78,27 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         {
             var timeSpan = sleepTime;
             var eventTask = Task.Run(async () =>
-            {
-                await Task.Delay(timeSpan);
-                return new SampleAggregateChangedEvent(param.ToString(), Id);
-            });
+                                           {
+                                               await Task.Delay(timeSpan);
+                                               return new SampleAggregateChangedEvent(param.ToString(), Id);
+                                           });
             return eventTask;
         }
 
-
         internal void ChangeStateAsync(int parameter, TimeSpan sleepTime)
         {
-            var eventTask = CreateEventsTask(parameter,sleepTime);
+            var eventTask = CreateEventsTask(parameter, sleepTime);
             RaiseEventAsync(eventTask);
         }
 
         internal void AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
         {
-            var expectionTask = CreateEventTask(0, sleepTime).ContinueWith(
-             t =>
-             {
-                 RaiseException();
-                 return t.Result;
-             });
+            var expectionTask = CreateEventTask(0, sleepTime)
+                .ContinueWith(t =>
+                              {
+                                  RaiseException();
+                                  return t.Result;
+                              });
             RaiseEventAsync(expectionTask);
         }
 
@@ -119,7 +107,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             Id = e.SourceId;
             Value = e.Value;
         }
-        
+
         private void Apply(SampleAggregateChangedEvent e)
         {
             Value = e.Value;
@@ -132,14 +120,29 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
         public void RaiseExceptionAsync(TimeSpan callBackTime)
         {
-         var expectionTask = CreateEventsTask(0,callBackTime).ContinueWith(
-             t =>
-             {
-                 RaiseException();
-                 return t.Result;
-             });
+            var expectionTask = CreateEventsTask(0, callBackTime)
+                .ContinueWith(t =>
+                              {
+                                  RaiseException();
+                                  return t.Result;
+                              });
 
             RaiseEventAsync(expectionTask);
+        }
+
+        private class Snapshot : IMemento
+        {
+            public Snapshot(Guid id, int version, string value)
+            {
+                Id = id;
+                Version = version;
+                Value = value;
+            }
+
+            public string Value { get; }
+
+            public Guid Id { get; set; }
+            public int Version { get; set; }
         }
     }
 }

@@ -11,15 +11,18 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
     {
         public BalanceFixture()
         {
-            Add(new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
+            Add(
+                new CustomContainerConfiguration(
+                    c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
             Add(new BalanceRouteMap());
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>()
+                                                        .Clear();
         }
 
         protected override NodeSettings CreateNodeSettings()
         {
             var nodeSettings = base.CreateNodeSettings();
-            nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(1,null,new NeverRetryExceptionPolicy());
+            nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy());
             return nodeSettings;
         }
     }

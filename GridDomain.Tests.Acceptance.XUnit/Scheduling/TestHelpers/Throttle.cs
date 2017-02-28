@@ -8,7 +8,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
     public static class Throttle
     {
-        public static void Verify<T>(Mock<T> mock, Expression<Action<T>> verification, TimeSpan minTimeout = default(TimeSpan), TimeSpan maxTimeout = default(TimeSpan)) where T : class
+        public static void Verify<T>(Mock<T> mock,
+                                     Expression<Action<T>> verification,
+                                     TimeSpan minTimeout = default(TimeSpan),
+                                     TimeSpan maxTimeout = default(TimeSpan)) where T : class
         {
             maxTimeout = maxTimeout == default(TimeSpan) ? TimeSpan.FromSeconds(5) : maxTimeout;
             var cancellationToken = new CancellationTokenSource(maxTimeout).Token;
@@ -24,15 +27,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
                     Assert.True(true, "method was called");
                     return;
                 }
-                catch (MockException)
-                {
-                }
+                catch (MockException) {}
                 Thread.Sleep(10);
             }
             throw new Exception("method wasn`t called");
         }
 
-        public static void AssertInTime(Action action, TimeSpan minTimeout = default(TimeSpan), TimeSpan maxTimeout = default(TimeSpan))
+        public static void AssertInTime(Action action,
+                                        TimeSpan minTimeout = default(TimeSpan),
+                                        TimeSpan maxTimeout = default(TimeSpan))
         {
             maxTimeout = maxTimeout == default(TimeSpan) ? TimeSpan.FromSeconds(5) : maxTimeout;
             var cancellationToken = new CancellationTokenSource(maxTimeout).Token;
@@ -48,9 +51,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
                     action();
                     return;
                 }
-                catch (Exception)
-                {
-                }
+                catch (Exception) {}
                 Thread.Sleep(10);
             }
             throw new Exception("Assertion wasn`t satisfied in time");

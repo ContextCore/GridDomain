@@ -17,6 +17,8 @@ namespace GridDomain.Tests.XUnit.Metadata
 {
     public class Metadata_from_command_passed_to_produced_scheduled_fault : FutureEventsTest
     {
+        public Metadata_from_command_passed_to_produced_scheduled_fault(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
@@ -56,7 +58,5 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandRaisedAnError, step.Why);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.CreatedFault, step.What);
         }
-
-        public Metadata_from_command_passed_to_produced_scheduled_fault(ITestOutputHelper output) : base(output) {}
     }
 }

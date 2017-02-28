@@ -7,12 +7,12 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
     public class TestAggregate : AggregateBase
     {
+        private int _timeToOkResponse;
+
         private TestAggregate(Guid id)
         {
             Id = id;
         }
-
-        private int _timeToOkResponse;
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {

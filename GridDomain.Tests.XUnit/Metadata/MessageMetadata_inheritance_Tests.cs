@@ -5,7 +5,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.Metadata
 {
-   
     public class MessageMetadata_inheritance_Tests
     {
         private MessageMetadata _parent;

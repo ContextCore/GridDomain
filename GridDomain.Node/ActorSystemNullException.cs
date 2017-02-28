@@ -2,7 +2,5 @@ using System;
 
 namespace GridDomain.Node
 {
-    public class ActorSystemNullException : Exception
-    {
-    }
+    public class ActorSystemNullException : Exception {}
 }

@@ -10,12 +10,8 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-   
     public class AkkaWaiter_One_Message_Test
     {
-        private readonly string _testmsg;
-        private readonly Task<IWaitResults> _results;
-
         //Given_waiter_subscribed_for_message_When_publishing_message()
         public AkkaWaiter_One_Message_Test()
         {
@@ -27,6 +23,31 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
             _testmsg = "TestMsg";
             transport.Publish(_testmsg);
+        }
+
+        private readonly string _testmsg;
+        private readonly Task<IWaitResults> _results;
+
+        [Fact]
+        public void Message_is_included_in_all_results()
+        {
+            Assert.Contains(_testmsg,
+                _results.Result.All.OfType<IMessageMetadataEnvelop>()
+                        .Select(m => m.Message));
+        }
+
+        [Fact]
+        public void Message_is_included_in_results_with_metadata()
+        {
+            Assert.Contains(_testmsg,
+                _results.Result.MessageWithMetadata<string>()
+                        .Message);
+        }
+
+        [Fact]
+        public void Message_is_included_in_typed_results()
+        {
+            Assert.Equal(_testmsg, _results.Result.Message<string>());
         }
 
         [Fact]
@@ -42,24 +63,6 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             await _results;
             await _results;
             await _results;
-        }
-
-        [Fact]
-        public void Message_is_included_in_typed_results()
-        {
-            Assert.Equal(_testmsg, _results.Result.Message<string>());
-        }
-
-        [Fact]
-        public void Message_is_included_in_all_results()
-        {
-            Assert.Contains(_testmsg, _results.Result.All.OfType<IMessageMetadataEnvelop>().Select(m => m.Message));
-        }
-
-        [Fact]
-        public void Message_is_included_in_results_with_metadata()
-        {
-            Assert.Contains(_testmsg, _results.Result.MessageWithMetadata<string>().Message);
         }
     }
 }

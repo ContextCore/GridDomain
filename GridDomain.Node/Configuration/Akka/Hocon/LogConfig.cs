@@ -7,19 +7,34 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class LogConfig : IAkkaConfig
     {
-
         private readonly Dictionary<LogLevel, string> _akkaLogLevels = new Dictionary<LogLevel, string>
-        {
-            {LogLevel.InfoLevel,    "INFO"},
-            {LogLevel.ErrorLevel,   "ERROR"},
-            {LogLevel.DebugLevel,   "DEBUG"},
-            {LogLevel.WarningLevel, "WARNING"}
-        };
+                                                                       {
+                                                                           {
+                                                                               LogLevel
+                                                                               .InfoLevel,
+                                                                               "INFO"
+                                                                           },
+                                                                           {
+                                                                               LogLevel
+                                                                               .ErrorLevel,
+                                                                               "ERROR"
+                                                                           },
+                                                                           {
+                                                                               LogLevel
+                                                                               .DebugLevel,
+                                                                               "DEBUG"
+                                                                           },
+                                                                           {
+                                                                               LogLevel
+                                                                               .WarningLevel,
+                                                                               "WARNING"
+                                                                           }
+                                                                       };
+
+        private readonly bool _includeConfig;
+        private readonly Type _logActorType;
 
         private readonly LogLevel _verbosity;
-        private readonly Type _logActorType;
-        private readonly bool _includeConfig;
-
 
         public LogConfig(LogLevel verbosity, bool includeConfig = true, Type logActorType = null)
         {
@@ -31,34 +46,30 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         public string Build()
         {
             var logLevel = _akkaLogLevels[_verbosity];
-            var logConfig =
-                @"
+            var logConfig = @"
                 stdout-loglevel = " + logLevel + @"
                 loglevel=" + logLevel;
             logConfig += @"
-                loggers=["""+_logActorType.AssemblyQualifiedShortName() + @"""]
+                loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 
-                actor.debug {"+AdditionalLogs(_verbosity)+ @" 
+                actor.debug {" + AdditionalLogs(_verbosity) + @" 
                       unhandled = on
                 }";
-            
+
             if (_includeConfig)
-                    logConfig += @"
+                logConfig += @"
                 log-config-on-start = on";
 
             return logConfig;
         }
 
-
         private object AdditionalLogs(LogLevel verbosity)
         {
-            return verbosity == LogLevel.DebugLevel
-                ? @"#autoreceive = on
+            return verbosity == LogLevel.DebugLevel ? @"#autoreceive = on
                     #lifecycle = on
                     #receive = on
                     #router-misconfiguration = on
-                    #event-stream = on"
-                : "";
+                    #event-stream = on" : "";
         }
     }
 }

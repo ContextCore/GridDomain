@@ -8,7 +8,6 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
 {
     public class BalanceRouteMap : IMessageRouteMap
     {
-
         public async Task Register(IMessagesRouter router)
         {
             await router.RegisterAggregate(BalanceAggregatesCommandHandler.Descriptor);

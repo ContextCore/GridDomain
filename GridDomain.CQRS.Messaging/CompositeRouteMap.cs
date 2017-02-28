@@ -16,7 +16,7 @@ namespace GridDomain.CQRS.Messaging
         {
             foreach (var messageRouteMap in _maps)
             {
-               await messageRouteMap.Register(router);
+                await messageRouteMap.Register(router);
             }
         }
     }

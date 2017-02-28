@@ -13,8 +13,8 @@ namespace Shop.Domain.Aggregates.UserAggregate
         }
 
         public Guid Order { get; }
-        public Guid SkuId { get;}
-        public int Quantity { get;  }
+        public Guid SkuId { get; }
+        public int Quantity { get; }
         public Guid StockId { get; }
     }
 }

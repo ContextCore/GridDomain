@@ -16,25 +16,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-    public class Saga_produced_events_and_commands_has_sagaId_with_custom_routes:NodeTestKit
+    public class Saga_produced_events_and_commands_has_sagaId_with_custom_routes : NodeTestKit
     {
         public Saga_produced_events_and_commands_has_sagaId_with_custom_routes(ITestOutputHelper output)
-         : base(output, new CustomRoutesSampleDomainFixture()) { }
-
-        [Fact]
-        public void When_saga_dispatch_command_than_it_should_have_sagaId()
-        {
-            var domainEvent = new GotTiredEvent(Guid.NewGuid());
-
-            Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
-            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {domainEvent}, MessageMetadata.Empty));
-
-            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
-            var command = sagaCompleteMsg.Message;
-
-            Assert.Equal(domainEvent.PersonId, command.SagaId);
-            Assert.IsAssignableFrom<MakeCoffeCommand>(command);
-        }
+            : base(output, new CustomRoutesSampleDomainFixture()) {}
 
         [Fact]
         public async Task When_raise_saga_than_saga_created_event_should_have_right_sagaId()
@@ -51,6 +36,19 @@ namespace GridDomain.Tests.XUnit.Sagas
             Assert.Equal(gotTiredEvent.PersonId, expectedCreatedEvent.SagaId);
         }
 
-     
+        [Fact]
+        public void When_saga_dispatch_command_than_it_should_have_sagaId()
+        {
+            var domainEvent = new GotTiredEvent(Guid.NewGuid());
+
+            Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
+            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {domainEvent}, MessageMetadata.Empty));
+
+            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
+            var command = sagaCompleteMsg.Message;
+
+            Assert.Equal(domainEvent.PersonId, command.SagaId);
+            Assert.IsAssignableFrom<MakeCoffeCommand>(command);
+        }
     }
 }

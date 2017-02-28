@@ -9,6 +9,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             State = state;
             Instance = instance;
         }
+
         public TSagaState Instance { get; }
         public State State { get; }
     }

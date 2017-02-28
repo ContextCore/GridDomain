@@ -14,9 +14,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public When_execute_command_Then_aggregate_Should_persist_changed(ITestOutputHelper output) : base(output) {}
 
         [Fact]
-        public async Task Sync_method_should_change_aggregate()
+        public async Task Async_method_should_change_aggregate()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
 
             await Node.Prepare(syncCommand)
                       .Expect<SampleAggregateChangedEvent>()
@@ -28,9 +28,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         }
 
         [Fact]
-        public async Task Async_method_should_change_aggregate()
+        public async Task Sync_method_should_change_aggregate()
         {
-            var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
+            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
 
             await Node.Prepare(syncCommand)
                       .Expect<SampleAggregateChangedEvent>()

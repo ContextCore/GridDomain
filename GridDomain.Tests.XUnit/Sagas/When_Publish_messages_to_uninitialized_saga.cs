@@ -39,6 +39,5 @@ namespace GridDomain.Tests.XUnit.Sagas
             await saga.Transit(coffeMadeEvent);
             //No exception is raised
         }
-
     }
 }

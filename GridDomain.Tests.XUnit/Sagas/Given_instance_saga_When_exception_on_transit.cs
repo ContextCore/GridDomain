@@ -16,6 +16,8 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class Given_instance_saga_When_exception_on_transit : SoftwareProgrammingInstanceSagaTest
     {
+        public Given_instance_saga_When_exception_on_transit(ITestOutputHelper helper) : base(helper) {}
+
         [Fact]
         public async Task When_saga_receives_a_message_that_case_saga_exception()
         {
@@ -23,7 +25,11 @@ namespace GridDomain.Tests.XUnit.Sagas
             //prepare initial saga state
             var sagaData = new SoftwareProgrammingSagaData(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
                            {
-                               PersonId = Guid.NewGuid()
+                               PersonId
+                                   =
+                                   Guid
+                                   .NewGuid
+                                   ()
                            };
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
@@ -47,7 +53,5 @@ namespace GridDomain.Tests.XUnit.Sagas
             Assert.IsAssignableFrom<EventExecutionException>(exception.InnerException);
             Assert.IsAssignableFrom<UndefinedCoffeMachineException>(exception.InnerException.InnerException);
         }
-
-        public Given_instance_saga_When_exception_on_transit(ITestOutputHelper helper) : base(helper) {}
     }
 }

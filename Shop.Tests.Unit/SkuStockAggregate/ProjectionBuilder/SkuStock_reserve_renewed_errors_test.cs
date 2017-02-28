@@ -8,23 +8,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
     [TestFixture]
     public class SkuStock_reserve_renewed_errors_test : SkuStockProjectionBuilderTests
     {
-
-        [Test]
-        public void Given_sku_created_and_reserved_and_renewed_messages_When_projected()
-        {
-            var stockId = Guid.NewGuid();
-
-            var stockCreatedEvent = new SkuStockCreated(stockId, Guid.NewGuid(), 1, TimeSpan.FromDays(2));
-            var stockReservedEvent = new StockReserved(stockId, Guid.NewGuid(), DateTime.Now.AddDays(1), 7);
-            var reserveRenewed = new ReserveRenewed(stockId, stockReservedEvent.ReserveId);
-
-            ProjectionBuilder.Handle(stockCreatedEvent);
-            ProjectionBuilder.Handle(stockReservedEvent);
-            ProjectionBuilder.Handle(reserveRenewed);
-
-            Assert.Throws<ReserveEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveRenewed));
-        }
-
         [Test]
         public void Given_no_reserve_When_reserve_renewed_projected_Then_error_occurs()
         {
@@ -43,5 +26,20 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             Assert.Throws<SkuStockEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveRenewed));
         }
 
+        [Test]
+        public void Given_sku_created_and_reserved_and_renewed_messages_When_projected()
+        {
+            var stockId = Guid.NewGuid();
+
+            var stockCreatedEvent = new SkuStockCreated(stockId, Guid.NewGuid(), 1, TimeSpan.FromDays(2));
+            var stockReservedEvent = new StockReserved(stockId, Guid.NewGuid(), DateTime.Now.AddDays(1), 7);
+            var reserveRenewed = new ReserveRenewed(stockId, stockReservedEvent.ReserveId);
+
+            ProjectionBuilder.Handle(stockCreatedEvent);
+            ProjectionBuilder.Handle(stockReservedEvent);
+            ProjectionBuilder.Handle(reserveRenewed);
+
+            Assert.Throws<ReserveEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveRenewed));
+        }
     }
 }

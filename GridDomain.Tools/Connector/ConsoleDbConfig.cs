@@ -2,7 +2,7 @@ using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tools.Connector
 {
-    class ConsoleDbConfig : IAkkaDbConfiguration
+    internal class ConsoleDbConfig : IAkkaDbConfiguration
     {
         public string SnapshotConnectionString { get; }
         public string JournalConnectionString { get; }

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -12,19 +11,22 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         //TODO: add version without correlation property
         public static Task RegisterHandler<TMessage, THandler>(this IMessagesRouter router,
-            Expression<Func<TMessage, Guid>>  correlationPropertyExpression = null) where THandler : IHandler<TMessage> where TMessage : DomainEvent
+                                                               Expression<Func<TMessage, Guid>> correlationPropertyExpression
+                                                                   = null) where THandler : IHandler<TMessage>
+            where TMessage : DomainEvent
         {
-            return router.RegisterHandler<TMessage,THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
+            return router.RegisterHandler<TMessage, THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
         }
+
         public static Task RegisterAggregate<TAggregate, TCommandHandler>(this IMessagesRouter router)
-                                                        where TAggregate : AggregateBase
-                                                        where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
+            where TAggregate : AggregateBase where TCommandHandler : AggregateCommandsHandler<TAggregate>, new()
         {
             return RegisterAggregate(router, new TCommandHandler());
         }
 
-        public static Task RegisterAggregate<TAggregate>(this IMessagesRouter router, AggregateCommandsHandler<TAggregate> handler)
-                                                      where TAggregate : AggregateBase
+        public static Task RegisterAggregate<TAggregate>(this IMessagesRouter router,
+                                                         AggregateCommandsHandler<TAggregate> handler)
+            where TAggregate : AggregateBase
         {
             var descriptor = new AggregateCommandsHandlerDescriptor<TAggregate>();
             foreach (var info in handler.RegisteredCommands)

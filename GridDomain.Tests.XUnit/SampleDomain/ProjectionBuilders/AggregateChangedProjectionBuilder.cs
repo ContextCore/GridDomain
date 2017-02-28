@@ -8,6 +8,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
     public class AggregateChangedProjectionBuilder : IHandler<SampleAggregateChangedEvent>
     {
         private static readonly Stopwatch Watch = new Stopwatch();
+
         static AggregateChangedProjectionBuilder()
         {
             Watch.Start();

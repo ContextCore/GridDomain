@@ -2,7 +2,5 @@ using System;
 
 namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
 {
-    public class FaultyProjectionBuilderException : Exception
-    {
-    }
+    public class FaultyProjectionBuilderException : Exception {}
 }

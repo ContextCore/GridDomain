@@ -9,8 +9,8 @@ namespace GridDomain.Tests.Framework
 {
     public class XUnitTestOutputSink : ILogEventSink
     {
-        readonly ITestOutputHelper _output;
-        readonly ITextFormatter _textFormatter;
+        private readonly ITestOutputHelper _output;
+        private readonly ITextFormatter _textFormatter;
 
         public XUnitTestOutputSink(ITestOutputHelper testOutputHelper, ITextFormatter textFormatter)
         {

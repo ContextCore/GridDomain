@@ -1,6 +1,4 @@
 using System;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
@@ -17,6 +15,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     public class Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default : SoftwareProgrammingInstanceSagaTest
     {
+        public Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper helper) : base(helper) {}
+
         [Fact]
         public async Task Given_default_policy()
         {
@@ -48,7 +48,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //Snapshot_should_be_saved_one_time()
             Assert.Equal(0, snapshots.Length);
         }
-
-        public Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper helper) : base(helper) {}
     }
 }

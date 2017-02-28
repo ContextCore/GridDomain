@@ -14,6 +14,7 @@ namespace GridDomain.CQRS
         {
             return builder.Execute(null, failOnAnyFault);
         }
+
         public static Task<IWaitResults> Execute(this ICommandExpectBuilder builder)
         {
             return builder.Execute(null, true);

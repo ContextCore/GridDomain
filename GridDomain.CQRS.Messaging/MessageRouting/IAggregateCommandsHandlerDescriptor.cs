@@ -5,7 +5,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public interface IAggregateCommandsHandlerDescriptor
     {
-        IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands { get; } 
+        IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands { get; }
         Type AggregateType { get; }
     }
 }

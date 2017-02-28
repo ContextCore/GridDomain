@@ -5,7 +5,8 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands
 {
     public class ChangeBalanceInFuture : Command
     {
-        public ChangeBalanceInFuture(int parameter, Guid aggregateId, DateTime raiseTime, bool useLegacyEvent):base(aggregateId)
+        public ChangeBalanceInFuture(int parameter, Guid aggregateId, DateTime raiseTime, bool useLegacyEvent)
+            : base(aggregateId)
         {
             Parameter = parameter;
             RaiseTime = raiseTime;

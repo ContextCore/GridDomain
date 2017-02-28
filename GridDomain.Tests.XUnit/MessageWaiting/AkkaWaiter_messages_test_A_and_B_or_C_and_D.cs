@@ -5,7 +5,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-   
     public class AkkaWaiter_messages_test_A_and_B_or_C_and_D : AkkaWaiterTest
     {
         private readonly Message _messageA = new Message("A");
@@ -23,6 +22,20 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
+        public void Condition_wait_end_should_be_false_on_A_and_C()
+        {
+            var sampleObjectsReceived = new object[] {_messageA, _messageC};
+            Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+        }
+
+        [Fact]
+        public void Condition_wait_end_should_be_true_on_A_and_B_and_D()
+        {
+            var sampleObjectsReceived = new object[] {_messageA, _messageB, _messageD};
+            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+        }
+
+        [Fact]
         public async Task Should_end_on_A_and_B_and_D()
         {
             Publish(_messageA, _messageB, _messageD);
@@ -32,10 +45,12 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
-        public void Condition_wait_end_should_be_true_on_A_and_B_and_D()
+        public async Task Should_end_on_C_and_D()
         {
-            var sampleObjectsReceived = new object[] { _messageA, _messageB, _messageD };
-            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+            Publish(_messageC, _messageD);
+
+            await ExpectMsg(_messageC, m => m.Id == _messageC.Id);
+            await ExpectMsg(_messageD, m => m.Id == _messageD.Id);
         }
 
         [Fact]
@@ -48,27 +63,11 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
-        public void Condition_wait_end_should_be_false_on_A_and_C()
-        {
-            var sampleObjectsReceived = new object[] { _messageA, _messageC };
-            Assert.False(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
-        }
-   
-        [Fact]
         public void Should_not_end_on_D_and_B()
         {
             Publish(_messageB, _messageD);
 
             ExpectNoMsg();
-        }
-
-        [Fact]
-        public async Task Should_end_on_C_and_D()
-        {
-            Publish(_messageC, _messageD);
-
-            await ExpectMsg(_messageC,m => m.Id == _messageC.Id);
-            await ExpectMsg(_messageD, m => m.Id == _messageD.Id);
         }
     }
 }

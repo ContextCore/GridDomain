@@ -9,9 +9,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
 {
-    
     public class Given_aggregate_When_raising_several_future_events : FutureEventsTest
     {
+        public Given_aggregate_When_raising_several_future_events(ITestOutputHelper output) : base(output) {}
+
         [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()
         {
@@ -32,7 +33,5 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             //Envelop_id_not_equal_to_aggregate_id()
             Assert.True(eventA.Id != aggregateId && aggregateId != eventB.Id);
         }
-
-        public Given_aggregate_When_raising_several_future_events(ITestOutputHelper output) : base(output) {}
     }
 }

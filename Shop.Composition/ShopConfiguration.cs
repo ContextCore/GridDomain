@@ -1,6 +1,5 @@
 using System;
 using GridDomain.Common;
-using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
@@ -26,12 +25,12 @@ namespace Shop.Composition
     {
         private readonly DbContextOptions<ShopDbContext> _readModelContextOptions;
 
-        public ShopConfiguration(DbContextOptions<ShopDbContext> readModelContextOptions = null )
+        public ShopConfiguration(DbContextOptions<ShopDbContext> readModelContextOptions = null)
         {
-            _readModelContextOptions = readModelContextOptions ?? 
-                                 new DbContextOptionsBuilder<ShopDbContext>()
-                                    .UseSqlServer("Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
-                                    .Options;
+            _readModelContextOptions = readModelContextOptions
+                                       ?? new DbContextOptionsBuilder<ShopDbContext>().UseSqlServer(
+                                           "Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
+                                                                                      .Options;
             ;
         }
 
@@ -41,11 +40,11 @@ namespace Shop.Composition
             container.RegisterType<ISkuPriceQuery, SkuPriceQuery>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>(new ContainerControlledLifetimeManager());
 
-            container.Register(new AggregateConfiguration<Account,AccountCommandsHandler>());
-            container.Register(new AggregateConfiguration<Order,OrderCommandsHandler>());
-            container.Register(new AggregateConfiguration<Sku,SkuCommandsHandler>());
-            container.Register(new AggregateConfiguration<SkuStock,SkuStockCommandsHandler>());
-            container.Register(new AggregateConfiguration<User,UserCommandsHandler>());
+            container.Register(new AggregateConfiguration<Account, AccountCommandsHandler>());
+            container.Register(new AggregateConfiguration<Order, OrderCommandsHandler>());
+            container.Register(new AggregateConfiguration<Sku, SkuCommandsHandler>());
+            container.Register(new AggregateConfiguration<SkuStock, SkuStockCommandsHandler>());
+            container.Register(new AggregateConfiguration<User, UserCommandsHandler>());
             container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>();
             container.Register(SagaConfiguration.Instance<BuyNow, BuyNowData, BuyNowSagaFactory>(BuyNow.Descriptor));

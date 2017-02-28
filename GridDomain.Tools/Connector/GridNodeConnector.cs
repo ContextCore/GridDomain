@@ -12,7 +12,7 @@ using GridDomain.Node.Configuration.Akka;
 namespace GridDomain.Tools.Connector
 {
     /// <summary>
-    /// GridNodeConnector is used to connect to remote node and delegate commands execution
+    ///     GridNodeConnector is used to connect to remote node and delegate commands execution
     /// </summary>
     public class GridNodeConnector : IGridDomainNode
     {
@@ -22,16 +22,36 @@ namespace GridDomain.Tools.Connector
         private readonly IAkkaNetworkAddress _serverAddress;
 
         private ICommandExecutor _commandExecutor;
-        private MessageWaiterFactory _waiterFactory;
         private ActorSystem _consoleSystem;
+        private MessageWaiterFactory _waiterFactory;
 
-        public GridNodeConnector(IAkkaNetworkAddress serverAddress, 
+        public GridNodeConnector(IAkkaNetworkAddress serverAddress,
                                  AkkaConfiguration clientConfiguration = null,
                                  TimeSpan? defaultTimeout = null)
         {
             _serverAddress = serverAddress;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
             _conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
+        }
+
+        public void Dispose()
+        {
+            _consoleSystem.Dispose();
+        }
+
+        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+            _commandExecutor.Execute(command, metadata);
+        }
+
+        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return _waiterFactory.NewWaiter(defaultTimeout);
+        }
+
+        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _commandExecutor.Prepare(cmd, metadata);
         }
 
         private async Task<IActorRef> GetActor(ActorSelection selection)
@@ -55,34 +75,16 @@ namespace GridDomain.Tools.Connector
 
             var eventBusForwarder = await GetActor(GetSelection(nameof(ActorTransportProxy)));
 
-            var transportBridge = new RemoteAkkaEventBusTransport(
-                                                new LocalAkkaEventBusTransport(_consoleSystem),
-                                                eventBusForwarder,
-                                                _defaultTimeout);
+            var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
+                eventBusForwarder,
+                _defaultTimeout);
 
             var commandExecutionActor = await GetActor(GetSelection(nameof(CommandExecutionActor)));
-            _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem, transportBridge, commandExecutionActor,_defaultTimeout);
+            _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
+                transportBridge,
+                commandExecutionActor,
+                _defaultTimeout);
             _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
-        }
-      
-        public void Dispose()
-        {
-            _consoleSystem.Dispose();
-        }
-
-        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
-        {
-            _commandExecutor.Execute(command, metadata);
-        }
-
-        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
-        {
-            return _waiterFactory.NewWaiter(defaultTimeout);
-        }
-
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
-        {
-            return _commandExecutor.Prepare(cmd, metadata);
         }
     }
 }

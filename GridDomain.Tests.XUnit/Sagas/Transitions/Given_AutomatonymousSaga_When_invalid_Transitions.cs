@@ -7,19 +7,17 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
-   
     public class Given_AutomatonymousSaga_When_invalid_Transitions
     {
-        private readonly Given_AutomatonymousSaga _given;
-
-        private class WrongMessage
-        {
-        }
-
         public Given_AutomatonymousSaga_When_invalid_Transitions(ITestOutputHelper output)
         {
-             _given = new Given_AutomatonymousSaga(m => m.Sleeping, new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
+            _given = new Given_AutomatonymousSaga(m => m.Sleeping,
+                new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
         }
+
+        private readonly Given_AutomatonymousSaga _given;
+
+        private class WrongMessage {}
 
         private static async Task When_execute_invalid_transaction(ISagaInstance sagaInstance)
         {
@@ -30,36 +28,44 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         {
             try
             {
-               await act();
+                await act();
             }
             catch
             {
                 //intentionally left blank
             }
         }
-        
-      [Fact]
+
+        [Fact]
         public void Exception_occurs()
         {
-            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await When_execute_invalid_transaction(_given.SagaInstance));
+            Assert.ThrowsAsync<UnbindedMessageReceivedException>(
+                async () => await When_execute_invalid_transaction(_given.SagaInstance));
         }
 
-      [Fact]
-        public void Null_message_Exception_occurs()
+        [Fact]
+        public async Task No_commands_are_proroduced()
         {
-            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await  _given.SagaInstance.Transit((object)null));
+            await SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
+            Assert.Empty(_given.SagaInstance.CommandsToDispatch);
         }
 
-      [Fact]
+        [Fact]
         public async Task No_events_are_raised_in_data_aggregate()
         {
-            var aggregate = (IAggregate)_given.SagaDataAggregate;
+            var aggregate = (IAggregate) _given.SagaDataAggregate;
             aggregate.ClearUncommittedEvents(); //ignore sagaCreated event
             await SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
             Assert.Empty(aggregate.GetUncommittedEvents());
         }
 
-      [Fact]
+        [Fact]
+        public void Null_message_Exception_occurs()
+        {
+            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await _given.SagaInstance.Transit((object) null));
+        }
+
+        [Fact]
         public async Task Saga_state_not_changed()
         {
             var stateHashBefore = _given.SagaDataAggregate.Data.CurrentStateName.GetHashCode();
@@ -67,13 +73,6 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var stateHashAfter = _given.SagaDataAggregate.Data.CurrentStateName.GetHashCode();
 
             Assert.Equal(stateHashBefore, stateHashAfter);
-        }
-
-      [Fact]
-        public async Task No_commands_are_proroduced()
-        {
-            await SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
-            Assert.Empty(_given.SagaInstance.CommandsToDispatch);
         }
     }
 }

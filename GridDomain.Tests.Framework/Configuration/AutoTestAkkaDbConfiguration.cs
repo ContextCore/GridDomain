@@ -1,5 +1,4 @@
 ﻿using System.Configuration;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tests.Framework.Configuration
@@ -9,12 +8,14 @@ namespace GridDomain.Tests.Framework.Configuration
         private const string JournalConnectionStringName = "WriteModel";
 
         public string SnapshotConnectionString
-            => ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString ??
-            "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
+            =>
+                ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
+                ?? "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string JournalConnectionString
-            => ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString ??
-            "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
+            =>
+                ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
+                ?? "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";

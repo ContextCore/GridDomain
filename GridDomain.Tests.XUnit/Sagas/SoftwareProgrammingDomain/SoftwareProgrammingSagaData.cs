@@ -5,13 +5,6 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaData : ISagaState
     {
-        public Guid PersonId { get; set; }
-        public Guid Id { get; }
-        public string CurrentStateName { get; set; }
-        public Guid CoffeeMachineId { get; }
-        public Guid SofaId { get; set; }
-        public Guid BadSleepPersonId { get; set; }
-
         public SoftwareProgrammingSagaData(Guid id,
                                            string currentStateName,
                                            Guid sofaId = default(Guid),
@@ -24,5 +17,12 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             CurrentStateName = currentStateName;
             PersonId = personId;
         }
+
+        public Guid PersonId { get; set; }
+        public Guid CoffeeMachineId { get; }
+        public Guid SofaId { get; set; }
+        public Guid BadSleepPersonId { get; set; }
+        public Guid Id { get; }
+        public string CurrentStateName { get; set; }
     }
 }

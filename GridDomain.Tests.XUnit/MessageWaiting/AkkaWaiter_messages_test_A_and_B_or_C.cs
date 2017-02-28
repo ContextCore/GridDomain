@@ -5,11 +5,10 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-   
     public class AkkaWaiter_messages_test_A_and_B_or_C : AkkaWaiterTest
     {
         private string _messageA;
-        private char _messageB = 'd';
+        private readonly char _messageB = 'd';
         private int _messageC;
 
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
@@ -24,11 +23,12 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
-        public async Task C_message_should_end_wait()
+        public async Task A_and_B_message_should_end_wait()
         {
-            Publish(_messageC);
+            Publish(_messageA, _messageB);
 
-            await ExpectMsg(_messageC);
+            await ExpectMsg(_messageA);
+            await ExpectMsg(_messageB);
         }
 
         [Fact]
@@ -38,14 +38,12 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             ExpectNoMsg();
         }
 
-
         [Fact]
-        public async Task A_and_B_message_should_end_wait()
+        public async Task C_message_should_end_wait()
         {
-            Publish(_messageA,_messageB);
+            Publish(_messageC);
 
-            await ExpectMsg(_messageA);
-            await ExpectMsg(_messageB);
+            await ExpectMsg(_messageC);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain.Commands
 {
     public class ChangeSampleAggregateCommand : Command
     {
-        public ChangeSampleAggregateCommand(int parameter, Guid aggregateId):base(aggregateId)
+        public ChangeSampleAggregateCommand(int parameter, Guid aggregateId) : base(aggregateId)
         {
             Parameter = parameter;
         }

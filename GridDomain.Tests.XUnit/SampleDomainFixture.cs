@@ -1,6 +1,3 @@
-using System;
-using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.XUnit.SampleDomain;
 
 namespace GridDomain.Tests.XUnit
@@ -13,5 +10,4 @@ namespace GridDomain.Tests.XUnit
             Add(new SampleRouteMap());
         }
     }
-    
 }

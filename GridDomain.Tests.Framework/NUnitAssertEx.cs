@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Framework
 {
     public static class NUnitAssertEx
     {
-        public static async Task ShouldThrow<T>(this Task task, Predicate<T> predicate = null ) where T : Exception
+        public static async Task ShouldThrow<T>(this Task task, Predicate<T> predicate = null) where T : Exception
         {
             try
             {
@@ -20,9 +20,9 @@ namespace GridDomain.Tests.Framework
                 if (predicate == null)
                     Assert.Pass();
 
-                if (predicate != null && predicate((T)exception))
+                if (predicate != null && predicate((T) exception))
                     Assert.Pass();
-                 
+
                 Assert.Fail($"{typeof(T).Name} was raised but did not satisfy predicate");
             }
             Assert.Fail($"{typeof(T).Name} was not raised");

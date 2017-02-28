@@ -1,10 +1,7 @@
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -20,7 +17,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low : NodeTestKit
     {
         public Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low(ITestOutputHelper output)
-            : base(output, new SampleDomainFixture { InMemory = false }.InitSampleAggregateSnapshots()) {}
+            : base(output, new SampleDomainFixture {InMemory = false}.InitSampleAggregateSnapshots()) {}
 
         [Fact]
         public async Task Given_timeout_only_default_policy()
@@ -57,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //First_snapshot_should_have_parameters_from_second_command()
             Assert.Equal(changedParameter.ToString(),
                 snapshots.First()
-                          .Aggregate.Value);
+                         .Aggregate.Value);
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

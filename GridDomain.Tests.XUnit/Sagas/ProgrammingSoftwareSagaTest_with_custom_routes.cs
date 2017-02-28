@@ -1,5 +1,3 @@
-using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain;
@@ -11,22 +9,24 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class ProgrammingSoftwareSagaTest_with_custom_routes : NodeTestKit
     {
-        class CustomRoutesFixture : NodeTestFixture
+        public ProgrammingSoftwareSagaTest_with_custom_routes(ITestOutputHelper output)
+            : base(output, new CustomRoutesFixture()) {}
+
+        private class CustomRoutesFixture : NodeTestFixture
         {
             public CustomRoutesFixture()
             {
                 Add(new CustomRoutesSoftwareProgrammingSagaMap());
                 var cfg =
                     new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                        c => c.RegisterAggregate
+                        c =>
+                            c
+                                .RegisterAggregate
                                 <SagaStateAggregate<SoftwareProgrammingSagaData>,
                                     SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>());
                 Add(cfg);
                 Add(new SampleDomainContainerConfiguration());
             }
         }
-
-        public ProgrammingSoftwareSagaTest_with_custom_routes(ITestOutputHelper output)
-            : base(output, new CustomRoutesFixture()) {}
     }
 }

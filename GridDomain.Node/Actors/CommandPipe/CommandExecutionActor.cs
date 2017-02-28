@@ -1,7 +1,6 @@
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
@@ -9,18 +8,19 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         private readonly ICatalog<Processor, ICommand> _aggregateCatalog;
 
-        public CommandExecutionActor(ICatalog<Processor,ICommand> aggregateCatalog)
+        public CommandExecutionActor(ICatalog<Processor, ICommand> aggregateCatalog)
         {
             _aggregateCatalog = aggregateCatalog;
 
             Receive<IMessageMetadataEnvelop<ICommand>>(c =>
-            {
-                Processor aggregateProcessor = _aggregateCatalog.Get(c.Message);
-                if (aggregateProcessor == null)
-                    throw new CannotFindAggregateForCommandExñeption(c.Message, c.Message.GetType());
+                                                       {
+                                                           var aggregateProcessor = _aggregateCatalog.Get(c.Message);
+                                                           if (aggregateProcessor == null)
+                                                               throw new CannotFindAggregateForCommandExñeption(c.Message,
+                                                                   c.Message.GetType());
 
-                aggregateProcessor.ActorRef.Tell(c);
-            });
+                                                           aggregateProcessor.ActorRef.Tell(c);
+                                                       });
         }
     }
 }

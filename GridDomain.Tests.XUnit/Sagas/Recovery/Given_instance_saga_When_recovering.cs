@@ -16,12 +16,12 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
 {
     public class Given_instance_saga_When_recovering
     {
-        private readonly Logger _logger;
-
         public Given_instance_saga_When_recovering(ITestOutputHelper output)
         {
             _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
+
+        private readonly Logger _logger;
 
         [Fact]
         public async Task Given_instance_saga_When_recovering_from_creation()

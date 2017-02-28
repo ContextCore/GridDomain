@@ -6,6 +6,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
     public class TestSaga : Saga<TestSagaState>
     {
+        static TestSaga()
+        {
+            var descriptor = SagaDescriptor.CreateDescriptor<TestSaga, TestSagaState>();
+            descriptor.AddStartMessage<TestSagaStartMessage>();
+            descriptor.AddAcceptedMessage(typeof(TestEvent));
+            Descriptor = descriptor;
+        }
+
         public TestSaga()
         {
             During(Initial,
@@ -22,15 +30,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
         public Event<TestEvent> Process { get; private set; }
 
         public State Started { get; set; }
-
-        static TestSaga()
-        {
-            var descriptor = SagaDescriptor.CreateDescriptor<TestSaga, TestSagaState>();
-            descriptor.AddStartMessage<TestSagaStartMessage>();
-            descriptor.AddAcceptedMessage(typeof(TestEvent));
-            Descriptor = descriptor;
-        }
         public static ISagaDescriptor Descriptor { get; }
-       
     }
 }

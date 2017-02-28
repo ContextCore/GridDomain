@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
-using Shop.Domain.Aggregates.SkuAggregate.Events;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel.Context;
 
 namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
-
-
     [TestFixture]
     public class SkuStock_created_tests : SkuStockProjectionBuilderTests
     {
@@ -26,12 +19,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
 
         [Test]
-        public void When_project_again_error_occures()
-        {
-            Assert.Throws<ArgumentException>(() => ProjectionBuilder.Handle(_message));
-        }
-
-        [Test]
         public void Then_new_sku_stock_row_is_added()
         {
             using (var context = ContextFactory())
@@ -42,7 +29,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         public void Then_new_stock_history_row_is_added()
         {
             using (var context = ContextFactory())
-                Assert.NotNull(context.StockHistory.Find(_message.SourceId,(long)1));
+                Assert.NotNull(context.StockHistory.Find(_message.SourceId, (long) 1));
         }
 
         [Test]
@@ -50,7 +37,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
             {
-                var row = context.StockHistory.Find(_message.SourceId, (long)1);
+                var row = context.StockHistory.Find(_message.SourceId, (long) 1);
                 Assert.AreEqual(1, row.Number);
                 Assert.AreEqual(StockOperation.Created, row.Operation);
                 Assert.AreEqual(_message.Quantity, row.Quanity);
@@ -60,7 +47,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 Assert.AreEqual(0, row.OldReservedQuantity);
                 Assert.AreEqual(0, row.OldTotalQuantity);
 
-                Assert.AreEqual(_message.Quantity,    row.NewAvailableQuantity);
+                Assert.AreEqual(_message.Quantity, row.NewAvailableQuantity);
                 Assert.AreEqual(0, row.NewReservedQuantity);
                 Assert.AreEqual(_message.Quantity, row.NewTotalQuantity);
             }
@@ -81,6 +68,12 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 Assert.AreEqual(_message.SkuId, row.SkuId);
                 Assert.AreEqual(_message.Quantity, row.TotalQuantity);
             }
+        }
+
+        [Test]
+        public void When_project_again_error_occures()
+        {
+            Assert.Throws<ArgumentException>(() => ProjectionBuilder.Handle(_message));
         }
     }
 }

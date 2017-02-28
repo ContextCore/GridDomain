@@ -1,9 +1,5 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Akka.TestKit.Xunit2;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using Xunit;
 
@@ -13,9 +9,9 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
     {
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-           return waiter.Expect<string>()
-                        .Or<char>()
-                        .Create();
+            return waiter.Expect<string>()
+                         .Or<char>()
+                         .Create();
         }
 
         [Fact]

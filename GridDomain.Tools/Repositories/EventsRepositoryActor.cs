@@ -4,35 +4,31 @@ using Akka;
 using Akka.Actor;
 using Akka.Event;
 using Akka.Persistence;
-using GridDomain.Logging;
 
 namespace GridDomain.Tools.Repositories
 {
     public class EventsRepositoryActor : ReceivePersistentActor
     {
         private readonly List<object> _events = new List<object>();
-        public override string PersistenceId { get; }
         private ILoggingAdapter logger = Context.GetLogger();
+
         public EventsRepositoryActor(string id)
         {
             PersistenceId = id;
 
             RecoverAny(m =>
-            {
-                m.Match()
-                 .With<SnapshotOffer>(so => { })
-                 .With<RecoveryCompleted>(f => {})
-                 .Default(e =>
-                          {
-                              _events.Add(e);
-                          });
-            });
+                       {
+                           m.Match()
+                            .With<SnapshotOffer>(so => { })
+                            .With<RecoveryCompleted>(f => { })
+                            .Default(e => { _events.Add(e); });
+                       });
 
-            Command<Persist>(m => 
-            Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)
-            ));
+            Command<Persist>(m => Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)));
             Command<Load>(m => Sender.Tell(new Loaded(id, _events.ToArray())));
         }
+
+        public override string PersistenceId { get; }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
         {
@@ -49,7 +45,8 @@ namespace GridDomain.Tools.Repositories
             base.OnRecoveryFailure(reason, message);
         }
 
-        public class Load { }
+        public class Load {}
+
         public class Persist
         {
             public readonly object Msg;
@@ -59,26 +56,28 @@ namespace GridDomain.Tools.Repositories
                 Msg = msg;
             }
         }
+
         public class Loaded
         {
+            public Loaded(string persistenceId, params object[] events)
+            {
+                PersistenceId = persistenceId;
+                Events = events;
+            }
+
             public string PersistenceId { get; }
 
             public object[] Events { get; }
-
-            public Loaded(string persistenceId, params object[] events)
-            {
-                this.PersistenceId = persistenceId;
-                Events = events;
-            }
         }
+
         public class Persisted
         {
-            public object Payload { get; }
-
             public Persisted(object payload)
             {
                 Payload = payload;
             }
+
+            public object Payload { get; }
         }
     }
 }

@@ -8,29 +8,32 @@ using GridDomain.Node.Actors.CommandPipe;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
 {
-    class TestSagaActor : ReceiveActor
+    internal class TestSagaActor : ReceiveActor
     {
-
         public TestSagaActor(IActorRef watcher,
-            Func<DomainEvent, ICommand[]> commandFactory = null,
-            TimeSpan? sleepTime = null)
+                             Func<DomainEvent, ICommand[]> commandFactory = null,
+                             TimeSpan? sleepTime = null)
         {
             var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);
-            commandFactory = commandFactory ?? (e => new ICommand[] { new TestCommand(e) });
+            commandFactory = commandFactory ?? (e => new ICommand[] {new TestCommand(e)});
 
             Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
-            {
-                Task.Delay(sleep)
-                    .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty))
-                    .PipeTo(Self, Sender);
-            });
+                                                          {
+                                                              Task.Delay(sleep)
+                                                                  .ContinueWith(
+                                                                      t =>
+                                                                          new SagaTransited(commandFactory(m.Message),
+                                                                              m.Metadata,
+                                                                              ProcessEntry.Empty))
+                                                                  .PipeTo(Self, Sender);
+                                                          });
 
 
             Receive<SagaTransited>(m =>
-            {
-                watcher.Tell(m);
-                Sender.Tell(m);
-            });
+                                   {
+                                       watcher.Tell(m);
+                                       Sender.Tell(m);
+                                   });
         }
     }
 }

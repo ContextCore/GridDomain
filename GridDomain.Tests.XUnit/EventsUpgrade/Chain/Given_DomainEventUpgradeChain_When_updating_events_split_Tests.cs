@@ -8,7 +8,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.EventsUpgrade.Chain
 {
-    
     public class Given_DomainEventUpgradeChain_When_updating_events_split_Tests
     {
         private IEnumerable<TestEvent_V3> _resultEvent;
@@ -21,7 +20,8 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Chain
             chain.Register(new DomainEventUpdater3());
             var balanceAggregate = new BalanceAggregate(Guid.NewGuid(), 10);
             _initialEvent = new TestEvent_V2(balanceAggregate.Id);
-            _resultEvent = chain.Update(_initialEvent).OfType<TestEvent_V3>();
+            _resultEvent = chain.Update(_initialEvent)
+                                .OfType<TestEvent_V3>();
 
             //Events_type_was_updated()
             Assert.IsAssignableFrom<TestEvent_V3>(_resultEvent.FirstOrDefault());

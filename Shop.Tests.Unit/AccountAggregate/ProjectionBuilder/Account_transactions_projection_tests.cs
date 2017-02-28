@@ -3,7 +3,6 @@ using NMoneys;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.ReadModel.Context;
-using Shop.Tests.Unit.OrderAggregate.ProjectionBuilders;
 
 namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
 {
@@ -18,7 +17,7 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
         public void Given_account_created_and_projecting()
         {
             _msgCreated = new AccountCreated(Guid.NewGuid(), Guid.NewGuid(), 42);
-            var user = new User() { Id = _msgCreated.UserId, Login = "test" };
+            var user = new User {Id = _msgCreated.UserId, Login = "test"};
 
             _msgReplenish = new AccountReplenish(_msgCreated.SourceId, Guid.NewGuid(), new Money(100));
             _msgWithdrawal = new AccountWithdrawal(_msgCreated.SourceId, Guid.NewGuid(), new Money(30));
@@ -73,16 +72,6 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
         }
 
         [Test]
-        public void Should_update_modified_time_for_account()
-        {
-            using (var context = ContextFactory())
-            {
-                var account = context.Accounts.Find(_msgWithdrawal.SourceId);
-                Assert.AreEqual(_msgWithdrawal.CreatedTime, account.LastModified);
-            }
-        }
-
-        [Test]
         public void Should_fill_fields_for_withdrawal()
         {
             using (var context = ContextFactory())
@@ -101,5 +90,14 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
             }
         }
 
+        [Test]
+        public void Should_update_modified_time_for_account()
+        {
+            using (var context = ContextFactory())
+            {
+                var account = context.Accounts.Find(_msgWithdrawal.SourceId);
+                Assert.AreEqual(_msgWithdrawal.CreatedTime, account.LastModified);
+            }
+        }
     }
 }

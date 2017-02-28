@@ -1,27 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
-using Akka.Event;
-using Akka.Monitoring;
-using Akka.Monitoring.Impl;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Akka.Messages;
-using Helios.Util;
 
 namespace GridDomain.Node.Actors
 {
@@ -32,62 +23,55 @@ namespace GridDomain.Node.Actors
     /// <typeparam name="TAggregate"></typeparam>
     public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : AggregateBase
     {
-        private readonly IAggregateCommandsHandler<TAggregate> _handler;
-        private readonly IActorRef _schedulerActorRef;
-        private readonly IActorRef _customHandlersActor;
-        private readonly ProcessEntry _domainEventProcessEntry;
-        private readonly ProcessEntry _domainEventProcessFailEntry;
-        private readonly IPublisher _publisher;
-
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
         public const string PublishingEvent = "Publishing event";
         public const string CommandExecutionCreatedAnEvent = "Command execution created an event";
+        private readonly IActorRef _customHandlersActor;
+        private readonly ProcessEntry _domainEventProcessEntry;
+        private readonly ProcessEntry _domainEventProcessFailEntry;
+        private readonly IAggregateCommandsHandler<TAggregate> _handler;
+        private readonly IPublisher _publisher;
+        private readonly IActorRef _schedulerActorRef;
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               IActorRef schedulerActorRef,
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor,
-                              IActorRef customHandlersActor) : base(aggregateConstructor,
-                                                                    snapshotsPersistencePolicy)
+                              IActorRef customHandlersActor) : base(aggregateConstructor, snapshotsPersistencePolicy)
         {
             _publisher = publisher;
             _customHandlersActor = customHandlersActor;
             _schedulerActorRef = schedulerActorRef;
             _handler = handler;
-            _domainEventProcessEntry = new ProcessEntry(Self.Path.Name,
-                                                        PublishingEvent,
-                                                        CommandExecutionCreatedAnEvent);
+            _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, PublishingEvent, CommandExecutionCreatedAnEvent);
 
-            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name,
-                                                            CreatedFault,
-                                                            CommandRaisedAnError);
+            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, CreatedFault, CommandRaisedAnError);
 
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
-            {
-                var cmd = m.Message;
-                Monitor.IncrementMessagesReceived();
-                Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
+                                                       {
+                                                           var cmd = m.Message;
+                                                           Monitor.IncrementMessagesReceived();
+                                                           Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
 
-                try
-                {
-                    State = _handler.Execute((TAggregate) State, cmd);
-                }
-                catch (Exception ex)
-                {
-                    WaitForFaultProcessedByHandlers(cmd, ex, m.Metadata);
-                    BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
-                    return;
-                }
+                                                           try
+                                                           {
+                                                               State = _handler.Execute((TAggregate) State, cmd);
+                                                           }
+                                                           catch (Exception ex)
+                                                           {
+                                                               WaitForFaultProcessedByHandlers(cmd, ex, m.Metadata);
+                                                               BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
+                                                               return;
+                                                           }
 
-                PersistState(cmd, m.Metadata);
+                                                           PersistState(cmd, m.Metadata);
 
-                ProcessAsyncMethods(cmd, m.Metadata);
+                                                           ProcessAsyncMethods(cmd, m.Metadata);
 
-                BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
-            });
-          
+                                                           BecomeStacked(() => WaitingHandlersProcess(m.Metadata));
+                                                       });
         }
 
         protected override void Terminating()
@@ -106,7 +90,7 @@ namespace GridDomain.Node.Actors
 
             var metadata = messageMetadata.CreateChild(cmd.Id, _domainEventProcessFailEntry);
 
-            _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault,metadata))
+            _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault, metadata))
                                 .PipeTo(Self);
 
             Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, ex, cmd);
@@ -119,18 +103,19 @@ namespace GridDomain.Node.Actors
                               .Select(e => e.CloneWithSaga(command.SagaId))
                               .ToArray();
 
-            int totalEvents = events.Length;
-            int persistedEvents = 0;
+            var totalEvents = events.Length;
+            var persistedEvents = 0;
             var eventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
 
-            PersistAll(events, e =>
-            {
-                //should save snapshot only after all messages persisted as state was already modified by all of them
-                if (++persistedEvents == totalEvents)
-                    OnCommandEventsPersisted(events, eventsMetadata);
+            PersistAll(events,
+                e =>
+                {
+                    //should save snapshot only after all messages persisted as state was already modified by all of them
+                    if (++persistedEvents == totalEvents)
+                        OnCommandEventsPersisted(events, eventsMetadata);
 
-                NotifyPersistenceWatchers(e);
-            });
+                    NotifyPersistenceWatchers(e);
+                });
 
             State.ClearUncommittedEvents();
         }
@@ -138,40 +123,47 @@ namespace GridDomain.Node.Actors
         private void WaitingHandlersProcess(IMessageMetadata commandMetadata)
         {
             CommandAny(c =>
-            {
-                c.Match()
-                 .With<AllHandlersCompleted>(processComplete =>
-                 {
-                     foreach (var e in processComplete.DomainEvents)
-                     {
-                         var eventMetadata = commandMetadata.CreateChild(e.SourceId, _domainEventProcessEntry);
-                         _publisher.Publish(e, eventMetadata);
-                     }
+                       {
+                           c.Match()
+                            .With<AllHandlersCompleted>(processComplete =>
+                                                        {
+                                                            foreach (var e in processComplete.DomainEvents)
+                                                            {
+                                                                var eventMetadata = commandMetadata.CreateChild(e.SourceId,
+                                                                    _domainEventProcessEntry);
+                                                                _publisher.Publish(e, eventMetadata);
+                                                            }
 
-                     if (processComplete.Fault != null)
-                     {
-                         var faultMetadata = commandMetadata.CreateChild(commandMetadata.MessageId, _domainEventProcessFailEntry);
-                         _publisher.Publish(processComplete.Fault, faultMetadata);
-                     }
+                                                            if (processComplete.Fault != null)
+                                                            {
+                                                                var faultMetadata =
+                                                                    commandMetadata.CreateChild(commandMetadata.MessageId,
+                                                                        _domainEventProcessFailEntry);
+                                                                _publisher.Publish(processComplete.Fault, faultMetadata);
+                                                            }
 
-                     UnbecomeStacked();
-                     Stash.UnstashAll();
-                 })
-                 .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
-                  {
-                      var m = d.Message;
-                      Monitor.IncrementMessagesReceived();
-                      if (m.Exception != null)
-                      {
-                          WaitForFaultProcessedByHandlers(m.Command, m.Exception, d.Metadata);
-                          return;
-                      }
+                                                            UnbecomeStacked();
+                                                            Stash.UnstashAll();
+                                                        })
+                            .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d =>
+                                                                                {
+                                                                                    var m = d.Message;
+                                                                                    Monitor.IncrementMessagesReceived();
+                                                                                    if (m.Exception != null)
+                                                                                    {
+                                                                                        WaitForFaultProcessedByHandlers(
+                                                                                            m.Command,
+                                                                                            m.Exception,
+                                                                                            d.Metadata);
+                                                                                        return;
+                                                                                    }
 
-                      (State as Aggregate).FinishAsyncExecution(m.InvocationId);
-                      PersistState(m.Command, d.Metadata);
-                  })
-                 .Default(o => Stash.Stash());
-            });
+                                                                                    (State as Aggregate).FinishAsyncExecution
+                                                                                        (m.InvocationId);
+                                                                                    PersistState(m.Command, d.Metadata);
+                                                                                })
+                            .Default(o => Stash.Stash());
+                       });
         }
 
         private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata eventCommonMetadata)
@@ -185,8 +177,9 @@ namespace GridDomain.Node.Actors
                 //how to pass aggregate type in this case? 
                 //direct call to method to not postpone process of event scheduling, 
                 //case it can be interrupted by other messages in stash processing errors
-                e.Match().With<FutureEventScheduledEvent>(m => Handle(m, eventCommonMetadata))
-                         .With<FutureEventCanceledEvent>(m => Handle(m, eventCommonMetadata));
+                e.Match()
+                 .With<FutureEventScheduledEvent>(m => Handle(m, eventCommonMetadata))
+                 .With<FutureEventCanceledEvent>(m => Handle(m, eventCommonMetadata));
             }
 
             _customHandlersActor.Ask<AllHandlersCompleted>(envelop)
@@ -204,17 +197,20 @@ namespace GridDomain.Node.Actors
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
             {
-                asyncMethod.ResultProducer.ContinueWith(
-                    t =>
-                    {
-                        var asyncEventsReceived = new AsyncEventsReceived(t.IsFaulted ? null : t.Result, 
-                                                                          cmd, 
-                                                                          asyncMethod.InvocationId,
-                                                                          t.Exception);
+                asyncMethod.ResultProducer.ContinueWith(t =>
+                                                        {
+                                                            var asyncEventsReceived =
+                                                                new AsyncEventsReceived(t.IsFaulted ? null : t.Result,
+                                                                    cmd,
+                                                                    asyncMethod.InvocationId,
+                                                                    t.Exception);
 
-                        return new MessageMetadataEnvelop<AsyncEventsReceived>(asyncEventsReceived, metadata);
-                    })
-                    .PipeTo(Self);
+                                                            return
+                                                                new MessageMetadataEnvelop<AsyncEventsReceived>(
+                                                                    asyncEventsReceived,
+                                                                    metadata);
+                                                        })
+                           .PipeTo(Self);
             }
             extendedAggregate.ClearAsyncUncomittedEvents();
         }
@@ -222,45 +218,46 @@ namespace GridDomain.Node.Actors
         public void Handle(FutureEventScheduledEvent futureEventScheduledEvent, IMessageMetadata messageMetadata)
         {
             var message = futureEventScheduledEvent;
-            Guid scheduleId = message.Id;
-            Guid aggregateId = message.Event.SourceId;
+            var scheduleId = message.Id;
+            var aggregateId = message.Event.SourceId;
 
-            var description = $"Aggregate {typeof(TAggregate).Name} id = {aggregateId} scheduled future event " +
-                              $"{scheduleId} with payload type {message.Event.GetType().Name} on time {message.RaiseTime}\r\n" +
-                              $"Future event: {message.ToPropsString()}";
+            var description = $"Aggregate {typeof(TAggregate).Name} id = {aggregateId} scheduled future event "
+                              + $"{scheduleId} with payload type {message.Event.GetType() .Name} on time {message.RaiseTime}\r\n"
+                              + $"Future event: {message.ToPropsString()}";
 
             var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
 
             var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
             var metadata = messageMetadata.CreateChild(command.Id,
-                                                                new ProcessEntry(GetType().Name, 
-                                                                                 "Scheduling raise future event command",
-                                                                                 "FutureEventScheduled event occured"));
+                new ProcessEntry(GetType()
+                    .Name,
+                    "Scheduling raise future event command",
+                    "FutureEventScheduled event occured"));
 
             var confirmationEventType = typeof(IMessageMetadataEnvelop<>).MakeGenericType(message.Event.GetType());
 
             var scheduleEvent = new ScheduleCommand(command,
-                                                    scheduleKey,
-                                                    new ExtendedExecutionOptions(message.RaiseTime,
-                                                                                 confirmationEventType, 
-                                                                                 message.Event.SourceId,
-                                                                                 nameof(DomainEvent.SourceId)),
-                                                    metadata);
+                scheduleKey,
+                new ExtendedExecutionOptions(message.RaiseTime,
+                    confirmationEventType,
+                    message.Event.SourceId,
+                    nameof(DomainEvent.SourceId)),
+                metadata);
 
-           _schedulerActorRef.Tell(scheduleEvent);
+            _schedulerActorRef.Tell(scheduleEvent);
         }
 
         public static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid aggregateId, string description)
         {
             return new ScheduleKey(scheduleId,
-                                   $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
-                                   $"{typeof(TAggregate).Name}_futureEvents",
-                                   "");
+                $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
+                $"{typeof(TAggregate).Name}_futureEvents",
+                "");
         }
 
         public void Handle(FutureEventCanceledEvent futureEventCanceledEvent, IMessageMetadata metadata)
         {
-            var message = futureEventCanceledEvent; 
+            var message = futureEventCanceledEvent;
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
             _schedulerActorRef.Tell(unscheduleMessage);

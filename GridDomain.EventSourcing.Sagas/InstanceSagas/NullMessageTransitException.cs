@@ -6,7 +6,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public readonly object SagaData;
 
-        public NullMessageTransitException(object sagaData):base("Saga was transitioned by null message")
+        public NullMessageTransitException(object sagaData) : base("Saga was transitioned by null message")
         {
             SagaData = sagaData;
         }

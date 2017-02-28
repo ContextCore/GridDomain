@@ -5,7 +5,6 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.Serialization
 {
-  
     public class Aggregate_can_be_used_for_snapshotting_by_defaut
     {
         private TestAggregate _restoredAggregate;
@@ -13,12 +12,12 @@ namespace GridDomain.Tests.XUnit.Serialization
 
         private class TestAggregate : Aggregate
         {
-            public int Value { get; private set; }
-
-            public TestAggregate(int value, Guid id):base(id)
+            public TestAggregate(int value, Guid id) : base(id)
             {
-               RaiseEvent(new TestAggregateCreatedEvent(id, value));
+                RaiseEvent(new TestAggregateCreatedEvent(id, value));
             }
+
+            public int Value { get; private set; }
 
             private void Apply(TestAggregateCreatedEvent e)
             {
@@ -28,12 +27,12 @@ namespace GridDomain.Tests.XUnit.Serialization
 
             internal class TestAggregateCreatedEvent : DomainEvent
             {
-                public int Value { get; }
-
                 public TestAggregateCreatedEvent(Guid id, int value) : base(id)
                 {
                     Value = value;
                 }
+
+                public int Value { get; }
             }
         }
 
@@ -50,8 +49,8 @@ namespace GridDomain.Tests.XUnit.Serialization
             // Ids_are_equal()
             Assert.Equal(_aggregate.Id, _restoredAggregate.Id);
             //Restored_aggregate_uncommitted_events_are_empty()
-            Assert.Empty(((IAggregate)_restoredAggregate).GetUncommittedEvents());
-           //Restored_aggregate_state_is_equal_to_origin()
+            Assert.Empty(((IAggregate) _restoredAggregate).GetUncommittedEvents());
+            //Restored_aggregate_state_is_equal_to_origin()
             Assert.Equal(_aggregate.Value, _restoredAggregate.Value);
         }
     }

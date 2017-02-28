@@ -3,8 +3,7 @@ using Shop.ReadModel.Context;
 
 namespace Shop.Tests.Unit.OrderAggregate.ProjectionBuilders
 {
-    public class Order_projection_builder_test :
-        ProjectionBuilderTest<ShopDbContext, OrdersProjectionBuilder>
+    public class Order_projection_builder_test : ProjectionBuilderTest<ShopDbContext, OrdersProjectionBuilder>
     {
         public Order_projection_builder_test()
         {

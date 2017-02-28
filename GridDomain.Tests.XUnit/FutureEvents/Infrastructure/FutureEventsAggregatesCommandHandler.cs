@@ -9,6 +9,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
     {
         public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new FutureEventsAggregatesCommandHandler();
+
         public FutureEventsAggregatesCommandHandler()
         {
             Map<ScheduleEventInFutureCommand>((c, a) => a.ScheduleInFuture(c.RaiseTime, c.Value));
@@ -17,7 +18,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
             Map<CancelFutureEventCommand>((c, a) => a.CancelFutureEvents(c.Value));
 
-            Map<ScheduleErrorInFutureCommand>((c, a) => a.ScheduleErrorInFuture(c.RaiseTime,c.Value, c.SuccedOnRetryNum));
+            Map<ScheduleErrorInFutureCommand>((c, a) => a.ScheduleErrorInFuture(c.RaiseTime, c.Value, c.SuccedOnRetryNum));
 
             this.MapFutureEvents();
         }

@@ -13,9 +13,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             var withType = new ExecutionOptions(DateTime.MaxValue, typeof(ScheduledCommandSuccessfullyProcessed));
             var serializer = new DomainSerializer();
             var bytes = serializer.ToBinary(withType);
-            var deserialized = (ExecutionOptions)serializer.FromBinary(bytes, typeof(ExecutionOptions));
+            var deserialized = (ExecutionOptions) serializer.FromBinary(bytes, typeof(ExecutionOptions));
             Assert.True(deserialized.SuccesEventType == withType.SuccesEventType);
         }
-
     }
 }

@@ -11,8 +11,9 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             Id = id;
         }
 
+        public Guid ProcessingId { get; set; }
+
         public Guid Id { get; set; }
         public string CurrentStateName { get; set; }
-        public Guid ProcessingId { get; set; }
     }
 }

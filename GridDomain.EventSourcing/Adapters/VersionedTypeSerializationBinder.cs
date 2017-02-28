@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Adapters
     {
         private readonly IDictionary<Type, int> _typeMaxVersions;
 
-        public VersionedTypeSerializationBinder(IDictionary<Type, int> typeMaxVersions )
+        public VersionedTypeSerializationBinder(IDictionary<Type, int> typeMaxVersions)
         {
             _typeMaxVersions = typeMaxVersions;
         }
@@ -18,11 +18,11 @@ namespace GridDomain.EventSourcing.Adapters
         {
             var versionedTypeName = VersionedTypeName.Parse(typeName);
             var originalTypeFullName = $"{versionedTypeName.OriginalName}, {assemblyName}";
-            var originalType = Type.GetType(originalTypeFullName,false);
+            var originalType = Type.GetType(originalTypeFullName, false);
             if (originalType == null)
                 throw new CantFindTypeException(originalTypeFullName);
 
-            int typeMaxVersion = 0;
+            var typeMaxVersion = 0;
             if (!_typeMaxVersions.TryGetValue(originalType, out typeMaxVersion))
                 throw new CantFindTypeLatestVersionException(originalType);
 

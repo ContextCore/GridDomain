@@ -20,8 +20,8 @@ namespace GridDomain.Tests.Framework
 
         public override void CompareType(CompareParms parms)
         {
-            var st1 = (DateTimeOffset)parms.Object1;
-            var st2 = (DateTimeOffset)parms.Object2;
+            var st1 = (DateTimeOffset) parms.Object1;
+            var st2 = (DateTimeOffset) parms.Object2;
 
             if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta)
             {

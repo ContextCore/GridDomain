@@ -12,9 +12,9 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 {
     public abstract class AkkaWaiterTest : IDisposable
     {
-        private LocalAkkaEventBusTransport _transport;
-        private ActorSystem _actorSystem;
-        private Task<IWaitResults> _results;
+        private readonly ActorSystem _actorSystem;
+        private readonly Task<IWaitResults> _results;
+        private readonly LocalAkkaEventBusTransport _transport;
 
         //Configure()
         protected AkkaWaiterTest()
@@ -25,7 +25,9 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             _results = ConfigureWaiter(Waiter);
         }
 
-        protected abstract Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter);
+        protected AkkaMessageLocalWaiter Waiter { get; }
+
+        public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(50);
 
         public void Dispose()
         {
@@ -33,7 +35,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
                         .Wait();
         }
 
-        protected AkkaMessageLocalWaiter Waiter { get; }
+        protected abstract Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter);
 
         protected void Publish(params object[] messages)
         {
@@ -60,8 +62,6 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
             var e = Assert.ThrowsAsync<TimeoutException>(() => ExpectMsg(msg));
         }
-
-        public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(50);
 
         protected void ExpectNoMsg()
         {

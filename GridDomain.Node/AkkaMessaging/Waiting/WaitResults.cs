@@ -9,6 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             All = allReceivedMessages;
         }
+
         public IReadOnlyCollection<object> All { get; }
     }
 }

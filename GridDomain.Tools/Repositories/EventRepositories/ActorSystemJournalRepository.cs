@@ -25,13 +25,6 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             _system = config;
         }
 
-        public static ActorSystemEventRepository New(AkkaConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
-        {
-            var actorSystem = conf.CreateSystem();
-            actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);
-            return new ActorSystemEventRepository(actorSystem);
-        }
-
         public async Task Save(string id, params object[] messages)
         {
             var persistActor = CreateEventsPersistActor(id);
@@ -44,25 +37,6 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             {
                 await TerminateActor(persistActor);
             }
-        }
-
-        private async Task TerminateActor(IActorRef persistActor)
-        {
-            var inbox = Inbox.Create(_system);
-
-            inbox.Watch(persistActor);
-            persistActor.Tell(PoisonPill.Instance);
-            var terminated = await inbox.ReceiveAsync();
-
-            if (!(terminated is Terminated))
-                throw new InvalidOperationException();
-        }
-        
-        private IActorRef CreateEventsPersistActor(string id)
-        {
-            var props = Props.Create(() => new EventsRepositoryActor(id));
-            var persistActor = _system.ActorOf(props, "Test_events_persist_actor_"+ Guid.NewGuid());
-            return persistActor;
         }
 
         public async Task<object[]> Load(string id)
@@ -81,8 +55,32 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             }
         }
 
-        public void Dispose()
+        public void Dispose() {}
+
+        public static ActorSystemEventRepository New(AkkaConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
         {
+            var actorSystem = conf.CreateSystem();
+            actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);
+            return new ActorSystemEventRepository(actorSystem);
+        }
+
+        private async Task TerminateActor(IActorRef persistActor)
+        {
+            var inbox = Inbox.Create(_system);
+
+            inbox.Watch(persistActor);
+            persistActor.Tell(PoisonPill.Instance);
+            var terminated = await inbox.ReceiveAsync();
+
+            if (!(terminated is Terminated))
+                throw new InvalidOperationException();
+        }
+
+        private IActorRef CreateEventsPersistActor(string id)
+        {
+            var props = Props.Create(() => new EventsRepositoryActor(id));
+            var persistActor = _system.ActorOf(props, "Test_events_persist_actor_" + Guid.NewGuid());
+            return persistActor;
         }
     }
 }

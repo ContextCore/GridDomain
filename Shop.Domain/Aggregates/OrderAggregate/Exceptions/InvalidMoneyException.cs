@@ -2,7 +2,5 @@ using GridDomain.EventSourcing;
 
 namespace Shop.Domain.Aggregates.OrderAggregate.Exceptions
 {
-    public class InvalidMoneyException : DomainException
-    {
-    }
+    public class InvalidMoneyException : DomainException {}
 }

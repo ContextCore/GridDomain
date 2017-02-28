@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.CQRS;
@@ -18,27 +14,27 @@ using GridDomain.Tests.XUnit.SampleDomain;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
-using Ploeh.AutoFixture;
 
 namespace GridGomain.Tests.Stress
 {
     public class Program
     {
-      
         public static void Main(params string[] args)
         {
             //RawCommandExecution(1, 1000, 20);
 
             var system = ActorSystem.Create("test");
             var actor = system.ActorOf(Props.Create(() => new TestLogActor()));
-            actor.Ask<string>("hi").Wait();
+            actor.Ask<string>("hi")
+                 .Wait();
 
             Console.WriteLine("Sleeping");
             Console.ReadKey();
         }
 
-        private static void RawCommandExecution(int totalAggregateScenariosCount, int aggregateScenarioPackSize, int aggregateChangeAmount)
+        private static void RawCommandExecution(int totalAggregateScenariosCount,
+                                                int aggregateScenarioPackSize,
+                                                int aggregateChangeAmount)
         {
             var dbCfg = new AutoTestAkkaConfiguration();
 
@@ -57,8 +53,7 @@ namespace GridGomain.Tests.Stress
             var unityContainer = new UnityContainer();
             unityContainer.Register(new SampleDomainContainerConfiguration());
 
-            var cfg = new CustomContainerConfiguration(
-                c => c.Register(new SampleDomainContainerConfiguration()),
+            var cfg = new CustomContainerConfiguration(c => c.Register(new SampleDomainContainerConfiguration()),
                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                 c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
@@ -67,27 +62,29 @@ namespace GridGomain.Tests.Stress
             var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
-            node.Start().Wait();
+            node.Start()
+                .Wait();
 
             var timer = new Stopwatch();
             timer.Start();
 
-            int timeoutedCommads = 0;
+            var timeoutedCommads = 0;
             var random = new Random();
             var commandsInScenario = aggregateScenarioPackSize*(aggregateChangeAmount + 1);
             var totalCommandsToIssue = commandsInScenario*totalAggregateScenariosCount;
 
 
-            for (int i = 0; i < totalAggregateScenariosCount; i ++)
+            for (var i = 0; i < totalAggregateScenariosCount; i ++)
             {
                 var packTimer = new Stopwatch();
                 packTimer.Start();
                 var tasks = Enumerable.Range(0, aggregateScenarioPackSize)
-                    .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
-                    .ToArray();
+                                      .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
+                                      .ToArray();
                 try
                 {
-                    Task.WhenAll(tasks).Wait();
+                    Task.WhenAll(tasks)
+                        .Wait();
                 }
                 catch
                 {
@@ -98,15 +95,15 @@ namespace GridGomain.Tests.Stress
                 var speed = (decimal) (commandsInScenario/packTimer.Elapsed.TotalSeconds);
                 var timeLeft = TimeSpan.FromSeconds((double) ((totalCommandsToIssue - i*commandsInScenario)/speed));
 
-                Console.WriteLine($"speed :{speed} cmd/sec," +
-                                  $"total errors: {timeoutedCommads}, " +
-                                  $"total commands executed: {i*commandsInScenario}/{totalCommandsToIssue}," +
-                                  $"approx time remaining: {timeLeft}");
+                Console.WriteLine($"speed :{speed} cmd/sec," + $"total errors: {timeoutedCommads}, "
+                                  + $"total commands executed: {i*commandsInScenario}/{totalCommandsToIssue},"
+                                  + $"approx time remaining: {timeLeft}");
             }
 
 
             timer.Stop();
-            node.Stop().Wait();
+            node.Stop()
+                .Wait();
 
             var speedTotal = (decimal) (totalCommandsToIssue/timer.Elapsed.TotalSeconds);
             Console.WriteLine(
@@ -131,8 +128,7 @@ namespace GridGomain.Tests.Stress
             var unityContainer = new UnityContainer();
             unityContainer.Register(new SampleDomainContainerConfiguration());
 
-            var cfg = new CustomContainerConfiguration(
-                c => c.Register(new SampleDomainContainerConfiguration()),
+            var cfg = new CustomContainerConfiguration(c => c.Register(new SampleDomainContainerConfiguration()),
                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                 c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
@@ -141,7 +137,8 @@ namespace GridGomain.Tests.Stress
             var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
-            node.Start().Wait();
+            node.Start()
+                .Wait();
             return node;
         }
 
@@ -169,9 +166,11 @@ namespace GridGomain.Tests.Stress
 
             for (var num = 0; num < changeNumber; num++)
             {
-                await node.Prepare(new ChangeSampleAggregateCommand(random.Next(), new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
-                                               .Expect<SampleAggregateChangedEvent>()
-                                               .Execute();
+                await
+                    node.Prepare(new ChangeSampleAggregateCommand(random.Next(),
+                        new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
+                        .Expect<SampleAggregateChangedEvent>()
+                        .Execute();
             }
         }
     }

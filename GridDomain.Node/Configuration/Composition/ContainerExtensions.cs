@@ -1,10 +1,6 @@
-using System.Linq;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node.Actors;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -16,7 +12,8 @@ namespace GridDomain.Node.Configuration.Composition
             configuration.Register(container);
         }
 
-        public static void RegisterAggregate<TAggregate, TCommandsHandler>(this IUnityContainer container) where TCommandsHandler :IAggregateCommandsHandler<TAggregate> where TAggregate : AggregateBase
+        public static void RegisterAggregate<TAggregate, TCommandsHandler>(this IUnityContainer container)
+            where TCommandsHandler : IAggregateCommandsHandler<TAggregate> where TAggregate : AggregateBase
         {
             new AggregateConfiguration<TAggregate, TCommandsHandler>().Register(container);
         }

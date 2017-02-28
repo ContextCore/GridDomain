@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
@@ -16,18 +14,34 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.Framework.Configuration;
 using Serilog;
 using Serilog.Events;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit
 {
-
     public class NodeTestFixture : IDisposable
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
-        public GridDomainNode Node { get; private set; }
+
+        private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();
+        private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
 
         private ActorSystem _system;
+
+        public NodeTestFixture(IContainerConfiguration containerConfiguration = null,
+                               IMessageRouteMap map = null,
+                               TimeSpan? defaultTimeout = null,
+                               ITestOutputHelper helper = null)
+        {
+            if (map != null)
+                Add(map);
+            if (containerConfiguration != null)
+                Add(containerConfiguration);
+
+            DefaultTimeout = defaultTimeout ?? DefaultTimeout;
+            Output = helper;
+        }
+
+        public GridDomainNode Node { get; private set; }
 
         public ActorSystem System
         {
@@ -42,16 +56,19 @@ namespace GridDomain.Tests.XUnit
         public string Name => AkkaConfig.Network.SystemName;
         internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(3);
         public ITestOutputHelper Output { get; set; }
-
-        private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();
-        private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
         public LogEventLevel LogLevel { get; set; } = LogEventLevel.Verbose;
+
+        public void Dispose()
+        {
+            Node.Stop()
+                .Wait();
+        }
 
         public virtual LoggerConfiguration CreateLoggerConfiguration(ITestOutputHelper helper)
         {
-          return new XUnitAutoTestLoggerConfiguration(helper, LogLevel);
-        } 
-     
+            return new XUnitAutoTestLoggerConfiguration(helper, LogLevel);
+        }
+
         public void Add(IMessageRouteMap map)
         {
             _routeMap.Add(map);
@@ -65,20 +82,6 @@ namespace GridDomain.Tests.XUnit
         public string GetConfig()
         {
             return InMemory ? AkkaConfig.ToStandAloneInMemorySystemConfig() : AkkaConfig.ToStandAloneSystemConfig();
-        }
-
-        public NodeTestFixture(IContainerConfiguration containerConfiguration = null,
-                               IMessageRouteMap map = null,
-                               TimeSpan? defaultTimeout = null,
-                               ITestOutputHelper helper = null)
-        {
-            if (map != null)
-                Add(map);
-            if (containerConfiguration != null)
-                Add(containerConfiguration);
-
-            DefaultTimeout = defaultTimeout ?? DefaultTimeout;
-            Output = helper;
         }
 
         public async Task<GridDomainNode> CreateNode()
@@ -104,7 +107,10 @@ namespace GridDomain.Tests.XUnit
                 new CompositeRouteMap(_routeMap.ToArray()),
                 () => new[] {System})
                            {
-                               QuartzConfig =  InMemory ? (IQuartzConfig)new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
+                               QuartzConfig =
+                                   InMemory
+                                       ? (IQuartzConfig) new InMemoryQuartzConfig()
+                                       : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger
                            };
@@ -114,22 +120,16 @@ namespace GridDomain.Tests.XUnit
 
         private async Task CreateLogger()
         {
-            Logger = CreateLoggerConfiguration(Output).CreateLogger();
+            Logger = CreateLoggerConfiguration(Output)
+                .CreateLogger();
 
-            var extSystem = (ExtendedActorSystem)System;
-            var logActor =
-                extSystem.SystemActorOf(
-                    Props.Create(() => new SerilogLoggerActor(Logger)),
-                    "node-log-test");
+            var extSystem = (ExtendedActorSystem) System;
+            var logActor = extSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(Logger)), "node-log-test");
 
             await logActor.Ask<LoggerInitialized>(new InitializeLogger(System.EventStream));
         }
+
         public event EventHandler OnNodeStartedEvent = delegate { };
         public event EventHandler OnNodeCreatedEvent = delegate { };
-
-        public void Dispose()
-        {
-            Node.Stop().Wait();
-        }
     }
 }

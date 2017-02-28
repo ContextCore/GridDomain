@@ -4,7 +4,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate.Commands
 {
     public class CreateOrderCommand : OrderCommand
     {
-        public CreateOrderCommand(Guid orderId, Guid userId):base(orderId)
+        public CreateOrderCommand(Guid orderId, Guid userId) : base(orderId)
         {
             UserId = userId;
         }

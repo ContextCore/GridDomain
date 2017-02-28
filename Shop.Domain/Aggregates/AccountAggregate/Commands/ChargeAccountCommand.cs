@@ -6,7 +6,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate.Commands
 {
     public class ChargeAccountCommand : Command
     {
-        protected ChargeAccountCommand(Guid accountId, Money amount):base(accountId)
+        protected ChargeAccountCommand(Guid accountId, Money amount) : base(accountId)
         {
             Amount = amount;
         }

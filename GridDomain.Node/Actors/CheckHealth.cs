@@ -1,14 +1,14 @@
 namespace GridDomain.Node.Actors
 {
-    class CheckHealth
+    internal class CheckHealth
     {
-        public string Payload {get;}
+        public static CheckHealth Instance = new CheckHealth();
 
         public CheckHealth(string payload = null)
         {
-            this.Payload = payload;
+            Payload = payload;
         }
 
-        public static CheckHealth Instance = new CheckHealth();
+        public string Payload { get; }
     }
 }

@@ -1,7 +1,5 @@
 using System;
-using System.Net.Mime;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel.Context;
 
@@ -24,18 +22,11 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
 
         [Test]
-        public void Then_history_new_row_is_added()
-        {
-            using (var context = ContextFactory())
-                Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, (long)2));
-        }
-
-        [Test]
         public void Then_history_fields_are_filled()
         {
             using (var context = ContextFactory())
             {
-                var row = context.StockHistory.Find(_stockAddedEvent.SourceId, (long)2);
+                var row = context.StockHistory.Find(_stockAddedEvent.SourceId, (long) 2);
 
                 Assert.AreEqual(2, row.Number);
                 Assert.AreEqual(_stockAddedEvent.SourceId, row.StockId);
@@ -53,6 +44,13 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
 
         [Test]
+        public void Then_history_new_row_is_added()
+        {
+            using (var context = ContextFactory())
+                Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, (long) 2));
+        }
+
+        [Test]
         public void Then_stock_entry_is_renewed()
         {
             using (var context = ContextFactory())
@@ -65,4 +63,3 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         }
     }
 }
-

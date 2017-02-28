@@ -18,12 +18,18 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
             var agregateValue = "initial";
             var aggregate = new SampleAggregate(aggregateId, agregateValue);
 
-            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog())))
+            using (
+                var repo =
+                    new AggregateRepository(ActorSystemJournalRepository.New(new AutoTestAkkaConfiguration(),
+                        new EventsAdaptersCatalog())))
             {
                 await repo.Save(aggregate);
             }
 
-            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog())))
+            using (
+                var repo =
+                    new AggregateRepository(ActorSystemJournalRepository.New(new AutoTestAkkaConfiguration(),
+                        new EventsAdaptersCatalog())))
             {
                 aggregate = await repo.LoadAggregate<SampleAggregate>(aggregate.Id);
             }

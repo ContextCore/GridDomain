@@ -5,7 +5,7 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
 {
     public class TestCommand : Command
     {
-        public TestCommand(int parameter, Guid aggregateId):base(aggregateId)
+        public TestCommand(int parameter, Guid aggregateId) : base(aggregateId)
         {
             Parameter = parameter;
         }

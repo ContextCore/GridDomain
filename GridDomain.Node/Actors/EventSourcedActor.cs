@@ -1,91 +1,88 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
-using Akka.Event;
 using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
-using GridDomain.Logging;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    public class EventSourcedActor<T> : ReceivePersistentActor where T: AggregateBase
+    public class EventSourcedActor<T> : ReceivePersistentActor where T : AggregateBase
     {
-        private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
-        protected Guid Id { get; }
-        private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
-        protected readonly ActorMonitor Monitor;
         private readonly IConstructAggregates _aggregateConstructor;
-        public override string PersistenceId { get; }
-        public IAggregate State { get; protected set; }
+        private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
+        private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
+        private readonly TimeSpan _terminateWaitPeriod = TimeSpan.FromSeconds(1);
+        protected readonly ActorMonitor Monitor;
 
         private int _terminateWaitCount = 3;
-        private readonly TimeSpan _terminateWaitPeriod = TimeSpan.FromSeconds(1);
 
-
-        public EventSourcedActor(IConstructAggregates aggregateConstructor,
-                                 ISnapshotsPersistencePolicy policy)
+        public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
             _aggregateConstructor = aggregateConstructor;
 
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
-            State = (AggregateBase)aggregateConstructor.Build(typeof(T), Id, null);
+            Id = AggregateActorName.Parse<T>(Self.Path.Name)
+                                   .Id;
+            State = (AggregateBase) aggregateConstructor.Build(typeof(T), Id, null);
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 
             Command<GracefullShutdownRequest>(req =>
-            {
-                Log.Debug("{Actor} received shutdown request", PersistenceId);
-                Monitor.IncrementMessagesReceived();
-                BecomeStacked(Terminating);
-            });
+                                              {
+                                                  Log.Debug("{Actor} received shutdown request", PersistenceId);
+                                                  Monitor.IncrementMessagesReceived();
+                                                  BecomeStacked(Terminating);
+                                              });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
             Command<SaveSnapshotSuccess>(s =>
-            {
-                NotifyPersistenceWatchers(s);
-                _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr, BusinessDateTime.UtcNow);
-            });
+                                         {
+                                             NotifyPersistenceWatchers(s);
+                                             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
+                                                 BusinessDateTime.UtcNow);
+                                         });
 
             Command<NotifyOnPersistenceEvents>(c =>
-            {
-                var waiter = c.Waiter ?? Sender;
-                if (IsRecoveryFinished)
-                    waiter.Tell(RecoveryCompleted.Instance);
+                                               {
+                                                   var waiter = c.Waiter ?? Sender;
+                                                   if (IsRecoveryFinished)
+                                                       waiter.Tell(RecoveryCompleted.Instance);
 
-                 _persistenceWatchers.Add(waiter);
-                Sender.Tell(SubscribeAck.Instance);
-            });
+                                                   _persistenceWatchers.Add(waiter);
+                                                   Sender.Tell(SubscribeAck.Instance);
+                                               });
 
-            Recover<DomainEvent>(e =>
-            {
-                State.ApplyEvent(e);
-            });
+            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
-            {
-                _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
-                State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
-            });
+                                   {
+                                       _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
+                                       State = _aggregateConstructor.Build(typeof(T), Id, (IMemento) offer.Snapshot);
+                                   });
 
             Recover<RecoveryCompleted>(message =>
-            {
-                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                NotifyPersistenceWatchers(message);
-            });
+                                       {
+                                           Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                                           NotifyPersistenceWatchers(message);
+                                       });
         }
+
+        protected Guid Id { get; }
+        public override string PersistenceId { get; }
+        public IAggregate State { get; protected set; }
 
         protected bool TrySaveSnapshot()
         {
-            return _snapshotsPolicy.TrySave(() => SaveSnapshot(State.GetSnapshot()), SnapshotSequenceNr, BusinessDateTime.UtcNow);
+            return _snapshotsPolicy.TrySave(() => SaveSnapshot(State.GetSnapshot()),
+                SnapshotSequenceNr,
+                BusinessDateTime.UtcNow);
         }
 
         protected void NotifyPersistenceWatchers(object msg)
@@ -96,39 +93,39 @@ namespace GridDomain.Node.Actors
 
         protected virtual void Terminating()
         {
-             //for case when we in process of saving snapshot or events
-             Command<DeleteSnapshotsSuccess>(s => StopNow(s));
-             Command<DeleteSnapshotsFailure>(s => StopNow(s));
-             Command<CancelShutdownRequest>(s =>
-                                            {
-                                                UnbecomeStacked();
-                                                Stash.UnstashAll();
-                                                Log.Info("Aborting shutdown, will resume activity");
-                                                Sender.Tell(ShutdownCanceled.Instance);
-                                            });
+            //for case when we in process of saving snapshot or events
+            Command<DeleteSnapshotsSuccess>(s => StopNow(s));
+            Command<DeleteSnapshotsFailure>(s => StopNow(s));
+            Command<CancelShutdownRequest>(s =>
+                                           {
+                                               UnbecomeStacked();
+                                               Stash.UnstashAll();
+                                               Log.Info("Aborting shutdown, will resume activity");
+                                               Sender.Tell(ShutdownCanceled.Instance);
+                                           });
 
-             Command<GracefullShutdownRequest>(s =>
-                                               {
-                                                    if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
-                                                   {
-                                                       Log.Debug("started snapshots delete");
-                                                       return;
-                                                   }   
+            Command<GracefullShutdownRequest>(s =>
+                                              {
+                                                  if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
+                                                  {
+                                                      Log.Debug("started snapshots delete");
+                                                      return;
+                                                  }
 
-                                                   Log.Debug("Unsaved snapshots found");
-                                                   if (--_terminateWaitCount < 0) return;
+                                                  Log.Debug("Unsaved snapshots found");
+                                                  if (--_terminateWaitCount < 0) return;
 
-                                                   Log.Debug("Will retry to delete snapshots in {time}, times left:{times}",
-                                                       _terminateWaitPeriod,
-                                                       _terminateWaitCount);
+                                                  Log.Debug("Will retry to delete snapshots in {time}, times left:{times}",
+                                                      _terminateWaitPeriod,
+                                                      _terminateWaitCount);
 
-                                                   Context.System.Scheduler.ScheduleTellOnce(_terminateWaitPeriod,
-                                                       Self,
-                                                       GracefullShutdownRequest.Instance,
-                                                       Self);
-                                               }); 
+                                                  Context.System.Scheduler.ScheduleTellOnce(_terminateWaitPeriod,
+                                                      Self,
+                                                      GracefullShutdownRequest.Instance,
+                                                      Self);
+                                              });
             //start terminateion process
-            Self.Tell(GracefullShutdownRequest.Instance);     
+            Self.Tell(GracefullShutdownRequest.Instance);
         }
 
         private void StopNow(object s)

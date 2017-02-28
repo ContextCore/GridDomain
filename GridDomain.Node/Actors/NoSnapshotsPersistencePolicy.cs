@@ -11,13 +11,9 @@ namespace GridDomain.Node.Actors
             return true;
         }
 
-        public void MarkSnapshotApplied(long sequenceNr)
-        {
-        }
+        public void MarkSnapshotApplied(long sequenceNr) {}
 
-        public void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null)
-        {
-        }
+        public void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null) {}
 
         public bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null)
         {

@@ -16,7 +16,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.ProjectionBuilders
 
         public Task Handle(BalanceChangedEvent_V0 msg)
         {
-            _publisher.Publish(new BalanceAggregateChangedEventNotification() { AggregateId = msg.SourceId} );
+            _publisher.Publish(new BalanceAggregateChangedEventNotification {AggregateId = msg.SourceId});
             return Task.CompletedTask;
         }
     }

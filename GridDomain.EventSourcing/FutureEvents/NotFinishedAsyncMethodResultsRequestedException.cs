@@ -2,7 +2,5 @@
 
 namespace GridDomain.EventSourcing.FutureEvents
 {
-    public class NotFinishedAsyncMethodResultsRequestedException : Exception
-    {
-    }
+    public class NotFinishedAsyncMethodResultsRequestedException : Exception {}
 }

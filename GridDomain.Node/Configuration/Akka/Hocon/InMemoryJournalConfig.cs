@@ -17,7 +17,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                     inmem {
                             class = ""Akka.Persistence.Journal.MemoryJournal, Akka.Persistence""
                             plugin-dispatcher = ""akka.actor.default-dispatcher""
-                            "+ _eventAdaptersConfig.Build() + @"
+                            " + _eventAdaptersConfig.Build() + @"
                                 }
                         }
 ";

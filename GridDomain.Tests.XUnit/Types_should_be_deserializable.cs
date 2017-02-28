@@ -18,9 +18,14 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit
 {
-    
     public class Types_should_be_deserializable : TypesDeserializationTest
     {
+        public Types_should_be_deserializable()
+        {
+            Fixture.Register<ICommand>(() => new FakeCommand());
+            Fixture.Register<Command>(() => new FakeCommand());
+        }
+
         protected override IEnumerable<Type> ExcludeTypes
         {
             get
@@ -31,68 +36,56 @@ namespace GridDomain.Tests.XUnit
             }
         }
 
-        public Types_should_be_deserializable()
+        private class FakeCommand : Command
         {
-            Fixture.Register<ICommand>(() => new FakeCommand());
-            Fixture.Register<Command>(() => new FakeCommand());
+            public FakeCommand() : base(Guid.NewGuid()) {}
         }
 
-        class FakeCommand : Command
-        {
-            public FakeCommand():base(Guid.NewGuid())
-            {
-                
-            } 
-        }
-       [Fact]
-        public void Generic_domain_classes_should_be_deserializable()
-        {
-            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>),
-                             typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>)
-                            );
-        }
+        protected override Assembly[] AllAssemblies { get; } = {
+                                                                   Assembly.GetAssembly(typeof(GridDomainNode)),
+                                                                   Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
+                                                                   Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
+                                                                   Assembly.GetAssembly(typeof(SampleAggregate)),
+                                                                   Assembly.GetAssembly(typeof(ISagaProducer<>)),
+                                                                   Assembly.GetAssembly(typeof(DomainEvent)),
+                                                                   Assembly.GetAssembly(typeof(ExecutionOptions))
+                                                               };
 
-       [Fact]
-        public void MessageMetadata_classes_should_be_deserializable()
-        {
-            CheckAll<object>(typeof(MessageMetadata));
-        }
-
-       [Fact]
-        public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
-        {
-            CheckAll<object>(typeof(ExecutionOptions),
-                             typeof(ExtendedExecutionOptions),
-                             typeof(ScheduleKey));
-        }
-       
-       [Fact]
+        [Fact]
         public void Aggregates_from_all_assemblies_should_be_deserializable()
         {
             CheckAllChildrenOf<IAggregate>(AllAssemblies);
         }
 
-       [Fact]
-        public void DomainEvents_from_all_assemblies_should_be_deserializable()
-        {
-            CheckAllChildrenOf<DomainEvent>(AllAssemblies);
-        }
-
-       [Fact]
+        [Fact]
         public void Commands_from_all_assemblies_should_be_deserializable()
         {
             CheckAllChildrenOf<ICommand>(AllAssemblies);
         }
 
-        protected override Assembly[] AllAssemblies { get; } =
-            {
-                Assembly.GetAssembly(typeof(GridDomainNode)),
-                Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
-                Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
-                Assembly.GetAssembly(typeof(SampleAggregate)),
-                Assembly.GetAssembly(typeof(ISagaProducer<>)),
-                Assembly.GetAssembly(typeof(DomainEvent)),
-                Assembly.GetAssembly(typeof(ExecutionOptions))
-            };
+        [Fact]
+        public void DomainEvents_from_all_assemblies_should_be_deserializable()
+        {
+            CheckAllChildrenOf<DomainEvent>(AllAssemblies);
+        }
+
+        [Fact]
+        public void Generic_domain_classes_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>),
+                typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>));
+        }
+
+        [Fact]
+        public void MessageMetadata_classes_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(MessageMetadata));
+        }
+
+        [Fact]
+        public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
+        {
+            CheckAll<object>(typeof(ExecutionOptions), typeof(ExtendedExecutionOptions), typeof(ScheduleKey));
+        }
     }
 }

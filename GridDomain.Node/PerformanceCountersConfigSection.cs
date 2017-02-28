@@ -2,7 +2,8 @@ using System.Configuration;
 
 namespace GridDomain.Node
 {
-    public class PerformanceCountersConfigSection : ConfigurationSection, IPerformanceCountersConfiguration
+    public class PerformanceCountersConfigSection : ConfigurationSection,
+                                                    IPerformanceCountersConfiguration
     {
         public const string SectionName = "perfcounters";
         private const string EnabledPropertyName = "enabled";
@@ -13,7 +14,7 @@ namespace GridDomain.Node
         [ConfigurationProperty(EnabledPropertyName)]
         public bool IsEnabled
         {
-            get { return (bool)this[EnabledPropertyName]; }
+            get { return (bool) this[EnabledPropertyName]; }
             set { this[EnabledPropertyName] = value; }
         }
     }

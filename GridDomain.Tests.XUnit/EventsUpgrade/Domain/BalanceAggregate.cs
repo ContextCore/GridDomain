@@ -6,15 +6,13 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
 {
     public class BalanceAggregate : Aggregate
     {
-        private BalanceAggregate(Guid id) : base(id)
-        {
-            
-        }
+        public decimal Amount;
 
+        private BalanceAggregate(Guid id) : base(id) {}
 
-        public  BalanceAggregate(Guid id, decimal value):this(id)
+        public BalanceAggregate(Guid id, decimal value) : this(id)
         {
-            RaiseEvent(new AggregateCreatedEvent(value,id));
+            RaiseEvent(new AggregateCreatedEvent(value, id));
         }
 
         public void ChangeState(int number)
@@ -24,10 +22,10 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
 
         public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
         {
-            if(oldVersion)
+            if (oldVersion)
                 RaiseEvent(new BalanceChangedEvent_V0(number, Id), when);
             else
-                RaiseEvent(new BalanceChangedEvent_V1(number,Id), when);
+                RaiseEvent(new BalanceChangedEvent_V1(number, Id), when);
         }
 
         private void Apply(AggregateCreatedEvent e)
@@ -35,13 +33,10 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
             Id = e.SourceId;
             Amount = e.Value;
         }
-        
+
         private void Apply(BalanceChangedEvent_V1 e)
         {
             Amount += e.AmountChange;
         }
-
-        public decimal Amount;
-
     }
 }

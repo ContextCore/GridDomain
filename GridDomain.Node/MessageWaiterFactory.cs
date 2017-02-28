@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
-using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -20,7 +19,7 @@ namespace GridDomain.Node
         public IActorTransport Transport { get; }
         public TimeSpan DefaultTimeout { get; }
         public ActorSystem System { get; }
-        
+
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return new AkkaMessageLocalWaiter(System, Transport, defaultTimeout ?? DefaultTimeout);

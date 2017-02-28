@@ -3,7 +3,7 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Tests.Framework
 {
-   public class PersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
+    public class PersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
     {
         public PersistentChildsRecycleConfiguration(TimeSpan childClearPeriod, TimeSpan childMaxInactiveTime)
         {

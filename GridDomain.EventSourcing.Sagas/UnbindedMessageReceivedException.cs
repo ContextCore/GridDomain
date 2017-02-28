@@ -4,7 +4,6 @@ namespace GridDomain.EventSourcing.Sagas
 {
     public class UnbindedMessageReceivedException : Exception
     {
-        public Type FailedType { get; }
         public readonly object Msg;
 
         public UnbindedMessageReceivedException(object message, Type failedType = null)
@@ -12,5 +11,7 @@ namespace GridDomain.EventSourcing.Sagas
             FailedType = failedType;
             Msg = message;
         }
+
+        public Type FailedType { get; }
     }
 }

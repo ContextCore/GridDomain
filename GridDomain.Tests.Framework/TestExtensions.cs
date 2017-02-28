@@ -12,14 +12,15 @@ namespace GridDomain.Tests.Framework
         {
             var totalLength = collection.Count();
             var elemIndex = Rnd.Next(0, totalLength);
-            return collection.Skip(elemIndex - 1).FirstOrDefault();
+            return collection.Skip(elemIndex - 1)
+                             .FirstOrDefault();
         }
 
         public static DateTime RandomTime(DateTime from, DateTime till)
         {
             if (till > from) throw new ArgumentOutOfRangeException();
 
-            var randomTime = till.AddDays(Rnd.Next(0, (int) (@from - till).TotalDays));
+            var randomTime = till.AddDays(Rnd.Next(0, (int) (from - till).TotalDays));
             return randomTime;
         }
 
@@ -35,6 +36,7 @@ namespace GridDomain.Tests.Framework
                 list[n] = value;
             }
         }
+
         public static bool IsIncreasing<TElem>(this IList<TElem> elements, Func<TElem, int> valueSelector)
         {
             var firstElement = elements.FirstOrDefault();

@@ -2,7 +2,5 @@ using System;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class IdParseException : Exception
-    {
-    }
+    public class IdParseException : Exception {}
 }

@@ -14,8 +14,14 @@ using Shop.Infrastructure;
 namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 {
     [TestFixture]
-    public class Completed_order_test : AggregateCommandsTest<Order,OrderCommandsHandler>
+    public class Completed_order_test : AggregateCommandsTest<Order, OrderCommandsHandler>
     {
+        [SetUp]
+        public void Given_completed_order()
+        {
+            Init();
+        }
+
         protected override OrderCommandsHandler CreateCommandsHandler()
         {
             return new OrderCommandsHandler(new InMemorySequenceProvider());
@@ -27,10 +33,23 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
             yield return new OrderCompleted(Aggregate.Id, OrderStatus.Paid);
         }
 
-        [SetUp]
-        public void Given_completed_order()
+        [Test]
+        public void When_completed_order_try_add_items_it_throws_exeption()
         {
-            Init();
+            Assert.Throws<CantAddItemsToClosedOrder>(() =>
+                                                     {
+                                                         var cmd = new AddItemToOrderCommand(Aggregate.Id,
+                                                             Guid.NewGuid(),
+                                                             123,
+                                                             new Money(1));
+                                                         Execute(cmd);
+                                                     });
+        }
+
+        [Test]
+        public void When_completed_order_try_complete_it_throws_exeption()
+        {
+            Assert.Throws<CannotCompleteAlreadyClosedOrderException>(() => Execute(new CompleteOrderCommand(Aggregate.Id)));
         }
 
         [Test]
@@ -38,27 +57,5 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
         {
             Assert.AreEqual(OrderStatus.Paid, Aggregate.Status);
         }
-
-        [Test]
-        public void When_completed_order_try_complete_it_throws_exeption()
-        {
-            Assert.Throws<CannotCompleteAlreadyClosedOrderException>(() =>
-                Execute(new CompleteOrderCommand(Aggregate.Id)));
-        }
-
-        [Test]
-        public void When_completed_order_try_add_items_it_throws_exeption()
-        {
-            Assert.Throws<CantAddItemsToClosedOrder>(() =>
-            {
-                var cmd = new AddItemToOrderCommand(Aggregate.Id,
-                                                    Guid.NewGuid(),
-                                                    123,
-                                                    new Money(1));
-                Execute(cmd);
-            });
-        }
-        
-   
     }
 }

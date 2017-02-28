@@ -1,21 +1,10 @@
 using System;
-using System.IO;
-using System.Runtime.ExceptionServices;
-using System.Runtime.Serialization;
-using System.Text;
 using Akka.Actor;
 using Akka.Serialization;
-using Akka.Util;
-using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Adapters;
-using GridDomain.Logging;
-using Newtonsoft.Json;
-using DomainSerializer = GridDomain.EventSourcing.DomainSerializer;
 
 namespace GridDomain.Node
 {
-
     internal class DomainEventsJsonAkkaSerializer : Serializer
     {
         internal readonly Lazy<DomainSerializer> Serializer;
@@ -23,35 +12,35 @@ namespace GridDomain.Node
         public DomainEventsJsonAkkaSerializer(ExtendedActorSystem system) : base(system)
         {
             Serializer = new Lazy<DomainSerializer>(() =>
-            {
-                var ext = system.GetExtension<DomainEventsJsonSerializationExtension>();
-                if (ext == null)
-                    throw new ArgumentNullException(nameof(ext),
-                        $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
+                                                    {
+                                                        var ext =
+                                                            system.GetExtension<DomainEventsJsonSerializationExtension>();
+                                                        if (ext == null)
+                                                            throw new ArgumentNullException(nameof(ext),
+                                                                $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
-                if(ext.Settings != null)
-                    return new DomainSerializer(ext.Settings);
+                                                        if (ext.Settings != null)
+                                                            return new DomainSerializer(ext.Settings);
 
-                var settings = DomainSerializer.GetDefaultSettings();
-                foreach (var c in ext.Converters)
-                    settings.Converters.Add(c);
+                                                        var settings = DomainSerializer.GetDefaultSettings();
+                                                        foreach (var c in ext.Converters)
+                                                            settings.Converters.Add(c);
 
-                return new DomainSerializer(settings);
-            });
+                                                        return new DomainSerializer(settings);
+                                                    });
         }
 
         /// <summary>
-        /// Determines whether the deserializer needs a type hint to deserialize
-        /// an object.
+        ///     Determines whether the deserializer needs a type hint to deserialize
+        ///     an object.
         /// </summary>
         public override bool IncludeManifest => true;
 
         /// <summary>
-        /// Completely unique value to identify this implementation of the
-        /// <see cref="Akka.Serialization.Serializer"/> used to optimize network traffic
+        ///     Completely unique value to identify this implementation of the
+        ///     <see cref="Akka.Serialization.Serializer" /> used to optimize network traffic
         /// </summary>
         public override int Identifier => 21;
-
 
         // <summary>
         // Serializes the given object into a byte array
@@ -64,15 +53,14 @@ namespace GridDomain.Node
         }
 
         /// <summary>
-        /// Deserializes a byte array into an object using the type hint
-        // (if any, see "IncludeManifest" above)
+        ///     Deserializes a byte array into an object using the type hint
         /// </summary>
         /// <param name="bytes">The array containing the serialized object</param>
         /// <param name="type">The type hint of the object contained in the array</param>
         /// <returns>The object contained in the array</returns>
         public override object FromBinary(byte[] bytes, Type type)
         {
-           return Serializer.Value.FromBinary(bytes,type);
+            return Serializer.Value.FromBinary(bytes, type);
         }
     }
 }

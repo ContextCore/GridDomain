@@ -6,11 +6,10 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
     {
         public string Build()
         {
-            var adaptersConfig =
-                @"
+            var adaptersConfig = @"
                 event-adapters
                 {
-                    upd = """+ typeof(AkkaDomainEventsAdapter).AssemblyQualifiedShortName() +@"""
+                    upd = """ + typeof(AkkaDomainEventsAdapter).AssemblyQualifiedShortName() + @"""
                 }
                 event-adapter-bindings
                 {
@@ -20,6 +19,4 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             return adaptersConfig;
         }
     }
-
-
 }

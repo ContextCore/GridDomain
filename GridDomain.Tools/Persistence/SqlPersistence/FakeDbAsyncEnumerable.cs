@@ -1,24 +1,25 @@
+using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
-    public class FakeDbAsyncEnumerable<T> : EnumerableQuery<T>, System.Data.Entity.Infrastructure.IDbAsyncEnumerable<T>, IQueryable<T>
+    public class FakeDbAsyncEnumerable<T> : EnumerableQuery<T>,
+                                            IDbAsyncEnumerable<T>,
+                                            IQueryable<T>
     {
-        public FakeDbAsyncEnumerable(System.Collections.Generic.IEnumerable<T> enumerable)
-            : base(enumerable)
-        { }
+        public FakeDbAsyncEnumerable(IEnumerable<T> enumerable) : base(enumerable) {}
 
-        public FakeDbAsyncEnumerable(System.Linq.Expressions.Expression expression)
-            : base(expression)
-        { }
+        public FakeDbAsyncEnumerable(Expression expression) : base(expression) {}
 
-        public System.Data.Entity.Infrastructure.IDbAsyncEnumerator<T> GetAsyncEnumerator()
+        public IDbAsyncEnumerator<T> GetAsyncEnumerator()
         {
-            return new FakeDbAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
+            return new FakeDbAsyncEnumerator<T>(this.AsEnumerable()
+                                                    .GetEnumerator());
         }
 
-        System.Data.Entity.Infrastructure.IDbAsyncEnumerator System.Data.Entity.Infrastructure.IDbAsyncEnumerable.GetAsyncEnumerator()
+        IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()
         {
             return GetAsyncEnumerator();
         }

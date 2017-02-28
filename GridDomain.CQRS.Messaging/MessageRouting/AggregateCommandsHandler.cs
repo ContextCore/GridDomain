@@ -3,23 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Core;
 using GridDomain.Common;
-using Microsoft.Practices.ServiceLocation;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<Func<ICommand, TAggregate, TAggregate>, ICommand>,
                                                         IAggregateCommandsHandler<TAggregate>
-                                                        where TAggregate : AggregateBase
+        where TAggregate : AggregateBase
     {
+        public IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands
+        {
+            get
+            {
+                return Catalog.Select(h => new AggregateCommandInfo(h.Key))
+                              .ToArray();
+            }
+        }
+
         public TAggregate Execute(TAggregate aggregate, ICommand command)
         {
-            return Get(command).Invoke(command, aggregate);
+            return Get(command)
+                .Invoke(command, aggregate);
         }
 
         public override Func<ICommand, TAggregate, TAggregate> Get(ICommand command)
         {
             var handler = base.Get(command);
-            if(handler == null)
+            if (handler == null)
                 throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
             return handler;
         }
@@ -35,15 +44,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>((c, a) => commandExecutor((TCommand)c));
-        }
-
-        public IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands
-        {
-            get
-            {
-                return Catalog.Select(h => new AggregateCommandInfo(h.Key)).ToArray();
-            }
+            Add<TCommand>((c, a) => commandExecutor((TCommand) c));
         }
     }
 }

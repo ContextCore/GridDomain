@@ -14,6 +14,8 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class Given_saga_When_publishing_several_start_messages : SoftwareProgrammingInstanceSagaTest
     {
+        public Given_saga_When_publishing_several_start_messages(ITestOutputHelper helper) : base(helper) {}
+
         [Fact]
         public async Task When_publishing_start_message()
         {
@@ -39,7 +41,5 @@ namespace GridDomain.Tests.XUnit.Sagas
             //Saga_has_correct_state()
             Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaData.Data.CurrentStateName);
         }
-
-        public Given_saga_When_publishing_several_start_messages(ITestOutputHelper helper) : base(helper) {}
     }
 }

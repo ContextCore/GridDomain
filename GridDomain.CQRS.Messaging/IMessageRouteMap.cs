@@ -7,5 +7,4 @@ namespace GridDomain.CQRS.Messaging
     {
         Task Register(IMessagesRouter router);
     }
-    
 }

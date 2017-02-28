@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using GridDomain.Logging;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel.Context;
@@ -10,8 +8,8 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
     [TestFixture]
     public class SkuStock_taken_tests : SkuStockProjectionBuilderTests
     {
-        private SkuStockCreated  _stockCreatedEvent;
-        private StockTaken       _stockTakenEvent;
+        private SkuStockCreated _stockCreatedEvent;
+        private StockTaken _stockTakenEvent;
 
         [OneTimeSetUp]
         public void Given_sku_created_and_taken_messages_When_projected()
@@ -30,7 +28,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
             {
-                Assert.NotNull(context.StockHistory.Find(_stockCreatedEvent.SourceId, (long)2));
+                Assert.NotNull(context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 2));
             }
         }
 
@@ -40,7 +38,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             using (var context = ContextFactory())
             {
                 //#1 is stock added history
-                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long)2);
+                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 2);
                 Assert.AreEqual(2, history.Number);
 
                 Assert.AreEqual(_stockCreatedEvent.Quantity - _stockTakenEvent.Quantity, history.NewAvailableQuantity);

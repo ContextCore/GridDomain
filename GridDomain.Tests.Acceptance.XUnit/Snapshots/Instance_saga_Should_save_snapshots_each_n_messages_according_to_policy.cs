@@ -1,17 +1,10 @@
 using System;
 using System.Linq;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
-using Akka.Actor;
-using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node.Actors;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -28,10 +21,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy : NodeTestKit
     {
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
-      : base(output, new SoftwareProgrammingSagaFixture { InMemory = false }
-                                          .IgnoreCommands()
-                                          .InitSoftwareProgrammingSagaSnapshots(5, TimeSpan.FromMilliseconds(5), 2))
-        { }
+            : base(output,
+                new SoftwareProgrammingSagaFixture {InMemory = false}.IgnoreCommands()
+                                                                     .InitSoftwareProgrammingSagaSnapshots(5,
+                                                                         TimeSpan.FromMilliseconds(5),
+                                                                         2)) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -44,8 +38,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaStartEvent);
 
-           //var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
-           //saga.Tell(NotifyOnPersistenceEvents.Instance);
+            //var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+            //saga.Tell(NotifyOnPersistenceEvents.Instance);
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
@@ -54,16 +48,19 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                       .Create()
                       .SendToSagas(sagaContinueEvent);
 
-            var sagaContinueEventB = new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
-                new Exception(), typeof(object), sagaId, BusinessDateTime.Now);
+            var sagaContinueEventB =
+                new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
+                    new Exception(),
+                    typeof(object),
+                    sagaId,
+                    BusinessDateTime.Now);
 
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                       .Create()
                       .SendToSagas(sagaContinueEventB);
 
-
-         //   FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
+            //   FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
 
             await Task.Delay(500);
 
@@ -91,7 +88,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }
-
-  
     }
 }

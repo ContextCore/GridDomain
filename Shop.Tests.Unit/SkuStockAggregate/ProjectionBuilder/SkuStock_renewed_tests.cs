@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using GridDomain.Logging;
 using NUnit.Framework;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel.Context;
@@ -10,9 +8,9 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
     [TestFixture]
     public class SkuStock_renewed_tests : SkuStockProjectionBuilderTests
     {
-        private SkuStockCreated  _stockCreatedEvent;
-        private StockReserved    _stockReservedEvent;
-        private ReserveRenewed   _stockReserveRenewedEvent;
+        private SkuStockCreated _stockCreatedEvent;
+        private StockReserved _stockReservedEvent;
+        private ReserveRenewed _stockReserveRenewedEvent;
 
         [OneTimeSetUp]
         public void Given_sku_created_and_reserved_and_reserve_expired_messages_When_projected()
@@ -20,7 +18,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             var stockId = Guid.NewGuid();
 
             _stockCreatedEvent = new SkuStockCreated(stockId, Guid.NewGuid(), 1, TimeSpan.FromDays(2));
-            _stockReservedEvent = new StockReserved(stockId, Guid.NewGuid(), DateTime.Now.AddDays(1),7);
+            _stockReservedEvent = new StockReserved(stockId, Guid.NewGuid(), DateTime.Now.AddDays(1), 7);
             _stockReserveRenewedEvent = new ReserveRenewed(stockId, _stockReservedEvent.ReserveId);
 
             ProjectionBuilder.Handle(_stockCreatedEvent);
@@ -33,7 +31,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
             {
-                Assert.NotNull(context.StockHistory.Find(_stockCreatedEvent.SourceId, (long)3));
+                Assert.NotNull(context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3));
             }
         }
 
@@ -43,7 +41,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             using (var context = ContextFactory())
             {
                 //#1 is stock added history
-                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long)3);
+                var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3);
                 Assert.AreEqual(3, history.Number);
 
                 Assert.AreEqual(_stockCreatedEvent.Quantity, history.NewAvailableQuantity);
@@ -51,8 +49,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 Assert.AreEqual(_stockCreatedEvent.Quantity, history.NewTotalQuantity);
                 Assert.AreEqual(_stockReservedEvent.Quantity, history.OldReservedQuantity);
                 Assert.AreEqual(_stockCreatedEvent.Quantity, history.OldTotalQuantity);
-                Assert.AreEqual(_stockCreatedEvent.Quantity -
-                                _stockReservedEvent.Quantity, history.OldAvailableQuantity);
+                Assert.AreEqual(_stockCreatedEvent.Quantity - _stockReservedEvent.Quantity, history.OldAvailableQuantity);
                 Assert.AreEqual(StockOperation.ReserveRenewed, history.Operation);
                 Assert.AreEqual(_stockReservedEvent.Quantity, history.Quanity);
                 Assert.AreEqual(_stockReservedEvent.SourceId, history.StockId);
@@ -64,7 +61,6 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         {
             using (var context = ContextFactory())
                 Assert.Null(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
-
         }
 
         [Test]

@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace Shop.Domain.Aggregates.UserAggregate.Commands
 {
-    class CreateUserCommand : Command
+    internal class CreateUserCommand : Command
     {
-        public CreateUserCommand(Guid userId, string login, Guid accountId):base(userId)
+        public CreateUserCommand(Guid userId, string login, Guid accountId) : base(userId)
         {
             Login = login;
             AccountId = accountId;

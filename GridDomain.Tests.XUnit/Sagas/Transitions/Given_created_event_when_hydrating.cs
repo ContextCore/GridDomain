@@ -15,6 +15,11 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         private SoftwareProgrammingSaga _machine;
         private SoftwareProgrammingSagaData _softwareProgrammingSagaData;
 
+        protected override IEnumerable<DomainEvent> Given()
+        {
+            yield return new SagaCreatedEvent<SoftwareProgrammingSagaData>(_softwareProgrammingSagaData, _sagaId);
+        }
+
         [Fact]
         public void Given_created_event()
         {
@@ -26,11 +31,6 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             Assert.Equal(_softwareProgrammingSagaData, Aggregate.Data);
             //Then_Id_is_taken_from_event()
             Assert.Equal(_sagaId, Aggregate.Id);
-        }
-
-        protected override IEnumerable<DomainEvent> Given()
-        {
-            yield return new SagaCreatedEvent<SoftwareProgrammingSagaData>(_softwareProgrammingSagaData, _sagaId);
         }
     }
 }

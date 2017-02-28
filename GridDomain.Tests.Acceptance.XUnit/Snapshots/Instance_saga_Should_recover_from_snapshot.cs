@@ -13,6 +13,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
     public class Instance_saga_Should_recover_from_snapshot : NodeTestKit
     {
+        public Instance_saga_Should_recover_from_snapshot(ITestOutputHelper helper)
+            : base(helper, new SoftwareProgrammingSagaFixture {InMemory = false}) {}
+
         [Fact]
         public async Task Test()
         {
@@ -35,8 +38,5 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             // State_should_be_equal()
             Assert.Equal(sagaState.Data.CurrentStateName, restoredState.Data.CurrentStateName);
         }
-
-        public Instance_saga_Should_recover_from_snapshot(ITestOutputHelper helper) : base(helper,
-            new SoftwareProgrammingSagaFixture {InMemory = false}) {}
     }
 }

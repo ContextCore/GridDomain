@@ -4,22 +4,23 @@ using System.Data.SqlClient;
 
 namespace Shop.Infrastructure
 {
-    public class SqlSequenceProvider : ISequenceProvider, IDisposable
+    public class SqlSequenceProvider : ISequenceProvider,
+                                       IDisposable
     {
+        private const string DefaultCollectionName = "global";
         private readonly string _connectionString;
         private readonly IDictionary<string, Func<long>> _sequences = new Dictionary<string, Func<long>>();
-        private object _lock = new object();
         private SqlConnection _connection;
-        private const string DefaultCollectionName = "global"; 
+        private readonly object _lock = new object();
+
         public SqlSequenceProvider(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public void Connect()
+        public void Dispose()
         {
-            _connection = new SqlConnection(_connectionString);
-            _connection.Open();
+            _connection.Dispose();
         }
 
         public long GetNext(string sequenceName = null)
@@ -38,26 +39,27 @@ namespace Shop.Infrastructure
             }
         }
 
+        public void Connect()
+        {
+            _connection = new SqlConnection(_connectionString);
+            _connection.Open();
+        }
+
         private void CreateNewSequence(string sequenceName)
         {
-                var cmd = new SqlCommand(@"
-                                          IF OBJECT_ID('"+ sequenceName + @"') IS NULL
-                                          CREATE SEQUENCE "+sequenceName+@"
+            var cmd = new SqlCommand(@"
+                                          IF OBJECT_ID('" + sequenceName + @"') IS NULL
+                                          CREATE SEQUENCE " + sequenceName + @"
                                               START WITH 1  
                                               INCREMENT BY 1
-                                          ",_connection);
-                cmd.ExecuteNonQuery();
+                                          ", _connection);
+            cmd.ExecuteNonQuery();
         }
 
         private long GetNextFromSqlSequence(string sequenceName)
         {
-                var cmd = new SqlCommand(@"SELECT NEXT VALUE FOR "+sequenceName, _connection);
-                return (long)cmd.ExecuteScalar();
-        }
-
-        public void Dispose()
-        {
-            _connection.Dispose();
+            var cmd = new SqlCommand(@"SELECT NEXT VALUE FOR " + sequenceName, _connection);
+            return (long) cmd.ExecuteScalar();
         }
     }
 }

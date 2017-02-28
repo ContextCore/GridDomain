@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Akka.TestKit.Xunit2;
 using Akka.Util;
 using GridDomain.CQRS;
@@ -11,13 +10,8 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.MessageWaiting
 {
-   
     public class AkkaWaiter_message_test_filtered_message : TestKit
     {
-        private AkkaMessageLocalWaiter _waiter;
-        private LocalAkkaEventBusTransport _transport;
-        private Task<IWaitResults> results;
-
         public AkkaWaiter_message_test_filtered_message()
         {
             _transport = new LocalAkkaEventBusTransport(Sys);
@@ -25,24 +19,18 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             _waiter.Expect<string>(m => m.Like("Msg"));
             results = _waiter.Start(TimeSpan.FromMilliseconds(50));
         }
-      
+
+        private readonly AkkaMessageLocalWaiter _waiter;
+        private readonly LocalAkkaEventBusTransport _transport;
+        private readonly Task<IWaitResults> results;
 
         [Fact]
-        public void Timeout_should_be_fired_on_wait_and_no_message_publish()
+        public void Message_not_satisfying_filter_should_not_be_received()
         {
-            var e = Assert.Throws<AggregateException>(() =>
-            {
-                var a = results.Result;
-            });
+            _transport.Publish("Test");
 
-            Assert.IsAssignableFrom<TimeoutException>(e.InnerExceptions.FirstOrDefault());
-        }
-
-        [Fact]
-        public void Timeout_should_be_fired_on_wait_without_messages()
-        {
-            var e = Assert.Throws<AggregateException>(() => results.Wait());
-            Assert.IsAssignableFrom<TimeoutException>(e.InnerExceptions.FirstOrDefault());
+            var e = Assert.Throws<AggregateException>(() => results.Result.Message<string>());
+            Assert.IsAssignableFrom<TimeoutException>(e.InnerException);
         }
 
         [Fact]
@@ -53,12 +41,21 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         [Fact]
-        public void Message_not_satisfying_filter_should_not_be_received()
+        public void Timeout_should_be_fired_on_wait_and_no_message_publish()
         {
-            _transport.Publish("Test");
+            var e = Assert.Throws<AggregateException>(() =>
+                                                      {
+                                                          var a = results.Result;
+                                                      });
 
-            var e = Assert.Throws<AggregateException>(() => results.Result.Message<string>());
-            Assert.IsAssignableFrom<TimeoutException>(e.InnerException);
+            Assert.IsAssignableFrom<TimeoutException>(e.InnerExceptions.FirstOrDefault());
+        }
+
+        [Fact]
+        public void Timeout_should_be_fired_on_wait_without_messages()
+        {
+            var e = Assert.Throws<AggregateException>(() => results.Wait());
+            Assert.IsAssignableFrom<TimeoutException>(e.InnerExceptions.FirstOrDefault());
         }
     }
 }

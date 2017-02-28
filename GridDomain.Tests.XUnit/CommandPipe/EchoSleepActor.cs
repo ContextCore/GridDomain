@@ -6,21 +6,19 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
 {
-    class EchoSleepActor : ReceiveActor
+    internal class EchoSleepActor : ReceiveActor
     {
-
         public EchoSleepActor(TimeSpan sleepTime, IActorRef watcher)
         {
-            Receive<IMessageMetadataEnvelop>(m =>
-                Task.Delay(sleepTime)
-                    .ContinueWith(t => new HandlerExecuted(m))
-                    .PipeTo(Self, Sender));
+            Receive<IMessageMetadataEnvelop>(m => Task.Delay(sleepTime)
+                                                      .ContinueWith(t => new HandlerExecuted(m))
+                                                      .PipeTo(Self, Sender));
 
             Receive<HandlerExecuted>(m =>
-            {
-                watcher.Tell(m);
-                Sender.Tell(m);
-            });
+                                     {
+                                         watcher.Tell(m);
+                                         Sender.Tell(m);
+                                     });
         }
     }
 }

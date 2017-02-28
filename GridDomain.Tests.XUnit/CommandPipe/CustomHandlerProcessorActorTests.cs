@@ -11,32 +11,9 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
 {
-   
     public class CustomHandlerProcessorActorTests : TestKit
     {
-       [Fact]
-        public void CustomHandlerProcessor_routes_events_by_type()
-        {
-            var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
-
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[] { new SampleAggregateCreatedEvent("1", Guid.NewGuid())}, 
-                                                                MessageMetadata.Empty);
-
-            actor.Tell(msg);
-
-            //TestActor as processor receives message for work
-            ExpectMsg<MessageMetadataEnvelop<DomainEvent>>();
-            //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
-            ExpectMsg<AllHandlersCompleted>();
-            //HandlersProcessActor should resend domain event to next step - saga actor - for processing
-            ExpectMsg<MessageMetadataEnvelop<DomainEvent[]>>();
-        }
-
-   
-
-       [Fact]
+        [Fact]
         public void All_async_handlers_performs_in_parralel()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
@@ -50,10 +27,10 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var sampleAggregateCreatedEvent = new SampleAggregateCreatedEvent("1", Guid.NewGuid());
             var sampleAggregateChangedEvent = new SampleAggregateChangedEvent("1", Guid.NewGuid());
 
-            var msgA = new MessageMetadataEnvelop<DomainEvent[]>(new DomainEvent[] {
-                                                                          sampleAggregateCreatedEvent,
-                                                                          sampleAggregateChangedEvent},
-                                                                 MessageMetadata.Empty);
+            var msgA =
+                new MessageMetadataEnvelop<DomainEvent[]>(
+                    new DomainEvent[] {sampleAggregateCreatedEvent, sampleAggregateChangedEvent},
+                    MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
@@ -67,7 +44,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<HandlerExecuted>();
         }
 
-       [Fact]
+        [Fact]
         public void All_sync_handlers_performs_one_after_one()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
@@ -79,10 +56,14 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
 
-            var msgA = new MessageMetadataEnvelop<DomainEvent[]>(new [] {(DomainEvent)
-                                                                         new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                                         new SampleAggregateChangedEvent("1", Guid.NewGuid())},
-                                                                 MessageMetadata.Empty);
+            var msgA =
+                new MessageMetadataEnvelop<DomainEvent[]>(
+                    new[]
+                    {
+                        (DomainEvent) new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                        new SampleAggregateChangedEvent("1", Guid.NewGuid())
+                    },
+                    MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
@@ -98,8 +79,45 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
         }
 
-        
-       [Fact]
+        [Fact]
+        public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
+        {
+            var catalog = new ProcessorListCatalog();
+            catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+
+            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
+                MessageMetadata.Empty);
+
+            actor.Tell(msg);
+
+            //processor did not run, but we received processing complete message
+            ExpectMsg<AllHandlersCompleted>();
+        }
+
+        [Fact]
+        public void CustomHandlerProcessor_routes_events_by_type()
+        {
+            var catalog = new ProcessorListCatalog();
+            catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+
+            var msg =
+                new MessageMetadataEnvelop<DomainEvent[]>(
+                    new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
+                    MessageMetadata.Empty);
+
+            actor.Tell(msg);
+
+            //TestActor as processor receives message for work
+            ExpectMsg<MessageMetadataEnvelop<DomainEvent>>();
+            //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
+            ExpectMsg<AllHandlersCompleted>();
+            //HandlersProcessActor should resend domain event to next step - saga actor - for processing
+            ExpectMsg<MessageMetadataEnvelop<DomainEvent[]>>();
+        }
+
+        [Fact]
         public void Sync_and_async_handlers_performs_independent()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
@@ -111,16 +129,21 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
 
-            var msgA = new MessageMetadataEnvelop<DomainEvent[]>(new [] { new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                                          new SampleAggregateChangedEvent("1", Guid.NewGuid()),
-                                                                          new DomainEvent(Guid.NewGuid())},
-                                                                 MessageMetadata.Empty);
+            var msgA =
+                new MessageMetadataEnvelop<DomainEvent[]>(
+                    new[]
+                    {
+                        new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                        new SampleAggregateChangedEvent("1", Guid.NewGuid()),
+                        new DomainEvent(Guid.NewGuid())
+                    },
+                    MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
             //async event fires immidiately
             ExpectMsg<IMessageMetadataEnvelop>();
-        
+
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateCreatedEvent);
@@ -130,21 +153,6 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
-        }
-
-       [Fact]
-        public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
-        {
-            var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
-
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new [] { new DomainEvent(Guid.NewGuid())}, MessageMetadata.Empty);
-
-            actor.Tell(msg);
-
-            //processor did not run, but we received processing complete message
-            ExpectMsg<AllHandlersCompleted>();
         }
     }
 }

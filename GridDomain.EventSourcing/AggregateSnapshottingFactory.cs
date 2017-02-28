@@ -3,7 +3,7 @@ using CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
-    public class AggregateSnapshottingFactory<T> : AggregateFactory where T: IAggregate
+    public class AggregateSnapshottingFactory<T> : AggregateFactory where T : IAggregate
     {
         private readonly Func<IMemento, T> _creator;
 
