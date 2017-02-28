@@ -39,9 +39,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                                      typeof(CustomEvent)
                                  };
 
-            Assert.Equal(expectedEvents,
-                _descriptor.AcceptMessages.Select(m => m.MessageType)
-                           .ToArray());
+            Assert.Equal(expectedEvents, _descriptor.AcceptMessages.Select(m => m.MessageType).ToArray());
         }
 
         [Fact]

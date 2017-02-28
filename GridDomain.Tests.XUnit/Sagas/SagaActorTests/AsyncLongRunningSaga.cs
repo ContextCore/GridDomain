@@ -13,13 +13,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             InstanceState(s => s.CurrentStateName);
 
             During(Initial,
-                When(Start)
-                    .ThenAsync(async ctx =>
-                                     {
-                                         ctx.Instance.ProcessingId = ctx.Data.SourceId;
-                                         await Task.Delay(100);
-                                     })
-                    .TransitionTo(Final));
+                When(Start).ThenAsync(async ctx =>
+                                            {
+                                                ctx.Instance.ProcessingId = ctx.Data.SourceId;
+                                                await Task.Delay(100);
+                                            }).TransitionTo(Final));
         }
 
         public static ISagaDescriptor Descriptor

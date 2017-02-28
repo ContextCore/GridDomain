@@ -23,8 +23,7 @@ namespace GridDomain.Tests.Framework
         protected virtual void Init()
         {
             Aggregate = (TAggregate) aggregateFactory.Build(typeof(TAggregate), Guid.NewGuid(), null);
-            GivenEvents = Given()
-                .ToArray();
+            GivenEvents = Given().ToArray();
             Aggregate.ApplyEvents(GivenEvents);
         }
     }

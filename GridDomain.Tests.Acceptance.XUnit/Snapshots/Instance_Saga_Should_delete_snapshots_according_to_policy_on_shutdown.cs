@@ -19,7 +19,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output,
+            : base(
+                output,
                 new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2)
                                                                      .IgnoreCommands()) {}
 
@@ -29,10 +30,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaStartEvent);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaStartEvent);
 
             var sagaContinueEventA = new CoffeMakeFailedEvent(sagaId,
                 sagaStartEvent.PersonId,
@@ -40,11 +42,12 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                 sagaId);
 
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
-                          e => (e.Message as CoffeMakeFailedEvent)?.SourceId == sagaId)
-                      .Create()
-                      .SendToSagas(sagaContinueEventA);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
+                        e => (e.Message as CoffeMakeFailedEvent)?.SourceId == sagaId)
+                    .Create()
+                    .SendToSagas(sagaContinueEventA);
 
             await Node.KillSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
 
@@ -59,14 +62,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
 
             // First_Snapshots_should_have_coding_state_from_first_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
-                snapshots.First()
-                         .Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.Data.CurrentStateName);
 
             //Last_Snapshots_should_have_coding_state_from_last_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping),
-                snapshots.Last()
-                         .Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping), snapshots.Last().Aggregate.Data.CurrentStateName);
 
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));

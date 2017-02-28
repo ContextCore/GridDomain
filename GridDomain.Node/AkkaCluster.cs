@@ -9,8 +9,7 @@ namespace GridDomain.Node
         public ActorSystem[] NonSeedNodes;
         public ActorSystem[] SeedNodes;
 
-        public ActorSystem[] All => SeedNodes.Concat(NonSeedNodes)
-                                             .ToArray();
+        public ActorSystem[] All => SeedNodes.Concat(NonSeedNodes).ToArray();
 
         public void Dispose()
         {
@@ -24,8 +23,7 @@ namespace GridDomain.Node
 
         public ActorSystem RandomNode()
         {
-            return SeedNodes.Concat(NonSeedNodes)
-                            .Last();
+            return SeedNodes.Concat(NonSeedNodes).Last();
         }
     }
 }

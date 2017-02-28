@@ -31,31 +31,16 @@ namespace GridDomain.Node.Actors.CommandPipe
                                     Sender.Tell(Initialized.Instance);
                                 });
             //results of one command execution
-            Receive<IMessageMetadataEnvelop<DomainEvent[]>>(c =>
-                                                            {
-                                                                c.Message.Select(
-                                                                    e =>
-                                                                        ProcessSagas(
-                                                                            new MessageMetadataEnvelop<DomainEvent>(e,
-                                                                                c.Metadata)))
-                                                                 .ToChain()
-                                                                 .ContinueWith(
-                                                                     t =>
-                                                                     {
-                                                                         t.Result.ForEach(
-                                                                             cmd => _commandExecutionActor.Tell(cmd));
-                                                                     });
-                                                            });
+            Receive<IMessageMetadataEnvelop<DomainEvent[]>>(
+                c =>
+                {
+                    c.Message.Select(e => ProcessSagas(new MessageMetadataEnvelop<DomainEvent>(e, c.Metadata)))
+                     .ToChain()
+                     .ContinueWith(t => { t.Result.ForEach(cmd => _commandExecutionActor.Tell(cmd)); });
+                });
 
-            Receive<IMessageMetadataEnvelop<IFault>>(c =>
-                                                     {
-                                                         ProcessSagas(c)
-                                                             .ContinueWith(
-                                                                 t =>
-                                                                 {
-                                                                     t.Result.ForEach(cmd => _commandExecutionActor.Tell(cmd));
-                                                                 });
-                                                     });
+            Receive<IMessageMetadataEnvelop<IFault>>(
+                c => { ProcessSagas(c).ContinueWith(t => { t.Result.ForEach(cmd => _commandExecutionActor.Tell(cmd)); }); });
 
             Receive<SagasProcessComplete>(m => { SendCommandForExecution(m); });
         }
@@ -73,20 +58,22 @@ namespace GridDomain.Node.Actors.CommandPipe
             if (!eventProcessors.Any())
                 return Task.FromResult(Enumerable.Empty<MessageMetadataEnvelop<ICommand>>());
 
-            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))
-                       .ContinueWith(t => CreateCommandEnvelops(t.Result));
+            return
+                Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))
+                    .ContinueWith(t => CreateCommandEnvelops(t.Result));
         }
 
         private static IEnumerable<MessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(
             IEnumerable<ISagaTransitCompleted> messages)
         {
-            return messages.OfType<SagaTransited>()
-                           .SelectMany(
-                               msg =>
-                                   msg.ProducedCommands.Select(
-                                       c =>
-                                           new MessageMetadataEnvelop<ICommand>(c,
-                                               msg.Metadata.CreateChild(c.Id, msg.SagaProcessEntry))));
+            return
+                messages.OfType<SagaTransited>()
+                        .SelectMany(
+                            msg =>
+                                msg.ProducedCommands.Select(
+                                    c =>
+                                        new MessageMetadataEnvelop<ICommand>(c,
+                                            msg.Metadata.CreateChild(c.Id, msg.SagaProcessEntry))));
         }
     }
 }

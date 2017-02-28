@@ -36,15 +36,12 @@ namespace GridDomain.Tests.Framework
             foreach (var cmd in command)
                 Aggregate = CommandsHandler.Execute(Aggregate, cmd);
 
-            return ProducedEvents = Aggregate.GetUncommittedEvents()
-                                             .Cast<DomainEvent>()
-                                             .ToArray();
+            return ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
         }
 
         protected void Execute(params ICommand[] command)
         {
-            ExpectedEvents = Expected()
-                .ToArray();
+            ExpectedEvents = Expected().ToArray();
             var events = ExecuteCommand(command);
             Console.WriteLine(CollectDebugInfo(command));
             EventsExtensions.CompareEvents(ExpectedEvents, events);
@@ -64,9 +61,7 @@ namespace GridDomain.Tests.Framework
             foreach (var cmd in command)
                 Aggregate = CommandsHandler.Execute(Aggregate, cmd);
 
-            ProducedEvents = Aggregate.GetUncommittedEvents()
-                                      .Cast<DomainEvent>()
-                                      .ToArray();
+            ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
             Console.WriteLine(CollectDebugInfo(command));
             EventsExtensions.CompareEvents(expected.ToArray(), ProducedEvents);
@@ -79,7 +74,7 @@ namespace GridDomain.Tests.Framework
             builder.AppendLine();
             foreach (var e in ev)
             {
-                builder.AppendLine($"Event:{e.GetType() .Name} : ");
+                builder.AppendLine($"Event:{e.GetType().Name} : ");
                 builder.AppendLine(e.ToPropsString());
             }
             builder.AppendLine();

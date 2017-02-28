@@ -18,10 +18,8 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.NamedDependencies
             container.RegisterType<NamedActorB>(new InjectionFactory(c => new NamedActorB(c.Resolve<SomeService>("B"))));
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
 
-            var actorA = ActorOfAsTestActorRef<NamedActorA>(Sys.DI()
-                                                               .Props<NamedActorA>());
-            var actorB = ActorOfAsTestActorRef<NamedActorB>(Sys.DI()
-                                                               .Props<NamedActorB>());
+            var actorA = ActorOfAsTestActorRef<NamedActorA>(Sys.DI().Props<NamedActorA>());
+            var actorB = ActorOfAsTestActorRef<NamedActorB>(Sys.DI().Props<NamedActorB>());
 
             Assert.Equal("A", actorA.UnderlyingActor.Dep.Name);
             Assert.Equal("B", actorB.UnderlyingActor.Dep.Name);

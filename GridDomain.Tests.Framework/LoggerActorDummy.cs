@@ -13,8 +13,7 @@ namespace GridDomain.Tests.Framework
             Receive<Debug>(m => { });
             Receive<InitializeLogger>(m =>
                                       {
-                                          Context.GetLogger()
-                                                 .Info("logger sub initialized");
+                                          Context.GetLogger().Info("logger sub initialized");
                                           Sender.Tell(new LoggerInitialized());
                                       });
         }

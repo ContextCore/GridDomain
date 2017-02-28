@@ -16,28 +16,22 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
         public CustomRoutesSoftwareProgrammingSaga()
         {
             During(Coding,
-                When(GotTired)
-                    .Then(context =>
-                          {
-                              var sagaData = context.Instance;
-                              var domainEvent = context.Data;
-                              sagaData.PersonId = domainEvent.SourceId;
-                              _log.Verbose("Hello trace string");
-                              Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
-                          })
-                    .TransitionTo(MakingCoffee));
+                When(GotTired).Then(context =>
+                                    {
+                                        var sagaData = context.Instance;
+                                        var domainEvent = context.Data;
+                                        sagaData.PersonId = domainEvent.SourceId;
+                                        _log.Verbose("Hello trace string");
+                                        Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
+                                    }).TransitionTo(MakingCoffee));
 
             During(MakingCoffee,
                 When(CoffeNotAvailable)
                     .Then(context => Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId)))
                     .TransitionTo(Sleeping),
-                When(CoffeReady)
-                    .TransitionTo(Coding));
+                When(CoffeReady).TransitionTo(Coding));
 
-            During(Sleeping,
-                When(SleptWell)
-                    .Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
-                    .TransitionTo(Coding));
+            During(Sleeping, When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
         }
 
         public Event<GotTiredEvent> GotTired { get; private set; }

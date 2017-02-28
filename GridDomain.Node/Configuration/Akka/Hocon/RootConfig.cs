@@ -14,8 +14,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         public string Build()
         {
-            var configStrings = _parts.Select(p => p.Build())
-                                      .ToArray();
+            var configStrings = _parts.Select(p => p.Build()).ToArray();
             var configString = string.Join(Environment.NewLine, configStrings);
             return @"akka {
 " + configString + @"

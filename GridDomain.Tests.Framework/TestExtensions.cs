@@ -12,8 +12,7 @@ namespace GridDomain.Tests.Framework
         {
             var totalLength = collection.Count();
             var elemIndex = Rnd.Next(0, totalLength);
-            return collection.Skip(elemIndex - 1)
-                             .FirstOrDefault();
+            return collection.Skip(elemIndex - 1).FirstOrDefault();
         }
 
         public static DateTime RandomTime(DateTime from, DateTime till)

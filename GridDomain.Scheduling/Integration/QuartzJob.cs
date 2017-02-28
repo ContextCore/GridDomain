@@ -109,8 +109,7 @@ namespace GridDomain.Scheduling.Integration
 
                                  //received fault instead of expected message
                                  var type = o?.GetType();
-                                 var guid = type?.GetProperty(extendedOptions.MessageIdFieldName)
-                                                ?.GetValue(o);
+                                 var guid = type?.GetProperty(extendedOptions.MessageIdFieldName)?.GetValue(o);
 
                                  return guid != null && (Guid) guid == extendedOptions.SuccessMessageId;
                              };
@@ -119,9 +118,10 @@ namespace GridDomain.Scheduling.Integration
             var commandMetadata = metadata.CreateChild(command.Id,
                 new ProcessEntry(nameof(QuartzJob), PassingCommandToExecutor, CommandRaiseTimeCame));
 
-            var task = _executor.Prepare(command, commandMetadata)
-                                .Expect(options.SuccesEventType, o => isExpected(o))
-                                .Execute(options.Timeout);
+            var task =
+                _executor.Prepare(command, commandMetadata)
+                         .Expect(options.SuccesEventType, o => isExpected(o))
+                         .Execute(options.Timeout);
 
             if (!task.Wait(options.Timeout))
                 throw new ScheduledCommandWasNotConfirmedException(command);
@@ -231,12 +231,13 @@ namespace GridDomain.Scheduling.Integration
         public static IJobDetail CreateJob(ScheduleKey key, JobDataMap jobDataMap)
         {
             var jobKey = new JobKey(key.Name, key.Group);
-            return JobBuilder.Create<QuartzJob>()
-                             .WithIdentity(jobKey)
-                             .WithDescription(key.Description)
-                             .UsingJobData(jobDataMap)
-                             .RequestRecovery(true)
-                             .Build();
+            return
+                JobBuilder.Create<QuartzJob>()
+                          .WithIdentity(jobKey)
+                          .WithDescription(key.Description)
+                          .UsingJobData(jobDataMap)
+                          .RequestRecovery(true)
+                          .Build();
         }
     }
 }

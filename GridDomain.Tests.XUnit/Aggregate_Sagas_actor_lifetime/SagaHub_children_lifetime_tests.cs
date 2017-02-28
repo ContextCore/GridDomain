@@ -34,12 +34,13 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
-                return system.DI()
-                             .Props
-                    <
-                        SagaHubActor
-                            <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                                SagaStateAggregate<SoftwareProgrammingSagaData>>>();
+                return
+                    system.DI()
+                          .Props
+                        <
+                            SagaHubActor
+                                <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+                                    SagaStateAggregate<SoftwareProgrammingSagaData>>>();
             }
 
             public object ChildCreateMessage { get; }

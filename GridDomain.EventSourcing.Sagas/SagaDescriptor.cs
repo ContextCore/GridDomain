@@ -77,15 +77,15 @@ namespace GridDomain.EventSourcing.Sagas
         {
             var sagaDescriptor = new SagaDescriptor<TSaga, TSagaData>();
 
-            var domainBindedEvents = typeof(TSaga).GetProperties()
-                                                  .Where(
-                                                      p =>
-                                                          p.PropertyType.IsGenericType
-                                                          && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
+            var domainBindedEvents =
+                typeof(TSaga).GetProperties()
+                             .Where(
+                                 p =>
+                                     p.PropertyType.IsGenericType
+                                     && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
             foreach (var prop in domainBindedEvents)
             {
-                var domainEventType = prop.PropertyType.GetGenericArguments()
-                                          .First();
+                var domainEventType = prop.PropertyType.GetGenericArguments().First();
                 sagaDescriptor.AddAcceptedMessage(domainEventType);
             }
 

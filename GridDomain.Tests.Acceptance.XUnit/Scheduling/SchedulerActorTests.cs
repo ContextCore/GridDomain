@@ -34,9 +34,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
 
             new QuartzSchedulerConfiguration(new PersistedQuartzConfig()).Register(_container);
             Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
-            _scheduler = Sys.ActorOf(Sys.DI()
-                                        .Props<SchedulingActor>(),
-                nameof(SchedulingActor));
+            _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>(), nameof(SchedulingActor));
             _quartzScheduler = _container.Resolve<IScheduler>();
         }
 
@@ -76,8 +74,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             _quartzScheduler.Shutdown(false);
             _quartzScheduler = _container.Resolve<IScheduler>();
 
-            var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture))
-                               .ToArray();
+            var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
             Throttle.AssertInTime(() => ResultHolder.Contains(taskIds));
         }
@@ -103,10 +100,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                     CreateOptions(failTask)));
             }
 
-            var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture))
-                                             .ToArray();
-            var failTaskIds = failTasks.Select(x => x.ToString(CultureInfo.InvariantCulture))
-                                       .ToArray();
+            var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
+            var failTaskIds = failTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
             Throttle.AssertInTime(() =>
                                   {
@@ -129,10 +124,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                 _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
-            var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture))
-                                             .ToArray();
-            var tasksToRemoveTaskIds = tasksToRemove.Select(x => x.ToString(CultureInfo.InvariantCulture))
-                                                    .ToArray();
+            var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
+            var tasksToRemoveTaskIds = tasksToRemove.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
             foreach (var taskId in tasksToRemoveTaskIds)
             {
@@ -159,8 +152,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                 _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
-            var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture))
-                               .ToArray();
+            var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
             Throttle.AssertInTime(() => ResultHolder.Contains(taskIds));
         }

@@ -9,9 +9,9 @@ namespace Shop.Infrastructure
     {
         private const string DefaultCollectionName = "global";
         private readonly string _connectionString;
+        private readonly object _lock = new object();
         private readonly IDictionary<string, Func<long>> _sequences = new Dictionary<string, Func<long>>();
         private SqlConnection _connection;
-        private readonly object _lock = new object();
 
         public SqlSequenceProvider(string connectionString)
         {

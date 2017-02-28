@@ -30,10 +30,12 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
 
-            _results = await Node.Prepare(cmd)
-                                 .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                                 .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                                 .Execute();
+            _results =
+                await
+                    Node.Prepare(cmd)
+                        .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                        .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
+                        .Execute();
             //Then_recieve_something()
             Assert.NotNull(_results);
             //Then_recieve_non_empty_collection()

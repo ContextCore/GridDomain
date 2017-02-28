@@ -60,8 +60,7 @@ namespace GridDomain.Node.Actors
                                                               }
 
                                                               //block any other executing until saga completes transition
-                                                              ProcessSaga(msg, metadata)
-                                                                  .PipeTo(Self, Sender);
+                                                              ProcessSaga(msg, metadata).PipeTo(Self, Sender);
                                                               BecomeStacked(() => SagaProcessWaiting(msg, metadata));
                                                           },
                 e => GetSagaId(e.Message) == Id);
@@ -74,8 +73,7 @@ namespace GridDomain.Node.Actors
                                                          Monitor.IncrementMessagesReceived();
 
                                                          //block any other executing until saga completes transition
-                                                         ProcessSaga(fault, metadata)
-                                                             .PipeTo(Self, Sender);
+                                                         ProcessSaga(fault, metadata).PipeTo(Self, Sender);
                                                          BecomeStacked(() => SagaProcessWaiting(fault, metadata));
                                                      },
                 fault => fault.Message.SagaId == Id);
@@ -98,8 +96,7 @@ namespace GridDomain.Node.Actors
             string fieldName;
 
             if (_sagaIdFields.TryGetValue(type, out fieldName))
-                return (Guid) type.GetProperty(fieldName)
-                                  .GetValue(msg);
+                return (Guid) type.GetProperty(fieldName).GetValue(msg);
 
             return msg.SagaId;
         }
@@ -127,20 +124,17 @@ namespace GridDomain.Node.Actors
         {
             CommandAny(o =>
                        {
-                           o.Match()
-                            .With<SagaTransited>(r =>
-                                                 {
-                                                     PersistState(messageMetadata);
-                                                     NotifySenderAndResume(r);
-                                                 })
-                            .With<SagaTransitFault>(f =>
-                                                    {
-                                                        PublishError(f.Message.Message,
-                                                            messageMetadata,
-                                                            f.Message.Exception.UnwrapSingle());
-                                                        NotifySenderAndResume(f);
-                                                    })
-                            .Default(m => Stash.Stash());
+                           o.Match().With<SagaTransited>(r =>
+                                                         {
+                                                             PersistState(messageMetadata);
+                                                             NotifySenderAndResume(r);
+                                                         }).With<SagaTransitFault>(f =>
+                                                                                   {
+                                                                                       PublishError(f.Message.Message,
+                                                                                           messageMetadata,
+                                                                                           f.Message.Exception.UnwrapSingle());
+                                                                                       NotifySenderAndResume(f);
+                                                                                   }).Default(m => Stash.Stash());
                        });
         }
 
@@ -191,9 +185,7 @@ namespace GridDomain.Node.Actors
 
         private void PersistState(IMessageMetadata mutatorMessageMetadata)
         {
-            var stateChangeEvents = State.GetUncommittedEvents()
-                                         .Cast<DomainEvent>()
-                                         .ToArray();
+            var stateChangeEvents = State.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             var totalEvents = stateChangeEvents.Length;
             var persistedEvents = 0;
 

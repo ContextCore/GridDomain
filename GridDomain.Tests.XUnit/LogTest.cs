@@ -16,8 +16,7 @@ namespace GridDomain.Tests.XUnit
         {
             var logger = new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Verbose).CreateLogger();
             var loggerActor = ((ExtendedActorSystem) Sys).SystemActorOf(Props.Create(() => new SerilogLoggerActor(logger)));
-            loggerActor.Ask<LoggerInitialized>(new InitializeLogger(Sys.EventStream))
-                       .Wait();
+            loggerActor.Ask<LoggerInitialized>(new InitializeLogger(Sys.EventStream)).Wait();
         }
 
         private class TestLogActor : ReceiveActor

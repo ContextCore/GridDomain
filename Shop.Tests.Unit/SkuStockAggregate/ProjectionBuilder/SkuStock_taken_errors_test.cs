@@ -28,13 +28,8 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             ProjectionBuilder.Handle(stockTaken);
             ProjectionBuilder.Handle(stockTaken);
 
-            Assert.AreEqual(3,
-                ContextFactory()
-                    .StockHistory.Count());
-            Assert.AreEqual(1,
-                ContextFactory()
-                    .SkuStocks.Find(stockId)
-                    .AvailableQuantity);
+            Assert.AreEqual(3, ContextFactory().StockHistory.Count());
+            Assert.AreEqual(1, ContextFactory().SkuStocks.Find(stockId).AvailableQuantity);
         }
     }
 }

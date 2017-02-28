@@ -15,8 +15,9 @@ namespace GridDomain.Node.Configuration.Composition
         }
 
         public CustomContainerConfiguration(params IContainerConfiguration[] configurations)
-            : this(configurations.Select(config => (Action<IUnityContainer>) (container => container.Register(config)))
-                                 .ToArray()) {}
+            : this(
+                configurations.Select(config => (Action<IUnityContainer>) (container => container.Register(config)))
+                              .ToArray()) {}
 
         public void Register(IUnityContainer container)
         {

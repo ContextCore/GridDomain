@@ -27,8 +27,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                         <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
                             SagaStateAggregate<SoftwareProgrammingSagaData>>);
 
-            var props = Node.System.DI()
-                            .Props(actorType);
+            var props = Node.System.DI().Props(actorType);
             var name =
                 new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);
@@ -41,10 +40,11 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(msg);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(msg);
 
             var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
             Assert.NotNull(sagaActor);

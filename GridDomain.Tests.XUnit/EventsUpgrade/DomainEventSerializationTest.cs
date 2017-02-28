@@ -30,8 +30,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
             //    TypeNameHandling = TypeNameHandling.All
             //});
 
-            return serializer.ToBinary(evt)
-                             .ToString();
+            return serializer.ToBinary(evt).ToString();
         }
 
         [Fact(Skip = "Disabled due to backward versioning is not ready")]
@@ -40,8 +39,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
             var evt = new TestEvent_V1(Guid.NewGuid());
             var serializedString = SerializedToString(evt);
 
-            var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent_V1))
-                                                    .ToString();
+            var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent_V1)).ToString();
             Assert.True(serializedString.Contains(expectedTypeName));
         }
 
@@ -54,8 +52,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
             var evt = new TestEvent(Guid.NewGuid());
             var serializedString = SerializedToString(evt);
 
-            var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent), 2)
-                                                    .ToString();
+            var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent), 2).ToString();
             Assert.True(serializedString.Contains(expectedTypeName));
         }
     }

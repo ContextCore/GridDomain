@@ -28,15 +28,13 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         public static ClusterConfig SeedNode(IAkkaNetworkAddress address, params IAkkaNetworkAddress[] otherSeeds)
         {
             var allSeeds = otherSeeds.Union(new[] {address});
-            var seedNodes = allSeeds.Select(GetSeedNetworkAddress)
-                                    .ToArray();
+            var seedNodes = allSeeds.Select(GetSeedNetworkAddress).ToArray();
             return new ClusterConfig(address, seedNodes);
         }
 
         public static ClusterConfig NonSeedNode(IAkkaNetworkAddress address, IAkkaNetworkAddress[] seedNodesAddresses)
         {
-            var seedNodes = seedNodesAddresses.Select(GetSeedNetworkAddress)
-                                              .ToArray();
+            var seedNodes = seedNodesAddresses.Select(GetSeedNetworkAddress).ToArray();
             return new ClusterConfig(new AkkaNetworkAddress(address.SystemName, address.Host, 0), seedNodes);
         }
 

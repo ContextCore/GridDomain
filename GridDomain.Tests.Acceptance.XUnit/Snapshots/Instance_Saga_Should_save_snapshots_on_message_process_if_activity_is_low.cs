@@ -22,8 +22,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             : base(
                 output,
                 new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2,
-                    TimeSpan.FromSeconds(10))
-                                                                     .IgnoreCommands()) {}
+                    TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -31,20 +30,22 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid());
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaStartEvent, sagaId);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaStartEvent, sagaId);
 
             //wait some time, allowing first snapshots to be saved
             await Task.Delay(200);
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow);
 
             //send text event
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaContinueEvent, sagaId);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaContinueEvent, sagaId);
 
             //wait some time, second snapshots should not be saved due to max frequency in snapshotting policy
             await Task.Delay(200);
@@ -59,9 +60,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
             //Snapshot_should_have_parameters_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
-                snapshots.First()
-                         .Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.Data.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

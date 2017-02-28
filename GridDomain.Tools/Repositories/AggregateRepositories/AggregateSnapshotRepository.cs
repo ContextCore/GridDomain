@@ -27,24 +27,26 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         {
             var serializer = new DomainSerializer();
             using (var repo = new RawSnapshotsRepository(_writeString))
-                return (await repo.Load(AggregateActorName.New<T>(id)
-                                                          .Name)).Select(s =>
-                                                                         {
-                                                                             var memento =
-                                                                                 (IMemento)
-                                                                                     serializer.FromBinary(s.Snapshot,
-                                                                                         typeof(IMemento));
-                                                                             var aggregate =
-                                                                                 (T)
-                                                                                     _aggregatesConstructor.Build(typeof(T),
-                                                                                         id,
-                                                                                         memento);
-                                                                             aggregate.ClearUncommittedEvents();
-                                                                                 //in case json will call public constructor
-                                                                             return new AggregateVersion<T>(aggregate,
-                                                                                 s.Timestamp);
-                                                                         })
-                                                                 .ToArray();
+                return (await repo.Load(AggregateActorName.New<T>(id).Name)).Select(s =>
+                                                                                    {
+                                                                                        var memento =
+                                                                                            (IMemento)
+                                                                                                serializer.FromBinary(
+                                                                                                    s.Snapshot,
+                                                                                                    typeof(IMemento));
+                                                                                        var aggregate =
+                                                                                            (T)
+                                                                                                _aggregatesConstructor.Build(
+                                                                                                    typeof(T),
+                                                                                                    id,
+                                                                                                    memento);
+                                                                                        aggregate.ClearUncommittedEvents();
+                                                                                        //in case json will call public constructor
+                                                                                        return
+                                                                                            new AggregateVersion<T>(
+                                                                                                aggregate,
+                                                                                                s.Timestamp);
+                                                                                    }).ToArray();
         }
 
         public async Task Add<T>(T aggregate) where T : IAggregate
@@ -56,10 +58,8 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                 var snapshot = aggregate.GetSnapshot();
                 var item = new SnapshotItem
                            {
-                               Manifest = snapshot.GetType()
-                                                  .AssemblyQualifiedShortName(),
-                               PersistenceId = AggregateActorName.New<T>(aggregate.Id)
-                                                                 .Name,
+                               Manifest = snapshot.GetType().AssemblyQualifiedShortName(),
+                               PersistenceId = AggregateActorName.New<T>(aggregate.Id).Name,
                                Snapshot = serializer.ToBinary(snapshot),
                                Timestamp = BusinessDateTime.UtcNow
                            };

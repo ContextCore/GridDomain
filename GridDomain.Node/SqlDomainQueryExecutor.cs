@@ -69,8 +69,7 @@ namespace GridDomain.Node
             while (SqlAzureRetriableExceptionDetector.ShouldRetryOn(ex) && --maxCount > 0);
 
             _log.Error(ex, "Got fatal error trying to execute a sql journal method");
-            ExceptionDispatchInfo.Capture(ex)
-                                 .Throw();
+            ExceptionDispatchInfo.Capture(ex).Throw();
         }
 
         private async Task<T> RetryAsync<T>(Func<Task<T>> act, int maxCount = 3)
@@ -90,8 +89,7 @@ namespace GridDomain.Node
             }
             while (SqlAzureRetriableExceptionDetector.ShouldRetryOn(ex) && --maxCount > 0);
             _log.Error(ex, "Got fatal error trying to execute a sql journal method");
-            ExceptionDispatchInfo.Capture(ex)
-                                 .Throw();
+            ExceptionDispatchInfo.Capture(ex).Throw();
             //never reach this statement
             throw new InvalidOperationException();
         }
@@ -115,8 +113,7 @@ namespace GridDomain.Node
             while (SqlAzureRetriableExceptionDetector.ShouldRetryOn(ex) && --maxCount > 0);
 
             _log.Error(ex, "Got fatal error trying to execute a sql journal method");
-            ExceptionDispatchInfo.Capture(ex)
-                                 .Throw();
+            ExceptionDispatchInfo.Capture(ex).Throw();
             //never reach this statement
             throw new InvalidOperationException();
         }

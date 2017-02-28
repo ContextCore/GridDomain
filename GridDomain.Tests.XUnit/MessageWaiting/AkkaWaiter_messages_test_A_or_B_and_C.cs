@@ -14,10 +14,11 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-            return waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                         .Or<Message>(m => m.Id == _messageB.Id)
-                         .And<Message>(m => m.Id == _messageC.Id)
-                         .Create();
+            return
+                waiter.Expect<Message>(m => m.Id == _messageA.Id)
+                      .Or<Message>(m => m.Id == _messageB.Id)
+                      .And<Message>(m => m.Id == _messageC.Id)
+                      .Create();
         }
 
         [Fact]

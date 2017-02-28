@@ -17,12 +17,12 @@ namespace GridDomain.Tests.Framework
 
         protected TypesDeserializationTest()
         {
-            TypesCache = AllAssemblies.SelectMany(a => a.GetTypes())
-                                      .SelectMany(t => t.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic)
-                                                        .Union(new[] {t}))
-                                      .Where(t => t != null)
-                                      .Distinct()
-                                      .ToArray();
+            TypesCache =
+                AllAssemblies.SelectMany(a => a.GetTypes())
+                             .SelectMany(t => t.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).Union(new[] {t}))
+                             .Where(t => t != null)
+                             .Distinct()
+                             .ToArray();
 
             _excludes = new HashSet<Type>(ExcludeTypes);
 
@@ -35,13 +35,13 @@ namespace GridDomain.Tests.Framework
 
         protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
         {
-            var allTypes = assembly.SelectMany(a => a.GetTypes())
-                                   .Where(
-                                       t =>
-                                           typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface
-                                           && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
-                                               .Any())
-                                   .Distinct();
+            var allTypes =
+                assembly.SelectMany(a => a.GetTypes())
+                        .Where(
+                            t =>
+                                typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface
+                                && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
+                        .Distinct();
 
             CheckAll<T>(allTypes.ToArray());
         }
@@ -57,9 +57,9 @@ namespace GridDomain.Tests.Framework
                 {
                     var constructedType = type;
 
-                    var createMethodInfo = typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create),
-                        new[] {typeof(ISpecimenBuilder)})
-                                                                  .MakeGenericMethod(constructedType);
+                    var createMethodInfo =
+                        typeof(SpecimenFactory).GetMethod(nameof(SpecimenFactory.Create), new[] {typeof(ISpecimenBuilder)})
+                                               .MakeGenericMethod(constructedType);
 
 
                     var obj = createMethodInfo.Invoke(null, new object[] {Fixture});

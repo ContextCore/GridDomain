@@ -21,17 +21,17 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             var reserveTime = TimeSpan.FromMilliseconds(100);
             _expirationDate = reservationStartTime + reserveTime;
 
-            _scenario = Scenario.New<SkuStock, SkuStockCommandsHandler>()
-                                .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, reserveTime),
-                                    new StockAdded(aggregateId, 10, "test batch 2"),
-                                    _stockReservedEvent = new StockReserved(aggregateId, customerId, _expirationDate, 5),
-                                    new FutureEventScheduledEvent(Guid.NewGuid(),
-                                        aggregateId,
-                                        _expirationDate,
-                                        new ReserveExpired(aggregateId, customerId)))
-                                .When(
-                                    _reserveStockCommand =
-                                        new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime));
+            _scenario =
+                Scenario.New<SkuStock, SkuStockCommandsHandler>()
+                        .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, reserveTime),
+                            new StockAdded(aggregateId, 10, "test batch 2"),
+                            _stockReservedEvent = new StockReserved(aggregateId, customerId, _expirationDate, 5),
+                            new FutureEventScheduledEvent(Guid.NewGuid(),
+                                aggregateId,
+                                _expirationDate,
+                                new ReserveExpired(aggregateId, customerId)))
+                        .When(
+                            _reserveStockCommand = new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime));
 
             _scenario.Run();
         }

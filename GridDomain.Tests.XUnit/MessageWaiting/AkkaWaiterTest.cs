@@ -31,8 +31,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         public void Dispose()
         {
-            _actorSystem.Terminate()
-                        .Wait();
+            _actorSystem.Terminate().Wait();
         }
 
         protected abstract Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter);

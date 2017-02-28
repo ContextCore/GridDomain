@@ -24,10 +24,9 @@ namespace GridDomain.Tests.XUnit.Metadata
             var command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12");
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(command, commandMetadata)
-                                .Expect<TestDomainEvent>()
-                                .And<JobSucceeded>()
-                                .Execute(null, false);
+            var res =
+                await
+                    Node.Prepare(command, commandMetadata).Expect<TestDomainEvent>().And<JobSucceeded>().Execute(null, false);
 
             var answer = res.MessageWithMetadata<TestDomainEvent>();
             var jobSucced = res.MessageWithMetadata<JobSucceeded>();
@@ -49,9 +48,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = answer.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId)
-                                           .Name,
-                step.Who);
+            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId).Name, step.Who);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandExecutionCreatedAnEvent, step.Why);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.PublishingEvent, step.What);
         }

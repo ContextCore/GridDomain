@@ -29,9 +29,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public FakeDbSet(params string[] primaryKeys)
         {
-            _primaryKeys = typeof(TEntity).GetProperties()
-                                          .Where(x => primaryKeys.Contains(x.Name))
-                                          .ToArray();
+            _primaryKeys = typeof(TEntity).GetProperties().Where(x => primaryKeys.Contains(x.Name)).ToArray();
             _data = new ObservableCollection<TEntity>();
             _query = _data.AsQueryable();
         }
@@ -81,8 +79,8 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             var keyQuery = this.AsQueryable();
             keyQuery = keyValues.Select((t, i) => i)
                                 .Aggregate(keyQuery,
-                                    (current, x) => current.Where(entity => _primaryKeys[x].GetValue(entity, null)
-                                                                                           .Equals(keyValues[x])));
+                                    (current, x) =>
+                                        current.Where(entity => _primaryKeys[x].GetValue(entity, null).Equals(keyValues[x])));
 
             return keyQuery.SingleOrDefault();
         }

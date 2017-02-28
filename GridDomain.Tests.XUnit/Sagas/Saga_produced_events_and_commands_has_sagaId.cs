@@ -40,14 +40,14 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var domainEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            var waitResults = await Node.NewDebugWaiter()
-                                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                                        .Create()
-                                        .SendToSagas(domainEvent);
+            var waitResults =
+                await
+                    Node.NewDebugWaiter()
+                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                        .Create()
+                        .SendToSagas(domainEvent);
 
-            Assert.Equal(domainEvent.SagaId,
-                waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                           .SagaId);
+            Assert.Equal(domainEvent.SagaId, waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>().SagaId);
         }
     }
 }

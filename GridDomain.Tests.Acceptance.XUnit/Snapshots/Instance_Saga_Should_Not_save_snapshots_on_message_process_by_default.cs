@@ -23,19 +23,21 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
-            await Node.NewDebugWaiter(TimeSpan.FromSeconds(100))
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaStartEvent);
+            await
+                Node.NewDebugWaiter(TimeSpan.FromSeconds(100))
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaStartEvent);
 
             await Task.Delay(1000);
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaContinueEvent);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaContinueEvent);
 
             //saving snapshot
             await Task.Delay(200);

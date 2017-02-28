@@ -72,16 +72,14 @@ namespace GridDomain.Node
             _actorSystem.AddDependencyResolver(new UnityDependencyResolver(container, _actorSystem));
 
             container.RegisterInstance(_quartzJobRetrySettings);
-            var persistentScheduler = _actorSystem.ActorOf(_actorSystem.DI()
-                                                                       .Props<SchedulingActor>(),
+            var persistentScheduler = _actorSystem.ActorOf(_actorSystem.DI().Props<SchedulingActor>(),
                 nameof(SchedulingActor));
             container.RegisterInstance(SchedulingActor.RegistrationName, persistentScheduler);
 
             var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);
             container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
 
-            var executor = ConfigureCommandPipe(_actorSystem, transport, container, _defaultCommandExecutionTimeout)
-                .Result;
+            var executor = ConfigureCommandPipe(_actorSystem, transport, container, _defaultCommandExecutionTimeout).Result;
             container.RegisterInstance(executor);
         }
 

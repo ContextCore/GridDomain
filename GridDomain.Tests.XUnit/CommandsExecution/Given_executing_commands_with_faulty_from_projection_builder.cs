@@ -30,33 +30,36 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task When_dont_expect_fault_Then_it_is_not_received_case_it_comes_from_projection_builder()
         {
-            await Node.Prepare(new LongOperationCommand(100, Guid.NewGuid()))
-                      .Expect<AggregateChangedEventNotification>()
-                      .Execute(TimeSpan.FromSeconds(1))
-                      .ShouldThrow<TimeoutException>();
+            await
+                Node.Prepare(new LongOperationCommand(100, Guid.NewGuid()))
+                    .Expect<AggregateChangedEventNotification>()
+                    .Execute(TimeSpan.FromSeconds(1))
+                    .ShouldThrow<TimeoutException>();
         }
 
         [Fact]
         public async Task When_expect_fault_and_ignore_fault_erorrs_Then_fault_is_received_and_contains_error_B()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
-            var res = await Node.Prepare(syncCommand)
-                                .Expect<AggregateChangedEventNotification>()
-                                .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId)
-                                .Execute(false);
+            var res =
+                await
+                    Node.Prepare(syncCommand)
+                        .Expect<AggregateChangedEventNotification>()
+                        .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId)
+                        .Execute(false);
 
-            Assert.IsAssignableFrom<MessageHandleException>(res.Message<IFault<SampleAggregateChangedEvent>>()
-                                                              ?.Exception);
+            Assert.IsAssignableFrom<MessageHandleException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
         }
 
         [Fact]
         public async Task When_expect_fault_Then_exception_is_raised()
         {
-            await Node.Prepare(new LongOperationCommand(8, Guid.NewGuid()))
-                      .Expect<AggregateChangedEventNotification>()
-                      .Or<IFault<SampleAggregateChangedEvent>>()
-                      .Execute()
-                      .ShouldThrow<MessageHandleException>();
+            await
+                Node.Prepare(new LongOperationCommand(8, Guid.NewGuid()))
+                    .Expect<AggregateChangedEventNotification>()
+                    .Or<IFault<SampleAggregateChangedEvent>>()
+                    .Execute()
+                    .ShouldThrow<MessageHandleException>();
         }
     }
 }

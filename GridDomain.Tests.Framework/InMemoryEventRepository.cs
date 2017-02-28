@@ -56,11 +56,8 @@ namespace GridDomain.Tests.Framework
                          Guid commitId,
                          Action<IDictionary<string, object>> updateHeaders)
         {
-            ProducedEvents.AddRange(aggregate.GetUncommittedEvents()
-                                             .Cast<DomainEvent>());
-            GetOrAddEventList(aggregate.Id)
-                .AddRange(aggregate.GetUncommittedEvents()
-                                   .Cast<DomainEvent>());
+            ProducedEvents.AddRange(aggregate.GetUncommittedEvents().Cast<DomainEvent>());
+            GetOrAddEventList(aggregate.Id).AddRange(aggregate.GetUncommittedEvents().Cast<DomainEvent>());
         }
 
         public void Dispose()
@@ -85,8 +82,7 @@ namespace GridDomain.Tests.Framework
 
         private void Hydrate(IAggregate aggregate)
         {
-            GetOrAddEventList(aggregate.Id)
-                .ForEach(aggregate.ApplyEvent);
+            GetOrAddEventList(aggregate.Id).ForEach(aggregate.ApplyEvent);
             aggregate.ClearUncommittedEvents();
         }
     }

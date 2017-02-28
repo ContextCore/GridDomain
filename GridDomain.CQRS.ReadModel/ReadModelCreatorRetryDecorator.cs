@@ -15,16 +15,12 @@ namespace GridDomain.CQRS.ReadModel
 
         public void Add(T entity)
         {
-            Policy.Handle<DbUpdateConcurrencyException>()
-                  .Retry(5)
-                  .Execute(() => _origCreator.Add(entity));
+            Policy.Handle<DbUpdateConcurrencyException>().Retry(5).Execute(() => _origCreator.Add(entity));
         }
 
         public void Modify(Guid id, Action<T> modificator)
         {
-            Policy.Handle<DbUpdateConcurrencyException>()
-                  .Retry(5)
-                  .Execute(() => _origCreator.Modify(id, modificator));
+            Policy.Handle<DbUpdateConcurrencyException>().Retry(5).Execute(() => _origCreator.Modify(id, modificator));
         }
     }
 }

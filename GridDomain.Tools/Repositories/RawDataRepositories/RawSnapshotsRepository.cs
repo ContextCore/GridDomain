@@ -38,9 +38,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         {
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
-                return await context.Snapshots.Where(j => j.PersistenceId == id)
-                                    .OrderBy(i => i.SequenceNr)
-                                    .ToArrayAsync();
+                return await context.Snapshots.Where(j => j.PersistenceId == id).OrderBy(i => i.SequenceNr).ToArrayAsync();
             }
         }
     }

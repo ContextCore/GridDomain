@@ -22,17 +22,18 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _expirationDate = reservationStartTime + reserveTime;
 
             var futureEventId = Guid.NewGuid();
-            _scenario = Scenario.New<SkuStock, SkuStockCommandsHandler>()
-                                .Given(_stockCreated = new SkuStockCreated(_aggregateId, Guid.NewGuid(), 50, reserveTime),
-                                    _stockAdded = new StockAdded(_aggregateId, 10, "test batch 2"),
-                                    _stockReserved = new StockReserved(_aggregateId, _customerId, _expirationDate, 5),
-                                    new FutureEventScheduledEvent(futureEventId,
-                                        _aggregateId,
-                                        _expirationDate,
-                                        new ReserveExpired(_aggregateId, _customerId)))
-                                .When(
-                                    _raiseEventCommand =
-                                        new RaiseScheduledDomainEventCommand(futureEventId, _aggregateId, Guid.NewGuid()));
+            _scenario =
+                Scenario.New<SkuStock, SkuStockCommandsHandler>()
+                        .Given(_stockCreated = new SkuStockCreated(_aggregateId, Guid.NewGuid(), 50, reserveTime),
+                            _stockAdded = new StockAdded(_aggregateId, 10, "test batch 2"),
+                            _stockReserved = new StockReserved(_aggregateId, _customerId, _expirationDate, 5),
+                            new FutureEventScheduledEvent(futureEventId,
+                                _aggregateId,
+                                _expirationDate,
+                                new ReserveExpired(_aggregateId, _customerId)))
+                        .When(
+                            _raiseEventCommand =
+                                new RaiseScheduledDomainEventCommand(futureEventId, _aggregateId, Guid.NewGuid()));
 
 
             _initialStock = _scenario.Aggregate.Quantity;

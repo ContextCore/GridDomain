@@ -22,31 +22,28 @@ namespace Shop.Domain.Sagas
             CompositeEvent(() => OrderWasReserved, x => x.OrderWarReservedStatus, OrderFinilized, StockReserved);
 
             During(Initial,
-                When(PurchaseOrdered)
-                    .Then((state, domainEvent) =>
-                          {
-                              state.AccountId = domainEvent.AccountId;
-                              state.OrderId = domainEvent.OrderId;
-                              state.Quantity = domainEvent.Quantity;
-                              state.SkuId = domainEvent.SkuId;
-                              state.UserId = domainEvent.SourceId;
-                              state.StockId = domainEvent.StockId;
+                When(PurchaseOrdered).Then((state, domainEvent) =>
+                                           {
+                                               state.AccountId = domainEvent.AccountId;
+                                               state.OrderId = domainEvent.OrderId;
+                                               state.Quantity = domainEvent.Quantity;
+                                               state.SkuId = domainEvent.SkuId;
+                                               state.UserId = domainEvent.SourceId;
+                                               state.StockId = domainEvent.StockId;
 
-                              Dispatch(new CreateOrderCommand(state.OrderId, state.UserId));
-                          })
-                    .TransitionTo(CreatingOrder));
+                                               Dispatch(new CreateOrderCommand(state.OrderId, state.UserId));
+                                           }).TransitionTo(CreatingOrder));
 
             During(CreatingOrder,
-                When(OrderCreated)
-                    .ThenAsync(async (state, e) =>
-                                     {
-                                         var totalPrice = await calculator.CalculatePrice(state.SkuId, state.Quantity);
-                                         Dispatch(new AddItemToOrderCommand(state.OrderId,
-                                             state.SkuId,
-                                             state.Quantity,
-                                             totalPrice));
-                                     })
-                    .TransitionTo(AddingOrderItems));
+                When(OrderCreated).ThenAsync(async (state, e) =>
+                                                   {
+                                                       var totalPrice =
+                                                           await calculator.CalculatePrice(state.SkuId, state.Quantity);
+                                                       Dispatch(new AddItemToOrderCommand(state.OrderId,
+                                                           state.SkuId,
+                                                           state.Quantity,
+                                                           totalPrice));
+                                                   }).TransitionTo(AddingOrderItems));
 
             During(AddingOrderItems,
                 When(ItemAdded)
@@ -54,20 +51,18 @@ namespace Shop.Domain.Sagas
                     .TransitionTo(Reserving));
 
             During(Reserving,
-                When(StockReserved)
-                    .Then((state, domainEvent) =>
-                          {
-                              state.ReserveId = domainEvent.ReserveId;
-                              Dispatch(new CalculateOrderTotalCommand(state.OrderId));
-                          }),
+                When(StockReserved).Then((state, domainEvent) =>
+                                         {
+                                             state.ReserveId = domainEvent.ReserveId;
+                                             Dispatch(new CalculateOrderTotalCommand(state.OrderId));
+                                         }),
                 When(OrderFinilized)
                     .Then(
                         (state, domainEvent) =>
                         {
                             Dispatch(new PayForOrderCommand(state.AccountId, domainEvent.TotalPrice, state.OrderId));
                         }),
-                When(OrderWasReserved)
-                    .TransitionTo(Paying));
+                When(OrderWasReserved).TransitionTo(Paying));
 
 
             During(Paying,
@@ -76,13 +71,11 @@ namespace Shop.Domain.Sagas
                     .TransitionTo(TakingStock));
 
             During(TakingStock,
-                When(ReserveTaken)
-                    .Then((state, e) =>
-                          {
-                              Dispatch(new CompleteOrderCommand(state.OrderId));
-                              Dispatch(new CompletePendingOrderCommand(state.UserId, state.OrderId));
-                          })
-                    .Finalize());
+                When(ReserveTaken).Then((state, e) =>
+                                        {
+                                            Dispatch(new CompleteOrderCommand(state.OrderId));
+                                            Dispatch(new CompletePendingOrderCommand(state.UserId, state.OrderId));
+                                        }).Finalize());
         }
 
         public Event<SkuPurchaseOrdered> PurchaseOrdered { get; private set; }

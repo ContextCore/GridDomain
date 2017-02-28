@@ -30,31 +30,24 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private T ExtractFirstEvent<T>(IAggregate sagaDataAggregate)
         {
-            return GetAllAs<T>(sagaDataAggregate)
-                .First();
+            return GetAllAs<T>(sagaDataAggregate).First();
         }
 
         private T GetFirstOf<T>(IAggregate sagaDataAggregate)
         {
-            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents()
-                                                    .OfType<T>()
-                                                    .First();
+            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents().OfType<T>().First();
             return stateChangeEvent;
         }
 
         private T[] GetAllOf<T>(IAggregate sagaDataAggregate)
         {
-            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents()
-                                                    .OfType<T>()
-                                                    .ToArray();
+            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents().OfType<T>().ToArray();
             return stateChangeEvent;
         }
 
         private T[] GetAllAs<T>(IAggregate sagaDataAggregate)
         {
-            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents()
-                                                    .Cast<T>()
-                                                    .ToArray();
+            var stateChangeEvent = sagaDataAggregate.GetUncommittedEvents().Cast<T>().ToArray();
             return stateChangeEvent;
         }
 
@@ -168,8 +161,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Sleeping, log);
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
             //Transition_raises_an_error()
-            await given.SagaInstance.Transit(gotTiredEvent)
-                       .ShouldThrow<SagaTransitionException>();
+            await given.SagaInstance.Transit(gotTiredEvent).ShouldThrow<SagaTransitionException>();
         }
     }
 }

@@ -52,8 +52,7 @@ namespace GridDomain.Node
 
         public string Manifest(object evt)
         {
-            return evt.GetType()
-                      .AssemblyQualifiedShortName();
+            return evt.GetType().AssemblyQualifiedShortName();
         }
 
         public object ToJournal(object evt)

@@ -16,8 +16,7 @@ namespace Shop.Tests.Unit.UserAggregate
         private AggregateScenario<User, UserCommandsHandler> NewScenario()
         {
             var stockProviderMoq = new Mock<IDefaultStockProvider>();
-            stockProviderMoq.Setup(p => p.GetStockForSku(It.IsAny<Guid>()))
-                            .Returns(_stockId);
+            stockProviderMoq.Setup(p => p.GetStockForSku(It.IsAny<Guid>())).Returns(_stockId);
 
             return AggregateScenario<User, UserCommandsHandler>.New(null, new UserCommandsHandler(stockProviderMoq.Object));
         }
@@ -30,17 +29,16 @@ namespace Shop.Tests.Unit.UserAggregate
             var quantity = 10;
             var account = Guid.NewGuid();
 
-            var scenario = NewScenario()
-                .Given(new UserCreated(userId, "testLogin", account))
-                .When(new BuySkuNowCommand(userId, skuId, quantity))
-                .Then(new SkuPurchaseOrdered(userId, skuId, 10, Any.GUID, _stockId, account));
+            var scenario =
+                NewScenario()
+                    .Given(new UserCreated(userId, "testLogin", account))
+                    .When(new BuySkuNowCommand(userId, skuId, quantity))
+                    .Then(new SkuPurchaseOrdered(userId, skuId, 10, Any.GUID, _stockId, account));
 
-            scenario.Run()
-                    .Check();
+            scenario.Run().Check();
 
             //Aggregate state 
-            var pendingOrderId = scenario.Aggregate.GetEvent<SkuPurchaseOrdered>()
-                                         .OrderId;
+            var pendingOrderId = scenario.Aggregate.GetEvent<SkuPurchaseOrdered>().OrderId;
             var pendingOrder = scenario.Aggregate.PendingOrders[pendingOrderId];
             Assert.AreEqual(quantity, pendingOrder.Quantity);
             Assert.AreEqual(skuId, pendingOrder.SkuId);
@@ -57,14 +55,14 @@ namespace Shop.Tests.Unit.UserAggregate
             var account = Guid.NewGuid();
 
 
-            var scenario = NewScenario()
-                .Given(new UserCreated(userId, "testLogin", account),
-                    new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
-                .When(new CancelPendingOrderCommand(userId, orderId))
-                .Then(new PendingOrderCanceled(userId, orderId));
+            var scenario =
+                NewScenario()
+                    .Given(new UserCreated(userId, "testLogin", account),
+                        new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
+                    .When(new CancelPendingOrderCommand(userId, orderId))
+                    .Then(new PendingOrderCanceled(userId, orderId));
 
-            scenario.Run()
-                    .Check();
+            scenario.Run().Check();
 
             //pending order should be removed
             CollectionAssert.IsEmpty(scenario.Aggregate.PendingOrders);
@@ -80,14 +78,14 @@ namespace Shop.Tests.Unit.UserAggregate
             var account = Guid.NewGuid();
 
 
-            var scenario = NewScenario()
-                .Given(new UserCreated(userId, "testLogin", account),
-                    new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
-                .When(new CompletePendingOrderCommand(userId, orderId))
-                .Then(new PendingOrderCompleted(userId, orderId));
+            var scenario =
+                NewScenario()
+                    .Given(new UserCreated(userId, "testLogin", account),
+                        new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
+                    .When(new CompletePendingOrderCommand(userId, orderId))
+                    .Then(new PendingOrderCompleted(userId, orderId));
 
-            scenario.Run()
-                    .Check();
+            scenario.Run().Check();
 
             //pending order should be removed
             CollectionAssert.IsEmpty(scenario.Aggregate.PendingOrders);
@@ -98,12 +96,9 @@ namespace Shop.Tests.Unit.UserAggregate
         {
             var cmd = new CreateUserCommand(Guid.NewGuid(), "testLogin", Guid.NewGuid());
 
-            var scenario = NewScenario()
-                .When(cmd)
-                .Then(new UserCreated(cmd.UserId, cmd.Login, cmd.AccountId));
+            var scenario = NewScenario().When(cmd).Then(new UserCreated(cmd.UserId, cmd.Login, cmd.AccountId));
 
-            scenario.Run()
-                    .Check();
+            scenario.Run().Check();
 
             Assert.AreEqual(cmd.Login, scenario.Aggregate.Login);
             Assert.AreEqual(cmd.AccountId, scenario.Aggregate.Account);

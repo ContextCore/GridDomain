@@ -15,7 +15,8 @@ using Microsoft.Practices.Unity;
 namespace GridDomain.Node.Configuration.Composition
 {
     public class AggregateConfiguration<TAggregate, TAggregateCommandsHandler> : IContainerConfiguration
-        where TAggregate : AggregateBase where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
+        where TAggregate : AggregateBase
+        where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
     {
         private readonly IConstructAggregates _factory;
 

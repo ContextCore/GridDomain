@@ -28,10 +28,12 @@ namespace GridDomain.Tests.XUnit.Metadata
             _command = new CreateSampleAggregateCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(_command, _commandMetadata)
-                                .Expect<SampleAggregateCreatedEvent>()
-                                .And<AggregateCreatedEventNotification>()
-                                .Execute();
+            var res =
+                await
+                    Node.Prepare(_command, _commandMetadata)
+                        .Expect<SampleAggregateCreatedEvent>()
+                        .And<AggregateCreatedEventNotification>()
+                        .Execute();
 
             _answer = res.MessageWithMetadata<AggregateCreatedEventNotification>();
             _aggregateEvent = res.MessageWithMetadata<SampleAggregateCreatedEvent>();

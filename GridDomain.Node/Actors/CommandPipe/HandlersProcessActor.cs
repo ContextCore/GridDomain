@@ -80,8 +80,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 
                                               p.ActorRef.Tell(messageMetadataEnvelop);
                                               return Task.CompletedTask;
-                                          })
-                                  .ToChain();
+                                          }).ToChain();
         }
     }
 }

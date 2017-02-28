@@ -40,14 +40,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
         {
             var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), false);
 
-            var res = await Node.Prepare(cmd)
-                                .Expect<BalanceChangedEvent_V1>()
-                                .Execute();
+            var res = await Node.Prepare(cmd).Expect<BalanceChangedEvent_V1>().Execute();
 
             //event should be modified by json object adapter, changing its Amount
-            Assert.Equal(101,
-                res.Message<BalanceChangedEvent_V1>()
-                   .AmountChange);
+            Assert.Equal(101, res.Message<BalanceChangedEvent_V1>().AmountChange);
         }
     }
 }

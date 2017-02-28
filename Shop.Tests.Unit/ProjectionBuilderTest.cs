@@ -13,8 +13,7 @@ namespace Shop.Tests.Unit
 
         protected ProjectionBuilderTest(string dbName = null)
         {
-            DatabaseName = dbName ?? GetType()
-                .BeautyName() + Random.Next();
+            DatabaseName = dbName ?? GetType().BeautyName() + Random.Next();
         }
 
         protected TBuilder ProjectionBuilder { get; set; }
@@ -23,8 +22,7 @@ namespace Shop.Tests.Unit
         [OneTimeSetUp]
         public void Generate_db_options()
         {
-            Options = new DbContextOptionsBuilder<TContext>().UseInMemoryDatabase(DatabaseName)
-                                                             .Options;
+            Options = new DbContextOptionsBuilder<TContext>().UseInMemoryDatabase(DatabaseName).Options;
 
             Console.WriteLine($"Generated options for test in-memory db '{DatabaseName}'");
         }

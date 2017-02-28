@@ -17,9 +17,10 @@ namespace GridDomain.Node.Actors
             MessageHandlingStatuses.PublishingFault,
             MessageHandlingStatuses.MessageProcessCasuedAnError);
 
+        private readonly ILoggingAdapter _log = Context.GetLogger();
+
         private readonly ActorMonitor _monitor;
         protected readonly IPublisher Publisher;
-        private readonly ILoggingAdapter _log = Context.GetLogger();
 
         private int publishFaultCount;
 

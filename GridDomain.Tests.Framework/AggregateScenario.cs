@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Framework
             builder.AppendLine();
             foreach (var e in ev)
             {
-                builder.AppendLine($"Event:{e?.GetType() .Name} : ");
+                builder.AppendLine($"Event:{e?.GetType().Name} : ");
                 builder.AppendLine(e?.ToPropsString());
             }
             builder.AppendLine();
@@ -91,9 +91,7 @@ namespace GridDomain.Tests.Framework
                 Aggregate = CommandsHandler.Execute(Aggregate, cmd);
 
             //Then
-            ProducedEvents = Aggregate.GetUncommittedEvents()
-                                      .Cast<DomainEvent>()
-                                      .ToArray();
+            ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
 
             return this;
         }

@@ -20,13 +20,13 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.1), aggregateId, "test value A");
             var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.1), aggregateId, "test value B");
 
-            var eventA = (await Node.Prepare(testCommandA)
-                                    .Expect<FutureEventOccuredEvent>()
-                                    .Execute()).Message<FutureEventOccuredEvent>();
+            var eventA =
+                (await Node.Prepare(testCommandA).Expect<FutureEventOccuredEvent>().Execute())
+                    .Message<FutureEventOccuredEvent>();
 
-            var eventB = (await Node.Prepare(testCommandB)
-                                    .Expect<FutureEventOccuredEvent>()
-                                    .Execute()).Message<FutureEventOccuredEvent>();
+            var eventB =
+                (await Node.Prepare(testCommandB).Expect<FutureEventOccuredEvent>().Execute())
+                    .Message<FutureEventOccuredEvent>();
 
             //Envelop_ids_are_different()
             Assert.NotEqual(eventA.FutureEventId, eventB.FutureEventId);

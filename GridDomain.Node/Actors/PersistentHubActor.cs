@@ -110,9 +110,8 @@ namespace GridDomain.Node.Actors
         private void Clear()
         {
             var now = BusinessDateTime.UtcNow;
-            var childsToTerminate = Children.Where(c => now > c.Value.ExpiresAt && !c.Value.Terminating)
-                                            .Select(ch => ch.Key)
-                                            .ToArray();
+            var childsToTerminate =
+                Children.Where(c => now > c.Value.ExpiresAt && !c.Value.Terminating).Select(ch => ch.Key).ToArray();
 
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
@@ -138,8 +137,7 @@ namespace GridDomain.Node.Actors
         protected ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
         {
             var childActorType = GetChildActorType(messageWitMetadata.Message);
-            var props = Context.DI()
-                               .Props(childActorType);
+            var props = Context.DI().Props(childActorType);
             var childActorRef = Context.ActorOf(props, name);
             return new ChildInfo(childActorRef);
         }

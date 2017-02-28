@@ -18,9 +18,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.Empty, TimeSpan.FromMilliseconds(50));
 
-            await Node.Prepare(cmd)
-                      .Expect<SampleAggregateChangedEvent>()
-                      .Execute();
+            await Node.Prepare(cmd).Expect<SampleAggregateChangedEvent>().Execute();
 
             var aggregate = await this.LoadAggregate<SampleAggregate>(cmd.AggregateId);
 

@@ -17,16 +17,13 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);
             commandFactory = commandFactory ?? (e => new ICommand[] {new TestCommand(e)});
 
-            Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
-                                                          {
-                                                              Task.Delay(sleep)
-                                                                  .ContinueWith(
-                                                                      t =>
-                                                                          new SagaTransited(commandFactory(m.Message),
-                                                                              m.Metadata,
-                                                                              ProcessEntry.Empty))
-                                                                  .PipeTo(Self, Sender);
-                                                          });
+            Receive<IMessageMetadataEnvelop<DomainEvent>>(
+                m =>
+                {
+                    Task.Delay(sleep)
+                        .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty))
+                        .PipeTo(Self, Sender);
+                });
 
 
             Receive<SagaTransited>(m =>

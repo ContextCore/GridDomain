@@ -121,8 +121,7 @@ namespace GridDomain.EventSourcing
             if (criteia != null)
                 eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id))
-                                            .ToArray())
+            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
                 RaiseEvent(e);
         }
 

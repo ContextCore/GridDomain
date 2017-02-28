@@ -16,10 +16,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             _messageA = "testMsg";
             _messageC = 'a';
 
-            return waiter.Expect<string>()
-                         .And<char>()
-                         .Or<int>()
-                         .Create();
+            return waiter.Expect<string>().And<char>().Or<int>().Create();
         }
 
         [Fact]

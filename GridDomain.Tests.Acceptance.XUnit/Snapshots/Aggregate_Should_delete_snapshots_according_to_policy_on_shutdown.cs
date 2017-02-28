@@ -27,9 +27,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             for (var cmdNum = 0; cmdNum < changeNumber; cmdNum++)
             {
                 _parameters[cmdNum] = cmdNum;
-                yield return Node.Prepare(new ChangeSampleAggregateCommand(cmdNum, aggregateId))
-                                 .Expect<SampleAggregateChangedEvent>()
-                                 .Execute();
+                yield return
+                    Node.Prepare(new ChangeSampleAggregateCommand(cmdNum, aggregateId))
+                        .Expect<SampleAggregateChangedEvent>()
+                        .Execute();
             }
         }
 
@@ -38,9 +39,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         {
             var aggregateId = Guid.NewGuid();
 
-            await Node.Prepare(new CreateSampleAggregateCommand(1, aggregateId))
-                      .Expect<SampleAggregateCreatedEvent>()
-                      .Execute();
+            await
+                Node.Prepare(new CreateSampleAggregateCommand(1, aggregateId))
+                    .Expect<SampleAggregateCreatedEvent>()
+                    .Execute();
 
             await Task.WhenAll(ChangeSeveralTimes(5, aggregateId));
 
@@ -58,10 +60,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //Restored_aggregates_should_have_same_ids()
             Assert.True(snapshots.All(s => s.Aggregate.Id == aggregateId));
             //Snapshots_should_have_parameters_from_last_command()
-            Assert.Equal(_parameters.Skip(3)
-                                    .Take(2)
-                                    .Select(p => p.ToString()),
-                snapshots.Select(s => s.Aggregate.Value));
+            Assert.Equal(_parameters.Skip(3).Take(2).Select(p => p.ToString()), snapshots.Select(s => s.Aggregate.Value));
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

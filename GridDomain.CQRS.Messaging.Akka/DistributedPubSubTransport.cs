@@ -45,16 +45,14 @@ namespace GridDomain.CQRS.Messaging.Akka
         {
             var topic = messageType.FullName;
             //TODO: replace wait with actor call
-            var ack = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout)
-                                .Result;
+            var ack = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
             subscribeNotificationWaiter.Tell(ack);
             _log.Debug("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
         }
 
         public void Publish(object msg)
         {
-            var topic = msg.GetType()
-                           .FullName;
+            var topic = msg.GetType().FullName;
             //  _log.Debug("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(),topic);
             _transport.Tell(new Publish(topic, msg));
         }

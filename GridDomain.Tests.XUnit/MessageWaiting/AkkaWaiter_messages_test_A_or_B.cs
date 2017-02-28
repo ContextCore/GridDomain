@@ -9,9 +9,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
     {
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-            return waiter.Expect<string>()
-                         .Or<char>()
-                         .Create();
+            return waiter.Expect<string>().Or<char>().Create();
         }
 
         [Fact]

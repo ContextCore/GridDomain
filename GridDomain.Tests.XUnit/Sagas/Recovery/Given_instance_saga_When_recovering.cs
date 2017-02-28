@@ -46,8 +46,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
             //Saga_produce_commands_only_one_command()
             Assert.Equal(1, dispatchedCommands.Count);
             //Produced_command_has_right_person_id()
-            var sleepCommand = dispatchedCommands.OfType<GoSleepCommand>()
-                                                 .First();
+            var sleepCommand = dispatchedCommands.OfType<GoSleepCommand>().First();
             Assert.Equal(coffeMakeFailedEvent.ForPersonId, sleepCommand.PersonId);
             //Produced_command_has_right_sofa_id()
             Assert.Equal(data.Data.SofaId, sleepCommand.SofaId);

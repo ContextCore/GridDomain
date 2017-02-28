@@ -12,8 +12,7 @@ namespace GridDomain.Scheduling.Quartz.Logging
             _log = log.ForContext<LoggingJobListener>();
         }
 
-        public string Name => GetType()
-            .Name;
+        public string Name => GetType().Name;
 
         public void JobToBeExecuted(IJobExecutionContext context)
         {

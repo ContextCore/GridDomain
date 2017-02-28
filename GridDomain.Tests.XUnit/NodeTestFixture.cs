@@ -60,8 +60,7 @@ namespace GridDomain.Tests.XUnit
 
         public void Dispose()
         {
-            Node.Stop()
-                .Wait();
+            Node.Stop().Wait();
         }
 
         public virtual LoggerConfiguration CreateLoggerConfiguration(ITestOutputHelper helper)
@@ -120,8 +119,7 @@ namespace GridDomain.Tests.XUnit
 
         private async Task CreateLogger()
         {
-            Logger = CreateLoggerConfiguration(Output)
-                .CreateLogger();
+            Logger = CreateLoggerConfiguration(Output).CreateLogger();
 
             var extSystem = (ExtendedActorSystem) System;
             var logActor = extSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(Logger)), "node-log-test");

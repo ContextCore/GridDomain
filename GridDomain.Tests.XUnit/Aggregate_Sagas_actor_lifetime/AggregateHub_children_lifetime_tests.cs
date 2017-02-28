@@ -28,8 +28,7 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
-                return system.DI()
-                             .Props<AggregateHubActor<SampleAggregate>>();
+                return system.DI().Props<AggregateHubActor<SampleAggregate>>();
             }
 
             public object ChildCreateMessage { get; }

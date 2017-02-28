@@ -18,15 +18,13 @@ namespace GridDomain.Tests.XUnit.Tools.Repositories
 
         private EventsRepositoryActor.Loaded LoadEvents(IActorRef actor)
         {
-            var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load())
-                           .Result;
+            var res = actor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load()).Result;
             return res;
         }
 
         private EventsRepositoryActor.Persisted Save(IActorRef actor, object payload)
         {
-            var persisted = actor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(payload))
-                                 .Result;
+            var persisted = actor.Ask<EventsRepositoryActor.Persisted>(new EventsRepositoryActor.Persist(payload)).Result;
             return persisted;
         }
 

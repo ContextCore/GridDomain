@@ -25,10 +25,12 @@ namespace GridDomain.Tests.XUnit.Metadata
             var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12", 1);
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(command, commandMetadata)
-                                .Expect<JobFailed>()
-                                .And<IFault<RaiseScheduledDomainEventCommand>>()
-                                .Execute(null, false);
+            var res =
+                await
+                    Node.Prepare(command, commandMetadata)
+                        .Expect<JobFailed>()
+                        .And<IFault<RaiseScheduledDomainEventCommand>>()
+                        .Execute(null, false);
 
             var schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
             var jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();
@@ -52,9 +54,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = schedulingCommandFault.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId)
-                                           .Name,
-                step.Who);
+            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId).Name, step.Who);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandRaisedAnError, step.Why);
             Assert.Equal(AggregateActor<FutureEventsAggregate>.CreatedFault, step.What);
         }

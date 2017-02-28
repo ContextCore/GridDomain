@@ -16,13 +16,14 @@ namespace GridDomain.Tools.Repositories
         {
             PersistenceId = id;
 
-            RecoverAny(m =>
-                       {
-                           m.Match()
-                            .With<SnapshotOffer>(so => { })
-                            .With<RecoveryCompleted>(f => { })
-                            .Default(e => { _events.Add(e); });
-                       });
+            RecoverAny(
+                m =>
+                {
+                    m.Match()
+                     .With<SnapshotOffer>(so => { })
+                     .With<RecoveryCompleted>(f => { })
+                     .Default(e => { _events.Add(e); });
+                });
 
             Command<Persist>(m => Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)));
             Command<Load>(m => Sender.Tell(new Loaded(id, _events.ToArray())));

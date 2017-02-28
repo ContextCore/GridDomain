@@ -21,13 +21,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromSeconds(1));
             var syncCommand = new ChangeSampleAggregateCommand(42, aggregateId);
 
-            var asyncCommandTask = Node.Prepare(asyncCommand)
-                                       .Expect<SampleAggregateChangedEvent>()
-                                       .Execute();
+            var asyncCommandTask = Node.Prepare(asyncCommand).Expect<SampleAggregateChangedEvent>().Execute();
 
-            await Node.Prepare(syncCommand)
-                      .Expect<SampleAggregateChangedEvent>()
-                      .Execute();
+            await Node.Prepare(syncCommand).Expect<SampleAggregateChangedEvent>().Execute();
 
             var sampleAggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
 

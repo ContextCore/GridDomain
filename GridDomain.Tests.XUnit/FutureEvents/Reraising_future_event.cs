@@ -16,15 +16,17 @@ namespace GridDomain.Tests.XUnit.FutureEvents
         {
             var aggregateId = Guid.NewGuid();
 
-            await Node.Prepare(new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), aggregateId, "test value"))
-                      .Expect<TestDomainEvent>()
-                      .Execute();
+            await
+                Node.Prepare(new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), aggregateId, "test value"))
+                    .Expect<TestDomainEvent>()
+                    .Execute();
 
             var reraiseTime = DateTime.Now.AddSeconds(0.5);
 
-            await Node.Prepare(new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value"))
-                      .Expect<TestDomainEvent>()
-                      .Execute();
+            await
+                Node.Prepare(new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value"))
+                    .Expect<TestDomainEvent>()
+                    .Execute();
 
             var aggregate = await this.LoadAggregate<FutureEventsAggregate>(aggregateId);
 

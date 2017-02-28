@@ -26,22 +26,19 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
         public void Unsubscribe(IActorRef actor, Type topic)
         {
             _local.Unsubscribe(actor, topic);
-            _remoteSubscriber.Ask<UnsubscribeAck>(new Unsubscribe(actor, topic), _timeout)
-                             .Wait();
+            _remoteSubscriber.Ask<UnsubscribeAck>(new Unsubscribe(actor, topic), _timeout).Wait();
         }
 
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter = null)
         {
             _local.Subscribe(messageType, actor, subscribeNotificationWaiter);
-            _remoteSubscriber.Ask<SubscribeAck>(new Subscribe(actor, messageType, subscribeNotificationWaiter))
-                             .Wait();
+            _remoteSubscriber.Ask<SubscribeAck>(new Subscribe(actor, messageType, subscribeNotificationWaiter)).Wait();
         }
 
         public void Publish(object msg)
         {
             _local.Publish(msg);
-            _remoteSubscriber.Ask<PublishAck>(new Publish(msg), _timeout)
-                             .Wait();
+            _remoteSubscriber.Ask<PublishAck>(new Publish(msg), _timeout).Wait();
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
@@ -49,19 +46,16 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
             _local.Publish(msg);
             var messageMetadataEnvelop = MessageMetadataEnvelop.NewGeneric(msg, metadata);
 
-            _remoteSubscriber.Ask<PublishAck>(new Publish(messageMetadataEnvelop), _timeout)
-                             .Wait();
+            _remoteSubscriber.Ask<PublishAck>(new Publish(messageMetadataEnvelop), _timeout).Wait();
         }
 
         public void Publish(params object[] messages)
         {
             _local.Publish(messages);
 
-            var remotePublish = new PublishMany(messages.Select(m => new Publish(m, m.GetType()))
-                                                        .ToArray());
+            var remotePublish = new PublishMany(messages.Select(m => new Publish(m, m.GetType())).ToArray());
 
-            _remoteSubscriber.Ask<PublishManyAck>(remotePublish, _timeout)
-                             .Wait();
+            _remoteSubscriber.Ask<PublishManyAck>(remotePublish, _timeout).Wait();
         }
     }
 }

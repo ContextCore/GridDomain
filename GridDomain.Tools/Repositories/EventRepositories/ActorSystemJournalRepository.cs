@@ -46,8 +46,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             {
                 //load actor will notify caller automatically when it will load all events
                 var msg = await persistActor.Ask<EventsRepositoryActor.Loaded>(new EventsRepositoryActor.Load(), Timeout);
-                return msg.Events.Cast<DomainEvent>()
-                          .ToArray();
+                return msg.Events.Cast<DomainEvent>().ToArray();
             }
             finally
             {

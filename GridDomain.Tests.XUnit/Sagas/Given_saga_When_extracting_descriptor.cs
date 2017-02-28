@@ -40,9 +40,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                                      typeof(CoffeMakeFailedEvent)
                                  };
 
-            Assert.Equal(expectedEvents,
-                _descriptor.AcceptMessages.Select(m => m.MessageType)
-                           .ToArray());
+            Assert.Equal(expectedEvents, _descriptor.AcceptMessages.Select(m => m.MessageType).ToArray());
         }
 
         [Fact]

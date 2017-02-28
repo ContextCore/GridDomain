@@ -16,14 +16,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 
         public TestSaga()
         {
-            During(Initial,
-                When(Start)
-                    .TransitionTo(Started));
+            During(Initial, When(Start).TransitionTo(Started));
 
-            During(Started,
-                When(Process)
-                    .Then(ctx => ResultHolder.Add("123", "123"))
-                    .Finalize());
+            During(Started, When(Process).Then(ctx => ResultHolder.Add("123", "123")).Finalize());
         }
 
         public Event<TestSagaStartMessage> Start { get; private set; }

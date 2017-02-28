@@ -84,19 +84,14 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             }
 
             _dataAggregate.RememberEvent(machineEvent, _dataAggregate.Data, message);
-            _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id))
-                                         .Cast<ICommand>()
-                                         .ToList();
+            _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id)).Cast<ICommand>().ToList();
         }
 
         private bool CheckInitialState(SagaStateAggregate<TSagaData> dataAggregate, bool logUninitializedState = true)
         {
             if (!string.IsNullOrEmpty(CurrentStateName)) return true;
 
-            _log.Warning("Started saga {Type} {Id} without initialization.",
-                GetType()
-                    .Name,
-                dataAggregate.Id);
+            _log.Warning("Started saga {Type} {Id} without initialization.", GetType().Name, dataAggregate.Id);
             _log.Warning(_dataAggregate.Data == null ? "Saga data is empty" : "Current state name is not specified");
 
             if (!logUninitializedState) return false;

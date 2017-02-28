@@ -15,8 +15,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
                 new CustomContainerConfiguration(
                     c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
             Add(new BalanceRouteMap());
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>()
-                                                        .Clear();
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }
 
         protected override NodeSettings CreateNodeSettings()

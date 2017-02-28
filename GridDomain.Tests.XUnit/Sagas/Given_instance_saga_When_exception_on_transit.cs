@@ -35,10 +35,12 @@ namespace GridDomain.Tests.XUnit.Sagas
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
             await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
 
-            var results = await Node.NewDebugWaiter(TimeSpan.FromDays(1))
-                                    .Expect<IFault<CoffeMakeFailedEvent>>()
-                                    .Create()
-                                    .SendToSagas(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId), sagaId);
+            var results =
+                await
+                    Node.NewDebugWaiter(TimeSpan.FromDays(1))
+                        .Expect<IFault<CoffeMakeFailedEvent>>()
+                        .Create()
+                        .SendToSagas(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId), sagaId);
 
             var fault = results.Message<IFault<CoffeMakeFailedEvent>>();
             //Fault_should_be_produced_and_published()

@@ -22,38 +22,33 @@ namespace GridDomain.Tests.XUnit.SyncProjection
             var totalAggregates = 5;
             var eachAggregateChanges = 5;
 
-            var createCommands = Enumerable.Range(0, totalAggregates)
-                                           .Select(r => new CreateSampleAggregateCommand(0, Guid.NewGuid()))
-                                           .ToArray();
+            var createCommands =
+                Enumerable.Range(0, totalAggregates)
+                          .Select(r => new CreateSampleAggregateCommand(0, Guid.NewGuid()))
+                          .ToArray();
 
-            var aggregateIds = createCommands.Select(c => c.AggregateId)
-                                             .ToArray();
+            var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
 
-            var updateCommands = createCommands.SelectMany(c => Enumerable.Range(0, eachAggregateChanges)
-                                                                          .Select(
-                                                                              r =>
-                                                                                  new ChangeSampleAggregateCommand(r,
-                                                                                      aggregateIds.RandomElement())));
+            var updateCommands =
+                createCommands.SelectMany(
+                    c =>
+                        Enumerable.Range(0, eachAggregateChanges)
+                                  .Select(r => new ChangeSampleAggregateCommand(r, aggregateIds.RandomElement())));
 
             createCommands.Shuffle();
 
-            var createWaiters = createCommands.Select(c => Node.Prepare(c)
-                                                               .Expect<SampleAggregateCreatedEvent>()
-                                                               .Execute());
+            var createWaiters = createCommands.Select(c => Node.Prepare(c).Expect<SampleAggregateCreatedEvent>().Execute());
 
-            var updateWaiters = updateCommands.Select(c => Node.Prepare(c)
-                                                               .Expect<SampleAggregateChangedEvent>()
-                                                               .Execute());
+            var updateWaiters = updateCommands.Select(c => Node.Prepare(c).Expect<SampleAggregateChangedEvent>().Execute());
 
             var allResults = await Task.WhenAll(createWaiters.Union(updateWaiters));
 
-            var eventsPerAggregate = allResults.SelectMany(r => r.All)
-                                               .Cast<IMessageMetadataEnvelop>()
-                                               .Select(m => (IHaveProcessingHistory) m.Message)
-                                               .GroupBy(e => e.SourceId)
-                                               .ToDictionary(g => g.Key,
-                                                   g => g.OrderBy(i => i.History.ElapsedTicksFromAppStart)
-                                                         .ToArray());
+            var eventsPerAggregate =
+                allResults.SelectMany(r => r.All)
+                          .Cast<IMessageMetadataEnvelop>()
+                          .Select(m => (IHaveProcessingHistory) m.Message)
+                          .GroupBy(e => e.SourceId)
+                          .ToDictionary(g => g.Key, g => g.OrderBy(i => i.History.ElapsedTicksFromAppStart).ToArray());
 
             //all change events for one aggregate should be processed synchroniously, one-by-one, according to their 
             //sequence numbers

@@ -18,8 +18,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         public async Task<DomainEvent[]> Load(string id)
         {
             var objects = await base.Load(id);
-            return objects.Cast<DomainEvent>()
-                          .ToArray();
+            return objects.Cast<DomainEvent>().ToArray();
         }
     }
 }

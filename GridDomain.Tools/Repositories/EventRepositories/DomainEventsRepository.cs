@@ -27,14 +27,16 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         {
             long counter = 0;
 
-            var journalEntries = messages.Select(m => new JournalItem(id,
-                ++counter,
-                false,
-                m.GetType()
-                 .AssemblyQualifiedShortName(),
-                m.CreatedTime,
-                "",
-                _serializer.ToBinary(m)));
+            var journalEntries =
+                messages.Select(
+                    m =>
+                        new JournalItem(id,
+                            ++counter,
+                            false,
+                            m.GetType().AssemblyQualifiedShortName(),
+                            m.CreatedTime,
+                            "",
+                            _serializer.ToBinary(m)));
 
             await _rawDataRepo.Save(id, journalEntries.ToArray());
         }
@@ -52,9 +54,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                                                             {
                                                                 throw new PersistanceFailureException(d, ex);
                                                             }
-                                                        })
-                                                .Cast<DomainEvent>()
-                                                .ToArray();
+                                                        }).Cast<DomainEvent>().ToArray();
         }
 
         public static DomainEventsRepository New(string connectionString)

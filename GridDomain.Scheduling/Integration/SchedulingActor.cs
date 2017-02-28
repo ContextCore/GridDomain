@@ -58,12 +58,12 @@ namespace GridDomain.Scheduling.Integration
             try
             {
                 var job = jobFactory();
-                var trigger = TriggerBuilder.Create()
-                                            .WithIdentity(job.Key.Name, job.Key.Group)
-                                            .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow()
-                                                                      .WithRepeatCount(0))
-                                            .StartAt(runAt)
-                                            .Build();
+                var trigger =
+                    TriggerBuilder.Create()
+                                  .WithIdentity(job.Key.Name, job.Key.Group)
+                                  .WithSimpleSchedule(x => x.WithMisfireHandlingInstructionFireNow().WithRepeatCount(0))
+                                  .StartAt(runAt)
+                                  .Build();
 
                 var fireTime = _scheduler.ScheduleJob(job, trigger);
                 Sender.Tell(new Scheduled(fireTime.UtcDateTime));

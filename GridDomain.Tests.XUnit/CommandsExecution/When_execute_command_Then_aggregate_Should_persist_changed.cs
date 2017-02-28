@@ -18,9 +18,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(syncCommand)
-                      .Expect<SampleAggregateChangedEvent>()
-                      .Execute();
+            await Node.Prepare(syncCommand).Expect<SampleAggregateChangedEvent>().Execute();
 
             //to finish persistence
             var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
@@ -32,9 +30,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(syncCommand)
-                      .Expect<SampleAggregateChangedEvent>()
-                      .Execute();
+            await Node.Prepare(syncCommand).Expect<SampleAggregateChangedEvent>().Execute();
 
             //to finish persistence
             var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);

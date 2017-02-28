@@ -19,9 +19,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new AsyncMethodCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(cmd)
-                      .Expect<AggregateChangedEventNotification>()
-                      .Execute();
+            await Node.Prepare(cmd).Expect<AggregateChangedEventNotification>().Execute();
         }
 
         [Fact]
@@ -29,9 +27,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new LongOperationCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(cmd)
-                      .Expect<AggregateChangedEventNotification>()
-                      .Execute();
+            await Node.Prepare(cmd).Expect<AggregateChangedEventNotification>().Execute();
         }
     }
 }

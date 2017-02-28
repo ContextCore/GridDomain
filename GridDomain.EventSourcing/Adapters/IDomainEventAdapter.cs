@@ -9,7 +9,8 @@ namespace GridDomain.EventSourcing.Adapters
     /// </summary>
     /// <typeparam name="TFrom"></typeparam>
     /// <typeparam name="TTo"></typeparam>
-    public interface IDomainEventAdapter<TFrom, TTo> : IEventAdapter where TFrom : DomainEvent where TTo : DomainEvent
+    public interface IDomainEventAdapter<TFrom, TTo> : IEventAdapter where TFrom : DomainEvent
+                                                                     where TTo : DomainEvent
     {
         IEnumerable<TTo> ConvertEvent(TFrom evt);
     }

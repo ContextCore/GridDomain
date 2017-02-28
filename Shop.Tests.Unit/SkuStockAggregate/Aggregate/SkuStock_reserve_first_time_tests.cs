@@ -24,10 +24,11 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 
             _expirationDate = reservationStartTime + _reserveTime;
 
-            _scenario = Scenario.New<SkuStock, SkuStockCommandsHandler>()
-                                .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, _reserveTime),
-                                    new StockAdded(aggregateId, 10, "test batch 2"))
-                                .When(_reserveStockCommand);
+            _scenario =
+                Scenario.New<SkuStock, SkuStockCommandsHandler>()
+                        .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, _reserveTime),
+                            new StockAdded(aggregateId, 10, "test batch 2"))
+                        .When(_reserveStockCommand);
 
             _initialStock = _scenario.Aggregate.Quantity;
             _scenario.Run();

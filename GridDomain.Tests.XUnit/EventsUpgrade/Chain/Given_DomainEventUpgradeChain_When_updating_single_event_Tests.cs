@@ -21,8 +21,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Chain
 
             var balanceAggregate = new BalanceAggregate(Guid.NewGuid(), 10);
             _initialEvent = new TestEvent(balanceAggregate.Id);
-            _resultEvent = chain.Update(_initialEvent)
-                                .FirstOrDefault() as TestEvent_V2;
+            _resultEvent = chain.Update(_initialEvent).FirstOrDefault() as TestEvent_V2;
             // Event_type_was_updated()
             Assert.IsAssignableFrom<TestEvent_V2>(_resultEvent);
             //Event_id_was_remained()

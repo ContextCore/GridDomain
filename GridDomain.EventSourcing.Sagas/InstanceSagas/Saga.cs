@@ -24,9 +24,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                                                                      type.GetGenericTypeDefinition());
                                                       }))
             {
-                var domainEventType = machineEvent.GetType()
-                                                  .GetGenericArguments()
-                                                  .First();
+                var domainEventType = machineEvent.GetType().GetGenericArguments().First();
                 _messagesToEventsMap[domainEventType] = machineEvent;
             }
         }

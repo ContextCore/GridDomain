@@ -19,12 +19,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
 
-            var futureEventA = aggregate.GetEvents<FutureEventScheduledEvent>()
-                                        .First();
+            var futureEventA = aggregate.GetEvents<FutureEventScheduledEvent>().First();
 
-            var futureEventOutOfCriteria = aggregate.GetEvents<FutureEventScheduledEvent>()
-                                                    .Skip(1)
-                                                    .First();
+            var futureEventOutOfCriteria = aggregate.GetEvents<FutureEventScheduledEvent>().Skip(1).First();
 
             aggregate.ClearEvents();
             aggregate.CancelFutureEvents(testValue);

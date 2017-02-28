@@ -14,8 +14,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
                 new CustomContainerConfiguration(
                     c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
             Add(new FutureEventsRouteMap());
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>()
-                                                        .Clear();
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }
     }
 }

@@ -18,9 +18,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var externalCallCommand = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.NewGuid());
 
-            var waitResults = await Node.Prepare(externalCallCommand)
-                                        .Expect<SampleAggregateChangedEvent>()
-                                        .Execute();
+            var waitResults = await Node.Prepare(externalCallCommand).Expect<SampleAggregateChangedEvent>().Execute();
 
             var domainEvent = waitResults.Message<SampleAggregateChangedEvent>();
 

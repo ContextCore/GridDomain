@@ -52,8 +52,9 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
         public void LongExecute(int sleepMiliseconds)
         {
-            var task = Task.Delay(sleepMiliseconds)
-                           .ContinueWith(t => new SampleAggregateChangedEvent(sleepMiliseconds.ToString(), Id));
+            var task =
+                Task.Delay(sleepMiliseconds)
+                    .ContinueWith(t => new SampleAggregateChangedEvent(sleepMiliseconds.ToString(), Id));
 
             RaiseEventAsync(task);
         }
@@ -93,12 +94,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
         internal void AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
         {
-            var expectionTask = CreateEventTask(0, sleepTime)
-                .ContinueWith(t =>
-                              {
-                                  RaiseException();
-                                  return t.Result;
-                              });
+            var expectionTask = CreateEventTask(0, sleepTime).ContinueWith(t =>
+                                                                           {
+                                                                               RaiseException();
+                                                                               return t.Result;
+                                                                           });
             RaiseEventAsync(expectionTask);
         }
 
@@ -120,12 +120,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain
 
         public void RaiseExceptionAsync(TimeSpan callBackTime)
         {
-            var expectionTask = CreateEventsTask(0, callBackTime)
-                .ContinueWith(t =>
-                              {
-                                  RaiseException();
-                                  return t.Result;
-                              });
+            var expectionTask = CreateEventsTask(0, callBackTime).ContinueWith(t =>
+                                                                               {
+                                                                                   RaiseException();
+                                                                                   return t.Result;
+                                                                               });
 
             RaiseEventAsync(expectionTask);
         }

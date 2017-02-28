@@ -34,15 +34,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
             //will retry 1 time
             var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A", 1);
 
-            var waiter = Node.Prepare(command)
-                             .Expect<JobFailed>()
-                             .And<JobSucceeded>()
-                             .And<TestErrorDomainEvent>()
-                             .Execute();
+            var waiter = Node.Prepare(command).Expect<JobFailed>().And<JobSucceeded>().And<TestErrorDomainEvent>().Execute();
 
             var res = await waiter;
-            var actual = res.Message<TestErrorDomainEvent>()
-                            .Value;
+            var actual = res.Message<TestErrorDomainEvent>().Value;
 
             Assert.Equal(command.Value, actual);
         }

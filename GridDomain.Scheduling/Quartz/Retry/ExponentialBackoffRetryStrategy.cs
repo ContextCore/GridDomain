@@ -49,12 +49,13 @@ namespace GridDomain.Scheduling.Quartz.Retry
             var factor = (long) Math.Pow(2, retries);
             var backoff = new TimeSpan(_settings.BackoffBaseInterval.Ticks*factor);
 
-            var trigger = TriggerBuilder.Create()
-                                        .StartAt(BusinessDateTime.UtcNow + backoff)
-                                        .WithSimpleSchedule(x => x.WithRepeatCount(0))
-                                        .WithIdentity(context.Trigger.Key)
-                                        .ForJob(context.JobDetail)
-                                        .Build();
+            var trigger =
+                TriggerBuilder.Create()
+                              .StartAt(BusinessDateTime.UtcNow + backoff)
+                              .WithSimpleSchedule(x => x.WithRepeatCount(0))
+                              .WithIdentity(context.Trigger.Key)
+                              .ForJob(context.JobDetail)
+                              .Build();
 
             context.JobDetail.JobDataMap[Retries] = ++retries;
             return trigger;

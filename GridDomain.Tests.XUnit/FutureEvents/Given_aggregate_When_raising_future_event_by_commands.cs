@@ -19,10 +19,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             var scheduledTime = DateTime.Now.AddSeconds(1);
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            var waitResults = await Node.Prepare(testCommand)
-                                        .Expect<FutureEventScheduledEvent>()
-                                        .And<TestDomainEvent>()
-                                        .Execute();
+            var waitResults =
+                await Node.Prepare(testCommand).Expect<FutureEventScheduledEvent>().And<TestDomainEvent>().Execute();
 
             var futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
             var producedEvent = waitResults.Message<TestDomainEvent>();

@@ -28,20 +28,23 @@ namespace GridDomain.Tests.XUnit.Sagas
                 Guid.NewGuid(),
                 startMessage.SagaId);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(startMessage);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(startMessage);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(coffeMadeEvent);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(coffeMadeEvent);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(reStartEvent);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(reStartEvent);
 
             var sagaDataAggregate =
                 await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);

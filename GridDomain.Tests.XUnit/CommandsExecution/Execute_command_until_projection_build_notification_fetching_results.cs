@@ -25,9 +25,11 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
 
-            _results = await Node.Prepare(_syncCommand)
-                                 .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
-                                 .Execute();
+            _results =
+                await
+                    Node.Prepare(_syncCommand)
+                        .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
+                        .Execute();
 
             _changedEvent = _results.Message<AggregateChangedEventNotification>();
             _aggregate = await this.LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);

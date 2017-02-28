@@ -26,10 +26,12 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
 
-            var waitResults = await Node.NewDebugWaiter()
-                                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                                        .Create()
-                                        .SendToSagas(gotTiredEvent);
+            var waitResults =
+                await
+                    Node.NewDebugWaiter()
+                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                        .Create()
+                        .SendToSagas(gotTiredEvent);
 
             var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
 

@@ -31,9 +31,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var cmd = new IncreaseSampleAggregateCommand(1, aggregate.Id);
 
-            var res = await Node.Prepare(cmd)
-                                .Expect<SampleAggregateChangedEvent>()
-                                .Execute();
+            var res = await Node.Prepare(cmd).Expect<SampleAggregateChangedEvent>().Execute();
 
             var message = res.Message<SampleAggregateChangedEvent>();
 

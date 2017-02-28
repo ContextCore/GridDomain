@@ -28,8 +28,7 @@ namespace GridDomain.Node.Actors
             _aggregateConstructor = aggregateConstructor;
 
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name)
-                                   .Id;
+            Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = (AggregateBase) aggregateConstructor.Build(typeof(T), Id, null);
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 

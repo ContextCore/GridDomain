@@ -109,8 +109,7 @@ namespace GridDomain.Node
 
         private IActorRef CreateActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
-            var handleActorProps = _system.DI()
-                                          .Props(actorType);
+            var handleActorProps = _system.DI().Props(actorType);
             if (routeConfig != null)
                 handleActorProps = handleActorProps.WithRouter(routeConfig);
 

@@ -17,8 +17,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             Add(new SchedulerContainerConfiguration());
             Add(new TestRouter());
 
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>()
-                                                        .Clear();
+            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }
 
         protected override NodeSettings CreateNodeSettings()

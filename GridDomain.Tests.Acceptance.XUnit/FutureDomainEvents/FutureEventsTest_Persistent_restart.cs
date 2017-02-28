@@ -25,9 +25,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.FutureDomainEvents
             var node = await _fixture.CreateNode();
             var cmd = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(3), Guid.NewGuid(), "test value");
 
-            await node.Prepare(cmd)
-                      .Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId)
-                      .Execute();
+            await node.Prepare(cmd).Expect<FutureEventScheduledEvent>(e => e.Event.SourceId == cmd.AggregateId).Execute();
 
             //to finish job persist
             await Task.Delay(300);
@@ -37,9 +35,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.FutureDomainEvents
 
             await node.Start();
 
-            var res = await node.NewWaiter(TimeSpan.FromSeconds(10))
-                                .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
-                                .Create();
+            var res =
+                await
+                    node.NewWaiter(TimeSpan.FromSeconds(10))
+                        .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
+                        .Create();
 
             var evt = res.Message<FutureEventOccuredEvent>();
 

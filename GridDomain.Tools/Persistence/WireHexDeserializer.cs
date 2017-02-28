@@ -24,10 +24,11 @@ namespace GridDomain.Tools.Persistence
 
         private byte[] HexStringToByteArray(string hex)
         {
-            return Enumerable.Range(0, hex.Length)
-                             .Where(x => x%2 == 0)
-                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                             .ToArray();
+            return
+                Enumerable.Range(0, hex.Length)
+                          .Where(x => x%2 == 0)
+                          .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                          .ToArray();
         }
 
         public static string ByteArrayToHexString(byte[] ba)

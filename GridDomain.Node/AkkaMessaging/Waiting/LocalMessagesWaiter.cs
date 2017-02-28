@@ -50,8 +50,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
-                await WaitForMessages(inbox, finalTimeout)
-                    .TimeoutAfter(finalTimeout);
+                await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
 
                 foreach (var type in _messageTypesToSubscribe)
                     _subscriber.Unsubscribe(inbox.Receiver, type);
@@ -64,8 +63,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             do
             {
-                var message = await inbox.ReceiveAsync(timeoutPerMessage)
-                                         .ConfigureAwait(false);
+                var message = await inbox.ReceiveAsync(timeoutPerMessage).ConfigureAwait(false);
                 CheckExecutionError(message);
                 if (IsExpected(message)) _allExpectedMessages.Add(message);
             }
@@ -85,10 +83,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private static void CheckExecutionError(object t)
         {
             t.Match()
-             .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause)
-                                                             .Throw())
-             .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception)
-                                                      .Throw());
+             .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
+             .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }
     }
 }

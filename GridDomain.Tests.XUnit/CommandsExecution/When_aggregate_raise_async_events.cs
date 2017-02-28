@@ -19,9 +19,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public void It_places_continuation_in_uncommited_async_events_collection()
         {
             var aggregate = WhenRaiseAsyncEvents();
-            Assert.Equal(1,
-                aggregate.GetAsyncUncomittedEvents()
-                         .Count);
+            Assert.Equal(1, aggregate.GetAsyncUncomittedEvents().Count);
         }
 
         [Fact]
@@ -36,8 +34,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task Then_it_results_can_be_applied_to_aggregate()
         {
             var aggregate = WhenRaiseAsyncEvents();
-            var asyncEvents = aggregate.GetAsyncUncomittedEvents()
-                                       .First();
+            var asyncEvents = aggregate.GetAsyncUncomittedEvents().First();
             await Task.Delay(1500);
             aggregate.FinishAsyncExecution(asyncEvents.InvocationId);
             Assert.Equal("42", aggregate.Value);

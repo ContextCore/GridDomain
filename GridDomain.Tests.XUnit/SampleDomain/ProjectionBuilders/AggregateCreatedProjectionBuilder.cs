@@ -35,10 +35,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
 
             var notificationMetadata = MessageMetadata.CreateFrom(msg.SourceId,
                 metadata,
-                new ProcessEntry(GetType()
-                    .Name,
-                    MessageProcessed,
-                    Why));
+                new ProcessEntry(GetType().Name, MessageProcessed, Why));
 
             var notification = new AggregateCreatedEventNotification {AggregateId = msg.SourceId};
             _publisher.Publish(notification, notificationMetadata);

@@ -25,8 +25,7 @@ namespace GridGomain.Tests.Stress
 
             var system = ActorSystem.Create("test");
             var actor = system.ActorOf(Props.Create(() => new TestLogActor()));
-            actor.Ask<string>("hi")
-                 .Wait();
+            actor.Ask<string>("hi").Wait();
 
             Console.WriteLine("Sleeping");
             Console.ReadKey();
@@ -62,8 +61,7 @@ namespace GridGomain.Tests.Stress
             var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
-            node.Start()
-                .Wait();
+            node.Start().Wait();
 
             var timer = new Stopwatch();
             timer.Start();
@@ -78,13 +76,13 @@ namespace GridGomain.Tests.Stress
             {
                 var packTimer = new Stopwatch();
                 packTimer.Start();
-                var tasks = Enumerable.Range(0, aggregateScenarioPackSize)
-                                      .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
-                                      .ToArray();
+                var tasks =
+                    Enumerable.Range(0, aggregateScenarioPackSize)
+                              .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
+                              .ToArray();
                 try
                 {
-                    Task.WhenAll(tasks)
-                        .Wait();
+                    Task.WhenAll(tasks).Wait();
                 }
                 catch
                 {
@@ -102,8 +100,7 @@ namespace GridGomain.Tests.Stress
 
 
             timer.Stop();
-            node.Stop()
-                .Wait();
+            node.Stop().Wait();
 
             var speedTotal = (decimal) (totalCommandsToIssue/timer.Elapsed.TotalSeconds);
             Console.WriteLine(
@@ -137,8 +134,7 @@ namespace GridGomain.Tests.Stress
             var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
-            node.Start()
-                .Wait();
+            node.Start().Wait();
             return node;
         }
 
@@ -160,9 +156,10 @@ namespace GridGomain.Tests.Stress
 
         private static async Task WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
         {
-            await node.Prepare(new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()))
-                      .Expect<SampleAggregateCreatedEvent>()
-                      .Execute();
+            await
+                node.Prepare(new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()))
+                    .Expect<SampleAggregateCreatedEvent>()
+                    .Execute();
 
             for (var num = 0; num < changeNumber; num++)
             {

@@ -21,7 +21,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy : NodeTestKit
     {
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
-            : base(output,
+            : base(
+                output,
                 new SoftwareProgrammingSagaFixture {InMemory = false}.IgnoreCommands()
                                                                      .InitSoftwareProgrammingSagaSnapshots(5,
                                                                          TimeSpan.FromMilliseconds(5),
@@ -33,20 +34,22 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaStartEvent);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaStartEvent);
 
             //var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
             //saga.Tell(NotifyOnPersistenceEvents.Instance);
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaContinueEvent);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaContinueEvent);
 
             var sagaContinueEventB =
                 new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
@@ -55,10 +58,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                     sagaId,
                     BusinessDateTime.Now);
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(sagaContinueEventB);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(sagaContinueEventB);
 
             //   FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
 
@@ -75,13 +79,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //4 events in total, two saves of snapshots due to policy saves on each two events
             Assert.Equal(2, snapshots.Length);
             //First_snapshot_should_have_state_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee),
-                snapshots.First()
-                         .Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.Data.CurrentStateName);
             //Last_snapshot_should_have_parameters_from_last_command()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding),
-                snapshots.Last()
-                         .Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), snapshots.Last().Aggregate.Data.CurrentStateName);
 
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));

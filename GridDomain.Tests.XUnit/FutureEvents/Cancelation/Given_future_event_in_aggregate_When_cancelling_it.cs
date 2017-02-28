@@ -26,15 +26,15 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             var scheduledTime = DateTime.Now.AddSeconds(200);
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            var futureEventEnvelop = (await Node.Prepare(testCommand)
-                                                .Expect<FutureEventScheduledEvent>()
-                                                .Execute()).Message<FutureEventScheduledEvent>();
+            var futureEventEnvelop =
+                (await Node.Prepare(testCommand).Expect<FutureEventScheduledEvent>().Execute())
+                    .Message<FutureEventScheduledEvent>();
 
             var cancelFutureEventCommand = new CancelFutureEventCommand(testCommand.AggregateId, testCommand.Value);
 
-            var futureEventCancelation = (await Node.Prepare(cancelFutureEventCommand)
-                                                    .Expect<FutureEventCanceledEvent>()
-                                                    .Execute()).Message<FutureEventCanceledEvent>();
+            var futureEventCancelation =
+                (await Node.Prepare(cancelFutureEventCommand).Expect<FutureEventCanceledEvent>().Execute())
+                    .Message<FutureEventCanceledEvent>();
 
             //Cancelation_event_has_same_id_as_future_event()
             Assert.Equal(futureEventEnvelop.Id, futureEventCancelation.FutureEventId);

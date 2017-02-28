@@ -14,8 +14,8 @@ namespace GridDomain.Common
         {
             var timeoutCancellationTokenSource = new CancellationTokenSource();
 
-            var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token))
-                                          .ConfigureAwait(false);
+            var completedTask =
+                await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token)).ConfigureAwait(false);
             if (completedTask == task)
             {
                 timeoutCancellationTokenSource.Cancel();
@@ -28,8 +28,8 @@ namespace GridDomain.Common
         {
             var timeoutCancellationTokenSource = new CancellationTokenSource();
 
-            var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token))
-                                          .ConfigureAwait(false);
+            var completedTask =
+                await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token)).ConfigureAwait(false);
             if (completedTask == task)
             {
                 timeoutCancellationTokenSource.Cancel();

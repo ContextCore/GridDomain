@@ -12,17 +12,12 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         public IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands
         {
-            get
-            {
-                return Catalog.Select(h => new AggregateCommandInfo(h.Key))
-                              .ToArray();
-            }
+            get { return Catalog.Select(h => new AggregateCommandInfo(h.Key)).ToArray(); }
         }
 
         public TAggregate Execute(TAggregate aggregate, ICommand command)
         {
-            return Get(command)
-                .Invoke(command, aggregate);
+            return Get(command).Invoke(command, aggregate);
         }
 
         public override Func<ICommand, TAggregate, TAggregate> Get(ICommand command)

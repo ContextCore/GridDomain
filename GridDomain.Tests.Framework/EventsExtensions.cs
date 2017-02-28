@@ -150,10 +150,8 @@ namespace GridDomain.Tests.Framework
 
             foreach (var events in eventPairs)
             {
-                compareLogic.Config.ActualName = events.Produced.GetType()
-                                                       .Name;
-                compareLogic.Config.ExpectedName = events.Expected.GetType()
-                                                         .Name;
+                compareLogic.Config.ActualName = events.Produced.GetType().Name;
+                compareLogic.Config.ExpectedName = events.Expected.GetType().Name;
                 var comparisonResult = compareLogic.Compare(events.Expected, events.Produced);
 
                 if (!comparisonResult.AreEqual)

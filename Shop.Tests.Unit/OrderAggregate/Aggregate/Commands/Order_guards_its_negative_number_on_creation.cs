@@ -15,8 +15,7 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
         protected override OrderCommandsHandler CreateCommandsHandler()
         {
             var sequenceNumberMock = new Mock<ISequenceProvider>();
-            sequenceNumberMock.Setup(p => p.GetNext(It.IsAny<string>()))
-                              .Returns(-1);
+            sequenceNumberMock.Setup(p => p.GetNext(It.IsAny<string>())).Returns(-1);
 
             return new OrderCommandsHandler(sequenceNumberMock.Object);
         }

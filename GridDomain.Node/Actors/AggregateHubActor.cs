@@ -19,8 +19,7 @@ namespace GridDomain.Node.Actors
             var command = message as ICommand;
             if (command != null)
             {
-                return AggregateActorName.New<TAggregate>(command.AggregateId)
-                                         .ToString();
+                return AggregateActorName.New<TAggregate>(command.AggregateId).ToString();
             }
             return null;
         }

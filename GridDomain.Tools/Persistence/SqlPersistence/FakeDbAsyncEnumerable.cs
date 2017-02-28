@@ -15,8 +15,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public IDbAsyncEnumerator<T> GetAsyncEnumerator()
         {
-            return new FakeDbAsyncEnumerator<T>(this.AsEnumerable()
-                                                    .GetEnumerator());
+            return new FakeDbAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
         }
 
         IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()

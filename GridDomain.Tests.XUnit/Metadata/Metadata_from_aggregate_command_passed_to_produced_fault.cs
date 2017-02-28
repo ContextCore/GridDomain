@@ -29,9 +29,8 @@ namespace GridDomain.Tests.XUnit.Metadata
             _command = new AlwaysFaultAsyncCommand(Guid.NewGuid(), TimeSpan.FromMilliseconds(50));
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(_command, _commandMetadata)
-                                .Expect<SampleAggregateCreatedEvent>()
-                                .Execute(null, false);
+            var res =
+                await Node.Prepare(_command, _commandMetadata).Expect<SampleAggregateCreatedEvent>().Execute(null, false);
 
             _answer = res.Message<IMessageMetadataEnvelop<IFault<AlwaysFaultAsyncCommand>>>();
             // Result_contains_metadata()
@@ -53,9 +52,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<SampleAggregate>(_command.AggregateId)
-                                           .Name,
-                step.Who);
+            Assert.Equal(AggregateActorName.New<SampleAggregate>(_command.AggregateId).Name, step.Who);
             Assert.Equal(AggregateActor<SampleAggregate>.CommandRaisedAnError, step.Why);
             Assert.Equal(AggregateActor<SampleAggregate>.CreatedFault, step.What);
         }

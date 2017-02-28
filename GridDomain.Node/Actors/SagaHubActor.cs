@@ -27,16 +27,14 @@ namespace GridDomain.Node.Actors
 
         protected override string GetChildActorName(object message)
         {
-            return AggregateActorName.New<TSagaState>(GetChildActorId(message))
-                                     .ToString();
+            return AggregateActorName.New<TSagaState>(GetChildActorId(message)).ToString();
         }
 
         protected override Guid GetChildActorId(object message)
         {
             var childActorId = Guid.Empty;
 
-            message.Match()
-                   .With<IFault>(m => childActorId = m.SagaId);
+            message.Match().With<IFault>(m => childActorId = m.SagaId);
 
             if (childActorId != Guid.Empty) return childActorId;
 
@@ -44,16 +42,14 @@ namespace GridDomain.Node.Actors
             var type = message.GetType();
 
             if (_acceptMessagesSagaIds.TryGetValue(type, out fieldName))
-                childActorId = (Guid) type.GetProperty(fieldName)
-                                          .GetValue(message);
+                childActorId = (Guid) type.GetProperty(fieldName).GetValue(message);
             else
             {
                 //try to search by inheritance
                 var firstInherited = _acceptMessagesSagaIds.FirstOrDefault(i => i.Key.IsAssignableFrom(type));
                 var sagaIdField = firstInherited.Value;
 
-                childActorId = (Guid) type.GetProperty(sagaIdField)
-                                          .GetValue(message);
+                childActorId = (Guid) type.GetProperty(sagaIdField).GetValue(message);
             }
             return childActorId;
         }
@@ -65,8 +61,7 @@ namespace GridDomain.Node.Actors
 
         protected override void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
         {
-            knownChild.Ref.Ask<ISagaTransitCompleted>(message)
-                      .PipeTo(Sender, Self);
+            knownChild.Ref.Ask<ISagaTransitCompleted>(message).PipeTo(Sender, Self);
         }
     }
 }

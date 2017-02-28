@@ -19,10 +19,11 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var startMessage = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                      .Create()
-                      .SendToSagas(startMessage);
+            await
+                Node.NewDebugWaiter()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Create()
+                    .SendToSagas(startMessage);
 
             var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);
             //Saga_has_correct_data()

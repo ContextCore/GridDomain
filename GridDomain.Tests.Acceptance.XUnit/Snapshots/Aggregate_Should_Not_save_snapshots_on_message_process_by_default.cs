@@ -22,9 +22,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var aggregateId = Guid.NewGuid();
 
             var cmd = new CreateSampleAggregateCommand(1, aggregateId);
-            await Node.Prepare(cmd)
-                      .Expect<SampleAggregateCreatedEvent>()
-                      .Execute();
+            await Node.Prepare(cmd).Expect<SampleAggregateCreatedEvent>().Execute();
 
             //checking "time-out" rule for policy, snapshots should be saved once on second command
             await Task.Delay(1000);
@@ -32,9 +30,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var changedParameter = 2;
             var changeSampleAggregateCommand = new ChangeSampleAggregateCommand(changedParameter, aggregateId);
 
-            await Node.Prepare(changeSampleAggregateCommand)
-                      .Expect<SampleAggregateChangedEvent>()
-                      .Execute();
+            await Node.Prepare(changeSampleAggregateCommand).Expect<SampleAggregateChangedEvent>().Execute();
 
             await Task.Delay(1000);
 

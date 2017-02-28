@@ -14,8 +14,7 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
                              });
             Receive<PublishMany>(p =>
                                  {
-                                     var messages = p.Messages.Select(m => m.Msg)
-                                                     .ToArray();
+                                     var messages = p.Messages.Select(m => m.Msg).ToArray();
                                      localTransport.Publish(messages);
                                      Sender.Tell(PublishManyAck.Instance);
                                  });

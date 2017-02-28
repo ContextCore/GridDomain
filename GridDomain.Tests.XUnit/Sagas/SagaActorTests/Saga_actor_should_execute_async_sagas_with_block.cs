@@ -35,8 +35,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                             new AggregateFactory()));
 
             _sagaId = Guid.NewGuid();
-            var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId)
-                                         .Name;
+            var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
 
             _actor =
                 ActorOfAsTestActorRef

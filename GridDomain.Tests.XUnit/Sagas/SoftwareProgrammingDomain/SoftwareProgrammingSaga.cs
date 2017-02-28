@@ -17,40 +17,30 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         public SoftwareProgrammingSaga()
         {
             During(Coding,
-                When(GotTired)
-                    .Then(context =>
-                          {
-                              var sagaData = context.Instance;
-                              var domainEvent = context.Data;
-                              sagaData.PersonId = domainEvent.SourceId;
-                              Log.Verbose("Hello trace string");
-                              Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
-                          })
-                    .TransitionTo(MakingCoffee),
-                When(SleptWell)
-                    .Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
-                    .TransitionTo(Coding));
+                When(GotTired).Then(context =>
+                                    {
+                                        var sagaData = context.Instance;
+                                        var domainEvent = context.Data;
+                                        sagaData.PersonId = domainEvent.SourceId;
+                                        Log.Verbose("Hello trace string");
+                                        Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
+                                    }).TransitionTo(MakingCoffee),
+                When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
 
             During(MakingCoffee,
-                When(CoffeNotAvailable)
-                    .Then(context =>
-                          {
-                              if (context.Data.CoffeMachineId == Guid.Empty)
-                                  throw new UndefinedCoffeMachineException();
+                When(CoffeNotAvailable).Then(context =>
+                                             {
+                                                 if (context.Data.CoffeMachineId == Guid.Empty)
+                                                     throw new UndefinedCoffeMachineException();
 
-                              Dispatch(new GoSleepCommand(context.Data.ForPersonId, context.Instance.SofaId));
-                          })
-                    .TransitionTo(Sleeping),
-                When(CoffeReady)
-                    .TransitionTo(Coding));
+                                                 Dispatch(new GoSleepCommand(context.Data.ForPersonId,
+                                                     context.Instance.SofaId));
+                                             }).TransitionTo(Sleeping),
+                When(CoffeReady).TransitionTo(Coding));
 
             During(Sleeping,
-                When(SleptBad)
-                    .Then(ctx => ctx.Instance.BadSleepPersonId = ctx.Data.Message.PersonId)
-                    .TransitionTo(Coding),
-                When(SleptWell)
-                    .Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId)
-                    .TransitionTo(Coding));
+                When(SleptBad).Then(ctx => ctx.Instance.BadSleepPersonId = ctx.Data.Message.PersonId).TransitionTo(Coding),
+                When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
         }
 
         public Event<GotTiredEvent> GotTired { get; private set; }

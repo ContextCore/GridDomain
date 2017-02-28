@@ -47,13 +47,9 @@ namespace GridDomain.Tests.XUnit.GridConsole
             //Console_commands_are_executed_by_remote_node()
             var command = new CreateSampleAggregateCommand(42, Guid.NewGuid());
 
-            var evt = await _connector.Prepare(command)
-                                      .Expect<SampleAggregateCreatedEvent>()
-                                      .Execute();
+            var evt = await _connector.Prepare(command).Expect<SampleAggregateCreatedEvent>().Execute();
 
-            Assert.Equal(command.Parameter.ToString(),
-                evt.Message<SampleAggregateCreatedEvent>()
-                   .Value);
+            Assert.Equal(command.Parameter.ToString(), evt.Message<SampleAggregateCreatedEvent>().Value);
         }
     }
 }

@@ -19,9 +19,7 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task When_publishing_start_message()
         {
-            var anyMessagePublisher = Node.NewDebugWaiter()
-                                          .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
-                                          .Create();
+            var anyMessagePublisher = Node.NewDebugWaiter().Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>().Create();
             var sagaId = Guid.NewGuid();
 
             await anyMessagePublisher.SendToSagas(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId));

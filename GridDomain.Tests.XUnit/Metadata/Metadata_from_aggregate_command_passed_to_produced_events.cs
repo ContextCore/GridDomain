@@ -28,9 +28,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             _command = new CreateSampleAggregateCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(_command, _commandMetadata)
-                                .Expect<SampleAggregateCreatedEvent>()
-                                .Execute();
+            var res = await Node.Prepare(_command, _commandMetadata).Expect<SampleAggregateCreatedEvent>().Execute();
 
             _answer = res.MessageWithMetadata<SampleAggregateCreatedEvent>();
             //Result_contains_metadata()
@@ -52,9 +50,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<SampleAggregate>(_command.AggregateId)
-                                           .Name,
-                step.Who);
+            Assert.Equal(AggregateActorName.New<SampleAggregate>(_command.AggregateId).Name, step.Who);
             Assert.Equal(AggregateActor<SampleAggregate>.CommandExecutionCreatedAnEvent, step.Why);
             Assert.Equal(AggregateActor<SampleAggregate>.PublishingEvent, step.What);
         }

@@ -25,8 +25,7 @@ namespace GridDomain.Tests.XUnit
                     TransportMode.Cluster,
                     () =>
                     ActorSystemFactory.CreateCluster(
-                        new AutoTestAkkaConfiguration())
-                                      .RandomNode()
+                        new AutoTestAkkaConfiguration()).RandomNode()
                 }
             };
 
@@ -61,8 +60,7 @@ namespace GridDomain.Tests.XUnit
             }
 
 
-            if (!Task.Run(() => container.Dispose())
-                     .Wait(TimeSpan.FromSeconds(5)))
+            if (!Task.Run(() => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
                 throw new TimeoutException("Container dispose took too much time");
 
             Console.WriteLine("Container disposed");

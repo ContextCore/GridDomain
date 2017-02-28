@@ -79,8 +79,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
 
             var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
 
-            Assert.IsAssignableFrom<SubObject_V2>(restoredEvent.Payload?.FirstOrDefault()
-                                                              ?.Property?.FirstOrDefault());
+            Assert.IsAssignableFrom<SubObject_V2>(restoredEvent.Payload?.FirstOrDefault()?.Property?.FirstOrDefault());
         }
 
         [Fact]
@@ -107,8 +106,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
             var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
 
-            Assert.IsAssignableFrom<SubObject_V1>(restoredEvent.Payload?.FirstOrDefault()
-                                                              ?.Property?.FirstOrDefault());
+            Assert.IsAssignableFrom<SubObject_V1>(restoredEvent.Payload?.FirstOrDefault()?.Property?.FirstOrDefault());
         }
     }
 }

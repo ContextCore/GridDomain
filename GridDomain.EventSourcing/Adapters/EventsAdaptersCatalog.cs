@@ -43,8 +43,7 @@ namespace GridDomain.EventSourcing.Adapters
             if (!_eventAdapterCatalog.TryGetValue(processingType, out adapter)) return new[] {evt};
 
             var updatedEvent = adapter.Convert(evt);
-            return updatedEvent.SelectMany(Update)
-                               .ToArray();
+            return updatedEvent.SelectMany(Update).ToArray();
         }
     }
 }

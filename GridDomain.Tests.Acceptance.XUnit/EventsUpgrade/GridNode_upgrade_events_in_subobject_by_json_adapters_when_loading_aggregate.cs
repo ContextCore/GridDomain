@@ -38,9 +38,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
         {
             var cmd = new CreateSampleAggregateCommand(1, Guid.NewGuid());
 
-            await Node.Prepare(cmd)
-                      .Expect<SampleAggregateCreatedEvent>()
-                      .Execute();
+            await Node.Prepare(cmd).Expect<SampleAggregateCreatedEvent>().Execute();
 
             var aggregate = await Node.LoadAggregate<SampleAggregate>(cmd.AggregateId);
 

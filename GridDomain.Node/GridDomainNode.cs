@@ -64,8 +64,7 @@ namespace GridDomain.Node
 
         public void Dispose()
         {
-            Stop()
-                .Wait();
+            Stop().Wait();
         }
 
         private void OnSystemTermination()
@@ -119,8 +118,7 @@ namespace GridDomain.Node
 
             Settings.Log.Debug("Launching GridDomain node {Id}", Id);
 
-            var props = System.DI()
-                              .Props<GridNodeController>();
+            var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props, nameof(GridNodeController));
 
             await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
@@ -130,19 +128,15 @@ namespace GridDomain.Node
 
         private void RegisterCustomAggregateSnapshots()
         {
-            var factories = Container.ResolveAll(typeof(IConstructAggregates))
-                                     .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
-                                     .Where(
-                                         o =>
-                                             o.Type.IsGenericType
-                                             && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
-                                     .Select(o => new
-                                                  {
-                                                      AggregateType = o.Type.GetGenericArguments()
-                                                                       .First(),
-                                                      Constructor = o.Obj
-                                                  })
-                                     .ToArray();
+            var factories =
+                Container.ResolveAll(typeof(IConstructAggregates))
+                         .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
+                         .Where(
+                             o =>
+                                 o.Type.IsGenericType
+                                 && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
+                         .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
+                         .ToArray();
 
             foreach (var factory in factories)
             {

@@ -61,8 +61,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                                 new SnapshotsPersistencePolicy(1, 5, null, null),
                                 new AggregateFactory(),
                                 TestActor)),
-                    AggregateActorName.New<HomeAggregate>(command.Id)
-                                      .Name);
+                    AggregateActorName.New<HomeAggregate>(command.Id).Name);
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 

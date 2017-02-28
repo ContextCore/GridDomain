@@ -74,8 +74,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
                 _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
                 _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
 
-                var persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId)
-                                                      .ToString();
+                var persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
                 await eventRepo.Save(persistenceId, _createdEvent, _changedEvent);
                 _aggregate = await aggrRepo.LoadAggregate<SampleAggregate>(_sourceId);
 

@@ -50,11 +50,12 @@ namespace GridDomain.Tests.XUnit.Sagas
                 BusinessDateTime.UtcNow,
                 sagaId);
 
-            await Node.NewDebugWaiter(TimeSpan.FromMinutes(10))
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
-                          m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
-                      .Create()
-                      .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
+            await
+                Node.NewDebugWaiter(TimeSpan.FromMinutes(10))
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
+                        m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
+                    .Create()
+                    .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
 
             await Task.Delay(1000);
             var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);

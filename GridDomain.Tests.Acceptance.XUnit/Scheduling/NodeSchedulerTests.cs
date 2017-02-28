@@ -18,8 +18,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
         public NodeSchedulerTests(ITestOutputHelper output) : base(output, new SchedulerFixture())
         {
             ResultHolder.Clear();
-            _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor))
-                                                            .Result);
+            _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor)).Result);
         }
 
         private const string Name = "test";

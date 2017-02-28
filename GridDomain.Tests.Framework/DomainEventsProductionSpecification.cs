@@ -15,8 +15,7 @@ namespace GridDomain.Tests.Framework
         {
             Aggregate = CreateAggregate();
 
-            var domainEvents = Given()
-                .ToList();
+            var domainEvents = Given().ToList();
             if (domainEvents.Any())
             {
                 foreach (var e in domainEvents)
@@ -53,8 +52,7 @@ namespace GridDomain.Tests.Framework
         {
             var expected = ExpectedEvents();
             var aggregate = (IAggregate) Aggregate;
-            var published = aggregate.GetUncommittedEvents()
-                                     .OfType<DomainEvent>();
+            var published = aggregate.GetUncommittedEvents().OfType<DomainEvent>();
             EventsExtensions.CompareEvents(expected.ToArray(), published.ToArray());
         }
     }

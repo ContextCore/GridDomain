@@ -12,9 +12,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
         {
-            var task = Waiter.Expect<string>()
-                             .And<char>()
-                             .Create();
+            var task = Waiter.Expect<string>().And<char>().Create();
 
             Publish(_messageA);
             Publish(_messageB);

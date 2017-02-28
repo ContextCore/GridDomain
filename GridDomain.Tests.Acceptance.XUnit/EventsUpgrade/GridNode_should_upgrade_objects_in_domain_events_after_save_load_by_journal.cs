@@ -31,11 +31,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
             await Node.SaveToJournal(persistId, new EventA(id, new BookOrder_V1("A")), new EventB(id, new BookOrder_V1("B")));
 
             var loadedEvents = await Node.LoadFromJournal(persistId);
-            var expectA = loadedEvents.OfType<EventA>()
-                                      .FirstOrDefault();
+            var expectA = loadedEvents.OfType<EventA>().FirstOrDefault();
 
-            var expectB = loadedEvents.OfType<EventB>()
-                                      .FirstOrDefault();
+            var expectB = loadedEvents.OfType<EventB>().FirstOrDefault();
 
             Assert.IsAssignableFrom<BookOrder_V2>(expectA?.Order);
             Assert.IsAssignableFrom<BookOrder_V2>(expectB?.Order);
