@@ -21,7 +21,6 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Node.Actors;
-using GridDomain.Node.AkkaMessaging.Routing;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;

@@ -7,17 +7,17 @@ namespace GridDomain.Node.Actors.CommandPipe
 {
     public class CommandExecutionActor : ReceiveActor
     {
-        private readonly IAggregateProcessorCatalog _aggregateCatalog;
+        private readonly ICatalog<Processor, ICommand> _aggregateCatalog;
 
-        public CommandExecutionActor(IAggregateProcessorCatalog aggregateCatalog)
+        public CommandExecutionActor(ICatalog<Processor,ICommand> aggregateCatalog)
         {
             _aggregateCatalog = aggregateCatalog;
 
             Receive<IMessageMetadataEnvelop<ICommand>>(c =>
             {
-                Processor aggregateProcessor = _aggregateCatalog.GetAggregateProcessor(c.Message);
+                Processor aggregateProcessor = _aggregateCatalog.Get(c.Message);
                 if (aggregateProcessor == null)
-                    throw new CannotFindAggregateForCommandExeption(c.Message, c.Message.GetType());
+                    throw new CannotFindAggregateForCommandExñeption(c.Message, c.Message.GetType());
 
                 aggregateProcessor.ActorRef.Tell(c);
             });

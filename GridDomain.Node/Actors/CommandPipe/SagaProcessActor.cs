@@ -18,11 +18,11 @@ namespace GridDomain.Node.Actors.CommandPipe
     /// </summary>
     public class SagaProcessActor : ReceiveActor
     {
-        private readonly ISagaProcessorCatalog _catalog;
+        private readonly IProcessorListCatalog _catalog;
         private IActorRef _commandExecutionActor;
         public const string SagaProcessActorRegistrationName = nameof(SagaProcessActorRegistrationName);
 
-        public SagaProcessActor(ISagaProcessorCatalog catalog)
+        public SagaProcessActor(IProcessorListCatalog catalog)
         {
             _catalog = catalog;
 
@@ -64,7 +64,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 
         private Task<IEnumerable<MessageMetadataEnvelop<ICommand>>> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
-            IReadOnlyCollection<Processor> eventProcessors = _catalog.GetSagaProcessor(messageMetadataEnvelop.Message);
+            IReadOnlyCollection<Processor> eventProcessors = _catalog.Get(messageMetadataEnvelop.Message);
             if(!eventProcessors.Any())
                  return Task.FromResult(Enumerable.Empty<MessageMetadataEnvelop<ICommand>>());
 

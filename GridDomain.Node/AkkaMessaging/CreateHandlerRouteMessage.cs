@@ -2,18 +2,16 @@ using System;
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.AkkaMessaging
 {
     public class CreateHandlerRouteMessage : IEquatable<CreateHandlerRouteMessage>
     {
-        public CreateHandlerRouteMessage(Type messageType, Type handlerType, string messageCorrelationProperty, PoolKind poolType)
+        public CreateHandlerRouteMessage(Type messageType, Type handlerType, string messageCorrelationProperty)
         {
             MessageType = messageType;
             HandlerType = handlerType;
             MessageCorrelationProperty = messageCorrelationProperty;
-            PoolType = poolType;
 
             Check();
         }
@@ -21,7 +19,6 @@ namespace GridDomain.Node.AkkaMessaging
         public Type MessageType { get; }
         public Type HandlerType { get; }
 
-        public PoolKind PoolType { get; }
 
         /// <summary>
         ///     Name of property in message to use as correlation id.
@@ -41,8 +38,7 @@ namespace GridDomain.Node.AkkaMessaging
         {
             return new CreateHandlerRouteMessage(typeof (TMessage), 
                 typeof (THandler), 
-                property, 
-                property == null ? PoolKind.Random : PoolKind.ConsistentHash);
+                property);
         }
 
         private void Check()

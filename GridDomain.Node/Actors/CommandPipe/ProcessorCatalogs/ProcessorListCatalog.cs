@@ -1,27 +1,34 @@
 using System;
 using System.Collections.Generic;
+using GridDomain.Common;
 
 namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
 {
-    static class ProcessorListCatalog
+    class ProcessorListCatalog : TypeCatalog<List<Processor>,object>, IProcessorListCatalog
     {
-        internal static readonly List<Processor> EmptyProcessorList = new List<Processor>();
-    }
+        private static readonly List<Processor> EmptyProcessorList = new List<Processor>();
 
-    class ProcessorListCatalog<TMessage> : TypeCatalog<List<Processor>,TMessage>
-    {
-        public override void Add(Type type, Processor processor)
+        public override void Add(Type type, List<Processor> processor)
         {
             List<Processor> list;
             if (!Catalog.TryGetValue(type, out list))
-                list = Catalog[type] = new List<Processor>();
+                list = Catalog[type] = processor;
 
-            list.Add(processor);
+            list.AddRange(processor);
         }
 
-        protected IReadOnlyCollection<Processor> GetProcessor<TMsg>(TMsg message) where TMsg:TMessage
+        public void Add(Type type, Processor processor)
         {
-            return base.GetProcessor(message) ?? ProcessorListCatalog.EmptyProcessorList;
+            Add(type, new List<Processor> { processor});
+        }
+        public void Add<U>(Processor processor)
+        {
+            Add(typeof(U), processor);
+        }
+
+        public new IReadOnlyCollection<Processor> Get(object evt)
+        {
+            return base.Get(evt) ?? EmptyProcessorList;
         }
     }
 }

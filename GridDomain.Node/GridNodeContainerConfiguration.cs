@@ -65,7 +65,6 @@ namespace GridDomain.Node
             container.RegisterInstance<IActorTransport>(transport);
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            container.RegisterType<IAggregateActorLocator, DefaultAggregateActorLocator>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
             container.RegisterInstance<IAppInsightsConfiguration>(AppInsightsConfigSection.Default ??
                                                                                       new DefaultAppInsightsConfiguration());

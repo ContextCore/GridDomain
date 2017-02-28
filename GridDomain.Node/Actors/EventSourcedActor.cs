@@ -164,13 +164,4 @@ namespace GridDomain.Node.Actors
             Monitor.IncrementActorRestarted();
         }
     }
-
-    public class ShutdownCanceled
-    {
-        private ShutdownCanceled()
-        {
-            
-        }
-        public static ShutdownCanceled Instance { get; } = new ShutdownCanceled();
-    }
 }

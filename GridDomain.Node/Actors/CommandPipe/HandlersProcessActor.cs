@@ -19,10 +19,10 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
 
-        private readonly ICustomHandlersProcessorCatalog _handlersCatalog;
+        private readonly IProcessorListCatalog _handlersCatalog;
         private readonly IActorRef _sagasProcessActor;
 
-        public HandlersProcessActor(ICustomHandlersProcessorCatalog handlersCatalog, IActorRef sagasProcessActor)
+        public HandlersProcessActor(IProcessorListCatalog handlersCatalog, IActorRef sagasProcessActor)
         {
             _sagasProcessActor = sagasProcessActor;
             _handlersCatalog = handlersCatalog;
@@ -57,7 +57,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 
         private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
-            IReadOnlyCollection<Processor> faultProcessors = _handlersCatalog.GetHandlerProcessor(messageMetadataEnvelop.Message);
+            IReadOnlyCollection<Processor> faultProcessors = _handlersCatalog.Get(messageMetadataEnvelop.Message);
             if (!faultProcessors.Any()) return Task.CompletedTask;
 
             return faultProcessors.Select(p => {

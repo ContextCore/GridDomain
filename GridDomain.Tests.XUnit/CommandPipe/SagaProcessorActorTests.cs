@@ -21,7 +21,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
 
-            var catalog = new SagaProcessorCatalog();
+            var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
-            var catalog = new SagaProcessorCatalog();
+            var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
@@ -77,7 +77,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var testSagaActorÑ = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
 
-            var catalog = new SagaProcessorCatalog();
+            var catalog = new ProcessorListCatalog();
 
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActorA));
             //two commands per one event will be produced

@@ -16,7 +16,6 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.AkkaMessaging.Routing;
 using Microsoft.Practices.Unity;
 using Serilog;
 using Serilog.Core;
@@ -25,9 +24,9 @@ namespace GridDomain.Node
 {
     public class CommandPipeBuilder : IMessagesRouter
     {
-        private readonly AggregateProcessorCatalog _aggregatesCatalog = new AggregateProcessorCatalog();
-        private readonly SagaProcessorCatalog _sagaCatalog = new SagaProcessorCatalog();
-        private readonly CustomHandlersProcessCatalog _handlersCatalog = new CustomHandlersProcessCatalog();
+        private readonly TypeCatalog<Processor, ICommand> _aggregatesCatalog = new TypeCatalog<Processor, ICommand>();
+        private readonly ProcessorListCatalog _sagaCatalog = new ProcessorListCatalog();
+        private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
         private readonly ActorSystem _system;
         public IActorRef SagaProcessor { get; private set; }
         public IActorRef HandlersProcessor { get; private set; }

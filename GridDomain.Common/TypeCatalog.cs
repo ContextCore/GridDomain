@@ -1,20 +1,23 @@
 using System;
 using System.Collections.Generic;
 
-namespace GridDomain.Node.Actors.CommandPipe
+namespace GridDomain.Common
 {
-    abstract class TypeCatalog<TData,TMessage>
+    public class TypeCatalog<TData,TMessage> : ICatalog<TData,TMessage>
     {
         protected readonly IDictionary<Type, TData> Catalog = new Dictionary<Type, TData>();
 
-        public abstract void Add(Type type, Processor processor);
+        public virtual void Add(Type type, TData processor)
+        {
+            Catalog[type] = processor;
+        }
 
-        public void Add<U>(Processor processor) where U : TMessage
+        public void Add<U>(TData processor) where U : TMessage
         {
             Add(typeof(U), processor);
         }
 
-        protected TData GetProcessor(object message)
+        public virtual TData Get(TMessage message)
         {
             TData processor;
             Catalog.TryGetValue(message.GetType(), out processor);

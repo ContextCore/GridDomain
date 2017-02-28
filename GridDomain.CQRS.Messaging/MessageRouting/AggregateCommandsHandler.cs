@@ -2,53 +2,47 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Core;
+using GridDomain.Common;
 using Microsoft.Practices.ServiceLocation;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
-    public class AggregateCommandsHandler<TAggregate> : IAggregateCommandsHandler<TAggregate>
+    public class AggregateCommandsHandler<TAggregate> : TypeCatalog<Func<ICommand, TAggregate, TAggregate>, ICommand>,
+                                                        IAggregateCommandsHandler<TAggregate>
                                                         where TAggregate : AggregateBase
     {
-        private readonly IDictionary<Type, AggregateCommandHandler<TAggregate>> _commandHandlers =
-                                                     new Dictionary<Type, AggregateCommandHandler<TAggregate>>();
-
-
         public TAggregate Execute(TAggregate aggregate, ICommand command)
         {
-            return GetHandler(command).Execute(aggregate, command);
+            return Get(command).Invoke(command, aggregate);
         }
 
-        private AggregateCommandHandler<TAggregate> GetHandler(ICommand cmd)
+        public override Func<ICommand, TAggregate, TAggregate> Get(ICommand command)
         {
-            AggregateCommandHandler<TAggregate> aggregateCommandHandler; 
-            var commandType = cmd.GetType();
-
-            if (!_commandHandlers.TryGetValue(commandType, out aggregateCommandHandler))
-                throw new CannotFindAggregateCommandHandlerExeption(typeof (TAggregate), commandType);
-
-            return aggregateCommandHandler;
-        }
-
-        private void Map<TCommand>(AggregateCommandHandler<TAggregate> handler)
-        {
-            _commandHandlers[typeof(TCommand)] = handler;
+            var handler = base.Get(command);
+            if(handler == null)
+                throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
+            return handler;
         }
 
         public void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(commandExecutor));
+            Add<TCommand>((c, a) =>
+                          {
+                              commandExecutor((TCommand) c, a);
+                              return a;
+                          });
         }
 
         protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Map<TCommand>(AggregateCommandHandler<TAggregate>.New(commandExecutor));
+            Add<TCommand>((c, a) => commandExecutor((TCommand)c));
         }
 
         public IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands
         {
             get
             {
-                return _commandHandlers.Select(h => new AggregateCommandInfo(h.Key)).ToArray();
+                return Catalog.Select(h => new AggregateCommandInfo(h.Key)).ToArray();
             }
         }
     }

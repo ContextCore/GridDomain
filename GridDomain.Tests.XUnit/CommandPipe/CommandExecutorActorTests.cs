@@ -16,7 +16,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
        [Fact]
         public void CommandExecutor_routes_command_by_its_type()
         {
-            var catalog = new AggregateProcessorCatalog();
+            var catalog = new TypeCatalog<Processor, ICommand>();
             catalog.Add<CreateSampleAggregateCommand>(new Processor(TestActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));
@@ -38,7 +38,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
        [Fact]
         public void CommandExecutor_does_not_support_command_inheritance()
         {
-            var catalog = new AggregateProcessorCatalog();
+            var catalog = new TypeCatalog<Processor, ICommand>();
             catalog.Add<CreateSampleAggregateCommand>(new Processor(TestActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));

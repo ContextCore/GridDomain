@@ -17,7 +17,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
        [Fact]
         public void CustomHandlerProcessor_routes_events_by_type()
         {
-            var catalog = new CustomHandlersProcessCatalog();
+            var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
 
@@ -40,7 +40,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         public void All_async_handlers_performs_in_parralel()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
-            var catalog = new CustomHandlersProcessCatalog();
+            var catalog = new ProcessorListCatalog();
 
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor));
@@ -71,7 +71,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         public void All_sync_handlers_performs_one_after_one()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
-            var catalog = new CustomHandlersProcessCatalog();
+            var catalog = new ProcessorListCatalog();
 
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
@@ -103,7 +103,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         public void Sync_and_async_handlers_performs_independent()
         {
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
-            var catalog = new CustomHandlersProcessCatalog();
+            var catalog = new ProcessorListCatalog();
 
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
@@ -135,7 +135,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
        [Fact]
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
-            var catalog = new CustomHandlersProcessCatalog();
+            var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
 
