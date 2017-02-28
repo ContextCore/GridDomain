@@ -19,7 +19,7 @@ namespace GridDomain.EventSourcing
 
             await PersistDelegate(evt);
             foreach(var e in evt)
-                RaiseEvent(e);
+                await Emit(e);
         }
 
         public void RegisterPersistenceCallBack(Func<DomainEvent[], Task> persistDelegate) {
@@ -88,7 +88,7 @@ namespace GridDomain.EventSourcing
             _asyncEventsResults.Add(asyncMethodStarted.InvocationId, asyncMethodStarted);
         }
 
-        public void FinishAsyncExecution(Guid invocationId)
+        public async Task FinishAsyncExecution(Guid invocationId)
         {
             AsyncEventsInProgress eventsInProgress;
 
@@ -96,7 +96,8 @@ namespace GridDomain.EventSourcing
             if (!eventsInProgress.ResultProducer.IsCompleted) throw new NotFinishedAsyncMethodResultsRequestedException();
             _asyncEventsResults.Remove(invocationId);
 
-            foreach (var @event in eventsInProgress.ResultProducer.Result) RaiseEvent(@event);
+            foreach (var @event in eventsInProgress.ResultProducer.Result)
+                await Emit(@event);
         }
 
         #endregion
@@ -113,26 +114,27 @@ namespace GridDomain.EventSourcing
             Register<FutureEventCanceledEvent>(Apply);
         }
 
-        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
+        public async Task RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent e;
             if (!FutureEvents.TryGetValue(futureEventId, out e)) throw new ScheduledEventNotFoundException(futureEventId);
 
-            RaiseEvent(e.Event);
-            RaiseEvent(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
+            await Emit(e.Event);
+            await Emit(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
         }
 
-        protected void RaiseEvent(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
+        protected async Task Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
-            RaiseEvent(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+            await Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
+        protected async Task CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
             var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
             if (criteia != null) eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray()) RaiseEvent(e);
+            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
+                await Emit(e);
         }
 
         private void Apply(FutureEventScheduledEvent e)

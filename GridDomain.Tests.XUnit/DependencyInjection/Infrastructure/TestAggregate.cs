@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 
@@ -12,10 +13,10 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
         {
         }
 
-        public void Execute(int number, ITestDependency d)
+        public async Task Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);
-            RaiseEvent(new TestDomainEvent(dependencyUseResult, Id));
+            await Emit(new TestDomainEvent(dependencyUseResult, Id));
         }
 
         private void Apply(TestDomainEvent e)

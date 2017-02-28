@@ -34,20 +34,20 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             return new Snapshot(Id, Version, Value);
         }
 
-        public void ChangeState(int number)
+        public async Task ChangeState(int number)
         {
-            RaiseEvent(new SampleAggregateChangedEvent(number.ToString(), Id));
+            await Emit(new SampleAggregateChangedEvent(number.ToString(), Id));
         }
 
-        public void CreateAndChangeState(string value)
+        public async Task CreateAndChangeState(string value)
         {
-            RaiseEvent(new SampleAggregateCreatedEvent(value, Id));
-            RaiseEvent(new SampleAggregateChangedEvent(value, Id));
+            await Emit(new SampleAggregateCreatedEvent(value, Id));
+            await Emit(new SampleAggregateChangedEvent(value, Id));
         }
 
-        public void IncreaseParameter(int value)
+        public async Task IncreaseParameter(int value)
         {
-            RaiseEvent(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
+            await Emit(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
         }
 
         public void LongExecute(int sleepMiliseconds)

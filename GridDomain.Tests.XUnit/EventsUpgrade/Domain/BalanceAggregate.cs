@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
 
@@ -15,15 +16,15 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
             RaiseEvent(new AggregateCreatedEvent(value, id));
         }
 
-        public void ChangeState(int number)
+        public async Task ChangeState(int number)
         {
-            RaiseEvent(new BalanceChangedEvent_V1(number, Id));
+            await Emit(new BalanceChangedEvent_V1(number, Id));
         }
 
-        public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
+        public async Task ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
         {
-            if (oldVersion) RaiseEvent(new BalanceChangedEvent_V0(number, Id), when);
-            else RaiseEvent(new BalanceChangedEvent_V1(number, Id), when);
+            if (oldVersion) await Emit(new BalanceChangedEvent_V0(number, Id), when);
+            else await Emit(new BalanceChangedEvent_V1(number, Id), when);
         }
 
         private void Apply(AggregateCreatedEvent e)

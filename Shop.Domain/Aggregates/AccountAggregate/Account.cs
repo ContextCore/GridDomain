@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using NMoneys;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
@@ -35,10 +36,10 @@ namespace Shop.Domain.Aggregates.AccountAggregate
             Amount -= e.Amount;
         }
 
-        public void Replenish(Money m, Guid replenishSource)
+        public async Task Replenish(Money m, Guid replenishSource)
         {
             GuardNegativeMoney(m, "Cant replenish negative amount of money.");
-            RaiseEvent(new AccountReplenish(Id, replenishSource, m));
+            await Emit(new AccountReplenish(Id, replenishSource, m));
         }
 
         private static void GuardNegativeMoney(Money m, string msg)
@@ -46,12 +47,12 @@ namespace Shop.Domain.Aggregates.AccountAggregate
             if (m.IsNegative()) throw new NegativeMoneyException(msg);
         }
 
-        public void Withdraw(Money m, Guid withdrawSource)
+        public async Task Withdraw(Money m, Guid withdrawSource)
         {
             GuardNegativeMoney(m, "Cant withdrawal negative amount of money.");
             if ((Amount - m).IsNegative()) throw new NotEnoughMoneyException("Dont have enough money to pay for bill");
 
-            RaiseEvent(new AccountWithdrawal(Id, withdrawSource, m));
+            await Emit(new AccountWithdrawal(Id, withdrawSource, m));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
@@ -29,17 +30,17 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public void Success(string taskId)
+        public async Task Success(string taskId)
         {
             ResultHolder.Add(taskId, taskId);
-            RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
+            await Emit(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public void LongTime(string taskId, TimeSpan timeout)
+        public async Task LongTime(string taskId, TimeSpan timeout)
         {
             Thread.Sleep(timeout);
             ResultHolder.Add(taskId, taskId);
-            RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
+            await Emit(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void Failure(TimeSpan timeout)

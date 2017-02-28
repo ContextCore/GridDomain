@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
@@ -25,11 +26,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             SleepTimes ++;
         }
 
-        public void Sleep(Guid sofaId)
+        public async Task Sleep(Guid sofaId)
         {
             if (sofaId == Guid.Empty) throw new CantFindSofaException();
 
-            RaiseEvent(new Slept(sofaId));
+            await Emit(new Slept(sofaId));
         }
     }
 }

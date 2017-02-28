@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
@@ -17,9 +18,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public TSagaState Data { get; private set; }
 
-        public void RememberEvent(Event @event, TSagaState sagaData, object message)
+        public async Task RememberEvent(Event @event, TSagaState sagaData, object message)
         {
-            RaiseEvent(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, @event.Name, message));
+            await Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, @event.Name, message));
         }
 
         public void Apply(SagaCreatedEvent<TSagaState> e)

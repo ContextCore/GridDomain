@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using Serilog;
 using Shop.Domain.Aggregates.UserAggregate.Events;
@@ -41,9 +42,9 @@ namespace Shop.Domain.Aggregates.UserAggregate
         public IDictionary<Guid, PendingOrder> PendingOrders { get; } = new Dictionary<Guid, PendingOrder>();
         public Guid Account { get; private set; }
 
-        public void BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
+        public async Task BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
         {
-            RaiseEvent(new SkuPurchaseOrdered(Id,
+            await Emit(new SkuPurchaseOrdered(Id,
                 skuId,
                 quantity,
                 Guid.NewGuid(),
@@ -51,14 +52,14 @@ namespace Shop.Domain.Aggregates.UserAggregate
                 Account));
         }
 
-        public void CompleteOrder(Guid orderId)
+        public async Task CompleteOrder(Guid orderId)
         {
-            RaiseEvent(new PendingOrderCompleted(Id, orderId));
+            await Emit(new PendingOrderCompleted(Id, orderId));
         }
 
-        public void CancelOrder(Guid orderId)
+        public async Task CancelOrder(Guid orderId)
         {
-            RaiseEvent(new PendingOrderCanceled(Id, orderId));
+            await Emit(new PendingOrderCanceled(Id, orderId));
         }
     }
 }

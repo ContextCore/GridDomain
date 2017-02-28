@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using NMoneys;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
@@ -52,24 +53,24 @@ namespace Shop.Domain.Aggregates.OrderAggregate
 
         //any discounting logic can be placed here, such as "buy 2 items for price of 1
         //calculate total call is last oin order lifetime, it means order is ready to be paid
-        public void CalculateTotal()
+        public async Task CalculateTotal()
         {
-            RaiseEvent(new OrderTotalCalculated(Id, CalculateTotalPrice()));
+            await Emit(new OrderTotalCalculated(Id, CalculateTotalPrice()));
         }
 
-        public void AddItem(Guid sku, int quantity, Money totalPrice)
+        public async Task AddItem(Guid sku, int quantity, Money totalPrice)
         {
             if (quantity <= 0) throw new InvalidQuantityException();
             if (totalPrice < Money.Zero()) throw new InvalidMoneyException();
             if (Status != OrderStatus.Created) throw new CantAddItemsToClosedOrder();
 
-            RaiseEvent(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
+            await Emit(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
         }
 
-        public void Complete()
+        public async Task Complete()
         {
             if (Status != OrderStatus.Created) throw new CannotCompleteAlreadyClosedOrderException();
-            RaiseEvent(new OrderCompleted(Id, OrderStatus.Paid));
+            await Emit(new OrderCompleted(Id, OrderStatus.Paid));
         }
     }
 }

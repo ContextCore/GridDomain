@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using Serilog;
@@ -68,19 +69,19 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             Reservations.Remove(reserveId);
         }
 
-        public void Take(int quantity)
+        public async Task Take(int quantity)
         {
             if (Quantity < quantity) throw new OutOfStockException(quantity, Quantity);
-            RaiseEvent(new StockTaken(Id, quantity));
+            await Emit(new StockTaken(Id, quantity));
         }
 
-        public void Take(Guid reserveId)
+        public async Task Take(Guid reserveId)
         {
             CancelScheduledEvents<ReserveExpired>(e => e.ReserveId == reserveId);
-            RaiseEvent(new StockReserveTaken(Id, reserveId));
+            await Emit(new StockReserveTaken(Id, reserveId));
         }
 
-        public void Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
+        public async Task Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
         {
             if (Quantity < quantity) throw new OutOfStockException(quantity, Quantity);
 
@@ -91,23 +92,23 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             if (Reservations.TryGetValue(reserveId, out oldReservation))
             {
                 quantityToReserve += oldReservation.Quantity;
-                RaiseEvent(new ReserveRenewed(Id, reserveId));
+                await Emit(new ReserveRenewed(Id, reserveId));
             }
 
-            RaiseEvent(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
-            RaiseEvent(new ReserveExpired(Id, reserveId), expirationDate);
+            await Emit(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
+            await Emit(new ReserveExpired(Id, reserveId), expirationDate);
         }
 
-        public void AddToToStock(int quantity, Guid skuId, string packArticle)
+        public async Task AddToToStock(int quantity, Guid skuId, string packArticle)
         {
             if (skuId != SkuId) throw new InvalidSkuAddException(SkuId, skuId);
             if (quantity <= 0) throw new ArgumentException(nameof(quantity));
-            RaiseEvent(new StockAdded(Id, quantity, packArticle));
+            await Emit(new StockAdded(Id, quantity, packArticle));
         }
 
-        public void Cancel(Guid reserveId)
+        public async Task Cancel(Guid reserveId)
         {
-            RaiseEvent(new ReserveCanceled(Id, reserveId));
+            await Emit(new ReserveCanceled(Id, reserveId));
         }
     }
 }

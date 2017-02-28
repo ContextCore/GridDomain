@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
@@ -11,27 +12,27 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         public FutureEventsAggregate(Guid id, string initialValue = "") : this(id)
         {
-            Value = initialValue;
+            RaiseEvent(new TestDomainEvent(initialValue, Id));
         }
 
         public int? RetriesToSucceed { get; private set; }
         public DateTime ProcessedTime { get; private set; }
 
-        public void ScheduleInFuture(DateTime raiseTime, string testValue)
+        public async Task ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            RaiseEvent(new TestDomainEvent(testValue, Id), raiseTime);
+            await Emit(new TestDomainEvent(testValue, Id), raiseTime);
         }
 
-        public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
+        public async Task ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
-            if (RetriesToSucceed == 0) RaiseEvent(new TestDomainEvent(testValue, Id), raiseTime);
+            if (RetriesToSucceed == 0) await Emit(new TestDomainEvent(testValue, Id), raiseTime);
             else
-            { RaiseEvent(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime); }
+            { await Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime); }
         }
 
-        public void CancelFutureEvents(string likeValue)
+        public async Task CancelFutureEvents(string likeValue)
         {
-            CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
+           await CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
 
         private void Apply(TestDomainEvent e)
