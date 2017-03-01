@@ -34,72 +34,43 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             return new Snapshot(Id, Version, Value);
         }
 
-        public async Task ChangeState(int number)
+        public void ChangeState(int number)
         {
-            await Emit(new SampleAggregateChangedEvent(number.ToString(), Id));
+            Emit(new SampleAggregateChangedEvent(number.ToString(), Id));
         }
 
-        public async Task CreateAndChangeState(string value)
+        public void CreateAndChangeState(string value)
         {
-            await Emit(new SampleAggregateCreatedEvent(value, Id));
-            await Emit(new SampleAggregateChangedEvent(value, Id));
+             Emit(new SampleAggregateCreatedEvent(value, Id),
+                        new SampleAggregateChangedEvent(value, Id));
         }
 
-        public async Task IncreaseParameter(int value)
+        public void IncreaseParameter(int value)
         {
-            await Emit(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
+             Emit(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
         }
 
-        public void LongExecute(int sleepMiliseconds)
+        public Task LongExecute(int sleepMiliseconds)
         {
-            var task =
-                Task.Delay(sleepMiliseconds)
-                    .ContinueWith(t => new SampleAggregateChangedEvent(sleepMiliseconds.ToString(), Id));
+            var eventTask = Task.Delay(sleepMiliseconds)
+                                .ContinueWith(t => new SampleAggregateChangedEvent(sleepMiliseconds.ToString(), Id));
 
-            RaiseEventAsync(task);
+             return Emit(eventTask);
         }
 
-        private Task<DomainEvent[]> CreateEventsTask(int param, TimeSpan sleepTime)
+        internal Task ChangeStateAsync(int parameter, TimeSpan sleepTime)
         {
-            var timeSpan = sleepTime;
-            var eventTask = Task.Run(async () =>
-                                     {
-                                         await Task.Delay(timeSpan);
-                                         return new DomainEvent[]
-                                                {
-                                                    new SampleAggregateChangedEvent(
-                                                                                    param.ToString(),
-                                                                                    Id)
-                                                };
-                                     });
-            return eventTask;
+             return Emit(Task.Delay(sleepTime)
+                            .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)));
         }
 
-        private Task<SampleAggregateChangedEvent> CreateEventTask(int param, TimeSpan sleepTime)
+        internal Task AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
         {
-            var timeSpan = sleepTime;
-            var eventTask = Task.Run(async () =>
-                                     {
-                                         await Task.Delay(timeSpan);
-                                         return new SampleAggregateChangedEvent(param.ToString(), Id);
-                                     });
-            return eventTask;
-        }
+            return Emit(Task.Delay(sleepTime)
+                            .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)),
 
-        internal void ChangeStateAsync(int parameter, TimeSpan sleepTime)
-        {
-            var eventTask = CreateEventsTask(parameter, sleepTime);
-            RaiseEventAsync(eventTask);
-        }
+                         () => RaiseException())
 
-        internal void AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
-        {
-            var expectionTask = CreateEventTask(0, sleepTime).ContinueWith(t =>
-                                                                           {
-                                                                               RaiseException();
-                                                                               return t.Result;
-                                                                           });
-            RaiseEventAsync(expectionTask);
         }
 
         private void Apply(SampleAggregateCreatedEvent e)
@@ -118,15 +89,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             throw new SampleAggregateException();
         }
 
-        public void RaiseExceptionAsync(TimeSpan callBackTime)
+        public Task RaiseExceptionAsync(TimeSpan callBackTime)
         {
-            var expectionTask = CreateEventsTask(0, callBackTime).ContinueWith(t =>
-                                                                               {
-                                                                                   RaiseException();
-                                                                                   return t.Result;
-                                                                               });
-
-            RaiseEventAsync(expectionTask);
+            return Emit(Task.Delay(callBackTime)
+                     .ContinueWith(t => new SampleAggregateChangedEvent("0", Id)))
+                  .ContinueWith(t => RaiseException());
         }
 
         private class Snapshot : IMemento

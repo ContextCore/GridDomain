@@ -31,6 +31,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
                                      Reservations[e.ReserveId] = new Reservation(e.Quantity, e.ExpirationDate);
                                      Quantity -= e.Quantity;
                                  });
+
             Apply<ReserveExpired>(e => CancelReservation(e.ReserveId));
             Apply<StockTaken>(e => Quantity -= e.Quantity);
             Apply<StockReserveTaken>(e => Reservations.Remove(e.ReserveId));
@@ -70,20 +71,20 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             Reservations.Remove(reserveId);
         }
 
-        public async Task Take(int quantity)
+        public void Take(int quantity)
         {
             if (Quantity < quantity)
                 throw new OutOfStockException(quantity, Quantity);
-            await Emit(new StockTaken(Id, quantity));
+            Emit(new StockTaken(Id, quantity));
         }
 
-        public async Task Take(Guid reserveId)
+        public void Take(Guid reserveId)
         {
             CancelScheduledEvents<ReserveExpired>(e => e.ReserveId == reserveId);
-            await Emit(new StockReserveTaken(Id, reserveId));
+            Emit(new StockReserveTaken(Id, reserveId));
         }
 
-        public async Task Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
+        public void Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
         {
             if (Quantity < quantity)
                 throw new OutOfStockException(quantity, Quantity);
@@ -95,25 +96,25 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             if (Reservations.TryGetValue(reserveId, out oldReservation))
             {
                 quantityToReserve += oldReservation.Quantity;
-                await Emit(new ReserveRenewed(Id, reserveId));
+                Emit(new ReserveRenewed(Id, reserveId));
             }
 
-            await Emit(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
-            await Emit(new ReserveExpired(Id, reserveId), expirationDate);
+            Emit(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
+            Emit(new ReserveExpired(Id, reserveId), expirationDate);
         }
 
-        public async Task AddToToStock(int quantity, Guid skuId, string packArticle)
+        public void AddToToStock(int quantity, Guid skuId, string packArticle)
         {
             if (skuId != SkuId)
                 throw new InvalidSkuAddException(SkuId, skuId);
             if (quantity <= 0)
                 throw new ArgumentException(nameof(quantity));
-            await Emit(new StockAdded(Id, quantity, packArticle));
+            Emit(new StockAdded(Id, quantity, packArticle));
         }
 
-        public async Task Cancel(Guid reserveId)
+        public void Cancel(Guid reserveId)
         {
-            await Emit(new ReserveCanceled(Id, reserveId));
+            Emit(new ReserveCanceled(Id, reserveId));
         }
     }
 }

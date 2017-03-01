@@ -13,9 +13,9 @@ namespace Shop.Domain.DomainServices.PriceCalculator
             _priceQuery = priceQuery;
         }
 
-        public async Task<Money> CalculatePrice(Guid skuId, int quantity)
+        public Task<Money> CalculatePrice(Guid skuId, int quantity)
         {
-            return await _priceQuery.Execute(skuId) * quantity;
+            return _priceQuery.Execute(skuId).ContinueWith(t => t.Result * quantity);
         }
     }
 }

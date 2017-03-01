@@ -54,12 +54,12 @@ namespace Shop.Domain.Aggregates.OrderAggregate
 
         //any discounting logic can be placed here, such as "buy 2 items for price of 1
         //calculate total call is last oin order lifetime, it means order is ready to be paid
-        public async Task CalculateTotal()
+        public void CalculateTotal()
         {
-            await Emit(new OrderTotalCalculated(Id, CalculateTotalPrice()));
+            Emit(new OrderTotalCalculated(Id, CalculateTotalPrice()));
         }
 
-        public async Task AddItem(Guid sku, int quantity, Money totalPrice)
+        public void AddItem(Guid sku, int quantity, Money totalPrice)
         {
             if (quantity <= 0)
                 throw new InvalidQuantityException();
@@ -68,14 +68,15 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             if (Status != OrderStatus.Created)
                 throw new CantAddItemsToClosedOrder();
 
-            await Emit(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
+            Emit(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
         }
 
-        public async Task Complete()
+        public void Complete()
         {
             if (Status != OrderStatus.Created)
                 throw new CannotCompleteAlreadyClosedOrderException();
-            await Emit(new OrderCompleted(Id, OrderStatus.Paid));
+
+            Emit(new OrderCompleted(Id, OrderStatus.Paid));
         }
     }
 }

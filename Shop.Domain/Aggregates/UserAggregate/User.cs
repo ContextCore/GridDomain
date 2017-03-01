@@ -43,9 +43,9 @@ namespace Shop.Domain.Aggregates.UserAggregate
         public IDictionary<Guid, PendingOrder> PendingOrders { get; } = new Dictionary<Guid, PendingOrder>();
         public Guid Account { get; private set; }
 
-        public async Task BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
+        public void BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
         {
-            await Emit(new SkuPurchaseOrdered(Id,
+             Emit(new SkuPurchaseOrdered(Id,
                                               skuId,
                                               quantity,
                                               Guid.NewGuid(),
@@ -53,14 +53,14 @@ namespace Shop.Domain.Aggregates.UserAggregate
                                               Account));
         }
 
-        public async Task CompleteOrder(Guid orderId)
+        public void CompleteOrder(Guid orderId)
         {
-            await Emit(new PendingOrderCompleted(Id, orderId));
+           Emit(new PendingOrderCompleted(Id, orderId));
         }
 
-        public async Task CancelOrder(Guid orderId)
+        public void CancelOrder(Guid orderId)
         {
-            await Emit(new PendingOrderCanceled(Id, orderId));
+            Emit(new PendingOrderCanceled(Id, orderId));
         }
     }
 }

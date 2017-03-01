@@ -27,17 +27,17 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public async Task Success(string taskId)
+        public void Success(string taskId)
         {
             ResultHolder.Add(taskId, taskId);
-            await Emit(new ScheduledCommandSuccessfullyProcessed(Id));
+            Emit(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
-        public async Task LongTime(string taskId, TimeSpan timeout)
+        public void LongTime(string taskId, TimeSpan timeout)
         {
             Thread.Sleep(timeout);
             ResultHolder.Add(taskId, taskId);
-            await Emit(new ScheduledCommandSuccessfullyProcessed(Id));
+            Emit(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void Failure(TimeSpan timeout)

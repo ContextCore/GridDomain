@@ -191,7 +191,6 @@
     <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
     <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
     <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
-    <Compile Include="CommandsExecution\When_aggregate_raise_async_events.cs" />
     <Compile Include="CommandsExecution\When_async_method_called_Then_domainEvents_are_persisted.cs" />
     <Compile Include="CommandsExecution\When_execute_command_causing_an_aggregate_error.cs" />
     <Compile Include="CommandsExecution\When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller.cs" />

@@ -16,17 +16,17 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
             RaiseEvent(new AggregateCreatedEvent(value, id));
         }
 
-        public async Task ChangeState(int number)
+        public void ChangeState(int number)
         {
-            await Emit(new BalanceChangedEvent_V1(number, Id));
+             Emit(new BalanceChangedEvent_V1(number, Id));
         }
 
-        public async Task ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
+        public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
         {
             if (oldVersion)
-                await Emit(new BalanceChangedEvent_V0(number, Id), when);
+                Emit(new BalanceChangedEvent_V0(number, Id), when);
             else
-                await Emit(new BalanceChangedEvent_V1(number, Id), when);
+                Emit(new BalanceChangedEvent_V1(number, Id), when);
         }
 
         private void Apply(AggregateCreatedEvent e)

@@ -36,10 +36,10 @@ namespace Shop.Domain.Aggregates.AccountAggregate
             Amount -= e.Amount;
         }
 
-        public async Task Replenish(Money m, Guid replenishSource)
+        public void Replenish(Money m, Guid replenishSource)
         {
             GuardNegativeMoney(m, "Cant replenish negative amount of money.");
-            await Emit(new AccountReplenish(Id, replenishSource, m));
+            Emit(new AccountReplenish(Id, replenishSource, m));
         }
 
         private static void GuardNegativeMoney(Money m, string msg)
@@ -48,13 +48,13 @@ namespace Shop.Domain.Aggregates.AccountAggregate
                 throw new NegativeMoneyException(msg);
         }
 
-        public async Task Withdraw(Money m, Guid withdrawSource)
+        public void Withdraw(Money m, Guid withdrawSource)
         {
             GuardNegativeMoney(m, "Cant withdrawal negative amount of money.");
             if ((Amount - m).IsNegative())
                 throw new NotEnoughMoneyException("Dont have enough money to pay for bill");
 
-            await Emit(new AccountWithdrawal(Id, withdrawSource, m));
+            Emit(new AccountWithdrawal(Id, withdrawSource, m));
         }
     }
 }

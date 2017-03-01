@@ -13,7 +13,8 @@ namespace GridDomain.EventSourcing
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
 
-        internal Func<DomainEvent[], Task> PersistDelegate;
+        internal Action<DomainEvent[], Action<DomainEvent>> PersistDelegate;
+        internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action> PersistAsyncDelegate;
 
         // Only for simple implementation 
         Guid IMemento.Id
@@ -28,16 +29,38 @@ namespace GridDomain.EventSourcing
             set { Version = value; }
         }
 
-        protected async Task Emit(params DomainEvent[] evt)
+
+        protected void Emit(DomainEvent e, Action<DomainEvent> onApply = null)
         {
-            await PersistDelegate(evt);
-            foreach (var e in evt)
-                await Emit(e);
+            Emit(onApply, e);
+        }
+        protected void Emit(params DomainEvent[] e)
+        {
+            Emit(evts => { }, e);
         }
 
-        public void RegisterPersistenceCallBack(Func<DomainEvent[], Task> persistDelegate)
+        protected void Emit(Action<DomainEvent> onApply, params DomainEvent[] events)
+        {
+            PersistDelegate(events, onApply);
+        }
+
+        protected void Emit<T>(Task<T> evtTask, Action<DomainEvent> onApply = null, Action continuation = null) where T : DomainEvent
+        {
+            Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}), onApply, continuation);
+        }
+        
+        protected void Emit(Task<DomainEvent[]> evtTask, Action<DomainEvent> onApply = null, Action continuation = null)
+        {
+            PersistAsyncDelegate(evtTask, onApply ?? (o => { }), continuation ?? (() => {}));
+        }
+
+        public void RegisterPersistenceCallBack(Action<DomainEvent[], Action<DomainEvent>> persistDelegate)
         {
             PersistDelegate = persistDelegate;
+        }
+        public void RegisterPersistenceAsyncCallBack(Action<Task<DomainEvent[]>, Action<DomainEvent>, Action> persistDelegate)
+        {
+            PersistAsyncDelegate = persistDelegate;
         }
 
         public static T Empty<T>(Guid id) where T : IAggregate
@@ -57,51 +80,8 @@ namespace GridDomain.EventSourcing
 
         #region AsyncMethods
 
-        //keep track of all invocation to be sure only aggregate-initialized async events can be applied
-        private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults =
-            new Dictionary<Guid, AsyncEventsInProgress>();
-
-        private readonly HashSet<AsyncEventsInProgress> _asyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
-
-        public void ClearAsyncUncomittedEvents()
-        {
-            _asyncUncomittedEvents.Clear();
-        }
-
-        public IReadOnlyCollection<AsyncEventsInProgress> GetAsyncUncomittedEvents()
-        {
-            return _asyncUncomittedEvents;
-        }
-
         public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } =
             new Dictionary<Guid, FutureEventScheduledEvent>();
-
-        public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
-        {
-            var entityToArrayTask = eventProducer.ContinueWith(t => new DomainEvent[] {t.Result});
-            RaiseEventAsync(entityToArrayTask);
-        }
-
-        protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
-        {
-            var asyncMethodStarted = new AsyncEventsInProgress(eventProducer, Guid.NewGuid());
-            _asyncUncomittedEvents.Add(asyncMethodStarted);
-            _asyncEventsResults.Add(asyncMethodStarted.InvocationId, asyncMethodStarted);
-        }
-
-        public async Task FinishAsyncExecution(Guid invocationId)
-        {
-            AsyncEventsInProgress eventsInProgress;
-
-            if (!_asyncEventsResults.TryGetValue(invocationId, out eventsInProgress))
-                return;
-            if (!eventsInProgress.ResultProducer.IsCompleted)
-                throw new NotFinishedAsyncMethodResultsRequestedException();
-            _asyncEventsResults.Remove(invocationId);
-
-            foreach (var @event in eventsInProgress.ResultProducer.Result)
-                await Emit(@event);
-        }
 
         #endregion
 
@@ -115,29 +95,31 @@ namespace GridDomain.EventSourcing
             Register<FutureEventCanceledEvent>(Apply);
         }
 
-        public async Task RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
+        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent e;
             if (!FutureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            await Emit(e.Event);
-            await Emit(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
+            Emit(e.Event);
+            Emit(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
         }
 
-        protected async Task Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
+        protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
-            await Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+            Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected async Task CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
+        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
             var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
             if (criteia != null)
                 eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
-                await Emit(e);
+            var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id))
+                                             .Cast<DomainEvent>()
+                                             .ToArray();
+            Emit(domainEvents);
         }
 
         private void Apply(FutureEventScheduledEvent e)

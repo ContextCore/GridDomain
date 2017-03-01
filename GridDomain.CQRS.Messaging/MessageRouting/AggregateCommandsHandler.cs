@@ -29,7 +29,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             return handler;
         }
 
-        [Obsolete("use only async versions")]
         public void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Add<TCommand>((c, a) =>
@@ -41,26 +40,23 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>(async (c, a) =>
+            Add<TCommand>((c, a) =>
                           {
                               var aggregate = commandExecutor((TCommand) c);
-                              var eventsToSave =
-                                  ((IAggregate) aggregate).GetUncommittedEvents()
-                                                          .Cast<DomainEvent>()
-                                                          .ToArray();
 
-                              await aggregate.PersistDelegate.Invoke(eventsToSave);
-                              return aggregate;
+                              var eventsToSave = ((IAggregate) aggregate).GetUncommittedEvents()
+                                                                         .Cast<DomainEvent>()
+                                                                         .ToArray();
+
+                              aggregate.PersistDelegate(eventsToSave,e => {});
+
+                              return Task.FromResult(aggregate);
                           });
         }
 
         public void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>(async (c, a) =>
-                          {
-                              await commandExecutor((TCommand) c, a);
-                              return a;
-                          });
+            Add<TCommand>((c, a) => commandExecutor((TCommand) c, a).ContinueWith(t => a));
         }
     }
 }

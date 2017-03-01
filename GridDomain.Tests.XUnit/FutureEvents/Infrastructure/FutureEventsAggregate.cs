@@ -18,22 +18,22 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
         public int? RetriesToSucceed { get; private set; }
         public DateTime ProcessedTime { get; private set; }
 
-        public async Task ScheduleInFuture(DateTime raiseTime, string testValue)
+        public void ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            await Emit(new TestDomainEvent(testValue, Id), raiseTime);
+            Emit(new TestDomainEvent(testValue, Id), raiseTime);
         }
 
-        public async Task ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
+        public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
-            if (RetriesToSucceed == 0)
-                await Emit(new TestDomainEvent(testValue, Id), raiseTime);
-            else
-                await Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
+            if(RetriesToSucceed == 0)
+                Emit(new TestDomainEvent(testValue, Id), raiseTime);
+
+            else Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
         }
 
-        public async Task CancelFutureEvents(string likeValue)
+        public void CancelFutureEvents(string likeValue)
         {
-            await CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
+            CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
 
         private void Apply(TestDomainEvent e)

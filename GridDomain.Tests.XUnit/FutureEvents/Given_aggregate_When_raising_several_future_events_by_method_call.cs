@@ -16,13 +16,12 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "value D");
             aggregate.ClearEvents();
             //Then_raising_event_with_wrong_id_throws_an_error()
-            await
-                aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid())
-                         .ShouldThrow<ScheduledEventNotFoundException>();
+            Assert.Throws<ScheduledEventNotFoundException>(() =>
+                aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid()));
             //Then_raising_event_with_wrong_id_does_not_produce_new_events()
             try
             {
-                await aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid());
+                aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid());
             }
             catch
             {

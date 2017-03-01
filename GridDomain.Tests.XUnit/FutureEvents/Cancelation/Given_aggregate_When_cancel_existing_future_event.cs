@@ -33,8 +33,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             Assert.True(cancelEvents.All(e => e.FutureEventId != futureEventOutOfCriteria.Id));
             // Canceled_event_cannot_be_raised()
             aggregate.ClearEvents();
-            Assert.ThrowsAsync<ScheduledEventNotFoundException>(
-                                                                async () => await aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()));
+            Assert.Throws<ScheduledEventNotFoundException>(() => aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()));
             var anyEvents = aggregate.GetEvents<DomainEvent>();
             Assert.Empty(anyEvents);
         }

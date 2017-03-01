@@ -18,8 +18,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var res =
-                await Node.Prepare(cmd).Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId).Execute();
+            var res = await Node.Prepare(cmd)
+                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                .Execute();
 
             var msg = res.Message<SampleAggregateChangedEvent>();
 
@@ -30,9 +31,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task After_wait_of_async_command_aggregate_should_be_changed()
         {
             var cmd = new AsyncMethodCommand(42, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromMilliseconds(50));
-
-            var res =
-                await Node.Prepare(cmd).Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId).Execute();
+            var res = await Node.Prepare(cmd)
+                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                .Execute();
 
             Assert.Equal(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);
         }
@@ -42,8 +43,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
 
-            var res =
-                await Node.Prepare(cmd).Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId).Execute();
+            var res = await Node.Prepare(cmd)
+                                .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                                .Execute();
 
             var msg = res.Message<SampleAggregateChangedEvent>();
 
@@ -55,20 +57,20 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
 
-            await
-                Node.Prepare(cmd)
-                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                    .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
-                    .Execute()
-                    .ShouldThrow<TimeoutException>();
+            await Node.Prepare(cmd)
+                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                      .And<SampleAggregateCreatedEvent>(e => e.SourceId == cmd.AggregateId)
+                      .Execute()
+                      .ShouldThrow<TimeoutException>();
         }
 
         [Fact]
         public async Task MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
-
-            var waiter = Node.NewWaiter().Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId).Create();
+            var waiter = Node.NewWaiter()
+                             .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                             .Create();
 
             Node.Execute(cmd);
             var res = await waiter;
@@ -80,12 +82,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task Wait_for_timeout_command_throws_excpetion()
         {
             var cmd = new LongOperationCommand(1000, Guid.NewGuid());
-
-            await
-                Node.Prepare(cmd)
-                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
-                    .Execute(TimeSpan.FromMilliseconds(100))
-                    .ShouldThrow<TimeoutException>();
+            await Node.Prepare(cmd)
+                      .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                      .Execute(TimeSpan.FromMilliseconds(100))
+                      .ShouldThrow<TimeoutException>();
         }
     }
 }

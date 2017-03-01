@@ -26,12 +26,12 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             SleepTimes++;
         }
 
-        public async Task Sleep(Guid sofaId)
+        public void Sleep(Guid sofaId)
         {
             if (sofaId == Guid.Empty)
                 throw new CantFindSofaException();
 
-            await Emit(new Slept(sofaId));
+            Emit(new Slept(sofaId));
         }
     }
 }

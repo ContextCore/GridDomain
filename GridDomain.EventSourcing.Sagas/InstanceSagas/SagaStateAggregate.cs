@@ -18,9 +18,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public TSagaState Data { get; private set; }
 
-        public async Task RememberEvent(Event @event, TSagaState sagaData, object message)
+        public void RememberEvent(Event @event, TSagaState sagaData, object message)
         {
-            await Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, @event.Name, message));
+            Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, @event.Name, message));
         }
 
         public void Apply(SagaCreatedEvent<TSagaState> e)

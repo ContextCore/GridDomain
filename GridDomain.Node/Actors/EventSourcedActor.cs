@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Persistence;
 using CommonDomain;
@@ -23,6 +24,8 @@ namespace GridDomain.Node.Actors
 
         private int _terminateWaitCount = 3;
 
+   
+
         public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
@@ -32,18 +35,13 @@ namespace GridDomain.Node.Actors
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = aggregateConstructor.Build(typeof(T), Id, null);
 
-            ((Aggregate) State).RegisterPersistenceCallBack(e =>
-                                                            {
-                                                                var taskCompletionSource = new TaskCompletionSource();
-                                                                PersistAll(e,
-                                                                           o =>
-                                                                           {
-                                                                               OnEventPersisted(e);
-                                                                               taskCompletionSource.Complete();
-                                                                           });
+            ((Aggregate)State).RegisterPersistenceCallBack((e,act) => PersistAll(e, o =>
+                                                                                    {
+                                                                                        OnEventPersisted(e);
+                                                                                        act(o);
+                                                                                    }));
 
-                                                                return taskCompletionSource.Task;
-                                                            });
+
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 

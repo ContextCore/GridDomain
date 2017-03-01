@@ -59,34 +59,32 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public IAggregate Data => _dataAggregate;
 
-        public async Task Transit<TMessage>(TMessage message) where TMessage : class
+        public Task Transit<TMessage>(TMessage message) where TMessage : class
         {
             //Saga is not initialized
             if (_dataAggregate.Id == Guid.Empty)
             {
                 _log.Verbose("Saga {Saga} id is empty and it received message {Message}", typeof(TSaga).Name, message);
-                return;
+                return Task.CompletedTask;
             }
 
             if (_dataAggregate.Data == null)
             {
                 _log.Verbose("Saga {Saga} data is empty and it received message {Message}", typeof(TSaga).Name, message);
-                return;
+                return Task.CompletedTask;
             }
 
             var machineEvent = Machine.GetMachineEvent(message);
 
-            try
-            {
-                await Machine.RaiseEvent(_dataAggregate.Data, machineEvent, message);
-            }
-            catch (Exception ex)
-            {
-                throw new SagaTransitionException(message, _dataAggregate.Data, ex);
-            }
+            return Machine.RaiseEvent(_dataAggregate.Data, machineEvent, message)
+                          .ContinueWith(t =>
+                                        {
+                                            if (t.IsFaulted)
+                                                throw new SagaTransitionException(message, _dataAggregate.Data, t.Exception);
 
-            _dataAggregate.RememberEvent(machineEvent, _dataAggregate.Data, message);
-            _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id)).Cast<ICommand>().ToList();
+                                            _dataAggregate.RememberEvent(machineEvent, _dataAggregate.Data, message);
+                                            _commandsToDispatch = Machine.CommandsToDispatch.Select(c => c.CloneWithSaga(Data.Id)).Cast<ICommand>().ToList();
+                                        });
         }
 
         private bool CheckInitialState(SagaStateAggregate<TSagaData> dataAggregate, bool logUninitializedState = true)

@@ -31,9 +31,22 @@ namespace GridDomain.Node.Actors
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;
         private readonly ProcessEntry _domainEventProcessFailEntry;
-        private readonly IAggregateCommandsHandler<TAggregate> _handler;
         private readonly IPublisher _publisher;
         private readonly IActorRef _schedulerActorRef;
+
+        class SaveEventsAsync
+        {
+            public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> act, Action continuation)
+            {
+                Continuation = continuation;
+                Events = events;
+                Act = act;
+            }
+
+            public Action Continuation { get; }
+            public DomainEvent[] Events { get; }
+            public Action<DomainEvent> Act { get; }
+        }
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               IActorRef schedulerActorRef,
@@ -45,10 +58,11 @@ namespace GridDomain.Node.Actors
             _publisher = publisher;
             _customHandlersActor = customHandlersActor;
             _schedulerActorRef = schedulerActorRef;
-            _handler = handler;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, PublishingEvent, CommandExecutionCreatedAnEvent);
-
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, CreatedFault, CommandRaisedAnError);
+
+            ((Aggregate) State).RegisterPersistenceAsyncCallBack((evtTask, act, cont) => evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, act, cont))
+                                                                                                .PipeTo(Self));
 
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
@@ -56,7 +70,8 @@ namespace GridDomain.Node.Actors
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
 
-                                                           _handler.ExecuteAsync((TAggregate) State, cmd).PipeTo(Self);
+                                                           handler.ExecuteAsync((TAggregate) State, cmd)
+                                                                  .PipeTo(Self);
 
                                                            BecomeStacked(() => WaitingForCommandExecution(m));
                                                        });
@@ -66,13 +81,26 @@ namespace GridDomain.Node.Actors
         {
             CommandAny(c =>
                        {
-                           c.Match().With<Failure>(f =>
+                           c.Match()
+                            //finished some call on aggregate, need persist
+                            .With<SaveEventsAsync>(e =>
                                                    {
-                                                       CommandError(commandEnvelop, f);
-
-                                                       UnbecomeStacked();
-                                                       BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
+                                                       int count = e.Events.Length;
+                                                       PersistAll(e.Events,
+                                                                  o =>
+                                                                  {
+                                                                      e.Act(o);
+                                                                      if (--count == 0)
+                                                                          e.Continuation();
+                                                                  });
                                                    })
+                            .With<Failure>(f =>
+                                           {
+                                               CommandError(commandEnvelop, f);
+
+                                               UnbecomeStacked();
+                                               BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
+                                           })
                             // .With<Status.Failure>()
                             .With<IAggregate>(newState =>
                                               {
@@ -82,7 +110,8 @@ namespace GridDomain.Node.Actors
                                                   UnbecomeStacked();
                                                   BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
                                                   Stash.UnstashAll();
-                                              }).Default(o => Stash.Stash());
+                                              })
+                            .Default(o => Stash.Stash());
                        });
         }
 
@@ -93,11 +122,10 @@ namespace GridDomain.Node.Actors
 
         private void CommandSuccess(IMessageMetadataEnvelop<ICommand> commandEnvelop)
         {
-            var producedEvents =
-                State.GetUncommittedEvents()
-                     .Cast<DomainEvent>()
-                     .Select(e => e.CloneWithSaga(commandEnvelop.Message.SagaId))
-                     .ToArray();
+            var producedEvents = State.GetUncommittedEvents()
+                                      .Cast<DomainEvent>()
+                                      .Select(e => e.CloneWithSaga(commandEnvelop.Message.SagaId))
+                                      .ToArray();
 
             State.ClearUncommittedEvents();
             var eventsMetadata = commandEnvelop.Metadata.CreateChild(Id, _domainEventProcessEntry);
@@ -120,7 +148,8 @@ namespace GridDomain.Node.Actors
 
             var metadata = messageMetadata.CreateChild(cmd.Id, _domainEventProcessFailEntry);
 
-            _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault, metadata)).PipeTo(Self);
+            _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault, metadata))
+                                .PipeTo(Self);
 
             Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, ex, cmd);
         }
@@ -129,13 +158,14 @@ namespace GridDomain.Node.Actors
         {
             CommandAny(c =>
                        {
-                           c.Match().With<AllHandlersCompleted>(m =>
-                                                                {
-                                                                    OnHandlersFinish(commandMetadata, m);
+                           c.Match()
+                            .With<AllHandlersCompleted>(m =>
+                                                        {
+                                                            OnHandlersFinish(commandMetadata, m);
 
-                                                                    UnbecomeStacked();
-                                                                    Stash.UnstashAll();
-                                                                })
+                                                            UnbecomeStacked();
+                                                            Stash.UnstashAll();
+                                                        })
                             //  .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d => { FinishAsyncInvoke(d); })
                             .Default(o => Stash.Stash());
                        });
@@ -174,33 +204,6 @@ namespace GridDomain.Node.Actors
                  .With<FutureEventCanceledEvent>(m => Handle(m, eventCommonMetadata));
 
             _customHandlersActor.Ask<AllHandlersCompleted>(envelop).PipeTo(Self);
-        }
-
-        private void ProcessAsyncMethods(ICommand command, IMessageMetadata metadata)
-        {
-            var extendedAggregate = State as Aggregate;
-            if (extendedAggregate == null)
-                return;
-
-            //When aggregate notifies external world about async method execution start,
-            //actor should schedule results to process it
-            //command is included to safe access later, after async execution complete
-            var cmd = command;
-            foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
-                asyncMethod.ResultProducer.ContinueWith(t =>
-                                                        {
-                                                            var asyncEventsReceived =
-                                                                new AsyncEventsReceived(t.IsFaulted ? null : t.Result,
-                                                                                        cmd,
-                                                                                        asyncMethod.InvocationId,
-                                                                                        t.Exception);
-
-                                                            return
-                                                                new MessageMetadataEnvelop<AsyncEventsReceived>(
-                                                                                                                asyncEventsReceived,
-                                                                                                                metadata);
-                                                        }).PipeTo(Self);
-            extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
         public void Handle(FutureEventScheduledEvent futureEventScheduledEvent, IMessageMetadata messageMetadata)

@@ -10,10 +10,10 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
 
         private TestAggregate(Guid id) : base(id) {}
 
-        public async Task Execute(int number, ITestDependency d)
+        public void Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);
-            await Emit(new TestDomainEvent(dependencyUseResult, Id));
+            Emit(new TestDomainEvent(dependencyUseResult, Id));
         }
 
         private void Apply(TestDomainEvent e)
