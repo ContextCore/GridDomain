@@ -20,9 +20,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     {
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
             : base(
-                output,
-                new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2)
-                                                                     .IgnoreCommands()) {}
+                   output,
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2)
+                                                                        .IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
@@ -37,15 +37,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                     .SendToSagas(sagaStartEvent);
 
             var sagaContinueEventA = new CoffeMakeFailedEvent(sagaId,
-                sagaStartEvent.PersonId,
-                BusinessDateTime.UtcNow,
-                sagaId);
+                                                              sagaStartEvent.PersonId,
+                                                              BusinessDateTime.UtcNow,
+                                                              sagaId);
 
 
             await
                 Node.NewDebugWaiter()
                     .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
-                        e => (e.Message as CoffeMakeFailedEvent)?.SourceId == sagaId)
+                                                                                   e => (e.Message as CoffeMakeFailedEvent)?.SourceId == sagaId)
                     .Create()
                     .SendToSagas(sagaContinueEventA);
 
@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
 
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);

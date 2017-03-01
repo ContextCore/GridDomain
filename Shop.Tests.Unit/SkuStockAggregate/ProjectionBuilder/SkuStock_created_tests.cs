@@ -21,13 +21,19 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_new_sku_stock_row_is_added()
         {
-            using (var context = ContextFactory()) Assert.NotNull(context.SkuStocks.Find(_message.SourceId));
+            using (var context = ContextFactory())
+            {
+                Assert.NotNull(context.SkuStocks.Find(_message.SourceId));
+            }
         }
 
         [Test]
         public void Then_new_stock_history_row_is_added()
         {
-            using (var context = ContextFactory()) Assert.NotNull(context.StockHistory.Find(_message.SourceId, (long) 1));
+            using (var context = ContextFactory())
+            {
+                Assert.NotNull(context.StockHistory.Find(_message.SourceId, (long) 1));
+            }
         }
 
         [Test]

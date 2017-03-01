@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using GridDomain.Tests.Framework;
 using NMoneys;
 using NUnit.Framework;
@@ -16,7 +15,7 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
         private AggregateScenario<Order, OrderCommandsHandler> NewScenario()
         {
             return AggregateScenario<Order, OrderCommandsHandler>.New(null,
-                new OrderCommandsHandler(new InMemorySequenceProvider()));
+                                                                      new OrderCommandsHandler(new InMemorySequenceProvider()));
         }
 
         [Test]
@@ -26,7 +25,7 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 
             NewScenario()
                 .Given(new OrderCreated(sourceId, 123, Guid.NewGuid()),
-                    new ItemAdded(sourceId, Guid.NewGuid(), 1, new Money(50), 1))
+                       new ItemAdded(sourceId, Guid.NewGuid(), 1, new Money(50), 1))
                 .When(new CalculateOrderTotalCommand(sourceId))
                 .Then(new OrderTotalCalculated(sourceId, new Money(50)))
                 .Run()

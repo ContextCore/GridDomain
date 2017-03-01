@@ -2,7 +2,8 @@ using System;
 
 namespace GridDomain.EventSourcing.CommonDomain
 {
-    public interface IRouteEvents {
+    public interface IRouteEvents
+    {
         void Register<T>(Action<T> handler);
         void Register(IAggregate aggregate);
 

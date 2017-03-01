@@ -28,14 +28,14 @@ namespace GridDomain.Scheduling
             //our current scheduler is created from scratch with specified name
 
             container.RegisterType<IScheduler>(new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x =>
-                                     {
-                                         var factory = x.Resolve<QuartzSchedulerFactory>();
-                                         factory.Initialize(_quartzConfig.Settings);
-                                         var scheduler = factory.GetScheduler();
-                                         scheduler.Start();
-                                         return scheduler;
-                                     }));
+                                               new InjectionFactory(x =>
+                                                                    {
+                                                                        var factory = x.Resolve<QuartzSchedulerFactory>();
+                                                                        factory.Initialize(_quartzConfig.Settings);
+                                                                        var scheduler = factory.GetScheduler();
+                                                                        scheduler.Start();
+                                                                        return scheduler;
+                                                                    }));
 
             container.RegisterType<IQuartzLogger, QuartzLogger>();
             container.RegisterType<IJobFactory, JobFactory>();

@@ -16,12 +16,13 @@ namespace GridDomain.Node.Configuration.Composition
 
         public CustomContainerConfiguration(params IContainerConfiguration[] configurations)
             : this(
-                configurations.Select(config => (Action<IUnityContainer>) (container => container.Register(config)))
-                              .ToArray()) {}
+                   configurations.Select(config => (Action<IUnityContainer>) (container => container.Register(config)))
+                                 .ToArray()) {}
 
         public void Register(IUnityContainer container)
         {
-            foreach (var reg in _registrations) reg.Invoke(container);
+            foreach (var reg in _registrations)
+                reg.Invoke(container);
         }
 
         public static CustomContainerConfiguration Empty()

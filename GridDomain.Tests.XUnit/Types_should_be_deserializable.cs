@@ -73,7 +73,7 @@ namespace GridDomain.Tests.XUnit
         public void Generic_domain_classes_should_be_deserializable()
         {
             CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>),
-                typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>));
+                             typeof(SagaCreatedEvent<SoftwareProgrammingSagaData>));
         }
 
         [Fact]

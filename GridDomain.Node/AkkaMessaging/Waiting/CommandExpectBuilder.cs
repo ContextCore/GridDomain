@@ -37,35 +37,31 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             var res = await task;
 
-            if (!failOnAnyFault) return res;
+            if (!failOnAnyFault)
+                return res;
             var faults = res.All.OfType<IMessageMetadataEnvelop>().Select(env => env.Message).OfType<IFault>().ToArray();
-            if (faults.Any()) throw new AggregateException(faults.Select(f => f.Exception));
+            if (faults.Any())
+                throw new AggregateException(faults.Select(f => f.Exception));
 
             return res;
         }
 
         public new ICommandExpectBuilder And<TMsg>(Predicate<TMsg> filter = null)
         {
-            if (filter != null) {
+            if (filter != null)
                 base.And(filter);
-            }
             else
-            {
                 base.And<IMessageMetadataEnvelop<TMsg>>(CorrelationFilter);
-            }
 
             return this;
         }
 
         public new ICommandExpectBuilder Or<TMsg>(Predicate<TMsg> filter = null)
         {
-            if (filter != null) {
+            if (filter != null)
                 base.Or(filter);
-            }
             else
-            {
                 base.Or<IMessageMetadataEnvelop<TMsg>>(CorrelationFilter);
-            }
 
             return this;
         }
@@ -87,7 +83,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public new ICommandExpectBuilder And(Type type, Func<object, bool> filter = null)
         {
-            if (filter != null) {
+            if (filter != null)
+            {
                 base.And(type, filter);
             }
             else

@@ -18,7 +18,8 @@ namespace GridDomain.Tests.Framework
             var guidA = (DateTime) parms.Object1;
             var guidB = (DateTime) parms.Object2;
 
-            if (guidA == Any.DateTime || guidB == Any.DateTime || guidA == guidB) return;
+            if (guidA == Any.DateTime || guidB == Any.DateTime || guidA == guidB)
+                return;
 
             parms.Result.Differences.Add(new Difference
                                          {

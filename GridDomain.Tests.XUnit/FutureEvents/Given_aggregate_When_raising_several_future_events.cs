@@ -22,11 +22,11 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 
             var eventA =
                 (await Node.Prepare(testCommandA).Expect<FutureEventOccuredEvent>().Execute())
-                    .Message<FutureEventOccuredEvent>();
+                .Message<FutureEventOccuredEvent>();
 
             var eventB =
                 (await Node.Prepare(testCommandB).Expect<FutureEventOccuredEvent>().Execute())
-                    .Message<FutureEventOccuredEvent>();
+                .Message<FutureEventOccuredEvent>();
 
             //Envelop_ids_are_different()
             Assert.NotEqual(eventA.FutureEventId, eventB.FutureEventId);

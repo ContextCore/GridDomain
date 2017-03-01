@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CommonDomain.Core;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
 
@@ -11,9 +10,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
     {
         private int _timeToOkResponse;
 
-        private TestAggregate(Guid id):base(id)
-        {
-        }
+        private TestAggregate(Guid id) : base(id) {}
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {

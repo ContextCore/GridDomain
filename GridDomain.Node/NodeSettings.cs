@@ -31,7 +31,7 @@ namespace GridDomain.Node
         public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig();
 
         public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings(5,
-            TimeSpan.FromMinutes(10),
-            new DefaultExceptionPolicy());
+                                                                                               TimeSpan.FromMinutes(10),
+                                                                                               new DefaultExceptionPolicy());
     }
 }

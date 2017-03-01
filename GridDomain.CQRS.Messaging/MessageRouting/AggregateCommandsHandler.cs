@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommonDomain;
-using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 
@@ -25,7 +24,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public override Func<ICommand, TAggregate, Task<TAggregate>> Get(ICommand command)
         {
             var handler = base.Get(command);
-            if (handler == null) throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
+            if (handler == null)
+                throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
             return handler;
         }
 
@@ -42,25 +42,25 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Add<TCommand>(async (c, a) =>
-                                {
-                                    var aggregate = commandExecutor((TCommand) c);
-                                    var eventsToSave =
-                                        ((IAggregate) aggregate).GetUncommittedEvents()
-                                                                .Cast<DomainEvent>()
-                                                                .ToArray();
+                          {
+                              var aggregate = commandExecutor((TCommand) c);
+                              var eventsToSave =
+                                  ((IAggregate) aggregate).GetUncommittedEvents()
+                                                          .Cast<DomainEvent>()
+                                                          .ToArray();
 
-                                    await aggregate.PersistDelegate.Invoke(eventsToSave);
-                                    return aggregate;
-                                });
+                              await aggregate.PersistDelegate.Invoke(eventsToSave);
+                              return aggregate;
+                          });
         }
 
         public void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
         {
             Add<TCommand>(async (c, a) =>
-                                {
-                                    await commandExecutor((TCommand) c, a);
-                                    return a;
-                                });
+                          {
+                              await commandExecutor((TCommand) c, a);
+                              return a;
+                          });
         }
     }
 }

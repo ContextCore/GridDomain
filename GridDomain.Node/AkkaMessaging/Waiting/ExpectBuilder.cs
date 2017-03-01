@@ -36,15 +36,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public IExpectBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)
         {
             return filter == null
-                ? And(typeof(TMsg), MessageHasCorrectType<TMsg>)
-                : And(typeof(TMsg), o => MessagePassFilter(o, filter));
+                       ? And(typeof(TMsg), MessageHasCorrectType<TMsg>)
+                       : And(typeof(TMsg), o => MessagePassFilter(o, filter));
         }
 
         public IExpectBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null)
         {
             return filter == null
-                ? Or(typeof(TMsg), MessageHasCorrectType<TMsg>)
-                : Or(typeof(TMsg), o => MessagePassFilter(o, filter));
+                       ? Or(typeof(TMsg), MessageHasCorrectType<TMsg>)
+                       : Or(typeof(TMsg), o => MessagePassFilter(o, filter));
         }
 
         public abstract T Create(TimeSpan? timeout);
@@ -56,8 +56,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool MessagePassFilter<TMsg>(object message, Predicate<TMsg> filter)
         {
-            return (message is TMsg && filter((TMsg) message))
-                   || (message is IMessageMetadataEnvelop<TMsg> && filter(((IMessageMetadataEnvelop<TMsg>) message).Message));
+            return message is TMsg && filter((TMsg) message)
+                   || message is IMessageMetadataEnvelop<TMsg> && filter(((IMessageMetadataEnvelop<TMsg>) message).Message);
         }
 
         public IExpectBuilder<T> And(Type type, Func<object, bool> filter)

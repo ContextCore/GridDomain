@@ -14,8 +14,10 @@ namespace GridDomain.Tests.Framework
 
         public XUnitTestOutputSink(ITestOutputHelper testOutputHelper, ITextFormatter textFormatter)
         {
-            if (testOutputHelper == null) throw new ArgumentNullException(nameof(testOutputHelper));
-            if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
+            if (testOutputHelper == null)
+                throw new ArgumentNullException(nameof(testOutputHelper));
+            if (textFormatter == null)
+                throw new ArgumentNullException(nameof(textFormatter));
 
             _output = testOutputHelper;
             _textFormatter = textFormatter;
@@ -23,7 +25,8 @@ namespace GridDomain.Tests.Framework
 
         public void Emit(LogEvent logEvent)
         {
-            if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
+            if (logEvent == null)
+                throw new ArgumentNullException(nameof(logEvent));
 
             var renderSpace = new StringWriter();
             _textFormatter.Format(logEvent, renderSpace);

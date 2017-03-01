@@ -34,10 +34,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                                                        TimeSpan? repeatInterval = null)
         {
             return new ExtendedExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
-                typeof(ScheduledCommandSuccessfullyProcessed),
-                id ?? Guid.Empty,
-                checkField,
-                timeout);
+                                                typeof(ScheduledCommandSuccessfullyProcessed),
+                                                id ?? Guid.Empty,
+                                                checkField,
+                                                timeout);
         }
 
         [Fact]

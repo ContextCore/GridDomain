@@ -37,8 +37,8 @@ namespace GridDomain.Node.Configuration.Akka
             unchecked
             {
                 var hashCode = SystemName != null ? SystemName.GetHashCode() : 0;
-                hashCode = (hashCode*397) ^ (Host != null ? Host.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ PortNumber;
+                hashCode = (hashCode * 397) ^ (Host != null ? Host.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ PortNumber;
                 return hashCode;
             }
         }

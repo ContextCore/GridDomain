@@ -24,8 +24,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         public ISagaInstance<AsyncLongRunningSaga, TestState> Create(SampleAggregateCreatedEvent message)
         {
             return SagaInstance.New(new AsyncLongRunningSaga(),
-                new SagaStateAggregate<TestState>(new TestState(message.SagaId, nameof(AsyncLongRunningSaga.Initial))),
-                _log);
+                                    new SagaStateAggregate<TestState>(new TestState(message.SagaId, nameof(AsyncLongRunningSaga.Initial))),
+                                    _log);
         }
     }
 }

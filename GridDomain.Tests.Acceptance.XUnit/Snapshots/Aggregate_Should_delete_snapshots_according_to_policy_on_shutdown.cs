@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
 
             //Only_2_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);

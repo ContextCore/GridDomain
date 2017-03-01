@@ -29,7 +29,10 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_history_containes_rows_for_added_and_reserved_events()
         {
-            using (var context = ContextFactory()) Assert.AreEqual(3, context.StockHistory.Count());
+            using (var context = ContextFactory())
+            {
+                Assert.AreEqual(3, context.StockHistory.Count());
+            }
         }
 
         [Test]
@@ -38,9 +41,11 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             using (var context = ContextFactory())
             {
                 var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3);
-                if (history != null) return;
+                if (history != null)
+                    return;
 
-                foreach (var hist in context.StockHistory) Console.WriteLine(hist.ToPropsString());
+                foreach (var hist in context.StockHistory)
+                    Console.WriteLine(hist.ToPropsString());
                 Assert.Fail("Cannot find history");
             }
         }
@@ -53,7 +58,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 //#1 is stock added history
                 var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3);
                 Assert.AreEqual(_stockCreatedEvent.Quantity + _stockAddedEvent.Quantity - _stockReservedEvent.Quantity,
-                    history.NewAvailableQuantity);
+                                history.NewAvailableQuantity);
                 Assert.AreEqual(_stockReservedEvent.Quantity, history.NewReservedQuantity);
                 Assert.AreEqual(_stockCreatedEvent.Quantity + _stockAddedEvent.Quantity, history.NewTotalQuantity);
                 Assert.AreEqual(0, history.OldReservedQuantity);
@@ -69,7 +74,10 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_reserve_row_is_added()
         {
-            using (var context = ContextFactory()) Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
+            using (var context = ContextFactory())
+            {
+                Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
+            }
         }
 
         [Test]
@@ -95,7 +103,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
             {
                 var stock = context.SkuStocks.Find(_stockCreatedEvent.SourceId);
                 Assert.AreEqual(_stockAddedEvent.Quantity + _stockCreatedEvent.Quantity - _stockReservedEvent.Quantity,
-                    stock.AvailableQuantity);
+                                stock.AvailableQuantity);
                 Assert.AreEqual(1, stock.CustomersReservationsTotal);
                 Assert.AreEqual(_stockReservedEvent.CreatedTime, stock.LastModified);
                 Assert.AreEqual(_stockReservedEvent.Quantity, stock.ReservedQuantity);

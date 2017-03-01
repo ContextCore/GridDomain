@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using CommonDomain.Core;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
@@ -9,9 +8,7 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
     {
         public string Value;
 
-        private TestAggregate(Guid id):base(id)
-        {
-        }
+        private TestAggregate(Guid id) : base(id) {}
 
         public async Task Execute(int number, ITestDependency d)
         {

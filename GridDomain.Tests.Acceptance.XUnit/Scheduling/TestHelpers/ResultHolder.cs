@@ -16,7 +16,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
         public static string Get(string key)
         {
             string result;
-            if (Results.TryGetValue(key, out result)) { return result; }
+            if (Results.TryGetValue(key, out result))
+                return result;
             return null;
         }
 

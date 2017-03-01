@@ -43,10 +43,10 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.IsAssignableFrom<IFault<RaiseScheduledDomainEventCommand>>(schedulingCommandFault.Message);
             //Result_message_has_expected_id()
             Assert.Equal((jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id,
-                schedulingCommandFault.Message.Message.Id);
+                         schedulingCommandFault.Message.Message.Id);
             //Result_metadata_has_command_id_as_casuation_id()
             Assert.Equal((jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id,
-                schedulingCommandFault.Metadata.CasuationId);
+                         schedulingCommandFault.Metadata.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(commandMetadata.CorrelationId, schedulingCommandFault.Metadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()

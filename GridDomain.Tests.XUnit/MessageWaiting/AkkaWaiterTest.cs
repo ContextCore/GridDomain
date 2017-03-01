@@ -38,7 +38,8 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
         protected void Publish(params object[] messages)
         {
-            foreach (var msg in messages) _transport.Publish(msg);
+            foreach (var msg in messages)
+                _transport.Publish(msg);
         }
 
         protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
@@ -47,15 +48,16 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 
             filter = filter ?? (t => true);
             Assert.Equal(msg,
-                _results.Result.All.OfType<IMessageMetadataEnvelop>()
-                        .Select(m => m.Message)
-                        .OfType<T>()
-                        .FirstOrDefault(t => filter(t)));
+                         _results.Result.All.OfType<IMessageMetadataEnvelop>()
+                                 .Select(m => m.Message)
+                                 .OfType<T>()
+                                 .FirstOrDefault(t => filter(t)));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class
         {
-            if (!_results.Wait(timeout ?? DefaultTimeout)) return;
+            if (!_results.Wait(timeout ?? DefaultTimeout))
+                return;
 
             var e = Assert.ThrowsAsync<TimeoutException>(() => ExpectMsg(msg));
         }

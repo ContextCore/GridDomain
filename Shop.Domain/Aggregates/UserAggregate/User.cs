@@ -20,16 +20,17 @@ namespace Shop.Domain.Aggregates.UserAggregate
                                    Account = e.Account;
                                });
             Apply<SkuPurchaseOrdered>(
-                e => { PendingOrders[e.OrderId] = new PendingOrder(e.OrderId, e.SkuId, e.Quantity, e.StockId); });
+                                      e => { PendingOrders[e.OrderId] = new PendingOrder(e.OrderId, e.SkuId, e.Quantity, e.StockId); });
             Apply<PendingOrderCanceled>(e =>
                                         {
-                                            if (!PendingOrders.Remove(e.OrderId)) _logger.Warning("Could not find pending order {order} to cancel", e.OrderId);
+                                            if (!PendingOrders.Remove(e.OrderId))
+                                                _logger.Warning("Could not find pending order {order} to cancel", e.OrderId);
                                         });
             Apply<PendingOrderCompleted>(e =>
                                          {
                                              if (!PendingOrders.Remove(e.OrderId))
                                                  _logger.Warning("Could not find pending order {order} to complete",
-                                                     e.OrderId);
+                                                                 e.OrderId);
                                          });
         }
 
@@ -45,11 +46,11 @@ namespace Shop.Domain.Aggregates.UserAggregate
         public async Task BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
         {
             await Emit(new SkuPurchaseOrdered(Id,
-                skuId,
-                quantity,
-                Guid.NewGuid(),
-                stockProvider.GetStockForSku(skuId),
-                Account));
+                                              skuId,
+                                              quantity,
+                                              Guid.NewGuid(),
+                                              stockProvider.GetStockForSku(skuId),
+                                              Account));
         }
 
         public async Task CompleteOrder(Guid orderId)

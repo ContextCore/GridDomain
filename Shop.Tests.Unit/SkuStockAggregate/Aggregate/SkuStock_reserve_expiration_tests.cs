@@ -25,15 +25,15 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario =
                 Scenario.New<SkuStock, SkuStockCommandsHandler>()
                         .Given(_stockCreated = new SkuStockCreated(_aggregateId, Guid.NewGuid(), 50, reserveTime),
-                            _stockAdded = new StockAdded(_aggregateId, 10, "test batch 2"),
-                            _stockReserved = new StockReserved(_aggregateId, _customerId, _expirationDate, 5),
-                            new FutureEventScheduledEvent(futureEventId,
-                                _aggregateId,
-                                _expirationDate,
-                                new ReserveExpired(_aggregateId, _customerId)))
+                               _stockAdded = new StockAdded(_aggregateId, 10, "test batch 2"),
+                               _stockReserved = new StockReserved(_aggregateId, _customerId, _expirationDate, 5),
+                               new FutureEventScheduledEvent(futureEventId,
+                                                             _aggregateId,
+                                                             _expirationDate,
+                                                             new ReserveExpired(_aggregateId, _customerId)))
                         .When(
-                            _raiseEventCommand =
-                                new RaiseScheduledDomainEventCommand(futureEventId, _aggregateId, Guid.NewGuid()));
+                              _raiseEventCommand =
+                                  new RaiseScheduledDomainEventCommand(futureEventId, _aggregateId, Guid.NewGuid()));
 
 
             _initialStock = _scenario.Aggregate.Quantity;
@@ -73,7 +73,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void Then_stock_reserve_expired_event_should_be_raised()
         {
             _scenario.Then(new ReserveExpired(_aggregateId, _customerId),
-                new FutureEventOccuredEvent(Any.GUID, _raiseEventCommand.FutureEventId, _aggregateId));
+                           new FutureEventOccuredEvent(Any.GUID, _raiseEventCommand.FutureEventId, _aggregateId));
             _scenario.Check();
         }
     }

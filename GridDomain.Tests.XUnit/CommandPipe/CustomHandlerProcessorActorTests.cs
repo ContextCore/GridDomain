@@ -29,8 +29,8 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var msgA =
                 new MessageMetadataEnvelop<DomainEvent[]>(
-                    new DomainEvent[] {sampleAggregateCreatedEvent, sampleAggregateChangedEvent},
-                    MessageMetadata.Empty);
+                                                          new DomainEvent[] {sampleAggregateCreatedEvent, sampleAggregateChangedEvent},
+                                                          MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
@@ -58,12 +58,12 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var msgA =
                 new MessageMetadataEnvelop<DomainEvent[]>(
-                    new[]
-                    {
-                        (DomainEvent) new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                        new SampleAggregateChangedEvent("1", Guid.NewGuid())
-                    },
-                    MessageMetadata.Empty);
+                                                          new[]
+                                                          {
+                                                              (DomainEvent) new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                                                              new SampleAggregateChangedEvent("1", Guid.NewGuid())
+                                                          },
+                                                          MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
@@ -87,7 +87,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
-                MessageMetadata.Empty);
+                                                                MessageMetadata.Empty);
 
             actor.Tell(msg);
 
@@ -104,8 +104,8 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var msg =
                 new MessageMetadataEnvelop<DomainEvent[]>(
-                    new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
-                    MessageMetadata.Empty);
+                                                          new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
+                                                          MessageMetadata.Empty);
 
             actor.Tell(msg);
 
@@ -131,13 +131,13 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var msgA =
                 new MessageMetadataEnvelop<DomainEvent[]>(
-                    new[]
-                    {
-                        new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                        new SampleAggregateChangedEvent("1", Guid.NewGuid()),
-                        new DomainEvent(Guid.NewGuid())
-                    },
-                    MessageMetadata.Empty);
+                                                          new[]
+                                                          {
+                                                              new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                                                              new SampleAggregateChangedEvent("1", Guid.NewGuid()),
+                                                              new DomainEvent(Guid.NewGuid())
+                                                          },
+                                                          MessageMetadata.Empty);
 
             actor.Tell(msgA);
 

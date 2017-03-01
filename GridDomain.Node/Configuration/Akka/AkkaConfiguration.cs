@@ -38,27 +38,27 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
         {
             var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
-                ClusterConfig.SeedNode(Network, otherSeeds),
-                new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
-                    new PersistenceSnapshotConfig(this)));
+                                     ClusterConfig.SeedNode(Network, otherSeeds),
+                                     new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
+                                                           new PersistenceSnapshotConfig(this)));
             return cfg.Build();
         }
 
         public virtual string ToStandAloneSystemConfig()
         {
             var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
-                new StandAloneConfig(Network),
-                new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
-                    new PersistenceSnapshotConfig(this)));
+                                     new StandAloneConfig(Network),
+                                     new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
+                                                           new PersistenceSnapshotConfig(this)));
             return cfg.Build();
         }
 
         public virtual string ToStandAloneInMemorySystemConfig()
         {
             var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
-                new StandAloneConfig(Network),
-                new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
-                    new LocalFilesystemSnapshotConfig()));
+                                     new StandAloneConfig(Network),
+                                     new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
+                                                           new LocalFilesystemSnapshotConfig()));
 
             return cfg.Build();
         }
@@ -66,9 +66,9 @@ namespace GridDomain.Node.Configuration.Akka
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
             var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
-                ClusterConfig.NonSeedNode(Network, seeds),
-                new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
-                    new PersistenceSnapshotConfig(this)));
+                                     ClusterConfig.NonSeedNode(Network, seeds),
+                                     new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
+                                                           new PersistenceSnapshotConfig(this)));
             return cfg.Build();
         }
     }

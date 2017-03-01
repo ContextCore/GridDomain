@@ -15,11 +15,11 @@ namespace GridDomain.Tests.XUnit.Sagas
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
             Add(new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                c =>
-                    c
-                        .RegisterAggregate
-                        <SagaStateAggregate<SoftwareProgrammingSagaData>,
-                            SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()));
+                                                 c =>
+                                                     c
+                                                         .RegisterAggregate
+                                                         <SagaStateAggregate<SoftwareProgrammingSagaData>,
+                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()));
             Add(new SoftwareProgrammingSagaRoutes());
             Add(new SampleDomainContainerConfiguration());
         }

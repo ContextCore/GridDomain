@@ -53,10 +53,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                                                        TimeSpan? repeatInterval = null)
         {
             return new ExtendedExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
-                typeof(ScheduledCommandSuccessfullyProcessed),
-                id ?? Guid.Empty,
-                checkField,
-                timeout);
+                                                typeof(ScheduledCommandSuccessfullyProcessed),
+                                                id ?? Guid.Empty,
+                                                checkField,
+                                                timeout);
         }
 
         [Fact]
@@ -96,8 +96,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                 var text = failTask.ToString(CultureInfo.InvariantCulture);
                 var failTaskCommand = new FailCommand();
                 _scheduler.Tell(new ScheduleCommand(failTaskCommand,
-                    new ScheduleKey(Guid.Empty, text, text),
-                    CreateOptions(failTask)));
+                                                    new ScheduleKey(Guid.Empty, text, text),
+                                                    CreateOptions(failTask)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -108,7 +108,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
                                       ResultHolder.Contains(successTaskIds);
                                       Assert.True(failTaskIds.All(x => ResultHolder.Get(x) == null));
                                   },
-                TimeSpan.FromSeconds(3));
+                                  TimeSpan.FromSeconds(3));
         }
 
         [Fact]
@@ -127,16 +127,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
             var tasksToRemoveTaskIds = tasksToRemove.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
-            foreach (var taskId in tasksToRemoveTaskIds) {
+            foreach (var taskId in tasksToRemoveTaskIds)
                 _scheduler.Tell(new Unschedule(new ScheduleKey(Guid.Empty, taskId, taskId)));
-            }
 
             Throttle.AssertInTime(() =>
                                   {
                                       ResultHolder.Contains(successTaskIds);
                                       Assert.True(tasksToRemoveTaskIds.All(x => ResultHolder.Get(x) == null));
                                   },
-                TimeSpan.FromSeconds(4));
+                                  TimeSpan.FromSeconds(4));
         }
 
         [Fact]

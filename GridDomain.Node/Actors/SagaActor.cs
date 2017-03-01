@@ -63,7 +63,7 @@ namespace GridDomain.Node.Actors
                                                               ProcessSaga(msg, metadata).PipeTo(Self, Sender);
                                                               BecomeStacked(() => SagaProcessWaiting(msg, metadata));
                                                           },
-                e => GetSagaId(e.Message) == Id);
+                                                          e => GetSagaId(e.Message) == Id);
 
             Command<IMessageMetadataEnvelop<IFault>>(m =>
                                                      {
@@ -76,15 +76,15 @@ namespace GridDomain.Node.Actors
                                                          ProcessSaga(fault, metadata).PipeTo(Self, Sender);
                                                          BecomeStacked(() => SagaProcessWaiting(fault, metadata));
                                                      },
-                fault => fault.Message.SagaId == Id);
+                                                     fault => fault.Message.SagaId == Id);
 
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name,
-                SagaActorLiterals.CreatedFaultForSagaTransit,
-                SagaActorLiterals.SagaTransitCasedAndError);
+                                                   SagaActorLiterals.CreatedFaultForSagaTransit,
+                                                   SagaActorLiterals.SagaTransitCasedAndError);
             _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
             _sagaProducedCommand = new ProcessEntry(Self.Path.Name,
-                SagaActorLiterals.PublishingCommand,
-                SagaActorLiterals.SagaProducedACommand);
+                                                    SagaActorLiterals.PublishingCommand,
+                                                    SagaActorLiterals.SagaProducedACommand);
         }
 
         public TSaga Saga => _saga ?? (_saga = _producer.Create(State));
@@ -95,7 +95,8 @@ namespace GridDomain.Node.Actors
             var type = msg.GetType();
             string fieldName;
 
-            if (_sagaIdFields.TryGetValue(type, out fieldName)) return (Guid) type.GetProperty(fieldName).GetValue(msg);
+            if (_sagaIdFields.TryGetValue(type, out fieldName))
+                return (Guid) type.GetProperty(fieldName).GetValue(msg);
 
             return msg.SagaId;
         }
@@ -130,8 +131,8 @@ namespace GridDomain.Node.Actors
                                                          }).With<SagaTransitFault>(f =>
                                                                                    {
                                                                                        PublishError(f.Message.Message,
-                                                                                           messageMetadata,
-                                                                                           f.Message.Exception.UnwrapSingle());
+                                                                                                    messageMetadata,
+                                                                                                    f.Message.Exception.UnwrapSingle());
                                                                                        NotifySenderAndResume(f);
                                                                                    }).Default(m => Stash.Stash());
                        });
@@ -170,12 +171,12 @@ namespace GridDomain.Node.Actors
                                                         var fault = Fault.NewGeneric(message, exception, Id, typeof(TSaga));
                                                         return
                                                             (ISagaTransitCompleted)
-                                                                new SagaTransitFault(fault, domainEventMetadata);
+                                                            new SagaTransitFault(fault, domainEventMetadata);
                                                     }
 
                                                     var sagaTransited = new SagaTransited(Saga.CommandsToDispatch.ToArray(),
-                                                        domainEventMetadata,
-                                                        _sagaProducedCommand);
+                                                                                          domainEventMetadata,
+                                                                                          _sagaProducedCommand);
                                                     Saga.ClearCommandsToDispatch();
 
                                                     return sagaTransited;
@@ -189,12 +190,13 @@ namespace GridDomain.Node.Actors
             var persistedEvents = 0;
 
             PersistAll(stateChangeEvents,
-                e =>
-                {
-                    NotifyPersistenceWatchers(new Persisted(e));
-                    //should save snapshot only after all messages persisted as state was already modified by all of them
-                    if (++persistedEvents == totalEvents) OnStatePersisted(stateChangeEvents, mutatorMessageMetadata);
-                });
+                       e =>
+                       {
+                           NotifyPersistenceWatchers(new Persisted(e));
+                           //should save snapshot only after all messages persisted as state was already modified by all of them
+                           if (++persistedEvents == totalEvents)
+                               OnStatePersisted(stateChangeEvents, mutatorMessageMetadata);
+                       });
 
             State.ClearUncommittedEvents();
         }

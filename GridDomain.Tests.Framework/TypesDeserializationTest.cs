@@ -38,9 +38,9 @@ namespace GridDomain.Tests.Framework
             var allTypes =
                 assembly.SelectMany(a => a.GetTypes())
                         .Where(
-                            t =>
-                                typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface
-                                && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
+                               t =>
+                                   typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface
+                                   && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
 
             CheckAll<T>(allTypes.ToArray());
@@ -52,7 +52,6 @@ namespace GridDomain.Tests.Framework
             var okTypes = new List<RestoreResult>();
 
             foreach (var type in types.Where(t => !_excludes.Contains(t)))
-            {
                 try
                 {
                     var constructedType = type;
@@ -65,13 +64,15 @@ namespace GridDomain.Tests.Framework
                     var obj = createMethodInfo.Invoke(null, new object[] {Fixture});
                     string difference;
 
-                    if (Checker.IsRestorable(obj, out difference)) okTypes.Add(new RestoreResult {Type = constructedType});
-                    else failedTypes.Add(new RestoreResult {Difference = difference, Type = constructedType});
+                    if (Checker.IsRestorable(obj, out difference))
+                        okTypes.Add(new RestoreResult {Type = constructedType});
+                    else
+                        failedTypes.Add(new RestoreResult {Difference = difference, Type = constructedType});
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     failedTypes.Add(new RestoreResult {Exception = ex, Type = type});
                 }
-            }
 
             var sb = new StringBuilder();
             if (failedTypes.Count > 0)
@@ -118,7 +119,8 @@ namespace GridDomain.Tests.Framework
             sb.AppendLine();
 
 
-            foreach (var res in failedTypes) { sb.AppendLine(res.Type.Name); }
+            foreach (var res in failedTypes)
+                sb.AppendLine(res.Type.Name);
         }
 
         private class RestoreResult

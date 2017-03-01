@@ -68,7 +68,8 @@ namespace GridDomain.Tools.Connector
 
         public async Task Connect()
         {
-            if (_consoleSystem != null) return;
+            if (_consoleSystem != null)
+                return;
 
             _consoleSystem = _conf.CreateInMemorySystem();
             DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
@@ -76,14 +77,14 @@ namespace GridDomain.Tools.Connector
             var eventBusForwarder = await GetActor(GetSelection(nameof(ActorTransportProxy)));
 
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
-                eventBusForwarder,
-                _defaultTimeout);
+                                                                  eventBusForwarder,
+                                                                  _defaultTimeout);
 
             var commandExecutionActor = await GetActor(GetSelection(nameof(CommandExecutionActor)));
             _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
-                transportBridge,
-                commandExecutionActor,
-                _defaultTimeout);
+                                                           transportBridge,
+                                                           commandExecutionActor,
+                                                           _defaultTimeout);
             _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
     }

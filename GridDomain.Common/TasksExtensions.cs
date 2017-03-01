@@ -49,7 +49,7 @@ namespace GridDomain.Common
         public static Task<IEnumerable<T>> ToChain<T>(this IEnumerable<Task<IEnumerable<T>>> tasks)
         {
             return tasks.Aggregate<Task<IEnumerable<T>>, Task<IEnumerable<T>>>(null,
-                (current, task) => current?.ContinueWith(t => task.Result.Union(t.Result)) ?? task);
+                                                                               (current, task) => current?.ContinueWith(t => task.Result.Union(t.Result)) ?? task);
         }
     }
 }

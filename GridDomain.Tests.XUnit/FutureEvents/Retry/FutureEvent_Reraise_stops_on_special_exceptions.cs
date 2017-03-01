@@ -29,8 +29,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 var settings = base.CreateNodeSettings();
                 //TwoFastRetriesSettings();
                 settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2,
-                    TimeSpan.FromMilliseconds(10),
-                    new StopOnTestExceptionPolicy(Logger));
+                                                                            TimeSpan.FromMilliseconds(10),
+                                                                            new StopOnTestExceptionPolicy(Logger));
                 return settings;
             }
 
@@ -46,16 +46,18 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 public bool ShouldContinue(Exception ex)
                 {
                     _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
-                        GetHashCode(),
-                        Thread.CurrentThread.ManagedThreadId,
-                        Environment.CurrentManagedThreadId);
+                                     GetHashCode(),
+                                     Thread.CurrentThread.ManagedThreadId,
+                                     Environment.CurrentManagedThreadId);
 
                     _policyCallNumber++;
                     _policyCallNumberChanged.SetResult(1);
                     var domainException = ex.UnwrapSingle();
-                    if (domainException is TestScheduledException) return false;
+                    if (domainException is TestScheduledException)
+                        return false;
 
-                    if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException) return false;
+                    if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException)
+                        return false;
 
                     return true;
                 }

@@ -24,19 +24,19 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
         {
             return
                 new CustomContainerConfiguration(
-                    c =>
-                        c.Register(
-                            SagaConfiguration
-                                .Instance
-                                <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
-                                    SoftwareProgrammingSaga.Descriptor)),
-                    c =>
-                        c
-                            .RegisterAggregate
-                            <SagaStateAggregate<SoftwareProgrammingSagaData>,
-                                SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
-                    c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
-                    c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
+                                                 c =>
+                                                     c.Register(
+                                                                SagaConfiguration
+                                                                    .Instance
+                                                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+                                                                                                                                                           SoftwareProgrammingSaga.Descriptor)),
+                                                 c =>
+                                                     c
+                                                         .RegisterAggregate
+                                                         <SagaStateAggregate<SoftwareProgrammingSagaData>,
+                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
+                                                 c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
+                                                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
         }
 
         private class TestPersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration

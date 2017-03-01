@@ -32,7 +32,8 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_history_row_is_added()
         {
-            using (var context = ContextFactory()) {
+            using (var context = ContextFactory())
+            {
                 Assert.NotNull(context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 4));
             }
         }
@@ -50,7 +51,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
                 Assert.AreEqual(_stockReservedEvent.Quantity, history.OldReservedQuantity);
                 Assert.AreEqual(_stockCreatedEvent.Quantity + _stockAddedEvent.Quantity, history.OldTotalQuantity);
                 Assert.AreEqual(_stockCreatedEvent.Quantity + _stockAddedEvent.Quantity - _stockReservedEvent.Quantity,
-                    history.OldAvailableQuantity);
+                                history.OldAvailableQuantity);
                 Assert.AreEqual(StockOperation.ReserveExpired, history.Operation);
                 Assert.AreEqual(_stockReservedEvent.Quantity, history.Quanity);
                 Assert.AreEqual(_stockReservedEvent.SourceId, history.StockId);
@@ -61,7 +62,10 @@ namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
         [Test]
         public void Then_reserve_row_is_removed()
         {
-            using (var context = ContextFactory()) Assert.Null(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
+            using (var context = ContextFactory())
+            {
+                Assert.Null(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
+            }
         }
 
         [Test]

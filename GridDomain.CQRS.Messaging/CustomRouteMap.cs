@@ -23,7 +23,8 @@ namespace GridDomain.CQRS.Messaging
 
         public async Task Register(IMessagesRouter router)
         {
-            foreach (var routeRule in _routeRules) { await routeRule(router); }
+            foreach (var routeRule in _routeRules)
+                await routeRule(router);
         }
     }
 }

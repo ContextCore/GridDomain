@@ -37,7 +37,7 @@ namespace GridDomain.Node.Actors
                 Log?.Debug("will not save snapshots due to time limitations");
                 return false;
             }
-            if (_lastSequenceNumber%_saveOnEach != 0)
+            if (_lastSequenceNumber % _saveOnEach != 0)
             {
                 Log?.Debug("will not save snapshots due to save on event count condition");
                 return false;

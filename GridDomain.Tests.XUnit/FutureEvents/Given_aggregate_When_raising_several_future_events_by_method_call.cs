@@ -20,7 +20,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents
                 aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid())
                          .ShouldThrow<ScheduledEventNotFoundException>();
             //Then_raising_event_with_wrong_id_does_not_produce_new_events()
-            try {
+            try
+            {
                 await aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid());
             }
             catch

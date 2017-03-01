@@ -45,9 +45,8 @@ namespace GridDomain.Node
 
             var processor = new Processor(aggregateActor);
 
-            foreach (var aggregateCommandInfo in descriptor.RegisteredCommands) {
+            foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
                 _aggregatesCatalog.Add(aggregateCommandInfo.CommandType, processor);
-            }
 
             return Task.CompletedTask;
         }
@@ -59,13 +58,14 @@ namespace GridDomain.Node
             var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
             var processor = new Processor(sagaActor);
 
-            foreach (var acceptMsg in sagaDescriptor.AcceptMessages) { _sagaCatalog.Add(acceptMsg.MessageType, processor); }
+            foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
+                _sagaCatalog.Add(acceptMsg.MessageType, processor);
 
             return Task.CompletedTask;
         }
 
         public Task RegisterHandler<TMessage, THandler>(string correlationField) where TMessage : DomainEvent
-            where THandler : IHandler<TMessage>
+                                                                                 where THandler : IHandler<TMessage>
         {
             return RegisterHandler<TMessage, THandler>(true);
         }
@@ -80,11 +80,11 @@ namespace GridDomain.Node
             SagaProcessor = _system.ActorOf(Props.Create(() => new SagaProcessActor(_sagaCatalog)), nameof(SagaProcessActor));
 
             HandlersProcessor = _system.ActorOf(
-                Props.Create(() => new HandlersProcessActor(_handlersCatalog, SagaProcessor)),
-                nameof(HandlersProcessActor));
+                                                Props.Create(() => new HandlersProcessActor(_handlersCatalog, SagaProcessor)),
+                                                nameof(HandlersProcessActor));
 
             CommandExecutor = _system.ActorOf(Props.Create(() => new CommandExecutionActor(_aggregatesCatalog)),
-                nameof(CommandExecutionActor));
+                                              nameof(CommandExecutionActor));
 
             _container.RegisterInstance(HandlersProcessActor.CustomHandlersProcessActorRegistrationName, HandlersProcessor);
             _container.RegisterInstance(SagaProcessActor.SagaProcessActorRegistrationName, SagaProcessor);
@@ -94,7 +94,7 @@ namespace GridDomain.Node
         }
 
         public Task RegisterHandler<TMessage, THandler>(bool sync = false) where THandler : IHandler<TMessage>
-            where TMessage : DomainEvent
+                                                                           where TMessage : DomainEvent
         {
             var handlerActorType = typeof(MessageHandlingActor<TMessage, THandler>);
             var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());
@@ -106,7 +106,8 @@ namespace GridDomain.Node
         private IActorRef CreateActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
             var handleActorProps = _system.DI().Props(actorType);
-            if (routeConfig != null) handleActorProps = handleActorProps.WithRouter(routeConfig);
+            if (routeConfig != null)
+                handleActorProps = handleActorProps.WithRouter(routeConfig);
 
             var handleActor = _system.ActorOf(handleActorProps, actorName);
             return handleActor;

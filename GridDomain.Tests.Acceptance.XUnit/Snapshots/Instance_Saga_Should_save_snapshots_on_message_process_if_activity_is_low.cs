@@ -20,9 +20,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     {
         public Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
             : base(
-                output,
-                new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2,
-                    TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
+                   output,
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2,
+                                                                                                              TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);

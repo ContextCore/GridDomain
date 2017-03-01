@@ -20,7 +20,7 @@ namespace GridDomain.EventSourcing.Adapters
         /// <typeparam name="TTo"></typeparam>
         /// <param name="adapter"></param>
         public void Register<TFrom, TTo>(IDomainEventAdapter<TFrom, TTo> adapter) where TFrom : DomainEvent
-            where TTo : DomainEvent
+                                                                                  where TTo : DomainEvent
         {
             _eventAdapterCatalog[typeof(TFrom)] = adapter;
         }
@@ -40,7 +40,8 @@ namespace GridDomain.EventSourcing.Adapters
             IEventAdapter adapter;
             var processingType = evt.GetType();
 
-            if (!_eventAdapterCatalog.TryGetValue(processingType, out adapter)) return new[] {evt};
+            if (!_eventAdapterCatalog.TryGetValue(processingType, out adapter))
+                return new[] {evt};
 
             var updatedEvent = adapter.Convert(evt);
             return updatedEvent.SelectMany(Update).ToArray();

@@ -40,11 +40,11 @@ namespace GridDomain.Node
 
                                                             if (ext == null)
                                                                 throw new ArgumentNullException(nameof(ext),
-                                                                    $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
+                                                                                                $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
                                                             if (ext.EventsAdapterCatalog == null)
                                                                 throw new ArgumentNullException(nameof(ext),
-                                                                    $"Cannot get {typeof(IObjectUpdateChain).Name} extension");
+                                                                                                $"Cannot get {typeof(IObjectUpdateChain).Name} extension");
 
                                                             return ext.EventsAdapterCatalog;
                                                         });

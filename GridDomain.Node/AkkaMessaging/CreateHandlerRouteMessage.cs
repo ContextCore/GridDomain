@@ -48,29 +48,32 @@ namespace GridDomain.Node.AkkaMessaging
         {
             var msgType = GetTypeWithoutMetadata(MessageType);
             var handlerType = typeof(IHandler<>).MakeGenericType(msgType);
-            if (!handlerType.IsAssignableFrom(HandlerType)) throw new InvalidHandlerType(HandlerType, MessageType);
+            if (!handlerType.IsAssignableFrom(HandlerType))
+                throw new InvalidHandlerType(HandlerType, MessageType);
         }
 
         public static Type GetTypeWithoutMetadata(Type messageType)
         {
             if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) && messageType.IsGenericType
                 && (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>)
-                    || messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>))) {
-                        return messageType.GetGenericArguments().First();
-                    }
+                    || messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
+                return messageType.GetGenericArguments().First();
 
             return messageType;
         }
 
         private void CheckCorrelationProperty()
         {
-            if (MessageCorrelationProperty == null) return;
+            if (MessageCorrelationProperty == null)
+                return;
 
             var messageType = GetTypeWithoutMetadata(MessageType);
 
             var property = messageType.GetProperty(MessageCorrelationProperty);
-            if (property == null) throw new CannotFindCorrelationProperty(messageType, MessageCorrelationProperty);
-            if (property.PropertyType != typeof(Guid)) throw new IncorrectTypeOfCorrelationProperty(messageType, MessageCorrelationProperty);
+            if (property == null)
+                throw new CannotFindCorrelationProperty(messageType, MessageCorrelationProperty);
+            if (property.PropertyType != typeof(Guid))
+                throw new IncorrectTypeOfCorrelationProperty(messageType, MessageCorrelationProperty);
         }
     }
 }

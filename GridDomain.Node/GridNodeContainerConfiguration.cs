@@ -73,7 +73,7 @@ namespace GridDomain.Node
 
             container.RegisterInstance(_quartzJobRetrySettings);
             var persistentScheduler = _actorSystem.ActorOf(_actorSystem.DI().Props<SchedulingActor>(),
-                nameof(SchedulingActor));
+                                                           nameof(SchedulingActor));
             container.RegisterInstance(SchedulingActor.RegistrationName, persistentScheduler);
 
             var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);

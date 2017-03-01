@@ -73,7 +73,7 @@ namespace GridDomain.Node.Actors
                                                        UnbecomeStacked();
                                                        BecomeStacked(() => WaitingHandlersProcess(commandEnvelop.Metadata));
                                                    })
-                               // .With<Status.Failure>()
+                            // .With<Status.Failure>()
                             .With<IAggregate>(newState =>
                                               {
                                                   State = newState;
@@ -136,7 +136,7 @@ namespace GridDomain.Node.Actors
                                                                     UnbecomeStacked();
                                                                     Stash.UnstashAll();
                                                                 })
-                               //  .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d => { FinishAsyncInvoke(d); })
+                            //  .With<IMessageMetadataEnvelop<AsyncEventsReceived>>(d => { FinishAsyncInvoke(d); })
                             .Default(o => Stash.Stash());
                        });
         }
@@ -149,7 +149,8 @@ namespace GridDomain.Node.Actors
                 _publisher.Publish(e, eventMetadata);
             }
 
-            if (processComplete.Fault == null) return;
+            if (processComplete.Fault == null)
+                return;
 
             var faultMetadata = commandMetadata.CreateChild(commandMetadata.MessageId, _domainEventProcessFailEntry);
             _publisher.Publish(processComplete.Fault, faultMetadata);
@@ -157,7 +158,8 @@ namespace GridDomain.Node.Actors
 
         protected override void OnEventPersisted(DomainEvent[] events)
         {
-            foreach (var e in events) NotifyPersistenceWatchers(e);
+            foreach (var e in events)
+                NotifyPersistenceWatchers(e);
         }
 
         private void OnCommandEventsPersisted(DomainEvent[] events, IMessageMetadata eventCommonMetadata)
@@ -167,15 +169,9 @@ namespace GridDomain.Node.Actors
             var envelop = new MessageMetadataEnvelop<DomainEvent[]>(events, eventCommonMetadata);
 
             foreach (var e in events)
-            {
-                //TODO: move scheduling event processing to some separate handler or aggregateActor extension. 
-                //how to pass aggregate type in this case? 
-                //direct call to method to not postpone process of event scheduling, 
-                //case it can be interrupted by other messages in stash processing errors
                 e.Match()
                  .With<FutureEventScheduledEvent>(m => Handle(m, eventCommonMetadata))
                  .With<FutureEventCanceledEvent>(m => Handle(m, eventCommonMetadata));
-            }
 
             _customHandlersActor.Ask<AllHandlersCompleted>(envelop).PipeTo(Self);
         }
@@ -183,28 +179,27 @@ namespace GridDomain.Node.Actors
         private void ProcessAsyncMethods(ICommand command, IMessageMetadata metadata)
         {
             var extendedAggregate = State as Aggregate;
-            if (extendedAggregate == null) return;
+            if (extendedAggregate == null)
+                return;
 
             //When aggregate notifies external world about async method execution start,
             //actor should schedule results to process it
             //command is included to safe access later, after async execution complete
             var cmd = command;
             foreach (var asyncMethod in extendedAggregate.GetAsyncUncomittedEvents())
-            {
                 asyncMethod.ResultProducer.ContinueWith(t =>
                                                         {
                                                             var asyncEventsReceived =
                                                                 new AsyncEventsReceived(t.IsFaulted ? null : t.Result,
-                                                                    cmd,
-                                                                    asyncMethod.InvocationId,
-                                                                    t.Exception);
+                                                                                        cmd,
+                                                                                        asyncMethod.InvocationId,
+                                                                                        t.Exception);
 
                                                             return
                                                                 new MessageMetadataEnvelop<AsyncEventsReceived>(
-                                                                    asyncEventsReceived,
-                                                                    metadata);
+                                                                                                                asyncEventsReceived,
+                                                                                                                metadata);
                                                         }).PipeTo(Self);
-            }
             extendedAggregate.ClearAsyncUncomittedEvents();
         }
 
@@ -222,19 +217,19 @@ namespace GridDomain.Node.Actors
 
             var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
             var metadata = messageMetadata.CreateChild(command.Id,
-                new ProcessEntry(GetType().Name,
-                    "Scheduling raise future event command",
-                    "FutureEventScheduled event occured"));
+                                                       new ProcessEntry(GetType().Name,
+                                                                        "Scheduling raise future event command",
+                                                                        "FutureEventScheduled event occured"));
 
             var confirmationEventType = typeof(IMessageMetadataEnvelop<>).MakeGenericType(message.Event.GetType());
 
             var scheduleEvent = new ScheduleCommand(command,
-                scheduleKey,
-                new ExtendedExecutionOptions(message.RaiseTime,
-                    confirmationEventType,
-                    message.Event.SourceId,
-                    nameof(DomainEvent.SourceId)),
-                metadata);
+                                                    scheduleKey,
+                                                    new ExtendedExecutionOptions(message.RaiseTime,
+                                                                                 confirmationEventType,
+                                                                                 message.Event.SourceId,
+                                                                                 nameof(DomainEvent.SourceId)),
+                                                    metadata);
 
             _schedulerActorRef.Tell(scheduleEvent);
         }
@@ -242,9 +237,9 @@ namespace GridDomain.Node.Actors
         public static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid aggregateId, string description)
         {
             return new ScheduleKey(scheduleId,
-                $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
-                $"{typeof(TAggregate).Name}_futureEvents",
-                "");
+                                   $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
+                                   $"{typeof(TAggregate).Name}_futureEvents",
+                                   "");
         }
 
         public void Handle(FutureEventCanceledEvent futureEventCanceledEvent, IMessageMetadata metadata)

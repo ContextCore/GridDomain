@@ -14,8 +14,8 @@ namespace GridDomain.Node.Actors
                                                                          where TMessage : class
     {
         private static readonly ProcessEntry FaltProcessEntry = new ProcessEntry(typeof(THandler).Name,
-            MessageHandlingStatuses.PublishingFault,
-            MessageHandlingStatuses.MessageProcessCasuedAnError);
+                                                                                 MessageHandlingStatuses.PublishingFault,
+                                                                                 MessageHandlingStatuses.MessageProcessCasuedAnError);
 
         private readonly ILoggingAdapter _log = Context.GetLogger();
 
@@ -39,15 +39,17 @@ namespace GridDomain.Node.Actors
                                                  var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
 
                                                  Func<Task> handlerExecute;
-                                                 if (handlerWithMetadata != null) handlerExecute = () => handlerWithMetadata.Handle(message, msg.Metadata);
-                                                 else handlerExecute = () => handler.Handle(message);
+                                                 if (handlerWithMetadata != null)
+                                                     handlerExecute = () => handlerWithMetadata.Handle(message, msg.Metadata);
+                                                 else
+                                                     handlerExecute = () => handler.Handle(message);
 
                                                  try
                                                  {
                                                      handlerExecute()
                                                          .ContinueWith(
-                                                             t => new HandlerExecuted(msg, t?.Exception.UnwrapSingle()),
-                                                             TaskContinuationOptions.ExecuteSynchronously)
+                                                                       t => new HandlerExecuted(msg, t?.Exception.UnwrapSingle()),
+                                                                       TaskContinuationOptions.ExecuteSynchronously)
                                                          .PipeTo(Self, Sender);
                                                  }
                                                  catch (Exception ex)
@@ -56,21 +58,22 @@ namespace GridDomain.Node.Actors
                                                      Self.Tell(new HandlerExecuted(msg, ex), Sender);
                                                  }
                                              },
-                m => m.Message is TMessage);
+                                             m => m.Message is TMessage);
 
             Receive<HandlerExecuted>(res =>
                                      {
                                          Sender.Tell(res);
-                                         if (res.Error != null) PublishFault(res.ProcessingMessage, res.Error);
+                                         if (res.Error != null)
+                                             PublishFault(res.ProcessingMessage, res.Error);
                                      });
         }
 
         protected virtual void PublishFault(IMessageMetadataEnvelop msg, Exception ex)
         {
             _log.Error(ex,
-                "Handler actor raised an error on message process: {@Message}. Count: {count}",
-                msg,
-                ++publishFaultCount);
+                       "Handler actor raised an error on message process: {@Message}. Count: {count}",
+                       msg,
+                       ++publishFaultCount);
 
             var metadata = msg.Metadata.CreateChild(Guid.Empty, FaltProcessEntry);
 
@@ -88,7 +91,8 @@ namespace GridDomain.Node.Actors
                .With<ISourcedEvent>(e => sagaId = e.SagaId)
                .With<IMessageMetadataEnvelop>(e => sagaId = (e.Message as ISourcedEvent)?.SagaId);
 
-            if (sagaId.HasValue) return sagaId.Value;
+            if (sagaId.HasValue)
+                return sagaId.Value;
 
             throw new CannotGetSagaFromMessage(msg);
         }

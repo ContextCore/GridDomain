@@ -17,7 +17,8 @@ namespace GridDomain.Tests.Framework
 
         public static DateTime RandomTime(DateTime from, DateTime till)
         {
-            if (till > from) throw new ArgumentOutOfRangeException();
+            if (till > from)
+                throw new ArgumentOutOfRangeException();
 
             var randomTime = till.AddDays(Rnd.Next(0, (int) (from - till).TotalDays));
             return randomTime;
@@ -39,13 +40,15 @@ namespace GridDomain.Tests.Framework
         public static bool IsIncreasing<TElem>(this IList<TElem> elements, Func<TElem, int> valueSelector)
         {
             var firstElement = elements.FirstOrDefault();
-            if (firstElement == null) return false;
+            if (firstElement == null)
+                return false;
 
             var prevElement = valueSelector(firstElement);
             foreach (var element in elements)
             {
                 var currentValue = valueSelector(element);
-                if (currentValue < prevElement) return false;
+                if (currentValue < prevElement)
+                    return false;
                 prevElement = currentValue;
             }
             return true;

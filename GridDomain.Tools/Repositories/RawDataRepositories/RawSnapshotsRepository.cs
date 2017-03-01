@@ -19,7 +19,8 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
 
         public async Task Save(string id, params SnapshotItem[] messages)
         {
-            foreach (var m in messages) m.PersistenceId = id;
+            foreach (var m in messages)
+                m.PersistenceId = id;
 
             using (var context = new AkkaSqlPersistenceContext(_connectionString))
             {
@@ -35,7 +36,8 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         /// <returns></returns>
         public async Task<SnapshotItem[]> Load(string id)
         {
-            using (var context = new AkkaSqlPersistenceContext(_connectionString)) {
+            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            {
                 return await context.Snapshots.Where(j => j.PersistenceId == id).OrderBy(i => i.SequenceNr).ToArrayAsync();
             }
         }

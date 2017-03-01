@@ -35,26 +35,26 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
         public void Order_should_throw_exñeption_on_item_add_with_negative_money()
         {
             Assert.ThrowsAsync<InvalidMoneyException>(async () =>
-                                                 {
-                                                     var cmd = new AddItemToOrderCommand(Aggregate.Id,
-                                                         Guid.NewGuid(),
-                                                         20,
-                                                         new Money(-123));
-                                                     await Execute(cmd);
-                                                 });
+                                                      {
+                                                          var cmd = new AddItemToOrderCommand(Aggregate.Id,
+                                                                                              Guid.NewGuid(),
+                                                                                              20,
+                                                                                              new Money(-123));
+                                                          await Execute(cmd);
+                                                      });
         }
 
         [Test]
         public void Order_should_throw_exñeption_on_item_add_with_negative_quantity()
         {
             Assert.ThrowsAsync<InvalidQuantityException>(async () =>
-                                                    {
-                                                        var cmd = new AddItemToOrderCommand(Aggregate.Id,
-                                                            Guid.NewGuid(),
-                                                            -1,
-                                                            new Money(123));
-                                                        await Execute(cmd);
-                                                    });
+                                                         {
+                                                             var cmd = new AddItemToOrderCommand(Aggregate.Id,
+                                                                                                 Guid.NewGuid(),
+                                                                                                 -1,
+                                                                                                 new Money(123));
+                                                             await Execute(cmd);
+                                                         });
         }
     }
 }

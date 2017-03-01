@@ -6,8 +6,8 @@ namespace GridDomain.Node.AkkaMessaging
     {
         public IncorrectTypeOfCorrelationProperty(Type type, string property)
             : base(
-                $"Correlation property {property} of type {type} should be {typeof(Guid)} type to act as correlation property"
-                )
+                   $"Correlation property {property} of type {type} should be {typeof(Guid)} type to act as correlation property"
+                  )
         {
             Type = type;
             Property = property;

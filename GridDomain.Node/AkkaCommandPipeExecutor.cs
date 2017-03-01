@@ -10,8 +10,8 @@ namespace GridDomain.Node
     public class AkkaCommandPipeExecutor : ICommandExecutor
     {
         private static readonly ProcessEntry ExecuteMetadataEntry = new ProcessEntry(nameof(AkkaCommandPipeExecutor),
-            "sending command to executor actor",
-            "command is executing");
+                                                                                     "sending command to executor actor",
+                                                                                     "command is executing");
 
         private readonly IActorRef _commandExecutorActor;
         private readonly TimeSpan _defaultTimeout;
@@ -39,10 +39,10 @@ namespace GridDomain.Node
         {
             var commandMetadata = metadata
                                   ?? new MessageMetadata(cmd.Id,
-                                      BusinessDateTime.UtcNow,
-                                      Guid.NewGuid(),
-                                      Guid.Empty,
-                                      new ProcessHistory(new[] {ExecuteMetadataEntry}));
+                                                         BusinessDateTime.UtcNow,
+                                                         Guid.NewGuid(),
+                                                         Guid.Empty,
+                                                         new ProcessHistory(new[] {ExecuteMetadataEntry}));
 
             return new CommandWaiter<T>(cmd, commandMetadata, _system, _transport, _commandExecutorActor, _defaultTimeout);
         }

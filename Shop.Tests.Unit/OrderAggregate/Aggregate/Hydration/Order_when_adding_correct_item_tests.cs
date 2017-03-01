@@ -39,10 +39,10 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Hydration
         public void Order_items_contains_new_one_as_separate_item()
         {
             Assert.True(
-                Aggregate.Items.Any(
-                    i =>
-                        i.Quantity == _itemAddedEventB.Quantity && i.Sku == _itemAddedEventB.Sku
-                        && i.TotalPrice == _itemAddedEventB.TotalPrice));
+                        Aggregate.Items.Any(
+                                            i =>
+                                                i.Quantity == _itemAddedEventB.Quantity && i.Sku == _itemAddedEventB.Sku
+                                                && i.TotalPrice == _itemAddedEventB.TotalPrice));
         }
 
         [Test]

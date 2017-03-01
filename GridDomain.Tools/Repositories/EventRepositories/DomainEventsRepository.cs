@@ -29,14 +29,14 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
             var journalEntries =
                 messages.Select(
-                    m =>
-                        new JournalItem(id,
-                            ++counter,
-                            false,
-                            m.GetType().AssemblyQualifiedShortName(),
-                            m.CreatedTime,
-                            "",
-                            _serializer.ToBinary(m)));
+                                m =>
+                                    new JournalItem(id,
+                                                    ++counter,
+                                                    false,
+                                                    m.GetType().AssemblyQualifiedShortName(),
+                                                    m.CreatedTime,
+                                                    "",
+                                                    _serializer.ToBinary(m)));
 
             await _rawDataRepo.Save(id, journalEntries.ToArray());
         }
@@ -48,9 +48,10 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                                                             try
                                                             {
                                                                 return _serializer.FromBinary(d.Payload,
-                                                                    Type.GetType(d.Manifest));
+                                                                                              Type.GetType(d.Manifest));
                                                             }
-                                                            catch (NullReferenceException ex) {
+                                                            catch (NullReferenceException ex)
+                                                            {
                                                                 throw new PersistanceFailureException(d, ex);
                                                             }
                                                         }).Cast<DomainEvent>().ToArray();

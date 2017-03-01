@@ -32,8 +32,10 @@ namespace GridDomain.Tests.XUnit
                                TimeSpan? defaultTimeout = null,
                                ITestOutputHelper helper = null)
         {
-            if (map != null) Add(map);
-            if (containerConfiguration != null) Add(containerConfiguration);
+            if (map != null)
+                Add(map);
+            if (containerConfiguration != null)
+                Add(containerConfiguration);
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
@@ -83,7 +85,8 @@ namespace GridDomain.Tests.XUnit
 
         public async Task<GridDomainNode> CreateNode()
         {
-            if (ClearDataOnStart) await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
+            if (ClearDataOnStart)
+                await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
 
             await CreateLogger();
 
@@ -100,8 +103,8 @@ namespace GridDomain.Tests.XUnit
         protected virtual NodeSettings CreateNodeSettings()
         {
             var settings = new NodeSettings(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
-                new CompositeRouteMap(_routeMap.ToArray()),
-                () => new[] {System})
+                                            new CompositeRouteMap(_routeMap.ToArray()),
+                                            () => new[] {System})
                            {
                                QuartzConfig =
                                    InMemory

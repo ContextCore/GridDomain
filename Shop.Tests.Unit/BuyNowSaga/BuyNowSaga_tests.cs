@@ -44,11 +44,11 @@ namespace Shop.Tests.Unit.BuyNowSaga
 
             scenario.GivenState(sagaId, state)
                     .When(
-                        new ItemAdded(state.OrderId,
-                            state.SkuId,
-                            state.Quantity,
-                            await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity),
-                            1).CloneWithSaga(sagaId))
+                          new ItemAdded(state.OrderId,
+                                        state.SkuId,
+                                        state.Quantity,
+                                        await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity),
+                                        1).CloneWithSaga(sagaId))
                     .Then(new ReserveStockCommand(state.StockId, state.UserId, state.Quantity).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
@@ -67,10 +67,10 @@ namespace Shop.Tests.Unit.BuyNowSaga
             scenario.GivenState(sagaId, state)
                     .When(new OrderCreated(state.OrderId, 123, state.UserId, OrderStatus.Created).CloneWithSaga(sagaId))
                     .Then(
-                        new AddItemToOrderCommand(state.OrderId,
-                            state.SkuId,
-                            state.Quantity,
-                            await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity)).CloneWithSaga(sagaId))
+                          new AddItemToOrderCommand(state.OrderId,
+                                                    state.SkuId,
+                                                    state.Quantity,
+                                                    await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity)).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
                     .CheckOnlyStateNameChanged(nameof(BuyNow.AddingOrderItems));
@@ -117,8 +117,8 @@ namespace Shop.Tests.Unit.BuyNowSaga
 
             scenario.GivenState(sagaId, state)
                     .When(
-                        new StockReserved(state.StockId, state.ReserveId, DateTime.UtcNow.AddDays(1), state.Quantity)
-                            .CloneWithSaga(sagaId))
+                          new StockReserved(state.StockId, state.ReserveId, DateTime.UtcNow.AddDays(1), state.Quantity)
+                              .CloneWithSaga(sagaId))
                     .Then(new CalculateOrderTotalCommand(state.OrderId).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
@@ -136,10 +136,10 @@ namespace Shop.Tests.Unit.BuyNowSaga
 
             scenario.GivenState(sagaId, state)
                     .When(new OrderTotalCalculated(state.OrderId, totalPrice).CloneWithSaga(sagaId),
-                        new StockReserved(state.StockId, state.ReserveId, DateTime.UtcNow.AddDays(1), state.Quantity)
-                            .CloneWithSaga(sagaId))
+                          new StockReserved(state.StockId, state.ReserveId, DateTime.UtcNow.AddDays(1), state.Quantity)
+                              .CloneWithSaga(sagaId))
                     .Then(new PayForOrderCommand(state.AccountId, totalPrice, state.OrderId).CloneWithSaga(sagaId),
-                        new CalculateOrderTotalCommand(state.OrderId).CloneWithSaga(sagaId))
+                          new CalculateOrderTotalCommand(state.OrderId).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
                     .CheckOnlyStateNameChanged(nameof(BuyNow.Paying));
@@ -182,18 +182,18 @@ namespace Shop.Tests.Unit.BuyNowSaga
                                                                       {
                                                                           nameof
                                                                               (state
-                                                                              .OrderWarReservedStatus)
+                                                                                   .OrderWarReservedStatus)
                                                                       }
                                                               }
                                                       };
 
             scenario.When(
-                new SkuPurchaseOrdered(state.UserId,
-                    state.SkuId,
-                    state.Quantity,
-                    state.OrderId,
-                    state.StockId,
-                    state.AccountId).CloneWithSaga(sagaId))
+                          new SkuPurchaseOrdered(state.UserId,
+                                                 state.SkuId,
+                                                 state.Quantity,
+                                                 state.OrderId,
+                                                 state.StockId,
+                                                 state.AccountId).CloneWithSaga(sagaId))
                     .Then(new CreateOrderCommand(state.OrderId, state.UserId).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
@@ -215,7 +215,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
             scenario.GivenState(sagaId, state)
                     .When(new StockReserveTaken(state.StockId, state.ReserveId).CloneWithSaga(sagaId))
                     .Then(new CompleteOrderCommand(state.OrderId).CloneWithSaga(sagaId),
-                        new CompletePendingOrderCommand(state.UserId, state.OrderId).CloneWithSaga(sagaId))
+                          new CompletePendingOrderCommand(state.UserId, state.OrderId).CloneWithSaga(sagaId))
                     .Run()
                     .CheckProducedCommands()
                     .CheckOnlyStateNameChanged(nameof(BuyNow.Final));

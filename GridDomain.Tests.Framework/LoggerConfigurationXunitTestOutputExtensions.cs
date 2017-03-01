@@ -32,9 +32,12 @@ namespace GridDomain.Tests.Framework
                                                           string outputTemplate = DefaultOutputTemplate,
                                                           IFormatProvider formatProvider = null)
         {
-            if (loggerConfiguration == null) throw new ArgumentNullException("loggerConfiguration");
-            if (testOutputHelper == null) throw new ArgumentNullException("testOutputHelper");
-            if (outputTemplate == null) throw new ArgumentNullException("outputTemplate");
+            if (loggerConfiguration == null)
+                throw new ArgumentNullException("loggerConfiguration");
+            if (testOutputHelper == null)
+                throw new ArgumentNullException("testOutputHelper");
+            if (outputTemplate == null)
+                throw new ArgumentNullException("outputTemplate");
 
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
             return loggerConfiguration.Sink(new XUnitTestOutputSink(testOutputHelper, formatter), restrictedToMinimumLevel);

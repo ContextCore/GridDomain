@@ -27,13 +27,13 @@ namespace GridDomain.Tests.XUnit.Metadata
             var sagaId = Guid.NewGuid();
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId);
             var gotTiredEventMetadata = new MessageMetadata(gotTiredEvent.SourceId,
-                BusinessDateTime.UtcNow,
-                Guid.NewGuid(),
-                Guid.NewGuid());
+                                                            BusinessDateTime.UtcNow,
+                                                            Guid.NewGuid(),
+                                                            Guid.NewGuid());
 
             Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
             Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {gotTiredEvent},
-                gotTiredEventMetadata));
+                                                                                   gotTiredEventMetadata));
 
             var answer = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
             var command = answer.Message as MakeCoffeCommand;

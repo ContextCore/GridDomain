@@ -23,7 +23,8 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
         {
             var sqlValue = param.SqlValue;
             var nullableValue = sqlValue as INullable;
-            if (nullableValue != null) return nullableValue.IsNull;
+            if (nullableValue != null)
+                return nullableValue.IsNull;
             return sqlValue == null || sqlValue == DBNull.Value;
         }
 

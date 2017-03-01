@@ -21,9 +21,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
             var syncCommand = new AsyncFaultWithOneEventCommand(42,
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                TimeSpan.FromMilliseconds(500));
+                                                                Guid.NewGuid(),
+                                                                Guid.NewGuid(),
+                                                                TimeSpan.FromMilliseconds(500));
 
             await
                 Node.Prepare(syncCommand)

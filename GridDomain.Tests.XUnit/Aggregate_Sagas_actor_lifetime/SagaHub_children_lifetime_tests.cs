@@ -29,7 +29,7 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
                 ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, new MessageMetadata(gotTired.SourceId));
 
                 ChildActivateMessage = new MessageMetadataEnvelop<DomainEvent>(coffeMadeEvent,
-                    new MessageMetadata(coffeMadeEvent.SourceId));
+                                                                               new MessageMetadata(coffeMadeEvent.SourceId));
             }
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
@@ -37,10 +37,10 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
                 return
                     system.DI()
                           .Props
-                        <
-                            SagaHubActor
-                                <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                                    SagaStateAggregate<SoftwareProgrammingSagaData>>>();
+                          <
+                              SagaHubActor
+                              <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+                                  SagaStateAggregate<SoftwareProgrammingSagaData>>>();
             }
 
             public object ChildCreateMessage { get; }

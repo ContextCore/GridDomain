@@ -22,7 +22,7 @@ namespace GridDomain.Node.Actors
             : base(recycleConf, typeof(TSaga).Name)
         {
             _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType,
-                m => m.CorrelationField);
+                                                                                         m => m.CorrelationField);
         }
 
         protected override string GetChildActorName(object message)
@@ -36,12 +36,16 @@ namespace GridDomain.Node.Actors
 
             message.Match().With<IFault>(m => childActorId = m.SagaId);
 
-            if (childActorId != Guid.Empty) return childActorId;
+            if (childActorId != Guid.Empty)
+                return childActorId;
 
             string fieldName;
             var type = message.GetType();
 
-            if (_acceptMessagesSagaIds.TryGetValue(type, out fieldName)) childActorId = (Guid) type.GetProperty(fieldName).GetValue(message);
+            if (_acceptMessagesSagaIds.TryGetValue(type, out fieldName))
+            {
+                childActorId = (Guid) type.GetProperty(fieldName).GetValue(message);
+            }
             else
             {
                 //try to search by inheritance

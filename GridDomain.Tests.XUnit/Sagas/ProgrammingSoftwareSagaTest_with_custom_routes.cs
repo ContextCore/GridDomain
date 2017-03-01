@@ -19,11 +19,11 @@ namespace GridDomain.Tests.XUnit.Sagas
                 Add(new CustomRoutesSoftwareProgrammingSagaMap());
                 var cfg =
                     new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                        c =>
-                            c
-                                .RegisterAggregate
-                                <SagaStateAggregate<SoftwareProgrammingSagaData>,
-                                    SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>());
+                                                     c =>
+                                                         c
+                                                             .RegisterAggregate
+                                                             <SagaStateAggregate<SoftwareProgrammingSagaData>,
+                                                                 SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>());
                 Add(cfg);
                 Add(new SampleDomainContainerConfiguration());
             }

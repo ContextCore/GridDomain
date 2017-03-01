@@ -37,7 +37,8 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             var agr = Aggregate.Empty<T>(id);
             var persistId = AggregateActorName.New<T>(id).ToString();
             var events = await _eventRepository.Load(persistId);
-            foreach (var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e))) ((IAggregate) agr).ApplyEvent(e);
+            foreach (var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e)))
+                ((IAggregate) agr).ApplyEvent(e);
             return agr;
         }
 

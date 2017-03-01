@@ -28,8 +28,8 @@ namespace GridDomain.Tests.XUnit.Sagas
                                PersonId
                                    =
                                    Guid
-                                   .NewGuid
-                                   ()
+                                       .NewGuid
+                                       ()
                            };
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);

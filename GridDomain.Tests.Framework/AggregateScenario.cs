@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
@@ -13,7 +12,7 @@ namespace GridDomain.Tests.Framework
 {
     public class AggregateScenario<TAggregate, TCommandsHandler> where TAggregate : class, IAggregate
                                                                  where TCommandsHandler : class,
-                                                                     IAggregateCommandsHandler<TAggregate>
+                                                                 IAggregateCommandsHandler<TAggregate>
     {
         internal AggregateScenario(TAggregate agr = null, TCommandsHandler handler = null)
         {
@@ -45,7 +44,8 @@ namespace GridDomain.Tests.Framework
         protected string CollectDebugInfo()
         {
             var sb = new StringBuilder();
-            foreach (var cmd in GivenCommands) sb.AppendLine($"Command: {cmd.ToPropsString()}");
+            foreach (var cmd in GivenCommands)
+                sb.AppendLine($"Command: {cmd.ToPropsString()}");
 
             AddEventInfo("Given events", GivenEvents, sb);
             AddEventInfo("Produced events", ProducedEvents, sb);
@@ -116,7 +116,8 @@ namespace GridDomain.Tests.Framework
         private static TCommandsHandler CreateCommandsHandler()
         {
             var constructorInfo = typeof(TCommandsHandler).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo == null) throw new CannotCreateCommandHandlerExeption();
+            if (constructorInfo == null)
+                throw new CannotCreateCommandHandlerExeption();
 
             return (TCommandsHandler) constructorInfo.Invoke(null);
         }
@@ -124,14 +125,16 @@ namespace GridDomain.Tests.Framework
         public T GivenEvent<T>(Predicate<T> filter = null) where T : DomainEvent
         {
             var events = GivenEvents.OfType<T>();
-            if (filter != null) events = events.Where(e => filter(e));
+            if (filter != null)
+                events = events.Where(e => filter(e));
             return events.FirstOrDefault();
         }
 
         public T GivenCommand<T>(Predicate<T> filter = null) where T : ICommand
         {
             var commands = GivenCommands.OfType<T>();
-            if (filter != null) commands = commands.Where(e => filter(e));
+            if (filter != null)
+                commands = commands.Where(e => filter(e));
             return commands.FirstOrDefault();
         }
     }

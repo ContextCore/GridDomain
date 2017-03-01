@@ -29,8 +29,8 @@ namespace GridDomain.Tests.XUnit.Metadata
         private static IMessageRouteMap CreateMap()
         {
             return new CustomRouteMap(new SampleRouteMap(),
-                r =>
-                    r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(nameof(DomainEvent.SourceId)));
+                                      r =>
+                                          r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(nameof(DomainEvent.SourceId)));
         }
 
         [Fact]

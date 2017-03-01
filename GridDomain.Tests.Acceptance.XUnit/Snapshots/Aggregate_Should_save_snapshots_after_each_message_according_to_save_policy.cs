@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SampleAggregate>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()

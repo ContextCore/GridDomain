@@ -34,8 +34,8 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
             msg.History.ElapsedTicksFromAppStart = watch.ElapsedTicks;
 
             var notificationMetadata = MessageMetadata.CreateFrom(msg.SourceId,
-                metadata,
-                new ProcessEntry(GetType().Name, MessageProcessed, Why));
+                                                                  metadata,
+                                                                  new ProcessEntry(GetType().Name, MessageProcessed, Why));
 
             var notification = new AggregateCreatedEventNotification {AggregateId = msg.SourceId};
             _publisher.Publish(notification, notificationMetadata);

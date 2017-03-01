@@ -25,9 +25,9 @@ namespace GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders
         public Task Handle(SampleAggregateChangedEvent msg, IMessageMetadata metadata)
         {
             var notificationMetadata = metadata.CreateChild(Guid.NewGuid(),
-                new ProcessEntry(nameof(SampleProjectionBuilder),
-                    "Publishing notification",
-                    "Aggregate created event processed"));
+                                                            new ProcessEntry(nameof(SampleProjectionBuilder),
+                                                                             "Publishing notification",
+                                                                             "Aggregate created event processed"));
 
             _publisher.Publish(new AggregateChangedEventNotification {AggregateId = msg.SourceId}, notificationMetadata);
             return Task.CompletedTask;

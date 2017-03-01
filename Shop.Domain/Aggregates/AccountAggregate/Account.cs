@@ -44,13 +44,15 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 
         private static void GuardNegativeMoney(Money m, string msg)
         {
-            if (m.IsNegative()) throw new NegativeMoneyException(msg);
+            if (m.IsNegative())
+                throw new NegativeMoneyException(msg);
         }
 
         public async Task Withdraw(Money m, Guid withdrawSource)
         {
             GuardNegativeMoney(m, "Cant withdrawal negative amount of money.");
-            if ((Amount - m).IsNegative()) throw new NotEnoughMoneyException("Dont have enough money to pay for bill");
+            if ((Amount - m).IsNegative())
+                throw new NotEnoughMoneyException("Dont have enough money to pay for bill");
 
             await Emit(new AccountWithdrawal(Id, withdrawSource, m));
         }

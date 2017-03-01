@@ -20,7 +20,8 @@ namespace GridDomain.Scheduling.Quartz.Retry
         public override void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {
             _logger.Debug("Deciding if job {job} should be retried", context.JobDetail.Key);
-            if (!JobFailed(jobException) || !_retryStrategy.ShouldRetry(context, jobException)) return;
+            if (!JobFailed(jobException) || !_retryStrategy.ShouldRetry(context, jobException))
+                return;
 
             var trigger = _retryStrategy.GetTrigger(context);
             context.Scheduler.UnscheduleJob(context.Trigger.Key);

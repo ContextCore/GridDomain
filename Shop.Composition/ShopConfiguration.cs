@@ -29,7 +29,7 @@ namespace Shop.Composition
         {
             _readModelContextOptions = readModelContextOptions
                                        ?? new DbContextOptionsBuilder<ShopDbContext>().UseSqlServer(
-                                           "Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
+                                                                                                    "Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
                                                                                       .Options;
             ;
         }

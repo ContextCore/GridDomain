@@ -13,7 +13,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events
         {
             Koefficient = koefficient;
             AmountChange = amountChange;
-            AmplifiedAmountChange = Koefficient*AmountChange;
+            AmplifiedAmountChange = Koefficient * AmountChange;
         }
 
         public decimal AmountChange { get; }

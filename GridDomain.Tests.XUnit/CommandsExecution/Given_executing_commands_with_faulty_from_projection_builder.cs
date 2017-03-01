@@ -22,9 +22,9 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             return
                 new CustomRouteMap(
-                    r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
-                    r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(e => e.SourceId),
-                    r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
+                                   r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
+                                   r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(e => e.SourceId),
+                                   r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
         }
 
         [Fact]

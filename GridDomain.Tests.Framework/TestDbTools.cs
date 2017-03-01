@@ -12,8 +12,8 @@ namespace GridDomain.Tests.Framework
             await Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
             await
                 Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"),
-                    akkaConf.JournalTableName,
-                    akkaConf.MetadataTableName);
+                         akkaConf.JournalTableName,
+                         akkaConf.MetadataTableName);
         }
 
         private static async Task Truncate(string connection, params string[] tableNames)

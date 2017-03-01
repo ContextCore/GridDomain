@@ -12,7 +12,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         public Given_AutomatonymousSaga_When_invalid_Transitions(ITestOutputHelper output)
         {
             _given = new Given_AutomatonymousSaga(m => m.Sleeping,
-                new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
+                                                  new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
         }
 
         private readonly Given_AutomatonymousSaga _given;
@@ -26,7 +26,8 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private async Task SwallowException(Func<Task> act)
         {
-            try {
+            try
+            {
                 await act();
             }
             catch
@@ -39,7 +40,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         public void Exception_occurs()
         {
             Assert.ThrowsAsync<UnbindedMessageReceivedException>(
-                async () => await When_execute_invalid_transaction(_given.SagaInstance));
+                                                                 async () => await When_execute_invalid_transaction(_given.SagaInstance));
         }
 
         [Fact]

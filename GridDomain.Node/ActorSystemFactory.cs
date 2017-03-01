@@ -15,14 +15,14 @@ namespace GridDomain.Node
 
             var seedSystems =
                 seedNodeConfigs.Select(
-                    c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig(seedAdresses)));
+                                       c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig(seedAdresses)));
 
             var nonSeedConfiguration =
                 Enumerable.Range(0, childNodeNumber)
                           .Select(
-                              n =>
-                                  ActorSystem.Create(akkaConf.Network.SystemName,
-                                      akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
+                                  n =>
+                                      ActorSystem.Create(akkaConf.Network.SystemName,
+                                                         akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
 
 
             return new AkkaCluster {SeedNodes = seedSystems.ToArray(), NonSeedNodes = nonSeedConfiguration.ToArray()};

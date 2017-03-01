@@ -36,7 +36,8 @@ namespace Shop.Domain.Aggregates.OrderAggregate
 
         public Order(Guid id, long number, Guid user) : this(id)
         {
-            if (number < 0) throw new NegativeOrderNumberException();
+            if (number < 0)
+                throw new NegativeOrderNumberException();
             RaiseEvent(new OrderCreated(id, number, user));
         }
 
@@ -60,16 +61,20 @@ namespace Shop.Domain.Aggregates.OrderAggregate
 
         public async Task AddItem(Guid sku, int quantity, Money totalPrice)
         {
-            if (quantity <= 0) throw new InvalidQuantityException();
-            if (totalPrice < Money.Zero()) throw new InvalidMoneyException();
-            if (Status != OrderStatus.Created) throw new CantAddItemsToClosedOrder();
+            if (quantity <= 0)
+                throw new InvalidQuantityException();
+            if (totalPrice < Money.Zero())
+                throw new InvalidMoneyException();
+            if (Status != OrderStatus.Created)
+                throw new CantAddItemsToClosedOrder();
 
             await Emit(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
         }
 
         public async Task Complete()
         {
-            if (Status != OrderStatus.Created) throw new CannotCompleteAlreadyClosedOrderException();
+            if (Status != OrderStatus.Created)
+                throw new CannotCompleteAlreadyClosedOrderException();
             await Emit(new OrderCompleted(Id, OrderStatus.Paid));
         }
     }

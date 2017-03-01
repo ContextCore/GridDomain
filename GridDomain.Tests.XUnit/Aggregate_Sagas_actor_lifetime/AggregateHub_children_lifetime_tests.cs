@@ -21,9 +21,9 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
             {
                 ChildId = Guid.NewGuid();
                 ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new CreateSampleAggregateCommand(42, ChildId),
-                    new MessageMetadata(ChildId));
+                                                                          new MessageMetadata(ChildId));
                 ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new ChangeSampleAggregateCommand(100, ChildId),
-                    new MessageMetadata(ChildId));
+                                                                            new MessageMetadata(ChildId));
             }
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)

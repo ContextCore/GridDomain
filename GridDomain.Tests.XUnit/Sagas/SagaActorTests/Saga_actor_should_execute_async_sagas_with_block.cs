@@ -27,12 +27,12 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
             var props =
                 Props.Create(
-                    () =>
-                        new SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>(
-                            producer,
-                            _localAkkaEventBusTransport,
-                            new EachMessageSnapshotsPersistencePolicy(),
-                            new AggregateFactory()));
+                             () =>
+                                 new SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>(
+                                                                                                                              producer,
+                                                                                                                              _localAkkaEventBusTransport,
+                                                                                                                              new EachMessageSnapshotsPersistencePolicy(),
+                                                                                                                              new AggregateFactory()));
 
             _sagaId = Guid.NewGuid();
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;

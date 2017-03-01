@@ -17,7 +17,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                            var aggregateProcessor = _aggregateCatalog.Get(c.Message);
                                                            if (aggregateProcessor == null)
                                                                throw new CannotFindAggregateForCommandExñeption(c.Message,
-                                                                   c.Message.GetType());
+                                                                                                                c.Message.GetType());
 
                                                            aggregateProcessor.ActorRef.Tell(c);
                                                        });

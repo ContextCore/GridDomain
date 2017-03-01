@@ -18,7 +18,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario =
                 Scenario.New<SkuStock, SkuStockCommandsHandler>()
                         .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, TimeSpan.FromMilliseconds(100)),
-                            new StockAdded(aggregateId, 10, "test batch 2"))
+                               new StockAdded(aggregateId, 10, "test batch 2"))
                         .When(_takeCommand = new TakeFromStockCommand(aggregateId, 5));
             _initialStock = _scenario.Aggregate.Quantity;
             _scenario.Run();

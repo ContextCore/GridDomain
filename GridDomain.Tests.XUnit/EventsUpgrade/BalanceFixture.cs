@@ -13,7 +13,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade
         {
             Add(
                 new CustomContainerConfiguration(
-                    c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
+                                                 c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
             Add(new BalanceRouteMap());
             OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }

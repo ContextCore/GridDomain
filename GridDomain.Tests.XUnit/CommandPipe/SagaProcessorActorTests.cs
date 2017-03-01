@@ -23,11 +23,11 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var testSagaActorB =
                 Sys.ActorOf(
-                    Props.Create(
-                        () =>
-                            new TestSagaActor(TestActor,
-                                e => new ICommand[] {new TestCommand(e), new TestCommand(e)},
-                                TimeSpan.FromMilliseconds(50))));
+                            Props.Create(
+                                         () =>
+                                             new TestSagaActor(TestActor,
+                                                               e => new ICommand[] {new TestCommand(e), new TestCommand(e)},
+                                                               TimeSpan.FromMilliseconds(50))));
 
             var testSagaActorÑ =
                 Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
@@ -44,12 +44,12 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var msg =
                 new MessageMetadataEnvelop<DomainEvent[]>(
-                    new DomainEvent[]
-                    {
-                        new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                        new SampleAggregateChangedEvent("2", Guid.NewGuid())
-                    },
-                    MessageMetadata.Empty);
+                                                          new DomainEvent[]
+                                                          {
+                                                              new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                                                              new SampleAggregateChangedEvent("2", Guid.NewGuid())
+                                                          },
+                                                          MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 
@@ -80,7 +80,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
-                MessageMetadata.Empty);
+                                                                MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 
@@ -103,8 +103,8 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var msg =
                 new MessageMetadataEnvelop<DomainEvent[]>(
-                    new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
-                    MessageMetadata.Empty);
+                                                          new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
+                                                          MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 

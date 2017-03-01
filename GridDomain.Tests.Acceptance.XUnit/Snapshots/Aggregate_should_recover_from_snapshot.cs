@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             aggregate.ClearEvents();
 
             var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                Node.AggregateFromSnapshotsFactory);
+                                                       Node.AggregateFromSnapshotsFactory);
             await repo.Add(aggregate);
 
             var cmd = new IncreaseSampleAggregateCommand(1, aggregate.Id);

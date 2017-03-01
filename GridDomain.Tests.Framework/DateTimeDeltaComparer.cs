@@ -23,7 +23,8 @@ namespace GridDomain.Tests.Framework
             var st1 = (DateTime) parms.Object1;
             var st2 = (DateTime) parms.Object2;
 
-            if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta) { AddDifference(parms); }
+            if (TimeSpan.FromTicks(Math.Abs(st1.Ticks - st2.Ticks)) > _delta)
+                AddDifference(parms);
         }
     }
 }

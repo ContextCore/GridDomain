@@ -11,8 +11,8 @@ namespace GridDomain.Tests.XUnit.Sagas
             Add(new CustomRoutesSoftwareProgrammingSagaMap());
             Add(
                 new SagaConfiguration
-                    <CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData,
-                        CustomRoutesSoftwareProgrammingSagaFactory>(CustomRoutesSoftwareProgrammingSaga.Descriptor));
+                <CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData,
+                    CustomRoutesSoftwareProgrammingSagaFactory>(CustomRoutesSoftwareProgrammingSaga.Descriptor));
         }
     }
 }

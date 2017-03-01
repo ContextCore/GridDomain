@@ -59,12 +59,12 @@ namespace GridDomain.Scheduling.Integration
         private void ProcessEvent(IMessageMetadata metadata, JobKey jobKey, DomainEvent messageToFire)
         {
             var eventMetadata = metadata.CreateChild(messageToFire.SourceId,
-                new ProcessEntry(nameof(QuartzJob), PublishingEvent, EventRaiseTimeCame));
+                                                     new ProcessEntry(nameof(QuartzJob), PublishingEvent, EventRaiseTimeCame));
 
             var successMetadata = eventMetadata.CreateChild(Guid.NewGuid(),
-                new ProcessEntry(nameof(QuartzJob),
-                    "Publishing success notification",
-                    "Job execution completed succesfully. Message published."));
+                                                            new ProcessEntry(nameof(QuartzJob),
+                                                                             "Publishing success notification",
+                                                                             "Job execution completed succesfully. Message published."));
 
             var jobSucceeded = new JobSucceeded(jobKey.Name, jobKey.Group, messageToFire);
 
@@ -74,7 +74,8 @@ namespace GridDomain.Scheduling.Integration
 
         private void WithErrorHandling(object processingMessage, IMessageMetadata messageMetadata, JobKey key, Action act)
         {
-            try {
+            try
+            {
                 act();
             }
             catch (Exception e)
@@ -82,7 +83,7 @@ namespace GridDomain.Scheduling.Integration
                 _quartzLogger.LogFailure(key.Name, e);
                 var jobFailed = new JobFailed(key.Name, key.Group, e, processingMessage);
                 var jobFailedMetadata = messageMetadata.CreateChild(Guid.Empty,
-                    new ProcessEntry(nameof(QuartzJob), PublishingJobFaulire, JobRaiseTimeCame));
+                                                                    new ProcessEntry(nameof(QuartzJob), PublishingJobFaulire, JobRaiseTimeCame));
                 _publisher.Publish(jobFailed, jobFailedMetadata);
                 throw new JobExecutionException(e, false);
             }
@@ -92,18 +93,19 @@ namespace GridDomain.Scheduling.Integration
         {
             var key = GetScheduleKey(jobDataMap);
             var options = GetExecutionOptions(jobDataMap, jobKey.Name);
-            if (options.SuccesEventType == null) throw new Exception("options do not have SuccessEventType for key " + key);
+            if (options.SuccesEventType == null)
+                throw new Exception("options do not have SuccessEventType for key " + key);
 
             Predicate<object> isExpected = o => true;
             //we should work with legacy jobs having only ExecutionOptions, not ExtendedExecutionOptions 
             var extendedOptions = options as ExtendedExecutionOptions;
 
             if (!string.IsNullOrEmpty(extendedOptions?.MessageIdFieldName))
-            {
                 isExpected = o =>
                              {
                                  var envelop = o as IMessageMetadataEnvelop;
-                                 if (envelop != null) o = envelop.Message;
+                                 if (envelop != null)
+                                     o = envelop.Message;
 
                                  //received fault instead of expected message
                                  var type = o?.GetType();
@@ -111,24 +113,24 @@ namespace GridDomain.Scheduling.Integration
 
                                  return guid != null && (Guid) guid == extendedOptions.SuccessMessageId;
                              };
-            }
 
             var commandMetadata = metadata.CreateChild(command.Id,
-                new ProcessEntry(nameof(QuartzJob), PassingCommandToExecutor, CommandRaiseTimeCame));
+                                                       new ProcessEntry(nameof(QuartzJob), PassingCommandToExecutor, CommandRaiseTimeCame));
 
             var task =
                 _executor.Prepare(command, commandMetadata)
                          .Expect(options.SuccesEventType, o => isExpected(o))
                          .Execute(options.Timeout);
 
-            if (!task.Wait(options.Timeout)) throw new ScheduledCommandWasNotConfirmedException(command);
+            if (!task.Wait(options.Timeout))
+                throw new ScheduledCommandWasNotConfirmedException(command);
 
             _quartzLogger.LogSuccess(jobKey.Name);
 
             var successMetadata = commandMetadata.CreateChild(Guid.NewGuid(),
-                new ProcessEntry(nameof(QuartzJob),
-                    "Publishing success notification",
-                    "Job execution completed succesfully. Command executed and confirmed."));
+                                                              new ProcessEntry(nameof(QuartzJob),
+                                                                               "Publishing success notification",
+                                                                               "Job execution completed succesfully. Command executed and confirmed."));
 
             var jobSucceeded = new JobSucceeded(jobKey.Name, jobKey.Group, command);
 
@@ -138,10 +140,12 @@ namespace GridDomain.Scheduling.Integration
         private IMessageMetadata SafeGetMetadata(JobDataMap jobDataMap)
         {
             var bytes = jobDataMap[MetadataKey] as byte[];
-            try {
+            try
+            {
                 return Deserialize<IMessageMetadata>(bytes, _serializer);
             }
-            catch {
+            catch
+            {
                 return MessageMetadata.Empty;
             }
         }
@@ -212,7 +216,8 @@ namespace GridDomain.Scheduling.Integration
         private ExecutionOptions GetExecutionOptions(JobDataMap jobDatMap, string jobName)
         {
             var bytes = jobDatMap[ExecutionOptionsKey] as byte[];
-            try {
+            try
+            {
                 return Deserialize<ExtendedExecutionOptions>(bytes);
             }
             catch (Exception ex)

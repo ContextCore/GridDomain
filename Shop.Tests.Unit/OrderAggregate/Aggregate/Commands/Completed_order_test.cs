@@ -39,9 +39,9 @@ namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
             Assert.Throws<CantAddItemsToClosedOrder>(() =>
                                                      {
                                                          var cmd = new AddItemToOrderCommand(Aggregate.Id,
-                                                             Guid.NewGuid(),
-                                                             123,
-                                                             new Money(1));
+                                                                                             Guid.NewGuid(),
+                                                                                             123,
+                                                                                             new Money(1));
                                                          Execute(cmd);
                                                      });
         }

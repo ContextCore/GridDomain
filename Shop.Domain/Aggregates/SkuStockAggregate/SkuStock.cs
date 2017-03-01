@@ -49,7 +49,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
 
         public SkuStock(Guid sourceId, Guid skuId, int amount, TimeSpan reservationTime) : this(sourceId)
         {
-            if (amount <= 0) throw new ArgumentException(nameof(amount));
+            if (amount <= 0)
+                throw new ArgumentException(nameof(amount));
             RaiseEvent(new SkuStockCreated(sourceId, skuId, amount, reservationTime));
         }
 
@@ -71,7 +72,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
 
         public async Task Take(int quantity)
         {
-            if (Quantity < quantity) throw new OutOfStockException(quantity, Quantity);
+            if (Quantity < quantity)
+                throw new OutOfStockException(quantity, Quantity);
             await Emit(new StockTaken(Id, quantity));
         }
 
@@ -83,7 +85,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
 
         public async Task Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
         {
-            if (Quantity < quantity) throw new OutOfStockException(quantity, Quantity);
+            if (Quantity < quantity)
+                throw new OutOfStockException(quantity, Quantity);
 
             Reservation oldReservation;
             var quantityToReserve = quantity;
@@ -101,8 +104,10 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
 
         public async Task AddToToStock(int quantity, Guid skuId, string packArticle)
         {
-            if (skuId != SkuId) throw new InvalidSkuAddException(SkuId, skuId);
-            if (quantity <= 0) throw new ArgumentException(nameof(quantity));
+            if (skuId != SkuId)
+                throw new InvalidSkuAddException(SkuId, skuId);
+            if (quantity <= 0)
+                throw new ArgumentException(nameof(quantity));
             await Emit(new StockAdded(Id, quantity, packArticle));
         }
 

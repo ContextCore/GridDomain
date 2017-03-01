@@ -45,8 +45,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
-                            sagaStartEvent.SagaId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
+                                                                                                                                              sagaStartEvent.SagaId);
             //Snapshot_should_be_saved_one_time()
             Assert.Equal(0, snapshots.Length);
         }

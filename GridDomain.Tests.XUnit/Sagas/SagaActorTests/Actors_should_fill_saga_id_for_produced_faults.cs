@@ -29,11 +29,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
             var actor =
                 Sys.ActorOf(
-                    Props.Create(
-                        () =>
-                            new MessageHandlingActor<SampleAggregateChangedEvent, OddFaultyMessageHandler>(
-                                new OddFaultyMessageHandler(transport),
-                                transport)));
+                            Props.Create(
+                                         () =>
+                                             new MessageHandlingActor<SampleAggregateChangedEvent, OddFaultyMessageHandler>(
+                                                                                                                            new OddFaultyMessageHandler(transport),
+                                                                                                                            transport)));
 
             actor.Tell(new MessageMetadataEnvelop<DomainEvent>(message, MessageMetadata.Empty));
 
@@ -53,15 +53,15 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
             var actor =
                 Sys.ActorOf(
-                    Props.Create(
-                        () =>
-                            new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
-                                TestActor,
-                                transport,
-                                new SnapshotsPersistencePolicy(1, 5, null, null),
-                                new AggregateFactory(),
-                                TestActor)),
-                    AggregateActorName.New<HomeAggregate>(command.Id).Name);
+                            Props.Create(
+                                         () =>
+                                             new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
+                                                                               TestActor,
+                                                                               transport,
+                                                                               new SnapshotsPersistencePolicy(1, 5, null, null),
+                                                                               new AggregateFactory(),
+                                                                               TestActor)),
+                            AggregateActorName.New<HomeAggregate>(command.Id).Name);
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 

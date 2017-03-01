@@ -74,7 +74,7 @@ namespace GridDomain.Tests.XUnit.Sagas
         public void Descriptor_contains_saga_type()
         {
             Assert.Equal(typeof(ISagaInstance<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>),
-                _descriptor.SagaType);
+                         _descriptor.SagaType);
         }
     }
 }

@@ -16,8 +16,8 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         private static NodeTestFixture CreateFixture()
         {
             return new NodeTestFixture(new SampleDomainContainerConfiguration(),
-                new SampleRouteMap(),
-                TimeSpan.FromMilliseconds(100));
+                                       new SampleRouteMap(),
+                                       TimeSpan.FromMilliseconds(100));
         }
 
         [Fact]

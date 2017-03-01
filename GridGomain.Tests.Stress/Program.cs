@@ -53,8 +53,8 @@ namespace GridGomain.Tests.Stress
             unityContainer.Register(new SampleDomainContainerConfiguration());
 
             var cfg = new CustomContainerConfiguration(c => c.Register(new SampleDomainContainerConfiguration()),
-                c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
-                c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
+                                                       c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
+                                                       c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
@@ -68,11 +68,11 @@ namespace GridGomain.Tests.Stress
 
             var timeoutedCommads = 0;
             var random = new Random();
-            var commandsInScenario = aggregateScenarioPackSize*(aggregateChangeAmount + 1);
-            var totalCommandsToIssue = commandsInScenario*totalAggregateScenariosCount;
+            var commandsInScenario = aggregateScenarioPackSize * (aggregateChangeAmount + 1);
+            var totalCommandsToIssue = commandsInScenario * totalAggregateScenariosCount;
 
 
-            for (var i = 0; i < totalAggregateScenariosCount; i ++)
+            for (var i = 0; i < totalAggregateScenariosCount; i++)
             {
                 var packTimer = new Stopwatch();
                 packTimer.Start();
@@ -80,19 +80,21 @@ namespace GridGomain.Tests.Stress
                     Enumerable.Range(0, aggregateScenarioPackSize)
                               .Select(t => WaitAggregateCommands(aggregateChangeAmount, random, node))
                               .ToArray();
-                try {
+                try
+                {
                     Task.WhenAll(tasks).Wait();
                 }
-                catch {
+                catch
+                {
                     timeoutedCommads += tasks.Count(t => t.IsCanceled || t.IsFaulted);
                 }
 
                 packTimer.Stop();
-                var speed = (decimal) (commandsInScenario/packTimer.Elapsed.TotalSeconds);
-                var timeLeft = TimeSpan.FromSeconds((double) ((totalCommandsToIssue - i*commandsInScenario)/speed));
+                var speed = (decimal) (commandsInScenario / packTimer.Elapsed.TotalSeconds);
+                var timeLeft = TimeSpan.FromSeconds((double) ((totalCommandsToIssue - i * commandsInScenario) / speed));
 
                 Console.WriteLine($"speed :{speed} cmd/sec," + $"total errors: {timeoutedCommads}, "
-                                  + $"total commands executed: {i*commandsInScenario}/{totalCommandsToIssue},"
+                                  + $"total commands executed: {i * commandsInScenario}/{totalCommandsToIssue},"
                                   + $"approx time remaining: {timeLeft}");
             }
 
@@ -100,9 +102,9 @@ namespace GridGomain.Tests.Stress
             timer.Stop();
             node.Stop().Wait();
 
-            var speedTotal = (decimal) (totalCommandsToIssue/timer.Elapsed.TotalSeconds);
+            var speedTotal = (decimal) (totalCommandsToIssue / timer.Elapsed.TotalSeconds);
             Console.WriteLine(
-                $"Executed {totalAggregateScenariosCount} batches = {totalCommandsToIssue} commands in {timer.Elapsed}");
+                              $"Executed {totalAggregateScenariosCount} batches = {totalCommandsToIssue} commands in {timer.Elapsed}");
             Console.WriteLine($"Average speed was {speedTotal} cmd/sec");
 
             using (var connection = new SqlConnection(dbCfg.Persistence.JournalConnectionString))
@@ -113,8 +115,8 @@ namespace GridGomain.Tests.Stress
                 var count = (int) cmdJournal.ExecuteScalar();
 
                 Console.WriteLine(count == totalCommandsToIssue
-                    ? "Journal contains all events"
-                    : $"Journal contains only {count} of {totalCommandsToIssue}");
+                                      ? "Journal contains all events"
+                                      : $"Journal contains only {count} of {totalCommandsToIssue}");
             }
         }
 
@@ -124,8 +126,8 @@ namespace GridGomain.Tests.Stress
             unityContainer.Register(new SampleDomainContainerConfiguration());
 
             var cfg = new CustomContainerConfiguration(c => c.Register(new SampleDomainContainerConfiguration()),
-                c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
-                c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
+                                                       c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
+                                                       c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
@@ -160,13 +162,11 @@ namespace GridGomain.Tests.Stress
                     .Execute();
 
             for (var num = 0; num < changeNumber; num++)
-            {
                 await
                     node.Prepare(new ChangeSampleAggregateCommand(random.Next(),
-                        new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
+                                                                  new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
                         .Expect<SampleAggregateChangedEvent>()
                         .Execute();
-            }
         }
     }
 }

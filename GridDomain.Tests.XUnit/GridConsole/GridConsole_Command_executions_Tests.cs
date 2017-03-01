@@ -34,8 +34,8 @@ namespace GridDomain.Tests.XUnit.GridConsole
             var serverConfig = new TestGridNodeConfiguration();
 
             var settings = new NodeSettings(sampleDomainContainerConfiguration,
-                new SampleRouteMap(),
-                () => new[] {serverConfig.CreateInMemorySystem()});
+                                            new SampleRouteMap(),
+                                            () => new[] {serverConfig.CreateInMemorySystem()});
 
             _serverNode = new GridDomainNode(settings);
 

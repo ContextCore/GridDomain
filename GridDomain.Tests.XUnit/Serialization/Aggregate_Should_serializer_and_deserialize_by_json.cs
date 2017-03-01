@@ -21,7 +21,7 @@ namespace GridDomain.Tests.XUnit.Serialization
 
             var jsonString = JsonConvert.SerializeObject(_aggregate, DomainSerializer.GetDefaultSettings());
             _restoredAggregate = JsonConvert.DeserializeObject<SampleAggregate>(jsonString,
-                DomainSerializer.GetDefaultSettings());
+                                                                                DomainSerializer.GetDefaultSettings());
             // Values_should_be_equal()
             Assert.Equal(_aggregate.Value, _restoredAggregate.Value);
             //Ids_should_be_equal()

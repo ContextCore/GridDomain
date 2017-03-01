@@ -40,15 +40,15 @@ namespace GridDomain.Node.Configuration.Composition
 
             var aggregateRegistrationName = typeof(TAggregate).Name;
             container.RegisterType<ISnapshotsPersistencePolicy>(aggregateRegistrationName,
-                new InjectionFactory(c => _snapshotsPolicyFactory()));
+                                                                new InjectionFactory(c => _snapshotsPolicyFactory()));
 
             container.RegisterType<AggregateActor<TAggregate>>(
-                new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
-                    new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
-                    new ResolvedParameter<IPublisher>(),
-                    new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
-                    new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
-                    new ResolvedParameter<IActorRef>(HandlersProcessActor.CustomHandlersProcessActorRegistrationName)));
+                                                               new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
+                                                                                        new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
+                                                                                        new ResolvedParameter<IPublisher>(),
+                                                                                        new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
+                                                                                        new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
+                                                                                        new ResolvedParameter<IActorRef>(HandlersProcessActor.CustomHandlersProcessActorRegistrationName)));
 
             container.RegisterInstance(aggregateRegistrationName, _factory);
         }

@@ -19,11 +19,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                            TimeSpan? maxInactiveTime = null)
         {
             fixture.Add(
-                new CustomContainerConfiguration(
-                    c =>
-                        c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                            new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
-                                maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
+                        new CustomContainerConfiguration(
+                                                         c =>
+                                                             c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
+                                                                                                                       new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
+                                                                                                                                                                maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
         }
 
         public static NodeTestFixture InitSampleAggregateSnapshots(this NodeTestFixture fixture,
@@ -31,16 +31,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                    TimeSpan? maxSaveFrequency = null)
         {
             fixture.Add(
-                new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                    () =>
-                        new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
-                        {
-                            Log =
-                                fixture.Logger
-                                       .ForContext
-                                <SnapshotsPersistencePolicy>()
-                        },
-                    SampleAggregate.FromSnapshot));
+                        new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
+                                                                                                    () =>
+                                                                                                        new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
+                                                                                                        {
+                                                                                                            Log =
+                                                                                                                fixture.Logger
+                                                                                                                       .ForContext
+                                                                                                                       <SnapshotsPersistencePolicy>()
+                                                                                                        },
+                                                                                                    SampleAggregate.FromSnapshot));
 
             return fixture;
         }
@@ -51,14 +51,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                            int saveOnEach = 1)
         {
             fixture.Add(
-                new CustomContainerConfiguration(
-                    c =>
-                        c.Register(
-                            SagaConfiguration
-                                .Instance
-                                <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
-                                    SoftwareProgrammingSaga.Descriptor,
-                                    () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
+                        new CustomContainerConfiguration(
+                                                         c =>
+                                                             c.Register(
+                                                                        SagaConfiguration
+                                                                            .Instance
+                                                                            <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+                                                                                                                                                                   SoftwareProgrammingSaga.Descriptor,
+                                                                                                                                                                   () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
             return fixture;
         }
 

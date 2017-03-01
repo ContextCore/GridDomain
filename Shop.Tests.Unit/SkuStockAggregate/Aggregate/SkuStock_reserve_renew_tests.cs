@@ -24,14 +24,14 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario =
                 Scenario.New<SkuStock, SkuStockCommandsHandler>()
                         .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, reserveTime),
-                            new StockAdded(aggregateId, 10, "test batch 2"),
-                            _stockReservedEvent = new StockReserved(aggregateId, customerId, _expirationDate, 5),
-                            new FutureEventScheduledEvent(Guid.NewGuid(),
-                                aggregateId,
-                                _expirationDate,
-                                new ReserveExpired(aggregateId, customerId)))
+                               new StockAdded(aggregateId, 10, "test batch 2"),
+                               _stockReservedEvent = new StockReserved(aggregateId, customerId, _expirationDate, 5),
+                               new FutureEventScheduledEvent(Guid.NewGuid(),
+                                                             aggregateId,
+                                                             _expirationDate,
+                                                             new ReserveExpired(aggregateId, customerId)))
                         .When(
-                            _reserveStockCommand = new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime));
+                              _reserveStockCommand = new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime));
 
             _scenario.Run();
         }
@@ -78,12 +78,12 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             var sourceId = _scenario.Aggregate.Id;
 
             _scenario.Then(new FutureEventCanceledEvent(Any.GUID, sourceId),
-                new ReserveRenewed(sourceId, customerId),
-                new StockReserved(sourceId,
-                    customerId,
-                    _expirationDate,
-                    _reserveStockCommand.Quantity + _stockReservedEvent.Quantity),
-                new FutureEventScheduledEvent(Any.GUID, sourceId, _expirationDate, new ReserveExpired(sourceId, customerId)));
+                           new ReserveRenewed(sourceId, customerId),
+                           new StockReserved(sourceId,
+                                             customerId,
+                                             _expirationDate,
+                                             _reserveStockCommand.Quantity + _stockReservedEvent.Quantity),
+                           new FutureEventScheduledEvent(Any.GUID, sourceId, _expirationDate, new ReserveExpired(sourceId, customerId)));
 
             _scenario.Check();
         }

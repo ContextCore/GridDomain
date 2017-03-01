@@ -18,7 +18,8 @@ namespace GridDomain.Tests.Framework
             var guidA = (Guid) parms.Object1;
             var guidB = (Guid) parms.Object2;
 
-            if (guidA == Any.GUID || guidB == Any.GUID || guidA == guidB) return;
+            if (guidA == Any.GUID || guidB == Any.GUID || guidA == guidB)
+                return;
 
             parms.Result.Differences.Add(new Difference
                                          {

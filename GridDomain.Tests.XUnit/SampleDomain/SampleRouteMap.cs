@@ -16,7 +16,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             await router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder>(m => m.SourceId);
             await
                 router.RegisterHandler<SampleAggregateCreatedEvent, AggregateCreatedProjectionBuilder_Alternative>(
-                    m => m.SourceId);
+                                                                                                                   m => m.SourceId);
         }
     }
 }

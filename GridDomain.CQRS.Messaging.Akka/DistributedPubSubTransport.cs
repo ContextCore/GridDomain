@@ -17,11 +17,16 @@ namespace GridDomain.CQRS.Messaging.Akka
             _log = system.Log;
 
             DistributedPubSub distributedPubSub;
-            try { distributedPubSub = DistributedPubSub.Get(system); }
-            catch (Exception ex) {
+            try
+            {
+                distributedPubSub = DistributedPubSub.Get(system);
+            }
+            catch (Exception ex)
+            {
                 throw new CannotGetDistributedPubSubException(ex);
             }
-            if (distributedPubSub == null) throw new CannotGetDistributedPubSubException();
+            if (distributedPubSub == null)
+                throw new CannotGetDistributedPubSubException();
 
             _transport = distributedPubSub.Mediator;
         }

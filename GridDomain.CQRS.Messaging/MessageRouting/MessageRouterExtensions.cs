@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 
@@ -13,7 +12,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public static Task RegisterHandler<TMessage, THandler>(this IMessagesRouter router,
                                                                Expression<Func<TMessage, Guid>> correlationPropertyExpression
                                                                    = null) where THandler : IHandler<TMessage>
-            where TMessage : DomainEvent
+                                                                           where TMessage : DomainEvent
         {
             return router.RegisterHandler<TMessage, THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
         }
@@ -29,7 +28,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
             where TAggregate : Aggregate
         {
             var descriptor = new AggregateCommandsHandlerDescriptor<TAggregate>();
-            foreach (var info in handler.RegisteredCommands) descriptor.RegisterCommand(info.CommandType);
+            foreach (var info in handler.RegisteredCommands)
+                descriptor.RegisterCommand(info.CommandType);
 
             return router.RegisterAggregate(descriptor);
         }

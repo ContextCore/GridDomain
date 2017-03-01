@@ -8,7 +8,8 @@ namespace GridDomain.Common
         public static void NotNull<T>(Expression<Func<T>> expr)
         {
             var name = MemberNameExtractor.GetName(expr);
-            if (expr.Compile().Invoke() == null) throw new ArgumentNullException(name);
+            if (expr.Compile().Invoke() == null)
+                throw new ArgumentNullException(name);
         }
     }
 }

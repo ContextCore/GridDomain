@@ -27,14 +27,15 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario =
                 Scenario.New<SkuStock, SkuStockCommandsHandler>()
                         .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, _reserveTime),
-                            new StockAdded(aggregateId, 10, "test batch 2"))
+                               new StockAdded(aggregateId, 10, "test batch 2"))
                         .When(_reserveStockCommand);
 
             _initialStock = _scenario.Aggregate.Quantity;
             _scenario.Run();
             _scenario.Aggregate.Reservations.TryGetValue(_reserveStockCommand.CustomerId, out _aggregateReserve);
 
-            if (_aggregateReserve != null) _reserveExpirationFutureEvent = _scenario.Aggregate.FutureEvents.Values.FirstOrDefault();
+            if (_aggregateReserve != null)
+                _reserveExpirationFutureEvent = _scenario.Aggregate.FutureEvents.Values.FirstOrDefault();
             _reserveExpiredEvent = _reserveExpirationFutureEvent?.Event as ReserveExpired;
         }
 
@@ -105,14 +106,14 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
         public void Then_stock_reserved_event_should_be_raised()
         {
             _scenario.Then(
-                new StockReserved(_reserveStockCommand.StockId,
-                    _reserveStockCommand.CustomerId,
-                    _expirationDate,
-                    _reserveStockCommand.Quantity),
-                new FutureEventScheduledEvent(Any.GUID,
-                    _scenario.Aggregate.Id,
-                    _expirationDate,
-                    new ReserveExpired(_scenario.Aggregate.Id, _reserveStockCommand.CustomerId)));
+                           new StockReserved(_reserveStockCommand.StockId,
+                                             _reserveStockCommand.CustomerId,
+                                             _expirationDate,
+                                             _reserveStockCommand.Quantity),
+                           new FutureEventScheduledEvent(Any.GUID,
+                                                         _scenario.Aggregate.Id,
+                                                         _expirationDate,
+                                                         new ReserveExpired(_scenario.Aggregate.Id, _reserveStockCommand.CustomerId)));
             _scenario.Check();
         }
     }

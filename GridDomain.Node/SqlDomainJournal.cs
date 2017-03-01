@@ -10,19 +10,19 @@ namespace GridDomain.Node
         {
             QueryExecutor =
                 new SqlDomainQueryExecutor(
-                    new QueryConfiguration(config.GetString("schema-name"),
-                        config.GetString("table-name"),
-                        config.GetString("metadata-table-name"),
-                        "PersistenceId",
-                        "SequenceNr",
-                        "Payload",
-                        "Manifest",
-                        "Timestamp",
-                        "IsDeleted",
-                        "Tags",
-                        config.GetTimeSpan("connection-timeout")),
-                    Context.System.Serialization,
-                    GetTimestampProvider(config.GetString("timestamp-provider")));
+                                           new QueryConfiguration(config.GetString("schema-name"),
+                                                                  config.GetString("table-name"),
+                                                                  config.GetString("metadata-table-name"),
+                                                                  "PersistenceId",
+                                                                  "SequenceNr",
+                                                                  "Payload",
+                                                                  "Manifest",
+                                                                  "Timestamp",
+                                                                  "IsDeleted",
+                                                                  "Tags",
+                                                                  config.GetTimeSpan("connection-timeout")),
+                                           Context.System.Serialization,
+                                           GetTimestampProvider(config.GetString("timestamp-provider")));
         }
 
         public override IJournalQueryExecutor QueryExecutor { get; }

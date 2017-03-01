@@ -29,7 +29,7 @@ namespace GridDomain.Scheduling.Quartz
             scheduler.ListenerManager.AddSchedulerListener(new LoggingSchedulerListener(_log));
             scheduler.ListenerManager.AddJobListener(new LoggingJobListener(_log), GroupMatcher<JobKey>.AnyGroup());
             scheduler.ListenerManager.AddJobListener(new RetryJobListener(_retryStrategy, _log),
-                GroupMatcher<JobKey>.AnyGroup());
+                                                     GroupMatcher<JobKey>.AnyGroup());
             return scheduler;
         }
     }

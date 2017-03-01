@@ -43,17 +43,16 @@ namespace Shop.Tests.Acceptance
             {
                 connection.Open();
                 foreach (var sequence in sequences)
-                {
                     try
                     {
                         var cmd = new SqlCommand("DROP SEQUENCE " + sequence);
                         cmd.Connection = connection;
                         cmd.ExecuteNonQuery();
                     }
-                    catch {
+                    catch
+                    {
                         Console.WriteLine("error was occured while deleting sequence " + sequence);
                     }
-                }
             }
         }
 

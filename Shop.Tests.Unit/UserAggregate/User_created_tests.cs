@@ -58,7 +58,7 @@ namespace Shop.Tests.Unit.UserAggregate
             var scenario =
                 NewScenario()
                     .Given(new UserCreated(userId, "testLogin", account),
-                        new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
+                           new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
                     .When(new CancelPendingOrderCommand(userId, orderId))
                     .Then(new PendingOrderCanceled(userId, orderId));
 
@@ -81,7 +81,7 @@ namespace Shop.Tests.Unit.UserAggregate
             var scenario =
                 NewScenario()
                     .Given(new UserCreated(userId, "testLogin", account),
-                        new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
+                           new SkuPurchaseOrdered(userId, skuId, quantity, orderId, _stockId, account))
                     .When(new CompletePendingOrderCommand(userId, orderId))
                     .Then(new PendingOrderCompleted(userId, orderId));
 

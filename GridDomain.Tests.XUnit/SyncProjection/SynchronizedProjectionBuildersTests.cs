@@ -31,9 +31,9 @@ namespace GridDomain.Tests.XUnit.SyncProjection
 
             var updateCommands =
                 createCommands.SelectMany(
-                    c =>
-                        Enumerable.Range(0, eachAggregateChanges)
-                                  .Select(r => new ChangeSampleAggregateCommand(r, aggregateIds.RandomElement())));
+                                          c =>
+                                              Enumerable.Range(0, eachAggregateChanges)
+                                                        .Select(r => new ChangeSampleAggregateCommand(r, aggregateIds.RandomElement())));
 
             createCommands.Shuffle();
 
@@ -53,9 +53,8 @@ namespace GridDomain.Tests.XUnit.SyncProjection
             //all change events for one aggregate should be processed synchroniously, one-by-one, according to their 
             //sequence numbers
 
-            foreach (var oneAggregateEvents in eventsPerAggregate.Values) {
+            foreach (var oneAggregateEvents in eventsPerAggregate.Values)
                 oneAggregateEvents.IsIncreasing(h => h.History.SequenceNumber);
-            }
         }
     }
 }

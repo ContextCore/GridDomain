@@ -21,7 +21,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                                                           var type = e.GetType();
                                                           return type.IsGenericType
                                                                  && typeof(DataEvent<>).IsAssignableFrom(
-                                                                     type.GetGenericTypeDefinition());
+                                                                                                         type.GetGenericTypeDefinition());
                                                       }))
             {
                 var domainEventType = machineEvent.GetType().GetGenericArguments().First();
@@ -44,7 +44,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public Event<TMessage> GetMachineEvent<TMessage>(TMessage message)
         {
             Event ev;
-            if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev)) throw new UnbindedMessageReceivedException(message, typeof(TMessage));
+            if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev))
+                throw new UnbindedMessageReceivedException(message, typeof(TMessage));
             return (Event<TMessage>) ev;
         }
     }

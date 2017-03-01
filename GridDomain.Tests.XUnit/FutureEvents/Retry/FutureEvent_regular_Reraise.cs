@@ -22,8 +22,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
                 var nodeSettings = base.CreateNodeSettings();
                 //Two fast retries
                 nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(2,
-                    TimeSpan.FromMilliseconds(10),
-                    new DefaultExceptionPolicy());
+                                                                                TimeSpan.FromMilliseconds(10),
+                                                                                new DefaultExceptionPolicy());
                 return nodeSettings;
             }
         }

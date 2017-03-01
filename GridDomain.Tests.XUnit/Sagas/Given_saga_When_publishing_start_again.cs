@@ -19,14 +19,14 @@ namespace GridDomain.Tests.XUnit.Sagas
             var startMessage = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             var coffeMadeEvent = new CoffeMadeEvent(startMessage.FavoriteCoffeMachineId,
-                startMessage.PersonId,
-                null,
-                startMessage.SagaId);
+                                                    startMessage.PersonId,
+                                                    null,
+                                                    startMessage.SagaId);
 
             var reStartEvent = new GotTiredEvent(Guid.NewGuid(),
-                startMessage.LovelySofaId,
-                Guid.NewGuid(),
-                startMessage.SagaId);
+                                                 startMessage.LovelySofaId,
+                                                 Guid.NewGuid(),
+                                                 startMessage.SagaId);
 
             await
                 Node.NewDebugWaiter()

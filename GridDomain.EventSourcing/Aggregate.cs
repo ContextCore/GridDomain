@@ -15,17 +15,6 @@ namespace GridDomain.EventSourcing
 
         internal Func<DomainEvent[], Task> PersistDelegate;
 
-        protected async Task Emit(params DomainEvent[] evt) {
-
-            await PersistDelegate(evt);
-            foreach(var e in evt)
-                await Emit(e);
-        }
-
-        public void RegisterPersistenceCallBack(Func<DomainEvent[], Task> persistDelegate) {
-            PersistDelegate = persistDelegate;
-        }
-
         // Only for simple implementation 
         Guid IMemento.Id
         {
@@ -37,6 +26,18 @@ namespace GridDomain.EventSourcing
         {
             get { return Version; }
             set { Version = value; }
+        }
+
+        protected async Task Emit(params DomainEvent[] evt)
+        {
+            await PersistDelegate(evt);
+            foreach (var e in evt)
+                await Emit(e);
+        }
+
+        public void RegisterPersistenceCallBack(Func<DomainEvent[], Task> persistDelegate)
+        {
+            PersistDelegate = persistDelegate;
         }
 
         public static T Empty<T>(Guid id) where T : IAggregate
@@ -92,8 +93,10 @@ namespace GridDomain.EventSourcing
         {
             AsyncEventsInProgress eventsInProgress;
 
-            if (!_asyncEventsResults.TryGetValue(invocationId, out eventsInProgress)) return;
-            if (!eventsInProgress.ResultProducer.IsCompleted) throw new NotFinishedAsyncMethodResultsRequestedException();
+            if (!_asyncEventsResults.TryGetValue(invocationId, out eventsInProgress))
+                return;
+            if (!eventsInProgress.ResultProducer.IsCompleted)
+                throw new NotFinishedAsyncMethodResultsRequestedException();
             _asyncEventsResults.Remove(invocationId);
 
             foreach (var @event in eventsInProgress.ResultProducer.Result)
@@ -103,8 +106,6 @@ namespace GridDomain.EventSourcing
         #endregion
 
         #region FutureEvents
-
-      
 
         protected Aggregate(Guid id)
         {
@@ -117,7 +118,8 @@ namespace GridDomain.EventSourcing
         public async Task RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent e;
-            if (!FutureEvents.TryGetValue(futureEventId, out e)) throw new ScheduledEventNotFoundException(futureEventId);
+            if (!FutureEvents.TryGetValue(futureEventId, out e))
+                throw new ScheduledEventNotFoundException(futureEventId);
 
             await Emit(e.Event);
             await Emit(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
@@ -131,7 +133,8 @@ namespace GridDomain.EventSourcing
         protected async Task CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
             var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
-            if (criteia != null) eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
+            if (criteia != null)
+                eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
             foreach (var e in eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id)).ToArray())
                 await Emit(e);
@@ -155,7 +158,8 @@ namespace GridDomain.EventSourcing
         private void DeleteFutureEvent(Guid futureEventId)
         {
             FutureEventScheduledEvent evt;
-            if (!FutureEvents.TryGetValue(futureEventId, out evt)) return;
+            if (!FutureEvents.TryGetValue(futureEventId, out evt))
+                return;
             FutureEvents.Remove(futureEventId);
         }
 

@@ -14,7 +14,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public static SagaInstance<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga,
                                                                            SagaStateAggregate<TSagaData> data,
                                                                            ILogger log) where TSaga : Saga<TSagaData>
-            where TSagaData : class, ISagaState
+                                                                                        where TSagaData : class, ISagaState
         {
             return new SagaInstance<TSaga, TSagaData>(saga, data, log);
         }
@@ -35,8 +35,10 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                             ILogger log,
                             bool doUninitializedWarnings = true)
         {
-            if (machine == null) throw new ArgumentNullException(nameof(machine));
-            if (dataAggregate == null) throw new ArgumentNullException(nameof(dataAggregate));
+            if (machine == null)
+                throw new ArgumentNullException(nameof(machine));
+            if (dataAggregate == null)
+                throw new ArgumentNullException(nameof(dataAggregate));
             _dataAggregate = dataAggregate;
             _log = log.ForContext<SagaInstance<TSaga, TSagaData>>();
             Machine = machine;
@@ -74,10 +76,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             var machineEvent = Machine.GetMachineEvent(message);
 
-            try {
+            try
+            {
                 await Machine.RaiseEvent(_dataAggregate.Data, machineEvent, message);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new SagaTransitionException(message, _dataAggregate.Data, ex);
             }
 
@@ -87,12 +91,14 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private bool CheckInitialState(SagaStateAggregate<TSagaData> dataAggregate, bool logUninitializedState = true)
         {
-            if (!string.IsNullOrEmpty(CurrentStateName)) return true;
+            if (!string.IsNullOrEmpty(CurrentStateName))
+                return true;
 
             _log.Warning("Started saga {Type} {Id} without initialization.", GetType().Name, dataAggregate.Id);
             _log.Warning(_dataAggregate.Data == null ? "Saga data is empty" : "Current state name is not specified");
 
-            if (!logUninitializedState) return false;
+            if (!logUninitializedState)
+                return false;
 
             _log.Warning("Saga will not process and only record incoming messages");
             return false;

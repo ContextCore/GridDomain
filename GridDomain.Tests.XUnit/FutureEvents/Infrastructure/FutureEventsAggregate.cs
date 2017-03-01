@@ -25,14 +25,15 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         public async Task ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
-            if (RetriesToSucceed == 0) await Emit(new TestDomainEvent(testValue, Id), raiseTime);
+            if (RetriesToSucceed == 0)
+                await Emit(new TestDomainEvent(testValue, Id), raiseTime);
             else
-            { await Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime); }
+                await Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
         }
 
         public async Task CancelFutureEvents(string likeValue)
         {
-           await CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
+            await CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
 
         private void Apply(TestDomainEvent e)
@@ -43,7 +44,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         private void Apply(TestErrorDomainEvent e)
         {
-            if (RetriesToSucceed == null) RetriesToSucceed = e.SuccedOnRetryNum;
+            if (RetriesToSucceed == null)
+                RetriesToSucceed = e.SuccedOnRetryNum;
 
             if (RetriesToSucceed == 0)
             {
@@ -51,7 +53,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
                 return;
             }
 
-            RetriesToSucceed --;
+            RetriesToSucceed--;
             throw new TestScheduledException(RetriesToSucceed.Value + 1);
         }
     }

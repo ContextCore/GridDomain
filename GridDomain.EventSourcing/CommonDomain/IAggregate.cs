@@ -4,7 +4,8 @@ using CommonDomain;
 
 namespace GridDomain.EventSourcing.CommonDomain
 {
-    public interface IAggregate {
+    public interface IAggregate
+    {
         Guid Id { get; }
         int Version { get; }
 

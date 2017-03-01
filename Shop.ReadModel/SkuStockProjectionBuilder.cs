@@ -31,17 +31,19 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
-                if (reserve == null) throw new ReserveEntryNotFoundException(msg.SourceId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
 
                 var history = CreateHistory(skuStock, StockOperation.ReserveCanceled, reserve.Quantity);
 
                 skuStock.AvailableQuantity += reserve.Quantity;
                 skuStock.ReservedQuantity -= reserve.Quantity;
                 skuStock.LastModified = msg.CreatedTime;
-                skuStock.CustomersReservationsTotal --;
+                skuStock.CustomersReservationsTotal--;
 
                 FillNewQuantities(history, skuStock);
 
@@ -57,10 +59,12 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
-                if (reserve == null) throw new ReserveEntryNotFoundException(msg.SourceId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
 
                 var history = CreateHistory(skuStock, StockOperation.ReserveExpired, reserve.Quantity);
 
@@ -83,10 +87,12 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
-                if (reserve == null) throw new ReserveEntryNotFoundException(msg.SourceId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
 
                 var history = CreateHistory(skuStock, StockOperation.ReserveRenewed, reserve.Quantity);
 
@@ -138,7 +144,8 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var history = CreateHistory(skuStock, StockOperation.Added, msg.Quantity);
 
@@ -158,7 +165,8 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var reserve = new SkuReserve
                               {
@@ -174,7 +182,7 @@ namespace Shop.ReadModel
 
                 skuStock.AvailableQuantity -= msg.Quantity;
                 skuStock.ReservedQuantity += msg.Quantity;
-                skuStock.CustomersReservationsTotal ++;
+                skuStock.CustomersReservationsTotal++;
                 skuStock.LastModified = msg.CreatedTime;
 
                 FillNewQuantities(history, skuStock);
@@ -191,10 +199,12 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var reserve = await context.StockReserves.FindAsync(msg.SourceId, msg.ReserveId);
-                if (reserve == null) throw new ReserveEntryNotFoundException(msg.SourceId);
+                if (reserve == null)
+                    throw new ReserveEntryNotFoundException(msg.SourceId);
 
                 var history = CreateHistory(skuStock, StockOperation.ReserveTaken, reserve.Quantity);
 
@@ -217,7 +227,8 @@ namespace Shop.ReadModel
             using (var context = _contextFactory())
             {
                 var skuStock = await context.SkuStocks.FindAsync(msg.SourceId);
-                if (skuStock == null) throw new SkuStockEntryNotFoundException(msg.SourceId);
+                if (skuStock == null)
+                    throw new SkuStockEntryNotFoundException(msg.SourceId);
 
                 var history = CreateHistory(skuStock, StockOperation.Taken, msg.Quantity);
 

@@ -44,8 +44,8 @@ namespace GridDomain.Scheduling.Integration
         private void Schedule(ScheduleCommand message)
         {
             Schedule(() => QuartzJob.Create(message.Key, message.Command, message.CommandMetadata, message.Options),
-                message.Options.RunAt,
-                message.Key);
+                     message.Options.RunAt,
+                     message.Key);
         }
 
         private void Schedule(ScheduleMessage message)
@@ -71,9 +71,8 @@ namespace GridDomain.Scheduling.Integration
             catch (JobPersistenceException e)
             {
                 _logger.Error(e, "Error while scheduled job {Task}", key);
-                if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException)) {
+                if (e.InnerException?.GetType() == typeof(ObjectAlreadyExistsException))
                     Sender.Tell(new AlreadyScheduled(key));
-                }
             }
             catch (Exception e)
             {

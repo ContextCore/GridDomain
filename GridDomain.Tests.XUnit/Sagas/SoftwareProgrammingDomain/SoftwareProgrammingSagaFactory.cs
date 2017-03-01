@@ -7,7 +7,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaFactory :
         ISagaFactory
-            <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+        <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
             SagaStateAggregate<SoftwareProgrammingSagaData>>,
         ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
         ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         {
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,
-                    nameof(SoftwareProgrammingSaga.Coding)));
+                                                                                                    nameof(SoftwareProgrammingSaga.Coding)));
             return Create(data);
         }
 
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         {
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,
-                    nameof(SoftwareProgrammingSaga.Coding)));
+                                                                                                    nameof(SoftwareProgrammingSaga.Coding)));
             return Create(data);
         }
     }

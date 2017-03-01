@@ -80,9 +80,9 @@ namespace GridDomain.EventSourcing.Sagas
             var domainBindedEvents =
                 typeof(TSaga).GetProperties()
                              .Where(
-                                 p =>
-                                     p.PropertyType.IsGenericType
-                                     && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
+                                    p =>
+                                        p.PropertyType.IsGenericType
+                                        && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
             foreach (var prop in domainBindedEvents)
             {
                 var domainEventType = prop.PropertyType.GetGenericArguments().First();

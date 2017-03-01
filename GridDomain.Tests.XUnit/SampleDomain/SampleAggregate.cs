@@ -63,15 +63,15 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         {
             var timeSpan = sleepTime;
             var eventTask = Task.Run(async () =>
-                                           {
-                                               await Task.Delay(timeSpan);
-                                               return new DomainEvent[]
-                                                      {
-                                                          new SampleAggregateChangedEvent(
-                                                              param.ToString(),
-                                                              Id)
-                                                      };
-                                           });
+                                     {
+                                         await Task.Delay(timeSpan);
+                                         return new DomainEvent[]
+                                                {
+                                                    new SampleAggregateChangedEvent(
+                                                                                    param.ToString(),
+                                                                                    Id)
+                                                };
+                                     });
             return eventTask;
         }
 
@@ -79,10 +79,10 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         {
             var timeSpan = sleepTime;
             var eventTask = Task.Run(async () =>
-                                           {
-                                               await Task.Delay(timeSpan);
-                                               return new SampleAggregateChangedEvent(param.ToString(), Id);
-                                           });
+                                     {
+                                         await Task.Delay(timeSpan);
+                                         return new SampleAggregateChangedEvent(param.ToString(), Id);
+                                     });
             return eventTask;
         }
 

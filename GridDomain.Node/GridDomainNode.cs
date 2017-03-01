@@ -100,7 +100,7 @@ namespace GridDomain.Node
             _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
 
             ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),
-                nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
+                                                 nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
@@ -111,9 +111,8 @@ namespace GridDomain.Node
                 var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
                 ActorMonitoringExtension.RegisterMonitor(System, monitor);
             }
-            if (perfCountersConfig.IsEnabled) {
+            if (perfCountersConfig.IsEnabled)
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
-            }
 
             Settings.Log.Debug("Launching GridDomain node {Id}", Id);
 
@@ -131,31 +130,32 @@ namespace GridDomain.Node
                 Container.ResolveAll(typeof(IConstructAggregates))
                          .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
                          .Where(
-                             o =>
-                                 o.Type.IsGenericType
-                                 && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
+                                o =>
+                                    o.Type.IsGenericType
+                                    && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
                          .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
                          .ToArray();
 
             foreach (var factory in factories)
-            {
                 AggregateFromSnapshotsFactory.Register(factory.AggregateType,
-                    m => factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
-            }
+                                                       m => factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
         }
 
         public async Task Stop()
         {
-            if (_stopping) return;
+            if (_stopping)
+                return;
 
             Settings.Log.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
 
             try
             {
-                if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false) _quartzScheduler.Shutdown();
+                if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false)
+                    _quartzScheduler.Shutdown();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Settings.Log.Warning($"Got error on quartz scheduler shutdown:{ex}");
             }
 

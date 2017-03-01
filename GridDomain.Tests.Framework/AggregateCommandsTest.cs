@@ -13,8 +13,8 @@ namespace GridDomain.Tests.Framework
 {
     public class AggregateCommandsTest<TAggregate, THandler> : AggregateTest<TAggregate> where TAggregate : IAggregate
                                                                                          where THandler : class,
-                                                                                             IAggregateCommandsHandler
-                                                                                                 <TAggregate>
+                                                                                         IAggregateCommandsHandler
+                                                                                         <TAggregate>
     {
         protected THandler CommandsHandler { get; private set; }
 
@@ -24,7 +24,8 @@ namespace GridDomain.Tests.Framework
         protected virtual THandler CreateCommandsHandler()
         {
             var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo == null) throw new CannotCreateCommandHandlerExeption();
+            if (constructorInfo == null)
+                throw new CannotCreateCommandHandlerExeption();
 
             return (THandler) constructorInfo.Invoke(null);
         }
@@ -48,8 +49,8 @@ namespace GridDomain.Tests.Framework
         }
 
         protected async Task RunScenario(IEnumerable<DomainEvent> given,
-                                   IEnumerable<DomainEvent> expected,
-                                   params ICommand[] command)
+                                         IEnumerable<DomainEvent> expected,
+                                         params ICommand[] command)
         {
             CommandsHandler = CommandsHandler ?? CreateCommandsHandler();
 
@@ -83,7 +84,8 @@ namespace GridDomain.Tests.Framework
         protected string CollectDebugInfo(params ICommand[] commands)
         {
             var sb = new StringBuilder();
-            foreach (var cmd in commands) sb.AppendLine($"Command: {cmd.ToPropsString()}");
+            foreach (var cmd in commands)
+                sb.AppendLine($"Command: {cmd.ToPropsString()}");
 
             AddEventInfo("Given events", GivenEvents, sb);
             AddEventInfo("Produced events", ProducedEvents, sb);

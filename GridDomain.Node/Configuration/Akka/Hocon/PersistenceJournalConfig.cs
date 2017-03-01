@@ -20,7 +20,8 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         public string Build()
         {
             var jornalConnectionTimeoutSeconds = _dbConfiguration.JornalConnectionTimeoutSeconds;
-            if (jornalConnectionTimeoutSeconds <= 0) jornalConnectionTimeoutSeconds = 30;
+            if (jornalConnectionTimeoutSeconds <= 0)
+                jornalConnectionTimeoutSeconds = 30;
 
             var persistenceJournalConfig = @"
             journal {

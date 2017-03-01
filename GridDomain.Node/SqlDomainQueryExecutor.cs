@@ -32,10 +32,10 @@ namespace GridDomain.Node
                     .SequenceNrColumnName} as SequenceNr, 
                 e.{Configuration.TimestampColumnName} as Timestamp, 
                 e.{Configuration
-                        .IsDeletedColumnName} as IsDeleted, 
+                    .IsDeletedColumnName} as IsDeleted, 
                 e.{Configuration.ManifestColumnName} as Manifest, 
                 e.{Configuration
-                            .PayloadColumnName} as Payload";
+                    .PayloadColumnName} as Payload";
 
             ByPersistenceIdSql =
                 $@"
@@ -44,7 +44,7 @@ namespace GridDomain.Node
                     .FullJournalTableName} e
                        WHERE e.{Configuration.PersistenceIdColumnName} = @PersistenceId
                        AND e.{Configuration
-                        .SequenceNrColumnName} BETWEEN @FromSequenceNr AND @ToSequenceNr
+                    .SequenceNrColumnName} BETWEEN @FromSequenceNr AND @ToSequenceNr
                        ORDER BY SequenceNr ASC;";
         }
 
@@ -77,7 +77,8 @@ namespace GridDomain.Node
             Exception ex;
             do
             {
-                try {
+                try
+                {
                     return await act();
                 }
                 catch (Exception e)
@@ -134,14 +135,14 @@ namespace GridDomain.Node
         {
             await
                 RetryAsync(
-                    () =>
-                        base.SelectByPersistenceIdAsync(connection,
-                            cancellationToken,
-                            persistenceId,
-                            fromSequenceNr,
-                            toSequenceNr,
-                            max,
-                            callback));
+                           () =>
+                               base.SelectByPersistenceIdAsync(connection,
+                                                               cancellationToken,
+                                                               persistenceId,
+                                                               fromSequenceNr,
+                                                               toSequenceNr,
+                                                               max,
+                                                               callback));
         }
 
         protected override void WriteEvent(DbCommand command, IPersistentRepresentation e, IImmutableSet<string> tags)
@@ -173,7 +174,7 @@ namespace GridDomain.Node
             return
                 await
                     RetryAsync(
-                        () => base.SelectByTagAsync(connection, cancellationToken, tag, fromOffset, toOffset, max, callback));
+                               () => base.SelectByTagAsync(connection, cancellationToken, tag, fromOffset, toOffset, max, callback));
         }
     }
 }

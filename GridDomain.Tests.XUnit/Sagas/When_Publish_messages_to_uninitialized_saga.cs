@@ -32,8 +32,8 @@ namespace GridDomain.Tests.XUnit.Sagas
             var sagaId = !sagaHasId ? Guid.Empty : Guid.NewGuid();
             var sagaDataAggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
             sagaDataAggregate.RememberEvent(softwareProgrammingSaga.CoffeReady,
-                !sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
-                null);
+                                            !sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
+                                            null);
 
             var saga = SagaInstance.New(softwareProgrammingSaga, sagaDataAggregate, _log);
             await saga.Transit(coffeMadeEvent);

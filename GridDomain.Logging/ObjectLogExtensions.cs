@@ -9,7 +9,7 @@ namespace GridDomain.Logging
                                                                                     TypeNameHandling
                                                                                         =
                                                                                         TypeNameHandling
-                                                                                        .All
+                                                                                            .All
                                                                                 };
 
         public static string ToPropsString(this object o)

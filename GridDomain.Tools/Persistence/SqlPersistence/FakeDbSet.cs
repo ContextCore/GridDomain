@@ -71,14 +71,16 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public override TEntity Find(params object[] keyValues)
         {
-            if (_primaryKeys == null) throw new ArgumentException("No primary keys defined");
-            if (keyValues.Length != _primaryKeys.Length) throw new ArgumentException("Incorrect number of keys passed to Find method");
+            if (_primaryKeys == null)
+                throw new ArgumentException("No primary keys defined");
+            if (keyValues.Length != _primaryKeys.Length)
+                throw new ArgumentException("Incorrect number of keys passed to Find method");
 
             var keyQuery = this.AsQueryable();
             keyQuery = keyValues.Select((t, i) => i)
                                 .Aggregate(keyQuery,
-                                    (current, x) =>
-                                        current.Where(entity => _primaryKeys[x].GetValue(entity, null).Equals(keyValues[x])));
+                                           (current, x) =>
+                                               current.Where(entity => _primaryKeys[x].GetValue(entity, null).Equals(keyValues[x])));
 
             return keyQuery.SingleOrDefault();
         }
@@ -95,29 +97,34 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public override IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
         {
-            if (entities == null) throw new ArgumentNullException("entities");
+            if (entities == null)
+                throw new ArgumentNullException("entities");
             var items = entities.ToList();
-            foreach (var entity in items) { _data.Add(entity); }
+            foreach (var entity in items)
+                _data.Add(entity);
             return items;
         }
 
         public override TEntity Add(TEntity item)
         {
-            if (item == null) throw new ArgumentNullException("item");
+            if (item == null)
+                throw new ArgumentNullException("item");
             _data.Add(item);
             return item;
         }
 
         public override TEntity Remove(TEntity item)
         {
-            if (item == null) throw new ArgumentNullException("item");
+            if (item == null)
+                throw new ArgumentNullException("item");
             _data.Remove(item);
             return item;
         }
 
         public override TEntity Attach(TEntity item)
         {
-            if (item == null) throw new ArgumentNullException("item");
+            if (item == null)
+                throw new ArgumentNullException("item");
             _data.Add(item);
             return item;
         }

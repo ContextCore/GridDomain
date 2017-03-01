@@ -11,22 +11,22 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                                                        {
                                                                            {
                                                                                LogLevel
-                                                                               .InfoLevel,
+                                                                                   .InfoLevel,
                                                                                "INFO"
                                                                            },
                                                                            {
                                                                                LogLevel
-                                                                               .ErrorLevel,
+                                                                                   .ErrorLevel,
                                                                                "ERROR"
                                                                            },
                                                                            {
                                                                                LogLevel
-                                                                               .DebugLevel,
+                                                                                   .DebugLevel,
                                                                                "DEBUG"
                                                                            },
                                                                            {
                                                                                LogLevel
-                                                                               .WarningLevel,
+                                                                                   .WarningLevel,
                                                                                "WARNING"
                                                                            }
                                                                        };
@@ -56,7 +56,8 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                       unhandled = on
                 }";
 
-            if (_includeConfig) logConfig += @"
+            if (_includeConfig)
+                logConfig += @"
                 log-config-on-start = on";
 
             return logConfig;

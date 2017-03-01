@@ -8,7 +8,7 @@ namespace GridDomain.Scheduling.Quartz
 
         public InMemoryQuartzConfig(string schedulerName = null)
         {
-            Name = schedulerName ?? "Scheduler_" + ++ _number;
+            Name = schedulerName ?? "Scheduler_" + ++_number;
         }
 
         public NameValueCollection Settings

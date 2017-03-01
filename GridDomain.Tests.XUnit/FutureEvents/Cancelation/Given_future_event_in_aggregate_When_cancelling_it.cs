@@ -28,13 +28,13 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
 
             var futureEventEnvelop =
                 (await Node.Prepare(testCommand).Expect<FutureEventScheduledEvent>().Execute())
-                    .Message<FutureEventScheduledEvent>();
+                .Message<FutureEventScheduledEvent>();
 
             var cancelFutureEventCommand = new CancelFutureEventCommand(testCommand.AggregateId, testCommand.Value);
 
             var futureEventCancelation =
                 (await Node.Prepare(cancelFutureEventCommand).Expect<FutureEventCanceledEvent>().Execute())
-                    .Message<FutureEventCanceledEvent>();
+                .Message<FutureEventCanceledEvent>();
 
             //Cancelation_event_has_same_id_as_future_event()
             Assert.Equal(futureEventEnvelop.Id, futureEventCancelation.FutureEventId);
@@ -45,8 +45,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             //TODO: remove sleep to explicit wait
             await Task.Delay(2000);
             var scheduleKey = AggregateActor<FutureEventsAggregate>.CreateScheduleKey(futureEventEnvelop.Id,
-                testCommand.AggregateId,
-                "");
+                                                                                      testCommand.AggregateId,
+                                                                                      "");
 
             var jobKey = new JobKey(scheduleKey.Name, scheduleKey.Group);
 

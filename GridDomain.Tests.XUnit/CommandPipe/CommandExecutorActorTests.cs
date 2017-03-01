@@ -40,7 +40,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));
 
             var msg = new MessageMetadataEnvelop<ICommand>(new CreateSampleAggregateCommand(1, Guid.NewGuid()),
-                MessageMetadata.Empty);
+                                                           MessageMetadata.Empty);
 
             actor.Tell(msg);
 

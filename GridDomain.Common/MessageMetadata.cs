@@ -31,10 +31,10 @@ namespace GridDomain.Common
                                                  params ProcessEntry[] process)
         {
             return new MessageMetadata(messageId,
-                BusinessDateTime.UtcNow,
-                existedMessage.CorrelationId,
-                existedMessage.MessageId,
-                new ProcessHistory(process));
+                                       BusinessDateTime.UtcNow,
+                                       existedMessage.CorrelationId,
+                                       existedMessage.MessageId,
+                                       new ProcessHistory(process));
         }
     }
 }

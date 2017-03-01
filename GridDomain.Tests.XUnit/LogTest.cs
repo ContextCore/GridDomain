@@ -50,8 +50,8 @@ namespace GridDomain.Tests.XUnit
         public void Should_simplify_Money_class()
         {
             Serilog.Log.Logger.Error(new InvalidOperationException("ohshitwaddap"),
-                "MONEY TEST {@placeholder}",
-                new {Money = new Money(123, CurrencyIsoCode.RUB)});
+                                     "MONEY TEST {@placeholder}",
+                                     new {Money = new Money(123, CurrencyIsoCode.RUB)});
         }
 
         [Fact]

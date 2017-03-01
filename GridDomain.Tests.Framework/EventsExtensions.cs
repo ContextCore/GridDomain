@@ -19,26 +19,26 @@ namespace GridDomain.Tests.Framework
                                                                                          MembersToIgnore
                                                                                              =
                                                                                              new[]
-                                                                                             {
-                                                                                                 nameof
-                                                                                                     (DomainEvent
-                                                                                                     .CreatedTime),
-                                                                                                 nameof
-                                                                                                     (DomainEvent
-                                                                                                     .SagaId)
-                                                                                             }
-                                                                                             .ToList(),
+                                                                                                 {
+                                                                                                     nameof
+                                                                                                         (DomainEvent
+                                                                                                              .CreatedTime),
+                                                                                                     nameof
+                                                                                                         (DomainEvent
+                                                                                                              .SagaId)
+                                                                                                 }
+                                                                                                 .ToList(),
                                                                                          CustomComparers
                                                                                              =
                                                                                              new List
                                                                                              <
-                                                                                             BaseTypeComparer
+                                                                                                 BaseTypeComparer
                                                                                              >
                                                                                              {
                                                                                                  new GuidComparer
                                                                                                      (RootComparerFactory
-                                                                                                     .GetRootComparer
-                                                                                                     ())
+                                                                                                          .GetRootComparer
+                                                                                                          ())
                                                                                              },
                                                                                          DoublePrecision
                                                                                              = 0.0001
@@ -48,28 +48,28 @@ namespace GridDomain.Tests.Framework
                                                                             {
                                                                                 MembersToIgnore =
                                                                                     new[]
-                                                                                    {
-                                                                                        nameof(
-                                                                                            Command
-                                                                                            .Time),
-                                                                                        nameof(
-                                                                                            Command
-                                                                                            .Id)
-                                                                                    }
-                                                                                    .ToList(),
+                                                                                        {
+                                                                                            nameof(
+                                                                                                   Command
+                                                                                                       .Time),
+                                                                                            nameof(
+                                                                                                   Command
+                                                                                                       .Id)
+                                                                                        }
+                                                                                        .ToList(),
                                                                                 CustomComparers =
                                                                                     new List
-                                                                                    <BaseTypeComparer>
-                                                                                    {
-                                                                                        new GuidComparer
-                                                                                            (RootComparerFactory
-                                                                                            .GetRootComparer
-                                                                                            ()),
-                                                                                        new DateTimeComparer
-                                                                                            (RootComparerFactory
-                                                                                            .GetRootComparer
-                                                                                            ())
-                                                                                    },
+                                                                                        <BaseTypeComparer>
+                                                                                        {
+                                                                                            new GuidComparer
+                                                                                                (RootComparerFactory
+                                                                                                     .GetRootComparer
+                                                                                                     ()),
+                                                                                            new DateTimeComparer
+                                                                                                (RootComparerFactory
+                                                                                                     .GetRootComparer
+                                                                                                     ())
+                                                                                        },
                                                                                 DoublePrecision = 0.0001
                                                                             };
 
@@ -79,18 +79,18 @@ namespace GridDomain.Tests.Framework
                                                                                  new[]
                                                                                  {
                                                                                      nameof(
-                                                                                         ISagaState
-                                                                                         .CurrentStateName)
+                                                                                            ISagaState
+                                                                                                .CurrentStateName)
                                                                                  }.ToList(),
                                                                              CustomComparers =
                                                                                  new List
-                                                                                 <BaseTypeComparer>
-                                                                                 {
-                                                                                     new GuidComparer
-                                                                                         (RootComparerFactory
-                                                                                         .GetRootComparer
-                                                                                         ())
-                                                                                 },
+                                                                                     <BaseTypeComparer>
+                                                                                     {
+                                                                                         new GuidComparer
+                                                                                             (RootComparerFactory
+                                                                                                  .GetRootComparer
+                                                                                                  ())
+                                                                                     },
                                                                              DoublePrecision = 0.0001
                                                                          };
 
@@ -154,7 +154,8 @@ namespace GridDomain.Tests.Framework
                 compareLogic.Config.ExpectedName = events.Expected.GetType().Name;
                 var comparisonResult = compareLogic.Compare(events.Expected, events.Produced);
 
-                if (!comparisonResult.AreEqual) { Assert.Fail(comparisonResult.DifferencesString); }
+                if (!comparisonResult.AreEqual)
+                    Assert.Fail(comparisonResult.DifferencesString);
             }
         }
 

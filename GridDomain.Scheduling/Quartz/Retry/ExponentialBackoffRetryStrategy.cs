@@ -22,8 +22,8 @@ namespace GridDomain.Scheduling.Quartz.Retry
             if (e?.InnerException != null && !_settings.ErrorActions.ShouldContinue(e.InnerException))
             {
                 _log.Debug("Job {Key} will not be retried due to special error encoured: {error}",
-                    context.JobDetail.Key.Name,
-                    e.InnerException.GetType());
+                           context.JobDetail.Key.Name,
+                           e.InnerException.GetType());
                 return false;
             }
 
@@ -32,13 +32,13 @@ namespace GridDomain.Scheduling.Quartz.Retry
 
             if (shouldRetry)
                 _log.Debug("Job {Key} will be retried, {retries} / {maxRetries}",
-                    context.JobDetail.Key.Name,
-                    retries,
-                    _settings.MaxRetries);
+                           context.JobDetail.Key.Name,
+                           retries,
+                           _settings.MaxRetries);
             else
                 _log.Debug("Job {Key} will not be retried, as retries limit was reached: {maxRetries}",
-                    context.JobDetail.Key.Name,
-                    _settings.MaxRetries);
+                           context.JobDetail.Key.Name,
+                           _settings.MaxRetries);
 
             return shouldRetry;
         }
@@ -47,7 +47,7 @@ namespace GridDomain.Scheduling.Quartz.Retry
         {
             var retries = GetAlreadyPerformedRetries(context);
             var factor = (long) Math.Pow(2, retries);
-            var backoff = new TimeSpan(_settings.BackoffBaseInterval.Ticks*factor);
+            var backoff = new TimeSpan(_settings.BackoffBaseInterval.Ticks * factor);
 
             var trigger =
                 TriggerBuilder.Create()
@@ -65,7 +65,8 @@ namespace GridDomain.Scheduling.Quartz.Retry
         {
             var retries = 0;
             object o;
-            if (context.JobDetail.JobDataMap.TryGetValue(Retries, out o) && o is int) { retries = (int) o; }
+            if (context.JobDetail.JobDataMap.TryGetValue(Retries, out o) && o is int)
+                retries = (int) o;
             return retries;
         }
     }

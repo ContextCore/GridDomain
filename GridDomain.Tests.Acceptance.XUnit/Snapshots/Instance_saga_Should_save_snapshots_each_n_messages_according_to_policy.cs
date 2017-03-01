@@ -22,11 +22,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     {
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
             : base(
-                output,
-                new SoftwareProgrammingSagaFixture {InMemory = false}.IgnoreCommands()
-                                                                     .InitSoftwareProgrammingSagaSnapshots(5,
-                                                                         TimeSpan.FromMilliseconds(5),
-                                                                         2)) {}
+                   output,
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.IgnoreCommands()
+                                                                        .InitSoftwareProgrammingSagaSnapshots(5,
+                                                                                                              TimeSpan.FromMilliseconds(5),
+                                                                                                              2)) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -53,10 +53,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var sagaContinueEventB =
                 new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
-                    new Exception(),
-                    typeof(object),
-                    sagaId,
-                    BusinessDateTime.Now);
+                                          new Exception(),
+                                          typeof(object),
+                                          sagaId,
+                                          BusinessDateTime.Now);
 
             await
                 Node.NewDebugWaiter()
@@ -71,8 +71,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                        Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
-                            sagaStartEvent.SagaId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
+                                                                                                                                              sagaStartEvent.SagaId);
 
             //saving on each message, maximum on each command
             //Snapshots_should_be_saved_two_times
