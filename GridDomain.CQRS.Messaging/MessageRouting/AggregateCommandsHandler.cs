@@ -48,15 +48,15 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
                                                                          .Cast<DomainEvent>()
                                                                          .ToArray();
 
-                              aggregate.PersistDelegate(eventsToSave,e => {});
+                              aggregate.PersistAsyncDelegate(Task.FromResult(eventsToSave),e => {}, () => {}, aggregate);
 
                               return Task.FromResult(aggregate);
                           });
         }
 
-        public void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
-        {
-            Add<TCommand>((c, a) => commandExecutor((TCommand) c, a).ContinueWith(t => a));
-        }
+       //public void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
+       //{
+       //    Add<TCommand>((c, a) => commandExecutor((TCommand) c, a).ContinueWith(t => a));
+       //}
     }
 }

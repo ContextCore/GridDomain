@@ -50,26 +50,25 @@ namespace GridDomain.Tests.XUnit.SampleDomain
              Emit(new SampleAggregateChangedEvent((value + int.Parse(Value)).ToString(), Id));
         }
 
-        public Task LongExecute(int sleepMiliseconds)
+        public void LongExecute(int sleepMiliseconds)
         {
             var eventTask = Task.Delay(sleepMiliseconds)
                                 .ContinueWith(t => new SampleAggregateChangedEvent(sleepMiliseconds.ToString(), Id));
 
-             return Emit(eventTask);
+             Emit(eventTask);
         }
 
-        internal Task ChangeStateAsync(int parameter, TimeSpan sleepTime)
+        internal void ChangeStateAsync(int parameter, TimeSpan sleepTime)
         {
-             return Emit(Task.Delay(sleepTime)
-                            .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)));
+             Emit(Task.Delay(sleepTime)
+                      .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)));
         }
 
-        internal Task AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
+        internal void AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
         {
-            return Emit(Task.Delay(sleepTime)
-                            .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)),
-
-                         () => RaiseException())
+            Emit(Task.Delay(sleepTime)
+                     .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)),
+                 e => RaiseException());
 
         }
 
@@ -89,11 +88,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain
             throw new SampleAggregateException();
         }
 
-        public Task RaiseExceptionAsync(TimeSpan callBackTime)
+        public void RaiseExceptionAsync(TimeSpan callBackTime)
         {
-            return Emit(Task.Delay(callBackTime)
-                     .ContinueWith(t => new SampleAggregateChangedEvent("0", Id)))
-                  .ContinueWith(t => RaiseException());
+             Emit(Task.Delay(callBackTime)
+                      .ContinueWith(t => new SampleAggregateChangedEvent("0", Id)),
+                  t => RaiseException());
         }
 
         private class Snapshot : IMemento

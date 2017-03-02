@@ -18,6 +18,7 @@ namespace GridDomain.Node.Actors
     {
         private readonly IConstructAggregates _aggregateConstructor;
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
+        //store only locl in-mem events
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         private readonly TimeSpan _terminateWaitPeriod = TimeSpan.FromSeconds(1);
         protected readonly ActorMonitor Monitor;
@@ -34,14 +35,6 @@ namespace GridDomain.Node.Actors
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
             State = aggregateConstructor.Build(typeof(T), Id, null);
-
-            ((Aggregate)State).RegisterPersistenceCallBack((e,act) => PersistAll(e, o =>
-                                                                                    {
-                                                                                        OnEventPersisted(e);
-                                                                                        act(o);
-                                                                                    }));
-
-
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 
@@ -89,8 +82,6 @@ namespace GridDomain.Node.Actors
         protected Guid Id { get; }
         public override string PersistenceId { get; }
         public IAggregate State { get; protected set; }
-
-        protected virtual void OnEventPersisted(DomainEvent[] events) {}
 
         protected bool TrySaveSnapshot()
         {

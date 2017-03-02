@@ -8,14 +8,24 @@ using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing
 {
+
     public class Aggregate : AggregateBase,
                              IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
 
-        internal Action<DomainEvent[], Action<DomainEvent>> PersistDelegate;
-        internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action> PersistAsyncDelegate;
+        private static readonly Action<DomainEvent> EmptyApply = e => { };
+        private static readonly Action EmptyContinue = () => { };
 
+        //internal Action<DomainEvent[], Action<DomainEvent>> PersistDelegate;
+        internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> PersistAsyncDelegate;
+
+        private readonly HashSet<DomainEvent> _eventToPersist = new HashSet<DomainEvent>();
+        public IReadOnlyCollection<DomainEvent> EventToPersist => _eventToPersist;
+        public void MarkPersisted(DomainEvent e)
+        {
+            _eventToPersist.Remove(e);
+        }
         // Only for simple implementation 
         Guid IMemento.Id
         {
@@ -29,36 +39,55 @@ namespace GridDomain.EventSourcing
             set { Version = value; }
         }
 
-
         protected void Emit(DomainEvent e, Action<DomainEvent> onApply = null)
         {
-            Emit(onApply, e);
+            Emit(onApply, EmptyContinue, e);
         }
         protected void Emit(params DomainEvent[] e)
         {
-            Emit(evts => { }, e);
+            Emit(EmptyApply, EmptyContinue, e);
+
+        }
+        protected void Emit(Action afterAll, params DomainEvent[] e)
+        {
+            Emit(EmptyApply, afterAll, e);
+
         }
 
-        protected void Emit(Action<DomainEvent> onApply, params DomainEvent[] events)
+        protected void Emit(Action<DomainEvent> onApply, Action afterAll, params DomainEvent[] events)
         {
-            PersistDelegate(events, onApply);
+            foreach (var e in events)
+                _eventToPersist.Add(e);
+
+            PersistAsyncDelegate(Task.FromResult(events), onApply, afterAll, this);
         }
 
-        protected void Emit<T>(Task<T> evtTask, Action<DomainEvent> onApply = null, Action continuation = null) where T : DomainEvent
+        protected void Emit<T>(Task<T> evtTask, Action<DomainEvent> onApply = null) where T : DomainEvent
         {
-            Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}), onApply, continuation);
+            Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}), onApply, EmptyContinue);
         }
         
         protected void Emit(Task<DomainEvent[]> evtTask, Action<DomainEvent> onApply = null, Action continuation = null)
         {
-            PersistAsyncDelegate(evtTask, onApply ?? (o => { }), continuation ?? (() => {}));
+            var task = evtTask.ContinueWith(t =>
+                                            {
+                                                foreach (var e in t.Result)
+                                                    _eventToPersist.Add(e);
+                                                return t.Result;
+                                            });
+
+            PersistAsyncDelegate(task, onApply ?? EmptyApply, continuation ?? EmptyContinue, this);
+        }
+        protected void Emit(Task<DomainEvent[]> evtTask, Action continuation = null, Action<DomainEvent> onApply = null)
+        {
+            Emit(evtTask,onApply,continuation);
         }
 
-        public void RegisterPersistenceCallBack(Action<DomainEvent[], Action<DomainEvent>> persistDelegate)
-        {
-            PersistDelegate = persistDelegate;
-        }
-        public void RegisterPersistenceAsyncCallBack(Action<Task<DomainEvent[]>, Action<DomainEvent>, Action> persistDelegate)
+      // public void RegisterPersistenceCallBack(Action<DomainEvent[], Action<DomainEvent>> persistDelegate)
+      // {
+      //   //  PersistDelegate = persistDelegate;
+      // }
+        public void RegisterPersistenceAsyncCallBack(Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> persistDelegate)
         {
             PersistAsyncDelegate = persistDelegate;
         }

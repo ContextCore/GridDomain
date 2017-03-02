@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -8,6 +9,19 @@ using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
+
+    public class Project
+    {
+        public Project(DomainEvent[] events, Guid? projectId = null)
+        {
+            Events = events;
+            ProjectId = projectId ?? Guid.NewGuid();
+        }
+        public DomainEvent[] Events { get; }
+        public Guid ProjectId { get; }
+        
+    }
+
     /// <summary>
     ///     Synhronize message handlers work for domain events produced by command
     ///     If message process policy is set to synchronized, will process such events one after one
@@ -23,11 +37,11 @@ namespace GridDomain.Node.Actors.CommandPipe
         {
             _handlersCatalog = handlersCatalog;
 
-            Receive<IMessageMetadataEnvelop<DomainEvent[]>>(envelop =>
+            Receive<IMessageMetadataEnvelop<Project>>(envelop =>
                                                             {
                                                                 var eventsToProcess = envelop.Message;
                                                                 var sender = Sender;
-                                                                eventsToProcess.Select(e => SynhronizeHandlers(new MessageMetadataEnvelop<DomainEvent>(e, envelop.Metadata)))
+                                                                eventsToProcess.Events.Select(e => SynhronizeHandlers(new MessageMetadataEnvelop<DomainEvent>(e, envelop.Metadata)))
                                                                                .ToChain()
                                                                                .ContinueWith(t => new AllHandlersCompleted(envelop.Metadata, envelop.Message))
                                                                                .PipeTo(Self, sender);
