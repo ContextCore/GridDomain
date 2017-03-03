@@ -1,7 +1,6 @@
 using System;
 using Akka.Actor;
 using CommonDomain;
-using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
@@ -15,7 +14,7 @@ using Microsoft.Practices.Unity;
 namespace GridDomain.Node.Configuration.Composition
 {
     public class AggregateConfiguration<TAggregate, TAggregateCommandsHandler> : IContainerConfiguration
-        where TAggregate : AggregateBase
+        where TAggregate : Aggregate
         where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
     {
         private readonly IConstructAggregates _factory;

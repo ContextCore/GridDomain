@@ -303,7 +303,7 @@
     <Compile Include="AkkaMessaging\IHandlerActorTypeFactory.cs" />
     <Compile Include="AkkaMessaging\IncorrectTypeOfCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\InvalidHandlerType.cs" />
-    <Compile Include="Actors\MessageHandlingActor.cs" />
+    <Compile Include="Actors\MessageProcessActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />

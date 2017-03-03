@@ -31,7 +31,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                 Sys.ActorOf(
                             Props.Create(
                                          () =>
-                                             new MessageHandlingActor<SampleAggregateChangedEvent, OddFaultyMessageHandler>(
+                                             new MessageProcessActor<SampleAggregateChangedEvent, OddFaultyMessageHandler>(
                                                                                                                             new OddFaultyMessageHandler(transport),
                                                                                                                             transport)));
 

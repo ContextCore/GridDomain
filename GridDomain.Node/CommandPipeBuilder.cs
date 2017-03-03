@@ -96,7 +96,7 @@ namespace GridDomain.Node
         public Task RegisterHandler<TMessage, THandler>(bool sync = false) where THandler : IHandler<TMessage>
                                                                            where TMessage : DomainEvent
         {
-            var handlerActorType = typeof(MessageHandlingActor<TMessage, THandler>);
+            var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);
             var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());
 
             _handlersCatalog.Add<TMessage>(new Processor(handlerActor, new MessageProcessPolicy(sync)));

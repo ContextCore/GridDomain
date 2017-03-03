@@ -17,8 +17,8 @@ namespace GridDomain.EventSourcing
         private static readonly Action<DomainEvent> EmptyApply = e => { };
         private static readonly Action EmptyContinue = () => { };
 
-        //internal Action<DomainEvent[], Action<DomainEvent>> PersistDelegate;
-        internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> PersistAsyncDelegate;
+        internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> PersistEvents;
+        private Func<DomainEvent, DomainEvent> _eventsEnricher = e => e;
 
         private readonly HashSet<DomainEvent> _eventToPersist = new HashSet<DomainEvent>();
         public IReadOnlyCollection<DomainEvent> EventToPersist => _eventToPersist;
@@ -56,40 +56,46 @@ namespace GridDomain.EventSourcing
 
         protected void Emit(Action<DomainEvent> onApply, Action afterAll, params DomainEvent[] events)
         {
-            foreach (var e in events)
-                _eventToPersist.Add(e);
-
-            PersistAsyncDelegate(Task.FromResult(events), onApply, afterAll, this);
+            Emit(Task.FromResult(events), onApply, afterAll);
         }
 
         protected void Emit<T>(Task<T> evtTask, Action<DomainEvent> onApply = null) where T : DomainEvent
         {
             Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}), onApply, EmptyContinue);
         }
-        
+        protected void Emit(Task<DomainEvent[]> evtTask, Action continuation = null, Action<DomainEvent> onApply = null)
+        {
+            Emit(evtTask, onApply, continuation);
+        }
+
         protected void Emit(Task<DomainEvent[]> evtTask, Action<DomainEvent> onApply = null, Action continuation = null)
         {
             var task = evtTask.ContinueWith(t =>
                                             {
-                                                foreach (var e in t.Result)
+                                                var enrichedEvents = t.Result.Select(_eventsEnricher).ToArray();
+
+                                                foreach (var e in enrichedEvents)
                                                     _eventToPersist.Add(e);
-                                                return t.Result;
+
+                                                return enrichedEvents;
                                             });
 
-            PersistAsyncDelegate(task, onApply ?? EmptyApply, continuation ?? EmptyContinue, this);
-        }
-        protected void Emit(Task<DomainEvent[]> evtTask, Action continuation = null, Action<DomainEvent> onApply = null)
-        {
-            Emit(evtTask,onApply,continuation);
+            PersistEvents(task, e => RaiseEvent(e,onApply), continuation ?? EmptyContinue, this);
         }
 
-      // public void RegisterPersistenceCallBack(Action<DomainEvent[], Action<DomainEvent>> persistDelegate)
-      // {
-      //   //  PersistDelegate = persistDelegate;
-      // }
-        public void RegisterPersistenceAsyncCallBack(Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> persistDelegate)
+        private void RaiseEvent(DomainEvent e, Action<DomainEvent> onApply = null)
         {
-            PersistAsyncDelegate = persistDelegate;
+            base.RaiseEvent(e);
+            onApply?.Invoke(e);
+        }
+
+        public void RegisterEnricher(Func<DomainEvent, DomainEvent> enricher)
+        {
+            _eventsEnricher = enricher;
+        }
+        public void RegisterPersistence(Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> persistDelegate)
+        {
+            PersistEvents = persistDelegate;
         }
 
         public static T Empty<T>(Guid id) where T : IAggregate

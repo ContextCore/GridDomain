@@ -5,6 +5,7 @@ using Akka.DI.Core;
 using Akka.Persistence;
 using Akka.TestKit.Xunit2;
 using CommonDomain.Core;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -14,11 +15,11 @@ namespace GridDomain.Tests.XUnit
 {
     public static class TestKitExtensions
     {
-        public static async Task<T> LoadAggregate<T>(this TestKit kit, Guid id) where T : AggregateBase
+        public static async Task<T> LoadAggregate<T>(this TestKit kit, Guid id) where T : Aggregate
         {
             var name = AggregateActorName.New<T>(id).ToString();
             var actor = await kit.LoadActor<AggregateActor<T>>(name);
-            return (T) actor.State;
+            return actor.State;
         }
 
         public static async Task<T> LoadActor<T>(this TestKit kit, string name) where T : ActorBase

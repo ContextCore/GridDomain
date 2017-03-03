@@ -1,11 +1,12 @@
 using System;
 using CommonDomain.Core;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    public class AggregateHubActor<TAggregate> : PersistentHubActor where TAggregate : AggregateBase
+    public class AggregateHubActor<TAggregate> : PersistentHubActor where TAggregate : Aggregate
     {
         private readonly Type _actorType;
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
-using CommonDomain;
-using CommonDomain.Core;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -23,7 +21,7 @@ namespace GridDomain.Node.Actors
     ///     Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TAggregate"></typeparam>
-    public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : AggregateBase
+    public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : Aggregate
     {
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
@@ -35,8 +33,7 @@ namespace GridDomain.Node.Actors
         private readonly IPublisher _publisher;
         private readonly IActorRef _schedulerActorRef;
 
-        private readonly HashSet<DomainEvent> _eventsToPersist = new HashSet<DomainEvent>();
-        private readonly HashSet<Guid> _eventsToProject = new HashSet<Guid>();
+        private readonly IDictionary<Guid, object> _messagesToProject = new Dictionary<Guid, object>();
 
         class SaveEventsAsync
         {
@@ -54,6 +51,12 @@ namespace GridDomain.Node.Actors
             public Action<DomainEvent> Act { get; }
         }
 
+        public new TAggregate State
+        {
+            get { return (TAggregate) base.State; }
+            private set { base.State = value; }
+        }
+
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               IActorRef schedulerActorRef,
                               IPublisher publisher,
@@ -67,9 +70,9 @@ namespace GridDomain.Node.Actors
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, PublishingEvent, CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, CreatedFault, CommandRaisedAnError);
 
-            ((Aggregate) State).RegisterPersistence((evtTask, onEventPersist, continuation, newState) =>
-                                                        evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
-                                                               .PipeTo(Self));
+            State.RegisterPersistence((evtTask, onEventPersist, continuation, newState) =>
+                                          evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
+                                                 .PipeTo(Self));
 
             BecomeStacked(() => ReceivingCommands(handler));
         }
@@ -81,34 +84,33 @@ namespace GridDomain.Node.Actors
                                                            var cmd = m.Message;
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
+                                                           State.RegisterEnricher(e => e.CloneWithSaga(cmd.SagaId));
+                                                           handler.ExecuteAsync(State, cmd);
 
-                                                           handler.ExecuteAsync((TAggregate) State, cmd);
-
-                                                           var eventsMetadata = m.Metadata.CreateChild(Id, _domainEventProcessEntry);
-                                                           BecomeStacked(() => ProcessingCommand(m, eventsMetadata));
+                                                           BecomeStacked(() => ProcessingCommand(m));
                                                        });
         }
 
-        private void ProcessingCommand(IMessageMetadataEnvelop<ICommand> commandEnvelop, MessageMetadata eventsMetadata)
+        private void ProcessingCommand(IMessageMetadataEnvelop<ICommand> commandEnvelop)
         {
+            var command = commandEnvelop.Message;
+            var commandMetadata = commandEnvelop.Metadata;
+            var producedEventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
+            var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
+
             CommandAny(c => c.Match()
                              //finished some call on aggregate, need persist produced events
                              .With<SaveEventsAsync>(e =>
                                                     {
                                                         int count = e.Events.Length;
-                                                        var eventsToSave = e.Events
-                                                                            .Select(ev =>
-                                                                                    {
-                                                                                        var eventWithSaga = ev.CloneWithSaga(commandEnvelop.Message.SagaId);
-                                                                                        _eventsToPersist.Add(eventWithSaga);
-                                                                                        return eventWithSaga;
-                                                                                    });
-                                                        PersistAll(eventsToSave,
+                                                        PersistAll(e.Events,
                                                                    o =>
                                                                    {
                                                                        e.State.MarkPersisted(o);
 
-                                                                       OnEventPersisted(o, eventsMetadata);
+                                                                       TrySaveSnapshot();
+                                                                       NotifyPersistenceWatchers(o);
+                                                                       Project(o, producedEventsMetadata);
 
                                                                        e.Act(o);
                                                                        if (--count == 0)
@@ -126,7 +128,11 @@ namespace GridDomain.Node.Actors
                              //aggregate raised an error during command execution
                              .With<Failure>(f =>
                                             {
-                                                ProjectFault(commandEnvelop.Message, f.Exception, commandEnvelop.Metadata);
+                                                Exception ex = f.Exception;
+                                                var fault = Fault.NewGeneric(command, ex, command.SagaId, typeof(TAggregate));
+
+                                                Project(fault, producedFaultMetadata);
+                                                Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, ex, command);
 
                                                 FinishCommandExecution();
                                             })
@@ -134,23 +140,31 @@ namespace GridDomain.Node.Actors
                              //aggregate command execution is finished 
                              //produced events are persisted
                              //we can have events not projected yet
-                             .With<Aggregate>(newState =>
-                                              {
-                                                  if (newState.EventToPersist.Any())
-                                                      throw new UncommitedStateExeption();
-
-                                                  //can renew state now, as we are waiting only for event projections
-                                                  State = newState;
-                                                  FinishCommandExecution();
-                                              })
+                             .With<TAggregate>(newState =>
+                                               {
+                                                   if (newState.EventToPersist.Any())
+                                                       throw new UncommitedStateExeption();
+                                                   //can renew state now, as we are waiting only for event projections
+                                                   State = newState;
+                                                   //projection finished progress, 
+                                                   if (!_messagesToProject.Any())
+                                                       FinishCommandExecution();
+                                                   //projection in progress, will finish execution later by notification from message processor
+                                               })
                              //projection of event pack from aggregate finished
                              //we can have more event packs to project
                              .With<AllHandlersCompleted>(m =>
                                                          {
-                                                             OnHandlersFinish(commandEnvelop.Metadata, m);
+                                                             //publish messages for notification
+                                                             object projected;
+                                                             if (!_messagesToProject.TryGetValue(m.ProjectId, out projected))
+                                                                 throw new UnknownProjectionFinishedException();
+
+                                                             _publisher.Publish(projected, producedEventsMetadata);
+
                                                              //all projections are finished, aggregate events are persisted
                                                              //it means command execution is finished
-                                                             if (!_eventsToProject.Any() && !_eventsToPersist.Any())
+                                                             if (!_messagesToProject.Any() && !State.EventToPersist.Any())
                                                                  FinishCommandExecution();
                                                          })
                              .With<IMessageMetadataEnvelop<ICommand>>(o => Stash.Stash())
@@ -162,6 +176,7 @@ namespace GridDomain.Node.Actors
         {
             UnbecomeStacked();
             Stash.UnstashAll();
+            base.State.ClearUncommittedEvents();
         }
 
         protected override void Terminating()
@@ -174,52 +189,11 @@ namespace GridDomain.Node.Actors
             base.Terminating();
         }
 
-        private void OnHandlersFinish(IMessageMetadata commandMetadata, AllHandlersCompleted processComplete)
+        private void Project(object evt, IMessageMetadata commandMetadata)
         {
-            if (!_eventsToProject.Remove(processComplete.ProjectId))
-                throw new UnknownProjectionFinishedException();
+            var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
 
-            foreach (var e in processComplete.DomainEvents)
-            {
-                var eventMetadata = commandMetadata.CreateChild(e.SourceId, _domainEventProcessEntry);
-                _publisher.Publish(e, eventMetadata);
-            }
-
-            if (processComplete.Fault == null)
-                return;
-
-            var faultMetadata = commandMetadata.CreateChild(commandMetadata.MessageId, _domainEventProcessFailEntry);
-            _publisher.Publish(processComplete.Fault, faultMetadata);
-        }
-
-    
-        private void OnEventPersisted(DomainEvent evt, IMessageMetadata commandMetadata)
-        {
-            TrySaveSnapshot();
-
-            NotifyPersistenceWatchers(evt);
-
-            ProjectEvents(evt, commandMetadata);
-        }
-
-        private void ProjectFault(ICommand cmd, Exception ex, IMessageMetadata commandMetadata)
-        {
-            var fault = Fault.NewGeneric(cmd, ex, cmd.SagaId, typeof(TAggregate));
-
-            var faultMetadata = commandMetadata.CreateChild(cmd.Id, _domainEventProcessFailEntry);
-
-            _customHandlersActor.Ask<AllHandlersCompleted>(new MessageMetadataEnvelop<IFault>(fault, faultMetadata))
-                                .PipeTo(Self);
-
-            Log.Error(ex, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, ex, cmd);
-        }
-
-
-        private void ProjectEvents(DomainEvent evt, IMessageMetadata commandMetadata)
-        {
-            var envelop = new MessageMetadataEnvelop<Project>(new Project(new[] {evt}), commandMetadata);
-
-            _eventsToProject.Add(envelop.Message.ProjectId);
+            _messagesToProject.Add(envelop.Message.ProjectId, evt);
 
             evt.Match()
                .With<FutureEventScheduledEvent>(m => Handle(m, commandMetadata))

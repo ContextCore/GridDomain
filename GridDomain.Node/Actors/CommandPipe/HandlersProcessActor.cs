@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -9,17 +10,19 @@ using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
-
     public class Project
     {
-        public Project(DomainEvent[] events, Guid? projectId = null)
+        public Project(object[] messages, Guid projectId)
         {
-            Events = events;
-            ProjectId = projectId ?? Guid.NewGuid();
+            Messages = messages;
+            ProjectId = projectId;
         }
-        public DomainEvent[] Events { get; }
+
+        public Project(params object[] messages) : this(messages, Guid.NewGuid()) {}
+
+        public object[] Messages { get; }
+
         public Guid ProjectId { get; }
-        
     }
 
     /// <summary>
@@ -37,30 +40,23 @@ namespace GridDomain.Node.Actors.CommandPipe
         {
             _handlersCatalog = handlersCatalog;
 
-            Receive<IMessageMetadataEnvelop<Project>>(envelop =>
-                                                            {
-                                                                var eventsToProcess = envelop.Message;
-                                                                var sender = Sender;
-                                                                eventsToProcess.Events.Select(e => SynhronizeHandlers(new MessageMetadataEnvelop<DomainEvent>(e, envelop.Metadata)))
-                                                                               .ToChain()
-                                                                               .ContinueWith(t => new AllHandlersCompleted(envelop.Metadata, envelop.Message))
-                                                                               .PipeTo(Self, sender);
-                                                            });
+            ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
+                                                           {
+                                                               var sender = Sender;
+                                                               var project = envelop.Message;
+                                                               var metadata = envelop.Metadata;
+                                                               var envelops = project.Messages.Select(e => new MessageMetadataEnvelop<object>(e, metadata)).ToArray();
 
-            ReceiveAsync<IMessageMetadataEnvelop<IFault>>(envelop => SynhronizeHandlers(envelop)
-                                                              .ContinueWith(t => new AllHandlersCompleted(envelop.Metadata, envelop.Message))
-                                                              .PipeTo(Self, Sender));
+                                                               return envelops.Select(SynhronizeHandlers)
+                                                                              .ToChain()
+                                                                              .ContinueWith(t =>
+                                                                                            {
+                                                                                                sender.Tell(new AllHandlersCompleted(project.ProjectId));
 
-            Receive<AllHandlersCompleted>(m =>
-                                          {
-                                              Sender.Tell(m); //notifying aggregate actor
-
-                                              if (m.DomainEvents?.Length > 0)
-                                                  sagasProcessActor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(m.DomainEvents, m.Metadata));
-
-                                              if (m.Fault != null)
-                                                  sagasProcessActor.Tell(new MessageMetadataEnvelop<IFault>(m.Fault, m.Metadata));
-                                          });
+                                                                                                foreach (var env in envelops)
+                                                                                                    sagasProcessActor.Tell(env);
+                                                                                            });
+                                                           });
         }
 
         private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop)

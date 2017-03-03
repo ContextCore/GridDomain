@@ -14,33 +14,26 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
     {
         public Execute_command_until_projection_build_notification_fetching_results(ITestOutputHelper output) : base(output) {}
 
-        private AggregateChangedEventNotification _changedEvent;
-        private SampleAggregate _aggregate;
-        private LongOperationCommand _syncCommand;
-        private IWaitResults _results;
-
         [Fact]
         public async Task Given_command_executes_with_waiter_When_fetching_results()
         {
-            _syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
+            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
 
+            var results = await Node.Prepare(syncCommand)
+                                    .Expect<AggregateChangedEventNotification>()
+                                    .Execute();
 
-            _results =
-                await
-                    Node.Prepare(_syncCommand)
-                        .Expect<AggregateChangedEventNotification>(e => e.AggregateId == _syncCommand.AggregateId)
-                        .Execute();
+            var changedEvent = results.Message<AggregateChangedEventNotification>();
+            var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
 
-            _changedEvent = _results.Message<AggregateChangedEventNotification>();
-            _aggregate = await this.LoadAggregate<SampleAggregate>(_syncCommand.AggregateId);
             //Results_contains_received_messages()
-            Assert.NotEmpty(_results.All);
+            Assert.NotEmpty(results.All);
             //Results_contains_requested_message()
-            Assert.NotNull(_changedEvent);
+            Assert.NotNull(changedEvent);
             //Emmited_event_has_correct_id()
-            Assert.Equal(_syncCommand.AggregateId, _changedEvent?.AggregateId);
+            Assert.Equal(syncCommand.AggregateId, changedEvent?.AggregateId);
             //Aggregate_has_correct_state_from_command()
-            Assert.Equal(_syncCommand.Parameter.ToString(), _aggregate.Value);
+            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Value);
         }
     }
 }

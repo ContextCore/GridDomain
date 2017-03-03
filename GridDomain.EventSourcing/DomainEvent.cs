@@ -3,7 +3,7 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing
 {
-    public class DomainEvent : ISourcedEvent
+    public class DomainEvent : ISourcedEvent, IHaveId
     {
         public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid? sagaId = null)
         {
@@ -17,6 +17,8 @@ namespace GridDomain.EventSourcing
         public Guid SourceId { get; }
         public Guid SagaId { get; private set; }
         public DateTime CreatedTime { get; }
+        public Guid Id => SourceId;
+
 
         public DomainEvent CloneWithSaga(Guid sagaId)
         {
@@ -24,5 +26,6 @@ namespace GridDomain.EventSourcing
             evt.SagaId = sagaId;
             return evt;
         }
+
     }
 }
