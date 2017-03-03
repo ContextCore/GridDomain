@@ -47,7 +47,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                        : Or(typeof(TMsg), o => MessagePassFilter(o, filter));
         }
 
-        public abstract T Create(TimeSpan? timeout);
+        protected abstract T Create(TimeSpan? timeout);
 
         private bool MessageHasCorrectType<TMsg>(object message)
         {
@@ -56,15 +56,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool MessagePassFilter<TMsg>(object message, Predicate<TMsg> filter)
         {
-            return message is TMsg && filter((TMsg) message)
-                   || message is IMessageMetadataEnvelop<TMsg> && filter(((IMessageMetadataEnvelop<TMsg>) message).Message);
+            return message is TMsg
+                   && filter((TMsg) message)
+                   ||
+                   message is IMessageMetadataEnvelop<TMsg>
+                   && filter(((IMessageMetadataEnvelop<TMsg>) message).Message);
         }
 
         public IExpectBuilder<T> And(Type type, Func<object, bool> filter)
         {
             WaitIsOver = WaitIsOver.And(c => c != null && c.Any(filter));
             Waiter.Subscribe(type, filter, WaitIsOver.Compile());
-            Waiter.Subscribe(MessageMetadataEnvelop.GenericForType(type), filter, WaitIsOver.Compile());
             return this;
         }
 
@@ -72,7 +74,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             WaitIsOver = WaitIsOver.Or(c => c != null && c.Any(filter));
             Waiter.Subscribe(type, filter, WaitIsOver.Compile());
-            Waiter.Subscribe(MessageMetadataEnvelop.GenericForType(type), filter, WaitIsOver.Compile());
             return this;
         }
     }

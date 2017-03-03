@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace GridDomain.Common
 {
@@ -21,14 +22,13 @@ namespace GridDomain.Common
         public static IMessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata)
         {
             var msgType = msg.GetType();
-            var methodOpenType = typeof(MessageMetadataEnvelop).GetMethod(nameof(New));
-            var method = methodOpenType.MakeGenericMethod(msgType);
-            return (IMessageMetadataEnvelop) method.Invoke(null, new[] {msg, metadata});
+            var constructor = GenericForType(msgType).GetConstructor(new []{msgType, typeof(IMessageMetadata)});
+            return (IMessageMetadataEnvelop)constructor.Invoke(new []{msg, metadata});
         }
 
         public static Type GenericForType(Type type)
         {
-            return typeof(IMessageMetadataEnvelop<>).MakeGenericType(type);
+            return typeof(MessageMetadataEnvelop<>).MakeGenericType(type);
         }
     }
 

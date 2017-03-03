@@ -8,7 +8,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         public MessageExpectBuilder(LocalMessagesWaiter<Task<IWaitResults>> waiter, TimeSpan defaultTimeout) : base(waiter) {}
 
-        public override Task<IWaitResults> Create(TimeSpan? timeout)
+        protected override Task<IWaitResults> Create(TimeSpan? timeout)
         {
             return Waiter.Start(timeout);
         }

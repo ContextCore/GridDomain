@@ -49,9 +49,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public new ICommandExpectBuilder And<TMsg>(Predicate<TMsg> filter = null)
         {
             if (filter != null)
-                base.And(filter);
+                base.And<MessageMetadataEnvelop<TMsg>>(env => filter(env.Message));
             else
-                base.And<IMessageMetadataEnvelop<TMsg>>(CorrelationFilter);
+                base.And<MessageMetadataEnvelop<TMsg>>(CorrelationFilter);
 
             return this;
         }
@@ -59,10 +59,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public new ICommandExpectBuilder Or<TMsg>(Predicate<TMsg> filter = null)
         {
             if (filter != null)
-                base.Or(filter);
+                base.Or<MessageMetadataEnvelop<TMsg>>(env => filter(env.Message));
             else
-                base.Or<IMessageMetadataEnvelop<TMsg>>(CorrelationFilter);
-
+                base.Or<MessageMetadataEnvelop<TMsg>>(CorrelationFilter);
             return this;
         }
 
@@ -76,7 +75,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return envelop?.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
         }
 
-        public override Task<IWaitResults> Create(TimeSpan? timeout)
+        protected override Task<IWaitResults> Create(TimeSpan? timeout)
         {
             return Execute(timeout);
         }
