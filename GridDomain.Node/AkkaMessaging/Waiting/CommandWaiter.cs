@@ -10,43 +10,38 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public class CommandWaiter<TCommand> : LocalMessagesWaiter<Task<IWaitResults>>,
                                            ICommandWaiter where TCommand : ICommand
     {
-        private readonly CommandExpectBuilder<TCommand> _expectBuilder;
+        private readonly CommandConditionBuilder<TCommand> _conditionBuilder;
 
         public CommandWaiter(TCommand command,
                              IMessageMetadata commandMetadata,
                              ActorSystem system,
                              IActorTransport transport,
                              IActorRef executorActor,
-                             TimeSpan defaultTimeout) : base(system, transport, defaultTimeout)
+                             TimeSpan defaultTimeout) : this(system, transport, defaultTimeout, new CommandConditionBuilder<TCommand>(command, commandMetadata, executorActor)) { }
+
+        private CommandWaiter(ActorSystem system,
+                             IActorSubscriber subscriber,
+                             TimeSpan defaultTimeout,
+                             CommandConditionBuilder<TCommand> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
         {
-            _expectBuilder = new CommandExpectBuilder<TCommand>(command, commandMetadata, executorActor, this);
+            _conditionBuilder = conditionBuilder;
+            _conditionBuilder.CreateResultFunc = () => _conditionBuilder.Execute();
         }
+
 
         public Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
-            return _expectBuilder.Execute(timeout, failOnAnyFault);
+            return _conditionBuilder.Execute(timeout, failOnAnyFault);
         }
 
-        ICommandExpectBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
+        ICommandConditionBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
         {
-            return _expectBuilder.And(filter);
+            return _conditionBuilder.And(filter);
         }
 
-        ICommandExpectBuilder ICommandWaiter.Expect(Type type, Func<object, bool> filter)
+        ICommandConditionBuilder ICommandWaiter.Expect(Type type, Func<object, bool> filter)
         {
-            return _expectBuilder.And(type, filter);
-        }
-
-        public override IExpectBuilder<Task<IWaitResults>> Expect<TMsg>(Predicate<TMsg> filter = null)
-        {
-            _expectBuilder.And(filter);
-            return _expectBuilder;
-        }
-
-        public override IExpectBuilder<Task<IWaitResults>> Expect(Type type, Func<object, bool> filter = null)
-        {
-            _expectBuilder.And(type, filter ?? (o => true));
-            return _expectBuilder;
+            return (ICommandConditionBuilder) _conditionBuilder.And(type, filter);
         }
     }
 }

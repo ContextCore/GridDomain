@@ -12,7 +12,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
 
-        protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
+        protected override Task<IWaitResults> ConfigureWaiter(LocalExplicitMessagesWaiter waiter)
         {
             return
                 Waiter.Expect<Message>(m => m.Id == _messageA.Id)
@@ -25,14 +25,14 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         public void Condition_wait_end_should_be_true_on_A()
         {
             var sampleObjectsReceived = new object[] {_messageA};
-            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]
         public void Condition_wait_end_should_be_true_on_B()
         {
             var sampleObjectsReceived = new object[] {_messageA};
-            Assert.True(Waiter.ExpectBuilder.WaitIsOver.Compile()(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]

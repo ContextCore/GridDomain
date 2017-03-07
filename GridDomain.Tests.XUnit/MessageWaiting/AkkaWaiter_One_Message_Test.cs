@@ -17,10 +17,10 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         {
             var actorSystem = ActorSystem.Create("test");
             var transport = new LocalAkkaEventBusTransport(actorSystem);
-            var waiter = new AkkaMessageLocalWaiter(actorSystem, transport, TimeSpan.FromSeconds(10));
+            var waiter = new LocalExplicitMessagesWaiter(actorSystem, transport, TimeSpan.FromSeconds(10));
             waiter.Expect<string>();
-            _results = waiter.Start(TimeSpan.FromSeconds(1));
 
+            _results = waiter.Start(TimeSpan.FromSeconds(1));
             _testmsg = "TestMsg";
             transport.Publish(_testmsg);
         }

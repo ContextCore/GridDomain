@@ -12,47 +12,62 @@ using GridDomain.CQRS.Messaging.Akka;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public abstract class LocalMessagesWaiter<T> : IMessageWaiter<T>
+    public class LocalExplicitMessagesWaiter : LocalMessagesWaiter<Task<IWaitResults>>
+    {
+        public LocalExplicitMessagesWaiter(ActorSystem system,
+                                           IActorSubscriber subscriber,
+                                           TimeSpan defaultTimeout) : this(system, subscriber, defaultTimeout, new ConditionBuilder<Task<IWaitResults>>()) {}
+
+        public LocalExplicitMessagesWaiter(ActorSystem system, 
+            IActorSubscriber subscriber,
+            TimeSpan defaultTimeout, 
+            ConditionBuilder<Task<IWaitResults>> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
+        {
+            conditionBuilder.CreateResultFunc = () => Start(defaultTimeout);
+        }
+    }
+
+    public class LocalMessagesWaiter<T> : IMessageWaiter<T>
     {
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
-
         private readonly TimeSpan _defaultTimeout;
-
-        private readonly List<Func<object, bool>> _filters = new List<Func<object, bool>>();
-        private readonly List<Type> _messageTypesToSubscribe = new List<Type>();
+        internal readonly ConditionBuilder<T> ConditionBuilder;
         private readonly IActorSubscriber _subscriber;
         private readonly ActorSystem _system;
-        private Func<IEnumerable<object>, bool> _stopCondition;
 
-        public LocalMessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
+        public LocalMessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout, ConditionBuilder<T> conditionBuilder)
         {
             _system = system;
             _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
+            ConditionBuilder = conditionBuilder;
         }
 
-        public abstract IExpectBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null);
-        public abstract IExpectBuilder<T> Expect(Type type, Func<object, bool> filter = null);
-
-        internal void Subscribe(Type type, Func<object, bool> filter, Func<IEnumerable<object>, bool> stopCondition)
+        public IConditionBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null)
         {
-            _filters.Add(filter);
-            _stopCondition = stopCondition;
-            _messageTypesToSubscribe.Add(type);
+            return ConditionBuilder.And(filter);
+        }
+
+        public IConditionBuilder<T> Expect(Type type, Func<object, bool> filter = null)
+        {
+            return ConditionBuilder.And(type, filter ?? (o => true));
         }
 
         public async Task<IWaitResults> Start(TimeSpan? timeout = null)
         {
+            if (!_allExpectedMessages.IsEmpty)
+                throw new WaiterIsFinishedException();
+
             using (var inbox = Inbox.Create(_system))
             {
-                foreach (var type in _messageTypesToSubscribe)
+                foreach (var type in ConditionBuilder.MessageFilters.Keys)
                     _subscriber.Subscribe(type, inbox.Receiver);
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
                 await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
 
-                foreach (var type in _messageTypesToSubscribe)
+                foreach (var type in ConditionBuilder.MessageFilters.Keys)
                     _subscriber.Unsubscribe(inbox.Receiver, type);
 
                 return new WaitResults(_allExpectedMessages);
@@ -73,12 +88,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool IsAllExpectedMessagedReceived()
         {
-            return _stopCondition(_allExpectedMessages);
+            return ConditionBuilder.StopCondition(_allExpectedMessages);
         }
 
         private bool IsExpected(object message)
         {
-            return _filters.Any(f => f(message));
+            return ConditionBuilder.MessageFilters.Values.Any(f => f(message));
         }
 
         private static void CheckExecutionError(object t)
@@ -88,4 +103,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
              .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }
     }
+
+    public class WaiterIsFinishedException : Exception {}
 }

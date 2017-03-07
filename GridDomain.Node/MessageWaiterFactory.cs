@@ -22,7 +22,18 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return new AkkaMessageLocalWaiter(System, Transport, defaultTimeout ?? DefaultTimeout);
+            var conditionBuilder = new MetadataConditionBuilder<Task<IWaitResults>>();
+            var waiter = new LocalMessagesWaiter<Task<IWaitResults>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
+            conditionBuilder.CreateResultFunc = () => waiter.Start();
+            return waiter;
+        }
+
+        public IMessageWaiter<Task<IWaitResults>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        {
+            var conditionBuilder = new ConditionBuilder<Task<IWaitResults>>();
+            var waiter = new LocalMessagesWaiter<Task<IWaitResults>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
+            conditionBuilder.CreateResultFunc = () => waiter.Start();
+            return waiter;
         }
     }
 }

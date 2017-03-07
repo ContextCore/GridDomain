@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.FutureDomainEvents
 
             var res =
                 await
-                    node.NewWaiter(TimeSpan.FromSeconds(10))
+                    node.NewExplicitWaiter(TimeSpan.FromSeconds(10))
                         .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
                         .Create();
 

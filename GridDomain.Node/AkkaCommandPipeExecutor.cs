@@ -32,19 +32,26 @@ namespace GridDomain.Node
 
         public void Execute<T>(T command, IMessageMetadata metadata = null) where T : ICommand
         {
-            _commandExecutorActor.Tell(new MessageMetadataEnvelop<ICommand>(command, metadata));
+            _commandExecutorActor.Tell(new MessageMetadataEnvelop<ICommand>(command, metadata ?? CreateEmptyCommandMetadata(command)));
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
-            var commandMetadata = metadata
-                                  ?? new MessageMetadata(cmd.Id,
-                                                         BusinessDateTime.UtcNow,
-                                                         Guid.NewGuid(),
-                                                         Guid.Empty,
-                                                         new ProcessHistory(new[] {ExecuteMetadataEntry}));
+            return new CommandWaiter<T>(cmd,
+                                        metadata ?? CreateEmptyCommandMetadata(cmd),
+                                        _system,
+                                        _transport,
+                                        _commandExecutorActor,
+                                        _defaultTimeout);
+        }
 
-            return new CommandWaiter<T>(cmd, commandMetadata, _system, _transport, _commandExecutorActor, _defaultTimeout);
+        private static MessageMetadata CreateEmptyCommandMetadata<T>(T cmd) where T : ICommand
+        {
+            return new MessageMetadata(cmd.Id,
+                                       BusinessDateTime.UtcNow,
+                                       Guid.NewGuid(),
+                                       Guid.Empty,
+                                       new ProcessHistory(new[] {ExecuteMetadataEntry}));
         }
     }
 }

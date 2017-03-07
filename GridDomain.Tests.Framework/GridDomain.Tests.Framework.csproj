@@ -171,7 +171,6 @@
     <Compile Include="AggregateCommandsTest.cs" />
     <Compile Include="AggregateDebugExtensions.cs" />
     <Compile Include="Any.cs" />
-    <Compile Include="AnyMessageExpectBuilder.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="LoggerActorDummy.cs" />
     <Compile Include="NUnitAssertEx.cs" />
@@ -186,7 +185,6 @@
     <Compile Include="DateTimeComparer.cs" />
     <Compile Include="DateTimeDeltaComparer.cs" />
     <Compile Include="DateTimeOffsetDeltaComparer.cs" />
-    <Compile Include="DebugLocalWaiter.cs" />
     <Compile Include="DomainEventsProductionSpecification.cs" />
     <Compile Include="EventsExtensions.cs" />
     <Compile Include="GridNodeExtensions.cs" />

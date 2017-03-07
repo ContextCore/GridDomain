@@ -15,21 +15,24 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         public AkkaWaiter_message_test_filtered_message()
         {
             _transport = new LocalAkkaEventBusTransport(Sys);
-            _waiter = new AkkaMessageLocalWaiter(Sys, _transport, TimeSpan.FromSeconds(2));
-            _waiter.Expect<string>(m => m.Like("Msg"));
-            results = _waiter.Start(TimeSpan.FromMilliseconds(50));
+            var waiter = new LocalMessagesWaiter<IWaitResults>(Sys,
+                                                               _transport,
+                                                               TimeSpan.FromSeconds(2),
+                                                               new ConditionBuilder<IWaitResults>());
+
+            waiter.Expect<string>(m => m.Like("Msg"));
+            _results = waiter.Start(TimeSpan.FromMilliseconds(50));
         }
 
-        private readonly AkkaMessageLocalWaiter _waiter;
         private readonly LocalAkkaEventBusTransport _transport;
-        private readonly Task<IWaitResults> results;
+        private readonly Task<IWaitResults> _results;
 
         [Fact]
         public void Message_not_satisfying_filter_should_not_be_received()
         {
             _transport.Publish("Test");
 
-            var e = Assert.Throws<AggregateException>(() => results.Result.Message<string>());
+            var e = Assert.Throws<AggregateException>(() => _results.Result.Message<string>());
             Assert.IsAssignableFrom<TimeoutException>(e.InnerException);
         }
 
@@ -37,7 +40,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         public void Message_satisfying_filter_should_be_received()
         {
             _transport.Publish("TestMsg");
-            Assert.Equal("TestMsg", results.Result.Message<string>());
+            Assert.Equal("TestMsg", _results.Result.Message<string>());
         }
 
         [Fact]
@@ -45,7 +48,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         {
             var e = Assert.Throws<AggregateException>(() =>
                                                       {
-                                                          var a = results.Result;
+                                                          var a = _results.Result;
                                                       });
 
             Assert.IsAssignableFrom<TimeoutException>(e.InnerExceptions.FirstOrDefault());
@@ -54,7 +57,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         [Fact]
         public void Timeout_should_be_fired_on_wait_without_messages()
         {
-            var e = Assert.Throws<AggregateException>(() => results.Wait());
+            var e = Assert.Throws<AggregateException>(() => _results.Wait());
             Assert.IsAssignableFrom<TimeoutException>(e.InnerExceptions.FirstOrDefault());
         }
     }

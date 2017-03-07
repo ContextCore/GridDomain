@@ -7,7 +7,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
 {
     public class AkkaWaiter_messages_test_A_or_B : AkkaWaiterTest
     {
-        protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
+        protected override Task<IWaitResults> ConfigureWaiter(LocalExplicitMessagesWaiter waiter)
         {
             return waiter.Expect<string>().Or<char>().Create();
         }

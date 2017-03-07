@@ -10,6 +10,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 
@@ -19,7 +20,10 @@ namespace GridDomain.Tests.Framework
     {
         public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
-            return new DebugLocalWaiter(node.Pipe, node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout);
+            var conditionBuilder = new ConditionBuilder<AnyMessagePublisher>();
+            var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout, conditionBuilder);
+            conditionBuilder.CreateResultFunc = () => new AnyMessagePublisher(node.Pipe, waiter);
+            return waiter;
         }
 
         public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, Guid id)

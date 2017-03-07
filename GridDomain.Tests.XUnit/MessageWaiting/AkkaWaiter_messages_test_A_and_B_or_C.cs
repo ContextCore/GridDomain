@@ -11,7 +11,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         private readonly char _messageB = 'd';
         private int _messageC;
 
-        protected override Task<IWaitResults> ConfigureWaiter(AkkaMessageLocalWaiter waiter)
+        protected override Task<IWaitResults> ConfigureWaiter(LocalExplicitMessagesWaiter waiter)
         {
             _messageA = "testMsg";
             _messageC = 'a';

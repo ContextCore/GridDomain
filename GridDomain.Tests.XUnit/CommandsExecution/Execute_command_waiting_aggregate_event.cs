@@ -68,11 +68,12 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
-            var waiter = Node.NewWaiter()
+            var waiter = Node.NewExplicitWaiter()
                              .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
                              .Create();
 
             Node.Execute(cmd);
+
             var res = await waiter;
 
             Assert.Equal(cmd.Parameter.ToString(), res.Message<SampleAggregateChangedEvent>().Value);

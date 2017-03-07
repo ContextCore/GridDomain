@@ -58,10 +58,10 @@
     <Compile Include="Fault.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandExecutor.cs" />
-    <Compile Include="ICommandExpectBuilder.cs" />
+    <Compile Include="ICommandConditionBuilder.cs" />
     <Compile Include="ICommandWaiter.cs" />
     <Compile Include="ICriteria.cs" />
-    <Compile Include="IExpectBuilder.cs" />
+    <Compile Include="IConditionBuilder.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="IFault.cs" />
     <Compile Include="IHandlerWithMetadata.cs" />
