@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using Xunit;
@@ -12,7 +13,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
 
-        protected override Task<IWaitResults> ConfigureWaiter(LocalExplicitMessagesWaiter waiter)
+        protected override Task<IWaitResults> ConfigureWaiter(LocalMessagesWaiter waiter)
         {
             return
                 waiter.Expect<Message>(m => m.Id == _messageA.Id)
@@ -24,7 +25,11 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         [Fact]
         public void Condition_wait_end_should_be_true_on_B_and_C()
         {
-            var sampleObjectsReceived = new object[] {_messageB, _messageC};
+            var sampleObjectsReceived = new object[]
+                                        {
+                                            MessageMetadataEnvelop.New(_messageB),
+                                            MessageMetadataEnvelop.New(_messageC)
+                                        };
             Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
         }
 

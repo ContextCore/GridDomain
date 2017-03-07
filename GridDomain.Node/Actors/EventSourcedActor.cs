@@ -54,15 +54,7 @@ namespace GridDomain.Node.Actors
                                                                                 BusinessDateTime.UtcNow);
                                          });
 
-            Command<NotifyOnPersistenceEvents>(c =>
-                                               {
-                                                   var waiter = c.Waiter ?? Sender;
-                                                   if (IsRecoveryFinished)
-                                                       waiter.Tell(RecoveryCompleted.Instance);
-
-                                                   _persistenceWatchers.Add(waiter);
-                                                   Sender.Tell(SubscribeAck.Instance);
-                                               });
+            Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
 
             Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
@@ -77,6 +69,16 @@ namespace GridDomain.Node.Actors
                                            Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                                            NotifyPersistenceWatchers(message);
                                        });
+        }
+
+        private void SubscribePersistentObserver(NotifyOnPersistenceEvents c)
+        {
+            var waiter = c.Waiter ?? Sender;
+            if (IsRecoveryFinished)
+                waiter.Tell(RecoveryCompleted.Instance);
+
+            _persistenceWatchers.Add(waiter);
+            Sender.Tell(SubscribeAck.Instance);
         }
 
         protected Guid Id { get; }

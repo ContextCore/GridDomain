@@ -9,24 +9,10 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
+using Serilog;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class LocalExplicitMessagesWaiter : LocalMessagesWaiter<Task<IWaitResults>>
-    {
-        public LocalExplicitMessagesWaiter(ActorSystem system,
-                                           IActorSubscriber subscriber,
-                                           TimeSpan defaultTimeout) : this(system, subscriber, defaultTimeout, new ConditionBuilder<Task<IWaitResults>>()) {}
-
-        public LocalExplicitMessagesWaiter(ActorSystem system, 
-            IActorSubscriber subscriber,
-            TimeSpan defaultTimeout, 
-            ConditionBuilder<Task<IWaitResults>> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
-        {
-            conditionBuilder.CreateResultFunc = () => Start(defaultTimeout);
-        }
-    }
-
     public class LocalMessagesWaiter<T> : IMessageWaiter<T>
     {
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
@@ -93,7 +79,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool IsExpected(object message)
         {
-            return ConditionBuilder.MessageFilters.Values.Any(f => f(message));
+            return ConditionBuilder.MessageFilters.Values.SelectMany(v => v).Any(f => f(message));
         }
 
         private static void CheckExecutionError(object t)
@@ -103,6 +89,4 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
              .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
         }
     }
-
-    public class WaiterIsFinishedException : Exception {}
 }

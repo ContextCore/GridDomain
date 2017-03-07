@@ -269,11 +269,15 @@
     <Compile Include="AkkaMessaging\Waiting\CommandConditionBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\ConditionBuilder.cs" />
+    <Compile Include="AkkaMessaging\Waiting\LocalExplicitMessagesWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\LocalMessagesWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\LocalMetadataAwareMessagesWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\MetadataConditionBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
     <Compile Include="AkkaMessaging\Waiting\PredicateBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitEndInfo.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaiterIsFinishedException.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />

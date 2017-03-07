@@ -25,7 +25,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                              CommandConditionBuilder<TCommand> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
         {
             _conditionBuilder = conditionBuilder;
-            _conditionBuilder.CreateResultFunc = () => _conditionBuilder.Execute();
+            _conditionBuilder.CreateResultFunc = Start;
         }
 
 

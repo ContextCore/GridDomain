@@ -24,7 +24,7 @@ namespace GridDomain.Node
         {
             var conditionBuilder = new MetadataConditionBuilder<Task<IWaitResults>>();
             var waiter = new LocalMessagesWaiter<Task<IWaitResults>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = () => waiter.Start();
+            conditionBuilder.CreateResultFunc = waiter.Start;
             return waiter;
         }
 
@@ -32,7 +32,7 @@ namespace GridDomain.Node
         {
             var conditionBuilder = new ConditionBuilder<Task<IWaitResults>>();
             var waiter = new LocalMessagesWaiter<Task<IWaitResults>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = () => waiter.Start();
+            conditionBuilder.CreateResultFunc = waiter.Start;
             return waiter;
         }
     }

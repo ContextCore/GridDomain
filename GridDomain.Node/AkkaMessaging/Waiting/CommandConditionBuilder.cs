@@ -13,7 +13,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly IActorRef _executorActorRef;
-        private readonly LocalMessagesWaiter<Task<IWaitResults>> _waiter;
 
         public CommandConditionBuilder(TCommand command,
                                        IMessageMetadata commandMetadata,
@@ -26,9 +25,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public async Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
-            Or<IFault<TCommand>>(f => f.Message.Id == _command.Id);
+            Or<Fault<TCommand>>(f => f.Message.Id == _command.Id);
 
-            var task = _waiter.Start(timeout);
+            var task = Create(timeout);
 
             _executorActorRef.Tell(new MessageMetadataEnvelop<ICommand>(_command, _commandMetadata));
 
@@ -54,9 +53,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             base.Or(filter);
             return this;
         }
-        protected override bool ApplyDefaultFilter<TMsg>(object message)
+        protected override bool DefaultFilter<TMsg>(object received)
         {
-            var msg = message as MessageMetadataEnvelop<TMsg>;
+            var msg = received as MessageMetadataEnvelop<TMsg>;
             return msg != null && msg.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
         }
 

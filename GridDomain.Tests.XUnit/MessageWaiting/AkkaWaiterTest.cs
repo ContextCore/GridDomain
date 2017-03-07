@@ -16,16 +16,15 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         private readonly Task<IWaitResults> _results;
         private readonly LocalAkkaEventBusTransport _transport;
 
-        //Configure()
         protected AkkaWaiterTest()
         {
             _actorSystem = ActorSystem.Create("test");
             _transport = new LocalAkkaEventBusTransport(_actorSystem);
-            Waiter = new LocalExplicitMessagesWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(1));
+            Waiter = new LocalMessagesWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(1));
             _results = ConfigureWaiter(Waiter);
         }
 
-        protected LocalExplicitMessagesWaiter Waiter { get; }
+        protected LocalMessagesWaiter Waiter { get; }
 
         public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(50);
 
@@ -34,7 +33,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             _actorSystem.Terminate().Wait();
         }
 
-        protected abstract Task<IWaitResults> ConfigureWaiter(LocalExplicitMessagesWaiter waiter);
+        protected abstract Task<IWaitResults> ConfigureWaiter(LocalMessagesWaiter waiter);
 
         protected void Publish(params object[] messages)
         {
@@ -42,16 +41,16 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
                 _transport.Publish(msg);
         }
 
-        protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null, TimeSpan? timeout = null)
+        protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null)
         {
             await _results;
 
             filter = filter ?? (t => true);
             Assert.Equal(msg,
                          _results.Result.All.OfType<IMessageMetadataEnvelop>()
-                                 .Select(m => m.Message)
-                                 .OfType<T>()
-                                 .FirstOrDefault(t => filter(t)));
+                                            .Select(m => m.Message)
+                                            .OfType<T>()
+                                            .FirstOrDefault(t => filter(t)));
         }
 
         protected void ExpectNoMsg<T>(T msg, TimeSpan? timeout = null) where T : class

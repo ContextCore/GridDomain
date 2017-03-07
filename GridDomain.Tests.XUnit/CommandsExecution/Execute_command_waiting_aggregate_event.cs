@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
@@ -69,7 +70,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new LongOperationCommand(100, Guid.NewGuid());
             var waiter = Node.NewExplicitWaiter()
-                             .Expect<SampleAggregateChangedEvent>(e => e.SourceId == cmd.AggregateId)
+                             .Expect<IMessageMetadataEnvelop<SampleAggregateChangedEvent>>(e => e.Message.SourceId == cmd.AggregateId)
                              .Create();
 
             Node.Execute(cmd);

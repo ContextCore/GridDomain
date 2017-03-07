@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Framework
         {
             var conditionBuilder = new ConditionBuilder<AnyMessagePublisher>();
             var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = () => new AnyMessagePublisher(node.Pipe, waiter);
+            conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;
         }
 

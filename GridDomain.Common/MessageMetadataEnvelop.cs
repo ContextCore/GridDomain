@@ -14,9 +14,9 @@ namespace GridDomain.Common
         public object Message { get; }
         public IMessageMetadata Metadata { get; }
 
-        public static MessageMetadataEnvelop New<T>(T msg, IMessageMetadata metadata)
+        public static MessageMetadataEnvelop New<T>(T msg, IMessageMetadata metadata = null)
         {
-            return new MessageMetadataEnvelop<T>(msg, metadata);
+            return new MessageMetadataEnvelop<T>(msg, metadata ?? MessageMetadata.Empty);
         }
 
         public static IMessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata)
