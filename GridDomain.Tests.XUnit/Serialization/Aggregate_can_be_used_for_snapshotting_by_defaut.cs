@@ -27,7 +27,7 @@ namespace GridDomain.Tests.XUnit.Serialization
 
             internal class TestAggregateCreatedEvent : DomainEvent
             {
-                public TestAggregateCreatedEvent(Guid id, int value) : base(id)
+                public TestAggregateCreatedEvent(Guid sourceId, int value) : base(sourceId)
                 {
                     Value = value;
                 }

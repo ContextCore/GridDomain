@@ -7,8 +7,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain.Commands
     {
         public AsyncFaultWithOneEventCommand(int parameter,
                                              Guid aggregateId,
-                                             Guid sagaId = default(Guid),
-                                             TimeSpan? sleepTime = null) : base(aggregateId, sagaId)
+                                             TimeSpan? sleepTime = null) : base(aggregateId)
         {
             Parameter = parameter;
             SleepTime = sleepTime ?? TimeSpan.FromSeconds(1);

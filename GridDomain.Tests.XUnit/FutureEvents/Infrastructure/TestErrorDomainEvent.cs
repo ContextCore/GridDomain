@@ -5,7 +5,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 {
     public class TestErrorDomainEvent : DomainEvent
     {
-        public TestErrorDomainEvent(string value, Guid id, int succedOnRetryNum) : base(id)
+        public TestErrorDomainEvent(string value, Guid sourceId, int succedOnRetryNum) : base(sourceId)
         {
             Value = value;
             SuccedOnRetryNum = succedOnRetryNum;

@@ -26,7 +26,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
                             Props.Create(
                                          () =>
                                              new TestSagaActor(TestActor,
-                                                               e => new ICommand[] {new TestCommand(e), new TestCommand(e)},
+                                                               e => new ICommand[] {new TestCommand(e.SourceId), new TestCommand(e.SourceId)},
                                                                TimeSpan.FromMilliseconds(50))));
 
             var testSagaActor— =

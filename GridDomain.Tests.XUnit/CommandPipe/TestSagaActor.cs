@@ -15,7 +15,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
                              TimeSpan? sleepTime = null)
         {
             var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);
-            commandFactory = commandFactory ?? (e => new ICommand[] {new TestCommand(e)});
+            commandFactory = commandFactory ?? (e => new ICommand[] {new TestCommand(e.SourceId)});
 
             Receive<IMessageMetadataEnvelop<DomainEvent>>(
                                                           m =>

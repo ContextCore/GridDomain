@@ -22,8 +22,8 @@ namespace GridDomain.Tests.XUnit
     {
         public Types_should_be_deserializable()
         {
-            Fixture.Register<ICommand>(() => new FakeCommand());
-            Fixture.Register<Command>(() => new FakeCommand());
+            Fixture.Register<ICommand>(() => new FakeCommand(Guid.NewGuid()));
+            Fixture.Register<Command>(() => new FakeCommand(Guid.NewGuid()));
         }
 
         protected override IEnumerable<Type> ExcludeTypes
@@ -38,7 +38,7 @@ namespace GridDomain.Tests.XUnit
 
         private class FakeCommand : Command
         {
-            public FakeCommand() : base(Guid.NewGuid()) {}
+            public FakeCommand(Guid aggregateId) : base(aggregateId) {}
         }
 
         protected override Assembly[] AllAssemblies { get; } = {

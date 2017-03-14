@@ -5,11 +5,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class HomeCreated : DomainEvent
     {
-        public HomeCreated(Guid id, Guid personId) : base(id)
+        public HomeCreated(Guid sourceId, Guid personId) : base(sourceId)
         {
             PersonId = personId;
         }
 
-        public Guid PersonId { get; set; }
+        public Guid PersonId { get; private set; }
     }
 }

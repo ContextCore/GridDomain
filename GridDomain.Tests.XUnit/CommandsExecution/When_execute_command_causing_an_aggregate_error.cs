@@ -24,7 +24,6 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new AsyncFaultWithOneEventCommand(42,
                                                                 Guid.NewGuid(),
-                                                                Guid.NewGuid(),
                                                                 TimeSpan.FromMilliseconds(500));
 
             await Node.Prepare(syncCommand)

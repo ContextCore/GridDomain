@@ -22,7 +22,7 @@ namespace GridDomain.CQRS
         protected Command(Guid aggregateId) : this(Guid.NewGuid(), aggregateId) {}
 
         public DateTime Time { get; private set; }
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
         public Guid SagaId { get; private set; }
         public Guid AggregateId { get; }
 

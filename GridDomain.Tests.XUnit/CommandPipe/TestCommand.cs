@@ -6,11 +6,9 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 {
     internal class TestCommand : Command
     {
-        public TestCommand(DomainEvent fromEvent) : base(Guid.NewGuid())
+        public TestCommand(Guid aggregateId):base(aggregateId)
         {
-            FromEvent = fromEvent;
-        }
 
-        public DomainEvent FromEvent { get; }
+        }
     }
 }

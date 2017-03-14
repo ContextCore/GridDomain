@@ -5,11 +5,9 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class Slept : DomainEvent
     {
-        public Slept(Guid sofaId) : base(sofaId)
+        public Slept(Guid aggregateId) : base(aggregateId)
         {
-            SofaId = sofaId;
         }
 
-        public Guid SofaId { get; }
     }
 }

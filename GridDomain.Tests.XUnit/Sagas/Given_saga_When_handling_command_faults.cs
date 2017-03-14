@@ -33,11 +33,7 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             var sagaData = new SoftwareProgrammingSagaData(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
                            {
-                               PersonId
-                                   =
-                                   Guid
-                                       .NewGuid
-                                       ()
+                               PersonId = Guid.NewGuid()
                            };
 
             var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
@@ -50,12 +46,11 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                                 BusinessDateTime.UtcNow,
                                                                 sagaId);
 
-            await
-                Node.NewDebugWaiter(TimeSpan.FromMinutes(10))
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
-                                                                                   m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
-                    .Create()
-                    .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
+            await Node.NewDebugWaiter()
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
+                                                                                     m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
+                      .Create()
+                      .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
 
             await Task.Delay(1000);
             var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
