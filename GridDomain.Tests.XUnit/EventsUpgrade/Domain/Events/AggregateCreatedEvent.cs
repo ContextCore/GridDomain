@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events
         public AggregateCreatedEvent(decimal value,
                                      Guid sourceId,
                                      DateTime? createdTime = default(DateTime?),
-                                     Guid sagaId = default(Guid)) : base(sourceId, createdTime, sagaId)
+                                     Guid sagaId = default(Guid)) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             Value = value;
         }

@@ -9,7 +9,7 @@ namespace GridDomain.Tests.XUnit.SampleDomain.Events
         public SampleAggregateCreatedEvent(string value,
                                            Guid sourceId,
                                            DateTime? createdTime = default(DateTime?),
-                                           Guid sagaId = default(Guid)) : base(sourceId, createdTime, sagaId)
+                                           Guid sagaId = default(Guid)) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             Value = value;
         }

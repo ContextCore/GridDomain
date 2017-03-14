@@ -33,8 +33,15 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             Add<TCommand>((c, a) =>
                           {
-                              commandExecutor((TCommand) c, a);
-                              return Task.FromResult(a);
+                              try
+                              {
+                                  commandExecutor((TCommand) c, a);
+                                  return Task.FromResult(a);
+                              }
+                              catch (Exception ex)
+                              {
+                                  return Task.FromException<TAggregate>(ex);
+                              }
                           });
         }
 
@@ -42,15 +49,22 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         {
             Add<TCommand>((c, a) =>
                           {
-                              var aggregate = commandExecutor((TCommand) c);
+                              try
+                              {
+                                  var aggregate = commandExecutor((TCommand) c);
 
-                              var eventsToSave = ((IAggregate) aggregate).GetUncommittedEvents()
-                                                                         .Cast<DomainEvent>()
-                                                                         .ToArray();
+                                  var eventsToSave = ((IAggregate) aggregate).GetUncommittedEvents()
+                                                                             .Cast<DomainEvent>()
+                                                                             .ToArray();
 
-                              aggregate.PersistEvents(Task.FromResult(eventsToSave),e => {}, () => {}, aggregate);
+                                  aggregate.PersistEvents(Task.FromResult(eventsToSave), e => { }, () => { }, aggregate);
 
-                              return Task.FromResult(aggregate);
+                                  return Task.FromResult(aggregate);
+                              }
+                              catch (Exception ex)
+                              {
+                                  return Task.FromException<TAggregate>(ex);
+                              }
                           });
         }
     }

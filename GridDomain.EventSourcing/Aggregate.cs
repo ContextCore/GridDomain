@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommonDomain;
 using CommonDomain.Core;
@@ -13,18 +15,20 @@ namespace GridDomain.EventSourcing
                              IMemento
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
-
         private static readonly Action<DomainEvent> EmptyApply = e => { };
         private static readonly Action EmptyContinue = () => { };
+        private Func<DomainEvent, DomainEvent> _eventsEnricher = e => e;
+        private readonly ConcurrentDictionary<Guid,DomainEvent> _eventToPersist = new ConcurrentDictionary<Guid,DomainEvent>();
+        private int _runningMethodsRunningCount = 0;
 
         internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> PersistEvents;
-        private Func<DomainEvent, DomainEvent> _eventsEnricher = e => e;
+        public bool IsMethodExecuting => _runningMethodsRunningCount > 0;
+        public bool IsPendingPersistence => _eventToPersist.Any();
 
-        private readonly HashSet<DomainEvent> _eventToPersist = new HashSet<DomainEvent>();
-        public IReadOnlyCollection<DomainEvent> EventToPersist => _eventToPersist;
-        public void MarkPersisted(DomainEvent e)
+        public bool MarkPersisted(DomainEvent e)
         {
-            _eventToPersist.Remove(e);
+            DomainEvent outRemoved;
+            return _eventToPersist.TryRemove(e.Id, out outRemoved);
         }
         // Only for simple implementation 
         Guid IMemento.Id
@@ -70,13 +74,15 @@ namespace GridDomain.EventSourcing
 
         protected void Emit(Task<DomainEvent[]> evtTask, Action<DomainEvent> onApply = null, Action continuation = null)
         {
+            Interlocked.Increment(ref _runningMethodsRunningCount);
             var task = evtTask.ContinueWith(t =>
                                             {
                                                 var enrichedEvents = t.Result.Select(_eventsEnricher).ToArray();
 
                                                 foreach (var e in enrichedEvents)
-                                                    _eventToPersist.Add(e);
+                                                    _eventToPersist.TryAdd(e.Id,e);
 
+                                                Interlocked.Decrement(ref _runningMethodsRunningCount);
                                                 return enrichedEvents;
                                             });
 
@@ -136,8 +142,7 @@ namespace GridDomain.EventSourcing
             if (!FutureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            Emit(e.Event);
-            Emit(new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
+            Emit(e.Event, new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
         }
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)

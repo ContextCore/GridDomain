@@ -15,7 +15,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             return base.Save(id, messages);
         }
 
-        public async Task<DomainEvent[]> Load(string id)
+        public new async Task<DomainEvent[]> Load(string id)
         {
             var objects = await base.Load(id);
             return objects.Cast<DomainEvent>().ToArray();

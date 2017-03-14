@@ -7,7 +7,7 @@ namespace GridDomain.EventSourcing.FutureEvents
         public FutureEventCanceledEvent(Guid futureEventId,
                                         Guid sourceId,
                                         DateTime? createdTime = null,
-                                        Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+                                        Guid sagaId = new Guid()) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             FutureEventId = futureEventId;
         }

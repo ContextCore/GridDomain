@@ -33,18 +33,11 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         }
 
         [Fact]
-        public async Task Given_sync_aggregate_method_Then_execute_throws_exception_from_aggregate()
-        {
-            await Node.Prepare(new AlwaysFaultCommand(Guid.NewGuid())).Execute().ShouldThrow<SampleAggregateException>();
-        }
-
-        [Fact]
         public async Task Given_sync_aggregate_method_Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
-            await
-                Node.Prepare(new AlwaysFaultCommand(Guid.NewGuid()))
-                    .Execute()
-                    .ShouldThrow<SampleAggregateException>(ex => ex.StackTrace.Contains(typeof(SampleAggregate).Name));
+            await Node.Prepare(new AlwaysFaultCommand(Guid.NewGuid()))
+                      .Execute()
+                      .ShouldThrow<SampleAggregateException>(ex => ex.StackTrace.Contains(typeof(SampleAggregate).Name));
         }
     }
 }

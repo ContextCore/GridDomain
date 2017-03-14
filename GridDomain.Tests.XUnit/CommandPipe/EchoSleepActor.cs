@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
     {
         public EchoSleepActor(TimeSpan sleepTime, IActorRef watcher)
         {
-            Receive<IMessageMetadataEnvelop>(
+            ReceiveAsync<IMessageMetadataEnvelop>(
                                              m => Task.Delay(sleepTime).ContinueWith(t => new HandlerExecuted(m)).PipeTo(Self, Sender));
 
             Receive<HandlerExecuted>(m =>

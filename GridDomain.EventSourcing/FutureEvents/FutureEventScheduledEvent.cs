@@ -9,14 +9,12 @@ namespace GridDomain.EventSourcing.FutureEvents
                                          DateTime raiseTime,
                                          DomainEvent @event,
                                          DateTime? createdTime = null,
-                                         Guid? sagaId = null) : base(sourceId, createdTime, sagaId)
+                                         Guid? sagaId = null) : base(sourceId, sagaId, id, createdTime)
         {
-            Id = id;
             RaiseTime = raiseTime;
             Event = @event;
         }
 
-        public Guid Id { get; }
         public DateTime RaiseTime { get; }
         public DomainEvent Event { get; }
     }

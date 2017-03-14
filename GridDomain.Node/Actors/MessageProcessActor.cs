@@ -41,7 +41,6 @@ namespace GridDomain.Node.Actors
             Receive<IMessageMetadataEnvelop>(envelop =>
                                              {
                                                  _monitor.IncrementMessagesReceived();
-
                                                  try
                                                  {
                                                      var sender = Sender;
@@ -52,19 +51,24 @@ namespace GridDomain.Node.Actors
                                                          .ContinueWith(t =>
                                                                        {
                                                                            var error = t?.Exception.UnwrapSingle();
-                                                                           sender.Tell(new HandlerExecuted(envelop, error));
-
-                                                                           if (error != null)
-                                                                               PublishFault(envelop, error);
+                                                                           FinishExecution(sender, envelop, error);
                                                                        });
                                                  }
                                                  catch (Exception ex)
                                                  {
                                                      //for case when handler cannot create its task
-                                                     Self.Tell(new HandlerExecuted(envelop, ex), Sender);
+                                                     FinishExecution(Self, envelop, ex);
                                                  }
                                              },
                                              m => m.Message is TMessage);
+        }
+
+        private void FinishExecution(IActorRef sender, IMessageMetadataEnvelop envelop, Exception error = null)
+        {
+            sender.Tell(new HandlerExecuted(envelop, error));
+
+            if (error != null)
+                PublishFault(envelop, error);
         }
 
         protected virtual void PublishFault(IMessageMetadataEnvelop msg, Exception ex)

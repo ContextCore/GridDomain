@@ -5,11 +5,12 @@ namespace GridDomain.EventSourcing
 {
     public class DomainEvent : ISourcedEvent, IHaveId
     {
-        public DomainEvent(Guid sourceId, DateTime? createdTime = null, Guid? sagaId = null)
+        public DomainEvent(Guid sourceId, Guid? sagaId = null, Guid? id = null, DateTime? createdTime = null)
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
             SagaId = sagaId ?? Guid.NewGuid();
+            Id = sagaId ?? Guid.NewGuid();
         }
 
         //Source of the event - aggregate that created it
@@ -17,7 +18,7 @@ namespace GridDomain.EventSourcing
         public Guid SourceId { get; }
         public Guid SagaId { get; private set; }
         public DateTime CreatedTime { get; }
-        public Guid Id => SourceId;
+        public Guid Id { get; }
 
 
         public DomainEvent CloneWithSaga(Guid sagaId)

@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
         public TestDomainEvent(string value,
                                Guid sourceId,
                                DateTime? createdTime = default(DateTime?),
-                               Guid sagaId = default(Guid)) : base(sourceId, createdTime, sagaId)
+                               Guid sagaId = default(Guid)) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             Value = value;
         }

@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
     public class Given_aggregate_When_raising_several_future_events_by_method_call
     {
         [Fact]
-        public async Task When_scheduling_future_event()
+        public void When_scheduling_future_event()
         {
             var aggregate = new FutureEventsAggregate(Guid.NewGuid());
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "value D");

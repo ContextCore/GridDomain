@@ -9,7 +9,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events
                              Guid lovelySofaId = default(Guid),
                              Guid favoriteCoffeMachineId = default(Guid),
                              Guid? sagaId = null,
-                             DateTime? createdTime = null) : base(sourceId, createdTime, sagaId)
+                             DateTime? createdTime = null) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             LovelySofaId = lovelySofaId;
             FavoriteCoffeMachineId = favoriteCoffeMachineId;

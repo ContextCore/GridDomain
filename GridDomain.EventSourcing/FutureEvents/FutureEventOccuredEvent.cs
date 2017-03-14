@@ -10,7 +10,7 @@ namespace GridDomain.EventSourcing.FutureEvents
             FutureEventId = futureEventId;
         }
 
-        public Guid Id { get; }
+        public new Guid Id { get; }
         public Guid FutureEventId { get; }
     }
 }

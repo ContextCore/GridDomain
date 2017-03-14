@@ -5,6 +5,6 @@ namespace GridDomain.EventSourcing.Sagas
 {
     public class SagaStateEvent : DomainEvent
     {
-        public SagaStateEvent(Guid sagaId) : base(sagaId, BusinessDateTime.UtcNow, sagaId) {}
+        public SagaStateEvent(Guid sagaId) : base(sagaId, sagaId: sagaId, createdTime: BusinessDateTime.UtcNow) {}
     }
 }

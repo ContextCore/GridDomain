@@ -11,7 +11,7 @@ namespace GridDomain.Tests.XUnit.Serialization
 
         private class SampleDomainEvent : DomainEvent
         {
-            public SampleDomainEvent(int parameter, Guid aggregateId) : base(aggregateId, null, aggregateId)
+            public SampleDomainEvent(int parameter, Guid aggregateId) : base(aggregateId, sagaId: aggregateId, createdTime: null)
             {
                 Parameter = parameter;
             }

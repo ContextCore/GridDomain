@@ -6,7 +6,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events
     public class CoffeMadeEvent : DomainEvent
     {
         public CoffeMadeEvent(Guid sourceId, Guid forPersonId, DateTime? createdTime = null, Guid sagaId = new Guid())
-            : base(sourceId, createdTime, sagaId)
+            : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             ForPersonId = forPersonId;
         }

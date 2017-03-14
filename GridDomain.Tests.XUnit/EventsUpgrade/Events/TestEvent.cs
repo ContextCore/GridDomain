@@ -6,7 +6,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Events
     public class TestEvent : DomainEvent
     {
         public TestEvent(Guid sourceId, DateTime? createdTime = null, Guid sagaId = new Guid())
-            : base(sourceId, createdTime, sagaId) {}
+            : base(sourceId, sagaId: sagaId, createdTime: createdTime) {}
 
         public TestEvent() : this(Guid.Empty) {}
 

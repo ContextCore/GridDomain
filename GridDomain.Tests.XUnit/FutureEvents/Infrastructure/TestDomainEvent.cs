@@ -11,12 +11,12 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
                                Guid sourceId,
                                Guid id = default(Guid),
                                DateTime? createdTime = default(DateTime?),
-                               Guid sagaId = default(Guid)) : base(sourceId, createdTime, sagaId)
+                               Guid sagaId = default(Guid)) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
         {
             Value = value;
             Id = id;
         }
 
-        public Guid Id { get; }
+        public new Guid Id { get; }
     }
 }

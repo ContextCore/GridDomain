@@ -73,13 +73,15 @@ namespace GridDomain.Node.Actors
             State.RegisterPersistence((evtTask, onEventPersist, continuation, newState) =>
                                           evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
                                                  .PipeTo(Self));
+
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
                                                            var cmd = m.Message;
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
                                                            State.RegisterEnricher(e => e.CloneWithSaga(cmd.SagaId));
-                                                           handler.ExecuteAsync(State, cmd);
+                                                           handler.ExecuteAsync(State, cmd)
+                                                                  .PipeTo(Self);
 
                                                            BecomeStacked(() => ProcessingCommand(m));
                                                        });
@@ -127,7 +129,7 @@ namespace GridDomain.Node.Actors
                                                                            return;
                                                                        }
 
-                                                                       if (e.State.EventToPersist.Any())
+                                                                       if (e.State.IsPendingPersistence)
                                                                            return; 
 
                                                                        try
@@ -158,8 +160,11 @@ namespace GridDomain.Node.Actors
                              //we can have events not projected yet
                              .With<TAggregate>(newState =>
                                                {
-                                                   if (newState.EventToPersist.Any())
-                                                       throw new UncommitedStateExeption();
+                                                   //handler finished execution but need to wait for events persistence
+                                                   //or aggregate method started execution but don't produce anything yet
+                                                   if (newState.IsPendingPersistence || newState.IsMethodExecuting)
+                                                       return;
+
                                                    //can renew state now, as we are waiting only for event projections
                                                    State = newState;
                                                    //projection finished progress, 
@@ -180,10 +185,11 @@ namespace GridDomain.Node.Actors
 
                                                              //all projections are finished, aggregate events are persisted
                                                              //it means command execution is finished
-                                                             if (!_messagesToProject.Any() && !State.EventToPersist.Any())
+                                                             if (!_messagesToProject.Any() && !State.IsPendingPersistence)
                                                                  FinishCommandExecution();
                                                          })
                              .With<IMessageMetadataEnvelop<ICommand>>(o => Stash.Stash())
+                             .With<GracefullShutdownRequest>(o => Stash.Stash())
                              .Default(e => { throw new UnknownMessageReceivedException(); })
                       );
         }
@@ -285,7 +291,7 @@ namespace GridDomain.Node.Actors
 
     internal class EventApplyException : Exception
     {
-        public EventApplyException(Exception exception) : base("An error occured while applying event to aggregate. State can be corrupted", exception) {}
+        public EventApplyException(Exception exception): base("An error occured while applying event to aggregate. State can be corrupted", exception) {}
     }
 
     internal class UnknownMessageReceivedException : Exception {}

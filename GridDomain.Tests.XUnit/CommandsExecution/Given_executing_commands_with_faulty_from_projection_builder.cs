@@ -20,8 +20,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 
         private static IMessageRouteMap CreateMap()
         {
-            return new CustomRouteMap(
-                                      r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
+            return new CustomRouteMap(r => r.RegisterHandler<SampleAggregateChangedEvent, OddFaultyMessageHandler>(e => e.SourceId),
                                       r => r.RegisterHandler<SampleAggregateCreatedEvent, FaultyCreateProjectionBuilder>(e => e.SourceId),
                                       r => r.RegisterAggregate(SampleAggregatesCommandHandler.Descriptor));
         }
@@ -36,12 +35,12 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         }
 
         [Fact]
-        public async Task When_expect_fault_and_ignore_fault_erorrs_Then_fault_is_received_and_contains_error_B()
+        public async Task When_expect_fault_and_ignore_fault_errors_Then_fault_is_received_and_contains_error_B()
         {
             var syncCommand = new LongOperationCommand(100, Guid.NewGuid());
             var res = await Node.Prepare(syncCommand)
                                 .Expect<AggregateChangedEventNotification>()
-                                .Or<IFault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId)
+                                .Or<Fault<SampleAggregateChangedEvent>>(f => f.Message.SourceId == syncCommand.AggregateId)
                                 .Execute(false);
 
             Assert.IsAssignableFrom<MessageHandleException>(res.Message<IFault<SampleAggregateChangedEvent>>()?.Exception);
@@ -52,7 +51,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             await Node.Prepare(new LongOperationCommand(8, Guid.NewGuid()))
                       .Expect<AggregateChangedEventNotification>()
-                      .Or<IFault<SampleAggregateChangedEvent>>()
+                      .Or<Fault<SampleAggregateChangedEvent>>()
                       .Execute()
                       .ShouldThrow<MessageHandleException>();
         }
