@@ -21,7 +21,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
                                                           m =>
                                                           {
                                                               Task.Delay(sleep)
-                                                                  .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty))
+                                                                  .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty,null))
                                                                   .PipeTo(Self, Sender);
                                                           });
 

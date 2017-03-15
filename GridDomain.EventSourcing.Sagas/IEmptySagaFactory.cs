@@ -6,7 +6,7 @@ namespace GridDomain.EventSourcing.Sagas
     ///     Provides any custom logic for empty saga creation
     /// </summary>
     /// <typeparam name="TSaga"></typeparam>
-    public interface IEmptySagaFactory<TSaga> where TSaga : ISagaInstance
+    public interface IEmptySagaFactory<TSaga> where TSaga : ISaga
     {
         TSaga Create(Guid id);
     }

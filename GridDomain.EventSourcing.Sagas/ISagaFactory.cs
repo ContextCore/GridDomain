@@ -1,7 +1,7 @@
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISagaFactory<out TSaga, in TStartMessage> where TSaga : ISagaInstance
+    public interface ISagaFactory<out TSaga, in TMessage> where TSaga : ISagaInstance
     {
-        TSaga Create(TStartMessage message);
+        TSaga Create(TMessage message);
     }
 }

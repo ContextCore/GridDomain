@@ -14,6 +14,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors.CommandPipe;
+using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Node.Actors
 {
@@ -22,36 +23,37 @@ namespace GridDomain.Node.Actors
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
-    /// <typeparam name="TSaga"></typeparam>
-    /// <typeparam name="TSagaState"></typeparam>
-    public class SagaActor<TSaga, TSagaState> : AggregateActor<SagaStateAggregate<TSagaState>> where TSaga : class, ISagaInstance
-                                                                           where TSagaState : ISagaState
+    /// <typeparam name="TMachine"></typeparam>
+    /// <typeparam name="TState"></typeparam>
+    public class SagaActor<TMachine, TState> : AggregateActor<SagaStateAggregate<TState>> where TMachine : SagaStateMachine<TState>
+                                                                                          where TState : class, ISagaState
     {
         private readonly ProcessEntry _exceptionOnTransit;
-        private readonly ISagaProducer<TSaga> _producer;
+        private readonly ISagaProducer<ISaga<TMachine, TState>> _producer;
         private readonly IPublisher _publisher;
         private readonly Dictionary<Type, string> _sagaIdFields;
         private readonly ProcessEntry _sagaProducedCommand;
         private readonly HashSet<Type> _sagaStartMessageTypes;
-        private TSaga _saga;
-      ///  private new TSagaState State => (TSagaState) base.State;
+        private readonly ProcessEntry _stateChanged;
 
-        public SagaActor(ISagaProducer<TSaga> producer,
+        private ISaga<TMachine,TState> _saga;
+
+        public SagaActor(ISagaProducer<ISaga<TMachine, TState>> producer,
                          IPublisher publisher,
                          IActorRef schedulerActorRef,
                          IActorRef customHandlersActorRef,
                          ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                          IConstructAggregates aggregatesConstructor)
-                      : base(new SagaStateCommandHandler<TSagaState>(), schedulerActorRef,
-                            publisher,
-                            snapshotsPersistencePolicy,
-                            aggregatesConstructor,
-                            customHandlersActorRef)
+
+            : base(new SagaStateCommandHandler<TState>(), schedulerActorRef,
+                   publisher,
+                   snapshotsPersistencePolicy,
+                   aggregatesConstructor,
+                   customHandlersActorRef)
         {
             _publisher = publisher;
             _producer = producer;
-            _sagaStartMessageTypes =
-                new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
+            _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
 
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name,
@@ -63,55 +65,66 @@ namespace GridDomain.Node.Actors
                                                     SagaActorLiterals.SagaProducedACommand);
 
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
-            Command<IMessageMetadataEnvelop<DomainEvent>>(m =>
-                                                          {
-                                                              var msg = m.Message;
-                                                              var metadata = m.Metadata;
-
-                                                              Monitor.IncrementMessagesReceived();
-
-                                                              if (_sagaStartMessageTypes.Contains(msg.GetType()))
-                                                              {
-                                                                  var state = CreateStateFromStartMessage(msg);
-                                                                  Self.Tell(new CreateNewStateCommand<TSagaState>(Id,state));
-                                                                  BecomeStacked(() => SagaInitializing());
-                                                                  return;
-                                                              }
-
-                                                              //block any other executing until saga completes transition
-                                                              ProcessSaga(msg, metadata).PipeTo(Self, Sender);
-                                                              BecomeStacked(() => SagaProcessWaiting(msg, metadata));
-                                                          },
+            Command<IMessageMetadataEnvelop<DomainEvent>>(CreateSagaIfNeed,
                                                           e => GetSagaId(e.Message) == Id);
-
-            Command<IMessageMetadataEnvelop<IFault>>(m =>
-                                                     {
-                                                         var fault = m.Message;
-                                                         var metadata = m.Metadata;
-
-                                                         Monitor.IncrementMessagesReceived();
-
-                                                         //block any other executing until saga completes transition
-                                                         ProcessSaga(fault, metadata).PipeTo(Self, Sender);
-                                                         BecomeStacked(() => SagaProcessWaiting(fault, metadata));
-                                                     },
-                                                     fault => fault.Message.SagaId == Id);
+            Command<IMessageMetadataEnvelop<IFault>>(CreateSagaIfNeed,
+                                                     e => GetSagaId(e.Message) == Id);
         }
 
-        private void SagaInitializing()
+        private void CreateSagaIfNeed(IMessageMetadataEnvelop m)
         {
-            throw new NotImplementedException();
+            var msg = m.Message;
+            var metadata = m.Metadata;
+
+            Monitor.IncrementMessagesReceived();
+            if (_sagaStartMessageTypes.Contains(msg.GetType()))
+            {
+               // var state = (_producer.Create(msg).Data as SagaStateAggregate<TSagaState>).Data;
+                _saga = _producer.Create(msg);
+
+                var cmd = new CreateNewStateCommand<TState>(Id, _saga.Data.Data);
+
+                Self.Ask<CommandExecuted>(cmd)
+                    .PipeTo(Self);
+
+                BecomeStacked(() => SagaInitializing(msg, metadata));
+                return;
+            }
+
+            TransitSaga(msg, metadata);
         }
 
-        private TSagaState CreateStateFromStartMessage(DomainEvent msg)
+        private void TransitSaga(object msg, IMessageMetadata metadata)
         {
-             throw new NotImplementedException();
+            //block any other executing until saga completes transition
+            //cast is need for dynamic call of Transit
+            Task processSagaTask = (Saga as ISaga).Transit((dynamic) msg);
+            processSagaTask.ContinueWith(t => new SagaTransited(Saga.CommandsToDispatch.ToArray(),
+                                                                metadata,
+                                                                _sagaProducedCommand,
+                                                                null))
+                           .PipeTo(Self, Sender);
+
+            BecomeStacked(() => SagaProcessWaiting(msg, metadata));
         }
 
-        public TSaga Saga => _saga ?? (_saga = _producer.Create(State));
-        private ProcessEntry _stateChanged { get; }
+        private void SagaInitializing(object msg, IMessageMetadata metadata)
+        {
+            CommandAny(c =>
+                       {
+                           c.Match()
+                            .With<CommandExecuted>(cmd =>
+                                                   {
+                                                       UnbecomeStacked();
+                                                       TransitSaga(msg, metadata);
+                                                   })
+                            .Default(mbox => Stash.Stash());
+                       });
+        }
 
-        private Guid GetSagaId(DomainEvent msg)
+        public ISaga<TMachine,TState> Saga => _saga ?? (_saga = _producer.Create(State));
+
+        private Guid GetSagaId(object msg)
         {
             var type = msg.GetType();
             string fieldName;
@@ -119,7 +132,7 @@ namespace GridDomain.Node.Actors
             if (_sagaIdFields.TryGetValue(type, out fieldName))
                 return (Guid) type.GetProperty(fieldName).GetValue(msg);
 
-            return msg.SagaId;
+            throw new CannotFindSagaIdException(msg);
         }
 
         protected override void Terminating()
@@ -148,16 +161,20 @@ namespace GridDomain.Node.Actors
                            o.Match()
                             .With<SagaTransited>(r =>
                                                  {
-                                                     PersistState(messageMetadata);
+                                                     var stateChangeCommand = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, "", message.GetType());
+                                                     Self.Tell(stateChangeCommand);
+                                                     // PersistState(messageMetadata);
                                                      NotifySenderAndResume(r);
                                                  })
-                            .With<SagaTransitFault>(f =>
-                                                    {
-                                                        PublishError(f.Message.Message,
-                                                                     messageMetadata,
-                                                                     f.Message.Exception.UnwrapSingle());
-                                                        NotifySenderAndResume(f);
-                                                    })
+                            .With<Status.Failure>(f =>
+                                                  {
+                                                      Saga.ClearCommandsToDispatch();
+                                                      var fault = PublishError(message,
+                                                                               messageMetadata,
+                                                                               f.Cause.UnwrapSingle());
+
+                                                      NotifySenderAndResume(new SagaTransitFault(fault, messageMetadata));
+                                                  })
                             .Default(m => Stash.Stash());
                        });
         }
@@ -170,7 +187,13 @@ namespace GridDomain.Node.Actors
             UnbecomeStacked();
         }
 
-        private void PublishError(object message, IMessageMetadata messageMetadata, Exception exception)
+        protected override void FinishCommandExecution(ICommand cmd, IMessageMetadata metadata, IActorRef commandSender)
+        {
+            base.FinishCommandExecution(cmd, metadata, commandSender);
+            commandSender.Tell(new CommandExecuted(cmd.Id));
+        }
+
+        private IFault PublishError(object message, IMessageMetadata messageMetadata, Exception exception)
         {
             var processorType = _producer.Descriptor.StateMachineType;
 
@@ -180,34 +203,12 @@ namespace GridDomain.Node.Actors
             var metadata = messageMetadata.CreateChild(fault.SagaId, _exceptionOnTransit);
 
             _publisher.Publish(fault, metadata);
-        }
-
-        private Task<ISagaTransitCompleted> ProcessSaga(object message, IMessageMetadata domainEventMetadata)
-        {
-            //cast is need for dynamic call of Transit
-            Task processSagaTask = (Saga as ISagaInstance).Transit((dynamic) message);
-            return processSagaTask.ContinueWith(t =>
-                                                {
-                                                    if (t.IsCanceled || t.IsFaulted)
-                                                    {
-                                                        Saga.ClearCommandsToDispatch();
-                                                        var exception = t.Exception as Exception ?? new TimeoutException();
-                                                        var fault = Fault.NewGeneric(message, exception, Id, typeof(TSaga));
-                                                        return (ISagaTransitCompleted) new SagaTransitFault(fault, domainEventMetadata);
-                                                    }
-
-                                                    var sagaTransited = new SagaTransited(Saga.CommandsToDispatch.ToArray(),
-                                                                                          domainEventMetadata,
-                                                                                          _sagaProducedCommand);
-                                                    Saga.ClearCommandsToDispatch();
-
-                                                    return sagaTransited;
-                                                });
+            return fault;
         }
 
         private void PersistState(IMessageMetadata mutatorMessageMetadata)
         {
-            var stateChangeEvents = ((IAggregate)State).GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            var stateChangeEvents = ((IAggregate) State).GetUncommittedEvents().Cast<DomainEvent>().ToArray();
             var totalEvents = stateChangeEvents.Length;
             var persistedEvents = 0;
 
@@ -217,21 +218,40 @@ namespace GridDomain.Node.Actors
                            NotifyPersistenceWatchers(new Persisted(e));
                            //should save snapshot only after all messages persisted as state was already modified by all of them
                            if (++persistedEvents == totalEvents)
-                               OnStatePersisted(stateChangeEvents, mutatorMessageMetadata);
+                           {
+                               //   SnapshotsPolicy.MarkEventsProduced(stateChangeEvents.Length);
+                               foreach (var e1 in stateChangeEvents)
+                               {
+                                   var metadata = mutatorMessageMetadata.CreateChild(e1.SourceId, _stateChanged);
+                                   _publisher.Publish(e1, metadata);
+                               }
+                               TrySaveSnapshot();
+                           }
                        });
 
-            ((IAggregate)State).ClearUncommittedEvents();
+            ((IAggregate) State).ClearUncommittedEvents();
+        }
+    }
+
+    public class CommandExecuted
+    {
+        public Guid CommandId { get; }
+
+        public CommandExecuted(Guid commandId)
+        {
+            CommandId = commandId;
         }
 
-        private void OnStatePersisted(DomainEvent[] stateChangeEvents, IMessageMetadata eventsMetadata)
+        public static CommandExecuted Instance { get; } = new CommandExecuted(Guid.Empty);
+    }
+
+    internal class CannotFindSagaIdException : Exception
+    {
+        public object Msg { get; }
+
+        public CannotFindSagaIdException(object msg)
         {
-            //   SnapshotsPolicy.MarkEventsProduced(stateChangeEvents.Length);
-            foreach (var e in stateChangeEvents)
-            {
-                var metadata = eventsMetadata.CreateChild(e.SourceId, _stateChanged);
-                _publisher.Publish(e, metadata);
-            }
-            TrySaveSnapshot();
+            Msg = msg;
         }
     }
 }

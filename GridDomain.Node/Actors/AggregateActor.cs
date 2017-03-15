@@ -85,11 +85,11 @@ namespace GridDomain.Node.Actors
                                                            handler.ExecuteAsync(State, cmd)
                                                                   .PipeTo(Self);
 
-                                                           BecomeStacked(() => ProcessingCommand(m));
+                                                           BecomeStacked(() => ProcessingCommand(m,Sender));
                                                        });
         }
 
-        private void ProcessingCommand(IMessageMetadataEnvelop<ICommand> commandEnvelop)
+        private void ProcessingCommand(IMessageMetadataEnvelop<ICommand> commandEnvelop, IActorRef commandSender)
         {
             var command = commandEnvelop.Message;
             var commandMetadata = commandEnvelop.Metadata;
@@ -155,8 +155,8 @@ namespace GridDomain.Node.Actors
                                                                    });
                                                     })
                              //aggregate raised an error during command execution
-                             .With<Failure>(f => HandleError(command, commandMetadata, f.Exception))
-                             .With<Status.Failure>(f => HandleError(command, commandMetadata, f.Cause))
+                             .With<Failure>(f => HandleError(command, commandMetadata, f.Exception, commandSender))
+                             .With<Status.Failure>(f => HandleError(command, commandMetadata, f.Cause, commandSender))
                              //aggregate command execution is finished 
                              //produced events are persisted
                              //we can have events not projected yet
@@ -171,7 +171,7 @@ namespace GridDomain.Node.Actors
                                                    State = newState;
                                                    //projection finished progress, 
                                                    if (!_messagesToProject.Any())
-                                                       FinishCommandExecution();
+                                                       FinishCommandExecution(command, commandMetadata,commandSender);
                                                    //projection in progress, will finish execution later by notification from message processor
                                                })
                              //projection of event pack from aggregate finished
@@ -188,7 +188,7 @@ namespace GridDomain.Node.Actors
                                                              //all projections are finished, aggregate events are persisted
                                                              //it means command execution is finished
                                                              if (!_messagesToProject.Any() && !State.IsPendingPersistence)
-                                                                 FinishCommandExecution();
+                                                                 FinishCommandExecution(command, commandMetadata,commandSender);
                                                          })
                              .With<IMessageMetadataEnvelop<ICommand>>(o => Stash.Stash())
                              .With<GracefullShutdownRequest>(o => Stash.Stash())
@@ -196,7 +196,7 @@ namespace GridDomain.Node.Actors
                       );
         }
 
-        private void HandleError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
+        private void HandleError(ICommand command, IMessageMetadata commandMetadata, Exception exception, IActorRef commandSender)
         {
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
 
@@ -205,10 +205,10 @@ namespace GridDomain.Node.Actors
             Project(fault, producedFaultMetadata);
             Log.Error(exception, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, exception, command);
             _publisher.Publish(fault, producedFaultMetadata);
-            FinishCommandExecution();
+            FinishCommandExecution(command, commandMetadata, commandSender);
         }
 
-        private void FinishCommandExecution()
+        protected virtual void FinishCommandExecution(ICommand cmd, IMessageMetadata metadata, IActorRef commandSender)
         {
             UnbecomeStacked();
             Stash.UnstashAll();

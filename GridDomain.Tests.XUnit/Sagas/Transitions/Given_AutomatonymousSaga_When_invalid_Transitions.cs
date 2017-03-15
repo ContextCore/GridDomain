@@ -4,6 +4,7 @@ using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using Xunit;
 using Xunit.Abstractions;
+using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
@@ -19,9 +20,9 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private class WrongMessage {}
 
-        private static async Task When_execute_invalid_transaction(ISagaInstance sagaInstance)
+        private static async Task When_execute_invalid_transaction(ISaga saga)
         {
-            await sagaInstance.Transit(new WrongMessage());
+            await saga.Transit(new WrongMessage());
         }
 
         private async Task SwallowException(Func<Task> act)

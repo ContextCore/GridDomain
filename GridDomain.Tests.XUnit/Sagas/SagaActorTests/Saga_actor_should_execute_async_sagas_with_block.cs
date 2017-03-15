@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit;
+using Akka.TestKit.TestActors;
 using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging.Akka;
@@ -24,26 +25,25 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             producer.RegisterAll<AsyncLongRunningSagaFactory, TestState>(new AsyncLongRunningSagaFactory(logger));
             _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             _localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
-
+            var blackHole = Sys.ActorOf(BlackHoleActor.Props);
             var props =
                 Props.Create(
                              () =>
-                                 new SagaActor<ISaga<AsyncLongRunningSaga, TestState>, TestState>(
-                                                                                                  producer,
-                                                                                                  _localAkkaEventBusTransport,
-                                                                                                  new EachMessageSnapshotsPersistencePolicy(),
-                                                                                                  new AggregateFactory()));
+                                 new SagaActor<AsyncLongRunningSaga, TestState>(
+                                                                                producer,
+                                                                                _localAkkaEventBusTransport,
+                                                                                blackHole,
+                                                                                blackHole,
+                                                                                new EachMessageSnapshotsPersistencePolicy(),
+                                                                                new AggregateFactory()));
 
             _sagaId = Guid.NewGuid();
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
 
-            _actor =
-                ActorOfAsTestActorRef
-                    <SagaActor<ISaga<AsyncLongRunningSaga, TestState>, TestState>>(props, name);
+            _actor = ActorOfAsTestActorRef<SagaActor<AsyncLongRunningSaga, TestState>>(props, name);
         }
 
-        private readonly
-            TestActorRef<SagaActor<ISaga<AsyncLongRunningSaga, TestState>, TestState>> _actor;
+        private readonly TestActorRef<SagaActor<AsyncLongRunningSaga, TestState>> _actor;
 
         private readonly Guid _sagaId;
         private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;

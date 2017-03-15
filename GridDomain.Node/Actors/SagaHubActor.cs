@@ -8,19 +8,20 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    public class SagaHubActor<TSaga, TSagaState> : PersistentHubActor where TSaga : class, ISagaInstance
-                                                                      where TSagaState : Aggregate
+    public class SagaHubActor<TMachine, TState> : PersistentHubActor where TMachine : SagaStateMachine<TState>
+                                                                      where TState : class,ISagaState
     {
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
-        private readonly Type _actorType = typeof(SagaActor<TSaga, TSagaState>);
+        private readonly Type _actorType = typeof(SagaActor<TMachine, TState>);
 
-        public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf, ISagaProducer<TSaga> sagaProducer)
-            : base(recycleConf, typeof(TSaga).Name)
+        public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf, ISagaProducer<ISaga<TMachine,TState>> sagaProducer)
+            : base(recycleConf, typeof(TMachine).Name)
         {
             _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType,
                                                                                          m => m.CorrelationField);
@@ -28,7 +29,7 @@ namespace GridDomain.Node.Actors
 
         protected override string GetChildActorName(object message)
         {
-            return AggregateActorName.New<TSagaState>(GetChildActorId(message)).ToString();
+            return AggregateActorName.New<TState>(GetChildActorId(message)).ToString();
         }
 
         protected override Guid GetChildActorId(object message)
