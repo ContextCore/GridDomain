@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISagaProducer<out TSaga> where TSaga : ISagaInstance
+    public interface ISagaProducer<out TSaga> where TSaga : ISaga
     {
         ISagaDescriptor Descriptor { get; }
 

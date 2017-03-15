@@ -29,8 +29,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var props =
                 Props.Create(
                              () =>
-                                 new SagaActor<AsyncLongRunningSaga, TestState>(
-                                                                                producer,
+                                 new SagaActor<AsyncLongRunningSaga, TestState>(producer,
                                                                                 _localAkkaEventBusTransport,
                                                                                 blackHole,
                                                                                 blackHole,
@@ -61,11 +60,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
             //B should not be processed until A is completed
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
-            Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.Data.Data.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
 
             //B should not be processed after A is completed
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
-            Assert.Equal(domainEventB.SourceId, _actor.UnderlyingActor.Saga.Data.Data.ProcessingId);
+            Assert.Equal(domainEventB.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
         }
 
         [Fact]
@@ -78,7 +77,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
 
-            Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.Data.Data.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
         }
 
         [Fact]

@@ -67,6 +67,7 @@ namespace GridDomain.Node.Actors
             //id from name is used due to saga.Data can be not initialized before messages not belonging to current saga will be received
             Command<IMessageMetadataEnvelop<DomainEvent>>(CreateSagaIfNeed,
                                                           e => GetSagaId(e.Message) == Id);
+
             Command<IMessageMetadataEnvelop<IFault>>(CreateSagaIfNeed,
                                                      e => GetSagaId(e.Message) == Id);
         }
@@ -79,10 +80,9 @@ namespace GridDomain.Node.Actors
             Monitor.IncrementMessagesReceived();
             if (_sagaStartMessageTypes.Contains(msg.GetType()))
             {
-               // var state = (_producer.Create(msg).Data as SagaStateAggregate<TSagaState>).Data;
                 _saga = _producer.Create(msg);
 
-                var cmd = new CreateNewStateCommand<TState>(Id, _saga.Data.Data);
+                var cmd = new CreateNewStateCommand<TState>(Id, _saga.State);
 
                 Self.Ask<CommandExecuted>(cmd)
                     .PipeTo(Self);
@@ -162,9 +162,9 @@ namespace GridDomain.Node.Actors
                             .With<SagaTransited>(r =>
                                                  {
                                                      var stateChangeCommand = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, "", message.GetType());
-                                                     Self.Tell(stateChangeCommand);
+                                                     Self.Ask<CommandExecuted>(stateChangeCommand)
+                                                         .ContinueWith(t => NotifySenderAndResume(r));
                                                      // PersistState(messageMetadata);
-                                                     NotifySenderAndResume(r);
                                                  })
                             .With<Status.Failure>(f =>
                                                   {

@@ -25,10 +25,7 @@ namespace GridDomain.Node.Configuration.Composition
 
     public class SagaConfiguration<TSaga, TState, TFactory> : IContainerConfiguration where TSaga : SagaStateMachine<TState>
                                                                                       where TState : class, ISagaState
-                                                                                      where TFactory :
-                                                                                      ISagaFactory
-                                                                                      <ISaga<TSaga, TState>,
-                                                                                          SagaStateAggregate<TState>>
+                                                                                      where TFactory : ISagaFactory<ISaga<TSaga, TState>, SagaStateAggregate<TState>>
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly ISagaDescriptor _descriptor;

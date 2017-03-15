@@ -37,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
 
             data.ApplyEvents(eventsToReplay);
 
-            var sagaInstance = SagaInstance.New(saga, data, _logger);
+            var sagaInstance = Saga.New(saga, data, _logger);
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());

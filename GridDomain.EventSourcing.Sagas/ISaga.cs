@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.CQRS;
@@ -6,16 +7,16 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISagaInstance
+    public interface ISaga
     {
         IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
-        IAggregate Data { get; }
+        ISagaState State { get; } 
         void ClearCommandsToDispatch();
         Task Transit<T>(T message) where T : class;
     }
 
-    public interface ISaga<TSaga, TData> : ISagaInstance where TData : ISagaState
+    public interface ISaga<TSaga, TData> : ISaga where TData : ISagaState
     {
-        SagaStateAggregate<TData> Data { get; }
+        TData State { get; }
     }
 }

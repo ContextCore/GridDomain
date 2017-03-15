@@ -11,6 +11,7 @@ using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
+using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
@@ -21,9 +22,9 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             log = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
 
-        private static void When_execute_valid_transaction<T>(ISagaInstance sagaInstance, T e = null) where T : DomainEvent
+        private static void When_execute_valid_transaction<T>(ISaga saga, T e = null) where T : DomainEvent
         {
-            sagaInstance.Transit(e);
+            saga.Transit(e);
         }
 
         private readonly ILogger log;

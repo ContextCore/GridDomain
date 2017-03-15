@@ -199,8 +199,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                     .CheckProducedCommands()
                     .CheckProducedState(state, compare_ignore_complex_event_status);
 
-            Assert.AreEqual(sagaId, scenario.Saga.Data.Id);
-            Assert.AreEqual(sagaId, scenario.Saga.Data.Data.Id);
+            Assert.AreEqual(sagaId, scenario.Saga.State.Id);
         }
 
         [Test]

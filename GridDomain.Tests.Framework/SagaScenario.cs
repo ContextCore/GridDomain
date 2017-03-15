@@ -109,26 +109,26 @@ namespace GridDomain.Tests.Framework
         public SagaScenario<TSaga, TData, TFactory> CheckProducedState(TData expectedState,
                                                                        CompareLogic customCompareLogic = null)
         {
-            EventsExtensions.CompareState(expectedState, Saga.Data.Data, customCompareLogic);
+            EventsExtensions.CompareState(expectedState, Saga.State, customCompareLogic);
             return this;
         }
 
         public SagaScenario<TSaga, TData, TFactory> CheckProducedStateIsNotChanged()
         {
-            EventsExtensions.CompareState(InitialState, Saga.Data.Data);
+            EventsExtensions.CompareState(InitialState, Saga.State);
             return this;
         }
 
         public SagaScenario<TSaga, TData, TFactory> CheckProducedStateName(string stateName)
         {
-            Assert.AreEqual(stateName, Saga.Data.Data.CurrentStateName);
+            Assert.AreEqual(stateName, Saga.State.CurrentStateName);
             return this;
         }
 
         public SagaScenario<TSaga, TData, TFactory> CheckOnlyStateNameChanged(string stateName)
         {
             CheckProducedStateName(stateName);
-            EventsExtensions.CompareStateWithoutName(InitialState, Saga.Data.Data);
+            EventsExtensions.CompareStateWithoutName(InitialState, Saga.State);
 
             return this;
         }

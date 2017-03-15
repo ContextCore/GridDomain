@@ -56,8 +56,8 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             _commandsToDispatch.Clear();
         }
 
-        SagaStateAggregate<TState> ISaga<TMachine, TState>.Data => _dataAggregate;
-        public IAggregate Data => _dataAggregate;
+        ISagaState ISaga.State => State;
+        public TState State => _dataAggregate.Data;
 
         public Task Transit<TMessage>(TMessage message) where TMessage : class
         {
@@ -102,5 +102,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             return false;
         }
 
+ 
     }
 }
