@@ -102,11 +102,11 @@ namespace GridDomain.Node.Actors
         {
             //block any other executing until saga completes transition
             //cast is need for dynamic call of Transit
-            Task<TState> processSagaTask = Saga.CreateNextState((dynamic) msg);
-            processSagaTask.ContinueWith(t => new SagaTransited(Saga.CommandsToDispatch.ToArray(),
+            Task<StatePreview<TState>> processSagaTask = Saga.CreateNextState((dynamic) msg);
+            processSagaTask.ContinueWith(t => new SagaTransited(t.Result.ProducedCommands.ToArray(),
                                                                 metadata,
                                                                 _sagaProducedCommand,
-                                                                t.Result,
+                                                                t.Result.State,
                                                                 t.Exception))
                            .PipeTo(Self);
 
@@ -162,7 +162,7 @@ namespace GridDomain.Node.Actors
                            o.Match()
                             .With<SagaTransited>(r =>
                                                  {
-                                                     var cmd = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, "", message.GetType());
+                                                     var cmd = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, State.Data.CurrentStateName, message);
                                                      var envelop = new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata);
                                                      BecomeStacked(AwaitingCommandBehavior);
                                                      //write new data to saga state during command execution
@@ -172,7 +172,7 @@ namespace GridDomain.Node.Actors
                                                  })
                             .With<Status.Failure>(f =>
                                                   {
-                                                      Saga.ClearCommandsToDispatch();
+                                                      //Saga.ClearCommandsToDispatch();
                                                       var fault = PublishError(message,
                                                                                messageMetadata,
                                                                                f.Cause.UnwrapSingle());

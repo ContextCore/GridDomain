@@ -2,6 +2,9 @@ using System;
 using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.XUnit.CommandsExecution;
+using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
 using Xunit.Abstractions;
 using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
@@ -20,9 +23,9 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private class WrongMessage {}
 
-        private static async Task When_execute_invalid_transaction(ISaga saga)
+        private static async Task<StatePreview<SoftwareProgrammingSagaData>> When_execute_invalid_transaction(ISaga<SoftwareProgrammingSaga,SoftwareProgrammingSagaData> saga)
         {
-            await saga.CreateNextState(new WrongMessage());
+            return await saga.CreateNextState(new WrongMessage());
         }
 
         private async Task SwallowException(Func<Task> act)
@@ -45,10 +48,11 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         }
 
         [Fact]
-        public async Task No_commands_are_proroduced()
+        public async Task No_commands_are_produced()
         {
-            await SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
-            Assert.Empty(_given.SagaInstance.CommandsToDispatch);
+            StatePreview<SoftwareProgrammingSagaData> newState = null;
+            await SwallowException(async () => newState = await When_execute_invalid_transaction(_given.SagaInstance));
+            Assert.Empty(newState?.ProducedCommands);
         }
 
         [Fact]
@@ -61,9 +65,9 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         }
 
         [Fact]
-        public void Null_message_Exception_occurs()
+        public async Task Null_message_Exception_occurs()
         {
-            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await _given.SagaInstance.CreateNextState((object) null));
+            await _given.SagaInstance.CreateNextState((object) null).ShouldThrow<UnbindedMessageReceivedException>();
         }
 
         [Fact]

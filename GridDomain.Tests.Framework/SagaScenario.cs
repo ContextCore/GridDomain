@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
@@ -11,6 +13,32 @@ using Ploeh.AutoFixture.Dsl;
 
 namespace GridDomain.Tests.Framework
 {
+
+    public static class SagaScenarioExtensions
+    {
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedCommands<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+        {
+            var scnearion = await scenarioInProgress;
+            scnearion.CheckProducedCommands();
+            return scnearion;
+        }
+
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckOnlyStateNameChanged<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, string stateName) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+        {
+            var scnearion = await scenarioInProgress;
+            scnearion.CheckOnlyStateNameChanged(stateName);
+            return scnearion;
+        }
+
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedState<TSaga, TData, TFactory>(
+            this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, TData expectedState, CompareLogic logic = null) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+        {
+            var scnearion = await scenarioInProgress;
+            scnearion.CheckProducedState(expectedState, logic);
+            return scnearion;
+        }
+    }
+
     public class SagaScenario<TSaga, TData, TFactory> where TSaga : SagaStateMachine<TData>
                                                       where TData : class, ISagaState
                                                       where TFactory : class,
@@ -26,8 +54,8 @@ namespace GridDomain.Tests.Framework
         public ISaga<TSaga, TData> Saga { get; private set; }
         protected SagaStateAggregate<TData> SagaStateAggregate { get; private set; }
 
-        protected ICommand[] ExpectedCommands { get; private set; } = {};
-        protected ICommand[] ProducedCommands { get; private set; } = {};
+        public ICommand[] ExpectedCommands { get; private set; } = {};
+        public ICommand[] ProducedCommands { get; private set; } = {};
         protected DomainEvent[] GivenEvents { get; private set; } = {};
         protected DomainEvent[] ReceivedEvents { get; private set; } = {};
 
@@ -80,7 +108,7 @@ namespace GridDomain.Tests.Framework
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> Run()
+        public async Task<SagaScenario<TSaga, TData, TFactory>> Run()
         {
             if (SagaStateAggregate != null)
                 Saga = SagaProducer.Create(SagaStateAggregate);
@@ -89,13 +117,18 @@ namespace GridDomain.Tests.Framework
                 Saga = SagaProducer.Create(evt);
 
             //When
-
+            var producedCommands = new List<Command>();
             foreach (var evt in ReceivedEvents)
                 //cast to allow dynamic to locate Transit method
-                (Saga as ISaga).CreateNextState((dynamic) evt);
+            {
+                Task<StatePreview<TData>> newStateFromEventTask = Saga.CreateNextState((dynamic) evt);
+                var newState = await newStateFromEventTask;
+                producedCommands.AddRange(newState.ProducedCommands);
+                Saga.State = newState.State;
+            }
 
             //Then
-            ProducedCommands = Saga.CommandsToDispatch.ToArray();
+            ProducedCommands = producedCommands.ToArray();
 
             return this;
         }

@@ -42,17 +42,18 @@ namespace Shop.Tests.Unit.BuyNowSaga
 
             _inMemoryPriceCalculator.Add(state.SkuId, new Money(100));
 
-            scenario.GivenState(sagaId, state)
-                    .When(
-                          new ItemAdded(state.OrderId,
-                                        state.SkuId,
-                                        state.Quantity,
-                                        await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity),
-                                        1).CloneWithSaga(sagaId))
-                    .Then(new ReserveStockCommand(state.StockId, state.UserId, state.Quantity).CloneWithSaga(sagaId))
-                    .Run()
-                    .CheckProducedCommands()
-                    .CheckOnlyStateNameChanged(nameof(BuyNow.Reserving));
+            var res = await scenario.GivenState(sagaId, state)
+                                    .When(
+                                          new ItemAdded(state.OrderId,
+                                                        state.SkuId,
+                                                        state.Quantity,
+                                                        await _inMemoryPriceCalculator.CalculatePrice(state.SkuId, state.Quantity),
+                                                        1).CloneWithSaga(sagaId))
+                                    .Then(new ReserveStockCommand(state.StockId, state.UserId, state.Quantity).CloneWithSaga(sagaId))
+                                    .Run();
+
+            res.CheckProducedCommands()
+               .CheckOnlyStateNameChanged(nameof(BuyNow.Reserving));
         }
 
         [Test]

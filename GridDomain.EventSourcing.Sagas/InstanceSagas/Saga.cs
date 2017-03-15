@@ -20,13 +20,22 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
     }
 
+    public class StatePreview<TState>
+    {
+        public TState State { get; }
+        public IReadOnlyCollection<Command> ProducedCommands { get; }
+
+        public StatePreview(TState state, IReadOnlyCollection<Command> producedCommands)
+        {
+            State = state;
+            ProducedCommands = producedCommands;
+        }
+    }
     public class Saga<TMachine, TState> : ISaga<TMachine, TState> where TMachine : SagaStateMachine<TState>
                                                                   where TState : class, ISagaState
     {
         private readonly ILogger _log;
         public readonly SagaStateMachine<TState> Machine;
-
-        private readonly List<ICommand> _commandsToDispatch = new List<ICommand>();
 
         public Saga(SagaStateMachine<TState> machine,
                     TState state,
@@ -40,34 +49,38 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             _log = log.ForContext<Saga<TMachine, TState>>();
             Machine = machine;
-            Machine.DispatchCallback = c => _commandsToDispatch.Add(c.CloneWithSaga(State.Id));
             State = state;
             CheckInitialState(doUninitializedWarnings);
         }
 
         private string CurrentStateName => State.CurrentStateName;
-        public IReadOnlyCollection<ICommand> CommandsToDispatch => _commandsToDispatch;
 
-        public void ClearCommandsToDispatch()
-        {
-            _commandsToDispatch.Clear();
-        }
-
-        ISagaState ISaga.State => State;
         public TState State { get; set; }
-
-        public Task<ISagaState> CreateNextState<TMessage>(TMessage message) where TMessage : class
+        
+        /// <summary>
+        /// Transit saga to new state is possible only after state persistence
+        /// So we need to 'preview' it and save after due to mismathings in autonomyous \ akka persistence mechanics
+        /// </summary>
+        /// <typeparam name="TMessage"></typeparam>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public Task<StatePreview<TState>> CreateNextState<TMessage>(TMessage message) where TMessage : class
         {
             var machineEvent = Machine.GetMachineEvent(message);
+            
+
             //TODO: find more performant variant
             var newState = (TState)State.Clone();
+            var commandsToDispatch = new List<Command>();
+            Machine.DispatchCallback = c => commandsToDispatch.Add(c.CloneWithSaga(State.Id));
+
             return Machine.RaiseEvent(newState, machineEvent, message)
                           .ContinueWith(t =>
                                         {
                                             if (t.IsFaulted)
                                                 throw new SagaTransitionException(message, State, t.Exception);
                                            
-                                            return (ISagaState)newState;
+                                            return new StatePreview<TState>(newState,commandsToDispatch);
                                         });
         }
 
@@ -84,11 +97,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             _log.Warning("Saga will not process and only record incoming messages");
             return false;
-        }
-
-        Task<TState> ISaga<TMachine, TState>.CreateNextState<T>(T message)
-        {
-            return CreateNextState(message).ContinueWith(t => (TState) t.Result);
         }
     }
 }

@@ -333,7 +333,7 @@
     <Compile Include="Sagas\SoftwareProgrammingSagaFixture.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />
-    <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_valid_Transitions.cs" />
+    <Compile Include="Sagas\Transitions\Given_Saga_When_valid_Transitions.cs" />
     <Compile Include="Sagas\Transitions\Given_created_and_message_received_when_hydrating.cs" />
     <Compile Include="Sagas\Transitions\Given_created_event_when_hydrating.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\CantFindSofaException.cs" />

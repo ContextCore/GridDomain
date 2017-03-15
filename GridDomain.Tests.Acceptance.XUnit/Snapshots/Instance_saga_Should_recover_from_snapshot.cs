@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingSagaData>(state);
             Event @event = saga.CoffeReady;
-            sagaState.RememberEvent(state, typeof(Object), @event.Name);
+            sagaState.RememberEvent(state, new object(), @event.Name);
             sagaState.ClearEvents();
 
             var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,

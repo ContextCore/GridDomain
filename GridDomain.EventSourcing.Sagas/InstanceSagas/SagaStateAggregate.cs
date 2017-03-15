@@ -9,7 +9,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public SagaStateCommandHandler()
         {
-            Map<SaveStateCommand<TSagaState>>((c, a) => a.RememberEvent(c.State, c.MessageType, c.MachineStatePreviousName));
+            Map<SaveStateCommand<TSagaState>>((c, a) => a.RememberEvent(c.State, c.Message, c.MachineStatePreviousName));
             Map<CreateNewStateCommand<TSagaState>>(c => new SagaStateAggregate<TSagaState>(c.State));
         }
     }
@@ -18,12 +18,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public TSagaState State { get; }
         public string MachineStatePreviousName { get; }
-        public Type MessageType { get; }
-        public SaveStateCommand(Guid aggregateId, TSagaState state, string machineStatePreviousName, Type messageType) : base(aggregateId)
+        public object Message { get; }
+        public SaveStateCommand(Guid aggregateId, TSagaState state, string machineStatePreviousName, object message) : base(aggregateId)
         {
             State = state;
             MachineStatePreviousName = machineStatePreviousName;
-            MessageType = messageType;
+            Message = message;
         }
     }
 
@@ -50,7 +50,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public TSagaState Data { get; private set; }
 
-        public void RememberEvent(TSagaState sagaData, Type message, string machineEventName)
+        public void RememberEvent(TSagaState sagaData, object message, string machineEventName)
         {
             Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, machineEventName, message));
         }

@@ -15,16 +15,16 @@ using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
-    public class Given_AutomatonymousSaga_When_valid_Transitions
+    public class Given_Saga_When_valid_Transitions
     {
-        public Given_AutomatonymousSaga_When_valid_Transitions(ITestOutputHelper output)
+        public Given_Saga_When_valid_Transitions(ITestOutputHelper output)
         {
             log = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
 
-        private static void When_execute_valid_transaction<T>(ISaga saga, T e = null) where T : DomainEvent
+        private static Task<StatePreview<SoftwareProgrammingSagaData>> When_execute_valid_transaction<T>(ISaga<SoftwareProgrammingSaga,SoftwareProgrammingSagaData> saga, T e = null) where T : DomainEvent
         {
-            saga.CreateNextState(e);
+            return saga.CreateNextState(e);
         }
 
         private readonly ILogger log;
@@ -58,14 +58,14 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         }
 
         [Fact]
-        public void Commands_are_produced()
+        public async Task Commands_are_produced()
         {
             var given = new Given_AutomatonymousSaga(m => m.Coding, log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            When_execute_valid_transaction(given.SagaInstance, subscriptionExpiredEvent);
+            var newState = await When_execute_valid_transaction(given.SagaInstance, subscriptionExpiredEvent);
 
-            Assert.NotEmpty(given.SagaInstance.CommandsToDispatch);
+            Assert.NotEmpty(newState.ProducedCommands);
         }
 
         [Fact]
