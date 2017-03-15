@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private static async Task When_execute_invalid_transaction(ISaga saga)
         {
-            await saga.Transit(new WrongMessage());
+            await saga.CreateNextState(new WrongMessage());
         }
 
         private async Task SwallowException(Func<Task> act)
@@ -63,7 +63,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         [Fact]
         public void Null_message_Exception_occurs()
         {
-            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await _given.SagaInstance.Transit((object) null));
+            Assert.ThrowsAsync<UnbindedMessageReceivedException>(async () => await _given.SagaInstance.CreateNextState((object) null));
         }
 
         [Fact]

@@ -92,7 +92,7 @@ namespace GridDomain.Tests.Framework
 
             foreach (var evt in ReceivedEvents)
                 //cast to allow dynamic to locate Transit method
-                (Saga as ISaga).Transit((dynamic) evt);
+                (Saga as ISaga).CreateNextState((dynamic) evt);
 
             //Then
             ProducedCommands = Saga.CommandsToDispatch.ToArray();

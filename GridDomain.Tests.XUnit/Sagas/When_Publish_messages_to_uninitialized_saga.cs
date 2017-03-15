@@ -37,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                                             null, @event.Name);
 
             var saga = Saga.New(softwareProgrammingSaga, sagaDataAggregate, _log);
-            await saga.Transit(coffeMadeEvent);
+            await saga.CreateNextState(coffeMadeEvent);
             //No exception is raised
         }
     }

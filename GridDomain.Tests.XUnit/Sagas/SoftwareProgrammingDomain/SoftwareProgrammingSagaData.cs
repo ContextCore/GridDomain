@@ -24,5 +24,9 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         public Guid BadSleepPersonId { get; set; }
         public Guid Id { get; }
         public string CurrentStateName { get; set; }
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

@@ -50,8 +50,7 @@ namespace GridDomain.Node.Actors
         private readonly IActorRef _schedulerActorRef;
 
         private readonly IDictionary<Guid, object> _messagesToProject = new Dictionary<Guid, object>();
-
-      
+        private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
 
         public new TAggregate State
         {
@@ -66,6 +65,7 @@ namespace GridDomain.Node.Actors
                               IConstructAggregates aggregateConstructor,
                               IActorRef customHandlersActor) : base(aggregateConstructor, snapshotsPersistencePolicy)
         {
+            _aggregateCommandsHandler = handler;
             _publisher = publisher;
             _customHandlersActor = customHandlersActor;
             _schedulerActorRef = schedulerActorRef;
@@ -76,20 +76,25 @@ namespace GridDomain.Node.Actors
                                           evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
                                                  .PipeTo(Self));
 
+           AwaitingCommandBehavior();
+        }
+
+        protected void AwaitingCommandBehavior()
+        {
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
                                                            var cmd = m.Message;
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
                                                            State.RegisterEnricher(e => e.CloneWithSaga(cmd.SagaId));
-                                                           handler.ExecuteAsync(State, cmd)
+                                                           _aggregateCommandsHandler.ExecuteAsync(State, cmd)
                                                                   .PipeTo(Self);
 
-                                                           BecomeStacked(() => ProcessingCommand(m,Sender));
+                                                           BecomeStacked(() => ProcessingCommandBehavior(m, Sender));
                                                        });
         }
 
-        private void ProcessingCommand(IMessageMetadataEnvelop<ICommand> commandEnvelop, IActorRef commandSender)
+        protected void ProcessingCommandBehavior(IMessageMetadataEnvelop<ICommand> commandEnvelop, IActorRef commandSender)
         {
             var command = commandEnvelop.Message;
             var commandMetadata = commandEnvelop.Metadata;
@@ -215,14 +220,14 @@ namespace GridDomain.Node.Actors
             base.State.ClearUncommittedEvents();
         }
 
-        protected override void Terminating()
+        protected override void TerminatingBehavior()
         {
             Command<IMessageMetadataEnvelop<ICommand>>(c =>
                                                        {
                                                            Self.Tell(CancelShutdownRequest.Instance);
                                                            Stash.Stash();
                                                        });
-            base.Terminating();
+            base.TerminatingBehavior();
         }
 
         private void Project(object evt, IMessageMetadata commandMetadata)

@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         [Fact]
         public async Task Test()
         {
-            var saga = new SoftwareProgrammingSaga();
+            var saga  = new SoftwareProgrammingSaga();
             var state = new SoftwareProgrammingSagaData(Guid.NewGuid(), saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingSagaData>(state);
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var restoredState = await this.LoadSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaState.Id);
             //CoffeMachineId_should_be_equal()
-            Assert.Equal(sagaState.Data.CoffeeMachineId, restoredState.CoffeeMachineId);
+            Assert.Equal(sagaState.Data.CoffeeMachineId,  restoredState.CoffeeMachineId);
             // State_should_be_equal()
             Assert.Equal(sagaState.Data.CurrentStateName, restoredState.CurrentStateName);
         }

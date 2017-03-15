@@ -12,11 +12,13 @@ namespace GridDomain.EventSourcing.Sagas
         IReadOnlyCollection<ICommand> CommandsToDispatch { get; }
         ISagaState State { get; } 
         void ClearCommandsToDispatch();
-        Task Transit<T>(T message) where T : class;
+        Task<ISagaState> CreateNextState<T>(T message) where T : class;
     }
 
-    public interface ISaga<TSaga, TData> : ISaga where TData : ISagaState
+    public interface ISaga<TSaga, TState> : ISaga where TState : ISagaState
     {
-        TData State { get; }
+        TState State { get; }
+        new Task<TState> CreateNextState<T>(T message) where T : class;
+
     }
 }

@@ -15,5 +15,9 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
         public Guid Id { get; set; }
         public string CurrentStateName { get; set; }
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

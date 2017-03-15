@@ -10,7 +10,9 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         public SagaTransited(ICommand[] producedCommands,
                              IMessageMetadata metadata,
-                             ProcessEntry sagaProcesEntry, ISagaState newSagaState, Exception error = null) : base(producedCommands, metadata)
+                             ProcessEntry sagaProcesEntry, 
+                             ISagaState newSagaState, 
+                             Exception error = null) : base(producedCommands, metadata)
         {
             SagaProcessEntry = sagaProcesEntry;
             NewSagaState = newSagaState;

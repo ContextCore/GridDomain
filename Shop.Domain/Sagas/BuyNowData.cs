@@ -22,5 +22,9 @@ namespace Shop.Domain.Sagas
 
         public Guid Id { get; }
         public string CurrentStateName { get; set; }
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

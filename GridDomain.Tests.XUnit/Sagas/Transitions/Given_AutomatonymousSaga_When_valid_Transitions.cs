@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private static void When_execute_valid_transaction<T>(ISaga saga, T e = null) where T : DomainEvent
         {
-            saga.Transit(e);
+            saga.CreateNextState(e);
         }
 
         private readonly ILogger log;
@@ -144,7 +144,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee, log);
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
-            given.SagaInstance.Transit((dynamic) msg);
+            given.SagaInstance.CreateNextState((dynamic) msg);
             Assert.Equal(given.SagaMachine.Coding.Name, given.SagaDataAggregate.Data.CurrentStateName);
         }
 
@@ -162,7 +162,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Sleeping, log);
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
             //Transition_raises_an_error()
-            await given.SagaInstance.Transit(gotTiredEvent).ShouldThrow<SagaTransitionException>();
+            await given.SagaInstance.CreateNextState(gotTiredEvent).ShouldThrow<SagaTransitionException>();
         }
     }
 }

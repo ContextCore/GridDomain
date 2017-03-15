@@ -39,6 +39,7 @@ namespace Shop.Domain.Sagas
                                                 {
                                                     var totalPrice =
                                                         await calculator.CalculatePrice(state.SkuId, state.Quantity);
+
                                                     Dispatch(new AddItemToOrderCommand(state.OrderId,
                                                                                        state.SkuId,
                                                                                        state.Quantity,

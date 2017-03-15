@@ -9,12 +9,12 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
     public class SagaStateMachine<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
-        private readonly List<Command> _commandsToDispatch = new List<Command>();
-
         private readonly IDictionary<Type, Event> _messagesToEventsMap = new Dictionary<Type, Event>();
+        public Action<Command> DispatchCallback { get; set; }
 
-        protected SagaStateMachine()
+        protected SagaStateMachine(Action<Command> dispatchCallback = null)
         {
+            DispatchCallback = dispatchCallback ?? (c => {});
             InstanceState(d => d.CurrentStateName);
             foreach (var machineEvent in Events.Where(e =>
                                                       {
@@ -28,16 +28,10 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             }
         }
 
-        public IReadOnlyCollection<Command> CommandsToDispatch => _commandsToDispatch;
-
-        public void ClearCommands()
-        {
-            _commandsToDispatch.Clear();
-        }
 
         protected void Dispatch(Command cmd)
         {
-            _commandsToDispatch.Add(cmd);
+            DispatchCallback(cmd);
         }
 
         public Event<TMessage> GetMachineEvent<TMessage>(TMessage message)

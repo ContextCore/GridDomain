@@ -17,8 +17,8 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var sagaData = new SoftwareProgrammingSagaData(Guid.NewGuid(), initialState(SagaMachine).Name);
             SagaDataAggregate = new SagaStateAggregate<SoftwareProgrammingSagaData>(sagaData);
             SagaInstance = new Saga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(SagaMachine,
-                                                                                                  SagaDataAggregate,
-                                                                                                  logger);
+                                                                                          SagaDataAggregate.Data,
+                                                                                          logger);
         }
     }
 }

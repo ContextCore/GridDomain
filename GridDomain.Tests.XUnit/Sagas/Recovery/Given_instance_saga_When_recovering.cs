@@ -41,7 +41,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
-            await sagaInstance.Transit(coffeMakeFailedEvent);
+            await sagaInstance.CreateNextState(coffeMakeFailedEvent);
             var dispatchedCommands = sagaInstance.CommandsToDispatch;
             //Saga_produce_commands_only_one_command()
             Assert.Equal(1, dispatchedCommands.Count);

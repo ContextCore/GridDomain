@@ -38,14 +38,24 @@ namespace GridDomain.Node.Actors
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 
+            DefaultBehavior();
+
+            RecoveringBehavior();
+        }
+
+        protected void DefaultBehavior()
+        {
             Command<GracefullShutdownRequest>(req =>
                                               {
                                                   Log.Debug("{Actor} received shutdown request", PersistenceId);
                                                   Monitor.IncrementMessagesReceived();
-                                                  BecomeStacked(Terminating);
+                                                  BecomeStacked(TerminatingBehavior);
                                               });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
+
+            Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
+
 
             Command<SaveSnapshotSuccess>(s =>
                                          {
@@ -53,9 +63,10 @@ namespace GridDomain.Node.Actors
                                              _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                                                 BusinessDateTime.UtcNow);
                                          });
+        }
 
-            Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
-
+        protected void RecoveringBehavior()
+        {
             Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
@@ -98,7 +109,7 @@ namespace GridDomain.Node.Actors
                 watcher.Tell(new Persisted(msg));
         }
 
-        protected virtual void Terminating()
+        protected virtual void TerminatingBehavior()
         {
             //for case when we in process of saving snapshot or events
             Command<DeleteSnapshotsSuccess>(s => StopNow(s));
@@ -134,6 +145,11 @@ namespace GridDomain.Node.Actors
                                               });
             //start terminateion process
             Self.Tell(GracefullShutdownRequest.Instance);
+        }
+
+        protected override void Unhandled(object message)
+        {
+            Stash.Stash();
         }
 
         private void StopNow(object s)

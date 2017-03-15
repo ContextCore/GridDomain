@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
@@ -13,5 +14,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 
         public Guid Id { get; set; }
         public string CurrentStateName { get; set; }
+
+        public object Clone()
+        {
+           return MemberwiseClone();
+        }
     }
 }
