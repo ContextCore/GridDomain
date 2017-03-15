@@ -26,7 +26,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
                 new SagaMessageReceivedEvent<SoftwareProgrammingSagaData>(_sagaId,
                                                                           _softwareProgrammingSagaData,
                                                                           _machine.GotTired.Name,
-                                                                          _message);
+                                                                          _message.GetType());
         }
 
         [Fact]

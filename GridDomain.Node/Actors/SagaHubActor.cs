@@ -6,6 +6,7 @@ using Akka.Actor;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging;
@@ -13,7 +14,7 @@ using GridDomain.Node.AkkaMessaging;
 namespace GridDomain.Node.Actors
 {
     public class SagaHubActor<TSaga, TSagaState> : PersistentHubActor where TSaga : class, ISagaInstance
-                                                                      where TSagaState : AggregateBase
+                                                                      where TSagaState : Aggregate
     {
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
         private readonly Type _actorType = typeof(SagaActor<TSaga, TSagaState>);

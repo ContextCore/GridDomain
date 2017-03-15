@@ -116,13 +116,10 @@
     <Compile Include="CompositeRouteMap.cs" />
     <Compile Include="CustomRouteMap.cs" />
     <Compile Include="EmptyRouteMap.cs" />
-    <Compile Include="MessageRouting\AggregateCommandsHandler.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandlerDescriptor.cs" />
     <Compile Include="MessageRouting\AggregateCommandInfo.cs" />
-    <Compile Include="MessageRouting\CannotFindAggregateCommandHandlerExeption.cs" />
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
-    <Compile Include="MessageRouting\IAggregateCommandsHandler.cs" />
     <Compile Include="MessageRouting\IAggregateCommandsHandlerDescriptor.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />

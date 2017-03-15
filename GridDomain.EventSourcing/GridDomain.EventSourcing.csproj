@@ -59,9 +59,11 @@
     <Compile Include="Adapters\IEventAdaptersCatalog.cs" />
     <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="Adapters\IObjectUpdateChain.cs" />
+    <Compile Include="AggregateCommandsHandler.cs" />
     <Compile Include="AggregateFactory.cs" />
     <Compile Include="AggregateSnapshottingFactory.cs" />
     <Compile Include="AggregatesSnapshotsFactory.cs" />
+    <Compile Include="CannotFindAggregateCommandHandlerExeption.cs" />
     <Compile Include="CannotFindAggregateCreatorBySnapshotException.cs" />
     <Compile Include="CommonDomain\AggregateBase.cs" />
     <Compile Include="CommonDomain\ConventionEventRouter.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
+    <Compile Include="IAggregateCommandsHandler.cs" />
     <Compile Include="InvalidDefaultMementoException.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

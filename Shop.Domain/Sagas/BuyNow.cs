@@ -13,7 +13,7 @@ using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNow : Saga<BuyNowData>
+    public class BuyNow : SagaStateMachine<BuyNowData>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
 

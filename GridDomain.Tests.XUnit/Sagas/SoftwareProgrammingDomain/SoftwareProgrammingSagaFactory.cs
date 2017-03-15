@@ -7,10 +7,10 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaFactory :
         ISagaFactory
-        <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+        <ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
             SagaStateAggregate<SoftwareProgrammingSagaData>>,
-        ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
-        ISagaFactory<ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
+        ISagaFactory<ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
+        ISagaFactory<ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
     {
         private readonly ILogger _log;
 
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             _log = log;
         }
 
-        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
+        public ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
         {
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,
@@ -27,13 +27,13 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             return Create(data);
         }
 
-        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(
+        public ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(
             SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
-            return SagaInstance.New(new SoftwareProgrammingSaga(), message, _log);
+            return Saga.New(new SoftwareProgrammingSaga(), message, _log);
         }
 
-        public ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
+        public ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,

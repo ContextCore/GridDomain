@@ -1,6 +1,7 @@
 using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
 
 namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain

@@ -24,8 +24,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             var actorType =
                 typeof(
                     SagaActor
-                    <ISagaInstance<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
-                        SagaStateAggregate<SoftwareProgrammingSagaData>>);
+                    <ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,SoftwareProgrammingSagaData>);
 
             var props = Node.System.DI().Props(actorType);
             var name =

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting
+namespace GridDomain.EventSourcing
 {
     public interface IAggregateCommandsHandler<TAggregate>
     {

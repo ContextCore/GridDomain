@@ -1,5 +1,6 @@
 using CommonDomain;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Framework
 {

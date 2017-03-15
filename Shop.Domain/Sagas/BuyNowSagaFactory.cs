@@ -6,8 +6,8 @@ using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowSagaFactory : ISagaFactory<ISagaInstance<BuyNow, BuyNowData>, SagaStateAggregate<BuyNowData>>,
-                                     ISagaFactory<ISagaInstance<BuyNow, BuyNowData>, SkuPurchaseOrdered>
+    public class BuyNowSagaFactory : ISagaFactory<ISaga<BuyNow, BuyNowData>, SagaStateAggregate<BuyNowData>>,
+                                     ISagaFactory<ISaga<BuyNow, BuyNowData>, SkuPurchaseOrdered>
     {
         private readonly ILogger _log;
         private readonly IPriceCalculator _priceCalculator;
@@ -18,12 +18,12 @@ namespace Shop.Domain.Sagas
             _priceCalculator = priceCalculator;
         }
 
-        public ISagaInstance<BuyNow, BuyNowData> Create(SagaStateAggregate<BuyNowData> message)
+        public ISaga<BuyNow, BuyNowData> Create(SagaStateAggregate<BuyNowData> message)
         {
-            return SagaInstance.New(new BuyNow(_priceCalculator), message, _log);
+            return Saga.New(new BuyNow(_priceCalculator), message, _log);
         }
 
-        public ISagaInstance<BuyNow, BuyNowData> Create(SkuPurchaseOrdered message)
+        public ISaga<BuyNow, BuyNowData> Create(SkuPurchaseOrdered message)
         {
             var sagaState = new BuyNowData(message.SagaId, nameof(BuyNow.Initial));
             var dataAggregate = new SagaStateAggregate<BuyNowData>(sagaState);

@@ -1,6 +1,7 @@
 using System;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
 
 namespace GridDomain.Tests.XUnit.SampleDomain

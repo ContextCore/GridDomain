@@ -9,12 +9,12 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaDescriptor<TSaga, TSagaData> : SagaDescriptor where TSaga : Saga<TSagaData>
+    public class SagaDescriptor<TSaga, TSagaData> : SagaDescriptor where TSaga : SagaStateMachine<TSagaData>
                                                                    where TSagaData : class, ISagaState
 
     {
         public SagaDescriptor()
-            : base(typeof(ISagaInstance<TSaga, TSagaData>), typeof(SagaStateAggregate<TSagaData>), typeof(TSaga)) {}
+            : base(typeof(ISaga<TSaga, TSagaData>), typeof(SagaStateAggregate<TSagaData>), typeof(TSaga)) {}
 
         public void MapDomainEvent<TDomainEvent>(Expression<Func<TSaga, Event<TDomainEvent>>> machineEvent,
                                                  Expression<Func<TDomainEvent, Guid>> correlationFieldExpression)
@@ -73,7 +73,7 @@ namespace GridDomain.EventSourcing.Sagas
         }
 
         public static SagaDescriptor<TSaga, TSagaData> CreateDescriptor<TSaga, TSagaData>()
-            where TSagaData : class, ISagaState where TSaga : Saga<TSagaData>
+            where TSagaData : class, ISagaState where TSaga : SagaStateMachine<TSagaData>
         {
             var sagaDescriptor = new SagaDescriptor<TSaga, TSagaData>();
 

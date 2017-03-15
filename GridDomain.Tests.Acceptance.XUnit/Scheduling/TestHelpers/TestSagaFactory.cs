@@ -5,9 +5,9 @@ using Serilog;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
-    public class TestSagaFactory : ISagaFactory<ISagaInstance<TestSaga, TestSagaState>, TestSagaStartMessage>,
-                                   ISagaFactory<ISagaInstance<TestSaga, TestSagaState>, SagaStateAggregate<TestSagaState>>,
-                                   ISagaFactory<ISagaInstance<TestSaga, TestSagaState>, Guid>
+    public class TestSagaFactory : ISagaFactory<ISaga<TestSaga, TestSagaState>, TestSagaStartMessage>,
+                                   ISagaFactory<ISaga<TestSaga, TestSagaState>, SagaStateAggregate<TestSagaState>>,
+                                   ISagaFactory<ISaga<TestSaga, TestSagaState>, Guid>
     {
         private readonly ILogger _log;
 
@@ -16,17 +16,17 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             _log = log;
         }
 
-        public ISagaInstance<TestSaga, TestSagaState> Create(Guid message)
+        public ISaga<TestSaga, TestSagaState> Create(Guid message)
         {
             return Create(new TestSagaStartMessage(Guid.NewGuid(), null, message));
         }
 
-        public ISagaInstance<TestSaga, TestSagaState> Create(SagaStateAggregate<TestSagaState> message)
+        public ISaga<TestSaga, TestSagaState> Create(SagaStateAggregate<TestSagaState> message)
         {
-            return SagaInstance.New(new TestSaga(), message, _log);
+            return Saga.New(new TestSaga(), message, _log);
         }
 
-        public ISagaInstance<TestSaga, TestSagaState> Create(TestSagaStartMessage message)
+        public ISaga<TestSaga, TestSagaState> Create(TestSagaStartMessage message)
         {
             return Create(new SagaStateAggregate<TestSagaState>(new TestSagaState(message.SagaId, nameof(TestSaga.Initial))));
         }

@@ -1,4 +1,5 @@
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {

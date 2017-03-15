@@ -46,7 +46,7 @@ namespace GridDomain.Node
             var processor = new Processor(aggregateActor);
 
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
-                _aggregatesCatalog.Add(aggregateCommandInfo.CommandType, processor);
+                _aggregatesCatalog.Add(aggregateCommandInfo, processor);
 
             return Task.CompletedTask;
         }

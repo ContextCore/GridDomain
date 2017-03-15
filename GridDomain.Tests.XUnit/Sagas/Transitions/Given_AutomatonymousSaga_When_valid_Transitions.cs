@@ -75,7 +75,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var message = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
             When_execute_valid_transaction(given.SagaInstance, message);
             var stateChangeEvent = GetFirstOf<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(given.SagaDataAggregate);
-            Assert.Equal(message, stateChangeEvent.Message);
+            Assert.Equal(message.GetType(), stateChangeEvent.Message);
         }
 
         [Fact]

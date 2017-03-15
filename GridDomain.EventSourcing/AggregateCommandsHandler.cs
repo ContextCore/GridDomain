@@ -4,17 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.Common;
-using GridDomain.EventSourcing;
+using GridDomain.CQRS;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting
+namespace GridDomain.EventSourcing
 {
+    
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<Func<ICommand, TAggregate, Task<TAggregate>>, ICommand>,
                                                         IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
     {
-        public IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands
-        {
-            get { return Catalog.Select(h => new AggregateCommandInfo(h.Key)).ToArray(); }
-        }
+        public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();
 
         public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command)
         {

@@ -16,6 +16,22 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
+    class SaveEventsAsync
+    {
+        public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> act, Action continuation, Aggregate state)
+        {
+            Continuation = continuation;
+            State = state;
+            Events = events;
+            Act = act;
+        }
+
+        public Action Continuation { get; }
+        public DomainEvent[] Events { get; }
+        public Aggregate State { get; }
+        public Action<DomainEvent> Act { get; }
+    }
+
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -35,21 +51,7 @@ namespace GridDomain.Node.Actors
 
         private readonly IDictionary<Guid, object> _messagesToProject = new Dictionary<Guid, object>();
 
-        class SaveEventsAsync
-        {
-            public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> act, Action continuation, Aggregate state)
-            {
-                Continuation = continuation;
-                State = state;
-                Events = events;
-                Act = act;
-            }
-
-            public Action Continuation { get; }
-            public DomainEvent[] Events { get; }
-            public Aggregate State { get; }
-            public Action<DomainEvent> Act { get; }
-        }
+      
 
         public new TAggregate State
         {

@@ -1,26 +1,58 @@
 using System;
 using System.Threading.Tasks;
 using Automatonymous;
+using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
+    public class SagaStateCommandHandler<TSagaState> : AggregateCommandsHandler<SagaStateAggregate<TSagaState>> where TSagaState : ISagaState
+    {
+        public SagaStateCommandHandler()
+        {
+            Map<SaveStateCommand<TSagaState>>((c, a) => a.RememberEvent(c.State, c.MessageType, c.MachineStatePreviousName));
+            Map<CreateNewStateCommand<TSagaState>>(c => new SagaStateAggregate<TSagaState>(c.State));
+        }
+    }
+
+    public class SaveStateCommand<TSagaState> : Command where TSagaState : ISagaState
+    {
+        public TSagaState State { get; }
+        public string MachineStatePreviousName { get; }
+        public Type MessageType { get; }
+        public SaveStateCommand(Guid aggregateId, TSagaState state, string machineStatePreviousName, Type messageType) : base(aggregateId)
+        {
+            State = state;
+            MachineStatePreviousName = machineStatePreviousName;
+            MessageType = messageType;
+        }
+    }
+
+    public class CreateNewStateCommand<TSagaState> : Command where TSagaState : ISagaState
+    {
+        public TSagaState State { get; }
+        public CreateNewStateCommand(Guid aggregateId, TSagaState state) : base(aggregateId)
+        {
+            State = state;
+        }
+    }
+
     public class SagaStateAggregate<TSagaState> : Aggregate where TSagaState : ISagaState
     {
+        public SagaStateAggregate(TSagaState data): this(data.Id)
+        {
+            RaiseEvent(new SagaCreatedEvent<TSagaState>(data, data.Id));
+        }
+
         private SagaStateAggregate(Guid id) : base(id)
         {
             Id = id;
         }
 
-        public SagaStateAggregate(TSagaState data) : this(data.Id)
-        {
-            RaiseEvent(new SagaCreatedEvent<TSagaState>(data, data.Id));
-        }
-
         public TSagaState Data { get; private set; }
 
-        public void RememberEvent(Event @event, TSagaState sagaData, object message)
+        public void RememberEvent(TSagaState sagaData, Type message, string machineEventName)
         {
-            Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, @event.Name, message));
+            Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, machineEventName, message));
         }
 
         public void Apply(SagaCreatedEvent<TSagaState> e)

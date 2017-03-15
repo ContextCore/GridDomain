@@ -1,4 +1,5 @@
 using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 
 namespace Shop.Domain.Aggregates.AccountAggregate

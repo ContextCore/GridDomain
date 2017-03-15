@@ -6,8 +6,8 @@ using Serilog;
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 {
     public class AsyncLongRunningSagaFactory :
-        ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>,
-        ISagaFactory<ISagaInstance<AsyncLongRunningSaga, TestState>, SampleAggregateCreatedEvent>
+        ISagaFactory<ISaga<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>,
+        ISagaFactory<ISaga<AsyncLongRunningSaga, TestState>, SampleAggregateCreatedEvent>
     {
         private readonly ILogger _log;
 
@@ -16,14 +16,14 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _log = log;
         }
 
-        public ISagaInstance<AsyncLongRunningSaga, TestState> Create(SagaStateAggregate<TestState> message)
+        public ISaga<AsyncLongRunningSaga, TestState> Create(SagaStateAggregate<TestState> message)
         {
-            return SagaInstance.New(new AsyncLongRunningSaga(), message, _log);
+            return Saga.New(new AsyncLongRunningSaga(), message, _log);
         }
 
-        public ISagaInstance<AsyncLongRunningSaga, TestState> Create(SampleAggregateCreatedEvent message)
+        public ISaga<AsyncLongRunningSaga, TestState> Create(SampleAggregateCreatedEvent message)
         {
-            return SagaInstance.New(new AsyncLongRunningSaga(),
+            return Saga.New(new AsyncLongRunningSaga(),
                                     new SagaStateAggregate<TestState>(new TestState(message.SagaId, nameof(AsyncLongRunningSaga.Initial))),
                                     _log);
         }

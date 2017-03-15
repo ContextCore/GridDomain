@@ -14,7 +14,7 @@ namespace GridDomain.EventSourcing.Sagas
         Task Transit<T>(T message) where T : class;
     }
 
-    public interface ISagaInstance<TSaga, TData> : ISagaInstance where TData : ISagaState
+    public interface ISaga<TSaga, TData> : ISagaInstance where TData : ISagaState
     {
         new SagaStateAggregate<TData> Data { get; }
     }

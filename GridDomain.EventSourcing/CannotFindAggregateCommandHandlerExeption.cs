@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting
+namespace GridDomain.EventSourcing
 {
     internal class CannotFindAggregateCommandHandlerExeption : Exception
     {

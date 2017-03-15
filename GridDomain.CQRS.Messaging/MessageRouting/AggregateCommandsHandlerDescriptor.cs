@@ -5,8 +5,8 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 {
     public class AggregateCommandsHandlerDescriptor<T> : IAggregateCommandsHandlerDescriptor
     {
-        private readonly List<AggregateCommandInfo> _registrations = new List<AggregateCommandInfo>();
-        public IReadOnlyCollection<AggregateCommandInfo> RegisteredCommands => _registrations;
+        private readonly List<Type> _registrations = new List<Type>();
+        public IReadOnlyCollection<Type> RegisteredCommands => _registrations;
         public Type AggregateType => typeof(T);
 
         public void RegisterCommand<TCommand>()
@@ -16,7 +16,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
 
         public void RegisterCommand(Type type)
         {
-            _registrations.Add(new AggregateCommandInfo(type));
+            _registrations.Add(type);
         }
     }
 }

@@ -44,8 +44,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
-                                                                                   e => (e.Message as CoffeMakeFailedEvent)?.SourceId == sagaId)
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
                     .Create()
                     .SendToSagas(sagaContinueEventA);
 

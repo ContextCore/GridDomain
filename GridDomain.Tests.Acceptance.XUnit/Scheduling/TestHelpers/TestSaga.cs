@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
-    public class TestSaga : Saga<TestSagaState>
+    public class TestSaga : SagaStateMachine<TestSagaState>
     {
         static TestSaga()
         {

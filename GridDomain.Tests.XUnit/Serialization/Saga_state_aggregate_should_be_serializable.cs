@@ -1,4 +1,5 @@
 using System;
+using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
@@ -16,7 +17,8 @@ namespace GridDomain.Tests.XUnit.Serialization
             var state = new SoftwareProgrammingSagaData(Guid.NewGuid(), "123", Guid.NewGuid(), Guid.NewGuid());
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingSagaData>(state);
-            sagaState.RememberEvent(saga.CoffeReady, state, new object());
+            Event @event = saga.CoffeReady;
+            sagaState.RememberEvent(state, typeof(Object), @event.Name);
             sagaState.ClearEvents();
 
             var json = JsonConvert.SerializeObject(sagaState);

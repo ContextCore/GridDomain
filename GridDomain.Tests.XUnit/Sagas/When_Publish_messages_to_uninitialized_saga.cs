@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Automatonymous;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
@@ -31,11 +32,11 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             var sagaId = !sagaHasId ? Guid.Empty : Guid.NewGuid();
             var sagaDataAggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
-            sagaDataAggregate.RememberEvent(softwareProgrammingSaga.CoffeReady,
-                                            !sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
-                                            null);
+            Event @event = softwareProgrammingSaga.CoffeReady;
+            sagaDataAggregate.RememberEvent(!sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
+                                            null, @event.Name);
 
-            var saga = SagaInstance.New(softwareProgrammingSaga, sagaDataAggregate, _log);
+            var saga = Saga.New(softwareProgrammingSaga, sagaDataAggregate, _log);
             await saga.Transit(coffeMadeEvent);
             //No exception is raised
         }

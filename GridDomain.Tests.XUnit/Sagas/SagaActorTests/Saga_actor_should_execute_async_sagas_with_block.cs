@@ -20,7 +20,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output)
         {
             var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-            var producer = new SagaProducer<ISagaInstance<AsyncLongRunningSaga, TestState>>(AsyncLongRunningSaga.Descriptor);
+            var producer = new SagaProducer<ISaga<AsyncLongRunningSaga, TestState>>(AsyncLongRunningSaga.Descriptor);
             producer.RegisterAll<AsyncLongRunningSagaFactory, TestState>(new AsyncLongRunningSagaFactory(logger));
             _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             _localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
@@ -28,22 +28,22 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var props =
                 Props.Create(
                              () =>
-                                 new SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>(
-                                                                                                                              producer,
-                                                                                                                              _localAkkaEventBusTransport,
-                                                                                                                              new EachMessageSnapshotsPersistencePolicy(),
-                                                                                                                              new AggregateFactory()));
+                                 new SagaActor<ISaga<AsyncLongRunningSaga, TestState>, TestState>(
+                                                                                                  producer,
+                                                                                                  _localAkkaEventBusTransport,
+                                                                                                  new EachMessageSnapshotsPersistencePolicy(),
+                                                                                                  new AggregateFactory()));
 
             _sagaId = Guid.NewGuid();
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
 
             _actor =
                 ActorOfAsTestActorRef
-                    <SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>>(props, name);
+                    <SagaActor<ISaga<AsyncLongRunningSaga, TestState>, TestState>>(props, name);
         }
 
         private readonly
-            TestActorRef<SagaActor<ISagaInstance<AsyncLongRunningSaga, TestState>, SagaStateAggregate<TestState>>> _actor;
+            TestActorRef<SagaActor<ISaga<AsyncLongRunningSaga, TestState>, TestState>> _actor;
 
         private readonly Guid _sagaId;
         private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;

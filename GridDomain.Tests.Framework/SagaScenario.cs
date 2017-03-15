@@ -11,19 +11,19 @@ using Ploeh.AutoFixture.Dsl;
 
 namespace GridDomain.Tests.Framework
 {
-    public class SagaScenario<TSaga, TData, TFactory> where TSaga : Saga<TData>
+    public class SagaScenario<TSaga, TData, TFactory> where TSaga : SagaStateMachine<TData>
                                                       where TData : class, ISagaState
                                                       where TFactory : class,
                                                       ISagaFactory
-                                                      <ISagaInstance<TSaga, TData>, SagaStateAggregate<TData>>
+                                                      <ISaga<TSaga, TData>, SagaStateAggregate<TData>>
     {
-        internal SagaScenario(ISagaProducer<ISagaInstance<TSaga, TData>> producer)
+        internal SagaScenario(ISagaProducer<ISaga<TSaga, TData>> producer)
         {
             SagaProducer = producer;
         }
 
-        protected ISagaProducer<ISagaInstance<TSaga, TData>> SagaProducer { get; }
-        public ISagaInstance<TSaga, TData> SagaInstance { get; private set; }
+        protected ISagaProducer<ISaga<TSaga, TData>> SagaProducer { get; }
+        public ISaga<TSaga, TData> Saga { get; private set; }
         protected SagaStateAggregate<TData> SagaStateAggregate { get; private set; }
 
         protected ICommand[] ExpectedCommands { get; private set; } = {};
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Framework
 
         public static SagaScenario<TSaga, TData, TFactory> New(ISagaDescriptor descriptor, TFactory factory = null)
         {
-            var producer = new SagaProducer<ISagaInstance<TSaga, TData>>(descriptor);
+            var producer = new SagaProducer<ISaga<TSaga, TData>>(descriptor);
             producer.RegisterAll<TFactory, TData>(factory ?? CreateSagaFactory());
             return new SagaScenario<TSaga, TData, TFactory>(producer);
         }
@@ -83,19 +83,19 @@ namespace GridDomain.Tests.Framework
         public SagaScenario<TSaga, TData, TFactory> Run()
         {
             if (SagaStateAggregate != null)
-                SagaInstance = SagaProducer.Create(SagaStateAggregate);
+                Saga = SagaProducer.Create(SagaStateAggregate);
 
             foreach (var evt in ReceivedEvents.Where(e => SagaProducer.KnownDataTypes.Contains(e.GetType())))
-                SagaInstance = SagaProducer.Create(evt);
+                Saga = SagaProducer.Create(evt);
 
             //When
 
             foreach (var evt in ReceivedEvents)
                 //cast to allow dynamic to locate Transit method
-                (SagaInstance as ISagaInstance).Transit((dynamic) evt);
+                (Saga as ISagaInstance).Transit((dynamic) evt);
 
             //Then
-            ProducedCommands = SagaInstance.CommandsToDispatch.ToArray();
+            ProducedCommands = Saga.CommandsToDispatch.ToArray();
 
             return this;
         }
@@ -109,26 +109,26 @@ namespace GridDomain.Tests.Framework
         public SagaScenario<TSaga, TData, TFactory> CheckProducedState(TData expectedState,
                                                                        CompareLogic customCompareLogic = null)
         {
-            EventsExtensions.CompareState(expectedState, SagaInstance.Data.Data, customCompareLogic);
+            EventsExtensions.CompareState(expectedState, Saga.Data.Data, customCompareLogic);
             return this;
         }
 
         public SagaScenario<TSaga, TData, TFactory> CheckProducedStateIsNotChanged()
         {
-            EventsExtensions.CompareState(InitialState, SagaInstance.Data.Data);
+            EventsExtensions.CompareState(InitialState, Saga.Data.Data);
             return this;
         }
 
         public SagaScenario<TSaga, TData, TFactory> CheckProducedStateName(string stateName)
         {
-            Assert.AreEqual(stateName, SagaInstance.Data.Data.CurrentStateName);
+            Assert.AreEqual(stateName, Saga.Data.Data.CurrentStateName);
             return this;
         }
 
         public SagaScenario<TSaga, TData, TFactory> CheckOnlyStateNameChanged(string stateName)
         {
             CheckProducedStateName(stateName);
-            EventsExtensions.CompareStateWithoutName(InitialState, SagaInstance.Data.Data);
+            EventsExtensions.CompareStateWithoutName(InitialState, Saga.Data.Data);
 
             return this;
         }
