@@ -82,7 +82,6 @@
     <Compile Include="MessageBind.cs" />
     <Compile Include="SagaDescriptor.cs" />
     <Compile Include="SagaProducer.cs" />
-    <Compile Include="IEmptySagaFactory.cs" />
     <Compile Include="ISagaDescriptor.cs" />
     <Compile Include="ISagaFactory.cs" />
     <Compile Include="ISagaFault.cs" />

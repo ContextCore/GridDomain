@@ -7,10 +7,10 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaFactory :
         ISagaFactory
-        <ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+        <ISaga<SoftwareProgrammingSagaData>,
             SagaStateAggregate<SoftwareProgrammingSagaData>>,
-        ISagaFactory<ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
-        ISagaFactory<ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
+        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, GotTiredEvent>,
+        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, SleptWellEvent>
     {
         private readonly ILogger _log;
 
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             _log = log;
         }
 
-        public ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
+        public ISaga<SoftwareProgrammingSagaData> Create(GotTiredEvent message)
         {
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,
@@ -27,13 +27,13 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             return Create(data);
         }
 
-        public ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(
+        public ISaga<SoftwareProgrammingSagaData> Create(
             SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
             return Saga.New(new SoftwareProgrammingSaga(), message, _log);
         }
 
-        public ISaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
+        public ISaga<SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,

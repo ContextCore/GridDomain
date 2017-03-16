@@ -14,7 +14,7 @@ namespace GridDomain.EventSourcing.Sagas
 
     {
         public SagaDescriptor()
-            : base(typeof(ISaga<TSaga, TSagaData>), typeof(SagaStateAggregate<TSagaData>), typeof(TSaga)) {}
+            : base(typeof(ISaga<TSagaData>), typeof(SagaStateAggregate<TSagaData>), typeof(TSaga)) {}
 
         public void MapDomainEvent<TDomainEvent>(Expression<Func<TSaga, Event<TDomainEvent>>> machineEvent,
                                                  Expression<Func<TDomainEvent, Guid>> correlationFieldExpression)

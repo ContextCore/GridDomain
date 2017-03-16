@@ -7,14 +7,10 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISaga
+    public interface ISaga<TState> where TState : ISagaState
     {
-
-    }
-
-    public interface ISaga<TSaga, TState> : ISaga where TState : ISagaState
-    {
-        TState State { get; set; }
-        Task<StatePreview<TState>> CreateNextState<T>(T message) where T : class;
+        TState State { get; }
+        Task<TransitionResult<TState>> PreviewTransit<T>(T message) where T : class;
+        void ApplyTransit(TState newState);
     }
 }

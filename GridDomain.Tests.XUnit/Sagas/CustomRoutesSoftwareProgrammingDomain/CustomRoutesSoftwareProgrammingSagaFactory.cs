@@ -8,10 +8,10 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
 {
     public class CustomRoutesSoftwareProgrammingSagaFactory :
         ISagaFactory
-        <ISaga<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>,
+        <ISaga<SoftwareProgrammingSagaData>,
             SagaStateAggregate<SoftwareProgrammingSagaData>>,
-        ISagaFactory<ISaga<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, GotTiredEvent>,
-        ISagaFactory<ISaga<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>, SleptWellEvent>
+        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, GotTiredEvent>,
+        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, SleptWellEvent>
     {
         private readonly ILogger _log;
 
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
             _log = log;
         }
 
-        public ISaga<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(GotTiredEvent message)
+        public ISaga<SoftwareProgrammingSagaData> Create(GotTiredEvent message)
         {
             var saga = new CustomRoutesSoftwareProgrammingSaga();
             var data =
@@ -29,13 +29,13 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
             return Saga.New(saga, data, _log);
         }
 
-        public ISaga<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(
+        public ISaga<SoftwareProgrammingSagaData> Create(
             SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
             return Saga.New(new CustomRoutesSoftwareProgrammingSaga(), message, _log);
         }
 
-        public ISaga<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData> Create(SleptWellEvent message)
+        public ISaga<SoftwareProgrammingSagaData> Create(SleptWellEvent message)
         {
             var saga = new CustomRoutesSoftwareProgrammingSaga();
             var data =

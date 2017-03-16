@@ -5,6 +5,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using Serilog;
 using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,8 +37,8 @@ namespace GridDomain.Tests.XUnit.Sagas
             sagaDataAggregate.RememberEvent(!sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
                                             null, @event.Name);
 
-            var saga = Saga.New(softwareProgrammingSaga, sagaDataAggregate, _log);
-            await saga.CreateNextState(coffeMadeEvent);
+            var saga = new Saga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(softwareProgrammingSaga,sagaDataAggregate.Data, _log);
+            await saga.PreviewTransit(coffeMadeEvent);
             //No exception is raised
         }
     }

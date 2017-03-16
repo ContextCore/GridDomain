@@ -16,14 +16,14 @@ namespace GridDomain.Tests.Framework
 
     public static class SagaScenarioExtensions
     {
-        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedCommands<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedCommands<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TData>, SagaStateAggregate<TData>>
         {
             var scnearion = await scenarioInProgress;
             scnearion.CheckProducedCommands();
             return scnearion;
         }
 
-        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckOnlyStateNameChanged<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, string stateName) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckOnlyStateNameChanged<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, string stateName) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TData>, SagaStateAggregate<TData>>
         {
             var scnearion = await scenarioInProgress;
             scnearion.CheckOnlyStateNameChanged(stateName);
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Framework
         }
 
         public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedState<TSaga, TData, TFactory>(
-            this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, TData expectedState, CompareLogic logic = null) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+            this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, TData expectedState, CompareLogic logic = null) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TData>, SagaStateAggregate<TData>>
         {
             var scnearion = await scenarioInProgress;
             scnearion.CheckProducedState(expectedState, logic);
@@ -43,15 +43,15 @@ namespace GridDomain.Tests.Framework
                                                       where TData : class, ISagaState
                                                       where TFactory : class,
                                                       ISagaFactory
-                                                      <ISaga<TSaga, TData>, SagaStateAggregate<TData>>
+                                                      <ISaga<TData>, SagaStateAggregate<TData>>
     {
-        internal SagaScenario(ISagaProducer<ISaga<TSaga, TData>> producer)
+        internal SagaScenario(ISagaProducer<ISaga<TData>> producer)
         {
             SagaProducer = producer;
         }
 
-        protected ISagaProducer<ISaga<TSaga, TData>> SagaProducer { get; }
-        public ISaga<TSaga, TData> Saga { get; private set; }
+        protected ISagaProducer<ISaga<TData>> SagaProducer { get; }
+        public ISaga<TData> Saga { get; private set; }
         protected SagaStateAggregate<TData> SagaStateAggregate { get; private set; }
 
         public ICommand[] ExpectedCommands { get; private set; } = {};
@@ -73,7 +73,7 @@ namespace GridDomain.Tests.Framework
 
         public static SagaScenario<TSaga, TData, TFactory> New(ISagaDescriptor descriptor, TFactory factory = null)
         {
-            var producer = new SagaProducer<ISaga<TSaga, TData>>(descriptor);
+            var producer = new SagaProducer<ISaga<TData>>(descriptor);
             producer.RegisterAll<TFactory, TData>(factory ?? CreateSagaFactory());
             return new SagaScenario<TSaga, TData, TFactory>(producer);
         }
@@ -121,10 +121,10 @@ namespace GridDomain.Tests.Framework
             foreach (var evt in ReceivedEvents)
                 //cast to allow dynamic to locate Transit method
             {
-                Task<StatePreview<TData>> newStateFromEventTask = Saga.CreateNextState((dynamic) evt);
+                Task<TransitionResult<TData>> newStateFromEventTask = Saga.PreviewTransit((dynamic) evt);
                 var newState = await newStateFromEventTask;
                 producedCommands.AddRange(newState.ProducedCommands);
-                Saga.State = newState.State;
+                Saga.ApplyTransit(newState.State);
             }
 
             //Then

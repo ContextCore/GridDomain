@@ -14,7 +14,6 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors.CommandPipe;
-using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Node.Actors
 {
@@ -23,22 +22,20 @@ namespace GridDomain.Node.Actors
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
-    /// <typeparam name="TMachine"></typeparam>
     /// <typeparam name="TState"></typeparam>
-    public class SagaActor<TMachine, TState> : AggregateActor<SagaStateAggregate<TState>> where TMachine : SagaStateMachine<TState>
-                                                                                          where TState : class, ISagaState
+    public class SagaActor<TState> : AggregateActor<SagaStateAggregate<TState>> where TState : class, ISagaState
     {
         private readonly ProcessEntry _exceptionOnTransit;
-        private readonly ISagaProducer<ISaga<TMachine, TState>> _producer;
+        private readonly ISagaProducer<ISaga<TState>> _producer;
         private readonly IPublisher _publisher;
         private readonly Dictionary<Type, string> _sagaIdFields;
         private readonly ProcessEntry _sagaProducedCommand;
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly ProcessEntry _stateChanged;
 
-        private ISaga<TMachine,TState> _saga;
+        private ISaga<TState> _saga;
 
-        public SagaActor(ISagaProducer<ISaga<TMachine, TState>> producer,
+        public SagaActor(ISagaProducer<ISaga<TState>> producer,
                          IPublisher publisher,
                          IActorRef schedulerActorRef,
                          IActorRef customHandlersActorRef,
@@ -102,7 +99,7 @@ namespace GridDomain.Node.Actors
         {
             //block any other executing until saga completes transition
             //cast is need for dynamic call of Transit
-            Task<StatePreview<TState>> processSagaTask = Saga.CreateNextState((dynamic) msg);
+            Task<TransitionResult<TState>> processSagaTask = Saga.PreviewTransit((dynamic) msg);
             processSagaTask.ContinueWith(t => new SagaTransited(t.Result.ProducedCommands.ToArray(),
                                                                 metadata,
                                                                 _sagaProducedCommand,
@@ -123,7 +120,7 @@ namespace GridDomain.Node.Actors
                                      });
         }
 
-        public ISaga<TMachine,TState> Saga => _saga ?? (_saga = _producer.Create(State));
+        public ISaga<TState> Saga => _saga ?? (_saga = _producer.Create(State));
 
         private Guid GetSagaId(object msg)
         {

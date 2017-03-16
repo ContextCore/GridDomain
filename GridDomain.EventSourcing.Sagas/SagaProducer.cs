@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaProducer<TSaga> : ISagaProducer<TSaga> where TSaga : ISaga
+    public class SagaProducer<TSaga> : ISagaProducer<TSaga>
     {
         private readonly Dictionary<Type, Func<object, TSaga>> _factories = new Dictionary<Type, Func<object, TSaga>>();
 

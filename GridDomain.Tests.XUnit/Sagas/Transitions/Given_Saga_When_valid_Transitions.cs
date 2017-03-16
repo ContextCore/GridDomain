@@ -11,7 +11,6 @@ using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
-using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
@@ -22,9 +21,9 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             log = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
 
-        private static Task<StatePreview<SoftwareProgrammingSagaData>> When_execute_valid_transaction<T>(ISaga<SoftwareProgrammingSaga,SoftwareProgrammingSagaData> saga, T e = null) where T : DomainEvent
+        private static Task<TransitionResult<SoftwareProgrammingSagaData>> When_execute_valid_transaction<T>(ISaga<SoftwareProgrammingSagaData> saga, T e = null) where T : DomainEvent
         {
-            return saga.CreateNextState(e);
+            return saga.PreviewTransit(e);
         }
 
         private readonly ILogger log;
@@ -144,7 +143,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee, log);
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
-            given.SagaInstance.CreateNextState((dynamic) msg);
+            given.SagaInstance.PreviewTransit((dynamic) msg);
             Assert.Equal(given.SagaMachine.Coding.Name, given.SagaDataAggregate.Data.CurrentStateName);
         }
 
@@ -162,7 +161,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Sleeping, log);
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
             //Transition_raises_an_error()
-            await given.SagaInstance.CreateNextState(gotTiredEvent).ShouldThrow<SagaTransitionException>();
+            await given.SagaInstance.PreviewTransit(gotTiredEvent).ShouldThrow<SagaTransitionException>();
         }
     }
 }

@@ -9,30 +9,18 @@ using System.Threading.Tasks;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public static class Saga
-    {
-        public static Saga<TSaga, TSagaData> New<TSaga, TSagaData>(TSaga saga,
-                                                                   SagaStateAggregate<TSagaData> data,
-                                                                   ILogger log) where TSaga : SagaStateMachine<TSagaData>
-                                                                                where TSagaData : class, ISagaState
-        {
-            return new Saga<TSaga, TSagaData>(saga,data.Data, log);
-        }
-    }
-
-    public class StatePreview<TState>
+    public class TransitionResult<TState>
     {
         public TState State { get; }
         public IReadOnlyCollection<Command> ProducedCommands { get; }
 
-        public StatePreview(TState state, IReadOnlyCollection<Command> producedCommands)
+        public TransitionResult(TState state, IReadOnlyCollection<Command> producedCommands)
         {
             State = state;
             ProducedCommands = producedCommands;
         }
     }
-    public class Saga<TMachine, TState> : ISaga<TMachine, TState> where TMachine : SagaStateMachine<TState>
-                                                                  where TState : class, ISagaState
+    public class Saga<TState> : ISaga<TState> where TState : class, ISagaState
     {
         private readonly ILogger _log;
         public readonly SagaStateMachine<TState> Machine;
@@ -47,7 +35,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            _log = log.ForContext<Saga<TMachine, TState>>();
+            _log = log;
             Machine = machine;
             State = state;
             CheckInitialState(doUninitializedWarnings);
@@ -55,7 +43,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         private string CurrentStateName => State.CurrentStateName;
 
-        public TState State { get; set; }
+        public TState State { get; private set; }
         
         /// <summary>
         /// Transit saga to new state is possible only after state persistence
@@ -64,7 +52,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         /// <typeparam name="TMessage"></typeparam>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task<StatePreview<TState>> CreateNextState<TMessage>(TMessage message) where TMessage : class
+        public Task<TransitionResult<TState>> PreviewTransit<TMessage>(TMessage message) where TMessage : class
         {
             var machineEvent = Machine.GetMachineEvent(message);
             
@@ -80,7 +68,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                                             if (t.IsFaulted)
                                                 throw new SagaTransitionException(message, State, t.Exception);
                                            
-                                            return new StatePreview<TState>(newState,commandsToDispatch);
+                                            return new TransitionResult<TState>(newState,commandsToDispatch);
                                         });
         }
 
@@ -97,6 +85,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
             _log.Warning("Saga will not process and only record incoming messages");
             return false;
+        }
+
+        public void ApplyTransit(TState newState)
+        {
+            State = newState;
         }
     }
 }

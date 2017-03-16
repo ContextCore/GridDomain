@@ -7,7 +7,6 @@ using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
 using Xunit.Abstractions;
-using ISaga = GridDomain.EventSourcing.Sagas.ISaga;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
@@ -23,9 +22,9 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private class WrongMessage {}
 
-        private static async Task<StatePreview<SoftwareProgrammingSagaData>> When_execute_invalid_transaction(ISaga<SoftwareProgrammingSaga,SoftwareProgrammingSagaData> saga)
+        private static async Task<TransitionResult<SoftwareProgrammingSagaData>> When_execute_invalid_transaction(ISaga<SoftwareProgrammingSagaData> saga)
         {
-            return await saga.CreateNextState(new WrongMessage());
+            return await saga.PreviewTransit(new WrongMessage());
         }
 
         private async Task SwallowException(Func<Task> act)
@@ -50,7 +49,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         [Fact]
         public async Task No_commands_are_produced()
         {
-            StatePreview<SoftwareProgrammingSagaData> newState = null;
+            TransitionResult<SoftwareProgrammingSagaData> newState = null;
             await SwallowException(async () => newState = await When_execute_invalid_transaction(_given.SagaInstance));
             Assert.Empty(newState?.ProducedCommands);
         }
@@ -67,7 +66,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         [Fact]
         public async Task Null_message_Exception_occurs()
         {
-            await _given.SagaInstance.CreateNextState((object) null).ShouldThrow<UnbindedMessageReceivedException>();
+            await _given.SagaInstance.PreviewTransit((object) null).ShouldThrow<UnbindedMessageReceivedException>();
         }
 
         [Fact]
