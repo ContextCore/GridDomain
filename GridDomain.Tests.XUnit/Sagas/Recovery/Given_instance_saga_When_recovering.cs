@@ -8,6 +8,7 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using Serilog;
 using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,7 +38,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
 
             data.ApplyEvents(eventsToReplay);
 
-            var sagaInstance = Saga.New(saga, data, _logger);
+            var sagaInstance = new Saga<SoftwareProgrammingSagaData>(saga,data.Data, _logger);
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());

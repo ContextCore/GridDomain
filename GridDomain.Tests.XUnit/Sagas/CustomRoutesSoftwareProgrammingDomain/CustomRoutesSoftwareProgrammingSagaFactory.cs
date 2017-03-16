@@ -26,13 +26,13 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.PersonId,
                                                                                                     saga.Coding.Name));
-            return Saga.New(saga, data, _log);
+            return new Saga<SoftwareProgrammingSagaData>(saga,data.Data, _log);
         }
 
         public ISaga<SoftwareProgrammingSagaData> Create(
             SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
-            return Saga.New(new CustomRoutesSoftwareProgrammingSaga(), message, _log);
+            return new Saga<SoftwareProgrammingSagaData>(new CustomRoutesSoftwareProgrammingSaga(),message.Data, _log);
         }
 
         public ISaga<SoftwareProgrammingSagaData> Create(SleptWellEvent message)
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
             var data =
                 new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SofaId,
                                                                                                     saga.Sleeping.Name));
-            return Saga.New(saga, data, _log);
+            return new Saga<SoftwareProgrammingSagaData>(saga,data.Data, _log);
         }
     }
 }

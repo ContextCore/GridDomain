@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using NUnit.Framework;
 
-namespace GridDomain.Tests.Framework
+namespace Shop.Tests.Unit
 {
     public static class NUnitAssertEx
     {

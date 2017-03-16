@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 
                                                          if (predicate != null && !predicate((TEx) exception))
                                                              throw new InvalidExceptionReceivedException();
-                                                         throw exception;
+                                                       //  throw exception;
                                                      }
                                                  });
         }

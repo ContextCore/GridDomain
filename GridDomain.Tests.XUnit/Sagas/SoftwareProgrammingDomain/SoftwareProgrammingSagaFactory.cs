@@ -30,7 +30,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         public ISaga<SoftwareProgrammingSagaData> Create(
             SagaStateAggregate<SoftwareProgrammingSagaData> message)
         {
-            return Saga.New(new SoftwareProgrammingSaga(), message, _log);
+            return new Saga<SoftwareProgrammingSagaData>(new SoftwareProgrammingSaga(),message.Data, _log);
         }
 
         public ISaga<SoftwareProgrammingSagaData> Create(SleptWellEvent message)

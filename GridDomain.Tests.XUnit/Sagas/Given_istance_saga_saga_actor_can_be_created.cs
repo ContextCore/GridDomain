@@ -21,7 +21,7 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public void Instance_saga_actor_can_be_created()
         {
-            var actorType = typeof(SagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>);
+            var actorType = typeof(SagaActor<SoftwareProgrammingSagaData>);
 
             var props = Node.System.DI().Props(actorType);
             var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), Guid.NewGuid()).ToString();

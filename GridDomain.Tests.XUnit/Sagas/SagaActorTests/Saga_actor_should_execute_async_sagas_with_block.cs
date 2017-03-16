@@ -29,7 +29,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var props =
                 Props.Create(
                              () =>
-                                 new SagaActor<AsyncLongRunningSaga, TestState>(producer,
+                                 new SagaActor<TestState>(producer,
                                                                                 _localAkkaEventBusTransport,
                                                                                 blackHole,
                                                                                 blackHole,
@@ -39,10 +39,10 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaId = Guid.NewGuid();
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
 
-            _actor = ActorOfAsTestActorRef<SagaActor<AsyncLongRunningSaga, TestState>>(props, name);
+            _actor = ActorOfAsTestActorRef<SagaActor<TestState>>(props, name);
         }
 
-        private readonly TestActorRef<SagaActor<AsyncLongRunningSaga, TestState>> _actor;
+        private readonly TestActorRef<SagaActor<TestState>> _actor;
 
         private readonly Guid _sagaId;
         private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;

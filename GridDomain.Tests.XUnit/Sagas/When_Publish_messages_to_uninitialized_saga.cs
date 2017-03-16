@@ -37,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             sagaDataAggregate.RememberEvent(!sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
                                             null, @event.Name);
 
-            var saga = new Saga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(softwareProgrammingSaga,sagaDataAggregate.Data, _log);
+            var saga = new Saga<SoftwareProgrammingSagaData>(softwareProgrammingSaga,sagaDataAggregate.Data, _log);
             await saga.PreviewTransit(coffeMadeEvent);
             //No exception is raised
         }

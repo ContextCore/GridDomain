@@ -173,7 +173,6 @@
     <Compile Include="Any.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="LoggerActorDummy.cs" />
-    <Compile Include="NUnitAssertEx.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="CannotCreateCommandHandlerExeption.cs" />

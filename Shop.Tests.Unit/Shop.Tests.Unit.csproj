@@ -211,6 +211,7 @@
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
     <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
     <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
+    <Compile Include="NUnitAssertEx.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_calculate_total_test.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />

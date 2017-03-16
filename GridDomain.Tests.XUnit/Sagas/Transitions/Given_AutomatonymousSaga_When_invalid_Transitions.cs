@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
@@ -22,11 +23,6 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         private class WrongMessage {}
 
-        private static async Task<TransitionResult<SoftwareProgrammingSagaData>> When_execute_invalid_transaction(ISaga<SoftwareProgrammingSagaData> saga)
-        {
-            return await saga.PreviewTransit(new WrongMessage());
-        }
-
         private async Task SwallowException(Func<Task> act)
         {
             try
@@ -40,41 +36,35 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         }
 
         [Fact]
-        public void Exception_occurs()
+        public async Task Exception_occurs()
         {
-            Assert.ThrowsAsync<UnbindedMessageReceivedException>(
-                                                                 async () => await When_execute_invalid_transaction(_given.SagaInstance));
+            await Assert.ThrowsAsync<UnbindedMessageReceivedException>(() => _given.SagaInstance
+                                                                                   .PreviewTransit(new WrongMessage()));
         }
 
         [Fact]
         public async Task No_commands_are_produced()
         {
             TransitionResult<SoftwareProgrammingSagaData> newState = null;
-            await SwallowException(async () => newState = await When_execute_invalid_transaction(_given.SagaInstance));
-            Assert.Empty(newState?.ProducedCommands);
-        }
-
-        [Fact]
-        public async Task No_events_are_raised_in_data_aggregate()
-        {
-            var aggregate = (IAggregate) _given.SagaDataAggregate;
-            aggregate.ClearUncommittedEvents(); //ignore sagaCreated event
-            await SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
-            Assert.Empty(aggregate.GetUncommittedEvents());
+            await SwallowException(async () => newState = await _given.SagaInstance.PreviewTransit(new WrongMessage()));
+            Assert.Null(newState?.ProducedCommands);
         }
 
         [Fact]
         public async Task Null_message_Exception_occurs()
         {
-            await _given.SagaInstance.PreviewTransit((object) null).ShouldThrow<UnbindedMessageReceivedException>();
+            await Assert.ThrowsAsync<UnbindedMessageReceivedException>(() => _given.SagaInstance
+                                                                             .PreviewTransit((object) null));
         }
 
         [Fact]
         public async Task Saga_state_not_changed()
         {
-            var stateHashBefore = _given.SagaDataAggregate.Data.CurrentStateName.GetHashCode();
-            await SwallowException(() => When_execute_invalid_transaction(_given.SagaInstance));
-            var stateHashAfter = _given.SagaDataAggregate.Data.CurrentStateName.GetHashCode();
+            var stateHashBefore = _given.SagaInstance.State.CurrentStateName;
+
+            await SwallowException(() => _given.SagaInstance.PreviewTransit(new WrongMessage()));
+
+            var stateHashAfter = _given.SagaInstance.State.CurrentStateName;
 
             Assert.Equal(stateHashBefore, stateHashAfter);
         }

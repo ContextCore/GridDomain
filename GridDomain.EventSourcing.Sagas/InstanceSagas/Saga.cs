@@ -55,7 +55,6 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public Task<TransitionResult<TState>> PreviewTransit<TMessage>(TMessage message) where TMessage : class
         {
             var machineEvent = Machine.GetMachineEvent(message);
-            
 
             //TODO: find more performant variant
             var newState = (TState)State.Clone();

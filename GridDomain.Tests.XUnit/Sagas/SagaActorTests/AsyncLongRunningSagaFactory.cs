@@ -18,14 +18,12 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
         public ISaga<TestState> Create(SagaStateAggregate<TestState> message)
         {
-            return Saga.New(new AsyncLongRunningSaga(), message, _log);
+            return new Saga<TestState>(new AsyncLongRunningSaga(),message.Data, _log);
         }
 
         public ISaga<TestState> Create(SampleAggregateCreatedEvent message)
         {
-            return Saga.New(new AsyncLongRunningSaga(),
-                                    new SagaStateAggregate<TestState>(new TestState(message.SagaId, nameof(AsyncLongRunningSaga.Initial))),
-                                    _log);
+            return new Saga<TestState>(new AsyncLongRunningSaga(),new SagaStateAggregate<TestState>(new TestState(message.SagaId, nameof(AsyncLongRunningSaga.Initial))).Data, _log);
         }
     }
 }

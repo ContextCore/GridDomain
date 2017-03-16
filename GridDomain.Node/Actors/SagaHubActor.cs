@@ -18,7 +18,7 @@ namespace GridDomain.Node.Actors
                                                                       where TState : class,ISagaState
     {
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
-        private readonly Type _actorType = typeof(SagaActor<TMachine, TState>);
+        private readonly Type _actorType = typeof(SagaActor<TState>);
 
         public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf, ISagaProducer<ISaga<TState>> sagaProducer)
             : base(recycleConf, typeof(TMachine).Name)

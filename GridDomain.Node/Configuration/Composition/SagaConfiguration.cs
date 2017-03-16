@@ -56,7 +56,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                                          return producer;
                                                                                                      }));
 
-            container.RegisterType<SagaActor<TSaga, TState>>(
+            container.RegisterType<SagaActor<TState>>(
                                                                                                         new InjectionConstructor(new ResolvedParameter<ISagaProducer<ISaga<TState>>>(),
                                                                                                                                  new ResolvedParameter<IPublisher>(),
                                                                                                                                  new ResolvedParameter<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName),

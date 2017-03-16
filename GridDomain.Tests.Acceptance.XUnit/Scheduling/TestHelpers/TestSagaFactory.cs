@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 
         public ISaga<TestSagaState> Create(SagaStateAggregate<TestSagaState> message)
         {
-            return Saga.New(new TestSaga(), message, _log);
+            return new Saga<TestSagaState>(new TestSaga(),message.Data, _log);
         }
 
         public ISaga<TestSagaState> Create(TestSagaStartMessage message)

@@ -38,7 +38,7 @@ namespace GridDomain.Tests.XUnit
         {
             var name = AggregateActorName.New<SagaStateAggregate<TSagaState>>(id).ToString();
             var actor =
-                await kit.LoadActor<SagaActor<TSaga, TSagaState>>(name);
+                await kit.LoadActor<SagaActor<TSagaState>>(name);
             return actor.Saga.State;
         }
     }

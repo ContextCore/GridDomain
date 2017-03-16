@@ -41,7 +41,6 @@ namespace GridDomain.Node.Actors
                          IActorRef customHandlersActorRef,
                          ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                          IConstructAggregates aggregatesConstructor)
-
             : base(new SagaStateCommandHandler<TState>(), schedulerActorRef,
                    publisher,
                    snapshotsPersistencePolicy,
@@ -56,10 +55,12 @@ namespace GridDomain.Node.Actors
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name,
                                                    SagaActorLiterals.CreatedFaultForSagaTransit,
                                                    SagaActorLiterals.SagaTransitCasedAndError);
-            _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
+
             _sagaProducedCommand = new ProcessEntry(Self.Path.Name,
                                                     SagaActorLiterals.PublishingCommand,
                                                     SagaActorLiterals.SagaProducedACommand);
+
+            _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
 
             AwaitingMessageBehavior();
         }

@@ -20,7 +20,7 @@ namespace Shop.Domain.Sagas
 
         public ISaga<BuyNowData> Create(SagaStateAggregate<BuyNowData> message)
         {
-            return Saga.New(new BuyNow(_priceCalculator), message, _log);
+            return new Saga<BuyNowData>(new BuyNow(_priceCalculator),message.Data, _log);
         }
 
         public ISaga<BuyNowData> Create(SkuPurchaseOrdered message)
