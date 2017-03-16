@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor));
 
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var sampleAggregateCreatedEvent = new SampleAggregateCreatedEvent("1", Guid.NewGuid());
             var sampleAggregateChangedEvent = new SampleAggregateChangedEvent("1", Guid.NewGuid());
@@ -54,7 +54,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
 
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msgA =
                 new MessageMetadataEnvelop<DomainEvent[]>(
@@ -84,7 +84,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         {
             var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
                                                                 MessageMetadata.Empty);
@@ -100,7 +100,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         {
             var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msg =
                 new MessageMetadataEnvelop<DomainEvent[]>(
@@ -127,7 +127,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
             catalog.Add<DomainEvent>(new Processor(TestActor));
 
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersProcessActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msgA =
                 new MessageMetadataEnvelop<DomainEvent[]>(

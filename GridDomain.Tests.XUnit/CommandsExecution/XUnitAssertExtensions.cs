@@ -9,22 +9,23 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
     {
         public static async Task<TEx> ShouldThrow<TEx>(this Task t, Predicate<TEx> predicate = null) where TEx : Exception
         {
-            return await Assert.ThrowsAsync<TEx>(async () =>
-                                                 {
-                                                     try
-                                                     {
-                                                         await t;
-                                                     }
-                                                     catch (Exception ex)
-                                                     {
-                                                         var exception = ex.UnwrapSingle();
-                                                         Assert.IsAssignableFrom<TEx>(exception);
+            try
+            {
+                await t;
+            }
+            catch (Exception ex)
+            {
+                var exception = ex.UnwrapSingle();
+                Assert.IsAssignableFrom<TEx>(exception);
 
-                                                         if (predicate != null && !predicate((TEx) exception))
-                                                             throw new InvalidExceptionReceivedException();
-                                                       //  throw exception;
-                                                     }
-                                                 });
+                if (predicate != null && !predicate((TEx) exception))
+                    throw new InvalidExceptionReceivedException();
+
+                return (TEx) exception;
+            }
+
+            Assert.False(true, "No exception was raised");
+            throw new Exception();
         }
 
         public class InvalidExceptionReceivedException : Exception {}

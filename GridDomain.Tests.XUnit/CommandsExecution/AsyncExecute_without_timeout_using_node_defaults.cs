@@ -23,11 +23,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()
         {
-            await
-                Node.Prepare(new LongOperationCommand(1000, Guid.NewGuid()))
-                    .Expect<SampleAggregateChangedEvent>()
-                    .Execute()
-                    .ShouldThrow<TimeoutException>();
+            await Node.Prepare(new LongOperationCommand(1000, Guid.NewGuid()))
+                      .Expect<SampleAggregateChangedEvent>()
+                      .Execute()
+                      .ShouldThrow<TimeoutException>();
         }
     }
 }

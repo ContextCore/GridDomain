@@ -27,43 +27,35 @@ namespace GridDomain.EventSourcing
             return handler;
         }
 
-        public void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+    
+
+        private void Map<TCommand>(Func<TCommand,TAggregate, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Add<TCommand>((c, a) =>
-                          {
-                              try
-                              {
-                                  commandExecutor((TCommand) c, a);
-                                  return Task.FromResult(a);
-                              }
-                              catch (Exception ex)
-                              {
-                                  return Task.FromException<TAggregate>(ex);
-                              }
-                          });
+            {
+                try
+                {
+                    var aggregate = commandExecutor((TCommand)c, a);
+                    return Task.FromResult(aggregate);
+                }
+                catch (Exception ex)
+                {
+                    return Task.FromException<TAggregate>(ex);
+                }
+            });
+        }
+        public void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        {
+            Map((Func<TCommand, TAggregate, TAggregate>)((c, a) =>
+            {
+                commandExecutor(c, a);
+                return a;
+            }));
         }
 
         protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>((c, a) =>
-                          {
-                              try
-                              {
-                                  var aggregate = commandExecutor((TCommand) c);
-
-                                  var eventsToSave = ((IAggregate) aggregate).GetUncommittedEvents()
-                                                                             .Cast<DomainEvent>()
-                                                                             .ToArray();
-
-                                  aggregate.PersistEvents(Task.FromResult(eventsToSave), e => { }, () => { }, aggregate);
-
-                                  return Task.FromResult(aggregate);
-                              }
-                              catch (Exception ex)
-                              {
-                                  return Task.FromException<TAggregate>(ex);
-                              }
-                          });
+            Map((Func<TCommand, TAggregate, TAggregate>)((c, a) => commandExecutor(c)));
         }
     }
 }

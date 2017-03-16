@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
+using CommonDomain;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -18,18 +19,18 @@ namespace GridDomain.Node.Actors
 {
     class SaveEventsAsync
     {
-        public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> act, Action continuation, Aggregate state)
+        public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> onEventPersisted, Action continuation, Aggregate state)
         {
             Continuation = continuation;
             State = state;
             Events = events;
-            Act = act;
+            OnEventPersisted = onEventPersisted;
         }
 
         public Action Continuation { get; }
         public DomainEvent[] Events { get; }
         public Aggregate State { get; }
-        public Action<DomainEvent> Act { get; }
+        public Action<DomainEvent> OnEventPersisted { get; }
     }
 
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
@@ -76,7 +77,7 @@ namespace GridDomain.Node.Actors
                                           evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
                                                  .PipeTo(Self));
 
-           AwaitingCommandBehavior();
+            AwaitingCommandBehavior();
         }
 
         protected void AwaitingCommandBehavior()
@@ -86,122 +87,135 @@ namespace GridDomain.Node.Actors
                                                            var cmd = m.Message;
                                                            Monitor.IncrementMessagesReceived();
                                                            Log.Debug("{Aggregate} received a {@command}", PersistenceId, cmd);
-                                                           State.RegisterEnricher(e => e.CloneWithSaga(cmd.SagaId));
-                                                           _aggregateCommandsHandler.ExecuteAsync(State, cmd)
-                                                                  .PipeTo(Self);
 
-                                                           BecomeStacked(() => ProcessingCommandBehavior(m, Sender));
+                                                           _aggregateCommandsHandler.ExecuteAsync(State, cmd)
+                                                                                    .PipeTo(Self);
+
+                                                           BecomeStacked(() => ProcessingCommandBehavior(m),nameof(ProcessingCommandBehavior));
                                                        });
         }
 
-        protected void ProcessingCommandBehavior(IMessageMetadataEnvelop<ICommand> commandEnvelop, IActorRef commandSender)
+        protected void ProcessingCommandBehavior(IMessageMetadataEnvelop<ICommand> commandEnvelop)
         {
             var command = commandEnvelop.Message;
             var commandMetadata = commandEnvelop.Metadata;
             var producedEventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
-
-            CommandAny(c => c.Match()
-                             //finished some call on aggregate, need persist produced events
-                             .With<SaveEventsAsync>(e =>
+            DefaultBehavior();
+            //finished some call on aggregate, need persist produced events
+            Command<SaveEventsAsync>(e =>
+                                     {
+                                         bool hasErrorsOnApply = false;
+                                         PersistAll(e.Events.Select(evt => evt.CloneWithSaga(command.SagaId)),
+                                                    o =>
                                                     {
-                                                        bool hasErrorsOnApply = false;
-                                                        PersistAll(e.Events,
-                                                                   o =>
-                                                                   {
-                                                                       e.State.MarkPersisted(o);
-                                                                       if (hasErrorsOnApply)
-                                                                       {
-                                                                           return;
-                                                                       }
+                                                        e.State.MarkPersisted(o);
+                                                        if (hasErrorsOnApply)
+                                                        {
+                                                            return;
+                                                        }
 
-                                                                       TrySaveSnapshot();
-                                                                       NotifyPersistenceWatchers(o);
-                                                                       Project(o, producedEventsMetadata);
+                                                        TrySaveSnapshot();
+                                                        NotifyPersistenceWatchers(o);
+                                                        Project(o, producedEventsMetadata);
 
-                                                                       try
-                                                                       {
-                                                                           e.Act(o);
-                                                                       }
-                                                                       catch (Exception ex)
-                                                                       {
-                                                                           hasErrorsOnApply = true;
-                                                                           Log.Error("Aggregate {id} raised erorrs on events apply after persist while executing command {@command} " +
-                                                                                     "State is supposed to be corrupted until code changes." +
-                                                                                     "Futher aggregate running is unsafe." +
-                                                                                     "Events within same command will be persisted but will not be applied to aggregate to reduce " +
-                                                                                     "possible state corruption.", Id, command);
+                                                        try
+                                                        {
+                                                            e.OnEventPersisted(o);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            hasErrorsOnApply = true;
+                                                            Log.Error("Aggregate {id} raised erorrs on events apply after persist while executing command {@command} " +
+                                                                      "State is supposed to be corrupted until code changes." +
+                                                                      "Futher aggregate running is unsafe." +
+                                                                      "Events within same command will be persisted but will not be applied to aggregate to reduce " +
+                                                                      "possible state corruption.", Id, command);
 
-                                                                           Self.Tell(new Status.Failure(ex));
-                                                                           //TODO: shutdown without snapshot save
-                                                                           return;
-                                                                       }
+                                                            Self.Tell(new Status.Failure(ex));
+                                                            //TODO: shutdown without snapshot save
+                                                            return;
+                                                        }
 
-                                                                       if (e.State.IsPendingPersistence)
-                                                                           return; 
+                                                        if (e.State.IsPendingPersistence)
+                                                            return;
 
-                                                                       try
-                                                                       {
-                                                                           e.Continuation();
-                                                                           //command execution is finished
-                                                                           Self.Tell(e.State);
-                                                                       }
-                                                                       catch (Exception ex)
-                                                                       {
-                                                                           hasErrorsOnApply = true;
-                                                                           Log.Error("Aggregate {id} raised erorrs on continuation after events apply while executing command {@command} " +
-                                                                                    "State is supposed to be corrupted until code changes." +
-                                                                                    "Futher aggregate running is unsafe." +
-                                                                                    "Events within same command will be persisted but will not be applied to aggregate to reduce " +
-                                                                                    "possible state corruption.", Id, command);
+                                                        try
+                                                        {
+                                                            e.Continuation();
+                                                            //command execution is finished
+                                                            Self.Tell(e.State);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            hasErrorsOnApply = true;
+                                                            Log.Error("Aggregate {id} raised erorrs on continuation after events apply while executing command {@command} " +
+                                                                      "State is supposed to be corrupted until code changes." +
+                                                                      "Futher aggregate running is unsafe." +
+                                                                      "Events within same command will be persisted but will not be applied to aggregate to reduce " +
+                                                                      "possible state corruption.", Id, command);
 
-                                                                           //TODO: shutdown without snapshot save
-                                                                           Self.Tell(new Status.Failure(ex));
-                                                                       }
-                                                                   });
-                                                    })
-                             //aggregate raised an error during command execution
-                             .With<Failure>(f => HandleError(command, commandMetadata, f.Exception, commandSender))
-                             .With<Status.Failure>(f => HandleError(command, commandMetadata, f.Cause, commandSender))
-                             //aggregate command execution is finished 
-                             //produced events are persisted
-                             //we can have events not projected yet
-                             .With<TAggregate>(newState =>
-                                               {
-                                                   //handler finished execution but need to wait for events persistence
-                                                   //or aggregate method started execution but don't produce anything yet
-                                                   if (newState.IsPendingPersistence || newState.IsMethodExecuting)
-                                                       return;
+                                                            //TODO: shutdown without snapshot save
+                                                            Self.Tell(new Status.Failure(ex));
+                                                        }
+                                                    });
+                                     });
+            //aggregate raised an error during command execution
+            Command<Failure>(f => HandleError(command, commandMetadata, f.Exception));
+            Command<Status.Failure>(f => HandleError(command, commandMetadata, f.Cause));
+            //aggregate command execution is finished 
+            //produced events are persisted
+            //we can have events not projected yet
+            Command<TAggregate>(newState =>
+                                {
+                                    //special case
+                                    //aggregate was just created, only constructor was called
+                                    //need persist it events
+                                    if (!ReferenceEquals(newState, State))
+                                    {
+                                        Self.Tell(new SaveEventsAsync(((IAggregate) newState).GetUncommittedEvents()
+                                                                                             .Cast<DomainEvent>()
+                                                                                             .ToArray(),
+                                                                      e => { },
+                                                                      //renew state to not fall into recursion
+                                                                      () => { State = newState; },
+                                                                      newState));
+                                        return;
+                                    }
 
-                                                   //can renew state now, as we are waiting only for event projections
-                                                   State = newState;
-                                                   //projection finished progress, 
-                                                   if (!_messagesToProject.Any())
-                                                       FinishCommandExecution(command, commandMetadata,commandSender);
-                                                   //projection in progress, will finish execution later by notification from message processor
-                                               })
-                             //projection of event pack from aggregate finished
-                             //we can have more event packs to project
-                             .With<AllHandlersCompleted>(m =>
-                                                         {
-                                                             //publish messages for notification
-                                                             object projected;
-                                                             if (!_messagesToProject.TryGetValue(m.ProjectId, out projected))
-                                                                 throw new UnknownProjectionFinishedException();
+                                    //handler finished execution but need to wait for events persistence
+                                    //or aggregate method started execution but don't produce anything yet
+                                    if (newState.IsPendingPersistence || newState.IsMethodExecuting)
+                                        return;
 
-                                                             _publisher.Publish(projected, producedEventsMetadata);
+                                    //can renew state now, as we are waiting only for event projections
+                                    State = newState;
+                                    //projection finished progress, 
+                                    if (!_messagesToProject.Any())
+                                        FinishCommandExecution(command);
+                                    //projection in progress, will finish execution later by notification from message processor
+                                });
+            //projection of event pack from aggregate finished
+            //we can have more event packs to project
+            Command<AllHandlersCompleted>(m =>
+                                          {
+                                              //publish messages for notification
+                                              object projected;
+                                              if (!_messagesToProject.TryGetValue(m.ProjectId, out projected))
+                                                  throw new UnknownProjectionFinishedException();
+                                              _messagesToProject.Remove(m.ProjectId);
 
-                                                             //all projections are finished, aggregate events are persisted
-                                                             //it means command execution is finished
-                                                             if (!_messagesToProject.Any() && !State.IsPendingPersistence)
-                                                                 FinishCommandExecution(command, commandMetadata,commandSender);
-                                                         })
-                             .With<IMessageMetadataEnvelop<ICommand>>(o => Stash.Stash())
-                             .With<GracefullShutdownRequest>(o => Stash.Stash())
-                             .Default(e => { throw new UnknownMessageReceivedException(); })
-                      );
+                                              _publisher.Publish(projected, producedEventsMetadata);
+
+                                              //all projections are finished, aggregate events are persisted
+                                              //it means command execution is finished
+                                              if (!_messagesToProject.Any() && !State.IsPendingPersistence)
+                                                  FinishCommandExecution(command);
+                                          });
+            Command<IMessageMetadataEnvelop<ICommand>>(o => Stash.Stash());
+            Command<GracefullShutdownRequest>(o => Stash.Stash());
         }
 
-        private void HandleError(ICommand command, IMessageMetadata commandMetadata, Exception exception, IActorRef commandSender)
+        private void HandleError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
         {
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
 
@@ -210,10 +224,10 @@ namespace GridDomain.Node.Actors
             Project(fault, producedFaultMetadata);
             Log.Error(exception, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, exception, command);
             _publisher.Publish(fault, producedFaultMetadata);
-            FinishCommandExecution(command, commandMetadata, commandSender);
+            FinishCommandExecution(command);
         }
 
-        protected virtual void FinishCommandExecution(ICommand cmd, IMessageMetadata metadata, IActorRef commandSender)
+        protected virtual void FinishCommandExecution(ICommand cmd)
         {
             UnbecomeStacked();
             Stash.UnstashAll();
@@ -298,7 +312,7 @@ namespace GridDomain.Node.Actors
 
     internal class EventApplyException : Exception
     {
-        public EventApplyException(Exception exception): base("An error occured while applying event to aggregate. State can be corrupted", exception) {}
+        public EventApplyException(Exception exception) : base("An error occured while applying event to aggregate. State can be corrupted", exception) {}
     }
 
     internal class UnknownMessageReceivedException : Exception {}

@@ -17,11 +17,10 @@ namespace GridDomain.EventSourcing
         private static readonly AggregateFactory Factory = new AggregateFactory();
         private static readonly Action<DomainEvent> EmptyApply = e => { };
         private static readonly Action EmptyContinue = () => { };
-        private Func<DomainEvent, DomainEvent> _eventsEnricher = e => e;
         private readonly ConcurrentDictionary<Guid,DomainEvent> _eventToPersist = new ConcurrentDictionary<Guid,DomainEvent>();
         private int _runningMethodsRunningCount = 0;
 
-        internal Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> PersistEvents;
+        private Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> _persistEvents = (t,act,cnt,agr) =>{};
         public bool IsMethodExecuting => _runningMethodsRunningCount > 0;
         public bool IsPendingPersistence => _eventToPersist.Any();
 
@@ -77,7 +76,7 @@ namespace GridDomain.EventSourcing
             Interlocked.Increment(ref _runningMethodsRunningCount);
             var task = evtTask.ContinueWith(t =>
                                             {
-                                                var enrichedEvents = t.Result.Select(_eventsEnricher).ToArray();
+                                                var enrichedEvents = t.Result;
 
                                                 foreach (var e in enrichedEvents)
                                                     _eventToPersist.TryAdd(e.Id,e);
@@ -86,7 +85,7 @@ namespace GridDomain.EventSourcing
                                                 return enrichedEvents;
                                             });
 
-            PersistEvents(task, e => RaiseEvent(e,onApply), continuation ?? EmptyContinue, this);
+            _persistEvents(task, e => RaiseEvent(e,onApply), continuation ?? EmptyContinue, this);
         }
 
         private void RaiseEvent(DomainEvent e, Action<DomainEvent> onApply = null)
@@ -95,13 +94,9 @@ namespace GridDomain.EventSourcing
             onApply?.Invoke(e);
         }
 
-        public void RegisterEnricher(Func<DomainEvent, DomainEvent> enricher)
-        {
-            _eventsEnricher = enricher;
-        }
         public void RegisterPersistence(Action<Task<DomainEvent[]>, Action<DomainEvent>, Action, Aggregate> persistDelegate)
         {
-            PersistEvents = persistDelegate;
+            _persistEvents = persistDelegate;
         }
 
         public static T Empty<T>(Guid id) where T : IAggregate

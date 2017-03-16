@@ -39,7 +39,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             catalog.Add<SampleAggregateChangedEvent>(new Processor(testSagaActorB));
             catalog.Add<SampleAggregateChangedEvent>(new Processor(testSagaActorÑ));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
             var msg =
@@ -75,7 +75,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
 
@@ -97,7 +97,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var catalog = new ProcessorListCatalog();
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaProcessActor(catalog)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
 

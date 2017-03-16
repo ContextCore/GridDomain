@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var catalog = new TypeCatalog<Processor, ICommand>();
             catalog.Add<CreateSampleAggregateCommand>(new Processor(TestActor));
 
-            var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));
+            var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
             var msg = new MessageMetadataEnvelop<CreateCommand>(new CreateCommand(1, Guid.NewGuid()), MessageMetadata.Empty);
 
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var catalog = new TypeCatalog<Processor, ICommand>();
             catalog.Add<CreateSampleAggregateCommand>(new Processor(TestActor));
 
-            var actor = Sys.ActorOf(Props.Create(() => new CommandExecutionActor(catalog)));
+            var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
             var msg = new MessageMetadataEnvelop<ICommand>(new CreateSampleAggregateCommand(1, Guid.NewGuid()),
                                                            MessageMetadata.Empty);

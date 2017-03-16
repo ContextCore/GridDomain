@@ -80,7 +80,7 @@ namespace GridDomain.Tools.Connector
                                                                   eventBusForwarder,
                                                                   _defaultTimeout);
 
-            var commandExecutionActor = await GetActor(GetSelection(nameof(CommandExecutionActor)));
+            var commandExecutionActor = await GetActor(GetSelection(nameof(AggregatesPipeActor)));
             _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
                                                            transportBridge,
                                                            commandExecutionActor,

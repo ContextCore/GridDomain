@@ -30,16 +30,12 @@ namespace GridDomain.Node.Actors.CommandPipe
     ///     If message process policy is set to synchronized, will process such events one after one
     ///     Will process all other messages in parallel
     /// </summary>
-    public class HandlersProcessActor : ReceiveActor
+    public class HandlersPipeActor : ReceiveActor
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
 
-        private readonly IProcessorListCatalog _handlersCatalog;
-
-        public HandlersProcessActor(IProcessorListCatalog handlersCatalog, IActorRef sagasProcessActor)
+        public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef sagasProcessActor)
         {
-            _handlersCatalog = handlersCatalog;
-
             ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
                                                            {
                                                                var sender = Sender;
@@ -47,21 +43,21 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                var metadata = envelop.Metadata;
                                                                var envelops = project.Messages.Select(e => new MessageMetadataEnvelop<object>(e, metadata)).ToArray();
 
-                                                               return envelops.Select(SynhronizeHandlers)
+                                                               return envelops.Select(messageMetadataEnvelop => SynhronizeHandlers(messageMetadataEnvelop, handlersCatalog))
                                                                               .ToChain()
                                                                               .ContinueWith(t =>
                                                                                             {
                                                                                                 sender.Tell(new AllHandlersCompleted(project.ProjectId));
 
                                                                                                 foreach (var env in envelops)
-                                                                                                    sagasProcessActor.Tell(env);
+                                                                                                    sender.Tell(env);
                                                                                             });
                                                            });
         }
 
-        private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop)
+        private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop, IProcessorListCatalog processorListCatalog)
         {
-            var faultProcessors = _handlersCatalog.Get(messageMetadataEnvelop.Message);
+            var faultProcessors = processorListCatalog.Get(messageMetadataEnvelop.Message);
             if (!faultProcessors.Any())
                 return Task.CompletedTask;
 

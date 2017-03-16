@@ -77,17 +77,17 @@ namespace GridDomain.Node
         {
             _log.Debug("Command pipe is starting initialization");
 
-            SagaProcessor = _system.ActorOf(Props.Create(() => new SagaProcessActor(_sagaCatalog)), nameof(SagaProcessActor));
+            SagaProcessor = _system.ActorOf(Props.Create(() => new SagaPipeActor(_sagaCatalog)), nameof(SagaPipeActor));
 
             HandlersProcessor = _system.ActorOf(
-                                                Props.Create(() => new HandlersProcessActor(_handlersCatalog, SagaProcessor)),
-                                                nameof(HandlersProcessActor));
+                                                Props.Create(() => new HandlersPipeActor(_handlersCatalog, SagaProcessor)),
+                                                nameof(HandlersPipeActor));
 
-            CommandExecutor = _system.ActorOf(Props.Create(() => new CommandExecutionActor(_aggregatesCatalog)),
-                                              nameof(CommandExecutionActor));
+            CommandExecutor = _system.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
+                                              nameof(AggregatesPipeActor));
 
-            _container.RegisterInstance(HandlersProcessActor.CustomHandlersProcessActorRegistrationName, HandlersProcessor);
-            _container.RegisterInstance(SagaProcessActor.SagaProcessActorRegistrationName, SagaProcessor);
+            _container.RegisterInstance(HandlersPipeActor.CustomHandlersProcessActorRegistrationName, HandlersProcessor);
+            _container.RegisterInstance(SagaPipeActor.SagaProcessActorRegistrationName, SagaProcessor);
 
             await SagaProcessor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Persistence;
@@ -25,8 +26,19 @@ namespace GridDomain.Node.Actors
 
         private int _terminateWaitCount = 3;
 
-   
+        protected Stack<string> BehaviorStack = new Stack<string>();
+        protected string CurrentBehavior => BehaviorStack.Peek() ?? "Undefined";
 
+        protected void BecomeStacked(Action act, string name)
+        {
+            BehaviorStack.Push(name);
+            base.BecomeStacked(act);
+        }
+        protected void UnbecomeStacked(Action act, string name)
+        {
+            BehaviorStack.Pop();
+            base.UnbecomeStacked();
+        }
         public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
@@ -49,7 +61,7 @@ namespace GridDomain.Node.Actors
                                               {
                                                   Log.Debug("{Actor} received shutdown request", PersistenceId);
                                                   Monitor.IncrementMessagesReceived();
-                                                  BecomeStacked(TerminatingBehavior);
+                                                  BecomeStacked(TerminatingBehavior,nameof(TerminatingBehavior));
                                               });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));

@@ -15,13 +15,13 @@ namespace GridDomain.Node.Actors.CommandPipe
     ///     If message process policy is set to synchronized, will process such events one after one
     ///     Will process all other messages in parallel
     /// </summary>
-    public class SagaProcessActor : ReceiveActor
+    public class SagaPipeActor : ReceiveActor
     {
         public const string SagaProcessActorRegistrationName = nameof(SagaProcessActorRegistrationName);
         private readonly IProcessorListCatalog _catalog;
         private IActorRef _commandExecutionActor;
 
-        public SagaProcessActor(IProcessorListCatalog catalog)
+        public SagaPipeActor(IProcessorListCatalog catalog)
         {
             _catalog = catalog;
 

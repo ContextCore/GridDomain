@@ -47,7 +47,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                         new ResolvedParameter<IPublisher>(),
                                                                                         new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
                                                                                         new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
-                                                                                        new ResolvedParameter<IActorRef>(HandlersProcessActor.CustomHandlersProcessActorRegistrationName)));
+                                                                                        new ResolvedParameter<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName)));
 
             container.RegisterInstance(aggregateRegistrationName, _factory);
         }

@@ -9,6 +9,8 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Xunit;
@@ -23,35 +25,28 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
             var producer = new SagaProducer<ISaga<TestState>>(AsyncLongRunningSaga.Descriptor);
             producer.RegisterAll<AsyncLongRunningSagaFactory, TestState>(new AsyncLongRunningSagaFactory(logger));
-            _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
-            _localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
+            var localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
+            localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
-            var props =
-                Props.Create(
-                             () =>
-                                 new SagaActor<TestState>(producer,
-                                                                                _localAkkaEventBusTransport,
-                                                                                blackHole,
-                                                                                blackHole,
-                                                                                new EachMessageSnapshotsPersistencePolicy(),
-                                                                                new AggregateFactory()));
-
+            var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
             _sagaId = Guid.NewGuid();
-            var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
 
-            _actor = ActorOfAsTestActorRef<SagaActor<TestState>>(props, name);
+            var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
+            _actor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
+                                                                          localAkkaEventBusTransport,
+                                                                          blackHole,
+                                                                          messageProcessActor,
+                                                                          new EachMessageSnapshotsPersistencePolicy(),
+                                                                          new AggregateFactory()),
+                                           name);
         }
 
         private readonly TestActorRef<SagaActor<TestState>> _actor;
-
         private readonly Guid _sagaId;
-        private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;
 
         [Fact]
         public void Saga_actor_blocks_until_async_saga_execution_complete()
         {
-            Assert.NotNull(_actor);
-
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
             var domainEventB = new SampleAggregateCreatedEvent("2", Guid.NewGuid(), DateTime.Now, _sagaId);
 
@@ -70,12 +65,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [Fact]
         public void Saga_execute_async_saga_transitions()
         {
-            Assert.NotNull(_actor);
-
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
             _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
-            FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+
+            FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true, TimeSpan.FromMinutes(10));
 
             Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
         }
@@ -83,8 +77,6 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [Fact]
         public void Saga_transition_raises_three_state_events()
         {
-            Assert.NotNull(_actor);
-
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
             _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));

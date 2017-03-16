@@ -41,6 +41,7 @@ namespace GridDomain.Node.Actors
                          IActorRef customHandlersActorRef,
                          ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                          IConstructAggregates aggregatesConstructor)
+
             : base(new SagaStateCommandHandler<TState>(), schedulerActorRef,
                    publisher,
                    snapshotsPersistencePolicy,
@@ -89,7 +90,7 @@ namespace GridDomain.Node.Actors
                 Self.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(cmd, m.Metadata))
                     .PipeTo(Self);
 
-                BecomeStacked(() => StartingBehavior(msg, metadata));
+                BecomeStacked(() => StartingBehavior(msg, metadata), nameof(StartingBehavior));
                 return;
             }
 
@@ -108,7 +109,7 @@ namespace GridDomain.Node.Actors
                                                                 t.Exception))
                            .PipeTo(Self);
 
-            BecomeStacked(() => TransitionBehavior(msg, metadata));
+            BecomeStacked(() => TransitionBehavior(msg, metadata), nameof(TransitionBehavior));
         }
 
         private void StartingBehavior(object msg, IMessageMetadata metadata)
@@ -155,30 +156,27 @@ namespace GridDomain.Node.Actors
         /// <param name="messageMetadata"></param>
         private void TransitionBehavior(object message, IMessageMetadata messageMetadata)
         {
-            CommandAny(o =>
-                       {
-                           o.Match()
-                            .With<SagaTransited>(r =>
-                                                 {
-                                                     var cmd = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, State.Data.CurrentStateName, message);
-                                                     var envelop = new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata);
-                                                     BecomeStacked(AwaitingCommandBehavior);
-                                                     //write new data to saga state during command execution
-                                                     //on aggregate apply method after persist callback
-                                                     Self.Ask<CommandExecuted>(envelop)
-                                                         .ContinueWith(t => FinishMessageProcessing(r));
-                                                 })
-                            .With<Status.Failure>(f =>
-                                                  {
-                                                      //Saga.ClearCommandsToDispatch();
-                                                      var fault = PublishError(message,
-                                                                               messageMetadata,
-                                                                               f.Cause.UnwrapSingle());
+            DefaultBehavior();
 
-                                                      FinishMessageProcessing(new SagaTransitFault(fault, messageMetadata));
-                                                  })
-                            .Default(m => Stash.Stash());
-                       });
+            Command<SagaTransited>(r =>
+                                   {
+                                       var cmd = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, State.Data.CurrentStateName, message);
+                                       var envelop = new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata);
+                                       BecomeStacked(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
+                                       //write new data to saga state during command execution
+                                       //on aggregate apply method after persist callback
+                                       Self.Ask<CommandExecuted>(envelop)
+                                           .ContinueWith(t => FinishMessageProcessing(r));
+                                   });
+            Command<Status.Failure>(f =>
+                                    {
+                                        //Saga.ClearCommandsToDispatch();
+                                        var fault = PublishError(message,
+                                                                 messageMetadata,
+                                                                 f.Cause.UnwrapSingle());
+
+                                        FinishMessageProcessing(new SagaTransitFault(fault, messageMetadata));
+                                    });
         }
 
         private void FinishMessageProcessing(object message)
@@ -189,9 +187,9 @@ namespace GridDomain.Node.Actors
             UnbecomeStacked();
         }
 
-        protected override void FinishCommandExecution(ICommand cmd, IMessageMetadata metadata, IActorRef commandSender)
+        protected override void FinishCommandExecution(ICommand cmd)
         {
-            base.FinishCommandExecution(cmd, metadata, commandSender);
+            base.FinishCommandExecution(cmd);
             Self.Tell(new CommandExecuted(cmd.Id));
         }
 
