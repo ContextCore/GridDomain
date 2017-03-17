@@ -15,6 +15,7 @@ using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
+using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,8 +34,16 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
             _sagaId = Guid.NewGuid();
 
+            var container = new UnityContainer();
             
-            Sys.AddDependencyResolver(new UnityDependencyResolver(container));
+            container.RegisterType<AggregateActor<SagaStateAggregate<TestState>>>(new InjectionFactory( cnt =>
+             new AggregateActor<SagaStateAggregate<TestState>>(new SagaStateCommandHandler<TestState>(),
+                blackHole,
+                localAkkaEventBusTransport,
+                new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(), messageProcessActor)));
+
+            Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
+
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
             _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
                                                                               localAkkaEventBusTransport),
