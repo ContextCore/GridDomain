@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
+using Akka.DI.Core;
 using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -57,6 +58,19 @@ namespace GridDomain.Node.Actors
                 childActorId = (Guid) type.GetProperty(sagaIdField).GetValue(message);
             }
             return childActorId;
+        }
+
+        protected override ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
+        {
+            //var childActorType = GetChildActorType(messageWitMetadata.Message);
+            var id = GetChildActorId(messageWitMetadata.Message);
+            var stateActorProps = Context.DI().Props(typeof(AggregateActor<SagaStateAggregate<TState>>));
+            var stateActor = Context.ActorOf(stateActorProps, AggregateActorName.New<SagaStateAggregate<TState>>(id).Name);
+
+            var sagaActorProps = Context.DI().Props(typeof(SagaActor<TState>));
+            var sagaActor = Context.ActorOf(sagaActorProps, AggregateActorName.New<TMachine>(id).Name);
+
+            return new ChildInfo(sagaActor);
         }
 
         protected override Type GetChildActorType(object message)

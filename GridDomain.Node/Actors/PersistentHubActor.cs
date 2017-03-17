@@ -137,7 +137,7 @@ namespace GridDomain.Node.Actors
             return base.AroundReceive(receive, message);
         }
 
-        protected ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
+        protected virtual ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
         {
             var childActorType = GetChildActorType(messageWitMetadata.Message);
             var props = Context.DI().Props(childActorType);

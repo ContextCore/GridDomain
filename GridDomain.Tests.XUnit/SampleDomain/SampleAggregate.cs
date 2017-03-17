@@ -67,8 +67,11 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         internal void AsyncExceptionWithOneEvent(int parameter, TimeSpan sleepTime)
         {
             Emit(Task.Delay(sleepTime)
-                     .ContinueWith(t => new SampleAggregateChangedEvent(parameter.ToString(), Id)),
-                 e => RaiseException());
+                     .ContinueWith(t =>
+                                   {
+                                       RaiseException();
+                                       return new SampleAggregateChangedEvent(parameter.ToString(), Id);
+                                   }));
 
         }
 

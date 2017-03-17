@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
@@ -34,7 +35,7 @@ namespace GridDomain.Node.Actors
         private readonly IDictionary<Guid, TState> _persistancePendingStates = new Dictionary<Guid, TState>();
         private readonly BehaviorStack Behavior;
         private readonly ActorMonitor Monitor;
-        private readonly IActorRef _stateAggregateActor;
+        private IActorRef _stateAggregateActor;
 
         public ISaga<TState> Saga { get; set; }
 
@@ -43,17 +44,18 @@ namespace GridDomain.Node.Actors
 
         private Guid Id { get; }
 
-        public SagaActor(Guid id,
-                         ISagaProducer<ISaga<TState>> producer,
-                         IPublisher publisher,
-                         IActorRef aggregateActor)
+        public SagaActor(ISagaProducer<ISaga<TState>> producer,
+                         IPublisher publisher)
 
         {
             Monitor = new ActorMonitor(Context, "Saga" + typeof(TState).Name);
             Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
-            _stateAggregateActor = aggregateActor;
+            Guid id;
+            if(!AggregateActorName.TryParseId(Self.Path.Name,out id))
+                throw new BadNameFormatException();
             Id = id;
+
             _publisher = publisher;
             _producer = producer;
             Log = Context.GetLogger();
@@ -70,12 +72,17 @@ namespace GridDomain.Node.Actors
 
             _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
 
-            _stateAggregateActor.Tell(NotifyOnCommandComplete.Instance);
             Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
         }
 
         private void InitializingBehavior()
         {
+            Receive<IActorRef>(r =>
+                               {
+                                   _stateAggregateActor = r;
+                                   _stateAggregateActor.Tell(NotifyOnCommandComplete.Instance);
+                               });
+
             Receive<NotifyOnCommandCompletedAck>(a =>
                                                  {
                                                      Behavior.Unbecome();
