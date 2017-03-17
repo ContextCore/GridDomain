@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.DI.Core;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
@@ -69,19 +70,20 @@ namespace GridDomain.Node.Actors
             _sagaProducedCommand = new ProcessEntry(Self.Path.Name,
                                                     SagaActorLiterals.PublishingCommand,
                                                     SagaActorLiterals.SagaProducedACommand);
-
+            
             _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
+
+            var stateActorProps = Context.DI().Props(typeof(AggregateActor<SagaStateAggregate<TState>>));
+            var stateActor = Context.ActorOf(stateActorProps, AggregateActorName.New<SagaStateAggregate<TState>>(Id).Name);
+
+            _stateAggregateActor = stateActor;
+            _stateAggregateActor.Tell(NotifyOnCommandComplete.Instance);
 
             Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
         }
 
         private void InitializingBehavior()
         {
-            Receive<IActorRef>(r =>
-                               {
-                                   _stateAggregateActor = r;
-                                   _stateAggregateActor.Tell(NotifyOnCommandComplete.Instance);
-                               });
 
             Receive<NotifyOnCommandCompletedAck>(a =>
                                                  {
@@ -109,6 +111,12 @@ namespace GridDomain.Node.Actors
 
             Receive<IMessageMetadataEnvelop<IFault>>(m => ProcessMessage(m.Message, m.Metadata),
                                                      e => GetSagaId(e.Message) == Id);
+
+            Receive<GracefullShutdownRequest>(r =>
+                                              {
+                                                  _stateAggregateActor.Tell(r);
+                                                  Context.Stop(Self);
+                                              });  
         }
 
         private void ProcessMessage(object message, IMessageMetadata metadata)

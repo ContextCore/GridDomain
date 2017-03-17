@@ -1,5 +1,7 @@
 using System;
 using Akka.Actor;
+using Akka.DI.Core;
+using Akka.DI.Unity;
 using Akka.TestKit;
 using Akka.TestKit.TestActors;
 using Akka.TestKit.Xunit2;
@@ -31,11 +33,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
             _sagaId = Guid.NewGuid();
 
+            
+            Sys.AddDependencyResolver(new UnityDependencyResolver(container));
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
-            _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(_sagaId,
-                                                                              producer,
-                                                                              localAkkaEventBusTransport,
-                                                                              blackHole),
+            _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
+                                                                              localAkkaEventBusTransport),
                                                name);
         }
 
