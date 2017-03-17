@@ -104,7 +104,7 @@ namespace GridDomain.Node.Actors
 
         protected void AwaitingCommandBehavior()
         {
-            DefaultBehavior();
+            BaseFunctionsBehavior();
             Command<NotifyOnCommandComplete>(n =>
                                              {
                                                  _commandCompletedWaiters.Add(Sender);
@@ -129,7 +129,7 @@ namespace GridDomain.Node.Actors
             var command = commandEnvelop.Message;
             var commandMetadata = commandEnvelop.Metadata;
             var producedEventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
-            DefaultBehavior();
+            BaseFunctionsBehavior();
             //finished some call on aggregate, need persist produced events
             Command<SaveEventsAsync>(e =>
                                      {

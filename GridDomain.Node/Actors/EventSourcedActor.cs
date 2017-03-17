@@ -52,10 +52,24 @@ namespace GridDomain.Node.Actors
             Monitor = new ActorMonitor(Context, typeof(T).Name);
             Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
-            DefaultBehavior();
+            BaseFunctionsBehavior();
+
+            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
+
+            Recover<SnapshotOffer>(offer =>
+            {
+                _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
+                State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
+            });
+
+            Recover<RecoveryCompleted>(message =>
+            {
+                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                NotifyPersistenceWatchers(message);
+            });
         }
 
-        protected void DefaultBehavior()
+        protected void BaseFunctionsBehavior()
         {
             Command<GracefullShutdownRequest>(req =>
                                               {
@@ -74,20 +88,6 @@ namespace GridDomain.Node.Actors
                                              _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                                                 BusinessDateTime.UtcNow);
                                          });
-      
-            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
-
-            Recover<SnapshotOffer>(offer =>
-                                   {
-                                       _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
-                                       State = _aggregateConstructor.Build(typeof(T), Id, (IMemento) offer.Snapshot);
-                                   });
-
-            Recover<RecoveryCompleted>(message =>
-                                       {
-                                           Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                                           NotifyPersistenceWatchers(message);
-                                       });
         }
 
         private void SubscribePersistentObserver(NotifyOnPersistenceEvents c)

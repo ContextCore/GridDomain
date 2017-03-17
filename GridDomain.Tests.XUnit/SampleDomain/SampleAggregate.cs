@@ -91,8 +91,12 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         public void RaiseExceptionAsync(TimeSpan callBackTime)
         {
              Emit(Task.Delay(callBackTime)
-                      .ContinueWith(t => new SampleAggregateChangedEvent("0", Id)),
-                  t => RaiseException());
+                      .ContinueWith(t =>
+                                    {
+                                        RaiseException();
+                                        return new SampleAggregateChangedEvent("0", Id);
+                                    })
+                );
         }
 
         private class Snapshot : IMemento
