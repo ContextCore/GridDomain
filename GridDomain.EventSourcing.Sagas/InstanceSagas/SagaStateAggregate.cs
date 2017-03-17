@@ -14,7 +14,11 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
     }
 
-    public class SaveStateCommand<TSagaState> : Command where TSagaState : ISagaState
+    public interface ISagaStateCommand<TSagaState> : ICommand
+    {
+        TSagaState State { get; }
+    }
+    public class SaveStateCommand<TSagaState> : Command, ISagaStateCommand<TSagaState> where TSagaState : ISagaState
     {
         public TSagaState State { get; }
         public string MachineStatePreviousName { get; }
@@ -27,7 +31,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         }
     }
 
-    public class CreateNewStateCommand<TSagaState> : Command where TSagaState : ISagaState
+    public class CreateNewStateCommand<TSagaState> : Command, ISagaStateCommand<TSagaState> where TSagaState : ISagaState
     {
         public TSagaState State { get; }
         public CreateNewStateCommand(Guid aggregateId, TSagaState state) : base(aggregateId)

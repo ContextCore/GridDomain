@@ -15,6 +15,18 @@ using Helios.Concurrency;
 
 namespace GridDomain.Node.Actors
 {
+
+   //public class BehaviorStack
+   //{
+   //    protected Stack<string> Behaviors = new Stack<string>();
+   //    protected string CurrentBehavior => Behaviors.Count > 0 ? Behaviors.Peek() : "Default behavior";
+   //
+   //    public BehaviorStack(Actor )
+   //    {
+   //        
+   //    }
+   //
+   //}
     public class EventSourcedActor<T> : ReceivePersistentActor where T : AggregateBase
     {
         private readonly IConstructAggregates _aggregateConstructor;
@@ -26,19 +38,8 @@ namespace GridDomain.Node.Actors
 
         private int _terminateWaitCount = 3;
 
-        protected Stack<string> BehaviorStack = new Stack<string>();
-        protected string CurrentBehavior => BehaviorStack.Count > 0 ? BehaviorStack.Peek() : "Default behavior";
+        protected readonly BehaviorStack Behavior;
 
-        protected void BecomeStacked(Action act, string name)
-        {
-            BehaviorStack.Push(name);
-            base.BecomeStacked(act);
-        }
-        protected void UnbecomeStacktraced()
-        {
-            BehaviorStack.Pop();
-            UnbecomeStacked();
-        }
         public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
@@ -49,9 +50,9 @@ namespace GridDomain.Node.Actors
             State = aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
+            Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
             DefaultBehavior();
-            RecoveringBehavior();
         }
 
         protected void DefaultBehavior()
@@ -60,13 +61,12 @@ namespace GridDomain.Node.Actors
                                               {
                                                   Log.Debug("{Actor} received shutdown request", PersistenceId);
                                                   Monitor.IncrementMessagesReceived();
-                                                  BecomeStacked(TerminatingBehavior,nameof(TerminatingBehavior));
+                                                  Behavior.Become(TerminatingBehavior,nameof(TerminatingBehavior));
                                               });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
             Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
-
 
             Command<SaveSnapshotSuccess>(s =>
                                          {
@@ -74,10 +74,7 @@ namespace GridDomain.Node.Actors
                                              _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                                                 BusinessDateTime.UtcNow);
                                          });
-        }
-
-        protected void RecoveringBehavior()
-        {
+      
             Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
@@ -127,7 +124,7 @@ namespace GridDomain.Node.Actors
             Command<DeleteSnapshotsFailure>(s => StopNow(s));
             Command<CancelShutdownRequest>(s =>
                                            {
-                                               UnbecomeStacktraced();
+                                               Behavior.Unbecome();
                                                Stash.UnstashAll();
                                                Log.Info("Aborting shutdown, will resume activity");
                                                Sender.Tell(ShutdownCanceled.Instance);

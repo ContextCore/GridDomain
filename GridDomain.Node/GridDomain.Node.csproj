@@ -225,6 +225,7 @@
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
+    <Compile Include="Actors\BehaviorStack.cs" />
     <Compile Include="Actors\CancelShutdownRequest.cs" />
     <Compile Include="Actors\CannotGetSagaFromMessage.cs" />
     <Compile Include="Actors\CommandPipe\Initialize.cs" />

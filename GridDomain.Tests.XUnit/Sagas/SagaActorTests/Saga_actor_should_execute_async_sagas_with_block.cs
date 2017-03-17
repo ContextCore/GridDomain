@@ -32,12 +32,10 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaId = Guid.NewGuid();
 
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
-            _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
+            _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(_sagaId,
+                                                                              producer,
                                                                               localAkkaEventBusTransport,
-                                                                              blackHole,
-                                                                              messageProcessActor,
-                                                                              new EachMessageSnapshotsPersistencePolicy(),
-                                                                              new AggregateFactory()),
+                                                                              blackHole),
                                                name);
         }
 

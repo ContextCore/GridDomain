@@ -33,6 +33,22 @@ namespace GridDomain.Node.Actors
         public Action<DomainEvent> OnEventPersisted { get; }
     }
 
+    public class NotifyOnCommandComplete
+    {
+       private NotifyOnCommandComplete()
+       {
+           
+       }
+       public static NotifyOnCommandComplete Instance = new NotifyOnCommandComplete();
+    }
+    public class NotifyOnCommandCompletedAck
+    {
+        private NotifyOnCommandCompletedAck()
+        {
+
+        }
+        public static NotifyOnCommandCompletedAck Instance = new NotifyOnCommandCompletedAck();
+    }
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -52,6 +68,7 @@ namespace GridDomain.Node.Actors
 
         private readonly IDictionary<Guid, object> _messagesToProject = new Dictionary<Guid, object>();
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
+        private readonly List<IActorRef> _commandCompletedWaiters = new List<IActorRef>();
 
         public new TAggregate State
         {
@@ -88,6 +105,12 @@ namespace GridDomain.Node.Actors
         protected void AwaitingCommandBehavior()
         {
             DefaultBehavior();
+            Command<NotifyOnCommandComplete>(n =>
+                                             {
+                                                 _commandCompletedWaiters.Add(Sender);
+                                                 Sender.Tell(NotifyOnCommandCompletedAck.Instance);
+                                             });
+
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
                                                            var cmd = m.Message;
@@ -97,7 +120,7 @@ namespace GridDomain.Node.Actors
                                                            _aggregateCommandsHandler.ExecuteAsync(State, cmd)
                                                                                     .PipeTo(Self);
 
-                                                           BecomeStacked(() => ProcessingCommandBehavior(m),nameof(ProcessingCommandBehavior));
+                                                           Behavior.Become(() => ProcessingCommandBehavior(m),nameof(ProcessingCommandBehavior));
                                                        });
         }
 
@@ -200,7 +223,7 @@ namespace GridDomain.Node.Actors
 
                                     //projection finished progress, 
                                     if (!_messagesToProject.Any())
-                                        FinishCommandExecution(command);
+                                        CommandCompleted(command);
                                     //projection in progress, will finish execution later by notification from message processor
                                 });
             //projection of event pack from aggregate finished
@@ -218,7 +241,7 @@ namespace GridDomain.Node.Actors
                                               //all projections are finished, aggregate events are persisted
                                               //it means command execution is finished
                                               if (!_messagesToProject.Any() && !State.IsPendingPersistence)
-                                                  FinishCommandExecution(command);
+                                                  CommandCompleted(command);
                                           });
             Command<IMessageMetadataEnvelop<ICommand>>(o => Stash.Stash());
             Command<GracefullShutdownRequest>(o => Stash.Stash());
@@ -233,14 +256,16 @@ namespace GridDomain.Node.Actors
             Project(fault, producedFaultMetadata);
             Log.Error(exception, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, exception, command);
             _publisher.Publish(fault, producedFaultMetadata);
-            FinishCommandExecution(command);
+            CommandCompleted(command);
         }
 
-        protected virtual void FinishCommandExecution(ICommand cmd)
+        protected virtual void CommandCompleted(ICommand cmd)
         {
-            UnbecomeStacktraced();
+            Behavior.Unbecome();
             Stash.UnstashAll();
             base.State.ClearUncommittedEvents();
+            foreach(var waiter in _commandCompletedWaiters)
+                waiter.Tell(new CommandCompleted(cmd.Id));
         }
 
         protected override void TerminatingBehavior()

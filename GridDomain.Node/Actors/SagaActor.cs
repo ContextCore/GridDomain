@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Akka;
-using Akka.Actor;
-using CommonDomain;
-using CommonDomain.Core;
-using CommonDomain.Persistence;
+﻿using Akka.Actor;
+using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
@@ -14,6 +7,10 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors.CommandPipe;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GridDomain.Node.Actors
 {
@@ -23,7 +20,8 @@ namespace GridDomain.Node.Actors
     ///     Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TState"></typeparam>
-    public class SagaActor<TState> : AggregateActor<SagaStateAggregate<TState>> where TState : class, ISagaState
+    public class SagaActor<TState> : ReceiveActor,
+                                     IWithUnboundedStash where TState : class, ISagaState
     {
         private readonly ProcessEntry _exceptionOnTransit;
         private readonly ISagaProducer<ISaga<TState>> _producer;
@@ -32,24 +30,33 @@ namespace GridDomain.Node.Actors
         private readonly ProcessEntry _sagaProducedCommand;
         private readonly HashSet<Type> _sagaStartMessageTypes;
         private readonly ProcessEntry _stateChanged;
+        private readonly ILoggingAdapter Log;
+        private readonly IDictionary<Guid, TState> _persistancePendingStates = new Dictionary<Guid, TState>();
+        private readonly BehaviorStack Behavior;
+        private readonly ActorMonitor Monitor;
+        private readonly IActorRef _stateAggregateActor;
 
-        private ISaga<TState> _saga;
+        public ISaga<TState> Saga { get; set; }
 
-        public SagaActor(ISagaProducer<ISaga<TState>> producer,
+        //private TState State { get; set; }
+        public IStash Stash { get; set; }
+
+        private Guid Id { get; }
+
+        public SagaActor(Guid id,
+                         ISagaProducer<ISaga<TState>> producer,
                          IPublisher publisher,
-                         IActorRef schedulerActorRef,
-                         IActorRef customHandlersActorRef,
-                         ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
-                         IConstructAggregates aggregatesConstructor)
+                         IActorRef aggregateActor)
 
-            : base(new SagaStateCommandHandler<TState>(), schedulerActorRef,
-                   publisher,
-                   snapshotsPersistencePolicy,
-                   aggregatesConstructor,
-                   customHandlersActorRef)
         {
+            Monitor = new ActorMonitor(Context, "Saga" + typeof(TState).Name);
+            Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
+
+            _stateAggregateActor = aggregateActor;
+            Id = id;
             _publisher = publisher;
             _producer = producer;
+            Log = Context.GetLogger();
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
 
@@ -63,38 +70,93 @@ namespace GridDomain.Node.Actors
 
             _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
 
-            AwaitingMessageBehavior();
+            _stateAggregateActor.Tell(NotifyOnCommandComplete.Instance);
+            Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
+        }
+
+        private void InitializingBehavior()
+        {
+            Receive<NotifyOnCommandCompletedAck>(a =>
+                                                 {
+                                                     Behavior.Unbecome();
+                                                     Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
+                                                     Stash.UnstashAll();
+                                                 });
+
+            StashingMessagesToProcessBehavior();
+        }
+
+        private void StashingMessagesToProcessBehavior()
+        {
+            Receive<IMessageMetadataEnvelop<DomainEvent>>(m => Stash.Stash(),
+                                                          e => GetSagaId(e.Message) == Id);
+
+            Receive<IMessageMetadataEnvelop<IFault>>(m => Stash.Stash(),
+                                                     e => GetSagaId(e.Message) == Id);
         }
 
         private void AwaitingMessageBehavior()
         {
-            Command<IMessageMetadataEnvelop<DomainEvent>>(CreateSagaIfNeed,
+            Receive<IMessageMetadataEnvelop<DomainEvent>>(m => ProcessMessage(m.Message, m.Metadata),
                                                           e => GetSagaId(e.Message) == Id);
 
-            Command<IMessageMetadataEnvelop<IFault>>(CreateSagaIfNeed,
+            Receive<IMessageMetadataEnvelop<IFault>>(m => ProcessMessage(m.Message, m.Metadata),
                                                      e => GetSagaId(e.Message) == Id);
         }
 
-        private void CreateSagaIfNeed(IMessageMetadataEnvelop m)
+        private void ProcessMessage(object message, IMessageMetadata metadata)
         {
-            var msg = m.Message;
-            var metadata = m.Metadata;
-
             Monitor.IncrementMessagesReceived();
-            if (_sagaStartMessageTypes.Contains(msg.GetType()))
-            {
-                _saga = _producer.Create(msg);
+            if (ShouldStartNewSaga(message))
+                StartNewSaga(message, metadata);
+            else
+                TransitSaga(message, metadata);
+        }
 
-                var cmd = new CreateNewStateCommand<TState>(Id, _saga.State);
+        private void StartNewSaga(object message, IMessageMetadata metadata)
+        {
+            var saga = _producer.Create(message);
 
-                Self.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(cmd, m.Metadata))
-                    .PipeTo(Self);
+            var cmd = new CreateNewStateCommand<TState>(Id, saga.State);
 
-                BecomeStacked(() => ExecutingCommandBehavior(msg, metadata), nameof(ExecutingCommandBehavior));
-                return;
-            }
+            ChangeState(cmd, metadata, () => TransitSaga(message, metadata));
+        }
 
-            TransitSaga(msg, metadata);
+        private void WaitForCommandCompleteBehavior(Action<Guid> onCommandComplete)
+        {
+            StashingMessagesToProcessBehavior();
+            Receive<CommandCompleted>(cc => { onCommandComplete(cc.CommandId); });
+        }
+
+        private bool ShouldStartNewSaga(object message)
+        {
+            return _sagaStartMessageTypes.Contains(message.GetType());
+        }
+
+        private void ChangeState(ISagaStateCommand<TState> cmd, IMessageMetadata messageMetadata, Action onStateChanged)
+        {
+            _persistancePendingStates[cmd.Id] = cmd.State;
+
+            _stateAggregateActor.Ask<CommandCompleted>(new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata))
+                                .PipeTo(Self);
+
+            Behavior.Become(() => WaitForCommandCompleteBehavior(id =>
+                                                               {
+                                                                   Saga = ApplyPendingState(id);
+                                                                   onStateChanged();
+                                                                   Behavior.Unbecome();
+                                                               }),
+                          nameof(WaitForCommandCompleteBehavior));
+        }
+
+        private ISaga<TState> ApplyPendingState(Guid id)
+        {
+            TState persistedState;
+            if (!_persistancePendingStates.TryGetValue(id, out persistedState))
+                throw new UnknownStatePersistedException();
+            _persistancePendingStates.Remove(id);
+
+            return _producer.Create(persistedState);
         }
 
         private void TransitSaga(object msg, IMessageMetadata metadata)
@@ -109,68 +171,27 @@ namespace GridDomain.Node.Actors
                                                                 t.Exception))
                            .PipeTo(Self);
 
-            BecomeStacked(() => TransitionBehavior(msg, metadata), nameof(TransitionBehavior));
-        }
-
-        private void ExecutingCommandBehavior(object msg, IMessageMetadata metadata)
-        {
-            AwaitingCommandBehavior();
-            Command<CommandExecuted>(cmd =>
-                                     {
-                                         UnbecomeStacktraced();
-                                         TransitSaga(msg, metadata);
-                                     });
-        }
-
-        public ISaga<TState> Saga => _saga ?? (_saga = _producer.Create(State));
-
-        private Guid GetSagaId(object msg)
-        {
-            var type = msg.GetType();
-            string fieldName;
-
-            if (_sagaIdFields.TryGetValue(type, out fieldName))
-                return (Guid) type.GetProperty(fieldName).GetValue(msg);
-
-            throw new CannotFindSagaIdException(msg);
-        }
-
-        protected override void TerminatingBehavior()
-        {
-            Command<IMessageMetadataEnvelop<DomainEvent>>(m =>
-                                                          {
-                                                              Self.Tell(CancelShutdownRequest.Instance);
-                                                              Stash.Stash();
-                                                          });
-            Command<IMessageMetadataEnvelop<IFault>>(m =>
-                                                     {
-                                                         Self.Tell(CancelShutdownRequest.Instance);
-                                                         Stash.Stash();
-                                                     });
-            base.TerminatingBehavior();
+            Behavior.Become(() => AwaitingTransitionBehavior(msg, metadata), nameof(AwaitingTransitionBehavior));
         }
 
         /// <summary>
         /// </summary>
         /// <param name="message">Usially it is domain event or fault</param>
         /// <param name="messageMetadata"></param>
-        private void TransitionBehavior(object message, IMessageMetadata messageMetadata)
+        private void AwaitingTransitionBehavior(object message, IMessageMetadata messageMetadata)
         {
-            DefaultBehavior();
-
-            Command<SagaTransited>(r =>
+            StashingMessagesToProcessBehavior();
+            Receive<SagaTransited>(t =>
                                    {
-                                       var cmd = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, State.Data.CurrentStateName, message);
-                                       var envelop = new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata);
-                                       BecomeStacked(() => ExecutingCommandBehavior(message, messageMetadata), nameof(ExecutingCommandBehavior));
-                                       //write new data to saga state during command execution
-                                       //on aggregate apply method after persist callback
-                                       Self.Ask<CommandExecuted>(envelop)
-                                           .ContinueWith(t => FinishMessageProcessing(r));
+                                       var cmd = new SaveStateCommand<TState>(Id,
+                                                                              (TState) t.NewSagaState,
+                                                                              Saga.State.CurrentStateName, message);
+
+                                       ChangeState(cmd, messageMetadata, () => FinishMessageProcessing(t));
                                    });
-            Command<Status.Failure>(f =>
+
+            Receive<Status.Failure>(f =>
                                     {
-                                        //Saga.ClearCommandsToDispatch();
                                         var fault = PublishError(message,
                                                                  messageMetadata,
                                                                  f.Cause.UnwrapSingle());
@@ -184,14 +205,8 @@ namespace GridDomain.Node.Actors
             //notify saga process actor that saga transit is done
             Context.Parent.Tell(message);
             Stash.UnstashAll();
-            UnbecomeStacktraced();
+            Behavior.Unbecome();
         }
-
-       protected override void FinishCommandExecution(ICommand cmd)
-       {
-           base.FinishCommandExecution(cmd);
-           Self.Tell(new CommandExecuted(cmd.Id));
-       }
 
         private IFault PublishError(object message, IMessageMetadata messageMetadata, Exception exception)
         {
@@ -205,18 +220,31 @@ namespace GridDomain.Node.Actors
             _publisher.Publish(fault, metadata);
             return fault;
         }
+
+        private Guid GetSagaId(object msg)
+        {
+            var type = msg.GetType();
+            string fieldName;
+
+            if (_sagaIdFields.TryGetValue(type, out fieldName))
+                return (Guid) type.GetProperty(fieldName).GetValue(msg);
+
+            throw new CannotFindSagaIdException(msg);
+        }
     }
 
-    public class CommandExecuted
+    internal class UnknownStatePersistedException : Exception {}
+
+    public class CommandCompleted
     {
         public Guid CommandId { get; }
 
-        public CommandExecuted(Guid commandId)
+        public CommandCompleted(Guid commandId)
         {
             CommandId = commandId;
         }
 
-        public static CommandExecuted Instance { get; } = new CommandExecuted(Guid.Empty);
+        public static CommandCompleted Instance { get; } = new CommandCompleted(Guid.Empty);
     }
 
     internal class CannotFindSagaIdException : Exception
