@@ -90,7 +90,7 @@ namespace GridDomain.Node.Actors
                 Self.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(cmd, m.Metadata))
                     .PipeTo(Self);
 
-                BecomeStacked(() => StartingBehavior(msg, metadata), nameof(StartingBehavior));
+                BecomeStacked(() => ExecutingCommandBehavior(msg, metadata), nameof(ExecutingCommandBehavior));
                 return;
             }
 
@@ -112,12 +112,12 @@ namespace GridDomain.Node.Actors
             BecomeStacked(() => TransitionBehavior(msg, metadata), nameof(TransitionBehavior));
         }
 
-        private void StartingBehavior(object msg, IMessageMetadata metadata)
+        private void ExecutingCommandBehavior(object msg, IMessageMetadata metadata)
         {
             AwaitingCommandBehavior();
             Command<CommandExecuted>(cmd =>
                                      {
-                                         UnbecomeStacked();
+                                         UnbecomeStacktraced();
                                          TransitSaga(msg, metadata);
                                      });
         }
@@ -162,7 +162,7 @@ namespace GridDomain.Node.Actors
                                    {
                                        var cmd = new SaveStateCommand<TState>(Id, (TState) r.NewSagaState, State.Data.CurrentStateName, message);
                                        var envelop = new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata);
-                                       BecomeStacked(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
+                                       BecomeStacked(() => ExecutingCommandBehavior(message, messageMetadata), nameof(ExecutingCommandBehavior));
                                        //write new data to saga state during command execution
                                        //on aggregate apply method after persist callback
                                        Self.Ask<CommandExecuted>(envelop)
@@ -184,14 +184,14 @@ namespace GridDomain.Node.Actors
             //notify saga process actor that saga transit is done
             Context.Parent.Tell(message);
             Stash.UnstashAll();
-            UnbecomeStacked();
+            UnbecomeStacktraced();
         }
 
-        protected override void FinishCommandExecution(ICommand cmd)
-        {
-            base.FinishCommandExecution(cmd);
-            Self.Tell(new CommandExecuted(cmd.Id));
-        }
+       protected override void FinishCommandExecution(ICommand cmd)
+       {
+           base.FinishCommandExecution(cmd);
+           Self.Tell(new CommandExecuted(cmd.Id));
+       }
 
         private IFault PublishError(object message, IMessageMetadata messageMetadata, Exception exception)
         {

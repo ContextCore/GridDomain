@@ -32,16 +32,16 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaId = Guid.NewGuid();
 
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
-            _actor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
-                                                                          localAkkaEventBusTransport,
-                                                                          blackHole,
-                                                                          messageProcessActor,
-                                                                          new EachMessageSnapshotsPersistencePolicy(),
-                                                                          new AggregateFactory()),
-                                           name);
+            _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
+                                                                              localAkkaEventBusTransport,
+                                                                              blackHole,
+                                                                              messageProcessActor,
+                                                                              new EachMessageSnapshotsPersistencePolicy(),
+                                                                              new AggregateFactory()),
+                                               name);
         }
 
-        private readonly TestActorRef<SagaActor<TestState>> _actor;
+        private readonly TestActorRef<SagaActor<TestState>> _sagaActor;
         private readonly Guid _sagaId;
 
         [Fact]
@@ -50,16 +50,16 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
             var domainEventB = new SampleAggregateCreatedEvent("2", Guid.NewGuid(), DateTime.Now, _sagaId);
 
-            _actor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
-            _actor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
+            _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
+            _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //B should not be processed until A is completed
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
-            Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
 
             //B should not be processed after A is completed
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
-            Assert.Equal(domainEventB.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
+            Assert.Equal(domainEventB.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
         }
 
         [Fact]
@@ -67,11 +67,11 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         {
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
-            _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
+            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
 
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true, TimeSpan.FromMinutes(10));
 
-            Assert.Equal(domainEventA.SourceId, _actor.UnderlyingActor.Saga.State.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         {
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
-            _actor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
+            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
 
             FishForMessage<IMessageMetadataEnvelop<SagaCreatedEvent<TestState>>>(m => true);
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);

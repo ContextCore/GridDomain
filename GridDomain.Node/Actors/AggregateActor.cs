@@ -73,15 +73,21 @@ namespace GridDomain.Node.Actors
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, PublishingEvent, CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, CreatedFault, CommandRaisedAnError);
 
-            State.RegisterPersistence((evtTask, onEventPersist, continuation, newState) =>
-                                          evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
-                                                 .PipeTo(Self));
+            RegisterAggregatePersistence();
 
             AwaitingCommandBehavior();
         }
 
+        private void RegisterAggregatePersistence()
+        {
+            State.RegisterPersistence((evtTask, onEventPersist, continuation, newState) =>
+                                          evtTask.ContinueWith(t => new SaveEventsAsync(t.Result, onEventPersist, continuation, newState))
+                                                 .PipeTo(Self));
+        }
+
         protected void AwaitingCommandBehavior()
         {
+            DefaultBehavior();
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
                                                            var cmd = m.Message;
@@ -177,7 +183,12 @@ namespace GridDomain.Node.Actors
                                                                                              .ToArray(),
                                                                       e => { },
                                                                       //renew state to not fall into recursion
-                                                                      () => { State = newState; },
+                                                                      () =>
+                                                                      {
+                                                                          State = newState;
+                                                                          //attach persistence to newly created aggregate
+                                                                          RegisterAggregatePersistence();
+                                                                      },
                                                                       newState));
                                         return;
                                     }
@@ -187,8 +198,6 @@ namespace GridDomain.Node.Actors
                                     if (newState.IsPendingPersistence || newState.IsMethodExecuting)
                                         return;
 
-                                    //can renew state now, as we are waiting only for event projections
-                                    State = newState;
                                     //projection finished progress, 
                                     if (!_messagesToProject.Any())
                                         FinishCommandExecution(command);
@@ -229,7 +238,7 @@ namespace GridDomain.Node.Actors
 
         protected virtual void FinishCommandExecution(ICommand cmd)
         {
-            UnbecomeStacked();
+            UnbecomeStacktraced();
             Stash.UnstashAll();
             base.State.ClearUncommittedEvents();
         }

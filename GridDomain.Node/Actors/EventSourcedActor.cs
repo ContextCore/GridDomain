@@ -27,17 +27,17 @@ namespace GridDomain.Node.Actors
         private int _terminateWaitCount = 3;
 
         protected Stack<string> BehaviorStack = new Stack<string>();
-        protected string CurrentBehavior => BehaviorStack.Peek() ?? "Undefined";
+        protected string CurrentBehavior => BehaviorStack.Count > 0 ? BehaviorStack.Peek() : "Default behavior";
 
         protected void BecomeStacked(Action act, string name)
         {
             BehaviorStack.Push(name);
             base.BecomeStacked(act);
         }
-        protected void UnbecomeStacked(Action act, string name)
+        protected void UnbecomeStacktraced()
         {
             BehaviorStack.Pop();
-            base.UnbecomeStacked();
+            UnbecomeStacked();
         }
         public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
@@ -51,7 +51,6 @@ namespace GridDomain.Node.Actors
             Monitor = new ActorMonitor(Context, typeof(T).Name);
 
             DefaultBehavior();
-
             RecoveringBehavior();
         }
 
@@ -128,7 +127,7 @@ namespace GridDomain.Node.Actors
             Command<DeleteSnapshotsFailure>(s => StopNow(s));
             Command<CancelShutdownRequest>(s =>
                                            {
-                                               UnbecomeStacked();
+                                               UnbecomeStacktraced();
                                                Stash.UnstashAll();
                                                Log.Info("Aborting shutdown, will resume activity");
                                                Sender.Tell(ShutdownCanceled.Instance);
