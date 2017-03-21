@@ -48,13 +48,16 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
                                                                               localAkkaEventBusTransport),
                                                name);
+
+            _sagaActor.Ask<NotifyOnSagaTransitedAck>(new NotifyOnSagaTransited(TestActor)).Wait();
+
         }
 
         private readonly TestActorRef<SagaActor<TestState>> _sagaActor;
         private readonly Guid _sagaId;
 
         [Fact]
-        public void Saga_actor_blocks_until_async_saga_execution_complete()
+        public void Saga_actor_process_one_message_in_time()
         {
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
             var domainEventB = new SampleAggregateCreatedEvent("2", Guid.NewGuid(), DateTime.Now, _sagaId);
@@ -62,29 +65,31 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
-            //B should not be processed until A is completed
+            //A was received first and should be processed first
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            FishForMessage<SagaTransited>(m => true);
             Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
 
             //B should not be processed after A is completed
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            FishForMessage<SagaTransited>(m => true);
             Assert.Equal(domainEventB.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
         }
 
         [Fact]
-        public void Saga_execute_async_saga_transitions()
+        public void Saga_change_state_after_transitions()
         {
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
 
-            FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true, TimeSpan.FromMinutes(10));
+            FishForMessage<SagaTransited>(m => true);
 
             Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
         }
 
         [Fact]
-        public void Saga_transition_raises_three_state_events()
+        public void Saga_transition_raises_state_events()
         {
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 

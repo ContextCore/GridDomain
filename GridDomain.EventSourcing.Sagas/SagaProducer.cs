@@ -33,7 +33,7 @@ namespace GridDomain.EventSourcing.Sagas
 
             foreach (var startMessageType in Descriptor.StartMessages)
             {
-                var expectedFactoryType = typeof(IFactory<,>).MakeGenericType(typeof(TState), startMessageType);
+                var expectedFactoryType = typeof(IFactory<,>).MakeGenericType(typeof(ISaga<TState>), startMessageType);
                 if (!expectedFactoryType.IsInstanceOfType(factory))
                     throw new FactoryNotSupportStartMessageException(factory.GetType(), startMessageType);
 

@@ -37,6 +37,7 @@ namespace GridDomain.Node.Actors
         private readonly BehaviorStack Behavior;
         private readonly ActorMonitor Monitor;
         private IActorRef _stateAggregateActor;
+        private List<IActorRef> _sagaTransitionWaiters = new List<IActorRef>();
 
         public ISaga<TState> Saga { get; set; }
 
@@ -59,6 +60,7 @@ namespace GridDomain.Node.Actors
 
             _publisher = publisher;
             _producer = producer;
+            _sagaTransitionWaiters.Add(Context.Parent);
             Log = Context.GetLogger();
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
@@ -102,7 +104,7 @@ namespace GridDomain.Node.Actors
 
             Receive<IMessageMetadataEnvelop<IFault>>(m => Stash.Stash(),
                                                      e => GetSagaId(e.Message) == Id);
-
+           
             ProxifyingCommandsBehavior();
         }
 
@@ -119,6 +121,12 @@ namespace GridDomain.Node.Actors
 
         private void ProxifyingCommandsBehavior()
         {
+            Receive<NotifyOnSagaTransited>(m =>
+            {
+                _sagaTransitionWaiters.Add(m.Sender);
+                Sender.Tell(NotifyOnSagaTransitedAck.Instance);
+            });
+
             Receive<GracefullShutdownRequest>(r =>
                                               {
                                                   _stateAggregateActor.Tell(r);
@@ -173,9 +181,9 @@ namespace GridDomain.Node.Actors
 
             Behavior.Become(() => WaitForCommandCompleteBehavior(id =>
                                                                {
+                                                                   Behavior.Unbecome();
                                                                    Saga = ApplyPendingState(id);
                                                                    onStateChanged();
-                                                                   Behavior.Unbecome();
                                                                }),
                           nameof(WaitForCommandCompleteBehavior));
         }
@@ -218,7 +226,7 @@ namespace GridDomain.Node.Actors
                                                                               (TState) t.NewSagaState,
                                                                               Saga.State.CurrentStateName, message);
 
-                                       ChangeState(cmd, messageMetadata, () => FinishMessageProcessing(t));
+                                       ChangeState(cmd, messageMetadata, () => FinishSagaTransition(t));
                                    });
 
             Receive<Status.Failure>(f =>
@@ -227,14 +235,16 @@ namespace GridDomain.Node.Actors
                                                                  messageMetadata,
                                                                  f.Cause.UnwrapSingle());
 
-                                        FinishMessageProcessing(new SagaTransitFault(fault, messageMetadata));
+                                        FinishSagaTransition(new SagaTransitFault(fault, messageMetadata));
                                     });
         }
 
-        private void FinishMessageProcessing(object message)
+        private void FinishSagaTransition(object message)
         {
             //notify saga process actor that saga transit is done
-            Context.Parent.Tell(message);
+            foreach(var n in _sagaTransitionWaiters)
+                    n.Tell(message);
+
             Stash.UnstashAll();
             Behavior.Unbecome();
         }
@@ -262,6 +272,26 @@ namespace GridDomain.Node.Actors
 
             throw new CannotFindSagaIdException(msg);
         }
+    }
+
+    internal class NotifyOnSagaTransited
+    {
+        public NotifyOnSagaTransited(IActorRef sender)
+        {
+            Sender = sender;
+        }
+
+        public IActorRef Sender { get; }
+    }
+    internal class NotifyOnSagaTransitedAck
+    {
+        private NotifyOnSagaTransitedAck()
+        {
+
+        }
+
+        public static readonly NotifyOnSagaTransitedAck Instance = new NotifyOnSagaTransitedAck();
+
     }
 
     internal class UnknownStatePersistedException : Exception {}
