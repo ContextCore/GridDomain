@@ -29,11 +29,11 @@ namespace GridDomain.Tests.XUnit.Sagas
             var waitResults =
                 await
                     Node.NewDebugWaiter()
-                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                         .Create()
                         .SendToSagas(gotTiredEvent);
 
-            var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaData>>();
+            var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaState>>();
 
             Assert.Equal(gotTiredEvent.PersonId, expectedCreatedEvent.SagaId);
         }

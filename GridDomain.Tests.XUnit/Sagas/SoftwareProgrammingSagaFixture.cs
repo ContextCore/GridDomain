@@ -18,8 +18,8 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                  c =>
                                                      c
                                                          .RegisterAggregate
-                                                         <SagaStateAggregate<SoftwareProgrammingSagaData>,
-                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>()));
+                                                         <SagaStateAggregate<SoftwareProgrammingSagaState>,
+                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaState>>()));
             Add(new SoftwareProgrammingSagaRoutes());
             Add(new SampleDomainContainerConfiguration());
         }

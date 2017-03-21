@@ -3,9 +3,9 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingSagaData : ISagaState
+    public class SoftwareProgrammingSagaState : ISagaState
     {
-        public SoftwareProgrammingSagaData(Guid id,
+        public SoftwareProgrammingSagaState(Guid id,
                                            string currentStateName,
                                            Guid sofaId = default(Guid),
                                            Guid coffeeMachineId = default(Guid),

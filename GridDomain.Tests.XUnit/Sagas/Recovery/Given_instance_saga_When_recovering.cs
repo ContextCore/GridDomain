@@ -30,15 +30,15 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
             var aggregateFactory = new AggregateFactory();
             var sagaId = Guid.NewGuid();
 
-            var data = aggregateFactory.Build<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            var data = aggregateFactory.Build<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
             var saga = new SoftwareProgrammingSaga();
-            var initialState = new SoftwareProgrammingSagaData(sagaId, saga.MakingCoffee.Name);
+            var initialState = new SoftwareProgrammingSagaState(sagaId, saga.MakingCoffee.Name);
 
-            var eventsToReplay = new DomainEvent[] {new SagaCreatedEvent<SoftwareProgrammingSagaData>(initialState, sagaId)};
+            var eventsToReplay = new DomainEvent[] {new SagaCreatedEvent<SoftwareProgrammingSagaState>(initialState, sagaId)};
 
             data.ApplyEvents(eventsToReplay);
 
-            var sagaInstance = new Saga<SoftwareProgrammingSagaData>(saga,data.Data, _logger);
+            var sagaInstance = new Saga<SoftwareProgrammingSagaState>(saga,data.Data, _logger);
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());

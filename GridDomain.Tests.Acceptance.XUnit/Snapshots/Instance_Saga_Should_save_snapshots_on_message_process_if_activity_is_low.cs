@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent, sagaId);
 
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //send text event
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(sagaContinueEvent, sagaId);
 
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);

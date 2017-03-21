@@ -21,10 +21,10 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public void Instance_saga_actor_can_be_created()
         {
-            var actorType = typeof(SagaActor<SoftwareProgrammingSagaData>);
+            var actorType = typeof(SagaActor<SoftwareProgrammingSagaState>);
 
             var props = Node.System.DI().Props(actorType);
-            var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaData>), Guid.NewGuid()).ToString();
+            var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaState>), Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);
             actor.Tell(new CheckHealth());
             ExpectMsg<HealthStatus>();
@@ -37,11 +37,11 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(msg);
 
-            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(msg.SagaId);
+            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(msg.SagaId);
             Assert.NotNull(sagaActor);
         }
     }

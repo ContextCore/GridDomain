@@ -37,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Coding, _log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await ((ISaga<SoftwareProgrammingSagaData>) given.SagaInstance).PreviewTransit(subscriptionExpiredEvent);
+            var newState = await ((ISaga<SoftwareProgrammingSagaState>) given.SagaInstance).PreviewTransit(subscriptionExpiredEvent);
 
             Assert.NotEmpty(newState.ProducedCommands);
         }
@@ -48,7 +48,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Coding, _log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await ((ISaga<SoftwareProgrammingSagaData>) given.SagaInstance).PreviewTransit(subscriptionExpiredEvent);
+            var newState = await ((ISaga<SoftwareProgrammingSagaState>) given.SagaInstance).PreviewTransit(subscriptionExpiredEvent);
 
             Assert.Equal(subscriptionExpiredEvent.SourceId, newState.State.PersonId);
         }
@@ -57,7 +57,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         public async Task State_in_transition_result_is_changed()
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee, _log);
-            var newState = await ((ISaga<SoftwareProgrammingSagaData>) given.SagaInstance).PreviewTransit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
+            var newState = await ((ISaga<SoftwareProgrammingSagaState>) given.SagaInstance).PreviewTransit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
             Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), newState.State.CurrentStateName);
         }
 

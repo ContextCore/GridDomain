@@ -6,11 +6,9 @@ using Serilog;
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaFactory :
-        ISagaFactory
-        <ISaga<SoftwareProgrammingSagaData>,
-            SagaStateAggregate<SoftwareProgrammingSagaData>>,
-        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, GotTiredEvent>,
-        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, SleptWellEvent>
+        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, SoftwareProgrammingSagaState>,
+        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, GotTiredEvent>,
+        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, SleptWellEvent>
     {
         private readonly ILogger _log;
 
@@ -19,26 +17,21 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             _log = log;
         }
 
-        public ISaga<SoftwareProgrammingSagaData> Create(GotTiredEvent message)
+        public ISaga<SoftwareProgrammingSagaState> Create(GotTiredEvent message)
         {
-            var data =
-                new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,
-                                                                                                    nameof(SoftwareProgrammingSaga.Coding)));
-            return Create(data);
+            return Create(new SoftwareProgrammingSagaState(message.SagaId,
+                                                          nameof(SoftwareProgrammingSaga.Coding)));
         }
 
-        public ISaga<SoftwareProgrammingSagaData> Create(
-            SagaStateAggregate<SoftwareProgrammingSagaData> message)
+        public ISaga<SoftwareProgrammingSagaState> Create(SoftwareProgrammingSagaState message)
         {
-            return new Saga<SoftwareProgrammingSagaData>(new SoftwareProgrammingSaga(),message.Data, _log);
+            return new Saga<SoftwareProgrammingSagaState>(new SoftwareProgrammingSaga(), message, _log);
         }
 
-        public ISaga<SoftwareProgrammingSagaData> Create(SleptWellEvent message)
+        public ISaga<SoftwareProgrammingSagaState> Create(SleptWellEvent message)
         {
-            var data =
-                new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SagaId,
-                                                                                                    nameof(SoftwareProgrammingSaga.Coding)));
-            return Create(data);
+            return Create(new SoftwareProgrammingSagaState(message.SagaId,
+                                                          nameof(SoftwareProgrammingSaga.Coding)));
         }
     }
 }

@@ -7,11 +7,9 @@ using Serilog;
 namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
 {
     public class CustomRoutesSoftwareProgrammingSagaFactory :
-        ISagaFactory
-        <ISaga<SoftwareProgrammingSagaData>,
-            SagaStateAggregate<SoftwareProgrammingSagaData>>,
-        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, GotTiredEvent>,
-        ISagaFactory<ISaga<SoftwareProgrammingSagaData>, SleptWellEvent>
+        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, SoftwareProgrammingSagaState>,
+        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, GotTiredEvent>,
+        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, SleptWellEvent>
     {
         private readonly ILogger _log;
 
@@ -20,28 +18,25 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
             _log = log;
         }
 
-        public ISaga<SoftwareProgrammingSagaData> Create(GotTiredEvent message)
+        public ISaga<SoftwareProgrammingSagaState> Create(GotTiredEvent message)
         {
-            var saga = new CustomRoutesSoftwareProgrammingSaga();
-            var data =
-                new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.PersonId,
-                                                                                                    saga.Coding.Name));
-            return new Saga<SoftwareProgrammingSagaData>(saga,data.Data, _log);
+            return new Saga<SoftwareProgrammingSagaState>(new CustomRoutesSoftwareProgrammingSaga(),
+                                                          new SoftwareProgrammingSagaState(message.PersonId,
+                                                                                           new CustomRoutesSoftwareProgrammingSaga().Coding.Name),
+                                                          _log);
         }
 
-        public ISaga<SoftwareProgrammingSagaData> Create(
-            SagaStateAggregate<SoftwareProgrammingSagaData> message)
+        public ISaga<SoftwareProgrammingSagaState> Create(SoftwareProgrammingSagaState message)
         {
-            return new Saga<SoftwareProgrammingSagaData>(new CustomRoutesSoftwareProgrammingSaga(),message.Data, _log);
+            return new Saga<SoftwareProgrammingSagaState>(new CustomRoutesSoftwareProgrammingSaga(), message, _log);
         }
 
-        public ISaga<SoftwareProgrammingSagaData> Create(SleptWellEvent message)
+        public ISaga<SoftwareProgrammingSagaState> Create(SleptWellEvent message)
         {
-            var saga = new CustomRoutesSoftwareProgrammingSaga();
-            var data =
-                new SagaStateAggregate<SoftwareProgrammingSagaData>(new SoftwareProgrammingSagaData(message.SofaId,
-                                                                                                    saga.Sleeping.Name));
-            return new Saga<SoftwareProgrammingSagaData>(saga,data.Data, _log);
+            return new Saga<SoftwareProgrammingSagaState>(new CustomRoutesSoftwareProgrammingSaga(),
+                                                          new SoftwareProgrammingSagaState(message.SofaId,
+                                                                                           new CustomRoutesSoftwareProgrammingSaga().Sleeping.Name),
+                                                          _log);
         }
     }
 }

@@ -30,24 +30,24 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(startMessage);
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(coffeMadeEvent);
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(reStartEvent);
 
             var sagaDataAggregate =
-                await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);
+                await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(startMessage.SagaId);
             //Saga_state_should_be_correct()
             Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), sagaDataAggregate.Data.CurrentStateName);
             //Saga_data_contains_information_from_restart_message()

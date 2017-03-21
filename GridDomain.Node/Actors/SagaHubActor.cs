@@ -60,17 +60,6 @@ namespace GridDomain.Node.Actors
             return childActorId;
         }
 
-       // protected override ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
-       // {
-       //     //var childActorType = GetChildActorType(messageWitMetadata.Message);
-       //     var id = GetChildActorId(messageWitMetadata.Message);
-       //    
-       //     var sagaActorProps = Context.DI().Props(typeof(SagaActor<TState>));
-       //     var sagaActor = Context.ActorOf(sagaActorProps, AggregateActorName.New<TMachine>(id).Name);
-       //
-       //     return new ChildInfo(sagaActor);
-       // }
-
         protected override Type GetChildActorType(object message)
         {
             return _actorType;

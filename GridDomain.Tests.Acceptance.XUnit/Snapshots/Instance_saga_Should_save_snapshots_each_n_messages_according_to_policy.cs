@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent);
 
@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(sagaContinueEvent);
 
@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(sagaContinueEventB);
 
@@ -71,7 +71,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaData>>(
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaState>>(
                                                                                                                                               sagaStartEvent.SagaId);
 
             //saving on each message, maximum on each command

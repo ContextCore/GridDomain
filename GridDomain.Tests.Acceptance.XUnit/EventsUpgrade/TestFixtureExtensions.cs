@@ -56,7 +56,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                              c.Register(
                                                                         SagaConfiguration
                                                                             .Instance
-                                                                            <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+                                                                            <SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(
                                                                                                                                                                    SoftwareProgrammingSaga.Descriptor,
                                                                                                                                                                    () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
             return fixture;

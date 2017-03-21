@@ -20,12 +20,12 @@ namespace GridDomain.Tests.XUnit.Sagas
             var startMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             Node.NewDebugWaiter()
-                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                 .Create()
                 .SendToSagas(startMessage)
                 .Wait();
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);
+            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(startMessage.SagaId);
             // Saga_has_correct_data()
             Assert.Equal(startMessage.SofaId, sagaData.Data.SofaId);
             //Saga_has_correct_state()

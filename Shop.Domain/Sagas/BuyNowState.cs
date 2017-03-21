@@ -3,9 +3,9 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowData : ISagaState
+    public class BuyNowState : ISagaState
     {
-        public BuyNowData(Guid id, string currentStateName)
+        public BuyNowState(Guid id, string currentStateName)
         {
             CurrentStateName = currentStateName;
             Id = id;

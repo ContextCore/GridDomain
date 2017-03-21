@@ -9,6 +9,6 @@ namespace GridDomain.EventSourcing.Sagas
 
         //TODO: extract to separate type? 
         IReadOnlyCollection<Type> KnownDataTypes { get; }
-        TSaga Create(object data);
+        TSaga Create(object message);
     }
 }

@@ -22,8 +22,8 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                      c =>
                                                          c
                                                              .RegisterAggregate
-                                                             <SagaStateAggregate<SoftwareProgrammingSagaData>,
-                                                                 SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>());
+                                                             <SagaStateAggregate<SoftwareProgrammingSagaState>,
+                                                                 SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaState>>());
                 Add(cfg);
                 Add(new SampleDomainContainerConfiguration());
             }

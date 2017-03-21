@@ -9,7 +9,7 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingSaga : SagaStateMachine<SoftwareProgrammingSagaData>
+    public class SoftwareProgrammingSaga : SagaStateMachine<SoftwareProgrammingSagaState>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
         private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingSaga>();
@@ -55,7 +55,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 
         private static ISagaDescriptor CreateDescriptor()
         {
-            var descriptor = SagaDescriptor.CreateDescriptor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>();
+            var descriptor = SagaDescriptor.CreateDescriptor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>();
 
             descriptor.AddStartMessage<GotTiredEvent>();
             descriptor.AddStartMessage<SleptWellEvent>();

@@ -32,12 +32,12 @@ namespace GridDomain.Tests.XUnit.Sagas
             var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
 
             var sagaId = !sagaHasId ? Guid.Empty : Guid.NewGuid();
-            var sagaDataAggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            var sagaDataAggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
             Event @event = softwareProgrammingSaga.CoffeReady;
-            sagaDataAggregate.RememberEvent(!sagaHasData ? null : new SoftwareProgrammingSagaData(sagaId, ""),
+            sagaDataAggregate.RememberEvent(!sagaHasData ? null : new SoftwareProgrammingSagaState(sagaId, ""),
                                             null, @event.Name);
 
-            var saga = new Saga<SoftwareProgrammingSagaData>(softwareProgrammingSaga,sagaDataAggregate.Data, _log);
+            var saga = new Saga<SoftwareProgrammingSagaState>(softwareProgrammingSaga,sagaDataAggregate.Data, _log);
             await saga.PreviewTransit(coffeMadeEvent);
             //No exception is raised
         }

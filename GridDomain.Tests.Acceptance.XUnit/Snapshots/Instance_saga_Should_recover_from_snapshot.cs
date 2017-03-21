@@ -21,9 +21,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         public async Task Test()
         {
             var saga  = new SoftwareProgrammingSaga();
-            var state = new SoftwareProgrammingSagaData(Guid.NewGuid(), saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
+            var state = new SoftwareProgrammingSagaState(Guid.NewGuid(), saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
 
-            var sagaState = new SagaStateAggregate<SoftwareProgrammingSagaData>(state);
+            var sagaState = new SagaStateAggregate<SoftwareProgrammingSagaState>(state);
             Event @event = saga.CoffeReady;
             sagaState.RememberEvent(state, new object(), @event.Name);
             sagaState.ClearEvents();
@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                                                        Node.AggregateFromSnapshotsFactory);
             await repo.Add(sagaState);
 
-            var restoredState = await this.LoadSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaState.Id);
+            var restoredState = await this.LoadSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaState.Id);
             //CoffeMachineId_should_be_equal()
             Assert.Equal(sagaState.Data.CoffeeMachineId,  restoredState.CoffeeMachineId);
             // State_should_be_equal()

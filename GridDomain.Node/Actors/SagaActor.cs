@@ -102,6 +102,8 @@ namespace GridDomain.Node.Actors
 
             Receive<IMessageMetadataEnvelop<IFault>>(m => Stash.Stash(),
                                                      e => GetSagaId(e.Message) == Id);
+
+            ProxifyingCommandsBehavior();
         }
 
         private void AwaitingMessageBehavior()
@@ -112,11 +114,25 @@ namespace GridDomain.Node.Actors
             Receive<IMessageMetadataEnvelop<IFault>>(m => ProcessMessage(m.Message, m.Metadata),
                                                      e => GetSagaId(e.Message) == Id);
 
+            ProxifyingCommandsBehavior();  
+        }
+
+        private void ProxifyingCommandsBehavior()
+        {
             Receive<GracefullShutdownRequest>(r =>
                                               {
                                                   _stateAggregateActor.Tell(r);
                                                   Context.Stop(Self);
-                                              });  
+                                              });
+
+
+            Receive<CheckHealth>(s =>
+                                 {
+                                     var sender = Sender;
+                                     _stateAggregateActor.Ask<HealthStatus>(s).ContinueWith(t => sender.Tell(t.Result));
+                                 });
+
+            Receive<NotifyOnPersistenceEvents>(c => _stateAggregateActor.Tell(c));
         }
 
         private void ProcessMessage(object message, IMessageMetadata metadata)

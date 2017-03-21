@@ -17,7 +17,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                    snapShotsPolicy = null,
                                                                                IConstructAggregates factory = null)
             where TSaga : SagaStateMachine<TData> where TData : class, ISagaState
-            where TFactory : ISagaFactory<ISaga<TData>, SagaStateAggregate<TData>>
+            where TFactory : ISagaFactory<ISaga<TData>, TData>
         {
             return new SagaConfiguration<TSaga, TData, TFactory>(descriptor, snapShotsPolicy, factory);
         }
@@ -25,7 +25,7 @@ namespace GridDomain.Node.Configuration.Composition
 
     public class SagaConfiguration<TSaga, TState, TFactory> : IContainerConfiguration where TSaga : SagaStateMachine<TState>
                                                                                       where TState : class, ISagaState
-                                                                                      where TFactory : ISagaFactory<ISaga<TState>, SagaStateAggregate<TState>>
+                                                                                      where TFactory : ISagaFactory<ISaga<TState>, TState>
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly ISagaDescriptor _descriptor;

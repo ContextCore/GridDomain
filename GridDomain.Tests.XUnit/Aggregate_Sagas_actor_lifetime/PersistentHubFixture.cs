@@ -28,13 +28,13 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
                                                      c.Register(
                                                                 SagaConfiguration
                                                                     .Instance
-                                                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaData, SoftwareProgrammingSagaFactory>(
+                                                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(
                                                                                                                                                            SoftwareProgrammingSaga.Descriptor)),
                                                  c =>
                                                      c
                                                          .RegisterAggregate
-                                                         <SagaStateAggregate<SoftwareProgrammingSagaData>,
-                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaData>>(),
+                                                         <SagaStateAggregate<SoftwareProgrammingSagaState>,
+                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaState>>(),
                                                  c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
                                                  c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
         }

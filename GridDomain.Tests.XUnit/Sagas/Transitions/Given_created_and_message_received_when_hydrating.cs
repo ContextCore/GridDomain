@@ -11,20 +11,20 @@ using Xunit;
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
     public class Given_created_and_message_received_when_hydrating :
-        AggregateTest<SagaStateAggregate<SoftwareProgrammingSagaData>>
+        AggregateTest<SagaStateAggregate<SoftwareProgrammingSagaState>>
     {
         private Guid _sagaId;
         private SoftwareProgrammingSaga _machine;
-        private SoftwareProgrammingSagaData _softwareProgrammingSagaData;
+        private SoftwareProgrammingSagaState _softwareProgrammingSagaState;
         private GotTiredEvent _message;
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new SagaCreatedEvent<SoftwareProgrammingSagaData>(_softwareProgrammingSagaData, _sagaId);
+            yield return new SagaCreatedEvent<SoftwareProgrammingSagaState>(_softwareProgrammingSagaState, _sagaId);
 
             yield return
-                new SagaMessageReceivedEvent<SoftwareProgrammingSagaData>(_sagaId,
-                                                                          _softwareProgrammingSagaData,
+                new SagaMessageReceivedEvent<SoftwareProgrammingSagaState>(_sagaId,
+                                                                          _softwareProgrammingSagaState,
                                                                           _machine.GotTired.Name,
                                                                           _message);
         }
@@ -34,11 +34,11 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         {
             _sagaId = Guid.NewGuid();
             _machine = new SoftwareProgrammingSaga();
-            _softwareProgrammingSagaData = new SoftwareProgrammingSagaData(_sagaId, _machine.Sleeping.Name);
+            _softwareProgrammingSagaState = new SoftwareProgrammingSagaState(_sagaId, _machine.Sleeping.Name);
             _message = new GotTiredEvent(Guid.NewGuid());
             Init();
             //Then_State_is_taken_from_message_received_event()
-            Assert.Equal(_softwareProgrammingSagaData, Aggregate.Data);
+            Assert.Equal(_softwareProgrammingSagaState, Aggregate.Data);
         }
     }
 }

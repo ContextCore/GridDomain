@@ -19,12 +19,12 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task When_publishing_start_message()
         {
-            var anyMessagePublisher = Node.NewDebugWaiter().Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>().Create();
+            var anyMessagePublisher = Node.NewDebugWaiter().Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>().Create();
             var sagaId = Guid.NewGuid();
 
             await anyMessagePublisher.SendToSagas(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId));
 
-            var actorRef = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
+            var actorRef = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaId);
             actorRef.Tell(NotifyOnPersistenceEvents.Instance);
 
             var secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId);
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             FishForMessage<Persisted>(m => true);
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
             //Saga_reinitialized_from_last_start_message()
             Assert.Equal(secondStartMessage.SofaId, sagaData.Data.SofaId);
             //Saga_has_correct_state()

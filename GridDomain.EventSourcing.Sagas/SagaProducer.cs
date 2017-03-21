@@ -13,22 +13,23 @@ namespace GridDomain.EventSourcing.Sagas
             Descriptor = descriptor;
         }
 
-        public TSaga Create(object data)
+        public TSaga Create(object message)
         {
-            var type = data.GetType();
+            var type = message.GetType();
             Func<object, TSaga> factory;
             if (!_factories.TryGetValue(type, out factory))
-                throw new CannotFindFactoryForSagaCreation(typeof(TSaga), data);
+                throw new CannotFindFactoryForSagaCreation(typeof(TSaga), message);
 
-            return factory.Invoke(data);
+            return factory.Invoke(message);
         }
 
         public ISagaDescriptor Descriptor { get; }
 
         public IReadOnlyCollection<Type> KnownDataTypes => _factories.Keys;
 
-        public void RegisterAll<TFactory, TData>(TFactory factory)
-            where TFactory : ISagaFactory<TSaga, SagaStateAggregate<TData>> where TData : ISagaState
+        public void RegisterAll<TFactory, TState>(TFactory factory)
+            where TFactory : ISagaFactory<TSaga, TState> 
+            where TState : ISagaState
         {
             dynamic dynamicfactory = factory;
 

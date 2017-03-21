@@ -21,11 +21,11 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaData>>()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                     .Create()
                     .SendToSagas(startMessage);
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(startMessage.SagaId);
+            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(startMessage.SagaId);
             //Saga_has_correct_data()
             Assert.Equal(startMessage.PersonId, sagaData.Data.PersonId);
             //Saga_has_correct_state()

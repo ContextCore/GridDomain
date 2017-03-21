@@ -31,14 +31,14 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var sagaId = Guid.NewGuid();
 
-            var sagaData = new SoftwareProgrammingSagaData(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
+            var sagaData = new SoftwareProgrammingSagaState(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
                            {
                                PersonId = Guid.NewGuid()
                            };
 
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
+            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaState>(sagaData, sagaId);
 
-            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
+            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId, sagaDataEvent);
 
             await Task.Delay(100);
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),
@@ -47,13 +47,13 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                                 sagaId);
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaData>>(
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>(
                                                                                      m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
                       .Create()
                       .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
 
             await Task.Delay(1000);
-            var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId);
+            var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
             //Saga_should_be_in_correct_state_after_fault_handling()
             Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaDataAggregate.Data.CurrentStateName);
             //Saga_state_should_contain_data_from_fault_message()

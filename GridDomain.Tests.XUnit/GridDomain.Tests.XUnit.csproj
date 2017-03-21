@@ -350,7 +350,7 @@
     <Compile Include="Sagas\SoftwareProgrammingDomain\Slept.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSaga.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaContainerConfiguration.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaData.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaState.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\UndefinedCoffeMachineException.cs" />

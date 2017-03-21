@@ -23,7 +23,7 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var sagaId = Guid.NewGuid();
             //prepare initial saga state
-            var sagaData = new SoftwareProgrammingSagaData(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
+            var sagaData = new SoftwareProgrammingSagaState(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
                            {
                                PersonId
                                    =
@@ -32,8 +32,8 @@ namespace GridDomain.Tests.XUnit.Sagas
                                        ()
                            };
 
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaData>(sagaData, sagaId);
-            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaData>>(sagaId, sagaDataEvent);
+            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaState>(sagaData, sagaId);
+            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId, sagaDataEvent);
 
             var results =
                 await

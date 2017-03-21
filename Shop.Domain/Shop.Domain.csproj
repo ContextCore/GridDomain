@@ -140,7 +140,7 @@
     <Compile Include="DomainServices\PriceCalculator\SqlPriceCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sagas\BuyNow.cs" />
-    <Compile Include="Sagas\BuyNowData.cs" />
+    <Compile Include="Sagas\BuyNowState.cs" />
     <Compile Include="DomainServices\PriceCalculator\IPriceCalculator.cs" />
     <Compile Include="DomainServices\PriceCalculator\SkuPriceNotFoundException.cs" />
     <Compile Include="Sagas\BuyNowSagaFactory.cs" />

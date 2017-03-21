@@ -8,7 +8,7 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
 {
-    public class CustomRoutesSoftwareProgrammingSaga : SagaStateMachine<SoftwareProgrammingSagaData>
+    public class CustomRoutesSoftwareProgrammingSaga : SagaStateMachine<SoftwareProgrammingSagaState>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
         private readonly ILogger _log = Log.ForContext<CustomRoutesSoftwareProgrammingSaga>();
@@ -47,7 +47,7 @@ namespace GridDomain.Tests.XUnit.Sagas.CustomRoutesSoftwareProgrammingDomain
         private static SagaDescriptor CreateDescriptor()
         {
             var descriptor =
-                SagaDescriptor.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaData>();
+                SagaDescriptor.CreateDescriptor<CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaState>();
 
             descriptor.AddStartMessage<GotTiredEvent>();
             descriptor.AddStartMessage<SleptWellEvent>();

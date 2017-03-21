@@ -8,13 +8,13 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
     public class Given_AutomatonymousSaga
     {
-        public readonly Saga<SoftwareProgrammingSagaData> SagaInstance;
+        public readonly Saga<SoftwareProgrammingSagaState> SagaInstance;
 
         public Given_AutomatonymousSaga(Func<SoftwareProgrammingSaga, State> initialState, ILogger logger)
         {
             var sagaMachine = new SoftwareProgrammingSaga();
-            var sagaData = new SoftwareProgrammingSagaData(Guid.NewGuid(), initialState(sagaMachine).Name);
-            SagaInstance = new Saga<SoftwareProgrammingSagaData>(sagaMachine,
+            var sagaData = new SoftwareProgrammingSagaState(Guid.NewGuid(), initialState(sagaMachine).Name);
+            SagaInstance = new Saga<SoftwareProgrammingSagaState>(sagaMachine,
                                                                  sagaData,
                                                                  logger);
         }
