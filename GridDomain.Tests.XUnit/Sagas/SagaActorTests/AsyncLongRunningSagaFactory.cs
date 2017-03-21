@@ -6,8 +6,8 @@ using Serilog;
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 {
     public class AsyncLongRunningSagaFactory :
-        ISagaFactory<ISaga<TestState>, TestState>,
-        ISagaFactory<ISaga<TestState>, SampleAggregateCreatedEvent>
+        IFactory<ISaga<TestState>, TestState>,
+        IFactory<ISaga<TestState>, SampleAggregateCreatedEvent>
     {
         private readonly ILogger _log;
 

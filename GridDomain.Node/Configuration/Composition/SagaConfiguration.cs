@@ -17,7 +17,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                    snapShotsPolicy = null,
                                                                                IConstructAggregates factory = null)
             where TSaga : SagaStateMachine<TData> where TData : class, ISagaState
-            where TFactory : ISagaFactory<ISaga<TData>, TData>
+            where TFactory : IFactory<ISaga<TData>, TData>
         {
             return new SagaConfiguration<TSaga, TData, TFactory>(descriptor, snapShotsPolicy, factory);
         }
@@ -25,7 +25,7 @@ namespace GridDomain.Node.Configuration.Composition
 
     public class SagaConfiguration<TSaga, TState, TFactory> : IContainerConfiguration where TSaga : SagaStateMachine<TState>
                                                                                       where TState : class, ISagaState
-                                                                                      where TFactory : ISagaFactory<ISaga<TState>, TState>
+                                                                                      where TFactory : IFactory<ISaga<TState>, TState>
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly ISagaDescriptor _descriptor;
@@ -47,17 +47,17 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName,
                                                                 new InjectionFactory(c => _snapShotsPolicy()));
 
-            container.RegisterType<ISagaProducer<ISaga<TState>>>(new ContainerControlledLifetimeManager(),
+            container.RegisterType<ISagaProducer<TState>>(new ContainerControlledLifetimeManager(),
                                                                                 new InjectionFactory(c =>
                                                                                                      {
                                                                                                          var factory = c.Resolve<TFactory>();
-                                                                                                         var producer = new SagaProducer<ISaga<TState>>(_descriptor);
-                                                                                                         producer.RegisterAll<TFactory, TState>(factory);
+                                                                                                         var producer = new SagaProducer<TState>(_descriptor);
+                                                                                                         producer.RegisterAll(factory);
                                                                                                          return producer;
                                                                                                      }));
 
             container.RegisterType<SagaActor<TState>>(
-                                                                                                        new InjectionConstructor(new ResolvedParameter<ISagaProducer<ISaga<TState>>>(),
+                                                                                                        new InjectionConstructor(new ResolvedParameter<ISagaProducer<TState>>(),
                                                                                                                                  new ResolvedParameter<IPublisher>(),
                                                                                                                                  new ResolvedParameter<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName),
                                                                                                                                  new ResolvedParameter<IConstructAggregates>(sagaSpecificRegistrationsName)));

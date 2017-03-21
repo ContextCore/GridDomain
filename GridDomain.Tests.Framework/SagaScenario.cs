@@ -16,14 +16,14 @@ namespace GridDomain.Tests.Framework
 
     public static class SagaScenarioExtensions
     {
-        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedCommands<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TData>, TData>
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedCommands<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, IFactory<ISaga<TData>,TData>
         {
             var scnearion = await scenarioInProgress;
             scnearion.CheckProducedCommands();
             return scnearion;
         }
 
-        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckOnlyStateNameChanged<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, string stateName) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TData>, TData>
+        public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckOnlyStateNameChanged<TSaga, TData, TFactory>(this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, string stateName) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, IFactory<ISaga<TData>, TData>
         {
             var scnearion = await scenarioInProgress;
             scnearion.CheckOnlyStateNameChanged(stateName);
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Framework
         }
 
         public static async Task<SagaScenario<TSaga, TData, TFactory>> CheckProducedState<TSaga, TData, TFactory>(
-            this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, TData expectedState, CompareLogic logic = null) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, ISagaFactory<ISaga<TData>, TData>
+            this Task<SagaScenario<TSaga, TData, TFactory>> scenarioInProgress, TData expectedState, CompareLogic logic = null) where TSaga : SagaStateMachine<TData> where TData : class, ISagaState where TFactory : class, IFactory<ISaga<TData>, TData>
         {
             var scnearion = await scenarioInProgress;
             scnearion.CheckProducedState(expectedState, logic);
@@ -39,74 +39,74 @@ namespace GridDomain.Tests.Framework
         }
     }
 
-    public class SagaScenario<TSaga, TData, TFactory> where TSaga : SagaStateMachine<TData>
-                                                      where TData : class, ISagaState
-                                                      where TFactory : class, ISagaFactory<ISaga<TData>, TData>
+    public class SagaScenario<TSaga, TState, TFactory> where TSaga : SagaStateMachine<TState>
+                                                      where TState : class, ISagaState
+                                                      where TFactory : class, IFactory<ISaga<TState>, TState>
     {
-        internal SagaScenario(ISagaProducer<ISaga<TData>> producer)
+        internal SagaScenario(ISagaProducer<TState> producer)
         {
             SagaProducer = producer;
         }
 
-        protected ISagaProducer<ISaga<TData>> SagaProducer { get; }
-        public ISaga<TData> Saga { get; private set; }
-        protected SagaStateAggregate<TData> SagaStateAggregate { get; private set; }
+        protected ISagaProducer<TState> SagaProducer { get; }
+        public ISaga<TState> Saga { get; private set; }
+        protected SagaStateAggregate<TState> SagaStateAggregate { get; private set; }
 
         public ICommand[] ExpectedCommands { get; private set; } = {};
         public ICommand[] ProducedCommands { get; private set; } = {};
         protected DomainEvent[] GivenEvents { get; private set; } = {};
         protected DomainEvent[] ReceivedEvents { get; private set; } = {};
 
-        public TData InitialState { get; private set; }
+        public TState InitialState { get; private set; }
 
-        public TData GenerateState(string stateName,
-                                   Func<ICustomizationComposer<TData>, IPostprocessComposer<TData>> fixtureConfig = null)
+        public TState GenerateState(string stateName,
+                                   Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig = null)
         {
             var fixture = new Fixture();
-            var composer = fixtureConfig?.Invoke(fixture.Build<TData>());
-            var generateState = composer != null ? composer.Create() : fixture.Create<TData>();
+            var composer = fixtureConfig?.Invoke(fixture.Build<TState>());
+            var generateState = composer != null ? composer.Create() : fixture.Create<TState>();
             generateState.CurrentStateName = stateName;
             return generateState;
         }
 
-        public static SagaScenario<TSaga, TData, TFactory> New(ISagaDescriptor descriptor, TFactory factory = null)
+        public static SagaScenario<TSaga, TState, TFactory> New(ISagaDescriptor descriptor, TFactory factory = null)
         {
-            var producer = new SagaProducer<ISaga<TData>>(descriptor);
-            producer.RegisterAll<TFactory, TData>(factory ?? CreateSagaFactory());
-            return new SagaScenario<TSaga, TData, TFactory>(producer);
+            var producer = new SagaProducer<TState>(descriptor);
+            producer.RegisterAll(factory ?? CreateSagaFactory());
+            return new SagaScenario<TSaga, TState, TFactory>(producer);
         }
 
-        public SagaScenario<TSaga, TData, TFactory> Given(params DomainEvent[] events)
+        public SagaScenario<TSaga, TState, TFactory> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
-            SagaStateAggregate = CreateAggregate<SagaStateAggregate<TData>>(Guid.NewGuid());
+            SagaStateAggregate = CreateAggregate<SagaStateAggregate<TState>>(Guid.NewGuid());
             SagaStateAggregate.ApplyEvents(events);
             SagaStateAggregate.ClearEvents();
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> GivenState(Guid id, TData state)
+        public SagaScenario<TSaga, TState, TFactory> GivenState(Guid id, TState state)
         {
             InitialState = state;
-            SagaStateAggregate = CreateAggregate<SagaStateAggregate<TData>>(id);
-            SagaStateAggregate.ApplyEvents(new SagaCreatedEvent<TData>(state, id));
+            SagaStateAggregate = CreateAggregate<SagaStateAggregate<TState>>(id);
+            SagaStateAggregate.ApplyEvents(new SagaCreatedEvent<TState>(state, id));
             SagaStateAggregate.ClearEvents();
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> When(params DomainEvent[] events)
+        public SagaScenario<TSaga, TState, TFactory> When(params DomainEvent[] events)
         {
             ReceivedEvents = events;
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> Then(params Command[] expectedCommands)
+        public SagaScenario<TSaga, TState, TFactory> Then(params Command[] expectedCommands)
         {
             ExpectedCommands = expectedCommands;
             return this;
         }
 
-        public async Task<SagaScenario<TSaga, TData, TFactory>> Run()
+        public async Task<SagaScenario<TSaga, TState, TFactory>> Run()
         {
             if (SagaStateAggregate != null)
                 Saga = SagaProducer.Create(SagaStateAggregate);
@@ -119,7 +119,7 @@ namespace GridDomain.Tests.Framework
             foreach (var evt in ReceivedEvents)
                 //cast to allow dynamic to locate Transit method
             {
-                Task<TransitionResult<TData>> newStateFromEventTask = Saga.PreviewTransit((dynamic) evt);
+                Task<TransitionResult<TState>> newStateFromEventTask = Saga.PreviewTransit((dynamic) evt);
                 var newState = await newStateFromEventTask;
                 producedCommands.AddRange(newState.ProducedCommands);
                 Saga.ApplyTransit(newState.State);
@@ -131,32 +131,32 @@ namespace GridDomain.Tests.Framework
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckProducedCommands()
+        public SagaScenario<TSaga, TState, TFactory> CheckProducedCommands()
         {
             EventsExtensions.CompareCommands(ExpectedCommands, ProducedCommands);
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckProducedState(TData expectedState,
+        public SagaScenario<TSaga, TState, TFactory> CheckProducedState(TState expectedState,
                                                                        CompareLogic customCompareLogic = null)
         {
             EventsExtensions.CompareState(expectedState, Saga.State, customCompareLogic);
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckProducedStateIsNotChanged()
+        public SagaScenario<TSaga, TState, TFactory> CheckProducedStateIsNotChanged()
         {
             EventsExtensions.CompareState(InitialState, Saga.State);
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckProducedStateName(string stateName)
+        public SagaScenario<TSaga, TState, TFactory> CheckProducedStateName(string stateName)
         {
             Assert.AreEqual(stateName, Saga.State.CurrentStateName);
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckOnlyStateNameChanged(string stateName)
+        public SagaScenario<TSaga, TState, TFactory> CheckOnlyStateNameChanged(string stateName)
         {
             CheckProducedStateName(stateName);
             EventsExtensions.CompareStateWithoutName(InitialState, Saga.State);
@@ -164,7 +164,7 @@ namespace GridDomain.Tests.Framework
             return this;
         }
 
-        public SagaScenario<TSaga, TData, TFactory> CheckProducedStateName(Func<TData> expectedStateProducer)
+        public SagaScenario<TSaga, TState, TFactory> CheckProducedStateName(Func<TState> expectedStateProducer)
         {
             return CheckProducedState(expectedStateProducer());
         }

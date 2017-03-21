@@ -5,9 +5,9 @@ using Serilog;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
-    public class TestSagaFactory : ISagaFactory<ISaga<TestSagaState>, TestSagaStartMessage>,
-                                   ISagaFactory<ISaga<TestSagaState>, TestSagaState>,
-                                   ISagaFactory<ISaga<TestSagaState>, Guid>
+    public class TestSagaFactory : IFactory<ISaga<TestSagaState>, TestSagaStartMessage>,
+                                   IFactory<ISaga<TestSagaState>, TestSagaState>,
+                                   IFactory<ISaga<TestSagaState>, Guid>
     {
         private readonly ILogger _log;
 

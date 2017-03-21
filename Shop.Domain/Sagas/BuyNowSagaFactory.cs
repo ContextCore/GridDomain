@@ -6,8 +6,8 @@ using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowSagaFactory : ISagaFactory<ISaga<BuyNowState>, BuyNowState>,
-                                     ISagaFactory<ISaga<BuyNowState>, SkuPurchaseOrdered>
+    public class BuyNowSagaFactory : IFactory<ISaga<BuyNowState>, BuyNowState>,
+                                     IFactory<ISaga<BuyNowState>, SkuPurchaseOrdered>
     {
         private readonly ILogger _log;
         private readonly IPriceCalculator _priceCalculator;

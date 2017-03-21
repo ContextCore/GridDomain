@@ -83,7 +83,7 @@
     <Compile Include="SagaDescriptor.cs" />
     <Compile Include="SagaProducer.cs" />
     <Compile Include="ISagaDescriptor.cs" />
-    <Compile Include="ISagaFactory.cs" />
+    <Compile Include="IFactory.cs" />
     <Compile Include="ISagaFault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SagaCreatedEvent.cs" />

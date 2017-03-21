@@ -6,9 +6,9 @@ using Serilog;
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaFactory :
-        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, SoftwareProgrammingSagaState>,
-        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, GotTiredEvent>,
-        ISagaFactory<ISaga<SoftwareProgrammingSagaState>, SleptWellEvent>
+        IFactory<ISaga<SoftwareProgrammingSagaState>, SoftwareProgrammingSagaState>,
+        IFactory<ISaga<SoftwareProgrammingSagaState>, GotTiredEvent>,
+        IFactory<ISaga<SoftwareProgrammingSagaState>, SleptWellEvent>
     {
         private readonly ILogger _log;
 

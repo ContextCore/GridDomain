@@ -4,21 +4,21 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaProducer<TSaga> : ISagaProducer<TSaga>
+    public class SagaProducer<TState> : ISagaProducer<TState> where TState : ISagaState
     {
-        private readonly Dictionary<Type, Func<object, TSaga>> _factories = new Dictionary<Type, Func<object, TSaga>>();
+        private readonly Dictionary<Type, Func<object, ISaga<TState>>> _factories = new Dictionary<Type, Func<object, ISaga<TState>>>();
 
         public SagaProducer(ISagaDescriptor descriptor)
         {
             Descriptor = descriptor;
         }
 
-        public TSaga Create(object message)
+        public ISaga<TState> Create(object message)
         {
             var type = message.GetType();
-            Func<object, TSaga> factory;
+            Func<object, ISaga<TState>> factory;
             if (!_factories.TryGetValue(type, out factory))
-                throw new CannotFindFactoryForSagaCreation(typeof(TSaga), message);
+                throw new CannotFindFactoryForSagaCreation(typeof(TState), message);
 
             return factory.Invoke(message);
         }
@@ -27,31 +27,30 @@ namespace GridDomain.EventSourcing.Sagas
 
         public IReadOnlyCollection<Type> KnownDataTypes => _factories.Keys;
 
-        public void RegisterAll<TFactory, TState>(TFactory factory)
-            where TFactory : ISagaFactory<TSaga, TState> 
-            where TState : ISagaState
+        public void RegisterAll<TFactory>(TFactory factory) where TFactory : IFactory<ISaga<TState>, TState>
         {
             dynamic dynamicfactory = factory;
 
             foreach (var startMessageType in Descriptor.StartMessages)
             {
-                var expectedFactoryType = typeof(ISagaFactory<,>).MakeGenericType(typeof(TSaga), startMessageType);
+                var expectedFactoryType = typeof(IFactory<,>).MakeGenericType(typeof(TState), startMessageType);
                 if (!expectedFactoryType.IsInstanceOfType(factory))
                     throw new FactoryNotSupportStartMessageException(factory.GetType(), startMessageType);
 
                 //TODO: think how to avoid dynamic call and call method need by message
-                Register(startMessageType, msg => (TSaga) dynamicfactory.Create((dynamic) msg));
+                Func<object, ISaga<TState>> fct = msg => (ISaga<TState>) dynamicfactory.Create((dynamic) msg);
+                Register(startMessageType, fct);
             }
 
             Register(factory);
         }
 
-        public void Register<TMessage>(ISagaFactory<TSaga, TMessage> factory)
+        public void Register<TMessage>(IFactory<ISaga<TState>, TMessage> factory)
         {
             Register(typeof(TMessage), m => factory.Create((TMessage) m));
         }
 
-        private void Register(Type dataType, Func<object, TSaga> factory)
+        private void Register(Type dataType, Func<object, ISaga<TState>> factory)
         {
             if (_factories.ContainsKey(dataType))
                 throw new FactoryAlreadyRegisteredException(dataType);

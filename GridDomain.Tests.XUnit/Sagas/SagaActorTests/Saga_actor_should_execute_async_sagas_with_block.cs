@@ -26,8 +26,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output)
         {
             var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-            var producer = new SagaProducer<ISaga<TestState>>(AsyncLongRunningSaga.Descriptor);
-            producer.RegisterAll<AsyncLongRunningSagaFactory, TestState>(new AsyncLongRunningSagaFactory(logger));
+            var producer = new SagaProducer<TestState>(AsyncLongRunningSaga.Descriptor);
+            producer.RegisterAll(new AsyncLongRunningSagaFactory(logger));
             var localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
