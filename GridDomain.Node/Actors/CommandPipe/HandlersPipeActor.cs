@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,21 +9,6 @@ using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
-    public class Project
-    {
-        public Project(object[] messages, Guid projectId)
-        {
-            Messages = messages;
-            ProjectId = projectId;
-        }
-
-        public Project(params object[] messages) : this(messages, Guid.NewGuid()) {}
-
-        public object[] Messages { get; }
-
-        public Guid ProjectId { get; }
-    }
-
     /// <summary>
     ///     Synhronize message handlers work for domain events produced by command
     ///     If message process policy is set to synchronized, will process such events one after one

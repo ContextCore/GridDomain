@@ -277,6 +277,7 @@
     <Compile Include="GridConsole\GridConsole_Command_executions_Tests.cs" />
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
+    <Compile Include="SampleDomain\IncreaseSampleAggregateCommand.cs" />
     <Compile Include="SerilogLoggerActor.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />

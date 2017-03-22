@@ -12,77 +12,12 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
-    public class SagaStateActor<TState> : AggregateActor<SagaStateAggregate<TState>> where TState : ISagaState
-    {
-        public SagaStateActor(IAggregateCommandsHandler<SagaStateAggregate<TState>> handler,
-                              IActorRef schedulerActorRef,
-                              IPublisher publisher,
-                              ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
-                              IConstructAggregates aggregateConstructor,
-                              IActorRef customHandlersActor) : base(handler,
-                                                                    schedulerActorRef,
-                                                                    publisher,
-                                                                    snapshotsPersistencePolicy,
-                                                                    aggregateConstructor,
-                                                                    customHandlersActor)
-        {
-            int a = 1;
-            Command<GetSagaState>(c => Sender.Tell(new SagaState<TState>(State.Data)));
-        }
-    }
-
-    class SagaState<T>
-    {
-        public T State { get; }
-
-        public SagaState(T state)
-        {
-            State = state;
-        }
-    }
-
-    class GetSagaState
-    {
-        private GetSagaState() {}
-
-        public static readonly GetSagaState Instance = new GetSagaState();
-    }
-
-    class SaveEventsAsync
-    {
-        public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> onEventPersisted, Action continuation, Aggregate state)
-        {
-            Continuation = continuation;
-            State = state;
-            Events = events;
-            OnEventPersisted = onEventPersisted;
-        }
-
-        public Action Continuation { get; }
-        public DomainEvent[] Events { get; }
-        public Aggregate State { get; }
-        public Action<DomainEvent> OnEventPersisted { get; }
-    }
-
-    public class NotifyOnCommandComplete
-    {
-        private NotifyOnCommandComplete() {}
-        public static NotifyOnCommandComplete Instance = new NotifyOnCommandComplete();
-    }
-
-    public class NotifyOnCommandCompletedAck
-    {
-        private NotifyOnCommandCompletedAck() {}
-        public static NotifyOnCommandCompletedAck Instance = new NotifyOnCommandCompletedAck();
-    }
-
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -372,20 +307,4 @@ namespace GridDomain.Node.Actors
             _schedulerActorRef.Tell(unscheduleMessage);
         }
     }
-
-    internal class AggregateExecutionException : Exception
-    {
-        public AggregateExecutionException(Exception exception) : base("Exception was raised during execution of continuation in aggregate method", exception) {}
-    }
-
-    internal class EventApplyException : Exception
-    {
-        public EventApplyException(Exception exception) : base("An error occured while applying event to aggregate. State can be corrupted", exception) {}
-    }
-
-    internal class UnknownMessageReceivedException : Exception {}
-
-    internal class UnknownProjectionFinishedException : Exception {}
-
-    internal class UncommitedStateExeption : Exception {}
 }

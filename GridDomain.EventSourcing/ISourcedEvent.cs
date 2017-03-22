@@ -2,12 +2,6 @@
 
 namespace GridDomain.EventSourcing
 {
-
-    public interface IHaveId
-    {
-        Guid Id { get; }
-    }
-
     /// <summary>
     ///     Represents an event message.
     /// </summary>

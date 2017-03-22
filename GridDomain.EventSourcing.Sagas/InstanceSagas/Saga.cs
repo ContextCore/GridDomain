@@ -9,17 +9,6 @@ using System.Threading.Tasks;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class TransitionResult<TState>
-    {
-        public TState State { get; }
-        public IReadOnlyCollection<Command> ProducedCommands { get; }
-
-        public TransitionResult(TState state, IReadOnlyCollection<Command> producedCommands)
-        {
-            State = state;
-            ProducedCommands = producedCommands;
-        }
-    }
     public class Saga<TState> : ISaga<TState> where TState : class, ISagaState
     {
         private readonly ILogger _log;

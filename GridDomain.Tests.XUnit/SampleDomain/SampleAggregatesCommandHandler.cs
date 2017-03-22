@@ -1,5 +1,4 @@
 using System;
-using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.XUnit.SampleDomain.Commands;
@@ -34,15 +33,5 @@ namespace GridDomain.Tests.XUnit.SampleDomain
         }
 
         public Type AggregateType => typeof(SampleAggregate);
-    }
-
-    public class IncreaseSampleAggregateCommand : Command
-    {
-        public IncreaseSampleAggregateCommand(int value, Guid aggregateId) : base(aggregateId)
-        {
-            Value = value;
-        }
-
-        public int Value { get; }
     }
 }

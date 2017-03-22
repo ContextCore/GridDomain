@@ -1,5 +1,4 @@
 using System;
-using CommonDomain;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
@@ -49,12 +48,5 @@ namespace GridDomain.Node.Configuration.Composition
             var sagaStateConfig = new SagaStateConfiguration<TState>();
             sagaStateConfig.Register(container);
         }
-    }
-
-    public class SagaStateConfiguration<TState> : AggregateBaseConfiguration<SagaStateActor<TState>, SagaStateAggregate<TState>, SagaStateCommandHandler<TState>>
-        where TState : ISagaState
-    {
-        public SagaStateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
-                                      Func<IMemento, SagaStateAggregate<TState>> snapshotsFactory = null) : base(snapshotsPolicy, snapshotsFactory) {}
     }
 }

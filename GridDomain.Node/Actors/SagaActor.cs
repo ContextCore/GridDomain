@@ -300,45 +300,4 @@ namespace GridDomain.Node.Actors
             return sagaId;
         }
     }
-
-    internal class NotifyOnSagaTransited
-    {
-        public NotifyOnSagaTransited(IActorRef sender)
-        {
-            Sender = sender;
-        }
-
-        public IActorRef Sender { get; }
-    }
-
-    internal class NotifyOnSagaTransitedAck
-    {
-        private NotifyOnSagaTransitedAck() {}
-
-        public static readonly NotifyOnSagaTransitedAck Instance = new NotifyOnSagaTransitedAck();
-    }
-
-    internal class UnknownStatePersistedException : Exception {}
-
-    public class CommandCompleted
-    {
-        public Guid CommandId { get; }
-
-        public CommandCompleted(Guid commandId)
-        {
-            CommandId = commandId;
-        }
-
-        public static CommandCompleted Instance { get; } = new CommandCompleted(Guid.Empty);
-    }
-
-    internal class CannotFindSagaIdException : Exception
-    {
-        public object Msg { get; }
-
-        public CannotFindSagaIdException(object msg)
-        {
-            Msg = msg;
-        }
-    }
 }
