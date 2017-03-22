@@ -1,6 +1,9 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit.TestActors;
+using CommonDomain.Persistence;
+using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
@@ -54,11 +57,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                         new CustomContainerConfiguration(
                                                          c =>
                                                              c.Register(
-                                                                        SagaConfiguration
-                                                                            .Instance
-                                                                            <SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(
-                                                                                                                                                                   SoftwareProgrammingSaga.Descriptor,
-                                                                                                                                                                   () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency)))));
+                                                                        new SagaConfiguration<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency), null))));
             return fixture;
         }
 

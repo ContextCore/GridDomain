@@ -27,7 +27,8 @@ namespace GridDomain.Node.AkkaMessaging
         public static AggregateActorName Parse<T>(string value)
         {
             var aggregateType = typeof(T);
-            var id = Guid.Parse(value.Replace(aggregateType.BeautyName() + Separator, ""));
+            var beautyName = aggregateType.BeautyName();
+            var id = Guid.Parse(value.Replace(beautyName + Separator, ""));
             return new AggregateActorName(aggregateType, id);
         }
 

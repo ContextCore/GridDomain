@@ -1,5 +1,7 @@
 using System;
+using CommonDomain.Persistence;
 using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
@@ -26,10 +28,7 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
                 new CustomContainerConfiguration(
                                                  c =>
                                                      c.Register(
-                                                                SagaConfiguration
-                                                                    .Instance
-                                                                    <SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(
-                                                                                                                                                           SoftwareProgrammingSaga.Descriptor)),
+                                                                new SagaConfiguration<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingSaga.Descriptor, null, null)),
                                                  c =>
                                                      c
                                                          .RegisterAggregate

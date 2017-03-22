@@ -6,7 +6,7 @@ using GridDomain.Tests.XUnit.SampleDomain.Events;
 
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 {
-    public class AsyncLongRunningSaga : SagaStateMachine<TestState>
+    public class AsyncLongRunningSaga : Process<TestState>
     {
         public AsyncLongRunningSaga()
         {

@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Metadata
 {
-    public class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingInstanceSagaTest
+    public class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingSagaTest
     {
         public Metadata_from_saga_received_event_passed_to_produced_commands(ITestOutputHelper helper) : base(helper) {}
 

@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-    public class Saga_produced_events_and_commands_has_sagaId : SoftwareProgrammingInstanceSagaTest
+    public class Saga_produced_events_and_commands_has_sagaId : SoftwareProgrammingSagaTest
     {
         public Saga_produced_events_and_commands_has_sagaId(ITestOutputHelper helper) : base(helper) {}
 

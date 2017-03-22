@@ -6,15 +6,13 @@ namespace GridDomain.Node.Actors.CommandPipe
 {
     public class SagasProcessComplete
     {
-        public SagasProcessComplete(ICommand[] producedCommands, Exception fault, IMessageMetadata metadata)
+        public SagasProcessComplete(IMessageMetadataEnvelop<ICommand>[] producedCommands)
         {
             ProducedCommands = producedCommands;
-            Fault = fault;
-            Metadata = metadata;
         }
 
-        public ICommand[] ProducedCommands { get; }
-        public Exception Fault { get; }
-        public IMessageMetadata Metadata { get; }
+        public IMessageMetadataEnvelop<ICommand>[] ProducedCommands { get; }
+
+        public static SagasProcessComplete NoResults { get; } = new SagasProcessComplete(new IMessageMetadataEnvelop<ICommand>[] { });
     }
 }

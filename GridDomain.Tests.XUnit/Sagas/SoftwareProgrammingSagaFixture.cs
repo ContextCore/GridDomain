@@ -14,12 +14,10 @@ namespace GridDomain.Tests.XUnit.Sagas
                                               IMessageRouteMap map = null,
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
-            Add(new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                                                 c =>
-                                                     c
-                                                         .RegisterAggregate
-                                                         <SagaStateAggregate<SoftwareProgrammingSagaState>,
-                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingSagaState>>()));
+            var cfg = new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
+                                                       c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>,
+                                                                                SagaStateCommandHandler<SoftwareProgrammingSagaState>>());
+            Add(cfg);
             Add(new SoftwareProgrammingSagaRoutes());
             Add(new SampleDomainContainerConfiguration());
         }

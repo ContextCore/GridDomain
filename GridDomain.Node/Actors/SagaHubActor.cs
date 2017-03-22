@@ -15,8 +15,8 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    public class SagaHubActor<TMachine, TState> : PersistentHubActor where TMachine : SagaStateMachine<TState>
-                                                                      where TState : class,ISagaState
+    public class SagaHubActor<TMachine, TState> : PersistentHubActor where TMachine : Process<TState>
+                                                                     where TState : class, ISagaState
     {
         private readonly Dictionary<Type, string> _acceptMessagesSagaIds;
         private readonly Type _actorType = typeof(SagaActor<TState>);
@@ -67,7 +67,9 @@ namespace GridDomain.Node.Actors
 
         protected override void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
         {
-            knownChild.Ref.Ask<ISagaTransitCompleted>(message).PipeTo(Sender, Self);
+            var msgSender = Sender;
+            knownChild.Ref.Ask<ISagaTransitCompleted>(message)
+                      .PipeTo(msgSender, Self);
         }
     }
 }

@@ -329,7 +329,7 @@
     <Compile Include="Sagas\SagaActorTests\TestState.cs" />
     <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId.cs" />
     <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingInstanceSagaTest.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingSagaTest.cs" />
     <Compile Include="Sagas\SoftwareProgrammingSagaFixture.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga_When_invalid_Transitions.cs" />

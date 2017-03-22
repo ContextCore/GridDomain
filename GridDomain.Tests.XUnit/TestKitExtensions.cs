@@ -34,7 +34,7 @@ namespace GridDomain.Tests.XUnit
         }
 
         public static async Task<TSagaState> LoadSaga<TSaga, TSagaState>(this TestKit kit, Guid id)
-            where TSagaState : class, ISagaState where TSaga : SagaStateMachine<TSagaState>
+            where TSagaState : class, ISagaState where TSaga : Process<TSagaState>
         {
             var name = AggregateActorName.New<SagaStateAggregate<TSagaState>>(id).ToString();
             var actor =

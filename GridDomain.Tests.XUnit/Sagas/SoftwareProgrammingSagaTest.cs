@@ -2,9 +2,9 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-    public class SoftwareProgrammingInstanceSagaTest : NodeTestKit
+    public class SoftwareProgrammingSagaTest : NodeTestKit
     {
-        public SoftwareProgrammingInstanceSagaTest(ITestOutputHelper helper)
+        public SoftwareProgrammingSagaTest(ITestOutputHelper helper)
             : base(helper, new SoftwareProgrammingSagaFixture()) {}
     }
 }

@@ -15,23 +15,9 @@ using Helios.Concurrency;
 
 namespace GridDomain.Node.Actors
 {
-
-   //public class BehaviorStack
-   //{
-   //    protected Stack<string> Behaviors = new Stack<string>();
-   //    protected string CurrentBehavior => Behaviors.Count > 0 ? Behaviors.Peek() : "Default behavior";
-   //
-   //    public BehaviorStack(Actor )
-   //    {
-   //        
-   //    }
-   //
-   //}
-    public class EventSourcedActor<T> : ReceivePersistentActor where T : AggregateBase
+    public class EventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
     {
-        private readonly IConstructAggregates _aggregateConstructor;
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
-        //store only locl in-mem events
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         private readonly TimeSpan _terminateWaitPeriod = TimeSpan.FromSeconds(1);
         protected readonly ActorMonitor Monitor;
@@ -43,7 +29,6 @@ namespace GridDomain.Node.Actors
         public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
-            _aggregateConstructor = aggregateConstructor;
 
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
@@ -59,7 +44,7 @@ namespace GridDomain.Node.Actors
             Recover<SnapshotOffer>(offer =>
             {
                 _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
-                State = _aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
+                State = aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
             });
 
             Recover<RecoveryCompleted>(message =>

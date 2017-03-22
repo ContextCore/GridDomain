@@ -29,8 +29,8 @@ namespace GridDomain.Tests.Framework
         {
             var task = _waiter.Start();
 
-            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {message},
-                                                                                      metadata ?? MessageMetadata.Empty));
+            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(message,
+                                                                                    metadata ?? MessageMetadata.Empty));
 
             return await task;
         }

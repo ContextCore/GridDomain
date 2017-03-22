@@ -7,12 +7,12 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class SagaStateMachine<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
+    public class Process<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, ISagaState
     {
         private readonly IDictionary<Type, Event> _messagesToEventsMap = new Dictionary<Type, Event>();
         public Action<Command> DispatchCallback { get; set; }
 
-        protected SagaStateMachine(Action<Command> dispatchCallback = null)
+        protected Process(Action<Command> dispatchCallback = null)
         {
             DispatchCallback = dispatchCallback ?? (c => {});
             InstanceState(d => d.CurrentStateName);

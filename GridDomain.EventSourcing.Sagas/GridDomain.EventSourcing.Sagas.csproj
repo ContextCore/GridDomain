@@ -69,7 +69,7 @@
     <Compile Include="InstanceSagas\ISagaState.cs" />
     <Compile Include="InstanceSagas\MessageReceivedData.cs" />
     <Compile Include="InstanceSagas\NullMessageTransitException.cs" />
-    <Compile Include="InstanceSagas\SagaStateMachine.cs" />
+    <Compile Include="InstanceSagas\Process.cs" />
     <Compile Include="InstanceSagas\SagaStateAggregate.cs" />
     <Compile Include="InstanceSagas\SagaMessageReceivedEvent.cs" />
     <Compile Include="InstanceSagas\Saga.cs" />

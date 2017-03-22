@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 {
-    public class Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default : SoftwareProgrammingInstanceSagaTest
+    public class Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default : SoftwareProgrammingSagaTest
     {
         public Instance_Saga_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper helper) : base(helper) {}
 

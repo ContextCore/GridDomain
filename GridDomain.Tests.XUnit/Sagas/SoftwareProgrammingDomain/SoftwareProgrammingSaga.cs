@@ -9,7 +9,7 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingSaga : SagaStateMachine<SoftwareProgrammingSagaState>
+    public class SoftwareProgrammingSaga : Process<SoftwareProgrammingSagaState>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
         private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingSaga>();

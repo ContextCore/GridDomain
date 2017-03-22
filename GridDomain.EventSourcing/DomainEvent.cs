@@ -3,7 +3,7 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing
 {
-    public class DomainEvent : ISourcedEvent, IHaveId
+    public class DomainEvent : ISourcedEvent, IHaveId, IHaveSagaId
     {
         public DomainEvent(Guid sourceId, Guid? sagaId = null, Guid? id = null, DateTime? createdTime = null)
         {

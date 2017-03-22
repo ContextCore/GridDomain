@@ -23,9 +23,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     public class Saga<TState> : ISaga<TState> where TState : class, ISagaState
     {
         private readonly ILogger _log;
-        public readonly SagaStateMachine<TState> Machine;
+        public readonly Process<TState> Machine;
 
-        public Saga(SagaStateMachine<TState> machine,
+        public Saga(Process<TState> machine,
                     TState state,
                     ILogger log,
                     bool doUninitializedWarnings = true)

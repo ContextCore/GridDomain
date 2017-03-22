@@ -1,5 +1,8 @@
 using System;
+using CommonDomain.Persistence;
 using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
@@ -47,7 +50,7 @@ namespace Shop.Composition
             container.Register(new AggregateConfiguration<User, UserCommandsHandler>());
             container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>();
-            container.Register(SagaConfiguration.Instance<BuyNow, BuyNowState, BuyNowSagaFactory>(BuyNow.Descriptor));
+            container.Register(new SagaConfiguration<BuyNow, BuyNowState, BuyNowSagaFactory>(BuyNow.Descriptor, null, null));
         }
     }
 }

@@ -9,14 +9,14 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public class SagaDescriptor<TSaga, TSagaData> : SagaDescriptor where TSaga : SagaStateMachine<TSagaData>
-                                                                   where TSagaData : class, ISagaState
+    public class SagaDescriptor<TProcess, TState> : SagaDescriptor where TProcess : Process<TState>
+                                                                   where TState : class, ISagaState
 
     {
         public SagaDescriptor()
-            : base(typeof(ISaga<TSagaData>), typeof(SagaStateAggregate<TSagaData>), typeof(TSaga)) {}
+            : base(typeof(TState), typeof(TProcess)) {}
 
-        public void MapDomainEvent<TDomainEvent>(Expression<Func<TSaga, Event<TDomainEvent>>> machineEvent,
+        public void MapDomainEvent<TDomainEvent>(Expression<Func<TProcess, Event<TDomainEvent>>> machineEvent,
                                                  Expression<Func<TDomainEvent, Guid>> correlationFieldExpression)
         {
             AddAcceptedMessage(typeof(TDomainEvent), MemberNameExtractor.GetName(correlationFieldExpression));
@@ -29,10 +29,9 @@ namespace GridDomain.EventSourcing.Sagas
         private readonly List<Type> _producedMessages = new List<Type>();
         private readonly List<Type> _startMessages = new List<Type>();
 
-        public SagaDescriptor(Type saga, Type state, Type stateMachine)
+        public SagaDescriptor(Type state, Type stateMachine)
         {
             StateType = state;
-            SagaType = saga;
             StateMachineType = stateMachine;
         }
 
@@ -41,7 +40,6 @@ namespace GridDomain.EventSourcing.Sagas
         public IReadOnlyCollection<Type> StartMessages => _startMessages;
 
         public Type StateType { get; }
-        public Type SagaType { get; }
         public Type StateMachineType { get; }
 
         public void AddAcceptedMessage(Type messageType, string correlationFieldName = nameof(DomainEvent.SagaId))
@@ -73,7 +71,7 @@ namespace GridDomain.EventSourcing.Sagas
         }
 
         public static SagaDescriptor<TSaga, TSagaData> CreateDescriptor<TSaga, TSagaData>()
-            where TSagaData : class, ISagaState where TSaga : SagaStateMachine<TSagaData>
+            where TSagaData : class, ISagaState where TSaga : Process<TSagaData>
         {
             var sagaDescriptor = new SagaDescriptor<TSaga, TSagaData>();
 

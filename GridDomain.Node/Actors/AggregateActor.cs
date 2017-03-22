@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka;
 using Akka.Actor;
+using Akka.Persistence;
 using CommonDomain;
 using CommonDomain.Persistence;
 using GridDomain.Common;
@@ -11,12 +12,49 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
+    public class SagaStateActor<TState> : AggregateActor<SagaStateAggregate<TState>> where TState : ISagaState
+    {
+        public SagaStateActor(IAggregateCommandsHandler<SagaStateAggregate<TState>> handler,
+                              IActorRef schedulerActorRef,
+                              IPublisher publisher,
+                              ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
+                              IConstructAggregates aggregateConstructor,
+                              IActorRef customHandlersActor) : base(handler,
+                                                                    schedulerActorRef,
+                                                                    publisher,
+                                                                    snapshotsPersistencePolicy,
+                                                                    aggregateConstructor,
+                                                                    customHandlersActor)
+        {
+            int a = 1;
+            Command<GetSagaState>(c => Sender.Tell(new SagaState<TState>(State.Data)));
+        }
+    }
+
+    class SagaState<T>
+    {
+        public T State { get; }
+
+        public SagaState(T state)
+        {
+            State = state;
+        }
+    }
+
+    class GetSagaState
+    {
+        private GetSagaState() {}
+
+        public static readonly GetSagaState Instance = new GetSagaState();
+    }
+
     class SaveEventsAsync
     {
         public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> onEventPersisted, Action continuation, Aggregate state)
@@ -35,20 +73,16 @@ namespace GridDomain.Node.Actors
 
     public class NotifyOnCommandComplete
     {
-       private NotifyOnCommandComplete()
-       {
-           
-       }
-       public static NotifyOnCommandComplete Instance = new NotifyOnCommandComplete();
+        private NotifyOnCommandComplete() {}
+        public static NotifyOnCommandComplete Instance = new NotifyOnCommandComplete();
     }
+
     public class NotifyOnCommandCompletedAck
     {
-        private NotifyOnCommandCompletedAck()
-        {
-
-        }
+        private NotifyOnCommandCompletedAck() {}
         public static NotifyOnCommandCompletedAck Instance = new NotifyOnCommandCompletedAck();
     }
+
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -120,7 +154,7 @@ namespace GridDomain.Node.Actors
                                                            _aggregateCommandsHandler.ExecuteAsync(State, cmd)
                                                                                     .PipeTo(Self);
 
-                                                           Behavior.Become(() => ProcessingCommandBehavior(m),nameof(ProcessingCommandBehavior));
+                                                           Behavior.Become(() => ProcessingCommandBehavior(m), nameof(ProcessingCommandBehavior));
                                                        });
         }
 
@@ -264,7 +298,7 @@ namespace GridDomain.Node.Actors
             Behavior.Unbecome();
             Stash.UnstashAll();
             base.State.ClearUncommittedEvents();
-            foreach(var waiter in _commandCompletedWaiters)
+            foreach (var waiter in _commandCompletedWaiters)
                 waiter.Tell(new CommandCompleted(cmd.Id));
         }
 

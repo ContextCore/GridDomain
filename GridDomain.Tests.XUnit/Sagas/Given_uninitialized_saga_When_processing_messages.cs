@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-    public class Given_uninitialized_saga_When_processing_messages : SoftwareProgrammingInstanceSagaTest
+    public class Given_uninitialized_saga_When_processing_messages : SoftwareProgrammingSagaTest
     {
         public Given_uninitialized_saga_When_processing_messages(ITestOutputHelper helper) : base(helper) {}
 

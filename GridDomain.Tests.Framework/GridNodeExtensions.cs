@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Framework
     {
         public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
-            var conditionBuilder = new ConditionBuilder<AnyMessagePublisher>();
+            var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();
             var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;

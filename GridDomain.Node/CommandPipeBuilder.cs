@@ -53,7 +53,7 @@ namespace GridDomain.Node
 
         public Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null)
         {
-            var sagaActorType = typeof(SagaHubActor<,>).MakeGenericType(sagaDescriptor.SagaType, sagaDescriptor.StateType);
+            var sagaActorType = typeof(SagaHubActor<,>).MakeGenericType(sagaDescriptor.StateMachineType, sagaDescriptor.StateType);
 
             var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
             var processor = new Processor(sagaActor);
@@ -105,12 +105,12 @@ namespace GridDomain.Node
 
         private IActorRef CreateActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
-            var handleActorProps = _system.DI().Props(actorType);
+            var actorProps = _system.DI().Props(actorType);
             if (routeConfig != null)
-                handleActorProps = handleActorProps.WithRouter(routeConfig);
+                actorProps = actorProps.WithRouter(routeConfig);
 
-            var handleActor = _system.ActorOf(handleActorProps, actorName);
-            return handleActor;
+            var actorRef = _system.ActorOf(actorProps, actorName);
+            return actorRef;
         }
     }
 }

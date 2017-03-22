@@ -32,33 +32,25 @@ namespace GridDomain.Node.Actors.CommandPipe
                                 });
             //part of events or fault from command execution
             ReceiveAsync<IMessageMetadataEnvelop>(env => ProcessSagas(env).PipeTo(Self));
-            Receive<IEnumerable<MessageMetadataEnvelop<ICommand>>>(commandEnvelops =>
-                                                                   {
-                                                                       foreach (var envelop in commandEnvelops)
-                                                                           _commandExecutionActor.Tell(envelop);
-                                                                   });
 
-            Receive<SagasProcessComplete>(m => SendCommandForExecution(m));
+            Receive<SagasProcessComplete>(m =>
+                                          {
+                                              foreach (var envelop in m.ProducedCommands)
+                                                  _commandExecutionActor.Tell(envelop);
+                                          });
         }
-
-        private void SendCommandForExecution(SagasProcessComplete m)
-        {
-            foreach (var command in m.ProducedCommands)
-                _commandExecutionActor.Tell(new MessageMetadataEnvelop<ICommand>(command, m.Metadata.CreateChild(command.Id)));
-        }
-
-        private Task<IEnumerable<MessageMetadataEnvelop<ICommand>>> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
+        
+        private Task<SagasProcessComplete> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
             var eventProcessors = _catalog.Get(messageMetadataEnvelop.Message);
             if (!eventProcessors.Any())
-                return Task.FromResult(Enumerable.Empty<MessageMetadataEnvelop<ICommand>>());
+                return Task.FromResult(SagasProcessComplete.NoResults);
 
-            return
-                Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))
-                    .ContinueWith(t => CreateCommandEnvelops(t.Result.OfType<SagaTransited>()));
+            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))
+                       .ContinueWith(t => new SagasProcessComplete(CreateCommandEnvelops(t.Result.OfType<SagaTransited>()).ToArray()));
         }
 
-        private static IEnumerable<MessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<SagaTransited> messages)
+        private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<SagaTransited> messages)
         {
             return
                 messages.SelectMany(msg => msg.ProducedCommands

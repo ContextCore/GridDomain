@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-    public class Given_istance_saga_saga_actor_can_be_created : SoftwareProgrammingInstanceSagaTest
+    public class Given_istance_saga_saga_actor_can_be_created : SoftwareProgrammingSagaTest
     {
         public Given_istance_saga_saga_actor_can_be_created(ITestOutputHelper helper) : base(helper) {}
 
@@ -35,11 +35,10 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
-                    .Create()
-                    .SendToSagas(msg);
+            await Node.NewDebugWaiter()
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
+                      .Create()
+                      .SendToSagas(msg);
 
             var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(msg.SagaId);
             Assert.NotNull(sagaActor);

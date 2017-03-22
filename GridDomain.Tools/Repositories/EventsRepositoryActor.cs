@@ -16,8 +16,7 @@ namespace GridDomain.Tools.Repositories
         {
             PersistenceId = id;
 
-            RecoverAny(
-                       m =>
+            RecoverAny(m =>
                        {
                            m.Match()
                             .With<SnapshotOffer>(so => { })
@@ -25,7 +24,12 @@ namespace GridDomain.Tools.Repositories
                             .Default(e => { _events.Add(e); });
                        });
 
-            Command<Persist>(m => Persist(m.Msg, e => Sender.Tell(new Persisted(m.Msg), Self)));
+            Command<Persist>(m =>
+                             {
+                                 var sender = Sender;
+                                 Persist(m.Msg, e => sender.Tell(new Persisted(m.Msg), Self));
+                             });
+
             Command<Load>(m => Sender.Tell(new Loaded(id, _events.ToArray())));
         }
 

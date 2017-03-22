@@ -6,6 +6,7 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Integration;
@@ -13,7 +14,17 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public class AggregateConfiguration<TAggregate, TAggregateCommandsHandler> : IContainerConfiguration
+  
+
+    public class AggregateConfiguration<TAggregate, TAggregateCommandsHandler> : AggregateBaseConfiguration<AggregateActor<TAggregate>, TAggregate, TAggregateCommandsHandler>
+        where TAggregate : Aggregate
+        where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
+    {
+        public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
+                                      Func<IMemento, TAggregate> snapshotsFactory = null) : base(snapshotsPolicy, snapshotsFactory) {}
+    }
+
+    public class AggregateBaseConfiguration<TAggregateActor, TAggregate, TAggregateCommandsHandler> : IContainerConfiguration
         where TAggregate : Aggregate
         where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
     {
@@ -21,12 +32,12 @@ namespace GridDomain.Node.Configuration.Composition
 
         private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
 
-        public AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
-                                      Func<IMemento, TAggregate> snapshotsFactory = null)
+        public AggregateBaseConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
+                                          Func<IMemento, TAggregate> snapshotsFactory = null)
             : this(snapshotsPolicy, new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory)) {}
 
-        private AggregateConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
-                                       IConstructAggregates snapshotsFactory = null)
+        private AggregateBaseConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
+                                           IConstructAggregates snapshotsFactory = null)
         {
             _factory = snapshotsFactory ?? new AggregateFactory();
             _snapshotsPolicyFactory = snapshotsPolicy ?? (() => new NoSnapshotsPersistencePolicy());
@@ -41,13 +52,12 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<ISnapshotsPersistencePolicy>(aggregateRegistrationName,
                                                                 new InjectionFactory(c => _snapshotsPolicyFactory()));
 
-            container.RegisterType<AggregateActor<TAggregate>>(
-                                                               new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
-                                                                                        new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
-                                                                                        new ResolvedParameter<IPublisher>(),
-                                                                                        new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
-                                                                                        new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
-                                                                                        new ResolvedParameter<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName)));
+            container.RegisterType<TAggregateActor>(new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
+                                                                             new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
+                                                                             new ResolvedParameter<IPublisher>(),
+                                                                             new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
+                                                                             new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
+                                                                             new ResolvedParameter<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName)));
 
             container.RegisterInstance(aggregateRegistrationName, _factory);
         }

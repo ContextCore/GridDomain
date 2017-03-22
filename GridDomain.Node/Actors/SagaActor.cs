@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka;
 using Akka.DI.Core;
 using GridDomain.Node.AkkaMessaging;
 
@@ -36,12 +37,11 @@ namespace GridDomain.Node.Actors
         private readonly IDictionary<Guid, TState> _persistancePendingStates = new Dictionary<Guid, TState>();
         private readonly BehaviorStack Behavior;
         private readonly ActorMonitor Monitor;
-        private IActorRef _stateAggregateActor;
-        private List<IActorRef> _sagaTransitionWaiters = new List<IActorRef>();
+        private readonly IActorRef _stateAggregateActor;
+        private readonly List<IActorRef> _sagaTransitionWaiters = new List<IActorRef>();
 
         public ISaga<TState> Saga { get; set; }
 
-        //private TState State { get; set; }
         public IStash Stash { get; set; }
 
         private Guid Id { get; }
@@ -54,13 +54,12 @@ namespace GridDomain.Node.Actors
             Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
             Guid id;
-            if(!AggregateActorName.TryParseId(Self.Path.Name,out id))
+            if (!AggregateActorName.TryParseId(Self.Path.Name, out id))
                 throw new BadNameFormatException();
             Id = id;
 
             _publisher = publisher;
             _producer = producer;
-            _sagaTransitionWaiters.Add(Context.Parent);
             Log = Context.GetLogger();
             _sagaStartMessageTypes = new HashSet<Type>(producer.KnownDataTypes.Where(t => typeof(DomainEvent).IsAssignableFrom(t)));
             _sagaIdFields = producer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType, m => m.CorrelationField);
@@ -72,29 +71,46 @@ namespace GridDomain.Node.Actors
             _sagaProducedCommand = new ProcessEntry(Self.Path.Name,
                                                     SagaActorLiterals.PublishingCommand,
                                                     SagaActorLiterals.SagaProducedACommand);
-            
+
             _stateChanged = new ProcessEntry(Self.Path.Name, "Saga state event published", "Saga changed state");
 
-            var stateActorProps = Context.DI().Props(typeof(AggregateActor<SagaStateAggregate<TState>>));
+            var stateActorProps = Context.DI().Props(typeof(SagaStateActor<TState>));
             var stateActor = Context.ActorOf(stateActorProps, AggregateActorName.New<SagaStateAggregate<TState>>(Id).Name);
 
             _stateAggregateActor = stateActor;
             _stateAggregateActor.Tell(NotifyOnCommandComplete.Instance);
+            _stateAggregateActor.Tell(GetSagaState.Instance);
 
             Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
         }
 
         private void InitializingBehavior()
         {
+            bool commandsSubscribed = false;
+            bool stateInitialized = false;
 
             Receive<NotifyOnCommandCompletedAck>(a =>
                                                  {
-                                                     Behavior.Unbecome();
-                                                     Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
-                                                     Stash.UnstashAll();
+                                                     commandsSubscribed = true;
+                                                     if (commandsSubscribed && stateInitialized)
+                                                         FinishInitialization();
                                                  });
+            Receive<SagaState<TState>>(ss =>
+                                       {
+                                           stateInitialized = true;
+                                           Saga = _producer.Create(ss.State);
+                                           if (commandsSubscribed && stateInitialized)
+                                               FinishInitialization();
+                                       });
 
             StashingMessagesToProcessBehavior();
+        }
+
+        private void FinishInitialization()
+        {
+            Behavior.Unbecome();
+            Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
+            Stash.UnstashAll();
         }
 
         private void StashingMessagesToProcessBehavior()
@@ -104,7 +120,7 @@ namespace GridDomain.Node.Actors
 
             Receive<IMessageMetadataEnvelop<IFault>>(m => Stash.Stash(),
                                                      e => GetSagaId(e.Message) == Id);
-           
+
             ProxifyingCommandsBehavior();
         }
 
@@ -116,16 +132,16 @@ namespace GridDomain.Node.Actors
             Receive<IMessageMetadataEnvelop<IFault>>(m => ProcessMessage(m.Message, m.Metadata),
                                                      e => GetSagaId(e.Message) == Id);
 
-            ProxifyingCommandsBehavior();  
+            ProxifyingCommandsBehavior();
         }
 
         private void ProxifyingCommandsBehavior()
         {
             Receive<NotifyOnSagaTransited>(m =>
-            {
-                _sagaTransitionWaiters.Add(m.Sender);
-                Sender.Tell(NotifyOnSagaTransitedAck.Instance);
-            });
+                                           {
+                                               _sagaTransitionWaiters.Add(m.Sender);
+                                               Sender.Tell(NotifyOnSagaTransitedAck.Instance);
+                                           });
 
             Receive<GracefullShutdownRequest>(r =>
                                               {
@@ -145,26 +161,27 @@ namespace GridDomain.Node.Actors
 
         private void ProcessMessage(object message, IMessageMetadata metadata)
         {
+            var sender = Sender;
             Monitor.IncrementMessagesReceived();
             if (ShouldStartNewSaga(message))
-                StartNewSaga(message, metadata);
+                StartNewSaga(message, metadata, sender);
             else
-                TransitSaga(message, metadata);
+                TransitSaga(message, metadata, sender);
         }
 
-        private void StartNewSaga(object message, IMessageMetadata metadata)
+        private void StartNewSaga(object message, IMessageMetadata metadata, IActorRef sender)
         {
             var saga = _producer.Create(message);
 
             var cmd = new CreateNewStateCommand<TState>(Id, saga.State);
 
-            ChangeState(cmd, metadata, () => TransitSaga(message, metadata));
+            ChangeState(cmd, metadata, () => TransitSaga(message, metadata, sender));
         }
 
         private void WaitForCommandCompleteBehavior(Action<Guid> onCommandComplete)
         {
             StashingMessagesToProcessBehavior();
-            Receive<CommandCompleted>(cc => { onCommandComplete(cc.CommandId); });
+            Receive<CommandCompleted>(cc => onCommandComplete(cc.CommandId));
         }
 
         private bool ShouldStartNewSaga(object message)
@@ -180,12 +197,12 @@ namespace GridDomain.Node.Actors
                                 .PipeTo(Self);
 
             Behavior.Become(() => WaitForCommandCompleteBehavior(id =>
-                                                               {
-                                                                   Behavior.Unbecome();
-                                                                   Saga = ApplyPendingState(id);
-                                                                   onStateChanged();
-                                                               }),
-                          nameof(WaitForCommandCompleteBehavior));
+                                                                 {
+                                                                     Behavior.Unbecome();
+                                                                     Saga = ApplyPendingState(id);
+                                                                     onStateChanged();
+                                                                 }),
+                            nameof(WaitForCommandCompleteBehavior));
         }
 
         private ISaga<TState> ApplyPendingState(Guid id)
@@ -198,7 +215,7 @@ namespace GridDomain.Node.Actors
             return _producer.Create(persistedState);
         }
 
-        private void TransitSaga(object msg, IMessageMetadata metadata)
+        private void TransitSaga(object msg, IMessageMetadata metadata, IActorRef sender)
         {
             //block any other executing until saga completes transition
             //cast is need for dynamic call of Transit
@@ -208,7 +225,7 @@ namespace GridDomain.Node.Actors
                                                                 _sagaProducedCommand,
                                                                 t.Result.State,
                                                                 t.Exception))
-                           .PipeTo(Self);
+                           .PipeTo(Self, sender);
 
             Behavior.Become(() => AwaitingTransitionBehavior(msg, metadata), nameof(AwaitingTransitionBehavior));
         }
@@ -225,25 +242,27 @@ namespace GridDomain.Node.Actors
                                        var cmd = new SaveStateCommand<TState>(Id,
                                                                               (TState) t.NewSagaState,
                                                                               Saga.State.CurrentStateName, message);
-
-                                       ChangeState(cmd, messageMetadata, () => FinishSagaTransition(t));
+                                       var sender = Sender;
+                                       ChangeState(cmd, messageMetadata, () => FinishSagaTransition(t, sender));
                                    });
 
             Receive<Status.Failure>(f =>
                                     {
+                                        var sender = Sender;
                                         var fault = PublishError(message,
                                                                  messageMetadata,
                                                                  f.Cause.UnwrapSingle());
 
-                                        FinishSagaTransition(new SagaTransitFault(fault, messageMetadata));
+                                        FinishSagaTransition(new SagaTransitFault(fault, messageMetadata),sender);
                                     });
         }
 
-        private void FinishSagaTransition(object message)
+        private void FinishSagaTransition(ISagaTransitCompleted message, IActorRef sender)
         {
             //notify saga process actor that saga transit is done
-            foreach(var n in _sagaTransitionWaiters)
-                    n.Tell(message);
+            foreach (var n in _sagaTransitionWaiters)
+                n.Tell(message);
+            sender.Tell(message);
 
             Stash.UnstashAll();
             Behavior.Unbecome();
@@ -264,13 +283,21 @@ namespace GridDomain.Node.Actors
 
         private Guid GetSagaId(object msg)
         {
-            var type = msg.GetType();
-            string fieldName;
+            Guid sagaId = Guid.Empty;
+            msg.Match()
+               .With<IFault>(m => sagaId = m.SagaId)
+               .With<IHaveSagaId>(m => sagaId = m.SagaId)
+               .Default(m =>
+                        {
+                            var type = msg.GetType();
+                            string fieldName;
+                            if (_sagaIdFields.TryGetValue(type, out fieldName))
+                                sagaId = (Guid) type.GetProperty(fieldName).GetValue(msg);
+                            else
+                                throw new CannotFindSagaIdException(msg);
+                        });
 
-            if (_sagaIdFields.TryGetValue(type, out fieldName))
-                return (Guid) type.GetProperty(fieldName).GetValue(msg);
-
-            throw new CannotFindSagaIdException(msg);
+            return sagaId;
         }
     }
 
@@ -283,15 +310,12 @@ namespace GridDomain.Node.Actors
 
         public IActorRef Sender { get; }
     }
+
     internal class NotifyOnSagaTransitedAck
     {
-        private NotifyOnSagaTransitedAck()
-        {
-
-        }
+        private NotifyOnSagaTransitedAck() {}
 
         public static readonly NotifyOnSagaTransitedAck Instance = new NotifyOnSagaTransitedAck();
-
     }
 
     internal class UnknownStatePersistedException : Exception {}

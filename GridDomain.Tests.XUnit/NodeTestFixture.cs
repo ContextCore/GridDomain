@@ -106,10 +106,7 @@ namespace GridDomain.Tests.XUnit
                                             new CompositeRouteMap(_routeMap.ToArray()),
                                             () => new[] {System})
                            {
-                               QuartzConfig =
-                                   InMemory
-                                       ? (IQuartzConfig) new InMemoryQuartzConfig()
-                                       : new PersistedQuartzConfig(),
+                               QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger
                            };

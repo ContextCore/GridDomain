@@ -67,13 +67,13 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public void Descriptor_contains_saga_data_type()
         {
-            Assert.Equal(typeof(SagaStateAggregate<SoftwareProgrammingSagaState>), _descriptor.StateType);
+            Assert.Equal(typeof(SoftwareProgrammingSagaState), _descriptor.StateType);
         }
 
         [Fact]
-        public void Descriptor_contains_saga_type()
+        public void Descriptor_contains_saga_machine_type()
         {
-            Assert.Equal(typeof(ISaga<SoftwareProgrammingSagaState>), _descriptor.SagaType);
+            Assert.Equal(typeof(SoftwareProgrammingSaga), _descriptor.StateMachineType);
         }
     }
 }

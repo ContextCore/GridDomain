@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
-    public class Given_saga_When_publishing_several_start_messages : SoftwareProgrammingInstanceSagaTest
+    public class Given_saga_When_publishing_several_start_messages : SoftwareProgrammingSagaTest
     {
         public Given_saga_When_publishing_several_start_messages(ITestOutputHelper helper) : base(helper) {}
 
