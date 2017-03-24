@@ -21,7 +21,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             await Task.Delay(200);
             var sagaDataAggregate =
                 await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(coffeMadeEvent.SagaId);
-            Assert.Null(sagaDataAggregate.Data);
+            Assert.Null(sagaDataAggregate.SagaState);
         }
     }
 }

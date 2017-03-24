@@ -16,7 +16,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
             Id = id;
         }
 
-        public TSagaState Data { get; private set; }
+        public TSagaState SagaState { get; private set; }
 
         public void RememberEvent(TSagaState sagaData, object message, string machineEventName)
         {
@@ -25,13 +25,13 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public void Apply(SagaCreatedEvent<TSagaState> e)
         {
-            Data = e.State;
+            SagaState = e.State;
             Id = e.SourceId;
         }
 
         public void Apply(SagaMessageReceivedEvent<TSagaState> e)
         {
-            Data = e.SagaData;
+            SagaState = e.SagaData;
         }
     }
 }

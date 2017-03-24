@@ -19,25 +19,26 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task When_publishing_start_message()
         {
-            var anyMessagePublisher = Node.NewDebugWaiter().Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>().Create();
             var sagaId = Guid.NewGuid();
+            var startMessageA = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
-            await anyMessagePublisher.SendToSagas(new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId));
+            await Node.NewDebugWaiter()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                      .Create()
+                      .SendToSagas(startMessageA);
 
-            var actorRef = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaId);
-            actorRef.Tell(NotifyOnPersistenceEvents.Instance);
+            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
-            var secondStartMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId);
-
-            await anyMessagePublisher.SendToSagas(secondStartMessage);
-
-            FishForMessage<Persisted>(m => true);
+            await Node.NewDebugWaiter()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                      .Create()
+                      .SendToSagas(secondStartMessageB);
 
             var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
             //Saga_reinitialized_from_last_start_message()
-            Assert.Equal(secondStartMessage.SofaId, sagaData.Data.SofaId);
+            Assert.Equal(secondStartMessageB.SofaId, sagaData.SagaState.SofaId);
             //Saga_has_correct_state()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaData.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaData.SagaState.CurrentStateName);
         }
     }
 }

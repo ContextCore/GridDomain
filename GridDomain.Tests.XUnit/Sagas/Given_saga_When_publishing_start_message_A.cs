@@ -27,9 +27,9 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(startMessage.SagaId);
             //Saga_has_correct_data()
-            Assert.Equal(startMessage.PersonId, sagaData.Data.PersonId);
+            Assert.Equal(startMessage.PersonId, sagaData.SagaState.PersonId);
             //Saga_has_correct_state()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), sagaData.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), sagaData.SagaState.CurrentStateName);
         }
     }
 }

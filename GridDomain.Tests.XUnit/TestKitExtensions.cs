@@ -33,12 +33,11 @@ namespace GridDomain.Tests.XUnit
             return actor.UnderlyingActor;
         }
 
-        public static async Task<TSagaState> LoadSaga<TSaga, TSagaState>(this TestKit kit, Guid id)
-            where TSagaState : class, ISagaState where TSaga : Process<TSagaState>
+        public static async Task<TSagaState> LoadSaga<TSagaState>(this TestKit kit, Guid id)
+            where TSagaState : class, ISagaState
         {
             var name = AggregateActorName.New<SagaStateAggregate<TSagaState>>(id).ToString();
-            var actor =
-                await kit.LoadActor<SagaActor<TSagaState>>(name);
+            var actor = await kit.LoadActor<SagaActor<TSagaState>>(name);
             return actor.Saga.State;
         }
     }

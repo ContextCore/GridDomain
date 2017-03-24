@@ -26,12 +26,10 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
 
-            var waitResults =
-                await
-                    Node.NewDebugWaiter()
-                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
-                        .Create()
-                        .SendToSagas(gotTiredEvent);
+            var waitResults = await Node.NewDebugWaiter()
+                                        .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                                        .Create()
+                                        .SendToSagas(gotTiredEvent);
 
             var expectedCreatedEvent = waitResults.Message<SagaCreatedEvent<SoftwareProgrammingSagaState>>();
 
@@ -44,7 +42,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             var domainEvent = new GotTiredEvent(Guid.NewGuid());
 
             Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
-            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {domainEvent}, MessageMetadata.Empty));
+            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(domainEvent, MessageMetadata.Empty));
 
             var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
             var command = sagaCompleteMsg.Message;

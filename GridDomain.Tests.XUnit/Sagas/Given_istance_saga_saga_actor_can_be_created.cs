@@ -36,7 +36,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                       .Create()
                       .SendToSagas(msg);
 

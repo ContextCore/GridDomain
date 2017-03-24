@@ -61,10 +61,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
 
             // First_Snapshots_should_have_coding_state_from_first_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
 
             //Last_Snapshots_should_have_coding_state_from_last_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping), snapshots.Last().Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping), snapshots.Last().Aggregate.SagaState.CurrentStateName);
 
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));

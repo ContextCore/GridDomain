@@ -9,9 +9,8 @@ namespace GridDomain.Tests.XUnit.Sagas
         public CustomRoutesSampleDomainFixture()
         {
             Add(new CustomRoutesSoftwareProgrammingSagaMap());
-            Add(
-                new SagaConfiguration
-                <CustomRoutesSoftwareProgrammingSaga, SoftwareProgrammingSagaState,
+            Add(new SagaConfiguration<CustomRoutesSoftwareProgrammingSaga,
+                    SoftwareProgrammingSagaState,
                     CustomRoutesSoftwareProgrammingSagaFactory>(CustomRoutesSoftwareProgrammingSaga.Descriptor));
         }
     }

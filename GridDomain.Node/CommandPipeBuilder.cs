@@ -75,7 +75,7 @@ namespace GridDomain.Node
         /// <returns>Reference to pipe actor for command execution</returns>
         public async Task<IActorRef> Init()
         {
-            _log.Debug("Command pipe is starting initialization");
+            _log.Debug("Command pipe is starting");
 
             SagaProcessor = _system.ActorOf(Props.Create(() => new SagaPipeActor(_sagaCatalog)), nameof(SagaPipeActor));
 

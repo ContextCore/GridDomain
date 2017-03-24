@@ -28,7 +28,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             _softwareProgrammingSagaState = new SoftwareProgrammingSagaState(_sagaId, _machine.Sleeping.Name);
             Init();
             //Then_State_is_taken_from_event()
-            Assert.Equal(_softwareProgrammingSagaState, Aggregate.Data);
+            Assert.Equal(_softwareProgrammingSagaState, Aggregate.SagaState);
             //Then_Id_is_taken_from_event()
             Assert.Equal(_sagaId, Aggregate.Id);
         }

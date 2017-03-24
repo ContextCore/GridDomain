@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
             //Snapshot_should_have_parameters_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

@@ -29,35 +29,30 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task When_saga_produce_command_and_waiting_for_it_fault()
         {
-            var sagaId = Guid.NewGuid();
 
-            var sagaData = new SoftwareProgrammingSagaState(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
-                           {
-                               PersonId = Guid.NewGuid()
-                           };
+            var givenSagaStateAggregate = new SagaStateAggregate<SoftwareProgrammingSagaState>(new SoftwareProgrammingSagaState(Guid.NewGuid(), 
+                                                                                            nameof(SoftwareProgrammingSaga.MakingCoffee))
+                                                                                          {
+                                                                                              PersonId = Guid.NewGuid()
+                                                                                          });
 
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaState>(sagaData, sagaId);
+            await Node.SaveToJournal(givenSagaStateAggregate);
 
-            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId, sagaDataEvent);
-
-            await Task.Delay(100);
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),
-                                                                Guid.NewGuid(),
+                                                                givenSagaStateAggregate.SagaState.PersonId,
                                                                 BusinessDateTime.UtcNow,
-                                                                sagaId);
+                                                                givenSagaStateAggregate.Id);
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>(
-                                                                                     m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>(m => m.SagaData.CurrentStateName == nameof(SoftwareProgrammingSaga.Coding))
                       .Create()
                       .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
 
-            await Task.Delay(1000);
-            var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
+            var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(givenSagaStateAggregate.Id);
             //Saga_should_be_in_correct_state_after_fault_handling()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaDataAggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaDataAggregate.SagaState.CurrentStateName);
             //Saga_state_should_contain_data_from_fault_message()
-            Assert.Equal(coffeMakeFailedEvent.ForPersonId, sagaData.BadSleepPersonId);
+            Assert.Equal(coffeMakeFailedEvent.ForPersonId, sagaDataAggregate.SagaState.BadSleepPersonId);
         }
     }
 }

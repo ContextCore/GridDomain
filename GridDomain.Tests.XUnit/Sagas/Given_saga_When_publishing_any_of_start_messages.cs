@@ -26,7 +26,7 @@ namespace GridDomain.Tests.XUnit.Sagas
 
             var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
             //Saga_data_is_not_null()
-            Assert.NotNull(sagaData.Data);
+            Assert.NotNull(sagaData.SagaState);
             // Saga_has_correct_id()
             Assert.Equal(sagaId, sagaData.Id);
         }

@@ -38,7 +38,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             _message = new GotTiredEvent(Guid.NewGuid());
             Init();
             //Then_State_is_taken_from_message_received_event()
-            Assert.Equal(_softwareProgrammingSagaState, Aggregate.Data);
+            Assert.Equal(_softwareProgrammingSagaState, Aggregate.SagaState);
         }
     }
 }

@@ -355,7 +355,6 @@
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\UndefinedCoffeMachineException.cs" />
-    <Compile Include="Sagas\When_Publish_messages_to_uninitialized_saga.cs" />
     <Compile Include="SampleDomainFixture.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultAsyncCommand.cs" />
     <Compile Include="SampleDomain\Commands\AlwaysFaultCommand.cs" />

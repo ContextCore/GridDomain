@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -24,8 +25,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                            {
                                                                var sender = Sender;
                                                                var project = envelop.Message;
-                                                               var metadata = envelop.Metadata;
-                                                               var envelops = project.Messages.Select(e => new MessageMetadataEnvelop<object>(e, metadata)).ToArray();
+                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m,envelop.Metadata)).ToArray();
 
                                                                return envelops.Select(messageMetadataEnvelop => SynhronizeHandlers(messageMetadataEnvelop, handlersCatalog))
                                                                               .ToChain()
@@ -34,18 +34,31 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                                 sender.Tell(new AllHandlersCompleted(project.ProjectId));
 
                                                                                                 foreach (var env in envelops)
-                                                                                                    sender.Tell(env);
+                                                                                                    sagasProcessActor.Tell(env);
                                                                                             });
                                                            });
         }
 
+        private static IMessageMetadataEnvelop CreateMessageMetadataEnvelop(object message, IMessageMetadata metadata)
+        {
+            var @event = message as DomainEvent;
+            if (@event != null)
+                return new MessageMetadataEnvelop<DomainEvent>(@event, metadata);
+
+            var fault = message as IFault;
+            if (fault != null)
+                return new MessageMetadataEnvelop<IFault>(fault, metadata);
+
+            return new MessageMetadataEnvelop<object>(message, metadata);
+        }
+
         private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop, IProcessorListCatalog processorListCatalog)
         {
-            var faultProcessors = processorListCatalog.Get(messageMetadataEnvelop.Message);
-            if (!faultProcessors.Any())
+            var processors = processorListCatalog.Get(messageMetadataEnvelop.Message);
+            if (!processors.Any())
                 return Task.CompletedTask;
 
-            return faultProcessors.Select(p =>
+            return processors.Select(p =>
                                           {
                                               if (p.Policy.IsSynchronious)
                                                   return p.ActorRef.Ask<HandlerExecuted>(messageMetadataEnvelop);
@@ -53,7 +66,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                               p.ActorRef.Tell(messageMetadataEnvelop);
                                               return Task.CompletedTask;
                                           })
-                                  .ToChain();
+                              .ToChain();
         }
     }
 }

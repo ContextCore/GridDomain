@@ -79,9 +79,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //4 events in total, two saves of snapshots due to policy saves on each two events
             Assert.Equal(2, snapshots.Length);
             //First_snapshot_should_have_state_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
             //Last_snapshot_should_have_parameters_from_last_command()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), snapshots.Last().Aggregate.Data.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), snapshots.Last().Aggregate.SagaState.CurrentStateName);
 
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));

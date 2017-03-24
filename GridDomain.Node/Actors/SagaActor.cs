@@ -98,7 +98,10 @@ namespace GridDomain.Node.Actors
             Receive<SagaState<TState>>(ss =>
                                        {
                                            stateInitialized = true;
-                                           Saga = _producer.Create(ss.State);
+
+                                           if(ss.State != null)
+                                              Saga = _producer.Create(ss.State);
+
                                            if (commandsSubscribed && stateInitialized)
                                                FinishInitialization();
                                        });
@@ -217,6 +220,11 @@ namespace GridDomain.Node.Actors
 
         private void TransitSaga(object msg, IMessageMetadata metadata, IActorRef sender)
         {
+            if (Saga == null)
+            {
+                Log.Warning("Saga {saga} {sagaid} is not started but received transition message {@message} with metadata {@metadata}. Saga will not proceed. ", typeof(TState), Id, msg, metadata);
+                return;
+            }
             //block any other executing until saga completes transition
             //cast is need for dynamic call of Transit
             Task<TransitionResult<TState>> processSagaTask = Saga.PreviewTransit((dynamic) msg);

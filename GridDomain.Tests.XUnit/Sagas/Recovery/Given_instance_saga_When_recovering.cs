@@ -38,7 +38,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
 
             data.ApplyEvents(eventsToReplay);
 
-            var sagaInstance = new Saga<SoftwareProgrammingSagaState>(saga,data.Data, _logger);
+            var sagaInstance = new Saga<SoftwareProgrammingSagaState>(saga,data.SagaState, _logger);
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Recovery
             var sleepCommand = dispatchedCommands.OfType<GoSleepCommand>().First();
             Assert.Equal(coffeMakeFailedEvent.ForPersonId, sleepCommand.PersonId);
             //Produced_command_has_right_sofa_id()
-            Assert.Equal(data.Data.SofaId, sleepCommand.SofaId);
+            Assert.Equal(data.SagaState.SofaId, sleepCommand.SofaId);
             //Saga_produce_command_from_given_state()
             Assert.IsAssignableFrom<GoSleepCommand>(dispatchedCommands.FirstOrDefault());
         }

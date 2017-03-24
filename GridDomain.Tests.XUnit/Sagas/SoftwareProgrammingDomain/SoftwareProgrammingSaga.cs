@@ -24,7 +24,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
                                            sagaData.PersonId = domainEvent.SourceId;
                                            Log.Verbose("Hello trace string");
                                            Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
-                                       }).TransitionTo(MakingCoffee),
+                                       })
+                                 .TransitionTo(MakingCoffee),
                    When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
 
             During(MakingCoffee,
@@ -35,7 +36,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 
                                                     Dispatch(new GoSleepCommand(context.Data.ForPersonId,
                                                                                 context.Instance.SofaId));
-                                                }).TransitionTo(Sleeping),
+                                                })
+                                          .TransitionTo(Sleeping),
                    When(CoffeReady).TransitionTo(Coding));
 
             During(Sleeping,

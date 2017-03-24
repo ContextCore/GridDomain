@@ -35,12 +35,13 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaId = Guid.NewGuid();
 
             var container = new UnityContainer();
-            
-            container.RegisterType<AggregateActor<SagaStateAggregate<TestState>>>(new InjectionFactory( cnt =>
-             new AggregateActor<SagaStateAggregate<TestState>>(new SagaStateCommandHandler<TestState>(),
-                blackHole,
-                localAkkaEventBusTransport,
-                new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(), messageProcessActor)));
+
+            container.RegisterType<SagaStateActor<TestState>>(new InjectionFactory(cnt =>
+                                                                                       new SagaStateActor<TestState>(new SagaStateCommandHandler<TestState>(),
+                                                                                                                     blackHole,
+                                                                                                                     localAkkaEventBusTransport,
+                                                                                                                     new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
+                                                                                                                     messageProcessActor)));
 
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
 
@@ -50,7 +51,6 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                                                name);
 
             _sagaActor.Ask<NotifyOnSagaTransitedAck>(new NotifyOnSagaTransited(TestActor)).Wait();
-
         }
 
         private readonly TestActorRef<SagaActor<TestState>> _sagaActor;
@@ -91,9 +91,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [Fact]
         public void Saga_transition_raises_state_events()
         {
-            var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
-
-            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
+            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId),
+                                                           MessageMetadata.Empty));
 
             FishForMessage<IMessageMetadataEnvelop<SagaCreatedEvent<TestState>>>(m => true);
             FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);

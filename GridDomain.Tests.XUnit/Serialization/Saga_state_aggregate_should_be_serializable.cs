@@ -25,11 +25,11 @@ namespace GridDomain.Tests.XUnit.Serialization
             var restoredState = JsonConvert.DeserializeObject<SagaStateAggregate<SoftwareProgrammingSagaState>>(json);
 
             //CoffeMachineId_should_be_equal()
-            Assert.Equal(sagaState.Data.CoffeeMachineId, restoredState.Data.CoffeeMachineId);
+            Assert.Equal(sagaState.SagaState.CoffeeMachineId, restoredState.SagaState.CoffeeMachineId);
             // Id_should_be_equal()
             Assert.Equal(sagaState.Id, restoredState.Id);
             //State_should_be_equal()
-            Assert.Equal(sagaState.Data.CurrentStateName, restoredState.Data.CurrentStateName);
+            Assert.Equal(sagaState.SagaState.CurrentStateName, restoredState.SagaState.CurrentStateName);
         }
     }
 }

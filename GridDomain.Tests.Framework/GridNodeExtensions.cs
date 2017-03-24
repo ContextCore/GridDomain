@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using CommonDomain;
@@ -50,6 +51,15 @@ namespace GridDomain.Tests.Framework
             {
                 await repo.Save(id, messages);
             }
+        }
+
+        public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, TAggregate aggregate) where TAggregate : Aggregate
+        {
+            var domainEvents = ((IAggregate) aggregate).GetUncommittedEvents()
+                                                       .Cast<DomainEvent>()
+                                                       .ToArray();
+
+            await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)

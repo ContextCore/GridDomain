@@ -32,11 +32,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                                                        Node.AggregateFromSnapshotsFactory);
             await repo.Add(sagaState);
 
-            var restoredState = await this.LoadSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaState.Id);
+            var restoredState = await this.LoadSaga<SoftwareProgrammingSagaState>(sagaState.Id);
             //CoffeMachineId_should_be_equal()
-            Assert.Equal(sagaState.Data.CoffeeMachineId,  restoredState.CoffeeMachineId);
+            Assert.Equal(sagaState.SagaState.CoffeeMachineId,  restoredState.CoffeeMachineId);
             // State_should_be_equal()
-            Assert.Equal(sagaState.Data.CurrentStateName, restoredState.CurrentStateName);
+            Assert.Equal(sagaState.SagaState.CurrentStateName, restoredState.CurrentStateName);
         }
     }
 }

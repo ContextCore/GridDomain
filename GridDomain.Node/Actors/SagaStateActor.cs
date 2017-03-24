@@ -21,7 +21,7 @@ namespace GridDomain.Node.Actors
                                                                     customHandlersActor)
         {
             int a = 1;
-            Command<GetSagaState>(c => Sender.Tell(new SagaState<TState>(State.Data)));
+            Command<GetSagaState>(c => Sender.Tell(new SagaState<TState>(State.SagaState)));
         }
     }
 }
