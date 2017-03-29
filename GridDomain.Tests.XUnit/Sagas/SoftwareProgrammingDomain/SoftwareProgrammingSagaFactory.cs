@@ -1,3 +1,4 @@
+using System;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
@@ -16,10 +17,14 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         {
             _log = log;
         }
-
+        /// <summary>
+        /// Creates new saga from start message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public ISaga<SoftwareProgrammingSagaState> Create(GotTiredEvent message)
         {
-            return Create(new SoftwareProgrammingSagaState(message.SagaId,
+            return Create(new SoftwareProgrammingSagaState(Guid.NewGuid(),
                                                           nameof(SoftwareProgrammingSaga.Coding)));
         }
 
@@ -28,10 +33,15 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
             return new Saga<SoftwareProgrammingSagaState>(new SoftwareProgrammingSaga(), message, _log);
         }
 
+        /// <summary>
+        /// Creates new saga from start message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public ISaga<SoftwareProgrammingSagaState> Create(SleptWellEvent message)
         {
-            return Create(new SoftwareProgrammingSagaState(message.SagaId,
-                                                          nameof(SoftwareProgrammingSaga.Coding)));
+            return Create(new SoftwareProgrammingSagaState(Guid.NewGuid(),
+                                                           nameof(SoftwareProgrammingSaga.Coding)));
         }
     }
 }
