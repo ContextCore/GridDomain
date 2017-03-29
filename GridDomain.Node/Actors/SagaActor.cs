@@ -18,7 +18,15 @@ using GridDomain.Node.AkkaMessaging;
 namespace GridDomain.Node.Actors
 {
     //TODO: add status info, e.g. was any errors during execution or recover
+    public class RedirectToNewSaga : MessageMetadataEnvelop, ISagaTransitCompleted
+    {
+        public Guid SagaId { get; }
 
+        public RedirectToNewSaga(Guid sagaId, object message, IMessageMetadata metadata):base(message, metadata)
+        {
+            SagaId = sagaId;
+        }
+    }
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -175,6 +183,11 @@ namespace GridDomain.Node.Actors
         private void StartNewSaga(object message, IMessageMetadata metadata, IActorRef sender)
         {
             var saga = _producer.Create(message);
+            if (Id != saga.State.Id)
+            {
+                FinishSagaTransition(new RedirectToNewSaga(saga.State.Id, message, metadata), Self);
+                return;
+            }
 
             var cmd = new CreateNewStateCommand<TState>(Id, saga.State);
 

@@ -50,20 +50,20 @@ namespace GridDomain.Node.Actors
                                           Logger.Debug("Child {id} resumed. Stashed messages will be sent to it", id);
                                       });
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
-            Receive<IMessageMetadataEnvelop>(messageWitMetadata =>
+            Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
                                              {
                                                  ChildInfo knownChild;
 
-                                                 messageWitMetadata.Metadata.History.Add(_forwardEntry);
+                                                 messageWithMetadata.Metadata.History.Add(_forwardEntry);
 
-                                                 var childId = GetChildActorId(messageWitMetadata.Message);
-                                                 var name = GetChildActorName(messageWitMetadata.Message);
+                                                 var childId = GetChildActorId(messageWithMetadata);
+                                                 var name = GetChildActorName(messageWithMetadata);
 
                                                  var childWasCreated = false;
                                                  if (!Children.TryGetValue(childId, out knownChild))
                                                  {
                                                      childWasCreated = true;
-                                                     knownChild = CreateChild(messageWitMetadata, name);
+                                                     knownChild = CreateChild(messageWithMetadata, name);
                                                      Children[childId] = knownChild;
                                                      Context.Watch(knownChild.Ref);
                                                  }
@@ -77,7 +77,7 @@ namespace GridDomain.Node.Actors
                                                          knownChild.Ref.Tell(CancelShutdownRequest.Instance);
                                                          Logger.Debug(
                                                                       "Stashing message {msg} for child {id}. Waiting for child resume from termination",
-                                                                      messageWitMetadata,
+                                                                      messageWithMetadata,
                                                                       childId);
 
                                                          return;
@@ -86,10 +86,10 @@ namespace GridDomain.Node.Actors
 
                                                  knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
                                                  knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
-                                                 SendMessageToChild(knownChild, messageWitMetadata);
+                                                 SendMessageToChild(knownChild, messageWithMetadata);
 
                                                  Logger.Debug("Message {msg} sent to {isknown} child {id}",
-                                                              messageWitMetadata,
+                                                              messageWithMetadata,
                                                               childWasCreated ? "new" : "known",
                                                               childId);
                                              });
@@ -100,9 +100,9 @@ namespace GridDomain.Node.Actors
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
         public IStash Stash { get; set; }
 
-        protected abstract string GetChildActorName(object message);
-        protected abstract Guid GetChildActorId(object message);
-        protected abstract Type GetChildActorType(object message);
+        protected abstract string GetChildActorName(IMessageMetadataEnvelop message);
+        protected abstract Guid GetChildActorId(IMessageMetadataEnvelop message);
+        protected abstract Type GetChildActorType(IMessageMetadataEnvelop message);
 
         protected virtual void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
         {
@@ -139,7 +139,7 @@ namespace GridDomain.Node.Actors
 
         protected virtual ChildInfo CreateChild(IMessageMetadataEnvelop messageWitMetadata, string name)
         {
-            var childActorType = GetChildActorType(messageWitMetadata.Message);
+            var childActorType = GetChildActorType(messageWitMetadata);
             var props = Context.DI().Props(childActorType);
             var childActorRef = Context.ActorOf(props, name);
             return new ChildInfo(childActorRef);

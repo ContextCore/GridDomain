@@ -1,5 +1,6 @@
 using System;
 using CommonDomain.Core;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;
@@ -15,7 +16,7 @@ namespace GridDomain.Node.Actors
             _actorType = typeof(AggregateActor<TAggregate>);
         }
 
-        protected override string GetChildActorName(object message)
+        protected override string GetChildActorName(IMessageMetadataEnvelop message)
         {
             var command = message as ICommand;
             if (command != null)
@@ -23,13 +24,13 @@ namespace GridDomain.Node.Actors
             return null;
         }
 
-        protected override Guid GetChildActorId(object message)
+        protected override Guid GetChildActorId(IMessageMetadataEnvelop message)
         {
             var command = message as ICommand;
             return command?.AggregateId ?? Guid.Empty;
         }
 
-        protected override Type GetChildActorType(object message)
+        protected override Type GetChildActorType(IMessageMetadataEnvelop message)
         {
             return _actorType;
         }

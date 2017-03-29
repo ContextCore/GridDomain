@@ -28,16 +28,19 @@ namespace GridDomain.Node.Actors
                                                                                          m => m.CorrelationField);
         }
 
-        protected override string GetChildActorName(object message)
+        protected override string GetChildActorName(IMessageMetadataEnvelop message)
         {
             return AggregateActorName.New<TState>(GetChildActorId(message)).ToString();
         }
 
-        protected override Guid GetChildActorId(object message)
+        protected override Guid GetChildActorId(IMessageMetadataEnvelop env)
         {
+            var message = env.Message;
             var childActorId = Guid.Empty;
 
-            message.Match().With<IFault>(m => childActorId = m.SagaId);
+            message.Match()
+                   .With<IFault>(m => childActorId = m.SagaId)
+                   .With<RedirectToNewSaga>(r => childActorId = r.SagaId);
 
             if (childActorId != Guid.Empty)
                 return childActorId;
@@ -60,7 +63,7 @@ namespace GridDomain.Node.Actors
             return childActorId;
         }
 
-        protected override Type GetChildActorType(object message)
+        protected override Type GetChildActorType(IMessageMetadataEnvelop message)
         {
             return _actorType;
         }
@@ -69,7 +72,12 @@ namespace GridDomain.Node.Actors
         {
             var msgSender = Sender;
             knownChild.Ref.Ask<ISagaTransitCompleted>(message)
-                      .PipeTo(msgSender, Self);
+                          .ContinueWith(t =>
+                                        {
+                                            t.Match()
+                                             .With<RedirectToNewSaga>(r => Self.Tell(r))
+                                             .Default(r => t.PipeTo(msgSender, Self));
+                                        });
         }
     }
 }

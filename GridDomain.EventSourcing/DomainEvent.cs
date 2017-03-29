@@ -9,8 +9,8 @@ namespace GridDomain.EventSourcing
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
-            SagaId = sagaId ?? Guid.NewGuid();
-            Id = sagaId ?? Guid.NewGuid();
+            SagaId = sagaId ?? Guid.Empty;
+            Id = id ?? Guid.NewGuid();
         }
 
         //Source of the event - aggregate that created it
