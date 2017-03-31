@@ -24,8 +24,9 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         /// <returns></returns>
         public ISaga<SoftwareProgrammingSagaState> Create(GotTiredEvent message)
         {
-            return Create(new SoftwareProgrammingSagaState(Guid.NewGuid(),
-                                                          nameof(SoftwareProgrammingSaga.Coding)));
+            var sagaId = message.SagaId == Guid.Empty ? Guid.NewGuid() : message.SagaId;
+            return Create(new SoftwareProgrammingSagaState(sagaId,
+                                                           nameof(SoftwareProgrammingSaga.Coding)));
         }
 
         public ISaga<SoftwareProgrammingSagaState> Create(SoftwareProgrammingSagaState message)
@@ -40,7 +41,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         /// <returns></returns>
         public ISaga<SoftwareProgrammingSagaState> Create(SleptWellEvent message)
         {
-            return Create(new SoftwareProgrammingSagaState(Guid.NewGuid(),
+            var sagaId = message.SagaId == Guid.Empty ? Guid.NewGuid() : message.SagaId;
+            return Create(new SoftwareProgrammingSagaState(sagaId,
                                                            nameof(SoftwareProgrammingSaga.Coding)));
         }
     }

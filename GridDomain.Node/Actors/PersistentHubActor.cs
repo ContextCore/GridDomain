@@ -52,47 +52,50 @@ namespace GridDomain.Node.Actors
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
                                              {
-                                                 ChildInfo knownChild;
-
-                                                 messageWithMetadata.Metadata.History.Add(_forwardEntry);
-
                                                  var childId = GetChildActorId(messageWithMetadata);
-                                                 var name = GetChildActorName(messageWithMetadata);
-
-                                                 var childWasCreated = false;
-                                                 if (!Children.TryGetValue(childId, out knownChild))
-                                                 {
-                                                     childWasCreated = true;
-                                                     knownChild = CreateChild(messageWithMetadata, name);
-                                                     Children[childId] = knownChild;
-                                                     Context.Watch(knownChild.Ref);
-                                                 }
-                                                 else
-                                                 {
-                                                     //terminating a child is quite long operation due to snapshots saving
-                                                     //it is cheaper to resume child than wait for it termination and create rom scratch
-                                                     if (knownChild.Terminating)
-                                                     {
-                                                         Stash.Stash();
-                                                         knownChild.Ref.Tell(CancelShutdownRequest.Instance);
-                                                         Logger.Debug(
-                                                                      "Stashing message {msg} for child {id}. Waiting for child resume from termination",
-                                                                      messageWithMetadata,
-                                                                      childId);
-
-                                                         return;
-                                                     }
-                                                 }
-
-                                                 knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
-                                                 knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
-                                                 SendMessageToChild(knownChild, messageWithMetadata);
-
-                                                 Logger.Debug("Message {msg} sent to {isknown} child {id}",
-                                                              messageWithMetadata,
-                                                              childWasCreated ? "new" : "known",
-                                                              childId);
+                                                 var name = GetChildActorName(messageWithMetadata, childId);
+                                                 SendToChild(messageWithMetadata, childId, name);
                                              });
+        }
+
+        protected virtual void SendToChild(IMessageMetadataEnvelop messageWithMetadata, Guid childId, string name)
+        {
+            ChildInfo knownChild;
+            messageWithMetadata.Metadata.History.Add(_forwardEntry);
+
+            var childWasCreated = false;
+            if (!Children.TryGetValue(childId, out knownChild))
+            {
+                childWasCreated = true;
+                knownChild = CreateChild(messageWithMetadata, name);
+                Children[childId] = knownChild;
+                Context.Watch(knownChild.Ref);
+            }
+            else
+            {
+                //terminating a child is quite long operation due to snapshots saving
+                //it is cheaper to resume child than wait for it termination and create rom scratch
+                if (knownChild.Terminating)
+                {
+                    Stash.Stash();
+                    knownChild.Ref.Tell(CancelShutdownRequest.Instance);
+                    Logger.Debug(
+                                 "Stashing message {msg} for child {id}. Waiting for child resume from termination",
+                                 messageWithMetadata,
+                                 childId);
+
+                    return;
+                }
+            }
+
+            knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
+            knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
+            SendMessageToChild(knownChild, messageWithMetadata);
+
+            Logger.Debug("Message {msg} sent to {isknown} child {id}",
+                         messageWithMetadata,
+                         childWasCreated ? "new" : "known",
+                         childId);
         }
 
         //TODO: replace with more efficient implementation
@@ -100,7 +103,7 @@ namespace GridDomain.Node.Actors
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
         public IStash Stash { get; set; }
 
-        protected abstract string GetChildActorName(IMessageMetadataEnvelop message);
+        protected abstract string GetChildActorName(IMessageMetadataEnvelop message, Guid childId);
         protected abstract Guid GetChildActorId(IMessageMetadataEnvelop message);
         protected abstract Type GetChildActorType(IMessageMetadataEnvelop message);
 

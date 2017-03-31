@@ -26,11 +26,27 @@ namespace GridDomain.Node.Actors
         {
             _acceptMessagesSagaIds = sagaProducer.Descriptor.AcceptMessages.ToDictionary(m => m.MessageType,
                                                                                          m => m.CorrelationField);
+
+            Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
+                                             {
+                                                 messageWithMetadata.Match()
+                                                                    .With<RedirectToNewSaga>(r =>
+                                                                                             {
+                                                                                                 var name = GetChildActorName(messageWithMetadata, r.SagaId);
+                                                                                                 SendToChild(messageWithMetadata, r.SagaId, name);
+                                                                                             })
+                                                                    .Default(r =>
+                                                                             {
+                                                                                 var childId = GetChildActorId(messageWithMetadata);
+                                                                                 var name = GetChildActorName(messageWithMetadata, childId);
+                                                                                 SendToChild(messageWithMetadata, childId, name);
+                                                                             });
+                                             });
         }
 
-        protected override string GetChildActorName(IMessageMetadataEnvelop message)
+        protected override string GetChildActorName(IMessageMetadataEnvelop message, Guid childId)
         {
-            return AggregateActorName.New<TState>(GetChildActorId(message)).ToString();
+            return AggregateActorName.New<TState>(childId).ToString();
         }
 
         protected override Guid GetChildActorId(IMessageMetadataEnvelop env)
@@ -38,9 +54,8 @@ namespace GridDomain.Node.Actors
             var message = env.Message;
             var childActorId = Guid.Empty;
 
-            message.Match()
-                   .With<IFault>(m => childActorId = m.SagaId)
-                   .With<RedirectToNewSaga>(r => childActorId = r.SagaId);
+            message.Match().With<IFault>(m => childActorId = m.SagaId);
+            env.Match().With<RedirectToNewSaga>(r => childActorId = r.SagaId);
 
             if (childActorId != Guid.Empty)
                 return childActorId;
@@ -71,13 +86,16 @@ namespace GridDomain.Node.Actors
         protected override void SendMessageToChild(ChildInfo knownChild, IMessageMetadataEnvelop message)
         {
             var msgSender = Sender;
-            knownChild.Ref.Ask<ISagaTransitCompleted>(message)
-                          .ContinueWith(t =>
-                                        {
-                                            t.Match()
-                                             .With<RedirectToNewSaga>(r => Self.Tell(r))
-                                             .Default(r => t.PipeTo(msgSender, Self));
-                                        });
+            var self = Self;
+            //  message.Match().With<RedirectToNewSaga>(r => SendMessageToChild(knownChild, r.))
+            knownChild.Ref
+                      .Ask<ISagaTransitCompleted>(message)
+                      .ContinueWith(t =>
+                                    {
+                                        t.Result.Match()
+                                         .With<RedirectToNewSaga>(r => self.Tell(message))
+                                         .Default(r => msgSender.Tell(r));
+                                    });
         }
     }
 }

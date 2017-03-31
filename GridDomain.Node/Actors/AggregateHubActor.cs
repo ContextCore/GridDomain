@@ -16,18 +16,14 @@ namespace GridDomain.Node.Actors
             _actorType = typeof(AggregateActor<TAggregate>);
         }
 
-        protected override string GetChildActorName(IMessageMetadataEnvelop message)
+        protected override string GetChildActorName(IMessageMetadataEnvelop message, Guid childId)
         {
-            var command = message as ICommand;
-            if (command != null)
-                return AggregateActorName.New<TAggregate>(command.AggregateId).ToString();
-            return null;
+            return AggregateActorName.New<TAggregate>(childId).ToString();
         }
 
         protected override Guid GetChildActorId(IMessageMetadataEnvelop message)
         {
-            var command = message as ICommand;
-            return command?.AggregateId ?? Guid.Empty;
+            return (message.Message as ICommand)?.AggregateId ?? Guid.Empty;
         }
 
         protected override Type GetChildActorType(IMessageMetadataEnvelop message)

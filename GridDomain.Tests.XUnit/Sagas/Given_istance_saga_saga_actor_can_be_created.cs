@@ -6,6 +6,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
@@ -31,16 +32,18 @@ namespace GridDomain.Tests.XUnit.Sagas
         }
 
         [Fact]
-        public async Task Instance_saga_actor_has_correct_path_when_saga_is_raised_by_domain_message()
+        public async Task Instance_saga_actor_has_correct_path_when_saga_is_started_by_domain_message()
         {
             var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
-                      .Create()
-                      .SendToSagas(msg);
+            var resultMsg = await Node.NewDebugWaiter()
+                                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                                      .Create()
+                                      .SendToSagas(msg);
 
-            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(msg.SagaId);
+            var sagaId = resultMsg.Message<SagaCreatedEvent<SoftwareProgrammingSagaState>>().Id;
+
+            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaId);
             Assert.NotNull(sagaActor);
         }
     }

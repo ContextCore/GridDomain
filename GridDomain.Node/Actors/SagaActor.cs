@@ -18,11 +18,11 @@ using GridDomain.Node.AkkaMessaging;
 namespace GridDomain.Node.Actors
 {
     //TODO: add status info, e.g. was any errors during execution or recover
-    public class RedirectToNewSaga : MessageMetadataEnvelop, ISagaTransitCompleted
+    public class RedirectToNewSaga :  ISagaTransitCompleted
     {
         public Guid SagaId { get; }
 
-        public RedirectToNewSaga(Guid sagaId, object message, IMessageMetadata metadata):base(message, metadata)
+        public RedirectToNewSaga(Guid sagaId)
         {
             SagaId = sagaId;
         }
@@ -137,10 +137,10 @@ namespace GridDomain.Node.Actors
 
         private void AwaitingMessageBehavior()
         {
-            Receive<IMessageMetadataEnvelop<DomainEvent>>(m => ProcessMessage(m.Message, m.Metadata),
+            Receive<IMessageMetadataEnvelop<DomainEvent>>(env => ProcessMessage(((IMessageMetadataEnvelop) env).Message, env.Metadata),
                                                           e => GetSagaId(e.Message) == Id);
 
-            Receive<IMessageMetadataEnvelop<IFault>>(m => ProcessMessage(m.Message, m.Metadata),
+            Receive<IMessageMetadataEnvelop<IFault>>(env => ProcessMessage(((IMessageMetadataEnvelop) env).Message, env.Metadata),
                                                      e => GetSagaId(e.Message) == Id);
 
             ProxifyingCommandsBehavior();
@@ -175,23 +175,23 @@ namespace GridDomain.Node.Actors
             var sender = Sender;
             Monitor.IncrementMessagesReceived();
             if (ShouldStartNewSaga(message))
-                StartNewSaga(message, metadata, sender);
+                StartNewSaga(sender, message, metadata);
             else
                 TransitSaga(message, metadata, sender);
         }
 
-        private void StartNewSaga(object message, IMessageMetadata metadata, IActorRef sender)
+        private void StartNewSaga(IActorRef sender, object message, IMessageMetadata metadata)
         {
             var saga = _producer.Create(message);
             if (Id != saga.State.Id)
             {
-                FinishSagaTransition(new RedirectToNewSaga(saga.State.Id, message, metadata), Self);
+                FinishSagaTransition(new RedirectToNewSaga(saga.State.Id), sender);
+                Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                 return;
             }
 
             var cmd = new CreateNewStateCommand<TState>(Id, saga.State);
-
-            ChangeState(cmd, metadata, () => TransitSaga(message, metadata, sender));
+            WaitCommandComplete(cmd, metadata, () => TransitSaga(message, metadata, sender));
         }
 
         private void WaitForCommandCompleteBehavior(Action<Guid> onCommandComplete)
@@ -205,7 +205,7 @@ namespace GridDomain.Node.Actors
             return _sagaStartMessageTypes.Contains(message.GetType());
         }
 
-        private void ChangeState(ISagaStateCommand<TState> cmd, IMessageMetadata messageMetadata, Action onStateChanged)
+        private void WaitCommandComplete(ISagaStateCommand<TState> cmd, IMessageMetadata messageMetadata, Action onStateChanged)
         {
             _persistancePendingStates[cmd.Id] = cmd.State;
 
@@ -264,7 +264,7 @@ namespace GridDomain.Node.Actors
                                                                               (TState) t.NewSagaState,
                                                                               Saga.State.CurrentStateName, message);
                                        var sender = Sender;
-                                       ChangeState(cmd, messageMetadata, () => FinishSagaTransition(t, sender));
+                                       WaitCommandComplete(cmd, messageMetadata, () => FinishSagaTransition(t, sender));
                                    });
 
             Receive<Status.Failure>(f =>

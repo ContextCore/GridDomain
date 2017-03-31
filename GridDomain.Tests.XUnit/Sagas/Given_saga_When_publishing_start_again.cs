@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
@@ -15,19 +16,21 @@ namespace GridDomain.Tests.XUnit.Sagas
         public Given_saga_When_publishing_start_again(ITestOutputHelper helper) : base(helper) {}
 
         [Fact]
-        public async Task When_publishing_start_message()
+        public async Task When_publishing_start_message_for_new_saga()
         {
             var startMessage = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
-                      .Create()
-                      .SendToSagas(startMessage);
+            var res = await Node.NewDebugWaiter()
+                                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                                .Create()
+                                .SendToSagas(startMessage);
+
+            var newSagaId = res.Message<SagaCreatedEvent<SoftwareProgrammingSagaState>>().Id;
 
             var coffeMadeEvent = new CoffeMadeEvent(startMessage.FavoriteCoffeMachineId,
                                                     startMessage.PersonId,
                                                     null,
-                                                    startMessage.SagaId);
+                                                    newSagaId);
 
             await Node.NewDebugWaiter()
                       .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
@@ -38,14 +41,14 @@ namespace GridDomain.Tests.XUnit.Sagas
             var reStartEvent = new GotTiredEvent(Guid.NewGuid(),
                                                  startMessage.LovelySofaId,
                                                  Guid.NewGuid(),
-                                                 startMessage.SagaId);
+                                                 newSagaId);
 
             await Node.NewDebugWaiter()
                       .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
                       .Create()
                       .SendToSagas(reStartEvent);
 
-            var sagaState = await this.LoadSaga<SoftwareProgrammingSagaState>(startMessage.SagaId);
+            var sagaState = await this.LoadSaga<SoftwareProgrammingSagaState>(newSagaId);
             //Saga_state_should_be_correct()
             Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), sagaState.CurrentStateName);
             //Saga_data_contains_information_from_restart_message()
