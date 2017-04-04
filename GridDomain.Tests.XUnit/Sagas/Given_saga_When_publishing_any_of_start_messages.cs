@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
@@ -17,18 +18,19 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task When_publishing_start_message()
         {
-            var sagaId = Guid.NewGuid();
-            await
+            var res = await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                     .Create()
-                    .SendToSagas(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId));
+                    .SendToSagas(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid()));
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
+            var sagaCreatedEvent = res.Message<SagaCreatedEvent<SoftwareProgrammingState>>();
+
+            var state = await this.LoadSaga<SoftwareProgrammingState>(sagaCreatedEvent.State.Id);
             //Saga_data_is_not_null()
-            Assert.NotNull(sagaData.SagaState);
+            Assert.NotNull(state);
             // Saga_has_correct_id()
-            Assert.Equal(sagaId, sagaData.Id);
+            Assert.Equal(sagaCreatedEvent.SourceId, state.Id);
         }
     }
 }

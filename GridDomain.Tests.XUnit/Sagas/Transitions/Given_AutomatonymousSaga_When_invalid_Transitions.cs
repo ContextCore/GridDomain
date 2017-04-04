@@ -45,7 +45,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         [Fact]
         public async Task No_commands_are_produced()
         {
-            TransitionResult<SoftwareProgrammingSagaState> newState = null;
+            TransitionResult<SoftwareProgrammingState> newState = null;
             await SwallowException(async () => newState = await _given.SagaInstance.PreviewTransit(new WrongMessage()));
             Assert.Null(newState?.ProducedCommands);
         }

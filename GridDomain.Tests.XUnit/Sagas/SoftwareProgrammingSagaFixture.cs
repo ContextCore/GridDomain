@@ -15,8 +15,8 @@ namespace GridDomain.Tests.XUnit.Sagas
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
             var cfg = new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
-                                                       c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>,
-                                                                                SagaStateCommandHandler<SoftwareProgrammingSagaState>>());
+                                                       c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingState>,
+                                                                                SagaStateCommandHandler<SoftwareProgrammingState>>());
             Add(cfg);
             Add(new SoftwareProgrammingSagaRoutes());
             Add(new SampleDomainContainerConfiguration());

@@ -12,7 +12,7 @@ namespace GridDomain.Tests.XUnit.Sagas
 {
     public class Given_saga_When_extracting_descriptor
     {
-        private readonly ISagaDescriptor _descriptor = SoftwareProgrammingSaga.Descriptor;
+        private readonly ISagaDescriptor _descriptor = SoftwareProgrammingProcess.Descriptor;
 
         [Fact]
         public void Descriptor_can_be_created_from_saga()
@@ -67,13 +67,13 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public void Descriptor_contains_saga_data_type()
         {
-            Assert.Equal(typeof(SoftwareProgrammingSagaState), _descriptor.StateType);
+            Assert.Equal(typeof(SoftwareProgrammingState), _descriptor.StateType);
         }
 
         [Fact]
         public void Descriptor_contains_saga_machine_type()
         {
-            Assert.Equal(typeof(SoftwareProgrammingSaga), _descriptor.StateMachineType);
+            Assert.Equal(typeof(SoftwareProgrammingProcess), _descriptor.StateMachineType);
         }
     }
 }

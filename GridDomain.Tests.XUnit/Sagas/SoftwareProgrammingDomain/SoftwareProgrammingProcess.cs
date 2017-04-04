@@ -9,12 +9,12 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingSaga : Process<SoftwareProgrammingSagaState>
+    public class SoftwareProgrammingProcess : Process<SoftwareProgrammingState>
     {
         public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
-        private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingSaga>();
+        private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingProcess>();
 
-        public SoftwareProgrammingSaga()
+        public SoftwareProgrammingProcess()
         {
             During(Coding,
                    When(GotTired).Then(context =>
@@ -57,7 +57,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 
         private static ISagaDescriptor CreateDescriptor()
         {
-            var descriptor = SagaDescriptor.CreateDescriptor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>();
+            var descriptor = SagaDescriptor.CreateDescriptor<SoftwareProgrammingProcess, SoftwareProgrammingState>();
 
             descriptor.AddStartMessage<GotTiredEvent>();
             descriptor.AddStartMessage<SleptWellEvent>();

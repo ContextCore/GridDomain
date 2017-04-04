@@ -5,9 +5,9 @@ using Serilog;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 {
-    public class TestSagaFactory : IFactory<ISaga<TestSagaState>, TestSagaStartMessage>,
-                                   IFactory<ISaga<TestSagaState>, TestSagaState>,
-                                   IFactory<ISaga<TestSagaState>, Guid>
+    public class TestSagaFactory : ISagaCreator<TestSagaState, TestSagaStartMessage>,
+                                   ISagaCreator<TestSagaState, Guid>,
+                                   ISagaCreator<TestSagaState>
     {
         private readonly ILogger _log;
 
@@ -16,19 +16,19 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
             _log = log;
         }
 
-        public ISaga<TestSagaState> Create(Guid message)
+        public ISaga<TestSagaState> CreateNew(Guid message, Guid? id = null)
         {
-            return Create(new TestSagaStartMessage(Guid.NewGuid(), null, message));
+            return CreateNew(new TestSagaStartMessage(id ?? Guid.NewGuid(), null, id ?? message));
         }
 
         public ISaga<TestSagaState> Create(TestSagaState message)
         {
-            return new Saga<TestSagaState>(new TestSaga(),message, _log);
+            return new Saga<TestSagaState>(new TestSaga(), message, _log);
         }
 
-        public ISaga<TestSagaState> Create(TestSagaStartMessage message)
+        public ISaga<TestSagaState> CreateNew(TestSagaStartMessage message, Guid? id = null)
         {
-            return Create(new TestSagaState(message.SagaId, nameof(TestSaga.Initial)));
+            return Create(new TestSagaState(id ?? message.SagaId, nameof(TestSaga.Initial)));
         }
     }
 }

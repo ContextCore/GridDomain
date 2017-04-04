@@ -11,20 +11,20 @@ using Xunit;
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
     public class Given_created_and_message_received_when_hydrating :
-        AggregateTest<SagaStateAggregate<SoftwareProgrammingSagaState>>
+        AggregateTest<SagaStateAggregate<SoftwareProgrammingState>>
     {
         private Guid _sagaId;
-        private SoftwareProgrammingSaga _machine;
-        private SoftwareProgrammingSagaState _softwareProgrammingSagaState;
+        private SoftwareProgrammingProcess _machine;
+        private SoftwareProgrammingState _softwareProgrammingState;
         private GotTiredEvent _message;
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new SagaCreatedEvent<SoftwareProgrammingSagaState>(_softwareProgrammingSagaState, _sagaId);
+            yield return new SagaCreatedEvent<SoftwareProgrammingState>(_softwareProgrammingState, _sagaId);
 
             yield return
-                new SagaMessageReceivedEvent<SoftwareProgrammingSagaState>(_sagaId,
-                                                                          _softwareProgrammingSagaState,
+                new SagaMessageReceivedEvent<SoftwareProgrammingState>(_sagaId,
+                                                                          _softwareProgrammingState,
                                                                           _machine.GotTired.Name,
                                                                           _message);
         }
@@ -33,12 +33,12 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
         public void Given_created_and_message_received_and_transitioned_event()
         {
             _sagaId = Guid.NewGuid();
-            _machine = new SoftwareProgrammingSaga();
-            _softwareProgrammingSagaState = new SoftwareProgrammingSagaState(_sagaId, _machine.Sleeping.Name);
+            _machine = new SoftwareProgrammingProcess();
+            _softwareProgrammingState = new SoftwareProgrammingState(_sagaId, _machine.Sleeping.Name);
             _message = new GotTiredEvent(Guid.NewGuid());
             Init();
             //Then_State_is_taken_from_message_received_event()
-            Assert.Equal(_softwareProgrammingSagaState, Aggregate.SagaState);
+            Assert.Equal(_softwareProgrammingState, Aggregate.SagaState);
         }
     }
 }

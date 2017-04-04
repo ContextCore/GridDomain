@@ -20,7 +20,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             Node.Transport.Publish(coffeMadeEvent);
             await Task.Delay(200);
             var sagaDataAggregate =
-                await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(coffeMadeEvent.SagaId);
+                await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingState>>(coffeMadeEvent.SagaId);
             Assert.Null(sagaDataAggregate.SagaState);
         }
     }

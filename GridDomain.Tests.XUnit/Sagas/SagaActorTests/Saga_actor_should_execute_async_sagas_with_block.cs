@@ -26,7 +26,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output)
         {
             var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-            var producer = new SagaProducer<TestState>(AsyncLongRunningSaga.Descriptor);
+            var producer = new Saga—reatorsCatalog<TestState>(AsyncLongRunningSaga.Descriptor, new AsyncLongRunningSagaFactory(logger));
             producer.RegisterAll(new AsyncLongRunningSagaFactory(logger));
             var localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
@@ -60,20 +60,20 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         public void Saga_actor_process_one_message_in_time()
         {
             var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
-            var domainEventB = new SampleAggregateCreatedEvent("2", Guid.NewGuid(), DateTime.Now, _sagaId);
+            var domainEventB = new SampleAggregateChangedEvent("2", Guid.NewGuid(), DateTime.Now, _sagaId);
 
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //A was received first and should be processed first
-            FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            var msg = FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
             FishForMessage<SagaTransited>(m => true);
-            Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, msg.Message.SagaData.ProcessingId);
 
             //B should not be processed after A is completed
-            FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            var msgB = FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
             FishForMessage<SagaTransited>(m => true);
-            Assert.Equal(domainEventB.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
+            Assert.Equal(domainEventB.Id, msgB.Message.SagaData.ProcessingId);
         }
 
         [Fact]

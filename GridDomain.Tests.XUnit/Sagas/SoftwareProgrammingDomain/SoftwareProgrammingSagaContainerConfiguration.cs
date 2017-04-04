@@ -11,7 +11,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
     public class SoftwareProgrammingSagaContainerConfiguration : IContainerConfiguration
     {
         private readonly IContainerConfiguration _sagaConfiguration =
-            new SagaConfiguration<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingSaga.Descriptor, null, null);
+            new SagaConfiguration<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingProcess.Descriptor, null, null);
 
         public void Register(IUnityContainer container)
         {

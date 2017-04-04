@@ -83,12 +83,12 @@
     <Compile Include="InstanceSagas\TransitionResult.cs" />
     <Compile Include="InstanceSagas\WrongSnapshotTypeReceivedException.cs" />
     <Compile Include="ISaga.cs" />
-    <Compile Include="ISagaProducer.cs" />
+    <Compile Include="ISagaСreatorCatalog.cs" />
     <Compile Include="MessageBind.cs" />
     <Compile Include="SagaDescriptor.cs" />
-    <Compile Include="SagaProducer.cs" />
+    <Compile Include="SagaСreatorsCatalog.cs" />
     <Compile Include="ISagaDescriptor.cs" />
-    <Compile Include="IFactory.cs" />
+    <Compile Include="ISagaCreator.cs" />
     <Compile Include="ISagaFault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SagaCreatedEvent.cs" />

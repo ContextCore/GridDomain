@@ -23,13 +23,13 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var sagaId = Guid.NewGuid();
             //prepare initial saga state
-            var sagaData = new SoftwareProgrammingSagaState(sagaId, nameof(SoftwareProgrammingSaga.MakingCoffee))
+            var sagaData = new SoftwareProgrammingState(sagaId, nameof(SoftwareProgrammingProcess.MakingCoffee))
                            {
                                PersonId = Guid.NewGuid()
                            };
 
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingSagaState>(sagaData, sagaId);
-            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId, sagaDataEvent);
+            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingState>(sagaData, sagaId);
+            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingState>>(sagaId, sagaDataEvent);
 
             var results = await Node.NewDebugWaiter(TimeSpan.FromDays(1))
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             var exception = fault.Exception.UnwrapSingle();
             Assert.IsAssignableFrom<SagaTransitionException>(exception);
             //Fault_should_have_saga_as_producer()
-            Assert.Equal(typeof(SoftwareProgrammingSaga), fault.Processor);
+            Assert.Equal(typeof(Saga<SoftwareProgrammingState>), fault.Processor);
             Assert.True(exception.StackTrace.Contains("Saga"));
             //Fault_should_contains_exception_from_saga()
             var innerException = exception.InnerException.UnwrapSingle();

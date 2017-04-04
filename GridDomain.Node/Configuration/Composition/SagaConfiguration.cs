@@ -12,7 +12,7 @@ namespace GridDomain.Node.Configuration.Composition
 {
     public class SagaConfiguration<TSaga, TState, TFactory> : IContainerConfiguration where TSaga : Process<TState>
                                                                                       where TState : class, ISagaState
-                                                                                      where TFactory : IFactory<ISaga<TState>, TState>
+                                                                                      where TFactory : ISagaCreator<TState>
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly ISagaDescriptor _descriptor;
@@ -34,14 +34,16 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName,
                                                                 new InjectionFactory(c => _snapShotsPolicy()));
 
-            container.RegisterType<ISagaProducer<TState>>(new ContainerControlledLifetimeManager(),
-                                                          new InjectionFactory(c =>
-                                                                               {
-                                                                                   var factory = c.Resolve<TFactory>();
-                                                                                   var producer = new SagaProducer<TState>(_descriptor);
-                                                                                   producer.RegisterAll(factory);
-                                                                                   return producer;
-                                                                               }));
+            container.RegisterType<ISaga—reatorCatalog<TState>>(new ContainerControlledLifetimeManager(),
+                                                                new InjectionFactory(c =>
+                                                                                     {
+                                                                                         var factory = c.Resolve<TFactory>();
+
+                                                                                         var producer = new Saga—reatorsCatalog<TState>(_descriptor, factory);
+
+                                                                                         producer.RegisterAll(factory);
+                                                                                         return producer;
+                                                                                     }));
 
             container.RegisterType<SagaActor<TState>>();
 

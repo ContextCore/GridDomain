@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                    .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent);
 
@@ -44,16 +44,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
+                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaContinueEventA);
 
-            await Node.KillSaga<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaId);
+            await Node.KillSaga<SoftwareProgrammingProcess, SoftwareProgrammingState>(sagaId);
 
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
+                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
@@ -61,10 +61,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
 
             // First_Snapshots_should_have_coding_state_from_first_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
 
             //Last_Snapshots_should_have_coding_state_from_last_event()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Sleeping), snapshots.Last().Aggregate.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping), snapshots.Last().Aggregate.SagaState.CurrentStateName);
 
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));

@@ -1,3 +1,4 @@
+using System;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Serilog;
@@ -6,8 +7,8 @@ using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowSagaFactory : IFactory<ISaga<BuyNowState>, BuyNowState>,
-                                     IFactory<ISaga<BuyNowState>, SkuPurchaseOrdered>
+    public class BuyNowSagaFactory : ISagaCreator<BuyNowState>,
+                                     ISagaCreator<BuyNowState,SkuPurchaseOrdered>
     {
         private readonly ILogger _log;
         private readonly IPriceCalculator _priceCalculator;
@@ -23,9 +24,9 @@ namespace Shop.Domain.Sagas
             return new Saga<BuyNowState>(new BuyNow(_priceCalculator),state, _log);
         }
 
-        public ISaga<BuyNowState> Create(SkuPurchaseOrdered message)
+        public ISaga<BuyNowState> CreateNew(SkuPurchaseOrdered message, Guid? sagaid = null)
         {
-            return Create(new BuyNowState(message.SagaId, nameof(BuyNow.Initial)));
+            return Create(new BuyNowState(sagaid ?? Guid.NewGuid(), nameof(BuyNow.Initial)));
         }
     }
 }

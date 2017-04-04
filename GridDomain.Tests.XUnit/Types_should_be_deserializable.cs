@@ -46,7 +46,7 @@ namespace GridDomain.Tests.XUnit
                                                                    Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
                                                                    Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
                                                                    Assembly.GetAssembly(typeof(SampleAggregate)),
-                                                                   Assembly.GetAssembly(typeof(ISagaProducer<>)),
+                                                                   Assembly.GetAssembly(typeof(ISaga—reatorCatalog<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
                                                                    Assembly.GetAssembly(typeof(ExecutionOptions))
                                                                };
@@ -72,8 +72,8 @@ namespace GridDomain.Tests.XUnit
         [Fact]
         public void Generic_domain_classes_should_be_deserializable()
         {
-            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingSagaState>),
-                             typeof(SagaCreatedEvent<SoftwareProgrammingSagaState>));
+            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingState>),
+                             typeof(SagaCreatedEvent<SoftwareProgrammingState>));
         }
 
         [Fact]

@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                         new CustomContainerConfiguration(
                                                          c =>
                                                              c.Register(
-                                                                        new SagaConfiguration<SoftwareProgrammingSaga, SoftwareProgrammingSagaState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingSaga.Descriptor, () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency), null))));
+                                                                        new SagaConfiguration<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingProcess.Descriptor, () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency), null))));
             return fixture;
         }
 

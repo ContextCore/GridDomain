@@ -54,7 +54,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.Equal(1, answer.Metadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = answer.Metadata.History.Steps.First();
-            var name = AggregateActorName.New<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
+            var name = AggregateActorName.New<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             Assert.Equal(name.Name, step.Who);
             Assert.Equal(SagaActorLiterals.SagaProducedACommand, step.Why);

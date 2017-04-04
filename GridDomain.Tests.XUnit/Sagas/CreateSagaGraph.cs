@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public void GetGraph()
         {
-            var saga = new SoftwareProgrammingSaga();
+            var saga = new SoftwareProgrammingProcess();
             var generator = new StateMachineGraphvizGenerator(saga.GetGraph());
             var dotFile = generator.CreateDotFile();
             _helper.WriteLine(dotFile);

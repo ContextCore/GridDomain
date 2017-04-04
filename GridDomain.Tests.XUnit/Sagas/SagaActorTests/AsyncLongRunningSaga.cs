@@ -13,11 +13,14 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             InstanceState(s => s.CurrentStateName);
 
             During(Initial,
-                   When(Start).ThenAsync(async ctx =>
-                                         {
-                                             ctx.Instance.ProcessingId = ctx.Data.SourceId;
+                   When(Start).ThenAsync(async (state, msg) =>{
+                                             state.ProcessingId = msg.SourceId;
                                              await Task.Delay(100);
-                                         }).TransitionTo(Final));
+                                         }).TransitionTo(Initial),
+                   When(Progress).Then((state,msg) =>
+                                       {
+                                           state.ProcessingId = msg.Id;
+                                       }).TransitionTo(Final));
         }
 
         public static ISagaDescriptor Descriptor
@@ -26,10 +29,12 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             {
                 var descriptor = SagaDescriptor.CreateDescriptor<AsyncLongRunningSaga, TestState>();
                 descriptor.AddStartMessage<SampleAggregateCreatedEvent>();
+                descriptor.AddAcceptedMessage<SampleAggregateChangedEvent>();
                 return descriptor;
             }
         }
 
         public Event<SampleAggregateCreatedEvent> Start { get; private set; }
+        public Event<SampleAggregateChangedEvent> Progress { get; private set; }
     }
 }

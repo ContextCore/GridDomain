@@ -21,11 +21,11 @@ namespace GridDomain.Tests.XUnit.Sagas
             var startMessage = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             var res = await Node.NewDebugWaiter()
-                                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                                .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                                 .Create()
                                 .SendToSagas(startMessage);
 
-            var newSagaId = res.Message<SagaCreatedEvent<SoftwareProgrammingSagaState>>().Id;
+            var newSagaId = res.Message<SagaCreatedEvent<SoftwareProgrammingState>>().Id;
 
             var coffeMadeEvent = new CoffeMadeEvent(startMessage.FavoriteCoffeMachineId,
                                                     startMessage.PersonId,
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                     newSagaId);
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingSagaState>>()
+                      .Expect<SagaMessageReceivedEvent<SoftwareProgrammingState>>()
                       .Create()
                       .SendToSagas(coffeMadeEvent);
 
@@ -44,13 +44,13 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                  newSagaId);
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                       .Create()
                       .SendToSagas(reStartEvent);
 
-            var sagaState = await this.LoadSaga<SoftwareProgrammingSagaState>(newSagaId);
+            var sagaState = await this.LoadSaga<SoftwareProgrammingState>(newSagaId);
             //Saga_state_should_be_correct()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.MakingCoffee), sagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), sagaState.CurrentStateName);
             //Saga_data_contains_information_from_restart_message()
             Assert.Equal(reStartEvent.PersonId, sagaState.PersonId);
         }

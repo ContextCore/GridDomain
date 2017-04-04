@@ -1,3 +1,4 @@
+using System;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.XUnit.SampleDomain.Events;
@@ -5,9 +6,8 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 {
-    public class AsyncLongRunningSagaFactory :
-        IFactory<ISaga<TestState>, TestState>,
-        IFactory<ISaga<TestState>, SampleAggregateCreatedEvent>
+    public class AsyncLongRunningSagaFactory : ISagaCreator<TestState>,
+                                               ISagaCreator<TestState, SampleAggregateCreatedEvent>
     {
         private readonly ILogger _log;
 
@@ -21,9 +21,9 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             return new Saga<TestState>(new AsyncLongRunningSaga(), message, _log);
         }
 
-        public ISaga<TestState> Create(SampleAggregateCreatedEvent message)
+        public ISaga<TestState> CreateNew(SampleAggregateCreatedEvent message, Guid? id = null)
         {
-            return Create(new TestState(message.SagaId, nameof(AsyncLongRunningSaga.Initial)));
+            return Create(new TestState(id ?? message.SagaId, nameof(AsyncLongRunningSaga.Initial)));
         }
     }
 }

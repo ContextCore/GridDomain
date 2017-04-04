@@ -8,7 +8,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
     {
         public async Task Register(IMessagesRouter router)
         {
-            await router.RegisterSaga(SoftwareProgrammingSaga.Descriptor);
+            await router.RegisterSaga(SoftwareProgrammingProcess.Descriptor);
         }
     }
 }

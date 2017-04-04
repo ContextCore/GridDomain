@@ -22,10 +22,10 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public void Instance_saga_actor_can_be_created()
         {
-            var actorType = typeof(SagaActor<SoftwareProgrammingSagaState>);
+            var actorType = typeof(SagaActor<SoftwareProgrammingState>);
 
             var props = Node.System.DI().Props(actorType);
-            var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingSagaState>), Guid.NewGuid()).ToString();
+            var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingState>), Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);
             actor.Tell(new CheckHealth());
             ExpectMsg<HealthStatus>();
@@ -34,16 +34,14 @@ namespace GridDomain.Tests.XUnit.Sagas
         [Fact]
         public async Task Instance_saga_actor_has_correct_path_when_saga_is_started_by_domain_message()
         {
-            var msg = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-
             var resultMsg = await Node.NewDebugWaiter()
-                                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                                       .Create()
-                                      .SendToSagas(msg);
+                                      .SendToSagas(new GotTiredEvent(Guid.NewGuid()));
 
-            var sagaId = resultMsg.Message<SagaCreatedEvent<SoftwareProgrammingSagaState>>().Id;
+            var sagaId = resultMsg.Message<SagaCreatedEvent<SoftwareProgrammingState>>().Id;
 
-            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaState>(sagaId);
+            var sagaActor = Node.LookupSagaActor<SoftwareProgrammingProcess, SoftwareProgrammingState>(sagaId);
             Assert.NotNull(sagaActor);
         }
     }

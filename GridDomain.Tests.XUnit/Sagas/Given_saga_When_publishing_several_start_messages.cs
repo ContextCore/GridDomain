@@ -23,22 +23,22 @@ namespace GridDomain.Tests.XUnit.Sagas
             var startMessageA = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                       .Create()
                       .SendToSagas(startMessageA);
 
             var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId);
 
             await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
+                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
                       .Create()
                       .SendToSagas(secondStartMessageB);
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(sagaId);
+            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
             //Saga_reinitialized_from_last_start_message()
             Assert.Equal(secondStartMessageB.SofaId, sagaData.SagaState.SofaId);
             //Saga_has_correct_state()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaData.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), sagaData.SagaState.CurrentStateName);
         }
     }
 }

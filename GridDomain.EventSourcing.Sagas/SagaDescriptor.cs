@@ -48,6 +48,11 @@ namespace GridDomain.EventSourcing.Sagas
             _acceptedMessages.Add(new MessageBind(messageType, correlationFieldName));
         }
 
+        public void AddAcceptedMessage<TMessage>() where TMessage : IHaveSagaId
+        {
+            AddAcceptedMessage(typeof(TMessage), nameof(IHaveSagaId.SagaId));
+        }
+
         public void AddProduceCommandMessage(Type messageType)
         {
             _producedMessages.RemoveAll(t => t == messageType);

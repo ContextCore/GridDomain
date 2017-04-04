@@ -6,10 +6,9 @@ using Serilog;
 
 namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingSagaFactory :
-        IFactory<ISaga<SoftwareProgrammingSagaState>, SoftwareProgrammingSagaState>,
-        IFactory<ISaga<SoftwareProgrammingSagaState>, GotTiredEvent>,
-        IFactory<ISaga<SoftwareProgrammingSagaState>, SleptWellEvent>
+    public class SoftwareProgrammingSagaFactory : ISagaCreator<SoftwareProgrammingState>,
+                                                  ISagaCreator<SoftwareProgrammingState, GotTiredEvent>,
+                                                  ISagaCreator<SoftwareProgrammingState, SleptWellEvent>
     {
         private readonly ILogger _log;
 
@@ -17,33 +16,33 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
         {
             _log = log;
         }
-        /// <summary>
-        /// Creates new saga from start message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public ISaga<SoftwareProgrammingSagaState> Create(GotTiredEvent message)
-        {
-            var sagaId = message.SagaId == Guid.Empty ? Guid.NewGuid() : message.SagaId;
-            return Create(new SoftwareProgrammingSagaState(sagaId,
-                                                           nameof(SoftwareProgrammingSaga.Coding)));
-        }
-
-        public ISaga<SoftwareProgrammingSagaState> Create(SoftwareProgrammingSagaState message)
-        {
-            return new Saga<SoftwareProgrammingSagaState>(new SoftwareProgrammingSaga(), message, _log);
-        }
 
         /// <summary>
         /// Creates new saga from start message
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="sagaId">id of creating saga</param>
         /// <returns></returns>
-        public ISaga<SoftwareProgrammingSagaState> Create(SleptWellEvent message)
+        public ISaga<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? sagaId = null)
         {
-            var sagaId = message.SagaId == Guid.Empty ? Guid.NewGuid() : message.SagaId;
-            return Create(new SoftwareProgrammingSagaState(sagaId,
-                                                           nameof(SoftwareProgrammingSaga.Coding)));
+            return Create(new SoftwareProgrammingState(sagaId ?? Guid.NewGuid(),
+                                                           nameof(SoftwareProgrammingProcess.Coding)));
+        }
+
+        public ISaga<SoftwareProgrammingState> Create(SoftwareProgrammingState message)
+        {
+            return new Saga<SoftwareProgrammingState>(new SoftwareProgrammingProcess(), message, _log);
+        }
+
+        /// <summary>
+        /// Creates new saga from start message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public ISaga<SoftwareProgrammingState> CreateNew(SleptWellEvent message, Guid? sagaId = null)
+        {
+            return Create(new SoftwareProgrammingState(sagaId ?? Guid.NewGuid(),
+                                                           nameof(SoftwareProgrammingProcess.Coding)));
         }
     }
 }

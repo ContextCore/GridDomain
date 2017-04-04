@@ -15,14 +15,14 @@ namespace GridDomain.Tests.Framework
 {
     public class SagaScenario<TSaga, TState, TFactory> where TSaga : Process<TState>
                                                       where TState : class, ISagaState
-                                                      where TFactory : class, IFactory<ISaga<TState>, TState>
+                                                      where TFactory : class, ISagaCreator<TState>
     {
-        internal SagaScenario(ISagaProducer<TState> producer)
+        internal SagaScenario(ISaga—reatorCatalog<TState> ÒreatorCatalog)
         {
-            SagaProducer = producer;
+            Saga—reatorCatalog = ÒreatorCatalog;
         }
 
-        protected ISagaProducer<TState> SagaProducer { get; }
+        protected ISaga—reatorCatalog<TState> Saga—reatorCatalog { get; }
         public ISaga<TState> Saga { get; private set; }
         protected SagaStateAggregate<TState> SagaStateAggregate { get; private set; }
 
@@ -45,8 +45,9 @@ namespace GridDomain.Tests.Framework
 
         public static SagaScenario<TSaga, TState, TFactory> New(ISagaDescriptor descriptor, TFactory factory = null)
         {
-            var producer = new SagaProducer<TState>(descriptor);
-            producer.RegisterAll(factory ?? CreateSagaFactory());
+            var factory1 = factory ?? CreateSagaFactory();
+            var producer = new Saga—reatorsCatalog<TState>(descriptor, factory1);
+            producer.RegisterAll(factory1);
             return new SagaScenario<TSaga, TState, TFactory>(producer);
         }
 
@@ -83,10 +84,10 @@ namespace GridDomain.Tests.Framework
         public async Task<SagaScenario<TSaga, TState, TFactory>> Run()
         {
             if (SagaStateAggregate != null)
-                Saga = SagaProducer.Create(SagaStateAggregate);
+                Saga = Saga—reatorCatalog.CreateNew(SagaStateAggregate);
 
-            foreach (var evt in ReceivedEvents.Where(e => SagaProducer.KnownDataTypes.Contains(e.GetType())))
-                Saga = SagaProducer.Create(evt);
+            foreach (var evt in ReceivedEvents.Where(e => Saga—reatorCatalog.CanCreateFrom(e)))
+                Saga = Saga—reatorCatalog.CreateNew(evt);
 
             //When
             var producedCommands = new List<Command>();

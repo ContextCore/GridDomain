@@ -16,7 +16,7 @@ namespace GridDomain.Node.Actors
             _actorType = typeof(AggregateActor<TAggregate>);
         }
 
-        protected override string GetChildActorName(IMessageMetadataEnvelop message, Guid childId)
+        protected override string GetChildActorName(Guid childId)
         {
             return AggregateActorName.New<TAggregate>(childId).ToString();
         }
@@ -26,9 +26,9 @@ namespace GridDomain.Node.Actors
             return (message.Message as ICommand)?.AggregateId ?? Guid.Empty;
         }
 
-        protected override Type GetChildActorType(IMessageMetadataEnvelop message)
+        protected override Type ChildActorType
         {
-            return _actorType;
+            get { return _actorType; }
         }
     }
 }

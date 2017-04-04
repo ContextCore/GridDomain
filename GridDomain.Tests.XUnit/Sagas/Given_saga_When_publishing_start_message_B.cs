@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
@@ -19,17 +20,17 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var startMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            Node.NewDebugWaiter()
-                .Expect<SagaCreatedEvent<SoftwareProgrammingSagaState>>()
-                .Create()
-                .SendToSagas(startMessage)
-                .Wait();
+            var res = await Node.NewDebugWaiter()
+                                .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                                .Create()
+                                .SendToSagas(startMessage);
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingSagaState>>(startMessage.SagaId);
+            var sagaId = res.Message<SagaCreatedEvent<SoftwareProgrammingState>>().State.Id;
+            var state = await this.LoadSaga<SoftwareProgrammingState>(sagaId);
             // Saga_has_correct_data()
-            Assert.Equal(startMessage.SofaId, sagaData.SagaState.SofaId);
+            Assert.Equal(startMessage.SofaId, state.SofaId);
             //Saga_has_correct_state()
-            Assert.Equal(nameof(SoftwareProgrammingSaga.Coding), sagaData.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), state.CurrentStateName);
         }
     }
 }

@@ -304,11 +304,6 @@
     <Compile Include="NodeTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sagas\CommandPipeDebugExtensions.cs" />
-    <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomEvent.cs" />
-    <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSaga.cs" />
-    <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="Sagas\CustomRoutesSoftwareProgrammingDomain\CustomRoutesSoftwareProgrammingSagaMap.cs" />
-    <Compile Include="Sagas\CustomRoutesSampleDomainFixture.cs" />
     <Compile Include="Sagas\CreateSagaGraph.cs" />
     <Compile Include="Sagas\Given_instance_saga_When_exception_on_transit.cs" />
     <Compile Include="Sagas\Given_istance_saga_saga_actor_can_be_created.cs" />
@@ -319,9 +314,7 @@
     <Compile Include="Sagas\Given_saga_When_publishing_start_again.cs" />
     <Compile Include="Sagas\Given_saga_When_publishing_start_message_A.cs" />
     <Compile Include="Sagas\Given_saga_When_publishing_start_message_B.cs" />
-    <Compile Include="Sagas\Given_saga_with_custom_message_mappings_When_extracting_descriptor.cs" />
     <Compile Include="Sagas\Given_uninitialized_saga_When_processing_messages.cs" />
-    <Compile Include="Sagas\ProgrammingSoftwareSagaTest_with_custom_routes.cs" />
     <Compile Include="Sagas\Recovery\Given_instance_saga_When_recovering.cs" />
     <Compile Include="Sagas\SagaActorTests\Actors_should_fill_saga_id_for_produced_faults.cs" />
     <Compile Include="Sagas\SagaActorTests\AsyncLongRunningSaga.cs" />
@@ -329,7 +322,6 @@
     <Compile Include="Sagas\SagaActorTests\Saga_actor_should_execute_async_sagas_with_block.cs" />
     <Compile Include="Sagas\SagaActorTests\TestState.cs" />
     <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId.cs" />
-    <Compile Include="Sagas\Saga_produced_events_and_commands_has_sagaId_with_custom_routes.cs" />
     <Compile Include="Sagas\SoftwareProgrammingSagaTest.cs" />
     <Compile Include="Sagas\SoftwareProgrammingSagaFixture.cs" />
     <Compile Include="Sagas\Transitions\Given_AutomatonymousSaga.cs" />
@@ -349,9 +341,9 @@
     <Compile Include="Sagas\SoftwareProgrammingDomain\HomeCreated.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SagaDataAggregateCommandsHandlerDummy.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Slept.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSaga.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingProcess.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaContainerConfiguration.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaState.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingState.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\UndefinedCoffeMachineException.cs" />
