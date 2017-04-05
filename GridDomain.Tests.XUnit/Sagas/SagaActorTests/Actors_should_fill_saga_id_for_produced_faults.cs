@@ -7,10 +7,10 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
-using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [InlineData("10")] //, Description = "planned exception from message processor")]
         public void Message_process_actor_produce_fault_with_sagaId_from_incoming_message(string payload)
         {
-            var message = new SampleAggregateChangedEvent(payload, Guid.NewGuid(), DateTime.Now, Guid.NewGuid());
+            var message = new BalloonTitleChanged(payload, Guid.NewGuid(), DateTime.Now, Guid.NewGuid());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
             transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                 Sys.ActorOf(
                             Props.Create(
                                          () =>
-                                             new MessageProcessActor<SampleAggregateChangedEvent, OddFaultyMessageHandler>(
+                                             new MessageProcessActor<BalloonTitleChanged, OddFaultyMessageHandler>(
                                                                                                                             new OddFaultyMessageHandler(transport),
                                                                                                                             transport)));
 
@@ -40,7 +40,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
 
             Assert.Equal(message.SagaId, fault.Message.SagaId);
-            Assert.IsAssignableFrom<Fault<SampleAggregateChangedEvent>>(fault.Message);
+            Assert.IsAssignableFrom<Fault<BalloonTitleChanged>>(fault.Message);
         }
 
         [Fact]

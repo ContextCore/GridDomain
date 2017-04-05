@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,25 +16,25 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Async_method_should_change_aggregate()
         {
-            var syncCommand = new AsyncMethodCommand(42, Guid.NewGuid());
+            var syncCommand = new PlanTitleChangeCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(syncCommand).Expect<SampleAggregateChangedEvent>().Execute();
+            await Node.Prepare(syncCommand).Expect<BalloonTitleChanged>().Execute();
 
             //to finish persistence
-            var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Value);
+            var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
+            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Title);
         }
 
         [Fact]
         public async Task Sync_method_should_change_aggregate()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new PlanTitleWriteCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(syncCommand).Expect<SampleAggregateChangedEvent>().Execute();
+            await Node.Prepare(syncCommand).Expect<BalloonTitleChanged>().Execute();
 
             //to finish persistence
-            var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Value);
+            var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
+            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Title);
         }
     }
 }

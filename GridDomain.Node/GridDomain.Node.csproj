@@ -262,6 +262,7 @@
     <Compile Include="Actors\ISnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
+    <Compile Include="Actors\RedirectToNewSaga.cs" />
     <Compile Include="Actors\RouteCreated.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\ProcessorListCatalog.cs" />
     <Compile Include="Actors\CommandPipe\SagaPipeActor.cs" />
@@ -270,8 +271,10 @@
     <Compile Include="Actors\CommandPipe\AllHandlersCompleted.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\MessageProcessPolicy.cs" />
     <Compile Include="Actors\SagaActorLiterals.cs" />
+    <Compile Include="Actors\SagaAlreadyStartedException.cs" />
     <Compile Include="Actors\SagaState.cs" />
     <Compile Include="Actors\SagaStateActor.cs" />
+    <Compile Include="Actors\SagaStateException.cs" />
     <Compile Include="Actors\SaveEventsAsync.cs" />
     <Compile Include="Actors\ShutdownCanceled.cs" />
     <Compile Include="Actors\ShutdownChild.cs" />

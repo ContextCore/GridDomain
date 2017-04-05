@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tests.XUnit.CommandsExecution;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit.SyncProjection
 
             var createCommands =
                 Enumerable.Range(0, totalAggregates)
-                          .Select(r => new CreateSampleAggregateCommand(0, Guid.NewGuid()))
+                          .Select(r => new InflateNewBallonCommand(0, Guid.NewGuid()))
                           .ToArray();
 
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
@@ -33,13 +33,13 @@ namespace GridDomain.Tests.XUnit.SyncProjection
                 createCommands.SelectMany(
                                           c =>
                                               Enumerable.Range(0, eachAggregateChanges)
-                                                        .Select(r => new ChangeSampleAggregateCommand(r, aggregateIds.RandomElement())));
+                                                        .Select(r => new WriteTitleCommand(r, aggregateIds.RandomElement())));
 
             createCommands.Shuffle();
 
-            var createWaiters = createCommands.Select(c => Node.Prepare(c).Expect<SampleAggregateCreatedEvent>().Execute());
+            var createWaiters = createCommands.Select(c => Node.Prepare(c).Expect<BalloonCreated>().Execute());
 
-            var updateWaiters = updateCommands.Select(c => Node.Prepare(c).Expect<SampleAggregateChangedEvent>().Execute());
+            var updateWaiters = updateCommands.Select(c => Node.Prepare(c).Expect<BalloonTitleChanged>().Execute());
 
             var allResults = await Task.WhenAll(createWaiters.Union(updateWaiters));
 

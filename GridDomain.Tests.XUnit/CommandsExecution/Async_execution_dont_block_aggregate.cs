@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,22 +18,22 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task When_async_method_is_called_other_commands_can_be_executed_before_async_results()
         {
             var aggregateId = Guid.NewGuid();
-            var asyncCommand = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromSeconds(1));
-            var syncCommand = new ChangeSampleAggregateCommand(42, aggregateId);
+            var asyncCommand = new PlanTitleChangeCommand(43, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromSeconds(1));
+            var syncCommand = new WriteTitleCommand(42, aggregateId);
 
             var asyncCommandTask = Node.Prepare(asyncCommand)
-                                       .Expect<SampleAggregateChangedEvent>()
+                                       .Expect<BalloonTitleChanged>()
                                        .Execute();
 
             await Node.Prepare(syncCommand)
-                      .Expect<SampleAggregateChangedEvent>()
+                      .Expect<BalloonTitleChanged>()
                       .Execute();
 
-            var sampleAggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            var sampleAggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
 
-            Assert.Equal(syncCommand.Parameter.ToString(), sampleAggregate.Value);
+            Assert.Equal(syncCommand.Parameter.ToString(), sampleAggregate.Title);
 
-            var changedEvent = (await asyncCommandTask).Message<SampleAggregateChangedEvent>();
+            var changedEvent = (await asyncCommandTask).Message<BalloonTitleChanged>();
             Assert.Equal(asyncCommand.Parameter.ToString(), changedEvent.Value);
         }
     }

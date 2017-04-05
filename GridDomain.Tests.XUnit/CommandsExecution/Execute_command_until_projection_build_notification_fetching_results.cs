@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,14 +17,14 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Given_command_executes_with_waiter_When_fetching_results()
         {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
+            var syncCommand = new PlanTitleWriteCommand(1000, Guid.NewGuid());
 
             var results = await Node.Prepare(syncCommand)
                                     .Expect<AggregateChangedEventNotification>()
                                     .Execute();
 
             var changedEvent = results.Message<AggregateChangedEventNotification>();
-            var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
+            var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
 
             //Results_contains_received_messages()
             Assert.NotEmpty(results.All);
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             //Emmited_event_has_correct_id()
             Assert.Equal(syncCommand.AggregateId, changedEvent?.AggregateId);
             //Aggregate_has_correct_state_from_command()
-            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Value);
+            Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Title);
         }
     }
 }

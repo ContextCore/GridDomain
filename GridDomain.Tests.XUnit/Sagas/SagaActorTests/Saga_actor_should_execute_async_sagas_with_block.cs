@@ -14,7 +14,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
@@ -59,8 +59,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [Fact]
         public void Saga_actor_process_one_message_in_time()
         {
-            var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
-            var domainEventB = new SampleAggregateChangedEvent("2", Guid.NewGuid(), DateTime.Now, _sagaId);
+            var domainEventA = new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _sagaId);
+            var domainEventB = new BalloonTitleChanged("2", Guid.NewGuid(), DateTime.Now, _sagaId);
 
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
@@ -79,7 +79,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [Fact]
         public void Saga_change_state_after_transitions()
         {
-            var domainEventA = new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId);
+            var domainEventA = new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
 
@@ -91,7 +91,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         [Fact]
         public void Saga_transition_raises_state_events()
         {
-            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId),
+            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _sagaId),
                                                            MessageMetadata.Empty));
 
             FishForMessage<IMessageMetadataEnvelop<SagaCreated<TestState>>>(m => true);

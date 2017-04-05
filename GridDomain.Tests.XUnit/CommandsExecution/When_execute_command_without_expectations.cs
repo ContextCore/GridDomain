@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,10 +14,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Aggregate_will_apply_events_later_than_command_execution_finish()
         {
-            var syncCommand = new LongOperationCommand(42, Guid.NewGuid());
+            var syncCommand = new PlanTitleWriteCommand(42, Guid.NewGuid());
             Node.Execute(syncCommand);
-            var aggregate = await this.LoadAggregate<SampleAggregate>(syncCommand.AggregateId);
-            Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Value);
+            var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
+            Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Title);
         }
     }
 }

@@ -11,9 +11,9 @@ using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Ploeh.AutoFixture;
 using Xunit;
 
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.XUnit
         {
             Fixture.Register<ICommand>(() => new FakeCommand(Guid.NewGuid()));
             Fixture.Register<Command>(() => new FakeCommand(Guid.NewGuid()));
-            Fixture.Register<DomainEvent>(() => new SampleAggregateCreatedEvent("1", Guid.NewGuid()));
+            Fixture.Register<DomainEvent>(() => new BalloonCreated("1", Guid.NewGuid()));
         }
 
         protected override IEnumerable<Type> ExcludeTypes
@@ -49,7 +49,7 @@ namespace GridDomain.Tests.XUnit
                                                                    Assembly.GetAssembly(typeof(GridDomainNode)),
                                                                    Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
                                                                    Assembly.GetAssembly(typeof(SagaReceivedMessage<>)),
-                                                                   Assembly.GetAssembly(typeof(SampleAggregate)),
+                                                                   Assembly.GetAssembly(typeof(Balloon)),
                                                                    Assembly.GetAssembly(typeof(ISaga—reatorCatalog<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
                                                                    Assembly.GetAssembly(typeof(ExecutionOptions))

@@ -18,17 +18,6 @@ using GridDomain.Node.AkkaMessaging;
 namespace GridDomain.Node.Actors
 {
     //TODO: add status info, e.g. was any errors during execution or recover
-    public class RedirectToNewSaga :  ISagaTransitCompleted
-    {
-        public IMessageMetadataEnvelop MessageToRedirect { get; }
-        public Guid SagaId { get; }
-
-        public RedirectToNewSaga(Guid sagaId, IMessageMetadataEnvelop messageToRedirect)
-        {
-            SagaId = sagaId;
-            MessageToRedirect = messageToRedirect;
-        }
-    }
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -313,25 +302,6 @@ namespace GridDomain.Node.Actors
                .With<IFault>(m => sagaId = m.SagaId)
                .With<IHaveSagaId>(m => sagaId = m.SagaId);
             return sagaId;
-        }
-    }
-
-    internal class SagaStateException : Exception
-    {
-        public SagaStateException(string message):base(message)
-        {
-        }
-    }
-
-    internal class SagaAlreadyStartedException : Exception
-    {
-        public object StartMessage { get; }
-        public ISagaState ExistingState { get; }
-
-        public SagaAlreadyStartedException(ISagaState existingState, object startMessage)
-        {
-            StartMessage = startMessage;
-            ExistingState = existingState;
         }
     }
 }

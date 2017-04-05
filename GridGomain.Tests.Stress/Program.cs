@@ -10,9 +10,9 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Microsoft.Practices.Unity;
 
 namespace GridGomain.Tests.Stress
@@ -50,15 +50,15 @@ namespace GridGomain.Tests.Stress
             }
 
             var unityContainer = new UnityContainer();
-            unityContainer.Register(new SampleDomainContainerConfiguration());
+            unityContainer.Register(new BalloonContainerConfiguration());
 
-            var cfg = new CustomContainerConfiguration(c => c.Register(new SampleDomainContainerConfiguration()),
+            var cfg = new CustomContainerConfiguration(c => c.Register(new BalloonContainerConfiguration()),
                                                        c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                                                        c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
+            var settings = new NodeSettings(cfg, new BalloonRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
             node.Start().Wait();
@@ -123,15 +123,15 @@ namespace GridGomain.Tests.Stress
         private static GridDomainNode StartSampleDomainNode()
         {
             var unityContainer = new UnityContainer();
-            unityContainer.Register(new SampleDomainContainerConfiguration());
+            unityContainer.Register(new BalloonContainerConfiguration());
 
-            var cfg = new CustomContainerConfiguration(c => c.Register(new SampleDomainContainerConfiguration()),
+            var cfg = new CustomContainerConfiguration(c => c.Register(new BalloonContainerConfiguration()),
                                                        c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                                                        c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var settings = new NodeSettings(cfg, new SampleRouteMap(), actorSystemFactory);
+            var settings = new NodeSettings(cfg, new BalloonRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
             node.Start().Wait();
@@ -157,15 +157,15 @@ namespace GridGomain.Tests.Stress
         private static async Task WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
         {
             await
-                node.Prepare(new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()))
-                    .Expect<SampleAggregateCreatedEvent>()
+                node.Prepare(new InflateNewBallonCommand(random.Next(), Guid.NewGuid()))
+                    .Expect<BalloonCreated>()
                     .Execute();
 
             for (var num = 0; num < changeNumber; num++)
                 await
-                    node.Prepare(new ChangeSampleAggregateCommand(random.Next(),
-                                                                  new CreateSampleAggregateCommand(random.Next(), Guid.NewGuid()).AggregateId))
-                        .Expect<SampleAggregateChangedEvent>()
+                    node.Prepare(new WriteTitleCommand(random.Next(),
+                                                                  new InflateNewBallonCommand(random.Next(), Guid.NewGuid()).AggregateId))
+                        .Expect<BalloonTitleChanged>()
                         .Execute();
         }
     }

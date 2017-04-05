@@ -7,7 +7,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
@@ -34,16 +34,16 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActorA));
+            catalog.Add<BalloonCreated>(new Processor(testSagaActorA));
             //two commands per one event will be produced
-            catalog.Add<SampleAggregateChangedEvent>(new Processor(testSagaActorB));
-            catalog.Add<SampleAggregateChangedEvent>(new Processor(testSagaActor—));
+            catalog.Add<BalloonTitleChanged>(new Processor(testSagaActorB));
+            catalog.Add<BalloonTitleChanged>(new Processor(testSagaActor—));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
-            sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new SampleAggregateCreatedEvent("1", Guid.NewGuid())));
-            sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new SampleAggregateChangedEvent("2", Guid.NewGuid())));
+            sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonCreated("1", Guid.NewGuid())));
+            sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonTitleChanged("2", Guid.NewGuid())));
 
             //first we received complete message from all saga actors in undetermined sequence
             ExpectMsg<SagaTransited>();
@@ -62,9 +62,9 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
 
 
-        class InheritedEvent : SampleAggregateCreatedEvent
+        class Inherited : BalloonCreated
         {
-            public InheritedEvent():base("123",Guid.NewGuid())
+            public Inherited():base("123",Guid.NewGuid())
             {
                 
             }
@@ -74,12 +74,12 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
             var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
+            catalog.Add<BalloonCreated>(new Processor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
-            var msg = MessageMetadataEnvelop.New<DomainEvent>(new InheritedEvent());
+            var msg = MessageMetadataEnvelop.New<DomainEvent>(new Inherited());
 
             sagaProcessActor.Tell(msg);
 
@@ -94,14 +94,14 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
 
             var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(testSagaActor));
+            catalog.Add<BalloonCreated>(new Processor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
 
             var msg =
-                new MessageMetadataEnvelop<DomainEvent>(new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                new MessageMetadataEnvelop<DomainEvent>(new BalloonCreated("1", Guid.NewGuid()),
                                                         MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);

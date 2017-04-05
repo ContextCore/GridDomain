@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,12 +21,12 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task When_expect_more_than_one_messages()
         {
-            var syncCommand = new CreateAndChangeSampleAggregateCommand(100, Guid.NewGuid());
+            var syncCommand = new InflateCopyCommand(100, Guid.NewGuid());
             var waitResults =
                 await
                     Node.Prepare(syncCommand)
-                        .Expect<SampleAggregateChangedEvent>()
-                        .And<SampleAggregateCreatedEvent>()
+                        .Expect<BalloonTitleChanged>()
+                        .And<BalloonCreated>()
                         .Execute();
 
             _allReceivedMessages = waitResults.All.ToArray();
@@ -35,8 +35,8 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             //Then_recieve_non_empty_collection()
             Assert.True(_allReceivedMessages.Any());
             //Then_recieve_collection_of_expected_messages()
-            Assert.True(_allReceivedMessages.Any(m => m is IMessageMetadataEnvelop<SampleAggregateChangedEvent>));
-            Assert.True(_allReceivedMessages.Any(m => m is IMessageMetadataEnvelop<SampleAggregateCreatedEvent>));
+            Assert.True(_allReceivedMessages.Any(m => m is IMessageMetadataEnvelop<BalloonTitleChanged>));
+            Assert.True(_allReceivedMessages.Any(m => m is IMessageMetadataEnvelop<BalloonCreated>));
             //Then_recieve_only_expected_messages()
             Assert.True(_allReceivedMessages.Length == 2);
         }

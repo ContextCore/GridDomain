@@ -9,8 +9,8 @@ using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
+using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.SampleDomain;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                    TimeSpan? maxSaveFrequency = null)
         {
             fixture.Add(
-                        new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
+                        new AggregateConfiguration<Balloon, BalloonCommandHandler>(
                                                                                                     () =>
                                                                                                         new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
                                                                                                         {
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                                                                        .ForContext
                                                                                                                        <SnapshotsPersistencePolicy>()
                                                                                                         },
-                                                                                                    SampleAggregate.FromSnapshot));
+                                                                                                    Balloon.FromSnapshot));
 
             return fixture;
         }

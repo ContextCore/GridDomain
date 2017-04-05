@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,8 +16,8 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Default_wait_for_event_matches_by_correlation_id_when_projection_builder_cares_about_metadata()
         {
-            var commandA = new LongOperationCommand(10, Guid.NewGuid());
-            var commandB = new LongOperationCommand(10, Guid.NewGuid());
+            var commandA = new PlanTitleWriteCommand(10, Guid.NewGuid());
+            var commandB = new PlanTitleWriteCommand(10, Guid.NewGuid());
 
             Node.Execute(commandB);
             var res = await Node.Prepare(commandA).Expect<AggregateChangedEventNotification>().Execute(false);

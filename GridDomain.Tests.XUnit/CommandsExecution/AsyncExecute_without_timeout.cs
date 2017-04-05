@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,10 +15,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task CommandWaiter_throws_exception_after_wait_with_only_default_timeout()
         {
-            var syncCommand = new LongOperationCommand(1000, Guid.NewGuid());
+            var syncCommand = new PlanTitleWriteCommand(1000, Guid.NewGuid());
             var waiter =
                 Node.Prepare(syncCommand)
-                    .Expect<SampleAggregateChangedEvent>(e => e.SourceId == syncCommand.AggregateId)
+                    .Expect<BalloonTitleChanged>(e => e.SourceId == syncCommand.AggregateId)
                     .Execute(TimeSpan.FromMilliseconds(100));
 
             await Assert.ThrowsAsync<TimeoutException>(() => waiter);

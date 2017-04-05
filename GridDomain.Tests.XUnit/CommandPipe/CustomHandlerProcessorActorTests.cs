@@ -6,7 +6,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandPipe
@@ -19,13 +19,13 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor));
-            catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor));
+            catalog.Add<BalloonCreated>(new Processor(delayActor));
+            catalog.Add<BalloonTitleChanged>(new Processor(delayActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var sampleAggregateCreatedEvent = new SampleAggregateCreatedEvent("1", Guid.NewGuid());
-            var sampleAggregateChangedEvent = new SampleAggregateChangedEvent("1", Guid.NewGuid());
+            var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid());
+            var sampleAggregateChangedEvent = new BalloonTitleChanged("1", Guid.NewGuid());
 
             var msgA = new MessageMetadataEnvelop<Project>(new Project(sampleAggregateCreatedEvent, sampleAggregateChangedEvent),
                                                            MessageMetadata.Empty);
@@ -49,24 +49,24 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonCreated>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonTitleChanged>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonTitleChanged>(new Processor(delayActor, MessageProcessPolicy.Sync));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msgA =
-                new MessageMetadataEnvelop<Project>(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                                new SampleAggregateChangedEvent("1", Guid.NewGuid())),
+                new MessageMetadataEnvelop<Project>(new Project(new BalloonCreated("1", Guid.NewGuid()),
+                                                                new BalloonTitleChanged("1", Guid.NewGuid())),
                                                     MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateCreatedEvent);
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonCreated);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
@@ -74,9 +74,9 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
         }
 
-        class InheritedEvent : SampleAggregateCreatedEvent
+        class Inherited : BalloonCreated
         {
-            public InheritedEvent():base("inherited",Guid.NewGuid())
+            public Inherited():base("inherited",Guid.NewGuid())
             {
                 
             }
@@ -85,10 +85,10 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
             var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
+            catalog.Add<BalloonCreated>(new Processor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var msg = MessageMetadataEnvelop.New(new Project(new InheritedEvent()));
+            var msg = MessageMetadataEnvelop.New(new Project(new Inherited()));
 
             actor.Tell(msg);
 
@@ -100,11 +100,11 @@ namespace GridDomain.Tests.XUnit.CommandPipe
         public void CustomHandlerProcessor_routes_events_by_type()
         {
             var catalog = new ProcessorListCatalog();
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
+            catalog.Add<BalloonCreated>(new Processor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msg =
-                new MessageMetadataEnvelop<Project>(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid())),
+                new MessageMetadataEnvelop<Project>(new Project(new BalloonCreated("1", Guid.NewGuid())),
                                                     MessageMetadata.Empty);
 
             actor.Tell(msg);
@@ -123,16 +123,16 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<SampleAggregateCreatedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<SampleAggregateChangedEvent>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonCreated>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonTitleChanged>(new Processor(delayActor, MessageProcessPolicy.Sync));
             catalog.Add<DomainEvent>(new Processor(TestActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msgA =
-                MessageMetadataEnvelop.New(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                       new SampleAggregateChangedEvent("1", Guid.NewGuid()),
-                                                       new SampleAggregateChangedEvent("3", Guid.NewGuid())));
+                MessageMetadataEnvelop.New(new Project(new BalloonCreated("1", Guid.NewGuid()),
+                                                       new BalloonTitleChanged("1", Guid.NewGuid()),
+                                                       new BalloonTitleChanged("3", Guid.NewGuid())));
 
             actor.Tell(msgA);
 
@@ -141,9 +141,9 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateCreatedEvent);
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonCreated);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();

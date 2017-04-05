@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.ProjectionBuilders;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +17,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Async_method_should_produce_messages_for_projection_builders()
         {
-            var cmd = new AsyncMethodCommand(42, Guid.NewGuid());
+            var cmd = new PlanTitleChangeCommand(42, Guid.NewGuid());
 
             await Node.Prepare(cmd).Expect<AggregateChangedEventNotification>().Execute();
         }
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Sync_method_should_produce_messages_for_projection_builders()
         {
-            var cmd = new LongOperationCommand(42, Guid.NewGuid());
+            var cmd = new PlanTitleWriteCommand(42, Guid.NewGuid());
 
             await Node.Prepare(cmd).Expect<AggregateChangedEventNotification>().Execute();
         }

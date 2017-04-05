@@ -5,8 +5,8 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.SampleDomain;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
                                                          .RegisterAggregate
                                                          <SagaStateAggregate<SoftwareProgrammingState>,
                                                              SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>(),
-                                                 c => c.RegisterAggregate<SampleAggregate, SampleAggregatesCommandHandler>(),
+                                                 c => c.RegisterAggregate<Balloon, BalloonCommandHandler>(),
                                                  c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
         }
 

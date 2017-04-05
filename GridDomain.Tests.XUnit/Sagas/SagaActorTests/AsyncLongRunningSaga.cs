@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 {
@@ -28,13 +28,13 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             get
             {
                 var descriptor = SagaDescriptor.CreateDescriptor<AsyncLongRunningSaga, TestState>();
-                descriptor.AddStartMessage<SampleAggregateCreatedEvent>();
-                descriptor.AddAcceptedMessage<SampleAggregateChangedEvent>();
+                descriptor.AddStartMessage<BalloonCreated>();
+                descriptor.AddAcceptedMessage<BalloonTitleChanged>();
                 return descriptor;
             }
         }
 
-        public Event<SampleAggregateCreatedEvent> Start { get; private set; }
-        public Event<SampleAggregateChangedEvent> Progress { get; private set; }
+        public Event<BalloonCreated> Start { get; private set; }
+        public Event<BalloonTitleChanged> Progress { get; private set; }
     }
 }

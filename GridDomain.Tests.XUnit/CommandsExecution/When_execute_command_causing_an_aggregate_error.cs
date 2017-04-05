@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,29 +14,29 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate()
         {
-            await Node.Prepare(new AlwaysFaultAsyncCommand(Guid.NewGuid()))
+            await Node.Prepare(new PlanBallonBlowCommand(Guid.NewGuid()))
                       .Execute()
-                      .ShouldThrow<SampleAggregateException>();
+                      .ShouldThrow<BalloonException>();
         }
 
         [Fact]
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
-            var syncCommand = new AsyncFaultWithOneEventCommand(42,
+            var syncCommand = new PlanTitleWriteAndBlowCommand(42,
                                                                 Guid.NewGuid(),
                                                                 TimeSpan.FromMilliseconds(500));
 
             await Node.Prepare(syncCommand)
                       .Execute()
-                      .ShouldThrow<SampleAggregateException>(ex => ex.StackTrace.Contains(typeof(SampleAggregate).Name));
+                      .ShouldThrow<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
         }
 
         [Fact]
         public async Task Given_sync_aggregate_method_Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
-            await Node.Prepare(new AlwaysFaultCommand(Guid.NewGuid()))
+            await Node.Prepare(new BlowBalloonCommand(Guid.NewGuid()))
                       .Execute()
-                      .ShouldThrow<SampleAggregateException>(ex => ex.StackTrace.Contains(typeof(SampleAggregate).Name));
+                      .ShouldThrow<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
         }
     }
 }

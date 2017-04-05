@@ -85,7 +85,9 @@
     <Compile Include="ISaga.cs" />
     <Compile Include="ISagaСreatorCatalog.cs" />
     <Compile Include="MessageBind.cs" />
+    <Compile Include="SagaCreatorAdapter.cs" />
     <Compile Include="SagaDescriptor.cs" />
+    <Compile Include="SagaStartMessageTypeMismatchException.cs" />
     <Compile Include="SagaСreatorsCatalog.cs" />
     <Compile Include="ISagaDescriptor.cs" />
     <Compile Include="ISagaCreator.cs" />

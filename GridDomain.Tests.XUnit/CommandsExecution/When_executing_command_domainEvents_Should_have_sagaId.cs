@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,11 +16,11 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         [Fact]
         public async Task When_async_method_finished_produced_events_has_sagaId_from_command()
         {
-            var externalCallCommand = new AsyncMethodCommand(43, Guid.NewGuid(), Guid.NewGuid());
+            var externalCallCommand = new PlanTitleChangeCommand(43, Guid.NewGuid(), Guid.NewGuid());
 
-            var waitResults = await Node.Prepare(externalCallCommand).Expect<SampleAggregateChangedEvent>().Execute();
+            var waitResults = await Node.Prepare(externalCallCommand).Expect<BalloonTitleChanged>().Execute();
 
-            var domainEvent = waitResults.Message<SampleAggregateChangedEvent>();
+            var domainEvent = waitResults.Message<BalloonTitleChanged>();
 
             Assert.Equal(externalCallCommand.SagaId, domainEvent.SagaId);
         }

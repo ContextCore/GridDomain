@@ -4,8 +4,8 @@ using Akka.DI.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
@@ -20,15 +20,15 @@ namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
             public AggregatePersistedHubInfrastructure()
             {
                 ChildId = Guid.NewGuid();
-                ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new CreateSampleAggregateCommand(42, ChildId),
+                ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(42, ChildId),
                                                                           new MessageMetadata(ChildId));
-                ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new ChangeSampleAggregateCommand(100, ChildId),
+                ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new WriteTitleCommand(100, ChildId),
                                                                             new MessageMetadata(ChildId));
             }
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
-                return system.DI().Props<AggregateHubActor<SampleAggregate>>();
+                return system.DI().Props<AggregateHubActor<Balloon>>();
             }
 
             public object ChildCreateMessage { get; }

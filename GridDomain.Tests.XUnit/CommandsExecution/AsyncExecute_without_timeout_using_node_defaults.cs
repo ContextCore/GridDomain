@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Commands;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,16 +15,16 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 
         private static NodeTestFixture CreateFixture()
         {
-            return new NodeTestFixture(new SampleDomainContainerConfiguration(),
-                                       new SampleRouteMap(),
+            return new NodeTestFixture(new BalloonContainerConfiguration(),
+                                       new BalloonRouteMap(),
                                        TimeSpan.FromMilliseconds(100));
         }
 
         [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()
         {
-            await Node.Prepare(new LongOperationCommand(1000, Guid.NewGuid()))
-                      .Expect<SampleAggregateChangedEvent>()
+            await Node.Prepare(new PlanTitleWriteCommand(1000, Guid.NewGuid()))
+                      .Expect<BalloonTitleChanged>()
                       .Execute()
                       .ShouldThrow<TimeoutException>();
         }

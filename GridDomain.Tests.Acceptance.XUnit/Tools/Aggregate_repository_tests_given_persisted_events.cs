@@ -4,8 +4,8 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tests.XUnit.SampleDomain;
-using GridDomain.Tests.XUnit.SampleDomain.Events;
+using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
@@ -58,9 +58,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
             }
         };
 
-        private SampleAggregate _aggregate;
-        private SampleAggregateChangedEvent _changedEvent;
-        private SampleAggregateCreatedEvent _createdEvent;
+        private Balloon _aggregate;
+        private BalloonTitleChanged _changed;
+        private BalloonCreated _created;
         private Guid _sourceId;
 
         [Theory]
@@ -71,15 +71,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Tools
             try
             {
                 _sourceId = Guid.NewGuid();
-                _createdEvent = new SampleAggregateCreatedEvent("initial value", _sourceId);
-                _changedEvent = new SampleAggregateChangedEvent("changed value", _sourceId);
+                _created = new BalloonCreated("initial value", _sourceId);
+                _changed = new BalloonTitleChanged("changed value", _sourceId);
 
-                var persistenceId = AggregateActorName.New<SampleAggregate>(_sourceId).ToString();
-                await eventRepo.Save(persistenceId, _createdEvent, _changedEvent);
-                _aggregate = await aggrRepo.LoadAggregate<SampleAggregate>(_sourceId);
+                var persistenceId = AggregateActorName.New<Balloon>(_sourceId).ToString();
+                await eventRepo.Save(persistenceId, _created, _changed);
+                _aggregate = await aggrRepo.LoadAggregate<Balloon>(_sourceId);
 
                 Assert.Equal(_sourceId, _aggregate.Id);
-                Assert.Equal(_changedEvent.Value, _aggregate.Value);
+                Assert.Equal(_changed.Value, _aggregate.Title);
             }
             finally
             {

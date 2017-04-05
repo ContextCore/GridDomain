@@ -12,7 +12,7 @@ namespace GridDomain.Tests.XUnit.Serialization
 
         private class MyJsonSettings : JsonSerializerSettings {}
 
-        private class JsonFixture : SampleDomainFixture
+        private class JsonFixture : BalloonFixture
         {
             public JsonFixture()
             {

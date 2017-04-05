@@ -3,8 +3,8 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.SampleDomain;
 
 namespace GridDomain.Tests.XUnit.Sagas
 {
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                                                                                 SagaStateCommandHandler<SoftwareProgrammingState>>());
             Add(cfg);
             Add(new SoftwareProgrammingSagaRoutes());
-            Add(new SampleDomainContainerConfiguration());
+            Add(new BalloonContainerConfiguration());
         }
     }
 }
