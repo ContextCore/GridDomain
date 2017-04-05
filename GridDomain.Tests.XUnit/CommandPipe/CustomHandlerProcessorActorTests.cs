@@ -74,6 +74,13 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
         }
 
+        class InheritedEvent : SampleAggregateCreatedEvent
+        {
+            public InheritedEvent():base("inherited",Guid.NewGuid())
+            {
+                
+            }
+        }
         [Fact]
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
@@ -81,7 +88,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var msg = MessageMetadataEnvelop.New(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid())));
+            var msg = MessageMetadataEnvelop.New(new Project(new InheritedEvent()));
 
             actor.Tell(msg);
 
@@ -130,11 +137,12 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             actor.Tell(msgA);
 
             //async event fires immidiately
-            ExpectMsg<IMessageMetadataEnvelop>();
+//            ExpectMsg<IMessageMetadataEnvelop>();
 
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateCreatedEvent);
+            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is SampleAggregateChangedEvent);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done

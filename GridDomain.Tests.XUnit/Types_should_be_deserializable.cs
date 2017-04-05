@@ -13,6 +13,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.SampleDomain;
+using GridDomain.Tests.XUnit.SampleDomain.Events;
 using Ploeh.AutoFixture;
 using Xunit;
 
@@ -24,6 +25,7 @@ namespace GridDomain.Tests.XUnit
         {
             Fixture.Register<ICommand>(() => new FakeCommand(Guid.NewGuid()));
             Fixture.Register<Command>(() => new FakeCommand(Guid.NewGuid()));
+            Fixture.Register<DomainEvent>(() => new SampleAggregateCreatedEvent("1", Guid.NewGuid()));
         }
 
         protected override IEnumerable<Type> ExcludeTypes
