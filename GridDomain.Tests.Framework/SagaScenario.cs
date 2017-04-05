@@ -64,7 +64,7 @@ namespace GridDomain.Tests.Framework
         {
             InitialState = state;
             SagaStateAggregate = CreateAggregate<SagaStateAggregate<TState>>(id);
-            SagaStateAggregate.ApplyEvents(new SagaCreatedEvent<TState>(state, id));
+            SagaStateAggregate.ApplyEvents(new SagaCreated<TState>(state, id));
             SagaStateAggregate.ClearEvents();
             return this;
         }

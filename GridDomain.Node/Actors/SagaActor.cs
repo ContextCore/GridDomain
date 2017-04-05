@@ -157,13 +157,9 @@ namespace GridDomain.Node.Actors
                                               });
 
 
-            Receive<CheckHealth>(s =>
-                                 {
-                                     var sender = Sender;
-                                     _stateAggregateActor.Ask<HealthStatus>(s).ContinueWith(t => sender.Tell(t.Result));
-                                 });
+            ReceiveAsync<CheckHealth>(s => _stateAggregateActor.Ask<HealthStatus>(s).PipeTo(Sender));
 
-            Receive<NotifyOnPersistenceEvents>(c => _stateAggregateActor.Tell(c));
+            Receive<NotifyOnPersistenceEvents>(c => _stateAggregateActor.Tell(c,Sender));
         }
 
         private void ProcessMessage(IMessageMetadataEnvelop envelop)
@@ -184,9 +180,6 @@ namespace GridDomain.Node.Actors
         {
             var message = envelop.Message;
             var metadata = envelop.Metadata;
-
-            if (Saga != null)
-                throw new SagaAlreadyStartedException(Saga.State, message);
            
             var saga = _сreatorCatalog.CreateNew(message, enforcedSagaId);
             if (Id != saga.State.Id)
@@ -195,6 +188,9 @@ namespace GridDomain.Node.Actors
                 Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                 return;
             }
+
+            if (Saga != null)
+                throw new SagaAlreadyStartedException(Saga.State, message);
 
             var cmd = new CreateNewStateCommand<TState>(Id, saga.State);
             WaitCommandComplete(cmd, metadata, () => TransitSaga(message, metadata, sender));

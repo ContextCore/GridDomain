@@ -20,12 +20,11 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new SagaCreatedEvent<SoftwareProgrammingState>(_softwareProgrammingState, _sagaId);
+            yield return new SagaCreated<SoftwareProgrammingState>(_softwareProgrammingState, _sagaId);
 
             yield return
-                new SagaMessageReceivedEvent<SoftwareProgrammingState>(_sagaId,
+                new SagaReceivedMessage<SoftwareProgrammingState>(_sagaId,
                                                                           _softwareProgrammingState,
-                                                                          _machine.GotTired.Name,
                                                                           _message);
         }
 
@@ -38,7 +37,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             _message = new GotTiredEvent(Guid.NewGuid());
             Init();
             //Then_State_is_taken_from_message_received_event()
-            Assert.Equal(_softwareProgrammingState, Aggregate.SagaState);
+            Assert.Equal(_softwareProgrammingState, Aggregate.State);
         }
     }
 }

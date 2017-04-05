@@ -20,11 +20,11 @@ namespace GridDomain.Tests.XUnit.Sagas
         {
             var res = await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid()));
 
-            var sagaCreatedEvent = res.Message<SagaCreatedEvent<SoftwareProgrammingState>>();
+            var sagaCreatedEvent = res.Message<SagaCreated<SoftwareProgrammingState>>();
 
             var state = await this.LoadSaga<SoftwareProgrammingState>(sagaCreatedEvent.State.Id);
             //Saga_data_is_not_null()

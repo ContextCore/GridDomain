@@ -31,8 +31,10 @@ namespace GridDomain.Tests.XUnit
             get
             {
                 yield return typeof(SagaStateAggregate<>);
-                yield return typeof(SagaCreatedEvent<>);
-                yield return typeof(SagaMessageReceivedEvent<>);
+                yield return typeof(SagaCreated<>);
+                yield return typeof(SagaReceivedMessage<>);
+                yield return typeof(CreateNewStateCommand<>);
+                yield return typeof(SaveStateCommand<>);
             }
         }
 
@@ -44,7 +46,7 @@ namespace GridDomain.Tests.XUnit
         protected override Assembly[] AllAssemblies { get; } = {
                                                                    Assembly.GetAssembly(typeof(GridDomainNode)),
                                                                    Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
-                                                                   Assembly.GetAssembly(typeof(SagaMessageReceivedEvent<>)),
+                                                                   Assembly.GetAssembly(typeof(SagaReceivedMessage<>)),
                                                                    Assembly.GetAssembly(typeof(SampleAggregate)),
                                                                    Assembly.GetAssembly(typeof(ISaga—reatorCatalog<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
@@ -70,10 +72,13 @@ namespace GridDomain.Tests.XUnit
         }
 
         [Fact]
-        public void Generic_domain_classes_should_be_deserializable()
+        public void Saga_commands_aggregates_and_events_should_be_deserializable()
         {
-            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingState>),
-                             typeof(SagaCreatedEvent<SoftwareProgrammingState>));
+            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingState>));
+            //typeof(SagaCreated<SoftwareProgrammingState>),
+            //typeof(SagaReceivedMessage<SoftwareProgrammingState>),
+            //typeof(CreateNewStateCommand<SoftwareProgrammingState>),
+            // typeof(SaveStateCommand<SoftwareProgrammingState>));
         }
 
         [Fact]

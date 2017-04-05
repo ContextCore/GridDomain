@@ -27,17 +27,16 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var sampleAggregateCreatedEvent = new SampleAggregateCreatedEvent("1", Guid.NewGuid());
             var sampleAggregateChangedEvent = new SampleAggregateChangedEvent("1", Guid.NewGuid());
 
-            var msgA =
-                new MessageMetadataEnvelop<DomainEvent[]>(
-                                                          new DomainEvent[] {sampleAggregateCreatedEvent, sampleAggregateChangedEvent},
-                                                          MessageMetadata.Empty);
+            var msgA = new MessageMetadataEnvelop<Project>(new Project(sampleAggregateCreatedEvent, sampleAggregateChangedEvent),
+                                                           MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
 
             //but handlers will finish their work later in undefined sequence
             ExpectMsg<HandlerExecuted>();
@@ -57,13 +56,9 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msgA =
-                new MessageMetadataEnvelop<DomainEvent[]>(
-                                                          new[]
-                                                          {
-                                                              (DomainEvent) new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                              new SampleAggregateChangedEvent("1", Guid.NewGuid())
-                                                          },
-                                                          MessageMetadata.Empty);
+                new MessageMetadataEnvelop<Project>(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                                                                new SampleAggregateChangedEvent("1", Guid.NewGuid())),
+                                                    MessageMetadata.Empty);
 
             actor.Tell(msgA);
 
@@ -76,7 +71,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
         }
 
         [Fact]
@@ -86,8 +81,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             catalog.Add<SampleAggregateCreatedEvent>(new Processor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
-                                                                MessageMetadata.Empty);
+            var msg = MessageMetadataEnvelop.New(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid())));
 
             actor.Tell(msg);
 
@@ -103,9 +97,8 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msg =
-                new MessageMetadataEnvelop<DomainEvent[]>(
-                                                          new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
-                                                          MessageMetadata.Empty);
+                new MessageMetadataEnvelop<Project>(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid())),
+                                                    MessageMetadata.Empty);
 
             actor.Tell(msg);
 
@@ -114,7 +107,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should resend domain event to next step - saga actor - for processing
-            ExpectMsg<MessageMetadataEnvelop<DomainEvent[]>>();
+            ExpectMsg<MessageMetadataEnvelop<DomainEvent>>();
         }
 
         [Fact]
@@ -130,14 +123,9 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msgA =
-                new MessageMetadataEnvelop<DomainEvent[]>(
-                                                          new[]
-                                                          {
-                                                              new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                              new SampleAggregateChangedEvent("1", Guid.NewGuid()),
-                                                              new DomainEvent(Guid.NewGuid())
-                                                          },
-                                                          MessageMetadata.Empty);
+                MessageMetadataEnvelop.New(new Project(new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                                                       new SampleAggregateChangedEvent("1", Guid.NewGuid()),
+                                                       new SampleAggregateChangedEvent("3", Guid.NewGuid())));
 
             actor.Tell(msgA);
 
@@ -152,7 +140,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
             //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent[]>>();
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
         }
     }
 }

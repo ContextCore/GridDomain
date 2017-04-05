@@ -39,9 +39,6 @@ namespace GridDomain.Common
 
         public new T Message => (T) base.Message;
 
-        public static MessageMetadataEnvelop<T> Empty(T message)
-        {
-            return new MessageMetadataEnvelop<T>(message, MessageMetadata.Empty);
-        }
+     
     }
 }

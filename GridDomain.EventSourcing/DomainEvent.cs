@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing
 {
     public class DomainEvent : ISourcedEvent, IHaveId, IHaveSagaId
     {
-        public DomainEvent(Guid sourceId, Guid? sagaId = null, Guid? id = null, DateTime? createdTime = null)
+        protected DomainEvent(Guid sourceId, Guid? sagaId = null, Guid? id = null, DateTime? createdTime = null)
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;

@@ -27,7 +27,7 @@ namespace GridDomain.Tests.XUnit.Sagas
             Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
 
             var sagaCreatedMsg = await Node.NewDebugWaiter()
-                                           .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                                           .Expect<SagaCreated<SoftwareProgrammingState>>()
                                            .Create()
                                            .SendToSagas(new GotTiredEvent(Guid.NewGuid()));
 
@@ -44,11 +44,11 @@ namespace GridDomain.Tests.XUnit.Sagas
             var domainEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             var waitResults = await Node.NewDebugWaiter()
-                                        .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                                        .Expect<SagaCreated<SoftwareProgrammingState>>()
                                         .Create()
                                         .SendToSagas(domainEvent);
 
-            Assert.NotEqual(domainEvent.SagaId, waitResults.Message<SagaCreatedEvent<SoftwareProgrammingState>>().State.Id);
+            Assert.NotEqual(domainEvent.SagaId, waitResults.Message<SagaCreated<SoftwareProgrammingState>>().State.Id);
         }
     }
 }

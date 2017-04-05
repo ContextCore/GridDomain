@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent);
 
@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaContinueEventA);
 
@@ -61,10 +61,10 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
 
             // First_Snapshots_should_have_coding_state_from_first_event()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.State.CurrentStateName);
 
             //Last_Snapshots_should_have_coding_state_from_last_event()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping), snapshots.Last().Aggregate.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping), snapshots.Last().Aggregate.State.CurrentStateName);
 
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));

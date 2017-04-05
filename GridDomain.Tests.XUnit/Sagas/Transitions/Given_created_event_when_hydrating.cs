@@ -17,7 +17,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
 
         protected override IEnumerable<DomainEvent> Given()
         {
-            yield return new SagaCreatedEvent<SoftwareProgrammingState>(_softwareProgrammingState, _sagaId);
+            yield return new SagaCreated<SoftwareProgrammingState>(_softwareProgrammingState, _sagaId);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.XUnit.Sagas.Transitions
             _softwareProgrammingState = new SoftwareProgrammingState(_sagaId, _machine.Sleeping.Name);
             Init();
             //Then_State_is_taken_from_event()
-            Assert.Equal(_softwareProgrammingState, Aggregate.SagaState);
+            Assert.Equal(_softwareProgrammingState, Aggregate.State);
             //Then_Id_is_taken_from_event()
             Assert.Equal(_sagaId, Aggregate.Id);
         }

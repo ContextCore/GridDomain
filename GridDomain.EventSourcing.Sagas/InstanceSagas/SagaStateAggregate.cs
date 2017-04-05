@@ -4,34 +4,33 @@ using Automatonymous;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
-    public class SagaStateAggregate<TSagaState> : Aggregate where TSagaState : ISagaState
+    public class SagaStateAggregate<TState> : Aggregate where TState : ISagaState
     {
-        public SagaStateAggregate(TSagaState data): this(data.Id)
+        public SagaStateAggregate(TState state): this(state.Id)
         {
-            RaiseEvent(new SagaCreatedEvent<TSagaState>(data, data.Id));
+            RaiseEvent(new SagaCreated<TState>(state, state.Id));
         }
 
         private SagaStateAggregate(Guid id) : base(id)
         {
-            Id = id;
         }
 
-        public TSagaState SagaState { get; private set; }
+        public TState State { get; private set; }
 
-        public void RememberEvent(TSagaState sagaData, object message, string machineEventName)
+        public void ReceiveMessage(TState sagaData, object message)
         {
-            Emit(new SagaMessageReceivedEvent<TSagaState>(Id, sagaData, machineEventName, message));
+            Emit(new SagaReceivedMessage<TState>(Id, sagaData, message));
         }
 
-        public void Apply(SagaCreatedEvent<TSagaState> e)
+        public void Apply(SagaCreated<TState> e)
         {
-            SagaState = e.State;
+            State = e.State;
             Id = e.SourceId;
         }
 
-        public void Apply(SagaMessageReceivedEvent<TSagaState> e)
+        public void Apply(SagaReceivedMessage<TState> e)
         {
-            SagaState = e.SagaData;
+            State = e.State;
         }
     }
 }

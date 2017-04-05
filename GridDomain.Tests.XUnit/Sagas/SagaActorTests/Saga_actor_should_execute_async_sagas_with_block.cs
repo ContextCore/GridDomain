@@ -66,14 +66,14 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //A was received first and should be processed first
-            var msg = FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            var msg = FishForMessage<IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>>(m => true);
             FishForMessage<SagaTransited>(m => true);
-            Assert.Equal(domainEventA.SourceId, msg.Message.SagaData.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, msg.Message.State.ProcessingId);
 
             //B should not be processed after A is completed
-            var msgB = FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            var msgB = FishForMessage<IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>>(m => true);
             FishForMessage<SagaTransited>(m => true);
-            Assert.Equal(domainEventB.Id, msgB.Message.SagaData.ProcessingId);
+            Assert.Equal(domainEventB.Id, msgB.Message.State.ProcessingId);
         }
 
         [Fact]
@@ -94,8 +94,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(new SampleAggregateCreatedEvent("1", Guid.NewGuid(), DateTime.Now, _sagaId),
                                                            MessageMetadata.Empty));
 
-            FishForMessage<IMessageMetadataEnvelop<SagaCreatedEvent<TestState>>>(m => true);
-            FishForMessage<IMessageMetadataEnvelop<SagaMessageReceivedEvent<TestState>>>(m => true);
+            FishForMessage<IMessageMetadataEnvelop<SagaCreated<TestState>>>(m => true);
+            FishForMessage<IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>>(m => true);
         }
     }
 }

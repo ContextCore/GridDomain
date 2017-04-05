@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingState>(state);
             Event @event = saga.CoffeReady;
-            sagaState.RememberEvent(state, new object(), @event.Name);
+            sagaState.ReceiveMessage(state, new object());
             sagaState.ClearEvents();
 
             var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
@@ -34,9 +34,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var restoredState = await this.LoadSaga<SoftwareProgrammingState>(sagaState.Id);
             //CoffeMachineId_should_be_equal()
-            Assert.Equal(sagaState.SagaState.CoffeeMachineId,  restoredState.CoffeeMachineId);
+            Assert.Equal(sagaState.State.CoffeeMachineId,  restoredState.CoffeeMachineId);
             // State_should_be_equal()
-            Assert.Equal(sagaState.SagaState.CurrentStateName, restoredState.CurrentStateName);
+            Assert.Equal(sagaState.State.CurrentStateName, restoredState.CurrentStateName);
         }
     }
 }

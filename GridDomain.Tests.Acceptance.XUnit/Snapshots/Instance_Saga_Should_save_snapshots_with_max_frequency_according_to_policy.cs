@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent, sagaId);
 
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //send text event
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaContinueEvent, sagaId);
 
@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
             //Snapshot_should_have_parameters_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.State.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

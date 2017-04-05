@@ -18,18 +18,18 @@ namespace GridDomain.Tests.XUnit.Serialization
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingState>(state);
             Event @event = saga.CoffeReady;
-            sagaState.RememberEvent(state, typeof(Object), @event.Name);
+            sagaState.ReceiveMessage(state, typeof(Object));
             sagaState.ClearEvents();
 
             var json = JsonConvert.SerializeObject(sagaState);
             var restoredState = JsonConvert.DeserializeObject<SagaStateAggregate<SoftwareProgrammingState>>(json);
 
             //CoffeMachineId_should_be_equal()
-            Assert.Equal(sagaState.SagaState.CoffeeMachineId, restoredState.SagaState.CoffeeMachineId);
+            Assert.Equal(sagaState.State.CoffeeMachineId, restoredState.State.CoffeeMachineId);
             // Id_should_be_equal()
             Assert.Equal(sagaState.Id, restoredState.Id);
             //State_should_be_equal()
-            Assert.Equal(sagaState.SagaState.CurrentStateName, restoredState.SagaState.CurrentStateName);
+            Assert.Equal(sagaState.State.CurrentStateName, restoredState.State.CurrentStateName);
         }
     }
 }

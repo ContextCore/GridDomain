@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter(TimeSpan.FromSeconds(100))
-                    .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent);
 
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await
                 Node.NewDebugWaiter()
-                    .Expect<SagaMessageReceivedEvent<SoftwareProgrammingState>>()
+                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaContinueEvent);
 

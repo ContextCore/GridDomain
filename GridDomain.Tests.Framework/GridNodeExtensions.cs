@@ -7,6 +7,7 @@ using CommonDomain.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
@@ -19,6 +20,28 @@ namespace GridDomain.Tests.Framework
 {
     public static class GridNodeExtensions
     {
+        public static async Task<TExpect> SendToSaga<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
+        {
+            var res = await node.NewDebugWaiter(timeout)
+                                .Expect<TExpect>()
+                                .Create()
+                                .SendToSagas(msg);
+
+            return res.Message<TExpect>();
+        }
+
+        public static async Task<TState> GetTransitedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : ISagaState
+        {
+            var res = await node.SendToSaga<SagaReceivedMessage<TState>>(msg,timeout);
+            return res.State;
+        }
+
+        public static async Task<TState> GetCreatedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : ISagaState
+        {
+            var res = await node.SendToSaga<SagaCreated<TState>>(msg, timeout);
+            return res.State;
+        }
+
         public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
             var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();

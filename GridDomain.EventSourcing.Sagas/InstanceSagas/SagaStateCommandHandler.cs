@@ -4,7 +4,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public SagaStateCommandHandler()
         {
-            Map<SaveStateCommand<TSagaState>>((c, a) => a.RememberEvent(c.State, c.Message, c.MachineStatePreviousName));
+            Map<SaveStateCommand<TSagaState>>((c, a) => a.ReceiveMessage(c.State, c.Message));
             Map<CreateNewStateCommand<TSagaState>>(c => new SagaStateAggregate<TSagaState>(c.State));
         }
     }

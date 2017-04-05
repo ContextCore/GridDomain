@@ -28,7 +28,7 @@ namespace GridDomain.Tests.XUnit.Sagas
                                PersonId = Guid.NewGuid()
                            };
 
-            var sagaDataEvent = new SagaCreatedEvent<SoftwareProgrammingState>(sagaData, sagaId);
+            var sagaDataEvent = new SagaCreated<SoftwareProgrammingState>(sagaData, sagaId);
             await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingState>>(sagaId, sagaDataEvent);
 
             var results = await Node.NewDebugWaiter(TimeSpan.FromDays(1))

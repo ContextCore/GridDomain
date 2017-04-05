@@ -35,11 +35,11 @@ namespace GridDomain.Tests.XUnit.Sagas
         public async Task Instance_saga_actor_has_correct_path_when_saga_is_started_by_domain_message()
         {
             var resultMsg = await Node.NewDebugWaiter()
-                                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
+                                      .Expect<SagaCreated<SoftwareProgrammingState>>()
                                       .Create()
                                       .SendToSagas(new GotTiredEvent(Guid.NewGuid()));
 
-            var sagaId = resultMsg.Message<SagaCreatedEvent<SoftwareProgrammingState>>().Id;
+            var sagaId = resultMsg.Message<SagaCreated<SoftwareProgrammingState>>().Id;
 
             var sagaActor = Node.LookupSagaActor<SoftwareProgrammingProcess, SoftwareProgrammingState>(sagaId);
             Assert.NotNull(sagaActor);

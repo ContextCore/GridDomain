@@ -42,16 +42,8 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
-            var msg =
-                new MessageMetadataEnvelop<DomainEvent[]>(
-                                                          new DomainEvent[]
-                                                          {
-                                                              new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
-                                                              new SampleAggregateChangedEvent("2", Guid.NewGuid())
-                                                          },
-                                                          MessageMetadata.Empty);
-
-            sagaProcessActor.Tell(msg);
+            sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new SampleAggregateCreatedEvent("1", Guid.NewGuid())));
+            sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new SampleAggregateChangedEvent("2", Guid.NewGuid())));
 
             //first we received complete message from all saga actors in undetermined sequence
             ExpectMsg<SagaTransited>();
@@ -68,6 +60,15 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
         }
 
+
+
+        class InheritedEvent : SampleAggregateCreatedEvent
+        {
+            public InheritedEvent():base("123",Guid.NewGuid())
+            {
+                
+            }
+        }
         [Fact]
         public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
@@ -78,9 +79,7 @@ namespace GridDomain.Tests.XUnit.CommandPipe
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
-
-            var msg = new MessageMetadataEnvelop<DomainEvent[]>(new[] {new DomainEvent(Guid.NewGuid())},
-                                                                MessageMetadata.Empty);
+            var msg = MessageMetadataEnvelop.New<DomainEvent>(new InheritedEvent());
 
             sagaProcessActor.Tell(msg);
 
@@ -102,9 +101,8 @@ namespace GridDomain.Tests.XUnit.CommandPipe
 
 
             var msg =
-                new MessageMetadataEnvelop<DomainEvent[]>(
-                                                          new DomainEvent[] {new SampleAggregateCreatedEvent("1", Guid.NewGuid())},
-                                                          MessageMetadata.Empty);
+                new MessageMetadataEnvelop<DomainEvent>(new SampleAggregateCreatedEvent("1", Guid.NewGuid()),
+                                                        MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 

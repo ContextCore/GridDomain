@@ -4,7 +4,9 @@ using Akka.Actor;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
+using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
@@ -17,28 +19,31 @@ namespace GridDomain.Tests.XUnit.Sagas
         public Given_saga_When_publishing_several_start_messages(ITestOutputHelper helper) : base(helper) {}
 
         [Fact]
-        public async Task When_publishing_start_message()
+        public async Task Then_separate_saga_startes_on_each_message()
         {
-            var sagaId = Guid.NewGuid();
-            var startMessageA = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId);
+            var startMessageA = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
-                      .Create()
-                      .SendToSagas(startMessageA);
+            var resA = await Node.NewDebugWaiter()
+                                 .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
+                                 .Create()
+                                 .SendToSagas(startMessageA);
 
-            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), sagaId);
+            var stateA = resA.Message<SagaReceivedMessage<SoftwareProgrammingState>>().State;
 
-            await Node.NewDebugWaiter()
-                      .Expect<SagaCreatedEvent<SoftwareProgrammingState>>()
-                      .Create()
-                      .SendToSagas(secondStartMessageB);
+            //will reach same saga as already created and will produce a new one
+            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), stateA.Id);
 
-            var sagaData = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
-            //Saga_reinitialized_from_last_start_message()
-            Assert.Equal(secondStartMessageB.SofaId, sagaData.SagaState.SofaId);
+            var resB = await Node.NewDebugWaiter()
+                                 .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
+                                 .Create()
+                                 .SendToSagas(secondStartMessageB);
+
+            var stateB = resB.Message<SagaReceivedMessage<SoftwareProgrammingState>>().State;
+
+            Assert.Equal(secondStartMessageB.SofaId, stateB.SofaId);
             //Saga_has_correct_state()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), sagaData.SagaState.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), stateB.CurrentStateName);
+            Assert.NotEqual(stateA.Id, stateB.Id);
         }
     }
 }
