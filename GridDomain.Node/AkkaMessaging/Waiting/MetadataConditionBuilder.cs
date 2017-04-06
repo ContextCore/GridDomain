@@ -14,7 +14,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return received is IMessageMetadataEnvelop<TMsg>;
         }
 
-        protected override bool CustomFilter<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
+        protected override bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
         {
             var envelop = receivedMessage as IMessageMetadataEnvelop<TMsg>;
             return envelop != null && domainMessageFilter(envelop.Message);
@@ -22,13 +22,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         protected override void AddFilter(Type type, Func<object, bool> filter)
         {
-            base.AddFilter(MessageMetadataEnvelop.GenericForType(type), filter);
+            base.AddFilter(MessageMetadataEnvelop.GetEnvelopType(type), filter);
         }
-
-       //private static bool MetadataAwareFilter(Func<object, bool> filter, object o)
-       //{
-       //    var envelop = o as IMessageMetadataEnvelop;
-       //    return envelop != null && filter(envelop.Message);
-       //}
     }
 }

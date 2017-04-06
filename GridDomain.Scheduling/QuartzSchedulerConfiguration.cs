@@ -37,7 +37,6 @@ namespace GridDomain.Scheduling
                                                                         return scheduler;
                                                                     }));
 
-            container.RegisterType<IQuartzLogger, QuartzLogger>();
             container.RegisterType<IJobFactory, JobFactory>();
             container.RegisterType<QuartzJob>();
             container.RegisterInstance(_quartzConfig);

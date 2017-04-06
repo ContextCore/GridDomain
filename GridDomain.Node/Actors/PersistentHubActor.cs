@@ -19,7 +19,7 @@ namespace GridDomain.Node.Actors
         private readonly ActorMonitor _monitor;
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
-        private readonly ILoggingAdapter Logger = Context.GetLogger();
+        private readonly ILoggingAdapter Log = Context.GetLogger();
 
         protected PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {
@@ -47,7 +47,7 @@ namespace GridDomain.Node.Actors
                                           //child was resumed from planned shutdown
                                           Children[id].Terminating = false;
                                           Stash.UnstashAll();
-                                          Logger.Debug("Child {id} resumed. Stashed messages will be sent to it", id);
+                                          Log.Debug("Child {id} resumed. Stashed messages will be sent to it", id);
                                       });
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
@@ -77,9 +77,10 @@ namespace GridDomain.Node.Actors
                 //it is cheaper to resume child than wait for it termination and create rom scratch
                 if (knownChild.Terminating)
                 {
+                    Log.Info("Actor hub {id} stashing message {messge}", GetType().Name, message);
                     Stash.Stash();
                     knownChild.Ref.Tell(CancelShutdownRequest.Instance);
-                    Logger.Debug(
+                    Log.Debug(
                                  "Stashing message {msg} for child {id}. Waiting for child resume from termination",
                                  message,
                                  childId);
@@ -92,7 +93,7 @@ namespace GridDomain.Node.Actors
             knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
             SendMessageToChild(knownChild, message);
 
-            Logger.Debug("Message {msg} sent to {isknown} child {id}",
+            Log.Debug("Message {msg} sent to {isknown} child {id}",
                          message,
                          childWasCreated ? "new" : "known",
                          childId);
@@ -121,7 +122,7 @@ namespace GridDomain.Node.Actors
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
 
-            Logger.Debug("Clear childs process finished, removing {childsToTerminate} childs", childsToTerminate.Length);
+            Log.Debug("Clear childs process finished, removing {childsToTerminate} childs", childsToTerminate.Length);
         }
 
         private void ShutdownChild(Guid childId)
@@ -150,7 +151,7 @@ namespace GridDomain.Node.Actors
         protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
-            Logger.Debug("{ActorHub} is going to start", Self.Path);
+            Log.Debug("{ActorHub} is going to start", Self.Path);
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod,
                                                             ChildClearPeriod,
                                                             Self,
@@ -161,7 +162,7 @@ namespace GridDomain.Node.Actors
         protected override void PostStop()
         {
             _monitor.IncrementActorStopped();
-            Logger.Debug("{ActorHub} was stopped", Self.Path);
+            Log.Debug("{ActorHub} was stopped", Self.Path);
         }
 
         public class ClearChildren {}

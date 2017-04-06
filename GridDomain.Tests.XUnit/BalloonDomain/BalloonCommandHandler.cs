@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
 
             Map<InflateNewBallonCommand>(c => new Balloon(c.AggregateId, c.Title.ToString()));
 
-            Map<InflateCopyCommand>((c, a) => a.BlowNewBaloon(c.Parameter.ToString()));
+            Map<InflateCopyCommand>((c, a) => a.InflateNewBaloon(c.Parameter.ToString()));
 
             Map<PlanTitleWriteCommand>((c, a) => a.PlanTitleWrite(c.Parameter));
 

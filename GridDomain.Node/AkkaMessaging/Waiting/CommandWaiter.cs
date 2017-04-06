@@ -34,14 +34,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return _conditionBuilder.Execute(timeout, failOnAnyFault);
         }
 
-        ICommandConditionBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
-        {
-            return _conditionBuilder.And(filter);
-        }
-
-        ICommandConditionBuilder ICommandWaiter.Expect(Type type, Func<object, bool> filter)
-        {
-            return (ICommandConditionBuilder) _conditionBuilder.And(type, filter);
-        }
+       ICommandConditionBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
+       {
+           Expect(filter);
+           return _conditionBuilder;
+       }
+       
+       ICommandConditionBuilder ICommandWaiter.Expect(Type type, Func<object, bool> filter)
+       {
+           Expect(type, filter);
+           return _conditionBuilder;
+       }
     }
 }

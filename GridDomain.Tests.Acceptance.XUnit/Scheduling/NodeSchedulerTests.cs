@@ -26,14 +26,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
         private readonly Lazy<IActorRef> _schedulerActor;
         private IActorRef Scheduler => _schedulerActor.Value;
 
-        private ExtendedExecutionOptions CreateOptions(double seconds,
+        private ExecutionOptions CreateOptions(double seconds,
                                                        TimeSpan? timeout = null,
                                                        Guid? id = null,
                                                        string checkField = null,
                                                        int? retryCount = null,
                                                        TimeSpan? repeatInterval = null)
         {
-            return new ExtendedExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
+            return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
                                                 typeof(ScheduledCommandSuccessfullyProcessed),
                                                 id ?? Guid.Empty,
                                                 checkField,

@@ -141,12 +141,12 @@
   <ItemGroup>
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
-    <Compile Include="Akka\Messages\ExtendedExecutionOptions.cs" />
     <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="Integration\JobFailed.cs" />
     <Compile Include="Integration\JobSucceeded.cs" />
     <Compile Include="Integration\ScheduledCommandWasNotConfirmedException.cs" />
+    <Compile Include="Integration\ScheduleKeyExtensions.cs" />
     <Compile Include="Quartz\Retry\AlwaysRetryExceptionPolicy.cs" />
     <Compile Include="Quartz\Retry\ExponentialBackoffRetryStrategy.cs" />
     <Compile Include="Quartz\Retry\IExceptionPolicy.cs" />
@@ -160,13 +160,11 @@
     <Compile Include="Quartz\InMemoryQuartzConfig.cs" />
     <Compile Include="Quartz\JobFactory.cs" />
     <Compile Include="Quartz\IQuartzConfig.cs" />
-    <Compile Include="Quartz\Logging\IQuartzLogger.cs" />
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
     <Compile Include="Akka\Messages\ScheduleCommand.cs" />
     <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\PersistedQuartzConfig.cs" />
-    <Compile Include="Quartz\Logging\QuartzLogger.cs" />
     <Compile Include="Quartz\QuartzSchedulerFactory.cs" />
     <Compile Include="Integration\QuartzJob.cs" />
     <Compile Include="Akka\Messages\Unschedule.cs" />

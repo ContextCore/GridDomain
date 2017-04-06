@@ -37,7 +37,7 @@ namespace GridDomain.Node.Actors
             Monitor = new ActorMonitor(Context, typeof(T).Name);
             Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
-            BaseFunctionsBehavior();
+            DefaultBehavior();
 
             Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
@@ -54,7 +54,7 @@ namespace GridDomain.Node.Actors
             });
         }
 
-        protected void BaseFunctionsBehavior()
+        protected void DefaultBehavior()
         {
             Command<GracefullShutdownRequest>(req =>
                                               {
@@ -142,7 +142,9 @@ namespace GridDomain.Node.Actors
 
         protected override void Unhandled(object message)
         {
-            Stash.Stash();
+            Log.Warning("Actor {id} skipping message {message} because it was unhandled. \r\n {@behavior}.", 
+                PersistenceId, message, Behavior);
+            base.Unhandled(message);
         }
 
         private void StopNow(object s)

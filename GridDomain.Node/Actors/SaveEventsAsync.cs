@@ -5,17 +5,13 @@ namespace GridDomain.Node.Actors
 {
     class SaveEventsAsync
     {
-        public SaveEventsAsync(DomainEvent[] events, Action<DomainEvent> onEventPersisted, Action continuation, Aggregate state)
+        public SaveEventsAsync(Aggregate newState, Action continuation)
         {
             Continuation = continuation;
-            State = state;
-            Events = events;
-            OnEventPersisted = onEventPersisted;
+            NewState = newState;
         }
 
         public Action Continuation { get; }
-        public DomainEvent[] Events { get; }
-        public Aggregate State { get; }
-        public Action<DomainEvent> OnEventPersisted { get; }
+        public Aggregate NewState { get; }
     }
 }

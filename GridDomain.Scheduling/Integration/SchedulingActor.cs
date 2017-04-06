@@ -29,8 +29,7 @@ namespace GridDomain.Scheduling.Integration
             try
             {
                 _logger.Debug("Unscheduling job {Task}", msg.Key);
-                var jobKey = new JobKey(msg.Key.Name, msg.Key.Group);
-                _scheduler.DeleteJob(jobKey);
+                _scheduler.DeleteJob(msg.Key.ToJobKey());
                 _logger.Debug("Unscheduled job {Task}", msg.Key);
                 Sender.Tell(new Unscheduled(msg.Key));
             }

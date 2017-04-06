@@ -32,17 +32,17 @@ namespace GridDomain.CQRS
         public object Message { get; }
         public Type Processor { get; }
 
-        public static IFault NewGeneric(object msg, Exception exception, Guid sagaId, Type processorType)
+        public static Fault NewGeneric(object msg, Exception exception, Guid sagaId, Type processorType)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(Fault).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
-            return (IFault) method.Invoke(null, new[] {msg, exception, sagaId, processorType});
+            return (Fault) method.Invoke(null, new[] {msg, exception, sagaId, processorType});
         }
 
         public static Type TypeFor(object msg)
         {
-            return typeof(IFault<>).MakeGenericType(msg.GetType());
+            return typeof(Fault<>).MakeGenericType(msg.GetType());
         }
 
         public static Fault<T> New<T>(T msg, Exception ex, Guid sagaId, Type processorType = null)

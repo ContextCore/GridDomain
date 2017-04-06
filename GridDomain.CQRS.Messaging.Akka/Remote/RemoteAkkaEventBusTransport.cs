@@ -44,7 +44,7 @@ namespace GridDomain.CQRS.Messaging.Akka.Remote
         public void Publish(object msg, IMessageMetadata metadata)
         {
             _local.Publish(msg);
-            var messageMetadataEnvelop = MessageMetadataEnvelop.NewGeneric(msg, metadata);
+            var messageMetadataEnvelop = MessageMetadataEnvelop.New(msg, metadata);
 
             _remoteSubscriber.Ask<PublishAck>(new Publish(messageMetadataEnvelop), _timeout).Wait();
         }

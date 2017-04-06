@@ -25,7 +25,6 @@ namespace GridDomain.Tests.Framework
 
         public static IReadOnlyCollection<object> GetEvents(this IAggregate aggregate)
         {
-            //return aggregate.GetUncommittedEvents().Cast<object>().ToArray();
             return GetEvents<DomainEvent>(aggregate);
         }
 

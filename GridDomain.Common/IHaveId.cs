@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.EventSourcing
+namespace GridDomain.Common
 {
     public interface IHaveId
     {

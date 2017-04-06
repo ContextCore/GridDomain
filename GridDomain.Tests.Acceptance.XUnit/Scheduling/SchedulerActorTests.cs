@@ -45,14 +45,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
         private IScheduler _quartzScheduler;
         private readonly UnityContainer _container;
 
-        private ExtendedExecutionOptions CreateOptions(double seconds,
+        private ExecutionOptions CreateOptions(double seconds,
                                                        TimeSpan? timeout = null,
                                                        Guid? id = null,
                                                        string checkField = null,
                                                        int? retryCount = null,
                                                        TimeSpan? repeatInterval = null)
         {
-            return new ExtendedExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
+            return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
                                                 typeof(ScheduledCommandSuccessfullyProcessed),
                                                 id ?? Guid.Empty,
                                                 checkField,

@@ -12,12 +12,19 @@ namespace GridDomain.Common
         }
 
         public static MessageMetadata CreateChild(this IMessageMetadata metadata,
+                                                  IHaveId message,
+                                                  params ProcessEntry[] process)
+        {
+            return metadata.CreateChild(message.Id, process);
+        }
+
+        public static MessageMetadata CreateChild(this IMessageMetadata metadata,
                                                   Guid messageId,
                                                   string who,
                                                   string what,
                                                   string why)
         {
-            return MessageMetadata.CreateFrom(messageId, metadata, new ProcessEntry(who, what, why));
+            return metadata.CreateChild(messageId, new ProcessEntry(who, what, why));
         }
     }
 }

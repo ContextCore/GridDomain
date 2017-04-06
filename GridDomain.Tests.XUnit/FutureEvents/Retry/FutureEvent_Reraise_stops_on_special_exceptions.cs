@@ -70,10 +70,15 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
             //will retry 1 time
             var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.3), Guid.NewGuid(), "test value A", 2);
 
-            await Node.Prepare(command).Expect<JobFailed>().Execute();
+            await Node.Prepare(command)
+                      .Expect<JobFailed>()
+                      .Execute();
+
+            //give some time to scheduler listeners to proceed
+            await Task.Delay(500);
 
             //waiting for policy call to determine should we retry failed job or not
-            await _policyCallNumberChanged.Task.TimeoutAfter(TimeSpan.FromSeconds(10));
+            await _policyCallNumberChanged.Task.TimeoutAfter(TimeSpan.FromSeconds(5));
             // job was not retried and policy was not called
             Assert.Equal(1, _policyCallNumber);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
@@ -20,6 +21,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             aggregate.ScheduleInFuture(testCommand.RaiseTime, testCommand.Value);
 
             var futureEventEnvelop = aggregate.GetEvent<FutureEventScheduledEvent>();
+
+            aggregate.MarkPersisted(futureEventEnvelop);
+
             aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid());
 
             var producedEvent = aggregate.GetEvent<TestDomainEvent>();

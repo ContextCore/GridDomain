@@ -73,6 +73,7 @@
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ICatalog.cs" />
     <Compile Include="IContainerConfiguration.cs" />
+    <Compile Include="IHaveId.cs" />
     <Compile Include="IMessageMetadata.cs" />
     <Compile Include="IMessageMetadataEnvelop.cs" />
     <Compile Include="MemberNameExtractor.cs" />

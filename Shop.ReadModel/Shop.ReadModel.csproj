@@ -235,6 +235,10 @@
     <Compile Include="SkuStockProjectionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>

@@ -15,7 +15,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             RaiseEvent(new TestDomainEvent(initialValue, Id));
         }
 
-        public int? RetriesToSucceed { get; private set; }
+        public int RetriesToSucceed { get; private set; }
         public DateTime ProcessedTime { get; private set; }
 
         public void ScheduleInFuture(DateTime raiseTime, string testValue)
@@ -25,10 +25,14 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
         {
-            if(RetriesToSucceed == 0)
+            if (RetriesToSucceed == 0)
+            {
                 Emit(new TestDomainEvent(testValue, Id), raiseTime);
+                return;
+            }
+            var testErrorDomainEvent = new TestErrorDomainEvent(testValue, Id, succedOnRetryNum);
 
-            else Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
+            Emit(testErrorDomainEvent, () => { throw new TestScheduledException(RetriesToSucceed + 1); }, raiseTime);
         }
 
         public void CancelFutureEvents(string likeValue)
@@ -44,9 +48,6 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         private void Apply(TestErrorDomainEvent e)
         {
-            if (RetriesToSucceed == null)
-                RetriesToSucceed = e.SuccedOnRetryNum;
-
             if (RetriesToSucceed == 0)
             {
                 RetriesToSucceed = e.SuccedOnRetryNum;
@@ -54,7 +55,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             }
 
             RetriesToSucceed--;
-            throw new TestScheduledException(RetriesToSucceed.Value + 1);
+            throw new TestScheduledException(RetriesToSucceed + 1);
         }
     }
 }

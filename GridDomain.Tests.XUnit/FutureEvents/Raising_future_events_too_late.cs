@@ -21,7 +21,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             var now = DateTime.Now;
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            await Node.Prepare(testCommand).Expect<TestDomainEvent>().And<JobSucceeded>().Execute();
+            await Node.Prepare(testCommand)
+                      .Expect<TestDomainEvent>()
+                      .And<JobSucceeded>()
+                      .Execute();
 
             var aggregate = await Node.LoadAggregate<FutureEventsAggregate>(testCommand.AggregateId);
 

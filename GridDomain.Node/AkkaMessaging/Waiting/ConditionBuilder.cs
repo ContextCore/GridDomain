@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using GridDomain.Common;
 using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
@@ -44,14 +45,34 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return filter == null
                        ? And(typeof(TMsg), DefaultFilter<TMsg>)
-                       : And(typeof(TMsg), o => CustomFilter(o, filter));
+                       : And(typeof(TMsg), o => FilterDecorator(o, filter));
         }
 
         public IConditionBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null)
         {
             return filter == null
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
-                       : Or(typeof(TMsg), o => CustomFilter(o, filter));
+                       : Or(typeof(TMsg), o => FilterDecorator(o, filter));
+        }
+
+        public IConditionBuilder<T> And(Type type, Func<object, bool> filter = null)
+        {
+            var messageFilter = filter ?? DefaultFilter<object>;
+            StopExpression = StopExpression.And(c => c != null && c.Any(messageFilter));
+            StopCondition = StopExpression.Compile();
+
+            AddFilter(type, messageFilter);
+            return this;
+        }
+
+        protected IConditionBuilder<T> Or(Type type, Func<object, bool> filter = null)
+        {
+            var messageFilter = filter ?? DefaultFilter<object>;
+            StopExpression = StopExpression.Or(c => c != null && c.Any(messageFilter));
+            StopCondition = StopExpression.Compile();
+
+            AddFilter(type, messageFilter);
+            return this;
         }
 
         protected virtual bool DefaultFilter<TMsg>(object message)
@@ -59,36 +80,20 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return message is TMsg;
         }
 
-        protected virtual bool CustomFilter<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
+        protected virtual bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
         {
             return receivedMessage is TMsg && domainMessageFilter((TMsg) receivedMessage);
         }
 
         protected virtual void AddFilter(Type type, Func<object, bool> filter)
         {
+            Condition.NotNull(() => filter);
+
             List<Func<object, bool>> list;
             if (!MessageFilters.TryGetValue(type, out list))
                 list = MessageFilters[type] = new List<Func<object, bool>>();
 
             list.Add(filter);
-        }
-
-        public IConditionBuilder<T> And(Type type, Func<object, bool> filter)
-        {
-            StopExpression = StopExpression.And(c => c != null && c.Any(filter));
-            StopCondition = StopExpression.Compile();
-
-            AddFilter(type, filter);
-            return this;
-        }
-
-        private IConditionBuilder<T> Or(Type type, Func<object, bool> filter)
-        {
-            StopExpression = StopExpression.Or(c => c != null && c.Any(filter));
-            StopCondition = StopExpression.Compile();
-
-            AddFilter(type, filter);
-            return this;
         }
     }
 }

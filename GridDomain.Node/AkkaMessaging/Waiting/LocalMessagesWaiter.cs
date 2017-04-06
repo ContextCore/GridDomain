@@ -34,9 +34,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return ConditionBuilder.And(filter);
         }
 
-        public IConditionBuilder<T> Expect(Type type, Func<object, bool> filter = null)
+        public IConditionBuilder<T> Expect(Type type, Func<object, bool> filter)
         {
-            return ConditionBuilder.And(type, filter ?? (o => true));
+            return ConditionBuilder.And(type, filter);
         }
 
         public async Task<IWaitResults> Start(TimeSpan? timeout = null)
@@ -79,7 +79,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool IsExpected(object message)
         {
-            return ConditionBuilder.MessageFilters.Values.SelectMany(v => v).Any(f => f(message));
+            return ConditionBuilder.MessageFilters
+                                   .Where(p => p.Key.IsInstanceOfType(message))
+                                   .SelectMany(v => v.Value)
+                                   .Any(filter => filter(message));
         }
 
         private static void CheckExecutionError(object t)

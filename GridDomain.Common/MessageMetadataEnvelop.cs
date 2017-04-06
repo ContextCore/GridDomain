@@ -19,14 +19,14 @@ namespace GridDomain.Common
             return new MessageMetadataEnvelop<T>(msg, metadata ?? MessageMetadata.Empty);
         }
 
-        public static IMessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata)
+        public static IMessageMetadataEnvelop New(object msg, IMessageMetadata metadata)
         {
             var msgType = msg.GetType();
-            var constructor = GenericForType(msgType).GetConstructor(new []{msgType, typeof(IMessageMetadata)});
+            var constructor = GetEnvelopType(msgType).GetConstructor(new []{msgType, typeof(IMessageMetadata)});
             return (IMessageMetadataEnvelop)constructor.Invoke(new []{msg, metadata});
         }
 
-        public static Type GenericForType(Type type)
+        public static Type GetEnvelopType(Type type)
         {
             return typeof(MessageMetadataEnvelop<>).MakeGenericType(type);
         }

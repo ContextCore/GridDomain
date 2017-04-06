@@ -92,7 +92,7 @@ namespace GridDomain.Tests.XUnit
         [Fact]
         public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
         {
-            CheckAll<object>(typeof(ExecutionOptions), typeof(ExtendedExecutionOptions), typeof(ScheduleKey));
+            CheckAll<object>(typeof(ExecutionOptions), typeof(ExecutionOptions), typeof(ScheduleKey));
         }
     }
 }

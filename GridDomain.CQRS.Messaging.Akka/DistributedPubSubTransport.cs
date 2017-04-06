@@ -59,7 +59,7 @@ namespace GridDomain.CQRS.Messaging.Akka
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            Publish(MessageMetadataEnvelop.NewGeneric(msg, metadata));
+            Publish(MessageMetadataEnvelop.New(msg, metadata));
         }
     }
 }

@@ -13,6 +13,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly IActorRef _executorActorRef;
+        private IConditionBuilder<Task<IWaitResults>> _conditionBuilder;
 
         public CommandConditionBuilder(TCommand command,
                                        IMessageMetadata commandMetadata,
@@ -25,7 +26,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public async Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
-            Or<Fault<TCommand>>(f => f.Message.Id == _command.Id);
+            //we can launch any command with CommandConditionBuilder<ICommand>
+            //and TCommand will resolve to ICommand leading to incorect subscription
+            Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
 
             var task = Create(timeout);
 
@@ -40,6 +43,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 throw new AggregateException(faults.Select(f => f.Exception));
 
             return res;
+        }
+
+        private bool IsFaultFromExecutingCommand(object o)
+        {
+            return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
         public new ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null)

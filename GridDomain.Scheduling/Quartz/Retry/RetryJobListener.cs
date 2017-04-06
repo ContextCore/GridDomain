@@ -15,22 +15,21 @@ namespace GridDomain.Scheduling.Quartz.Retry
             _logger = log.ForContext<RetryJobListener>();
         }
 
-        public override string Name => "Retry";
+        public override string Name => "RetryJobListener";
 
         public override void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {
-            _logger.Debug("Deciding if job {job} should be retried", context.JobDetail.Key);
-            if (!JobFailed(jobException) || !_retryStrategy.ShouldRetry(context, jobException))
+            if (!_retryStrategy.ShouldRetry(context, jobException))
+            {
+                _logger.Debug("job {job} will not be retried", context.JobDetail.Key);
                 return;
+            }
+
+            _logger.Information("job {job} will be retried", context.JobDetail.Key);
 
             var trigger = _retryStrategy.GetTrigger(context);
             context.Scheduler.UnscheduleJob(context.Trigger.Key);
             context.Scheduler.ScheduleJob(context.JobDetail, trigger);
-        }
-
-        private static bool JobFailed(JobExecutionException jobException)
-        {
-            return jobException != null;
         }
     }
 }

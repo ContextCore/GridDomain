@@ -111,11 +111,23 @@ namespace GridDomain.Node.Actors
 
         private void StashingMessagesToProcessBehavior()
         {
-            Receive<IMessageMetadataEnvelop<DomainEvent>>(m => Stash.Stash());
+            Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
+                                                          {
+                                                              Log.Warning("Saga {id} stashing message {messge}", Id, m);
+                                                              Stash.Stash();
+                                                          });
 
-            Receive<IMessageMetadataEnvelop<IFault>>(m => Stash.Stash());
+            Receive<IMessageMetadataEnvelop<IFault>>(m =>
+                                                     {
+                                                         Log.Warning("Saga {id} stashing message {messge}", Id, m);
+                                                         Stash.Stash();
+                                                     });
 
-            Receive<RedirectToNewSaga>(env => Stash.Stash());
+            Receive<RedirectToNewSaga>(env =>
+                                       {
+                                           Log.Warning("Saga {id} stashing message {messge}", Id, env);
+                                           Stash.Stash();
+                                       });
 
             ProxifyingCommandsBehavior();
         }
@@ -261,14 +273,17 @@ namespace GridDomain.Node.Actors
                                        WaitCommandComplete(cmd, messageMetadata, () => FinishSagaTransition(t, sender));
                                    });
 
-            Receive<Status.Failure>(f =>
-                                    {
-                                        var fault = PublishError(message,
-                                                                 messageMetadata,
-                                                                 f.Cause.UnwrapSingle());
+            Receive<Status.Failure>(f => ProcessError(message, messageMetadata, f.Cause));
+            Receive<Failure>(f => ProcessError(message, messageMetadata, f.Exception));
+        }
 
-                                        FinishSagaTransition(new SagaTransitFault(fault, messageMetadata), Sender);
-                                    });
+        private void ProcessError(object message, IMessageMetadata messageMetadata, Exception error)
+        {
+            var fault = PublishError(message,
+                                     messageMetadata,
+                                     error.UnwrapSingle());
+
+            FinishSagaTransition(new SagaTransitFault(fault, messageMetadata), Sender);
         }
 
         private void FinishSagaTransition(ISagaTransitCompleted message, IActorRef sender)

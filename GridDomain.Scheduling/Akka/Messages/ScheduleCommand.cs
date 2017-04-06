@@ -7,7 +7,7 @@ namespace GridDomain.Scheduling.Akka.Messages
     {
         public ScheduleCommand(Command command,
                                ScheduleKey key,
-                               ExtendedExecutionOptions options,
+                               ExecutionOptions options,
                                IMessageMetadata commandMetadata = null)
         {
             Command = command;
@@ -19,6 +19,6 @@ namespace GridDomain.Scheduling.Akka.Messages
         public Command Command { get; }
         public IMessageMetadata CommandMetadata { get; }
         public ScheduleKey Key { get; }
-        public ExtendedExecutionOptions Options { get; }
+        public ExecutionOptions Options { get; }
     }
 }
