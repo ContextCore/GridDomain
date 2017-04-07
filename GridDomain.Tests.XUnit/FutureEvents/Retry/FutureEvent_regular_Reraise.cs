@@ -1,10 +1,12 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
+using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -29,21 +31,31 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Retry
         }
 
         [Fact]
-        public async Task Should_retry_on_exception()
+        public void Should_retry_on_exception()
         {
             //will retry 1 time
             var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A", 1);
 
-            var waiter = Node.Prepare(command)
-                             .Expect<JobFailed>()
-                             .And<JobSucceeded>()
-                             .And<TestErrorDomainEvent>()
-                             .Execute(TimeSpan.FromSeconds(100));
+            //using testkit waiting to avoid exception from aggregate
+            Node.Transport.Subscribe<MessageMetadataEnvelop<JobFailed>>(TestActor);
+            Node.Transport.Subscribe<MessageMetadataEnvelop<JobSucceeded>>(TestActor);
+            Node.Transport.Subscribe<MessageMetadataEnvelop<TestErrorDomainEvent>>(TestActor);
 
-            var res = await waiter;
-            var actual = res.Message<TestErrorDomainEvent>().Value;
+            Node.Execute(command);
 
-            Assert.Equal(command.Value, actual);
+            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true, TimeSpan.FromSeconds(100));
+            FishForMessage<MessageMetadataEnvelop<JobSucceeded>>(m => true);
+            var res = FishForMessage<MessageMetadataEnvelop<TestErrorDomainEvent>>(m => true);
+
+            Assert.Equal(command.Value, res.Message.Value);
+        }
+
+        [Fact]
+        public async Task Should_forward_error_to_caller()
+        {
+            await Node.Prepare(new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A", 1))
+                      .Expect<JobFailed>()
+                      .Execute().ShouldThrow<TestScheduledException>();
         }
     }
 }

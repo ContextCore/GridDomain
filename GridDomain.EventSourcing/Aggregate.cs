@@ -21,7 +21,7 @@ namespace GridDomain.EventSourcing
         private int _emmitingMethodsInProgressCount;
         private Action<Task<Aggregate>, Action> _persistEvents = (newStateTask, afterAll) => { };
         public bool IsMethodExecuting => _emmitingMethodsInProgressCount > 0;
-        public bool IsPendingPersistence => _eventToPersist.Any();
+        public bool HasUncommitedEvents => _eventToPersist.Any();
 
         protected Aggregate(Guid id)
         {

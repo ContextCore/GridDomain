@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Event;
 using Akka.Persistence;
-using CommonDomain;
 using CommonDomain.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -19,38 +19,6 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Node.Actors
 {
-    static class IAggregateExtensions
-    {
-        public static DomainEvent[] GetDomainEvents(this IAggregate aggregate)
-        {
-            return aggregate.GetUncommittedEvents()
-                            .Cast<DomainEvent>()
-                            .ToArray();
-        }
-    }
-
-    //class AggregateAkkaPersistanceHandler : IAggregatePersistanceHandler
-    //{
-    //    private readonly Action<DomainEvent> _onEachEvent;
-    //    private readonly Action _afterAllEvents;
-    //    private readonly IActorRef _aggregateActor;
-    //
-    //    public AggregateAkkaPersistanceHandler(IActorRef aggregateActor, Action<DomainEvent> onEachEvent, Action afterAllEvents)
-    //    {
-    //        _aggregateActor = aggregateActor;
-    //        _afterAllEvents = afterAllEvents;
-    //        _onEachEvent = onEachEvent;
-    //    }
-    //
-    //    public Task Persist(Task<Aggregate> eventProducerTask)
-    //    {
-    //        eventProducerTask.ContinueWith(t => new SaveEventsAsync(t.Result, _onEachEvent, _afterAllEvents))
-    //                         .PipeTo(_aggregateActor);
-    //
-    //        return Task.CompletedTask;
-    //    }
-    //}
-
     //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -62,13 +30,27 @@ namespace GridDomain.Node.Actors
         public const string CommandRaisedAnError = "command raised an error";
         public const string PublishingEvent = "Publishing event";
         public const string CommandExecutionCreatedAnEvent = "Command execution created an event";
+
+        private const string ErrorOnEventApplyText = "Aggregate {id} raised errors on events apply after persist while executing command {@command}  \r\n" +
+                                                     "State is supposed to be corrupted.  \r\n" +
+                                                     "Events will be persisted.\r\n" +
+                                                     "Aggregate will be stopped immediately, all pending commands will be dropped.";
+
+        const string ErrorOnContinuationText = "Aggregate {id} raised error while executing command {@command}. \r\n" +
+                                               "After some events produced and persisted, a continuation raises an error \r\n" +
+                                               "Current aggregate state will be taken as a new state. \r\n" +
+                                               "Aggregate is running and will execute futher commands";
+
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;
         private readonly ProcessEntry _domainEventProcessFailEntry;
         private readonly IPublisher _publisher;
         private readonly IActorRef _schedulerActorRef;
+        private bool _shouldTerminate;
 
         private readonly IDictionary<Guid, object> _messagesToProject = new Dictionary<Guid, object>();
+        private bool IsProjecting => _messagesToProject.Any();
+
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
         private readonly List<IActorRef> _commandCompletedWaiters = new List<IActorRef>();
 
@@ -91,6 +73,7 @@ namespace GridDomain.Node.Actors
             _schedulerActorRef = schedulerActorRef;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, PublishingEvent, CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, CreatedFault, CommandRaisedAnError);
+
 
             RegisterAggregatePersistence();
 
@@ -135,7 +118,6 @@ namespace GridDomain.Node.Actors
             //finished some call on aggregate, need persist produced events
             Command<SaveEventsAsync>(e =>
                                      {
-                                         //bool shouldTerminate = false;
                                          PersistAll(e.NewState.GetDomainEvents().Select(evt => evt.CloneWithSaga(command.SagaId)),
                                                     persistedEvent =>
                                                     {
@@ -145,15 +127,11 @@ namespace GridDomain.Node.Actors
                                                         }
                                                         catch (Exception ex)
                                                         {
-                                                            Log.Error("Aggregate {id} raised errors on events apply after persist while executing command {@command} " +
-                                                                      "State is supposed to be corrupted until code changes." +
-                                                                      "Futher aggregate running is unsafe." +
-                                                                      "Events within same command will be persisted but will not be applied to aggregate to reduce " +
-                                                                      "possible state corruption. Aggregate will be shut down after all events persist.", Id, command);
-
-                                                            Self.Tell(new Status.Failure(ex));
-                                                            Self.Tell(GracefullShutdownRequest.Instance);
-                                                            //TODO: shutdown without snapshot save
+                                                            Log.Error(ErrorOnEventApplyText, Id, command);
+                                                            PublishError(command,commandMetadata,ex);
+                                                            //intentionally drop all pending commands and messages
+                                                            //state is corrupted
+                                                            Context.Stop(Self);
                                                             return;
                                                         }
 
@@ -161,31 +139,34 @@ namespace GridDomain.Node.Actors
                                                         NotifyPersistenceWatchers(persistedEvent);
                                                         Project(persistedEvent, producedEventsMetadata);
 
-                                                        if (e.NewState.IsPendingPersistence)
+                                                        if (e.NewState.HasUncommitedEvents)
                                                             return;
 
                                                         try
                                                         {
                                                             e.Continuation();
-                                                            //command execution is finished
                                                         }
                                                         catch (Exception ex)
                                                         {
-                                                            Log.Error("Aggregate {id} raised error while executing command {@command}. \r\n" +
-                                                                      "After some events produced and persisted, a continuation raises an error \r\n" +
-                                                                      "Current aggregate state will be taken as a result. \r\n" +
-                                                                      "Aggregate is running and will execute futher commands", Id, command);
-
-                                                            //TODO: shutdown without snapshot save
-                                                            Self.Tell(new Status.Failure(ex));
+                                                            Log.Error(ErrorOnContinuationText, Id, command);
+                                                            PublishError(command,commandMetadata,ex);
                                                         }
 
                                                         Self.Tell(e.NewState);
                                                     });
                                      });
             //aggregate raised an error during command execution
-            Command<Status.Failure>(f => FinishCommandWithError(command, commandMetadata, f.Cause));
-            Command<Failure>(f => FinishCommandWithError(command, commandMetadata, f.Exception));
+            Command<Status.Failure>(f =>
+                                    {
+                                        PublishError(command, commandMetadata, f.Cause);
+                                        CompleteCommandExecution(command);
+                                    });
+            Command<Failure>(f =>
+                             {
+                                 PublishError(command, commandMetadata, f.Exception);
+                                 CompleteCommandExecution(command);
+                             });
+
             //aggregate command execution is finished 
             //produced events are persisted
             //we can have events not projected yet
@@ -193,7 +174,7 @@ namespace GridDomain.Node.Actors
                                 {
                                     //special case
                                     //aggregate was just created, only constructor was called
-                                    //need persist it events
+                                    //need persist its events
                                     if (!ReferenceEquals(newState, State))
                                     {
                                         //renew state to not fall into recursion
@@ -208,13 +189,11 @@ namespace GridDomain.Node.Actors
 
                                     //handler finished execution but need to wait for events persistence
                                     //or aggregate method started execution but don't produce anything yet
-                                    if (newState.IsPendingPersistence || newState.IsMethodExecuting)
+                                    //or projection in progress, will finish execution later by notification from message processor
+                                    if (IsProjecting || newState.HasUncommitedEvents || newState.IsMethodExecuting)
                                         return;
 
-                                    //projection finished progress, 
-                                    if (!_messagesToProject.Any())
-                                        CommandCompleted(command);
-                                    //projection in progress, will finish execution later by notification from message processor
+                                    CompleteCommandExecution(command);
                                 });
             //projection of event pack from aggregate finished
             //we can have more event packs to project
@@ -224,14 +203,21 @@ namespace GridDomain.Node.Actors
                                               object projected;
                                               if (!_messagesToProject.TryGetValue(m.ProjectId, out projected))
                                                   throw new UnknownProjectionFinishedException();
+
                                               _messagesToProject.Remove(m.ProjectId);
 
                                               _publisher.Publish(projected, producedEventsMetadata);
 
-                                              //all projections are finished, aggregate events are persisted
-                                              //it means command execution is finished
-                                              if (!_messagesToProject.Any() && !State.IsPendingPersistence)
-                                                  CommandCompleted(command);
+                                              if (IsProjecting || State.HasUncommitedEvents)
+                                                  return;
+
+                                              if (_shouldTerminate)
+                                              {
+                                                  Self.Tell(GracefullShutdownRequest.Instance);
+                                                  _shouldTerminate = true;
+                                              }
+
+                                              CompleteCommandExecution(command);
                                           });
 
             Command<IMessageMetadataEnvelop<ICommand>>(o =>
@@ -246,7 +232,8 @@ namespace GridDomain.Node.Actors
                                               });
         }
 
-        private void FinishCommandWithError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
+
+        private void PublishError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
         {
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
 
@@ -255,10 +242,9 @@ namespace GridDomain.Node.Actors
             Project(fault, producedFaultMetadata);
             Log.Error(exception, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, exception, command);
             _publisher.Publish(fault, producedFaultMetadata);
-            CommandCompleted(command);
         }
 
-        protected void CommandCompleted(ICommand cmd)
+        private void CompleteCommandExecution(ICommand cmd)
         {
             Behavior.Unbecome();
             Stash.UnstashAll();
