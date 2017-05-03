@@ -11,7 +11,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
     public class Given_aggregate_When_cancel_existing_future_event
     {
         [Fact]
-        public void When_cancel_existing_scheduled_future_event()
+        public void Then_it_occures_and_applies_to_aggregate()
         {
             var aggregate = new FutureEventsAggregate(Guid.NewGuid());
             var testValue = "value D";
@@ -19,12 +19,15 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
 
+
             var futureEventA = aggregate.GetEvents<FutureEventScheduledEvent>().First();
+            aggregate.MarkPersisted(futureEventA);
 
-            var futureEventOutOfCriteria = aggregate.GetEvents<FutureEventScheduledEvent>().Skip(1).First();
+            var futureEventOutOfCriteria = aggregate.GetEvents<FutureEventScheduledEvent>().First();
+            aggregate.MarkPersisted(futureEventOutOfCriteria);
 
-            aggregate.ClearEvents();
             aggregate.CancelFutureEvents(testValue);
+
             // Cancelation_event_is_produced()
             var cancelEvent = aggregate.GetEvent<FutureEventCanceledEvent>();
             Assert.Equal(futureEventA.Id, cancelEvent.FutureEventId);
@@ -32,7 +35,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             var cancelEvents = aggregate.GetEvents<FutureEventCanceledEvent>();
             Assert.True(cancelEvents.All(e => e.FutureEventId != futureEventOutOfCriteria.Id));
             // Canceled_event_cannot_be_raised()
-            aggregate.ClearEvents();
+            aggregate.MarkPersisted(cancelEvent);
             Assert.Throws<ScheduledEventNotFoundException>(() => aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()));
             var anyEvents = aggregate.GetEvents<DomainEvent>();
             Assert.Empty(anyEvents);

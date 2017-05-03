@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
     public class Given_aggregate_When_cancel_not_existing_future_event
     {
         [Fact]
-        public void When_cancel_existing_scheduled_future_event()
+        public void Then_not_found_exception_occures()
         {
             var aggregate = new FutureEventsAggregate(Guid.NewGuid());
             var testValue = "value D";
@@ -20,12 +20,11 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Cancelation
             aggregate.ClearEvents();
             aggregate.CancelFutureEvents("will not be found in any future event");
 
-            //No_events_are_produced()
+         
+            Assert.Throws<ScheduledEventNotFoundException>(() => aggregate.RaiseScheduledEvent(futureEvent.Id, Guid.NewGuid()));
+
+            //No_events_were_produced()
             Assert.Empty(aggregate.GetEvents<DomainEvent>());
-            //All_existed_future_events_remain_the_same()
-            aggregate.RaiseScheduledEvent(futureEvent.Id, Guid.NewGuid());
-            var occuredEvent = aggregate.GetEvent<FutureEventOccuredEvent>();
-            Assert.Equal(futureEvent.Id, occuredEvent.FutureEventId);
         }
     }
 }
