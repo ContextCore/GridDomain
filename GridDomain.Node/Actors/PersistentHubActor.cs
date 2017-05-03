@@ -59,6 +59,12 @@ namespace GridDomain.Node.Actors
                                              });
         }
 
+        private void StashMessage(object message)
+        {
+            Log.Info("Actor hub {id} stashing message {messge}", GetType().Name, message);
+            Stash.Stash();
+        }
+
         protected void SendToChild(object message, Guid childId, string name)
         {
             ChildInfo knownChild;
@@ -77,8 +83,7 @@ namespace GridDomain.Node.Actors
                 //it is cheaper to resume child than wait for it termination and create rom scratch
                 if (knownChild.Terminating)
                 {
-                    Log.Info("Actor hub {id} stashing message {messge}", GetType().Name, message);
-                    Stash.Stash();
+                    StashMessage(message);
                     knownChild.Ref.Tell(CancelShutdownRequest.Instance);
                     Log.Debug(
                                  "Stashing message {msg} for child {id}. Waiting for child resume from termination",

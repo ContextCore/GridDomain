@@ -111,25 +111,19 @@ namespace GridDomain.Node.Actors
 
         private void StashingMessagesToProcessBehavior()
         {
-            Receive<IMessageMetadataEnvelop<DomainEvent>>(m =>
-                                                          {
-                                                              Log.Warning("Saga {id} stashing message {messge}", Id, m);
-                                                              Stash.Stash();
-                                                          });
+            Receive<IMessageMetadataEnvelop<DomainEvent>>(m => StashMessage(m));
 
-            Receive<IMessageMetadataEnvelop<IFault>>(m =>
-                                                     {
-                                                         Log.Warning("Saga {id} stashing message {messge}", Id, m);
-                                                         Stash.Stash();
-                                                     });
+            Receive<IMessageMetadataEnvelop<IFault>>(m => StashMessage(m));
 
-            Receive<RedirectToNewSaga>(env =>
-                                       {
-                                           Log.Warning("Saga {id} stashing message {messge}", Id, env);
-                                           Stash.Stash();
-                                       });
+            Receive<RedirectToNewSaga>(m => StashMessage(m));
 
             ProxifyingCommandsBehavior();
+        }
+
+        private void StashMessage(object m)
+        {
+            Log.Warning("Saga {id} stashing message {messge}", Id, m);
+            Stash.Stash();
         }
 
         private void AwaitingMessageBehavior()

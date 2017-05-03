@@ -24,7 +24,8 @@ namespace GridDomain.Tests.XUnit.GridConsole
         private GridNodeConnector _connector;
         private GridDomainNode _serverNode;
 
-        [Fact]
+        //[Fact]
+
         public async Task Given_existing_GridNode()
         {
             var container = new UnityContainer();

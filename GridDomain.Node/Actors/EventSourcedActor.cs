@@ -15,6 +15,7 @@ using Helios.Concurrency;
 
 namespace GridDomain.Node.Actors
 {
+
     public class EventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
@@ -74,6 +75,11 @@ namespace GridDomain.Node.Actors
                                                                                 BusinessDateTime.UtcNow);
                                          });
         }
+        protected void StashMessage(object message)
+        {
+            Log.Debug("Aggregate {id} stashing message {message}", PersistenceId, message);
+            Stash.Stash();
+        }
 
         private void SubscribePersistentObserver(NotifyOnPersistenceEvents c)
         {
@@ -101,6 +107,8 @@ namespace GridDomain.Node.Actors
             foreach (var watcher in _persistenceWatchers)
                 watcher.Tell(new Persisted(msg));
         }
+
+     
 
         protected virtual void TerminatingBehavior()
         {

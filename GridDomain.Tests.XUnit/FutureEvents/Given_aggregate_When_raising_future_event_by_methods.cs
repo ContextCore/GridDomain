@@ -26,7 +26,10 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 
             aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid());
 
+
             var producedEvent = aggregate.GetEvent<TestDomainEvent>();
+            aggregate.MarkPersisted(producedEvent);
+
             var futureEventOccuredEvent = aggregate.GetEvent<FutureEventOccuredEvent>();
 
             //Future_event_occurance_has_same_id_as_future_event()

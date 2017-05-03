@@ -128,8 +128,10 @@ namespace GridDomain.Node.Actors
                                                         catch (Exception ex)
                                                         {
                                                             Log.Error(ErrorOnEventApplyText, Id, command);
-                                                            PublishError(command,commandMetadata,ex);
+                                                            PublishError(command, commandMetadata, ex);
+                                                            
                                                             //intentionally drop all pending commands and messages
+                                                            //and processing projection builders as
                                                             //state is corrupted
                                                             Context.Stop(Self);
                                                             return;
@@ -137,7 +139,7 @@ namespace GridDomain.Node.Actors
 
                                                         TrySaveSnapshot();
                                                         NotifyPersistenceWatchers(persistedEvent);
-                                                        Project(persistedEvent, producedEventsMetadata);
+                                                        Project(persistedEvent, producedEventsMetadata).PipeTo(Self);
 
                                                         if (e.NewState.HasUncommitedEvents)
                                                             return;
@@ -149,23 +151,17 @@ namespace GridDomain.Node.Actors
                                                         catch (Exception ex)
                                                         {
                                                             Log.Error(ErrorOnContinuationText, Id, command);
-                                                            PublishError(command,commandMetadata,ex);
+
+                                                            var self = Self;
+                                                            PublishError(command, commandMetadata, ex).ContinueWith(t => self.Tell(e.NewState));
+                                                            return;
                                                         }
 
                                                         Self.Tell(e.NewState);
                                                     });
                                      });
             //aggregate raised an error during command execution
-            Command<Status.Failure>(f =>
-                                    {
-                                        PublishError(command, commandMetadata, f.Cause);
-                                        CompleteCommandExecution(command);
-                                    });
-            Command<Failure>(f =>
-                             {
-                                 PublishError(command, commandMetadata, f.Exception);
-                                 CompleteCommandExecution(command);
-                             });
+            Command<Status.Failure>(f => PublishError(command, commandMetadata, f.Cause).PipeTo(Self));
 
             //aggregate command execution is finished 
             //produced events are persisted
@@ -220,28 +216,22 @@ namespace GridDomain.Node.Actors
                                               CompleteCommandExecution(command);
                                           });
 
-            Command<IMessageMetadataEnvelop<ICommand>>(o =>
-                                                       {
-                                                           Log.Debug("Aggregate {id} stashing message {message}", PersistenceId, o);
-                                                           Stash.Stash();
-                                                       });
-            Command<GracefullShutdownRequest>(o =>
-                                              {
-                                                  Log.Debug("Aggregate {id} stashing message {message}", PersistenceId, o);
-                                                  Stash.Stash();
-                                              });
+            Command<IMessageMetadataEnvelop<ICommand>>(o => StashMessage(o));
+            Command<GracefullShutdownRequest>(o => StashMessage(o));
         }
 
-
-        private void PublishError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
+        private Task<AllHandlersCompleted> PublishError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
         {
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
 
             var fault = Fault.NewGeneric(command, exception, command.SagaId, typeof(TAggregate));
-
-            Project(fault, producedFaultMetadata);
             Log.Error(exception, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, exception, command);
-            _publisher.Publish(fault, producedFaultMetadata);
+
+            return Project(fault, producedFaultMetadata).ContinueWith(t =>
+                                                                      {
+                                                                          _publisher.Publish(fault, producedFaultMetadata);
+                                                                          return t.Result;
+                                                                      });
         }
 
         private void CompleteCommandExecution(ICommand cmd)
@@ -258,13 +248,12 @@ namespace GridDomain.Node.Actors
             Command<IMessageMetadataEnvelop<ICommand>>(c =>
                                                        {
                                                            Self.Tell(CancelShutdownRequest.Instance);
-                                                           Log.Debug("Aggregate {id} stashing message {message}", PersistenceId, c);
-                                                           Stash.Stash();
+                                                           StashMessage(c);
                                                        });
             base.TerminatingBehavior();
         }
 
-        private void Project(object evt, IMessageMetadata commandMetadata)
+        private Task<AllHandlersCompleted> Project(object evt, IMessageMetadata commandMetadata)
         {
             var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
 
@@ -274,7 +263,7 @@ namespace GridDomain.Node.Actors
                .With<FutureEventScheduledEvent>(m => Handle(m, commandMetadata))
                .With<FutureEventCanceledEvent>(m => Handle(m, commandMetadata));
 
-            _customHandlersActor.Ask<AllHandlersCompleted>(envelop).PipeTo(Self);
+            return _customHandlersActor.Ask<AllHandlersCompleted>(envelop);
         }
 
         private Task Handle(FutureEventScheduledEvent futureEventScheduledEvent, IMessageMetadata messageMetadata)

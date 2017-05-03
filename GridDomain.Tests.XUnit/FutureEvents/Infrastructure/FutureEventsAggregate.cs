@@ -33,9 +33,8 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
                 Emit(new TestDomainEvent(testValue, Id), raiseTime);
                 return;
             }
-            var testErrorDomainEvent = new TestErrorDomainEvent(testValue, Id, succedOnRetryNum);
 
-            Emit(testErrorDomainEvent, () => { throw new TestScheduledException(RetriesToSucceed.Value + 1); }, raiseTime);
+            Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
         }
 
         public void CancelFutureEvents(string likeValue)
@@ -51,6 +50,12 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         private void Apply(TestErrorDomainEvent e)
         {
+            if (!RetriesToSucceed.HasValue)
+            {
+                RetriesToSucceed = e.SuccedOnRetryNum;
+                return;
+            }
+
             if (RetriesToSucceed == 0)
             {
                 RetriesToSucceed = e.SuccedOnRetryNum;
@@ -58,7 +63,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             }
 
             RetriesToSucceed--;
-            //throw new TestScheduledException(RetriesToSucceed.Value + 1);
+            throw new TestScheduledException(RetriesToSucceed.Value + 1);
         }
     }
 }

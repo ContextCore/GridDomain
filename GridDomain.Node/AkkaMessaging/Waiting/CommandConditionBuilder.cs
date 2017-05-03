@@ -63,7 +63,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
         protected override bool DefaultFilter<TMsg>(object received)
         {
-            var msg = received as MessageMetadataEnvelop<TMsg>;
+            //interface is important as it provides cavoriance
+            //it allows to check messages with concete inner types when TMsg is object
+            var msg = received as IMessageMetadataEnvelop<TMsg>;
             return msg != null && msg.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
         }
 

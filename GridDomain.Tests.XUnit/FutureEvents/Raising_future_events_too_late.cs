@@ -22,7 +22,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
             await Node.Prepare(testCommand)
-                      .Expect<TestDomainEvent>()
+                      .Expect<JobSucceeded>()
                       .And<JobSucceeded>()
                       .Execute();
 

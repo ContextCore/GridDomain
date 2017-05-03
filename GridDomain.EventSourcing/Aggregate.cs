@@ -94,6 +94,11 @@ namespace GridDomain.EventSourcing
             Emit(EmptyContinue, e);
         }
 
+        protected void Emit(DomainEvent @event,Action afterPersist)
+        {
+            Emit(afterPersist, @event);
+        }
+
         protected void Emit(Action afterPersist, params DomainEvent[] events)
         {
             Emit(Task.FromResult(events),  afterPersist);
@@ -114,7 +119,7 @@ namespace GridDomain.EventSourcing
 
                                                         Interlocked.Decrement(ref _emmitingMethodsInProgressCount);
                                                         return this;
-                                                    });
+                                                    },TaskContinuationOptions.AttachedToParent);
 
             _persistEvents(newStateTask, continuation ?? EmptyContinue);
         }
@@ -131,7 +136,10 @@ namespace GridDomain.EventSourcing
             if (!FutureEvents.TryGetValue(futureEventId, out e))
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            Emit(e.Event, new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id));
+            var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
+
+            //will emit occured event only after succesfull apply & persist of scheduled event
+            Emit(e.Event, () => Emit(futureEventOccuredEvent));
         }
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)

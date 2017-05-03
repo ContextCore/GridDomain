@@ -10,9 +10,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
     {
         public FutureEventsFixture(ITestOutputHelper output = null) : base(null, null, null, output)
         {
-            Add(
-                new CustomContainerConfiguration(
-                                                 c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
+            Add(new CustomContainerConfiguration(c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
             Add(new FutureEventsRouteMap());
             OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }
