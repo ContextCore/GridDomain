@@ -10,12 +10,12 @@ namespace GridDomain.CQRS
         /// </summary>
         /// <param name="defaultTimeout"></param>
         /// <returns></returns>
-        IMessageWaiter<Task<IWaitResults>> NewExplicitWaiter(TimeSpan? defaultTimeout = null);
+        IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null);
         /// <summary>
         /// Wait for messages with metadata envelop, e.g. IMessageWithMetadata<T>
         /// </summary>
         /// <param name="defaultTimeout"></param>
         /// <returns></returns>
-        IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null);
+        IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null);
     }
 }

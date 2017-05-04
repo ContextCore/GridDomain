@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         private readonly LocalAkkaEventBusTransport _transport;
-        private readonly Task<IWaitResults> _results;
+        private readonly Task<IWaitResult> _results;
 
         [Fact]
         public void Message_not_satisfying_filter_should_not_be_received()

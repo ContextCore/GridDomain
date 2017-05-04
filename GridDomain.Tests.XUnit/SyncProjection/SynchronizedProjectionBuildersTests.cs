@@ -37,11 +37,11 @@ namespace GridDomain.Tests.XUnit.SyncProjection
 
             createCommands.Shuffle();
 
-            var createWaiters = createCommands.Select(c => Node.Prepare(c).Expect<BalloonCreated>().Execute());
+            var createWaiters = createCommands.Select(async c => (IWaitResult) await Node.Prepare(c).Expect<BalloonCreated>().Execute());
 
-            var updateWaiters = updateCommands.Select(c => Node.Prepare(c).Expect<BalloonTitleChanged>().Execute());
+            var updateWaiters = updateCommands.Select(async c => (IWaitResult) await Node.Prepare(c).Expect<BalloonTitleChanged>().Execute());
 
-            var allResults = await Task.WhenAll(createWaiters.Union(updateWaiters));
+            var allResults = await Task.WhenAll(createWaiters.Concat(updateWaiters));
 
             var eventsPerAggregate =
                 allResults.SelectMany(r => r.All)

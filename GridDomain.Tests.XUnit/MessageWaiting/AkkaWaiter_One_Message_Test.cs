@@ -26,7 +26,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
         }
 
         private readonly string _testmsg;
-        private readonly Task<IWaitResults> _results;
+        private readonly Task<IWaitResult> _results;
 
         [Fact]
         public void Message_is_included_in_all_results()

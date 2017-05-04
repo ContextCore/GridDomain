@@ -39,7 +39,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return ConditionBuilder.And(type, filter);
         }
 
-        public async Task<IWaitResults> Start(TimeSpan? timeout = null)
+        public async Task<IWaitResult> Start(TimeSpan? timeout = null)
         {
             if (!_allExpectedMessages.IsEmpty)
                 throw new WaiterIsFinishedException();
@@ -56,7 +56,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 foreach (var type in ConditionBuilder.MessageFilters.Keys)
                     _subscriber.Unsubscribe(inbox.Receiver, type);
 
-                return new WaitResults(_allExpectedMessages);
+                return new WaitResult(_allExpectedMessages);
             }
         }
 

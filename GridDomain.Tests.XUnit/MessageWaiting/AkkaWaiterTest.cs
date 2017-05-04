@@ -13,7 +13,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
     public abstract class AkkaWaiterTest : IDisposable
     {
         private readonly ActorSystem _actorSystem;
-        private readonly Task<IWaitResults> _results;
+        private readonly Task<IWaitResult> _results;
         private readonly LocalAkkaEventBusTransport _transport;
 
         protected AkkaWaiterTest()
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.XUnit.MessageWaiting
             _actorSystem.Terminate().Wait();
         }
 
-        protected abstract Task<IWaitResults> ConfigureWaiter(LocalMessagesWaiter waiter);
+        protected abstract Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter);
 
         protected void Publish(params object[] messages)
         {

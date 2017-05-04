@@ -6,19 +6,19 @@ using GridDomain.CQRS.Messaging.Akka;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class LocalMessagesWaiter : LocalMessagesWaiter<Task<IWaitResults>>
+    public class LocalMessagesWaiter : LocalMessagesWaiter<Task<IWaitResult>>
     {
         public LocalMessagesWaiter(ActorSystem system,
                                    IActorSubscriber subscriber,
                                    TimeSpan defaultTimeout) : this(system,
                                                                    subscriber,
                                                                    defaultTimeout,
-                                                                   new MetadataConditionBuilder<Task<IWaitResults>>()) {}
+                                                                   new MetadataConditionBuilder<Task<IWaitResult>>()) {}
 
         private LocalMessagesWaiter(ActorSystem system,
                                     IActorSubscriber subscriber,
                                     TimeSpan defaultTimeout,
-                                    ConditionBuilder<Task<IWaitResults>> conditionBuilder) : base(system,
+                                    ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system,
                                                                                                  subscriber,
                                                                                                  defaultTimeout,
                                                                                                  conditionBuilder)

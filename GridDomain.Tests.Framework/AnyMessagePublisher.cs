@@ -20,12 +20,12 @@ namespace GridDomain.Tests.Framework
             _commandPipe = commandPipe;
         }
 
-        public async Task<IWaitResults> SendToSagas(DomainEvent message, Guid sagaId, IMessageMetadata metadata = null)
+        public async Task<IWaitResult> SendToSagas(DomainEvent message, Guid sagaId, IMessageMetadata metadata = null)
         {
             return await SendToSagas(message.CloneWithSaga(sagaId), metadata);
         }
 
-        public async Task<IWaitResults> SendToSagas(DomainEvent message, IMessageMetadata metadata = null)
+        public async Task<IWaitResult> SendToSagas(DomainEvent message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();
 
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Framework
             return await task;
         }
 
-        public async Task<IWaitResults> SendToSagas(IFault message, IMessageMetadata metadata = null)
+        public async Task<IWaitResult> SendToSagas(IFault message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();
 

@@ -44,7 +44,7 @@ namespace GridDomain.Tools.Connector
             _commandExecutor.Execute(command, metadata);
         }
 
-        public IMessageWaiter<Task<IWaitResults>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewExplicitWaiter(defaultTimeout);
         }
@@ -88,7 +88,7 @@ namespace GridDomain.Tools.Connector
             _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
 
-        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout);
         }

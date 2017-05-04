@@ -300,7 +300,7 @@
     <Compile Include="AkkaMessaging\Waiting\PredicateBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitEndInfo.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaiterIsFinishedException.cs" />
-    <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaitResult.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />

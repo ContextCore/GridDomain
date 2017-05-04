@@ -7,13 +7,46 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandConditionBuilder<TCommand> : MetadataConditionBuilder<Task<IWaitResults>>,
+
+
+    public class CommandConditionBuilderTypedDecorator<T> : ICommandConditionBuilder<T>
+    {
+        private readonly ICommandConditionBuilder _commandConditionBuilder;
+
+        public CommandConditionBuilderTypedDecorator(ICommandConditionBuilder builder)
+        {
+            _commandConditionBuilder = builder;
+        }
+
+        Task<IWaitResult> ICommandConditionBuilder.Execute(TimeSpan? timeout, bool failOnAnyFault)
+        {
+            return _commandConditionBuilder.Execute(timeout, failOnAnyFault);
+        }
+
+        public ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return _commandConditionBuilder.And(filter);
+
+        }
+
+        public ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return _commandConditionBuilder.Or(filter);
+
+        }
+
+        async Task<IWaitResult<T>> ICommandConditionBuilder<T>.Execute(TimeSpan? timeout, bool failOnAnyFault)
+        {
+            var res = await _commandConditionBuilder.Execute();
+            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop<T>>().First()); 
+        }
+    }
+    public class CommandConditionBuilder<TCommand> : MetadataConditionBuilder<Task<IWaitResult>>,
                                                      ICommandConditionBuilder where TCommand : ICommand
     {
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly IActorRef _executorActorRef;
-        private IConditionBuilder<Task<IWaitResults>> _conditionBuilder;
 
         public CommandConditionBuilder(TCommand command,
                                        IMessageMetadata commandMetadata,
@@ -24,7 +57,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _command = command;
         }
 
-        public async Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
+        public async Task<IWaitResult> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
             //we can launch any command with CommandConditionBuilder<ICommand>
             //and TCommand will resolve to ICommand leading to incorect subscription

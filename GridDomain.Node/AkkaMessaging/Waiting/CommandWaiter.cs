@@ -7,7 +7,9 @@ using GridDomain.CQRS.Messaging.Akka;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandWaiter<TCommand> : LocalMessagesWaiter<Task<IWaitResults>>,
+
+
+    public class CommandWaiter<TCommand> : LocalMessagesWaiter<Task<IWaitResult>>,
                                            ICommandWaiter where TCommand : ICommand
     {
         private readonly CommandConditionBuilder<TCommand> _conditionBuilder;
@@ -29,15 +31,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
 
 
-        public Task<IWaitResults> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
+        public Task<IWaitResult> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
         {
             return _conditionBuilder.Execute(timeout, failOnAnyFault);
         }
 
-       ICommandConditionBuilder ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
+       ICommandConditionBuilder<TMsg> ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
        {
            Expect(filter);
-           return _conditionBuilder;
+           return new CommandConditionBuilderTypedDecorator<TMsg>(_conditionBuilder);
        }
        
        ICommandConditionBuilder ICommandWaiter.Expect(Type type, Func<object, bool> filter)

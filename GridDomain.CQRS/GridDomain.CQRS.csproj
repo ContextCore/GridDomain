@@ -70,7 +70,7 @@
     <Compile Include="IMessageWaiterBase.cs" />
     <Compile Include="IMessageWaiterFactory.cs" />
     <Compile Include="IQuery.cs" />
-    <Compile Include="IWaitResults.cs" />
+    <Compile Include="IWaitResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ISingleQuery.cs" />
   </ItemGroup>

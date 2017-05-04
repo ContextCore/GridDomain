@@ -28,27 +28,31 @@ namespace GridDomain.Tests.XUnit.Metadata
             _command = new InflateNewBallonCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(_command, _commandMetadata).Expect<BalloonCreated>().Execute();
+            var res = await Node.Prepare(_command, _commandMetadata)
+                                .Expect<BalloonCreated>()
+                                .Execute();
+            
+            var messageMetadata = res.ReceivedMetadata;
+            var balloonCreated = res.Received;
 
-            _answer = res.MessageWithMetadata<BalloonCreated>();
-            //Result_contains_metadata()
-            Assert.NotNull(_answer.Metadata);
+            Assert.NotNull(messageMetadata);
             //Result_contains_message()
-            Assert.NotNull(_answer.Message);
+
+            Assert.NotNull(balloonCreated);
             //Result_message_has_expected_type()
-            Assert.IsAssignableFrom<BalloonCreated>(_answer.Message);
+            Assert.IsAssignableFrom<BalloonCreated>(balloonCreated);
             //Result_message_has_expected_id()
-            Assert.Equal(_command.AggregateId, _answer.Message.SourceId);
+            Assert.Equal(_command.AggregateId, balloonCreated.SourceId);
             //Result_message_has_expected_value()
-            Assert.Equal(_command.Title.ToString(), _answer.Message.Value);
+            Assert.Equal(_command.Title.ToString(), balloonCreated.Value);
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal(_command.Id, _answer.Metadata.CasuationId);
+            Assert.Equal(_command.Id, messageMetadata.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()
-            Assert.Equal(_commandMetadata.CorrelationId, _answer.Metadata.CorrelationId);
+            Assert.Equal(_commandMetadata.CorrelationId, messageMetadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()
-            Assert.Equal(1, _answer.Metadata.History?.Steps.Count);
+            Assert.Equal(1, messageMetadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
-            var step = _answer.Metadata.History.Steps.First();
+            var step = messageMetadata.History.Steps.First();
 
             Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId).Name, step.Who);
             Assert.Equal(AggregateActor<Balloon>.CommandExecutionCreatedAnEvent, step.Why);

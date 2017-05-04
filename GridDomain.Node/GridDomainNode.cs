@@ -52,7 +52,7 @@ namespace GridDomain.Node
             _commandExecutor.Execute(command, metadata);
         }
 
-        public IMessageWaiter<Task<IWaitResults>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewExplicitWaiter(defaultTimeout ?? Settings.DefaultTimeout);
         }
@@ -170,7 +170,7 @@ namespace GridDomain.Node
             Settings.Log.Debug("GridDomain node {Id} stopped", Id);
         }
 
-        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout);
         }
