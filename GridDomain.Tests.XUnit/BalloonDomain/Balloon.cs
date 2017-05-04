@@ -12,7 +12,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
 
         public Balloon(Guid id, string value) : this(id)
         {
-            RaiseEvent(new BalloonCreated(value, id));
+            Emit(new BalloonCreated(value, id));
         }
 
         public string Title { get; private set; }
