@@ -87,7 +87,7 @@ namespace GridDomain.Node.Actors
                                                       .PipeTo(Self));
         }
 
-        private void AwaitingCommandBehavior()
+        protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
             Command<NotifyOnCommandComplete>(n =>

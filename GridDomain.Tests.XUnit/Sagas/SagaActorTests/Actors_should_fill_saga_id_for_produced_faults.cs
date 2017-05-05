@@ -6,6 +6,8 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
@@ -32,8 +34,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                             Props.Create(
                                          () =>
                                              new MessageProcessActor<BalloonTitleChanged, OddFaultyMessageHandler>(
-                                                                                                                            new OddFaultyMessageHandler(transport),
-                                                                                                                            transport)));
+                                                                                                                   new OddFaultyMessageHandler(transport),
+                                                                                                                   transport)));
 
             actor.Tell(new MessageMetadataEnvelop<DomainEvent>(message, MessageMetadata.Empty));
 
@@ -50,25 +52,21 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
 
             var transport = new LocalAkkaEventBusTransport(Sys);
             transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
+            var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), TestActor)));
 
-            var actor =
-                Sys.ActorOf(
-                            Props.Create(
-                                         () =>
-                                             new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
-                                                                               TestActor,
-                                                                               transport,
-                                                                               new SnapshotsPersistencePolicy(1, 5, null, null),
-                                                                               new AggregateFactory(),
-                                                                               TestActor)),
+            var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
+                                                                                         TestActor,
+                                                                                         transport,
+                                                                                         new SnapshotsPersistencePolicy(1, 5, null, null),
+                                                                                         new AggregateFactory(),
+                                                                                         handlersActor)),
                             AggregateActorName.New<HomeAggregate>(command.Id).Name);
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 
-            var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
+            var fault = FishForMessage<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(m => true,TimeSpan.FromMinutes(100));
 
             Assert.Equal(command.SagaId, fault.Message.SagaId);
-            Assert.IsAssignableFrom<Fault<GoSleepCommand>>(fault.Message);
         }
     }
 }

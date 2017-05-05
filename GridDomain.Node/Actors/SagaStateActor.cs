@@ -20,8 +20,13 @@ namespace GridDomain.Node.Actors
                                                                     aggregateConstructor,
                                                                     customHandlersActor)
         {
-            int a = 1;
-            Command<GetSagaState>(c => Sender.Tell(new SagaState<TState>(State.State)));
         }
+
+        protected override void AwaitingCommandBehavior()
+        {
+            Command<GetSagaState>(c => Sender.Tell(new SagaState<TState>(State.State)));
+            base.AwaitingCommandBehavior();
+        }
+      
     }
 }

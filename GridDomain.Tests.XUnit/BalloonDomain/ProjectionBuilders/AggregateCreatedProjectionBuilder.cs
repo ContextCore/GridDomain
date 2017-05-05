@@ -26,7 +26,6 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public static int ProjectionGroupHashCode { get; set; }
 
         public virtual Task Handle(BalloonCreated msg, IMessageMetadata metadata)
         {

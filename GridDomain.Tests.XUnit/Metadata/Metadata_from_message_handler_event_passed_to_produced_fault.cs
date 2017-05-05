@@ -39,12 +39,10 @@ namespace GridDomain.Tests.XUnit.Metadata
             _command = new InflateNewBallonCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res =
-                await
-                    Node.Prepare(_command, _commandMetadata)
-                        .Expect<BalloonCreated>()
-                        .And<IFault<BalloonCreated>>()
-                        .Execute(null, false);
+            var res = await Node.Prepare(_command, _commandMetadata)
+                                .Expect<BalloonCreated>()
+                                .And<Fault<BalloonCreated>>()
+                                .Execute(null, false);
 
             _answer = res.MessageWithMetadata<IFault<BalloonCreated>>();
             _aggregateEvent = res.MessageWithMetadata<BalloonCreated>();

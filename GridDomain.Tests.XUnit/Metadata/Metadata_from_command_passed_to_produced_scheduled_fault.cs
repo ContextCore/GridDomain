@@ -25,12 +25,10 @@ namespace GridDomain.Tests.XUnit.Metadata
             var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12", 1);
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res =
-                await
-                    Node.Prepare(command, commandMetadata)
-                        .Expect<JobFailed>()
-                        .And<IFault<RaiseScheduledDomainEventCommand>>()
-                        .Execute(null, false);
+            var res = await Node.Prepare(command, commandMetadata)
+                                .Expect<JobFailed>()
+                                .And<Fault<RaiseScheduledDomainEventCommand>>()
+                                .Execute(null, false);
 
             var schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
             var jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();

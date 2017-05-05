@@ -81,7 +81,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
         {
             var domainEventA = new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _sagaId);
 
-            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
+            _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA));
 
             FishForMessage<SagaTransited>(m => true);
 

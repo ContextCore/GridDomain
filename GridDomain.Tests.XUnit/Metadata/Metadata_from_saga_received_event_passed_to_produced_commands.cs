@@ -32,8 +32,8 @@ namespace GridDomain.Tests.XUnit.Metadata
                                                             Guid.NewGuid());
 
             Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
-            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent[]>(new[] {gotTiredEvent},
-                                                                                   gotTiredEventMetadata));
+            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
+                                                                                 gotTiredEventMetadata));
 
             var answer = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
             var command = answer.Message as MakeCoffeCommand;
