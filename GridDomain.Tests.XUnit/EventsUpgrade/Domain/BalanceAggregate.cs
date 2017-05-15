@@ -13,7 +13,7 @@ namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
 
         public BalanceAggregate(Guid id, decimal value) : this(id)
         {
-            RaiseEvent(new AggregateCreatedEvent(value, id));
+            Emit(new AggregateCreatedEvent(value, id));
         }
 
         public void ChangeState(int number)

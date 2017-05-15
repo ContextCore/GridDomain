@@ -12,7 +12,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
 
         public FutureEventsAggregate(Guid id, string initialValue = "") : this(id)
         {
-            RaiseEvent(new TestDomainEvent(initialValue, Id));
+            Emit(new TestDomainEvent(initialValue, Id));
         }
 
         public int? RetriesToSucceed { get; private set; }

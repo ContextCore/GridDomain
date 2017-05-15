@@ -8,9 +8,9 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public SagaStateAggregate(TState state): this(state.Id)
         {
-            RaiseEvent(new SagaCreated<TState>(state, state.Id));
+            Emit(new SagaCreated<TState>(state, state.Id));
         }
-
+        
         private SagaStateAggregate(Guid id) : base(id)
         {
         }

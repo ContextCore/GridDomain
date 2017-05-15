@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
 
         public void Apply(TestEvent @event)
         {
-            RaiseEvent(new ScheduledCommandSuccessfullyProcessed(Id));
+            Emit(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void Success(string taskId)

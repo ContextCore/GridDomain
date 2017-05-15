@@ -24,8 +24,7 @@ namespace GridDomain.Tests.XUnit.Metadata
         [Fact]
         public void When_publishing_start_message()
         {
-            var sagaId = Guid.NewGuid();
-            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), sagaId);
+            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
             var gotTiredEventMetadata = new MessageMetadata(gotTiredEvent.SourceId,
                                                             BusinessDateTime.UtcNow,
                                                             Guid.NewGuid(),
@@ -35,7 +34,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
                                                                                  gotTiredEventMetadata));
 
-            var answer = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
+            var answer = FishForMessage<MessageMetadataEnvelop<ICommand>>(m => true,TimeSpan.FromDays(1));
             var command = answer.Message as MakeCoffeCommand;
 
             //Result_contains_metadata()
@@ -54,7 +53,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.Equal(1, answer.Metadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = answer.Metadata.History.Steps.First();
-            var name = AggregateActorName.New<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+            var name = AggregateActorName.New<SoftwareProgrammingState>(command.SagaId);
 
             Assert.Equal(name.Name, step.Who);
             Assert.Equal(SagaActorLiterals.SagaProducedACommand, step.Why);

@@ -118,7 +118,13 @@ namespace GridDomain.Node.Actors
             //finished some call on aggregate, need persist produced events
             Command<SaveEventsAsync>(e =>
                                      {
-                                         PersistAll(e.NewState.GetDomainEvents().Select(evt => evt.CloneWithSaga(command.SagaId)),
+                                         var domainEvents = e.NewState.GetDomainEvents();
+                                         if (!domainEvents.Any())
+                                         {
+                                             Log.Warning("Aggregate {id} is saving zero events", PersistenceId);
+                                         }
+
+                                         PersistAll(domainEvents.Select(evt => evt.CloneWithSaga(command.SagaId)),
                                                     persistedEvent =>
                                                     {
                                                         try

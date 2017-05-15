@@ -188,7 +188,7 @@ namespace GridDomain.Node.Actors
                 throw new SagaAlreadyStartedException(Saga.State, message);
 
             var cmd = new CreateNewStateCommand<TState>(Id, saga.State);
-            WaitCommandComplete(cmd, metadata, () => TransitSaga(message, metadata, sender));
+            WaitCommandComplete(cmd, metadata, () => TransitSaga(message, metadata, sender)).PipeTo(Self);
         }
 
         private void WaitForCommandCompleteBehavior(Action<Guid> onCommandComplete)
@@ -197,23 +197,22 @@ namespace GridDomain.Node.Actors
             Receive<CommandCompleted>(cc => onCommandComplete(cc.CommandId));
         }
 
-        private void WaitCommandComplete(ISagaStateCommand<TState> cmd, IMessageMetadata messageMetadata, Action onStateChanged)
+        private Task<CommandCompleted> WaitCommandComplete(ISagaStateCommand<TState> cmd, IMessageMetadata messageMetadata, Action onStateChanged)
         {
             _persistancePendingStates[cmd.Id] = cmd.State;
 
-            _stateAggregateActor.Ask<CommandCompleted>(new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata))
-                                .PipeTo(Self);
-
             Behavior.Become(() => WaitForCommandCompleteBehavior(id =>
-                                                                 {
-                                                                     Behavior.Unbecome();
-                                                                     Saga = ApplyPendingState(id);
-                                                                     if (Saga.State.Id != Id)
-                                                                         throw new SagaStateException("Saga changed id during appling new state");
+            {
+                Behavior.Unbecome();
+                Saga = ApplyPendingState(id);
+                if (Saga.State.Id != Id)
+                    throw new SagaStateException("Saga changed id during appling new state");
 
-                                                                     onStateChanged();
-                                                                 }),
-                            nameof(WaitForCommandCompleteBehavior));
+                onStateChanged();
+            }),
+                       nameof(WaitForCommandCompleteBehavior));
+
+            return _stateAggregateActor.Ask<CommandCompleted>(new MessageMetadataEnvelop<ICommand>(cmd, messageMetadata));
         }
 
         private ISaga<TState> ApplyPendingState(Guid id)
@@ -240,15 +239,16 @@ namespace GridDomain.Node.Actors
             }
             //block any other executing until saga completes transition
             //cast is need for dynamic call of Transit
-            Task<TransitionResult<TState>> processSagaTask = Saga.PreviewTransit((dynamic) msg);
+
+            Behavior.Become(() => AwaitingTransitionBehavior(msg, metadata), nameof(AwaitingTransitionBehavior));
+
+            Task<TransitionResult<TState>> processSagaTask = Saga.PreviewTransit((dynamic)msg);
             processSagaTask.ContinueWith(t => new SagaTransited(t.Result.ProducedCommands.ToArray(),
                                                                 metadata,
                                                                 _sagaProducedCommand,
                                                                 t.Result.State,
                                                                 t.Exception))
                            .PipeTo(Self, sender);
-
-            Behavior.Become(() => AwaitingTransitionBehavior(msg, metadata), nameof(AwaitingTransitionBehavior));
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace GridDomain.Node.Actors
                                                                               (TState) t.NewSagaState,
                                                                               Saga.State.CurrentStateName, message);
                                        var sender = Sender;
-                                       WaitCommandComplete(cmd, messageMetadata, () => FinishSagaTransition(t, sender));
+                                       WaitCommandComplete(cmd, messageMetadata, () => FinishSagaTransition(t, sender)).PipeTo(Self);
                                    });
 
             Receive<Status.Failure>(f => ProcessError(message, messageMetadata, f.Cause));

@@ -10,7 +10,7 @@ namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
 
         public HomeAggregate(Guid id, Guid personId) : base(id)
         {
-            RaiseEvent(new HomeCreated(id, personId));
+            Emit(new HomeCreated(id, personId));
         }
 
         public Guid PersonId { get; private set; }
