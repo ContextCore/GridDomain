@@ -1,5 +1,5 @@
 using System;
-using CommonDomain;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 

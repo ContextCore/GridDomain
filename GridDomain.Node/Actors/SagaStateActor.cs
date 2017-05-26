@@ -1,7 +1,8 @@
 using Akka.Actor;
-using CommonDomain.Persistence;
+
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Node.Actors

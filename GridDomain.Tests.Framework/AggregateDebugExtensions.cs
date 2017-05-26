@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using CommonDomain;
+
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Tests.Framework
 {
@@ -34,6 +35,12 @@ namespace GridDomain.Tests.Framework
             if (@event == null)
                 throw new CannotFindRequestedEventException();
             return @event;
+        }
+
+        public static void PersistAll(this Aggregate aggregate)
+        {
+            foreach (var e in aggregate.GetEvents<DomainEvent>())
+                aggregate.MarkPersisted(e);
         }
     }
 }

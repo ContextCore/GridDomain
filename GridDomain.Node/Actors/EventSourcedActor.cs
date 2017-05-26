@@ -4,12 +4,13 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Persistence;
-using CommonDomain;
-using CommonDomain.Core;
-using CommonDomain.Persistence;
+
+
+
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.AkkaMessaging;
 using Helios.Concurrency;
 

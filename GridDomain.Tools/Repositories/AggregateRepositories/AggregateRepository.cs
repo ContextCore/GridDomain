@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommonDomain;
-using CommonDomain.Core;
+
+
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tools.Repositories.EventRepositories;
 using GridDomain.Tools.Repositories.RawDataRepositories;

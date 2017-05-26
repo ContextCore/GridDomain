@@ -6,13 +6,14 @@ using Akka.DI.Core;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
-using CommonDomain.Persistence;
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.Practices.Unity;

@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CommonDomain;
-using CommonDomain.Core;
+
+
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing
@@ -27,10 +28,10 @@ namespace GridDomain.EventSourcing
         {
             Id = id;
             RegisterPersistence((newStateTask, afterAll) =>
-            {
-                newStateTask.Wait();
-                afterAll();
-            });
+                                {
+                                    newStateTask.Wait();
+                                    afterAll();
+                                });
 
             Register<FutureEventScheduledEvent>(Apply);
             Register<FutureEventOccuredEvent>(Apply);
@@ -38,20 +39,25 @@ namespace GridDomain.EventSourcing
         }
 
         #region Base functions
+
         // Only for simple implementation 
-        Guid IMemento.Id {
+        Guid IMemento.Id
+        {
             get { return Id; }
             set { Id = value; }
         }
 
-        int IMemento.Version {
+        int IMemento.Version
+        {
             get { return Version; }
             set { Version = value; }
         }
+
         public static T Empty<T>(Guid id) where T : IAggregate
         {
             return Factory.Build<T>(id);
         }
+
         protected void Apply<T>(Action<T> action) where T : DomainEvent
         {
             Register(action);
@@ -61,9 +67,10 @@ namespace GridDomain.EventSourcing
         {
             return this;
         }
+
         ICollection IAggregate.GetUncommittedEvents()
         {
-            return (ICollection)_eventToPersist.Values;
+            return (ICollection) _eventToPersist.Values;
         }
 
         void IAggregate.ClearUncommittedEvents()
@@ -74,12 +81,14 @@ namespace GridDomain.EventSourcing
         #endregion
 
         #region Persistence
+
         public bool MarkPersisted(DomainEvent e)
         {
             var evt = _eventToPersist[e.Id];
             RaiseEvent(evt);
             return _eventToPersist.Remove(e.Id);
         }
+
         public void RegisterPersistence(Action<Task<Aggregate>, Action> persistDelegate)
         {
             _persistEvents = persistDelegate;
@@ -88,25 +97,25 @@ namespace GridDomain.EventSourcing
         #endregion
 
         #region Emitting events
- 
+
         protected void Emit(params DomainEvent[] e)
         {
             Emit(EmptyContinue, e);
         }
 
-        protected void Emit(DomainEvent @event,Action afterPersist)
+        protected void Emit(DomainEvent @event, Action afterPersist)
         {
             Emit(afterPersist, @event);
         }
 
         protected void Emit(Action afterPersist, params DomainEvent[] events)
         {
-            Emit(Task.FromResult(events),  afterPersist);
+            Emit(Task.FromResult(events), afterPersist);
         }
 
         protected void Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-            Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}),  EmptyContinue);
+            Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}), EmptyContinue);
         }
 
         protected void Emit(Task<DomainEvent[]> evtTask, Action continuation = null)
@@ -119,13 +128,13 @@ namespace GridDomain.EventSourcing
 
                                                         Interlocked.Decrement(ref _emmitingMethodsInProgressCount);
                                                         return this;
-                                                    },TaskContinuationOptions.AttachedToParent);
+                                                    }, TaskContinuationOptions.AttachedToParent);
 
             _persistEvents(newStateTask, continuation ?? EmptyContinue);
         }
 
         #endregion
-    
+
         #region FutureEvents
 
         public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } = new ConcurrentDictionary<Guid, FutureEventScheduledEvent>();

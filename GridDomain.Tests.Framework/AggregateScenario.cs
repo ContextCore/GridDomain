@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CommonDomain;
+
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Logging;
 
 namespace GridDomain.Tests.Framework

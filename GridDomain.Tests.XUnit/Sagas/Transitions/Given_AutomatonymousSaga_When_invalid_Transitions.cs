@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using CommonDomain;
+
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;

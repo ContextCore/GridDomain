@@ -1,5 +1,5 @@
 using System;
-using CommonDomain.Persistence;
+
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;

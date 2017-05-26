@@ -1,5 +1,5 @@
 ﻿using System;
-using CommonDomain;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {

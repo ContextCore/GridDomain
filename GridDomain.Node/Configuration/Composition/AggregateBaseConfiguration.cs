@@ -1,10 +1,11 @@
 using System;
 using Akka.Actor;
-using CommonDomain;
-using CommonDomain.Persistence;
+
+
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Integration;

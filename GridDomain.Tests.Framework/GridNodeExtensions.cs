@@ -2,11 +2,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
-using CommonDomain;
-using CommonDomain.Core;
+
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;

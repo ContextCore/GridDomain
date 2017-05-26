@@ -1,6 +1,7 @@
 using System.Linq;
-using CommonDomain;
+
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Node.Actors
 {

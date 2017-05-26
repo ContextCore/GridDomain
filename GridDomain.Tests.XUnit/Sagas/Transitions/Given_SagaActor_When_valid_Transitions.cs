@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.TestKit.TestActors;
 using Akka.TestKit.Xunit2;
-using CommonDomain;
+
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;

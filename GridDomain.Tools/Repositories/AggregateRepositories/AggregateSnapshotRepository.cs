@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommonDomain;
-using CommonDomain.Persistence;
+
+
 using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;

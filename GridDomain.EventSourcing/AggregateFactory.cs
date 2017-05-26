@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using CommonDomain;
-using CommonDomain.Persistence;
+
+
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {

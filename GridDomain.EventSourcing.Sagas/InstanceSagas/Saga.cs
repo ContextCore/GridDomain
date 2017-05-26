@@ -1,5 +1,5 @@
 ﻿using Automatonymous;
-using CommonDomain;
+
 using GridDomain.CQRS;
 using Serilog;
 using System;

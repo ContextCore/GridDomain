@@ -6,12 +6,13 @@ using Akka;
 using Akka.Actor;
 using Akka.Event;
 using Akka.Persistence;
-using CommonDomain.Persistence;
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Node.Actors.CommandPipe;

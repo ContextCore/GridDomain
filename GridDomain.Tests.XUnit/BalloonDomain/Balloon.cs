@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using CommonDomain;
+
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.BalloonDomain

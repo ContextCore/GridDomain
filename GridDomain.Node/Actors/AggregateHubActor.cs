@@ -1,5 +1,5 @@
 using System;
-using CommonDomain.Core;
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;

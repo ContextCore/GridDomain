@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 using Xunit;
@@ -48,9 +49,8 @@ namespace GridDomain.Tests.Framework
 
         protected void CheckAll<T>(params Type[] types)
         {
-            var failedTypes = new List<RestoreResult>();
-            var okTypes = new List<RestoreResult>();
-
+            var objects = new List<object>();
+            var results = new List<RestoreResult>();
             foreach (var type in types.Where(t => !_excludes.Contains(t)))
                 try
                 {
@@ -62,30 +62,53 @@ namespace GridDomain.Tests.Framework
 
 
                     var obj = createMethodInfo.Invoke(null, new object[] {Fixture});
-                    string difference;
-
-                    if (Checker.IsRestorable(obj, out difference))
-                        okTypes.Add(new RestoreResult {Type = constructedType});
-                    else
-                        failedTypes.Add(new RestoreResult {Difference = difference, Type = constructedType});
+                    objects.Add(obj);
                 }
                 catch (Exception ex)
                 {
-                    failedTypes.Add(new RestoreResult {Exception = ex, Type = type});
+                    results.Add(RestoreResult.Error(type,ex));
                 }
 
+            results.AddRange(RestoreAll(objects));
+
+            CheckResults(results.ToArray());
+        }
+
+        protected static void CheckResults(params RestoreResult[] results)
+        {
             var sb = new StringBuilder();
-            if (failedTypes.Count > 0)
+
+
+            if (results.Any(r => !r.IsOk))
             {
-                AddFailedTypes(sb, failedTypes);
-                AddOkTypes(sb, okTypes);
+                AddFailedTypes(sb, results.Where(r => !r.IsOk));
+                AddOkTypes(sb, results.Where(r => r.IsOk));
                 Assert.True(false, sb.ToString());
             }
-            AddOkTypes(sb, okTypes);
+
+            AddOkTypes(sb, results.Where(r => r.IsOk));
             Assert.True(true, sb.ToString());
         }
 
-        private static void AddFailedTypes(StringBuilder sb, List<RestoreResult> failedTypes)
+        protected RestoreResult[] RestoreAll(params object[] objects)
+        {
+            var restoreResults = new List<RestoreResult>();
+            foreach (var obj in objects)
+                try
+                {
+                    restoreResults.Add(Checker.IsRestorable(obj, out string difference) ?
+                        RestoreResult.Ok(obj.GetType()) : 
+                        RestoreResult.Diff(obj.GetType(), difference));
+                }
+                catch (Exception ex)
+                {
+                    restoreResults.Add(RestoreResult.Error(obj.GetType(), ex));
+                }
+
+            return restoreResults.ToArray();
+        }
+
+        private static void AddFailedTypes(StringBuilder sb, IEnumerable<RestoreResult> failedTypes)
         {
             sb.AppendLine("Cannot restore types:");
 
@@ -110,7 +133,7 @@ namespace GridDomain.Tests.Framework
             }
         }
 
-        private static void AddOkTypes(StringBuilder sb, List<RestoreResult> failedTypes)
+        private static void AddOkTypes(StringBuilder sb, IEnumerable<RestoreResult> failedTypes)
         {
             sb.AppendLine();
             sb.AppendLine("-------------------------------------------------");
@@ -123,11 +146,26 @@ namespace GridDomain.Tests.Framework
                 sb.AppendLine(res.Type.Name);
         }
 
-        private class RestoreResult
+        protected class RestoreResult
         {
-            public string Difference;
-            public Exception Exception;
-            public Type Type;
+            public string Difference { get; private set; }
+            public Exception Exception { get; private set; }
+            public Type Type { get; private set; }
+
+            public bool IsOk  => Exception == null && Difference == null;
+
+            public static RestoreResult Ok(Type t)
+            {
+                return new RestoreResult(){Type = t};
+            }
+            public static RestoreResult Diff(Type t, string difference)
+            {
+                return new RestoreResult() { Type = t, Difference = difference };
+            }
+            public static RestoreResult Error(Type t, Exception ex)
+            {
+                return new RestoreResult() {Exception = ex, Type = t};
+            }
         }
     }
 }

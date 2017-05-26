@@ -4,7 +4,7 @@ using System.Linq;
 using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
-using CommonDomain.Core;
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;

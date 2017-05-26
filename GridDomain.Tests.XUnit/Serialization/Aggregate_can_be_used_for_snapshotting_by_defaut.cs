@@ -1,6 +1,7 @@
 using System;
-using CommonDomain;
+
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.Serialization

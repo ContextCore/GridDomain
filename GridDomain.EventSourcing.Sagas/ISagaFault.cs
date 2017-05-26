@@ -1,5 +1,6 @@
-using CommonDomain;
+
 using GridDomain.CQRS;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing.Sagas
 {

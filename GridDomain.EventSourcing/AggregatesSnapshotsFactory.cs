@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CommonDomain;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {

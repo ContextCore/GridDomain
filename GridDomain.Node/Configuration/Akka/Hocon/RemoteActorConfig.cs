@@ -1,7 +1,8 @@
 using System;
 using Akka.Serialization;
-using CommonDomain;
+
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {

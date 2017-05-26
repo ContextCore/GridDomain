@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Automatonymous;
+using GridDomain.Common;
 
 namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 {
@@ -8,6 +9,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
     {
         public SagaStateAggregate(TState state): this(state.Id)
         {
+            Condition.NotNull(() => state);
             Emit(new SagaCreated<TState>(state, state.Id));
         }
         

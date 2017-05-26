@@ -1,8 +1,9 @@
 using System;
-using CommonDomain.Persistence;
+
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;

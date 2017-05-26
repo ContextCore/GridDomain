@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using CommonDomain;
+
 
 namespace GridDomain.EventSourcing.CommonDomain
 {
+
+    public interface IMemento
+    {
+        Guid Id { get; set; }
+
+        int Version { get; set; }
+    }
+
     public abstract class AggregateBase : IAggregate,
                                           IEquatable<IAggregate>
     {

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CommonDomain;
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
@@ -14,6 +15,7 @@ using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
 using Xunit;
 
@@ -76,11 +78,14 @@ namespace GridDomain.Tests.XUnit
         [Fact]
         public void Saga_commands_aggregates_and_events_should_be_deserializable()
         {
-            CheckAll<object>(typeof(SagaStateAggregate<SoftwareProgrammingState>));
-            //typeof(SagaCreated<SoftwareProgrammingState>),
-            //typeof(SagaReceivedMessage<SoftwareProgrammingState>),
-            //typeof(CreateNewStateCommand<SoftwareProgrammingState>),
-            // typeof(SaveStateCommand<SoftwareProgrammingState>));
+            var state = Fixture.Create<SoftwareProgrammingState>();
+            var aggregate = new SagaStateAggregate<SoftwareProgrammingState>(state);
+            aggregate.PersistAll();
+//            var checker = new ObjectDeserializationChecker(null, new CompareLogic {Config = new ComparisonConfig(){MembersToIgnore = new []{"Version"}}});
+            Checker.AfterRestore = o => ((Aggregate) o).PersistAll();
+            CheckResults(Checker.IsRestorable(aggregate, out string difference1) ?
+                             RestoreResult.Ok(aggregate.GetType()) :
+                             RestoreResult.Diff(aggregate.GetType(), difference1));
         }
 
         [Fact]
