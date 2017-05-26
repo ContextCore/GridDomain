@@ -15,15 +15,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public IReadOnlyCollection<object> All { get; }
     }
 
-    public class WaitResult<T> : WaitResult,IWaitResult<T>
+    public class WaitResult<T> : WaitResult, IWaitResult<T> where T : class
     {
-        public WaitResult(IMessageMetadataEnvelop<T> message ):base(new object[]{ message})
+        public WaitResult(IMessageMetadataEnvelop<T> message, IMessageMetadataEnvelop<IFault> fault = null):base(new object[]{ message})
         {
-            Received = message.Message;
-            ReceivedMetadata = message.Metadata;
+            Received = message?.Message;
+            Fault = fault?.Message;
+            ReceivedMetadata = message?.Metadata ?? fault?.Metadata;
         }
 
         public T Received { get; }
         public IMessageMetadata ReceivedMetadata { get; }
+        public IFault Fault { get; }
     }
 }

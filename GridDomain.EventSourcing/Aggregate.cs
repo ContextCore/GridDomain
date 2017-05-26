@@ -103,6 +103,7 @@ namespace GridDomain.EventSourcing
             Emit(EmptyContinue, e);
         }
 
+
         protected void Emit(DomainEvent @event, Action afterPersist)
         {
             Emit(afterPersist, @event);
@@ -123,10 +124,16 @@ namespace GridDomain.EventSourcing
             Interlocked.Increment(ref _emmitingMethodsInProgressCount);
             var newStateTask = evtTask.ContinueWith(t =>
                                                     {
-                                                        foreach (var e in t.Result)
-                                                            _eventToPersist.Add(e.Id, e);
-
-                                                        Interlocked.Decrement(ref _emmitingMethodsInProgressCount);
+                                                        try
+                                                        {
+                                                            foreach (var e in t.Result)
+                                                                _eventToPersist.Add(e.Id, e);
+                                                        }
+                                                        finally
+                                                        {
+                                                            Interlocked.Decrement(ref _emmitingMethodsInProgressCount);
+                                                        }
+                                                        
                                                         return this;
                                                     }, TaskContinuationOptions.AttachedToParent);
 

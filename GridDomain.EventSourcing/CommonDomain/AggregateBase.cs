@@ -6,13 +6,6 @@ using System.Collections.Generic;
 namespace GridDomain.EventSourcing.CommonDomain
 {
 
-    public interface IMemento
-    {
-        Guid Id { get; set; }
-
-        int Version { get; set; }
-    }
-
     public abstract class AggregateBase : IAggregate,
                                           IEquatable<IAggregate>
     {

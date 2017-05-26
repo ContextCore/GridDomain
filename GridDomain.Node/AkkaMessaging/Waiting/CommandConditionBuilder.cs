@@ -7,9 +7,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-
-
-    public class CommandConditionBuilderTypedDecorator<T> : ICommandConditionBuilder<T>
+    public class CommandConditionBuilderTypedDecorator<T> : ICommandConditionBuilder<T> where T : class
     {
         private readonly ICommandConditionBuilder _commandConditionBuilder;
 
@@ -26,21 +24,21 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null)
         {
             return _commandConditionBuilder.And(filter);
-
         }
 
         public ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null)
         {
             return _commandConditionBuilder.Or(filter);
-
         }
 
         async Task<IWaitResult<T>> ICommandConditionBuilder<T>.Execute(TimeSpan? timeout, bool failOnAnyFault)
         {
-            var res = await _commandConditionBuilder.Execute();
-            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop<T>>().First()); 
+            var res = await _commandConditionBuilder.Execute(timeout, failOnAnyFault);
+            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop<T>>().FirstOrDefault(),
+                                     res.All.OfType<IMessageMetadataEnvelop<IFault>>().FirstOrDefault());
         }
     }
+
     public class CommandConditionBuilder<TCommand> : MetadataConditionBuilder<Task<IWaitResult>>,
                                                      ICommandConditionBuilder where TCommand : ICommand
     {
@@ -94,6 +92,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             base.Or(filter);
             return this;
         }
+
         protected override bool DefaultFilter<TMsg>(object received)
         {
             //interface is important as it provides cavoriance
@@ -101,7 +100,5 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var msg = received as IMessageMetadataEnvelop<TMsg>;
             return msg != null && msg.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
         }
-
-
     }
 }

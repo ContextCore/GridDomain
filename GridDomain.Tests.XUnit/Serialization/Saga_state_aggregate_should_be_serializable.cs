@@ -13,16 +13,15 @@ namespace GridDomain.Tests.XUnit.Serialization
         [Fact]
         public void Test()
         {
-            var saga = new SoftwareProgrammingProcess();
             var state = new SoftwareProgrammingState(Guid.NewGuid(), "123", Guid.NewGuid(), Guid.NewGuid());
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingState>(state);
-            Event @event = saga.CoffeReady;
             sagaState.ReceiveMessage(state, typeof(Object));
-            sagaState.ClearEvents();
+            sagaState.PersistAll();
 
             var json = JsonConvert.SerializeObject(sagaState);
             var restoredState = JsonConvert.DeserializeObject<SagaStateAggregate<SoftwareProgrammingState>>(json);
+            restoredState.PersistAll();
 
             //CoffeMachineId_should_be_equal()
             Assert.Equal(sagaState.State.CoffeeMachineId, restoredState.State.CoffeeMachineId);

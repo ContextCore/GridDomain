@@ -36,7 +36,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return _conditionBuilder.Execute(timeout, failOnAnyFault);
         }
 
-       ICommandConditionBuilder<TMsg> ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter)
+       ICommandConditionBuilder<TMsg> ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter) 
        {
            Expect(filter);
            return new CommandConditionBuilderTypedDecorator<TMsg>(_conditionBuilder);

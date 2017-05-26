@@ -81,8 +81,13 @@ namespace GridDomain.Tests.XUnit
             var state = Fixture.Create<SoftwareProgrammingState>();
             var aggregate = new SagaStateAggregate<SoftwareProgrammingState>(state);
             aggregate.PersistAll();
-//            var checker = new ObjectDeserializationChecker(null, new CompareLogic {Config = new ComparisonConfig(){MembersToIgnore = new []{"Version"}}});
-            Checker.AfterRestore = o => ((Aggregate) o).PersistAll();
+            Checker.AfterRestore = o =>
+                                   {
+                                       //little hack because version will be deserialized 
+                                       //and increased from produced events
+                                       ((IMemento) o).Version = 0;
+                                       ((Aggregate) o).PersistAll();
+                                   };
             CheckResults(Checker.IsRestorable(aggregate, out string difference1) ?
                              RestoreResult.Ok(aggregate.GetType()) :
                              RestoreResult.Diff(aggregate.GetType(), difference1));

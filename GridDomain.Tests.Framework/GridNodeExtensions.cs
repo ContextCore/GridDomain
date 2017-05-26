@@ -84,6 +84,8 @@ namespace GridDomain.Tests.Framework
                                                        .ToArray();
 
             await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
+
+            aggregate.PersistAll();
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)

@@ -67,6 +67,7 @@
     <Compile Include="CommonDomain\HandlerForDomainEventNotFoundException.cs" />
     <Compile Include="CommonDomain\IAggregate.cs" />
     <Compile Include="CommonDomain\IConstructAggregates.cs" />
+    <Compile Include="CommonDomain\IMemento.cs" />
     <Compile Include="CommonDomain\IRouteEvents.cs" />
     <Compile Include="CommonDomain\RegistrationEventRouter.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
