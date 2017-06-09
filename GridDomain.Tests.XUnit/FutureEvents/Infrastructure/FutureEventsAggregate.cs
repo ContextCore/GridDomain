@@ -18,9 +18,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
         public int? RetriesToSucceed { get; private set; }
         public DateTime ProcessedTime { get; private set; }
 
-        public void ScheduleInFuture(DateTime raiseTime, string testValue)
+        public Task ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            Emit(new TestDomainEvent(testValue, Id), raiseTime);
+            return Emit(new TestDomainEvent(testValue, Id), raiseTime);
         }
 
         public void ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
@@ -37,9 +37,9 @@ namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
             Emit(new TestErrorDomainEvent(testValue, Id, succedOnRetryNum), raiseTime);
         }
 
-        public void CancelFutureEvents(string likeValue)
+        public Task CancelFutureEvents(string likeValue)
         {
-            CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
+            return CancelScheduledEvents<TestDomainEvent>(e => e.Value.Contains(likeValue));
         }
 
         private void Apply(TestDomainEvent e)

@@ -31,6 +31,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             aggregate.MarkPersisted(producedEvent);
 
             var futureEventOccuredEvent = aggregate.GetEvent<FutureEventOccuredEvent>();
+            aggregate.MarkPersisted(futureEventOccuredEvent);
 
             //Future_event_occurance_has_same_id_as_future_event()
             Assert.Equal(futureEventEnvelop.Id, futureEventOccuredEvent.FutureEventId);
