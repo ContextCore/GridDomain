@@ -21,13 +21,20 @@ namespace GridDomain.Tests.XUnit.FutureEvents
             aggregate.ScheduleInFuture(testCommand.RaiseTime, testCommand.Value);
 
             var futureEventEnvelop = aggregate.GetEvent<FutureEventScheduledEvent>();
-
             aggregate.MarkPersisted(futureEventEnvelop);
 
-            aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid());
+            //quite ugly, but it only safe way to run some logic after scheduled event persistence
+            aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid(),
+                                          () => { AfterScheduledEventOccures(aggregate, futureEventEnvelop, testCommand); }
+                                         );
+        }
 
-
+        private static void AfterScheduledEventOccures(FutureEventsAggregate aggregate,
+                                                       FutureEventScheduledEvent futureEventEnvelop,
+                                                       ScheduleEventInFutureCommand testCommand)
+        {
             var producedEvent = aggregate.GetEvent<TestDomainEvent>();
+
             aggregate.MarkPersisted(producedEvent);
 
             var futureEventOccuredEvent = aggregate.GetEvent<FutureEventOccuredEvent>();

@@ -20,7 +20,7 @@ namespace GridDomain.EventSourcing
         private static readonly Action EmptyContinue = () => { };
         private readonly IDictionary<Guid, DomainEvent> _eventToPersist = new ConcurrentDictionary<Guid, DomainEvent>();
         private int _emmitingMethodsInProgressCount;
-        private Action<Task<Aggregate>, Action> _persistEvents = 
+        private Func<Task<Aggregate>, Action, Task> _persistEvents = 
             (newStateTask, afterAll) => newStateTask.ContinueWith(t => { afterAll(); });
         public bool IsMethodExecuting => _emmitingMethodsInProgressCount > 0;
         public bool HasUncommitedEvents => _eventToPersist.Any();
@@ -84,7 +84,7 @@ namespace GridDomain.EventSourcing
             return _eventToPersist.Remove(e.Id);
         }
 
-        public void RegisterPersistence(Action<Task<Aggregate>, Action> persistDelegate)
+        public void RegisterPersistence(Func<Task<Aggregate>, Action, Task> persistDelegate)
         {
             _persistEvents = persistDelegate;
         }
@@ -93,20 +93,24 @@ namespace GridDomain.EventSourcing
 
         #region Emitting events
 
-        protected Task Emit(params DomainEvent[] e)
+        protected void Emit(params DomainEvent[] e)
         {
-            return Emit(EmptyContinue, e);
+             Emit(EmptyContinue, e);
         }
 
 
-        protected Task Emit(DomainEvent @event, Action afterPersist)
+        protected void Emit(DomainEvent @event, Action afterPersist)
         {
-            return Emit(afterPersist, @event);
+             Emit(afterPersist, @event);
         }
 
-        protected Task Emit(Action afterPersist, params DomainEvent[] events)
+        protected void Emit(Action afterPersist, params DomainEvent[] events)
         {
-            return Emit(Task.FromResult(events), afterPersist);
+            afterPersist = afterPersist ?? EmptyContinue;
+            foreach (var e in events)
+                _eventToPersist.Add(e.Id, e);
+
+            _persistEvents(Task.FromResult(this), afterPersist);
         }
 
         protected Task Emit<T>(Task<T> evtTask) where T : DomainEvent
@@ -124,6 +128,7 @@ namespace GridDomain.EventSourcing
         /// <returns></returns>
         protected Task Emit(Task<DomainEvent[]> evtTask, Action continuation = null)
         {
+            continuation = continuation ?? EmptyContinue;
             Interlocked.Increment(ref _emmitingMethodsInProgressCount);
             var newStateTask = evtTask.ContinueWith(t =>
                                                     {
@@ -140,8 +145,7 @@ namespace GridDomain.EventSourcing
                                                         return this;
                                                     }, TaskContinuationOptions.AttachedToParent);
 
-             _persistEvents(newStateTask, continuation ?? EmptyContinue);
-            return newStateTask;
+             return _persistEvents(newStateTask, continuation);
         }
 
         #endregion
@@ -150,29 +154,35 @@ namespace GridDomain.EventSourcing
 
         public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } = new ConcurrentDictionary<Guid, FutureEventScheduledEvent>();
 
-        public Task RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
+        /// <summary>
+        /// will emit occured event only after succesfull apply of scheduled event
+        /// </summary>
+        /// <param name="futureEventId"></param>
+        /// <param name="futureEventOccuredEventId"></param>
+        /// <param name="afterEventsPersistence"></param>
+        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId, Action afterEventsPersistence = null)
         {
             FutureEventScheduledEvent e;
             if (!FutureEvents.TryGetValue(futureEventId, out e))
-                return Task.FromException(new ScheduledEventNotFoundException(futureEventId));
+                throw new ScheduledEventNotFoundException(futureEventId);
 
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
-            //will emit occured event only after succesfull apply & persist of scheduled event
-            return Emit(e.Event, () => Emit(futureEventOccuredEvent));
+            //will emit occured event only after succesfull apply of scheduled event
+             Emit(e.Event, () => Emit(futureEventOccuredEvent, afterEventsPersistence));
         }
 
-        protected Task Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
+        protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
-            return Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+             Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected Task Emit(DomainEvent @event, Action afterApply, DateTime raiseTime, Guid? futureEventId = null)
+        protected void Emit(DomainEvent @event, Action afterApply, DateTime raiseTime, Guid? futureEventId = null)
         {
-            return Emit(afterApply, new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+            Emit(afterApply, new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected Task CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
+        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
             var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
             if (criteia != null)
@@ -181,7 +191,7 @@ namespace GridDomain.EventSourcing
             var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id))
                                              .Cast<DomainEvent>()
                                              .ToArray();
-            return Emit(domainEvents);
+            Emit(domainEvents);
         }
 
         private void Apply(FutureEventScheduledEvent e)
