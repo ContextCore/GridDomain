@@ -21,11 +21,11 @@ namespace GridGomain.Tests.Stress
     {
         public static void Main(params string[] args)
         {
-            //RawCommandExecution(1, 1000, 20);
+            RawCommandExecution(1, 1, 1);
 
-            var system = ActorSystem.Create("test");
-            var actor = system.ActorOf(Props.Create(() => new TestLogActor()));
-            actor.Ask<string>("hi").Wait();
+            //var system = ActorSystem.Create("test");
+            //var actor = system.ActorOf(Props.Create(() => new TestLogActor()));
+            //actor.Ask<string>("hi").Wait();
 
             Console.WriteLine("Sleeping");
             Console.ReadKey();
