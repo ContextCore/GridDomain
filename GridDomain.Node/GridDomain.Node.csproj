@@ -221,7 +221,6 @@
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\AggregateExecutionException.cs" />
-    <Compile Include="Actors\AggregateExtensions.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\BehaviorStack.cs" />
     <Compile Include="Actors\CancelShutdownRequest.cs" />

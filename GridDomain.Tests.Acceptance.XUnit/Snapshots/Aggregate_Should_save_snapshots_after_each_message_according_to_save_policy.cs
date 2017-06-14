@@ -26,7 +26,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var aggregateId = Guid.NewGuid();
             var initialParameter = 1;
             var cmd = new InflateNewBallonCommand(initialParameter, aggregateId);
-            await Node.Prepare(cmd).Expect<BalloonCreated>().Execute();
+            await Node.Prepare(cmd)
+                      .Expect<BalloonCreated>()
+                      .Execute();
 
             var changedParameter = 2;
             var changeSampleAggregateCommand = new WriteTitleCommand(changedParameter, aggregateId);
@@ -35,10 +37,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             Thread.Sleep(100);
 
-            var snapshots =
-                await
-                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                                  Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()

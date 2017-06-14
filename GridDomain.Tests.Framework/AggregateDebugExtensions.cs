@@ -37,10 +37,6 @@ namespace GridDomain.Tests.Framework
             return @event;
         }
 
-        public static void PersistAll(this Aggregate aggregate)
-        {
-            foreach (var e in aggregate.GetEvents<DomainEvent>())
-                aggregate.MarkPersisted(e);
-        }
+    
     }
 }

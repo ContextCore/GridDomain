@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
+using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.BalloonDomain
@@ -26,7 +27,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
                                                     + typeof(BalloonSnapshot).Name);
 
             var aggregate = new Balloon(snapshot.Id, snapshot.Value) {Version = snapshot.Version};
-            (aggregate as IAggregate).ClearUncommittedEvents();
+            aggregate.PersistAll();
             return aggregate;
         }
 

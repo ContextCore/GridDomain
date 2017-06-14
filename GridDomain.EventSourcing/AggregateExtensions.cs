@@ -1,17 +1,20 @@
 using System.Linq;
-
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 
-namespace GridDomain.Node.Actors
+namespace GridDomain.EventSourcing
 {
-    static class AggregateExtensions
+    public static class AggregateExtensions
     {
         public static DomainEvent[] GetDomainEvents(this IAggregate aggregate)
         {
             return aggregate.GetUncommittedEvents()
                             .Cast<DomainEvent>()
                             .ToArray();
+        }
+        public static void PersistAll(this Aggregate aggregate)
+        {
+            foreach (var e in aggregate.GetDomainEvents())
+                aggregate.MarkPersisted(e);
         }
     }
 }

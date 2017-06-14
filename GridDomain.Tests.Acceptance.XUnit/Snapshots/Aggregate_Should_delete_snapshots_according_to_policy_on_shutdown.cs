@@ -50,17 +50,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             await Node.KillAggregate<Balloon>(aggregateId);
 
-            var snapshots =
-                await
-                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                                  Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
 
             //Only_2_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()
             Assert.True(snapshots.All(s => s.Aggregate.Id == aggregateId));
             //Snapshots_should_have_parameters_from_last_command()
-            Assert.Equal(_parameters.Skip(3).Take(2).Select(p => p.ToString()), snapshots.Select(s => s.Aggregate.Title));
+            Assert.Equal(_parameters.Skip(3).Take(2).Select(p => p.ToString()).ToArray(),
+                         snapshots.Select(s => s.Aggregate.Title).ToArray());
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

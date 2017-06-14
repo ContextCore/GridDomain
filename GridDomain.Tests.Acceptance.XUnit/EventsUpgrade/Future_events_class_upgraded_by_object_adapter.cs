@@ -41,9 +41,9 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
         [Fact]
         public async Task Future_event_is_upgraded_by_event_adapter()
         {
-            var saveOldEventCommand = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true);
-
-            await Node.Prepare(saveOldEventCommand).Expect<BalanceChangedEvent_V1>().Execute();
+            await Node.Prepare(new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true))
+                      .Expect<BalanceChangedEvent_V1>()
+                      .Execute();
         }
     }
 }

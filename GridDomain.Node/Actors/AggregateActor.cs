@@ -115,7 +115,6 @@ namespace GridDomain.Node.Actors
             var command = commandEnvelop.Message;
             var commandMetadata = commandEnvelop.Metadata;
             var producedEventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
-            DefaultBehavior();
             //finished some call on aggregate, need persist produced events
             Command<SaveEventsAsync>(e =>
                                      {
@@ -224,7 +223,10 @@ namespace GridDomain.Node.Actors
                                           });
 
             Command<IMessageMetadataEnvelop<ICommand>>(o => StashMessage(o));
+
             Command<GracefullShutdownRequest>(o => StashMessage(o));
+
+            DefaultBehavior();
         }
 
         private Task<AllHandlersCompleted> PublishError(ICommand command, IMessageMetadata commandMetadata, Exception exception)

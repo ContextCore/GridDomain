@@ -38,8 +38,8 @@ namespace GridDomain.Node
         }
 
         public NodeSettings Settings { get; }
-        public EventsAdaptersCatalog EventsAdaptersCatalog { get; } = new EventsAdaptersCatalog();
-        public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; } = new AggregatesSnapshotsFactory();
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
+        public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; private set; }
         public IActorTransport Transport { get; private set; }
         public ActorSystem System { get; private set; }
         private IActorRef ActorTransportProxy { get; set; }
@@ -76,6 +76,8 @@ namespace GridDomain.Node
         public async Task Start()
         {
             _stopping = false;
+            EventsAdaptersCatalog = new EventsAdaptersCatalog();
+            AggregateFromSnapshotsFactory = new AggregatesSnapshotsFactory();
 
             Container = new UnityContainer();
             Systems = Settings.ActorSystemFactory.Invoke();
@@ -139,7 +141,12 @@ namespace GridDomain.Node
 
             foreach (var factory in factories)
                 AggregateFromSnapshotsFactory.Register(factory.AggregateType,
-                                                       m => factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
+                                                       m =>
+                                                       {
+                                                           var aggregate = (Aggregate)factory.Constructor.Build(factory.GetType(), Guid.Empty, m);
+                                                           aggregate.PersistAll();
+                                                           return aggregate;
+                                                       });
         }
 
         public async Task Stop()
@@ -167,7 +174,6 @@ namespace GridDomain.Node
             }
 
             Container?.Dispose();
-
             Settings.Log.Debug("GridDomain node {Id} stopped", Id);
         }
 
