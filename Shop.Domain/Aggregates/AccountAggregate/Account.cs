@@ -12,7 +12,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 
         public Account(Guid id, Guid userId, int number) : this(id)
         {
-            RaiseEvent(new AccountCreated(id, userId, number));
+            Emit(new AccountCreated(id, userId, number));
         }
 
         public Guid UserId { get; private set; }

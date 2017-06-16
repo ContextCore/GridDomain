@@ -26,12 +26,13 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
                 throw new InvalidOperationException("Sample aggregate can be restored only from memento with type "
                                                     + typeof(BalloonSnapshot).Name);
 
-            var aggregate = new Balloon(snapshot.Id, snapshot.Value) {Version = snapshot.Version};
+            var aggregate = new Balloon(snapshot.Id, snapshot.Value);
             aggregate.PersistAll();
+            aggregate.Version = snapshot.Version;
             return aggregate;
         }
 
-        protected override IMemento GetSnapshot()
+        public override IMemento GetSnapshot()
         {
             return new BalloonSnapshot(Id, Version, Title);
         }

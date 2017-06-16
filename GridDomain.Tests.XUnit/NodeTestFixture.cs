@@ -93,7 +93,7 @@ namespace GridDomain.Tests.XUnit
             var settings = CreateNodeSettings();
 
             Node = new GridDomainNode(settings);
-            OnNodeCreatedEvent.Invoke(this, new EventArgs());
+            Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, new EventArgs());
 
@@ -125,6 +125,6 @@ namespace GridDomain.Tests.XUnit
         }
 
         public event EventHandler OnNodeStartedEvent = delegate { };
-        public event EventHandler OnNodeCreatedEvent = delegate { };
+        public event EventHandler<GridDomainNode> OnNodeCreatedEvent = delegate { };
     }
 }

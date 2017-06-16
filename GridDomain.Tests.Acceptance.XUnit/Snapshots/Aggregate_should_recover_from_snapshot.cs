@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
@@ -19,11 +20,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             : base(output, new BalloonFixture {InMemory = false}.InitSampleAggregateSnapshots()) {}
 
         [Fact]
-        public async Task Test()
+        public async Task Given_persisted_snapshot_Aggregate_should_execute_command()
         {
-            var aggregate = new Balloon(Guid.NewGuid(), "test");
+            var aggregate = new Balloon(Guid.NewGuid(), "haha");
             aggregate.WriteNewTitle(10);
-            aggregate.ClearEvents();
+            aggregate.PersistAll();
 
             var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                                                        Node.AggregateFromSnapshotsFactory);
@@ -31,9 +32,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
 
             var cmd = new IncreaseTitleCommand(1, aggregate.Id);
 
-            var res = await Node.Prepare(cmd).Expect<BalloonTitleChanged>().Execute();
+            var res = await Node.Prepare(cmd)
+                                .Expect<BalloonTitleChanged>()
+                                .Execute();
 
-            var message = res.Message<BalloonTitleChanged>();
+            var message = res.Received;
 
             //Values_should_be_equal()
             Assert.Equal("11", message.Value);

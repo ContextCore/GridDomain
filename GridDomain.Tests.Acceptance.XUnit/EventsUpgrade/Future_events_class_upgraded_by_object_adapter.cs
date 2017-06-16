@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                 InMemory = false;
                 LogLevel = LogEventLevel.Debug;
                 OnNodeCreatedEvent +=
-                    (sender, args) => Node.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
+                    (sender, node) => node.EventsAdaptersCatalog.Register(new BalanceChanged_eventdapter1());
             }
 
             private class BalanceChanged_eventdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>

@@ -47,6 +47,7 @@ namespace GridDomain.Node
         public IUnityContainer Container { get; private set; }
 
         public Guid Id { get; } = Guid.NewGuid();
+        public event EventHandler<GridDomainNode> Initializing =  delegate {};
 
         public void Execute<T>(T command, IMessageMetadata metadata = null) where T : ICommand
         {
@@ -81,6 +82,8 @@ namespace GridDomain.Node
 
             Container = new UnityContainer();
             Systems = Settings.ActorSystemFactory.Invoke();
+
+            Initializing.Invoke(this, this);
 
             System = Systems.First();
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);

@@ -36,7 +36,7 @@ namespace Shop.Domain.Aggregates.UserAggregate
 
         public User(Guid id, string login, Guid account) : this(id)
         {
-            RaiseEvent(new UserCreated(id, login, account));
+            Emit(new UserCreated(id, login, account));
         }
 
         public string Login { get; private set; }

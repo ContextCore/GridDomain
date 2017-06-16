@@ -52,7 +52,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         {
             if (amount <= 0)
                 throw new ArgumentException(nameof(amount));
-            RaiseEvent(new SkuStockCreated(sourceId, skuId, amount, reservationTime));
+            Emit(new SkuStockCreated(sourceId, skuId, amount, reservationTime));
         }
 
         public TimeSpan ReservationTime { get; set; }

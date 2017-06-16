@@ -1,7 +1,6 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit.TestActors;
-
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
@@ -33,17 +32,12 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                    int keep = 1,
                                                                    TimeSpan? maxSaveFrequency = null)
         {
-            fixture.Add(
-                        new AggregateConfiguration<Balloon, BalloonCommandHandler>(
-                                                                                                    () =>
-                                                                                                        new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
-                                                                                                        {
-                                                                                                            Log =
-                                                                                                                fixture.Logger
-                                                                                                                       .ForContext
-                                                                                                                       <SnapshotsPersistencePolicy>()
-                                                                                                        },
-                                                                                                    Balloon.FromSnapshot));
+            fixture.Add(new AggregateConfiguration<Balloon, BalloonCommandHandler>(
+                                                                                  () => new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
+                                                                                      {
+                                                                                          Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()
+                                                                                      },
+                                                                                  Balloon.FromSnapshot));
 
             return fixture;
         }

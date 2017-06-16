@@ -38,7 +38,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
         {
             if (number < 0)
                 throw new NegativeOrderNumberException();
-            RaiseEvent(new OrderCreated(id, number, user));
+            Emit(new OrderCreated(id, number, user));
         }
 
         public Guid UserId { get; private set; }
