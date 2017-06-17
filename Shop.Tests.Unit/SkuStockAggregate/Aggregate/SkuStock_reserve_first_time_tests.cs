@@ -35,7 +35,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             _scenario.Aggregate.Reservations.TryGetValue(_reserveStockCommand.CustomerId, out _aggregateReserve);
 
             if (_aggregateReserve != null)
-                _reserveExpirationFutureEvent = _scenario.Aggregate.FutureEvents.Values.FirstOrDefault();
+                _reserveExpirationFutureEvent = _scenario.Aggregate.FutureEvents.FirstOrDefault();
             _reserveExpiredEvent = _reserveExpirationFutureEvent?.Event as ReserveExpired;
         }
 

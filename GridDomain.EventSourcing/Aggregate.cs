@@ -33,11 +33,9 @@ namespace GridDomain.EventSourcing
             return Factory.Build<T>(id);
         }
 
-        // Only for simple implementation 
-       
-
-        public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } = new ConcurrentDictionary<Guid, FutureEventScheduledEvent>();
-
+        // Aggregate State, do not mix with uncommited events 
+        public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;//new List<FutureEventScheduledEvent>();
+        readonly List<FutureEventScheduledEvent> _futureEvents = new List<FutureEventScheduledEvent>();
         /// <summary>
         /// will emit occured event only after succesfull apply of scheduled event
         /// </summary>
@@ -46,14 +44,14 @@ namespace GridDomain.EventSourcing
         /// <param name="afterEventsPersistence"></param>
         public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId, Action afterEventsPersistence = null)
         {
-            FutureEventScheduledEvent e;
-            if (!FutureEvents.TryGetValue(futureEventId, out e))
+            FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
+            if (ev == null)
                 throw new ScheduledEventNotFoundException(futureEventId);
 
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
             //will emit occured event only after succesfull apply of scheduled event
-             Emit(e.Event, () => Emit(futureEventOccuredEvent, afterEventsPersistence));
+             Emit(ev.Event, () => Emit(futureEventOccuredEvent, afterEventsPersistence));
         }
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
@@ -68,7 +66,7 @@ namespace GridDomain.EventSourcing
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
         {
-            var eventsToCancel = FutureEvents.Values.Where(fe => fe.Event is TEvent);
+            var eventsToCancel = FutureEvents.Where(fe => fe.Event is TEvent);
             if (criteia != null)
                 eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
@@ -80,7 +78,7 @@ namespace GridDomain.EventSourcing
 
         private void Apply(FutureEventScheduledEvent e)
         {
-            FutureEvents[e.Id] = e;
+            _futureEvents.Add(e);
         }
 
         private void Apply(FutureEventOccuredEvent e)
@@ -95,12 +93,12 @@ namespace GridDomain.EventSourcing
 
         private void DeleteFutureEvent(Guid futureEventId)
         {
-            FutureEventScheduledEvent evt;
-            if (!FutureEvents.TryGetValue(futureEventId, out evt))
+            FutureEventScheduledEvent evt = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
+            if (evt == null)
                 return;
-            FutureEvents.Remove(futureEventId);
+            _futureEvents.Remove(evt);
         }
-
+        
         #endregion
     }
 }

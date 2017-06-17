@@ -11,7 +11,7 @@ namespace GridDomain.EventSourcing.CommonDomain
     public abstract class AggregateBase : IAggregate, IMemento,
                                           IEquatable<IAggregate>
     {
-        private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
+        protected internal readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private int _emmitingMethodsInProgressCount;
         public bool IsMethodExecuting => _emmitingMethodsInProgressCount > 0;
