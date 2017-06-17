@@ -11,7 +11,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
 {
     public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest
     {
-        public Given_aggregate_When_raising_future_event_by_commands(ITestOutputHelper output) : base(output) {}
+        public Given_aggregate_When_raising_future_event_by_commands(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task When_raising_future_event()

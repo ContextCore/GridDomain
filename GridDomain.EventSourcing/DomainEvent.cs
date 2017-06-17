@@ -20,6 +20,19 @@ namespace GridDomain.EventSourcing
         public DateTime CreatedTime { get; private set; }
         public Guid Id { get; private set; }
 
+        public override bool Equals(object obj)
+        {
+            if (obj!= null && obj is DomainEvent e)
+            {
+                return e.Id == Id;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
 
         public DomainEvent CloneWithSaga(Guid sagaId)
         {

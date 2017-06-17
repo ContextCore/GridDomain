@@ -268,9 +268,15 @@ namespace GridDomain.Node.Actors
 
             _messagesToProject.Add(envelop.Message.ProjectId, evt);
 
-            evt.Match()
-               .With<FutureEventScheduledEvent>(m => Handle(m, commandMetadata))
-               .With<FutureEventCanceledEvent>(m => Handle(m, commandMetadata));
+            switch (evt)
+            {
+                case FutureEventScheduledEvent e:
+                    Handle(e, commandMetadata);
+                    break;
+                case FutureEventCanceledEvent e:
+                    Handle(e, commandMetadata);
+                    break;
+            }
 
             return _customHandlersActor.Ask<AllHandlersCompleted>(envelop);
         }
