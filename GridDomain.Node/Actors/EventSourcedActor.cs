@@ -101,9 +101,9 @@ namespace GridDomain.Node.Actors
         public override string PersistenceId { get; }
         public IAggregate State { get; protected set; }
 
-        protected bool TrySaveSnapshot()
+        protected bool TrySaveSnapshot(IAggregate aggregate)
         {
-            return _snapshotsPolicy.TrySave(() => SaveSnapshot(State.GetSnapshot()),
+            return _snapshotsPolicy.TrySave(() => SaveSnapshot(aggregate.GetSnapshot()),
                                             SnapshotSequenceNr,
                                             BusinessDateTime.UtcNow);
         }

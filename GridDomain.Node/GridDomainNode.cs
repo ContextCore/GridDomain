@@ -148,6 +148,7 @@ namespace GridDomain.Node
                                                        {
                                                            var aggregate = (Aggregate)factory.Constructor.Build(factory.GetType(), Guid.Empty, m);
                                                            aggregate.PersistAll();
+                                                           ((IMemento)aggregate).Version = m.Version;
                                                            return aggregate;
                                                        });
         }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
@@ -20,24 +21,23 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         [Fact]
         public async Task Given_default_policy()
         {
-            var sagaId = Guid.NewGuid();
-            var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid(), sagaId);
+            //var sagaId = Guid.NewGuid();
+            var sagaStartEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await
-                Node.NewDebugWaiter(TimeSpan.FromSeconds(100))
+            var res = await
+                Node.NewDebugWaiter()
                     .Expect<SagaCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToSagas(sagaStartEvent);
 
-            await Task.Delay(1000);
-
-            var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
+            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().Id;
+            var sagaContinueEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
             await
                 Node.NewDebugWaiter()
                     .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
                     .Create()
-                    .SendToSagas(sagaContinueEvent);
+                    .SendToSagas(sagaContinueEvent,sagaId);
 
             //saving snapshot
             await Task.Delay(200);

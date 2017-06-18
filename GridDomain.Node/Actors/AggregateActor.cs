@@ -148,8 +148,8 @@ namespace GridDomain.Node.Actors
                                                             return;
                                                         }
 
-                                                        TrySaveSnapshot();
                                                         NotifyPersistenceWatchers(persistedEvent);
+                                                        TrySaveSnapshot(e.NewState);
                                                         Project(persistedEvent, producedEventsMetadata).PipeTo(Self);
 
                                                         if (e.NewState.HasUncommitedEvents)
@@ -200,6 +200,7 @@ namespace GridDomain.Node.Actors
                                     if (IsProjecting || newState.HasUncommitedEvents || newState.IsMethodExecuting)
                                         return;
 
+                                
                                     CompleteCommandExecution(command);
                                 });
             //projection of event pack from aggregate finished

@@ -29,27 +29,13 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             var serializer = new DomainSerializer();
             using (var repo = new RawSnapshotsRepository(_writeString))
             {
-                return (await repo.Load(AggregateActorName.New<T>(id).Name)).Select(s =>
-                                                                                    {
-                                                                                        var memento =
-                                                                                            (IMemento)
-                                                                                            serializer.FromBinary(
-                                                                                                                  s.Snapshot,
-                                                                                                                  typeof(IMemento));
-                                                                                        var aggregate =
-                                                                                            (T)
-                                                                                            _aggregatesConstructor.Build(
-                                                                                                                         typeof(T),
-                                                                                                                         id,
-                                                                                                                         memento);
-                                                                                        aggregate.PersistAll();
-                                                                                        ((IMemento)aggregate).Version = memento.Version;
-                                                                                        //in case json will call public constructor
-                                                                                        return
-                                                                                            new AggregateVersion<T>(
-                                                                                                                    aggregate,
-                                                                                                                    s.Timestamp);
-                                                                                    }).ToArray();
+                return (await repo.Load(AggregateActorName.New<T>(id).Name))
+                    .Select(s =>
+                    {
+                        var memento = (IMemento)serializer.FromBinary(s.Snapshot,typeof(IMemento));
+                        var aggregate = (T)_aggregatesConstructor.Build(typeof(T),id,memento);
+                        return new AggregateVersion<T>(aggregate, s.Timestamp);
+                    }).ToArray();
             }
         }
 
