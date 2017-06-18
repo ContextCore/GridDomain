@@ -88,6 +88,11 @@ namespace GridDomain.Node.Actors
                                                       .PipeTo(Self));
         }
 
+        protected override void RecoverFromSnapshot()
+        {
+            RegisterAggregatePersistence();
+        }
+
         protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
@@ -265,7 +270,7 @@ namespace GridDomain.Node.Actors
         private Task<AllHandlersCompleted> Project(object evt, IMessageMetadata commandMetadata)
         {
             var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
-
+            
             _messagesToProject.Add(envelop.Message.ProjectId, evt);
 
             switch (evt)

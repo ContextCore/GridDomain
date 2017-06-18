@@ -47,6 +47,7 @@ namespace GridDomain.Node.Actors
             {
                 _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
                 State = aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
+                RecoverFromSnapshot();
             });
 
             Recover<RecoveryCompleted>(message =>
@@ -54,6 +55,10 @@ namespace GridDomain.Node.Actors
                 Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
                 NotifyPersistenceWatchers(message);
             });
+        }
+
+        protected virtual void RecoverFromSnapshot()
+        {
         }
 
         protected void DefaultBehavior()

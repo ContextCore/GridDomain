@@ -33,12 +33,15 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var changedParameter = 2;
             var changeSampleAggregateCommand = new WriteTitleCommand(changedParameter, aggregateId);
 
-            await Node.Prepare(changeSampleAggregateCommand).Expect<BalloonTitleChanged>().Execute();
+            await Node.Prepare(changeSampleAggregateCommand)
+                      .Expect<BalloonTitleChanged>()
+                      .Execute();
 
             Thread.Sleep(100);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
+                                                                  Node.AggregateFromSnapshotsFactory)
+                                                                  .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()

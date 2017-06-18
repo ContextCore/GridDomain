@@ -24,7 +24,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             _writeString = akkaWriteDbConnectionString;
         }
 
-        public async Task<AggregateVersion<T>[]> Load<T>(Guid id) where T : IAggregate
+        public async Task<AggregateVersion<T>[]> Load<T>(Guid id) where T : Aggregate
         {
             var serializer = new DomainSerializer();
             using (var repo = new RawSnapshotsRepository(_writeString))
@@ -42,7 +42,8 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                                                                                                                          typeof(T),
                                                                                                                          id,
                                                                                                                          memento);
-                                                                                        aggregate.ClearUncommittedEvents();
+                                                                                        aggregate.PersistAll();
+                                                                                        ((IMemento)aggregate).Version = memento.Version;
                                                                                         //in case json will call public constructor
                                                                                         return
                                                                                             new AggregateVersion<T>(
