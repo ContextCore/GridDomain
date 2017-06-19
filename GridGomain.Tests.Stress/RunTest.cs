@@ -1,15 +1,16 @@
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace GridGomain.Tests.Stress
 {
     [TestFixture]
-    [Ignore("Run only manually")]
+   // [Ignore("Run only manually")]
     public class RunTest
     {
         [Test]
-        public void Run()
+        public async Task Run()
         {
-            Program.Main();
+            await Program.RawCommandExecution(10,10,10);
         }
     }
 }

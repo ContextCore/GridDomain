@@ -21,19 +21,15 @@ namespace GridGomain.Tests.Stress
     {
         public static void Main(params string[] args)
         {
-            RawCommandExecution(1, 1, 1);
-
-            //var system = ActorSystem.Create("test");
-            //var actor = system.ActorOf(Props.Create(() => new TestLogActor()));
-            //actor.Ask<string>("hi").Wait();
+            RawCommandExecution(10, 10, 10).Wait();
 
             Console.WriteLine("Sleeping");
             Console.ReadKey();
         }
 
-        private static void RawCommandExecution(int totalAggregateScenariosCount,
-                                                int aggregateScenarioPackSize,
-                                                int aggregateChangeAmount)
+        public static async Task RawCommandExecution(int totalAggregateScenariosCount,
+                                                      int aggregateScenarioPackSize,
+                                                      int aggregateChangeAmount)
         {
             var dbCfg = new AutoTestAkkaConfiguration();
 
@@ -42,11 +38,11 @@ namespace GridGomain.Tests.Stress
                 connection.Open();
                 var sqlText = @"TRUNCATE TABLE Journal";
                 var cmdJournal = new SqlCommand(sqlText, connection);
-                cmdJournal.ExecuteNonQuery();
+                await cmdJournal.ExecuteNonQueryAsync();
 
                 var sqlText1 = @"TRUNCATE TABLE Snapshots";
                 var cmdSnapshots = new SqlCommand(sqlText1, connection);
-                cmdSnapshots.ExecuteNonQuery();
+                await cmdSnapshots.ExecuteNonQueryAsync();
             }
 
             var unityContainer = new UnityContainer();
@@ -61,16 +57,15 @@ namespace GridGomain.Tests.Stress
             var settings = new NodeSettings(cfg, new BalloonRouteMap(), actorSystemFactory);
             var node = new GridDomainNode(settings);
 
-            node.Start().Wait();
-
-            var timer = new Stopwatch();
-            timer.Start();
+            await node.Start();
 
             var timeoutedCommads = 0;
             var random = new Random();
             var commandsInScenario = aggregateScenarioPackSize * (aggregateChangeAmount + 1);
             var totalCommandsToIssue = commandsInScenario * totalAggregateScenariosCount;
 
+            var timer = new Stopwatch();
+            timer.Start();
 
             for (var i = 0; i < totalAggregateScenariosCount; i++)
             {
@@ -82,7 +77,7 @@ namespace GridGomain.Tests.Stress
                               .ToArray();
                 try
                 {
-                    Task.WhenAll(tasks).Wait();
+                    await Task.WhenAll(tasks);
                 }
                 catch
                 {
@@ -100,7 +95,7 @@ namespace GridGomain.Tests.Stress
 
 
             timer.Stop();
-            node.Stop().Wait();
+            await node.Stop();
 
             var speedTotal = (decimal) (totalCommandsToIssue / timer.Elapsed.TotalSeconds);
             Console.WriteLine(
@@ -112,7 +107,7 @@ namespace GridGomain.Tests.Stress
                 connection.Open();
                 var sqlText = @"SELECT COUNT(*) FROM Journal";
                 var cmdJournal = new SqlCommand(sqlText, connection);
-                var count = (int) cmdJournal.ExecuteScalar();
+                var count = (int) await cmdJournal.ExecuteScalarAsync();
 
                 Console.WriteLine(count == totalCommandsToIssue
                                       ? "Journal contains all events"
@@ -156,17 +151,15 @@ namespace GridGomain.Tests.Stress
 
         private static async Task WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
         {
-            await
-                node.Prepare(new InflateNewBallonCommand(random.Next(), Guid.NewGuid()))
-                    .Expect<BalloonCreated>()
-                    .Execute();
+            await node.Prepare(new InflateNewBallonCommand(random.Next(), Guid.NewGuid()))
+                      .Expect<BalloonCreated>()
+                      .Execute();
 
             for (var num = 0; num < changeNumber; num++)
-                await
-                    node.Prepare(new WriteTitleCommand(random.Next(),
-                                                                  new InflateNewBallonCommand(random.Next(), Guid.NewGuid()).AggregateId))
-                        .Expect<BalloonTitleChanged>()
-                        .Execute();
+                await node.Prepare(new WriteTitleCommand(random.Next(),
+                                                         new InflateNewBallonCommand(random.Next(), Guid.NewGuid()).AggregateId))
+                          .Expect<BalloonTitleChanged>()
+                          .Execute();
         }
     }
 }
