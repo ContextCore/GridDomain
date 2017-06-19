@@ -13,18 +13,16 @@ namespace GridDomain.EventSourcing
     // objects id.
     public class AggregateFactory : IConstructAggregates
     {
-        public IAggregate Build(Type type, Guid id, IMemento snapshot)
-        {
-            return snapshot == null ? Build(type, id) : BuildFromSnapshot(type, id, snapshot);
-        }
+    
 
         //default convention: Aggregate is implementing IMemento itself
-        protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        protected virtual Aggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {
-            var aggregate = snapshot as IAggregate;
+            var aggregate = snapshot as Aggregate;
             if (aggregate == null)
                 throw new InvalidDefaultMementoException(type, id, snapshot);
-            aggregate.ClearUncommittedEvents();
+            aggregate.PersistAll();
+            ((IMemento)aggregate).Version = snapshot.Version;
             return aggregate;
         }
 
@@ -44,6 +42,11 @@ namespace GridDomain.EventSourcing
         public T Build<T>(Guid id, IMemento snapshot = null) where T : IAggregate
         {
             return (T) Build(typeof(T), id, snapshot);
+        }
+
+        public IAggregate Build(Type type, Guid id, IMemento snapshot)
+        {
+            return snapshot == null ? Build(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
     }
 }

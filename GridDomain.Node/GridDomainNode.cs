@@ -135,22 +135,14 @@ namespace GridDomain.Node
             var factories =
                 Container.ResolveAll(typeof(IConstructAggregates))
                          .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
-                         .Where(
-                                o =>
-                                    o.Type.IsGenericType
-                                    && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
+                         .Where(o =>o.Type.IsGenericType
+                                 && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
                          .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
                          .ToArray();
 
             foreach (var factory in factories)
                 AggregateFromSnapshotsFactory.Register(factory.AggregateType,
-                                                       m =>
-                                                       {
-                                                           var aggregate = (Aggregate)factory.Constructor.Build(factory.GetType(), Guid.Empty, m);
-                                                           aggregate.PersistAll();
-                                                           ((IMemento)aggregate).Version = m.Version;
-                                                           return aggregate;
-                                                       });
+                                                       m => (Aggregate)factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
         }
 
         public async Task Stop()

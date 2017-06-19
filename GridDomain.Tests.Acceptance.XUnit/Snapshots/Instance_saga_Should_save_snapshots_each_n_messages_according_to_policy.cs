@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -31,25 +32,21 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         [Fact]
         public async Task Given_default_policy()
         {
-            var sagaId = Guid.NewGuid();
-            var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid(), sagaId);
+            var sagaStartEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaCreated<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaStartEvent);
+            var res = await Node.NewDebugWaiter()
+                                .Expect<SagaCreated<SoftwareProgrammingState>>()
+                                .Create()
+                                .SendToSagas(sagaStartEvent);
 
-            //var saga = await Node.LookupSagaActor<SoftwareProgrammingSaga, SoftwareProgrammingSagaData>(sagaId);
-            //saga.Tell(NotifyOnPersistenceEvents.Instance);
+            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaContinueEvent);
+            await Node.NewDebugWaiter()
+                      .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
+                      .Create()
+                      .SendToSagas(sagaContinueEvent);
 
             var sagaContinueEventB =
                 new Fault<GoSleepCommand>(new GoSleepCommand(sagaStartEvent.PersonId, sagaStartEvent.LovelySofaId),
@@ -58,21 +55,16 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                                           sagaId,
                                           BusinessDateTime.Now);
 
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaContinueEventB);
-
-            //   FishForMessage<Persisted>(m => m.Event is SaveSnapshotSuccess);
+            await Node.NewDebugWaiter()
+                      .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
+                      .Create()
+                      .SendToSagas(sagaContinueEventB);
 
             await Task.Delay(500);
 
-            var snapshots =
-                await
-                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingState>>(
-                                                                                                                                              sagaStartEvent.SagaId);
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                                  Node.AggregateFromSnapshotsFactory)
+                                .Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //saving on each message, maximum on each command
             //Snapshots_should_be_saved_two_times

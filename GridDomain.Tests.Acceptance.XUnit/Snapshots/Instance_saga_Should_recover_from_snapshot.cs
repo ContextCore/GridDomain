@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Automatonymous;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -24,9 +25,8 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
             var state = new SoftwareProgrammingState(Guid.NewGuid(), saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
 
             var sagaState = new SagaStateAggregate<SoftwareProgrammingState>(state);
-            Event @event = saga.CoffeReady;
             sagaState.ReceiveMessage(state, new object());
-            sagaState.ClearEvents();
+            sagaState.PersistAll();
 
             var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                                                        Node.AggregateFromSnapshotsFactory);

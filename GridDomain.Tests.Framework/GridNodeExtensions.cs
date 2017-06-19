@@ -141,7 +141,7 @@ namespace GridDomain.Tests.Framework
                                                                           Guid id,
                                                                           TimeSpan? timeout = null) where TData : ISagaState
         {
-            var sagaName = AggregateActorName.New<SagaStateAggregate<TData>>(id).Name;
+            var sagaName = AggregateActorName.New<TData>(id).Name;
             var sagaType = typeof(TSaga).BeautyName();
             return await node.ResolveActor($"{sagaType}_Hub/{sagaName}", timeout);
         }

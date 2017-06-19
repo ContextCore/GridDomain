@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -19,41 +20,37 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
     public class Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(
-                   output,
+            : base(output,
                    new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2)
                                                                         .IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
-            var sagaId = Guid.NewGuid();
-            var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid(), sagaId);
+            var sagaStartEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaCreated<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaStartEvent);
+            var res = await Node.NewDebugWaiter()
+                                .Expect<SagaCreated<SoftwareProgrammingState>>()
+                                .Create()
+                                .SendToSagas(sagaStartEvent);
 
-            var sagaContinueEventA = new CoffeMakeFailedEvent(sagaId,
+            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
+
+            var sagaContinueEventA = new CoffeMakeFailedEvent(Guid.NewGuid(),
                                                               sagaStartEvent.PersonId,
                                                               BusinessDateTime.UtcNow,
                                                               sagaId);
 
-
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaContinueEventA);
+            await Node.NewDebugWaiter()
+                      .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
+                      .Create()
+                      .SendToSagas(sagaContinueEventA);
 
             await Node.KillSaga<SoftwareProgrammingProcess, SoftwareProgrammingState>(sagaId);
 
-            var snapshots =
-                await
-                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                                  Node.AggregateFromSnapshotsFactory)
+                                                                  .Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);

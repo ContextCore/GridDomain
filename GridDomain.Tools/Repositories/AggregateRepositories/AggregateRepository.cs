@@ -26,11 +26,11 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public void Dispose() {}
 
-        public async Task Save<T>(T aggr) where T : IAggregate
+        public async Task Save<T>(T aggr) where T : Aggregate
         {
             var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
-            await _eventRepository.Save(persistId, aggr.GetUncommittedEvents().Cast<DomainEvent>().ToArray());
-            aggr.ClearUncommittedEvents();
+            await _eventRepository.Save(persistId, aggr.GetDomainEvents());
+            aggr.PersistAll();
         }
 
         public async Task<T> LoadAggregate<T>(Guid id) where T : AggregateBase

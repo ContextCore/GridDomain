@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
@@ -27,40 +28,37 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         [Fact]
         public async Task Given_default_policy()
         {
-            var sagaId = Guid.NewGuid();
-            var sagaStartEvent = new GotTiredEvent(sagaId, Guid.NewGuid(), Guid.NewGuid());
+            var sagaStartEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaCreated<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaStartEvent, sagaId);
+            var res = await Node.NewDebugWaiter()
+                                .Expect<SagaCreated<SoftwareProgrammingState>>()
+                                .Create()
+                                .SendToSagas(sagaStartEvent);
+
+            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
 
             //wait some time, allowing first snapshots to be saved
-            await Task.Delay(200);
+            // await Task.Delay(200);
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow);
 
             //send text event
-            await
-                Node.NewDebugWaiter()
-                    .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToSagas(sagaContinueEvent, sagaId);
+            await Node.NewDebugWaiter()
+                      .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
+                      .Create()
+                      .SendToSagas(sagaContinueEvent, sagaId);
 
             //wait some time, second snapshots should not be saved due to max frequency in snapshotting policy
-            await Task.Delay(200);
+            //await Task.Delay(200);
 
-            var snapshots =
-                await
-                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                                  Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
-            //Snapshot_should_have_parameters_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.State.CurrentStateName);
+            //Snapshot_should_have_parameters_from_first_event = created event
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), snapshots.First().Aggregate.State.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

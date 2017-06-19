@@ -21,7 +21,6 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
         [Fact]
         public async Task Given_default_policy()
         {
-            //var sagaId = Guid.NewGuid();
             var sagaStartEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             var res = await
@@ -30,14 +29,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
                     .Create()
                     .SendToSagas(sagaStartEvent);
 
-            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().Id;
+            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
+
             var sagaContinueEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
-            await
-                Node.NewDebugWaiter()
+            await Node.NewDebugWaiter()
                     .Expect<SagaReceivedMessage<SoftwareProgrammingState>>()
                     .Create()
-                    .SendToSagas(sagaContinueEvent,sagaId);
+                    .SendToSagas(sagaContinueEvent);
 
             //saving snapshot
             await Task.Delay(200);

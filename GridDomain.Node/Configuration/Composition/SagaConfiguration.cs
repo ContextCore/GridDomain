@@ -32,9 +32,6 @@ namespace GridDomain.Node.Configuration.Composition
         {
             var sagaSpecificRegistrationsName = typeof(TSaga).Name;
             container.RegisterInstance(sagaSpecificRegistrationsName, _aggregateFactory);
-            container.RegisterType<ISnapshotsPersistencePolicy>(sagaSpecificRegistrationsName,
-                                                                new InjectionFactory(c => _snapShotsPolicy()));
-
             container.RegisterType<ISagaÑreatorCatalog<TState>>(new ContainerControlledLifetimeManager(),
                                                                 new InjectionFactory(c =>
                                                                                      {
@@ -47,9 +44,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                      }));
 
             container.RegisterType<SagaActor<TState>>();
-
-            var sagaStateConfig = new SagaStateConfiguration<TState>();
-            sagaStateConfig.Register(container);
+            container.Register(new SagaStateConfiguration<TState>(_snapShotsPolicy));
         }
     }
 }

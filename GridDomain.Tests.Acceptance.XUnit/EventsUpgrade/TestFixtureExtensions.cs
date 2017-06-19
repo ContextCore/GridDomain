@@ -33,11 +33,11 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                    TimeSpan? maxSaveFrequency = null)
         {
             fixture.Add(new AggregateConfiguration<Balloon, BalloonCommandHandler>(
-                                                                                  () => new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
-                                                                                      {
-                                                                                          Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()
-                                                                                      },
-                                                                                  Balloon.FromSnapshot));
+                                                                                   () => new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
+                                                                                         {
+                                                                                             Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()
+                                                                                         },
+                                                                                   Balloon.FromSnapshot));
 
             return fixture;
         }
@@ -47,11 +47,14 @@ namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
                                                                            TimeSpan? maxSaveFrequency = null,
                                                                            int saveOnEach = 1)
         {
-            fixture.Add(
-                        new CustomContainerConfiguration(
-                                                         c =>
-                                                             c.Register(
-                                                                        new SagaConfiguration<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingProcess.Descriptor, () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency), null))));
+            var containerConfiguration = new SagaConfiguration<SoftwareProgrammingProcess,
+                                                               SoftwareProgrammingState,
+                                                               SoftwareProgrammingSagaFactory>
+                (SoftwareProgrammingProcess.Descriptor,
+                 () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency), null);
+
+            fixture.Add(new CustomContainerConfiguration(c =>{c.Register(containerConfiguration);}));
+
             return fixture;
         }
 
