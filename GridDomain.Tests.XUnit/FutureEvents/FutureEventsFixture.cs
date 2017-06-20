@@ -1,7 +1,5 @@
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
-using Microsoft.Practices.Unity;
-using Quartz;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.XUnit.FutureEvents
@@ -12,7 +10,7 @@ namespace GridDomain.Tests.XUnit.FutureEvents
         {
             Add(new CustomContainerConfiguration(c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
             Add(new FutureEventsRouteMap());
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
+            this.ClearSheduledJobs();
         }
     }
 }

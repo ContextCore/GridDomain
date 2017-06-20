@@ -43,14 +43,10 @@ namespace GridDomain.Tests.XUnit
 
         public GridDomainNode Node { get; private set; }
 
-        public ActorSystem System
-        {
-            private get { return _system ?? (_system = ActorSystem.Create(Name, GetConfig())); }
-            set { _system = value; }
-        }
+        public ActorSystem System { get; set; }
 
         public ILogger Logger { get; private set; }
-        public AkkaConfiguration AkkaConfig { get; } = DefaultAkkaConfig;
+        public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
         public bool InMemory { get; set; } = true;
         public string Name => AkkaConfig.Network.SystemName;
@@ -61,6 +57,7 @@ namespace GridDomain.Tests.XUnit
         public void Dispose()
         {
             Node.Stop().Wait();
+            System = null;
         }
 
         public virtual LoggerConfiguration CreateLoggerConfiguration(ITestOutputHelper helper)
@@ -88,6 +85,7 @@ namespace GridDomain.Tests.XUnit
             if (ClearDataOnStart)
                 await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
 
+            System = System ?? ActorSystem.Create(Name, GetConfig());
             await CreateLogger();
 
             var settings = CreateNodeSettings();
@@ -104,7 +102,7 @@ namespace GridDomain.Tests.XUnit
         {
             var settings = new NodeSettings(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
                                             new CompositeRouteMap(_routeMap.ToArray()),
-                                            () => new[] {System})
+                                            () => new[] { System })
                            {
                                QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,

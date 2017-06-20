@@ -1,4 +1,5 @@
 using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.XUnit.FutureEvents;
 
 namespace GridDomain.Tests.XUnit
 {
@@ -8,6 +9,7 @@ namespace GridDomain.Tests.XUnit
         {
             Add(new BalloonContainerConfiguration());
             Add(new BalloonRouteMap());
+            this.ClearSheduledJobs();
         }
     }
 }

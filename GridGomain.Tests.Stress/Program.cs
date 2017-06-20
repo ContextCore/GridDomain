@@ -28,8 +28,8 @@ namespace GridGomain.Tests.Stress
         }
 
         public static async Task RawCommandExecution(int totalAggregateScenariosCount,
-                                                      int aggregateScenarioPackSize,
-                                                      int aggregateChangeAmount)
+                                                     int aggregateScenarioPackSize,
+                                                     int aggregateChangeAmount)
         {
             var dbCfg = new AutoTestAkkaConfiguration();
 

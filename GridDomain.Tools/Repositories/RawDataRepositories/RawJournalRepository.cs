@@ -42,5 +42,17 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
                 return await context.Journal.Where(j => j.PersistenceId == id).OrderBy(j => j.SequenceNr).ToArrayAsync();
             }
         }
+
+        public int TotalCount()
+        {
+            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            {
+               return (from x in context.Journal select x).Count();
+            }
+        }
+        //connection.Open();
+        //        var sqlText = @"SELECT COUNT(*) FROM Journal";
+        //var cmdJournal = new SqlCommand(sqlText, connection);
+        //var count = (int)cmdJournal.ExecuteScalar();
     }
 }

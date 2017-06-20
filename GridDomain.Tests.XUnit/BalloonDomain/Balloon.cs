@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using GridDomain.EventSourcing;
@@ -39,7 +40,9 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
 
         public void WriteNewTitle(int number)
         {
-            Emit(Task.Delay(1000).ContinueWith(t => new BalloonTitleChanged(number.ToString(), Id)));
+           // Emit(Task.Delay(1000).ContinueWith(t => new BalloonTitleChanged(number.ToString(), Id)));
+          // Thread.Sleep(1000);
+           Emit(new BalloonTitleChanged(number.ToString(), Id));
         }
 
         public void InflateNewBaloon(string value)
