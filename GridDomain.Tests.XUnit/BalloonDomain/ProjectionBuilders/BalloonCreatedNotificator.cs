@@ -7,7 +7,7 @@ using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
 {
-    public class AggregateCreatedProjectionBuilder : IHandlerWithMetadata<BalloonCreated>
+    public class BalloonCreatedNotificator : IHandlerWithMetadata<BalloonCreated>
     {
         public const string MessageProcessed = "message processed";
         public const string Why = "message received";
@@ -16,12 +16,12 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
 
         private readonly IPublisher _publisher;
 
-        static AggregateCreatedProjectionBuilder()
+        static BalloonCreatedNotificator()
         {
             watch.Start();
         }
 
-        public AggregateCreatedProjectionBuilder(IPublisher publisher)
+        public BalloonCreatedNotificator(IPublisher publisher)
         {
             _publisher = publisher;
         }

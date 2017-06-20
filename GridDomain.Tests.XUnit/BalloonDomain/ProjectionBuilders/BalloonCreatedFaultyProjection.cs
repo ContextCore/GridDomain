@@ -4,7 +4,7 @@ using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
 {
-    public class FaultyCreateProjectionBuilder : IHandler<BalloonCreated>
+    public class BalloonCreatedFaultyProjection : IHandler<BalloonCreated>
     {
         public Task Handle(BalloonCreated msg)
         {

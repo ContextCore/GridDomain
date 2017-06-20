@@ -11,9 +11,9 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
         public async Task Register(IMessagesRouter router)
         {
             await router.RegisterAggregate(BalloonCommandHandler.Descriptor);
-            await router.RegisterHandler<BalloonTitleChanged, SampleProjectionBuilder>(m => m.SourceId);
+            await router.RegisterHandler<BalloonTitleChanged, BalloonTitleChangedNotificator>(m => m.SourceId);
             await router.RegisterHandler<BalloonTitleChanged, AggregateChangedProjectionBuilder>(m => m.SourceId);
-            await router.RegisterHandler<BalloonCreated, AggregateCreatedProjectionBuilder>(m => m.SourceId);
+            await router.RegisterHandler<BalloonCreated, BalloonCreatedNotificator>(m => m.SourceId);
             await router.RegisterHandler<BalloonCreated, AggregateCreatedProjectionBuilder_Alternative>(m => m.SourceId);
         }
     }

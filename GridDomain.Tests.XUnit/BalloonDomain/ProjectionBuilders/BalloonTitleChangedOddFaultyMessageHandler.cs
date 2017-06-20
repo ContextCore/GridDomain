@@ -5,11 +5,11 @@ using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
 {
-    public class OddFaultyMessageHandler : IHandler<BalloonTitleChanged>
+    public class BalloonTitleChangedOddFaultyMessageHandler : IHandler<BalloonTitleChanged>
     {
         private readonly IPublisher _publisher;
 
-        public OddFaultyMessageHandler(IPublisher publisher)
+        public BalloonTitleChangedOddFaultyMessageHandler(IPublisher publisher)
         {
             _publisher = publisher;
         }

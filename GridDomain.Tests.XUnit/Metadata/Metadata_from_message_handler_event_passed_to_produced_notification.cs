@@ -49,9 +49,9 @@ namespace GridDomain.Tests.XUnit.Metadata
             Assert.Equal(1, _answer.Metadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
-            Assert.Equal(nameof(AggregateCreatedProjectionBuilder), step.Who);
-            Assert.Equal(AggregateCreatedProjectionBuilder.Why, step.Why);
-            Assert.Equal(AggregateCreatedProjectionBuilder.MessageProcessed, step.What);
+            Assert.Equal(nameof(BalloonCreatedNotificator), step.Who);
+            Assert.Equal(BalloonCreatedNotificator.Why, step.Why);
+            Assert.Equal(BalloonCreatedNotificator.MessageProcessed, step.What);
         }
     }
 }

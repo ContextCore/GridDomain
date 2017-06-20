@@ -20,8 +20,8 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
 
         private static IMessageRouteMap CreateMap()
         {
-            return new CustomRouteMap(r => r.RegisterHandler<BalloonTitleChanged, OddFaultyMessageHandler>(e => e.SourceId),
-                                      r => r.RegisterHandler<BalloonCreated, FaultyCreateProjectionBuilder>(e => e.SourceId),
+            return new CustomRouteMap(r => r.RegisterHandler<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(e => e.SourceId),
+                                      r => r.RegisterHandler<BalloonCreated, BalloonCreatedFaultyProjection>(e => e.SourceId),
                                       r => r.RegisterAggregate(BalloonCommandHandler.Descriptor));
         }
 

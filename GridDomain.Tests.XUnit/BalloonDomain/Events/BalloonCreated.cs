@@ -4,12 +4,12 @@ using GridDomain.EventSourcing;
 namespace GridDomain.Tests.XUnit.BalloonDomain.Events
 {
     public class BalloonCreated : DomainEvent,
-                                               IHaveProcessingHistory
+                                  IHaveProcessingHistory
     {
         public BalloonCreated(string value,
-                                           Guid sourceId,
-                                           DateTime? createdTime = default(DateTime?),
-                                           Guid sagaId = default(Guid)) : base(sourceId, sagaId, null, createdTime)
+                              Guid sourceId,
+                              DateTime? createdTime = default(DateTime?),
+                              Guid sagaId = default(Guid)) : base(sourceId, sagaId, null, createdTime)
         {
             Value = value;
         }

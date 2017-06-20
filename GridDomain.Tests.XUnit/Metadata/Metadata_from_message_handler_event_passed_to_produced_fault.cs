@@ -30,7 +30,7 @@ namespace GridDomain.Tests.XUnit.Metadata
         {
             return new CustomRouteMap(new BalloonRouteMap(),
                                       r =>
-                                          r.RegisterHandler<BalloonCreated, FaultyCreateProjectionBuilder>(nameof(DomainEvent.SourceId)));
+                                          r.RegisterHandler<BalloonCreated, BalloonCreatedFaultyProjection>(nameof(DomainEvent.SourceId)));
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_message_has_expected_type()
             Assert.IsAssignableFrom<IFault<BalloonCreated>>(_answer.Message);
             //Produced_fault_produced_by_projection_builder()
-            Assert.Equal(typeof(FaultyCreateProjectionBuilder), _answer.Message.Processor);
+            Assert.Equal(typeof(BalloonCreatedFaultyProjection), _answer.Message.Processor);
             //Result_message_has_expected_id()
             Assert.Equal(_command.AggregateId, _answer.Message.Message.SourceId);
             //Result_metadata_has_aggregate_event_id_as_casuation_id()
@@ -63,7 +63,7 @@ namespace GridDomain.Tests.XUnit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
 
-            Assert.Equal(nameof(FaultyCreateProjectionBuilder), step.Who);
+            Assert.Equal(nameof(BalloonCreatedFaultyProjection), step.Who);
             Assert.Equal(MessageHandlingStatuses.MessageProcessCasuedAnError, step.Why);
             Assert.Equal(MessageHandlingStatuses.PublishingFault, step.What);
         }

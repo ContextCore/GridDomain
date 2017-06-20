@@ -12,9 +12,9 @@ namespace GridDomain.Tests.XUnit.BalloonDomain
         {
             container.RegisterAggregate<Balloon, BalloonCommandHandler>();
             container.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
-            container.RegisterType<AggregateCreatedProjectionBuilder>();
-            container.RegisterType<SampleProjectionBuilder>();
-            container.RegisterType<FaultyCreateProjectionBuilder>();
+            container.RegisterType<BalloonCreatedNotificator>();
+            container.RegisterType<BalloonTitleChangedNotificator>();
+            container.RegisterType<BalloonCreatedFaultyProjection>();
         }
     }
 }

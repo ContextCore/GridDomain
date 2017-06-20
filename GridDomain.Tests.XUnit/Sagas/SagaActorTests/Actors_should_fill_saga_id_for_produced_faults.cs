@@ -33,8 +33,8 @@ namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
                 Sys.ActorOf(
                             Props.Create(
                                          () =>
-                                             new MessageProcessActor<BalloonTitleChanged, OddFaultyMessageHandler>(
-                                                                                                                   new OddFaultyMessageHandler(transport),
+                                             new MessageProcessActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
+                                                                                                                   new BalloonTitleChangedOddFaultyMessageHandler(transport),
                                                                                                                    transport)));
 
             actor.Tell(new MessageMetadataEnvelop<DomainEvent>(message, MessageMetadata.Empty));

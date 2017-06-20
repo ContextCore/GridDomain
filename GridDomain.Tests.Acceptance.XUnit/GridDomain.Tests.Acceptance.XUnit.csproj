@@ -157,6 +157,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BalloonDomain\BallonContext.cs" />
+    <Compile Include="BalloonDomain\BalloonCatalogItem.cs" />
+    <Compile Include="BalloonDomain\BalloonCatalogProjection.cs" />
+    <Compile Include="BalloonDomain\BalloonDomainEventsExtensions.cs" />
+    <Compile Include="BalloonDomain\BalloonWithProjectionContainerConfiguration.cs" />
+    <Compile Include="BalloonDomain\BalloonWithProjectionFixture.cs" />
+    <Compile Include="BalloonDomain\BalloonWithProjectionRouteMap.cs" />
     <Compile Include="EventsUpgrade\Future_events_class_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal.cs" />

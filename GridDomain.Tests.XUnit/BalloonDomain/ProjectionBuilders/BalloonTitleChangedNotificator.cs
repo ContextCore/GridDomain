@@ -7,11 +7,11 @@ using GridDomain.Tests.XUnit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
 {
-    public class SampleProjectionBuilder : IHandlerWithMetadata<BalloonTitleChanged>
+    public class BalloonTitleChangedNotificator : IHandlerWithMetadata<BalloonTitleChanged>
     {
         private readonly IPublisher _publisher;
 
-        public SampleProjectionBuilder(IPublisher publisher)
+        public BalloonTitleChangedNotificator(IPublisher publisher)
         {
             _publisher = publisher;
         }
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
         public Task Handle(BalloonTitleChanged msg, IMessageMetadata metadata)
         {
             var notificationMetadata = metadata.CreateChild(Guid.NewGuid(),
-                                                            new ProcessEntry(nameof(SampleProjectionBuilder),
+                                                            new ProcessEntry(nameof(BalloonTitleChangedNotificator),
                                                                              "Publishing notification",
                                                                              "Aggregate created event processed"));
 
