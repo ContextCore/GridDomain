@@ -17,7 +17,7 @@ namespace GridDomain.Tests.XUnit.Metadata
     {
         public Metadata_from_message_handler_event_passed_to_produced_notification(ITestOutputHelper output) : base(output) {}
 
-        private IMessageMetadataEnvelop<AggregateCreatedEventNotification> _answer;
+        private IMessageMetadataEnvelop<BalloonCreatedNotification> _answer;
         private InflateNewBallonCommand _command;
         private MessageMetadata _commandMetadata;
         private IMessageMetadataEnvelop<BalloonCreated> _aggregateEvent;
@@ -30,17 +30,17 @@ namespace GridDomain.Tests.XUnit.Metadata
 
             var res = await Node.Prepare(_command, _commandMetadata)
                                 .Expect<BalloonCreated>()
-                                .And<AggregateCreatedEventNotification>()
+                                .And<BalloonCreatedNotification>()
                                 .Execute();
 
-            _answer = res.MessageWithMetadata<AggregateCreatedEventNotification>();
+            _answer = res.MessageWithMetadata<BalloonCreatedNotification>();
             _aggregateEvent = res.MessageWithMetadata<BalloonCreated>();
             //Result_contains_metadata()
             Assert.NotNull(_answer.Metadata);
             //Result_message_has_expected_type()
-            Assert.IsAssignableFrom<AggregateCreatedEventNotification>(_answer.Message);
+            Assert.IsAssignableFrom<BalloonCreatedNotification>(_answer.Message);
             //Result_message_has_expected_id()
-            Assert.Equal(_command.AggregateId, _answer.Message.AggregateId);
+            Assert.Equal(_command.AggregateId, _answer.Message.BallonId);
             //Result_metadata_has_command_id_as_casuation_id()
             Assert.Equal(_aggregateEvent.Metadata.MessageId, _answer.Metadata.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()

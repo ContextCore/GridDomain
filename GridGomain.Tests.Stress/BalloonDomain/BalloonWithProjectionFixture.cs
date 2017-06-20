@@ -1,7 +1,7 @@
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.FutureEvents;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridGomain.Tests.Stress.BalloonDomain
 {
     public class BalloonWithProjectionFixture : NodeTestFixture
     {

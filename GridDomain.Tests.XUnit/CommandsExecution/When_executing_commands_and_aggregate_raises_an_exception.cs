@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             //will throw exception in aggregate and in message handler
             var syncCommand = new PlanTitleWriteAndBlowCommand(50, Guid.NewGuid());
             var res = await Node.Prepare(syncCommand)
-                                .Expect<AggregateChangedEventNotification>()
+                                .Expect<BalloonTitleChangedNotification>()
                                 .Or<Fault<BalloonTitleChanged>>()
                                 .Execute(false);
 
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new PlanTitleWriteCommand(100, Guid.NewGuid());
             await Node.Prepare(syncCommand)
-                      .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
+                      .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
                       .Execute(TimeSpan.FromMilliseconds(50))
                       .ShouldThrow<TimeoutException>();
         }
@@ -46,12 +46,12 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new PlanTitleWriteCommand(101, Guid.NewGuid());
             var res = await Node.Prepare(syncCommand)
-                                .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
+                                .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
                                 .Or<Fault>(f => (f.Message as DomainEvent)?.SourceId == syncCommand.AggregateId)
                                 .Execute();
 
-            var evt = res.Message<AggregateChangedEventNotification>();
-            Assert.Equal(syncCommand.AggregateId, evt.AggregateId);
+            var evt = res.Message<BalloonTitleChangedNotification>();
+            Assert.Equal(syncCommand.AggregateId, evt.BallonId);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new PlanTitleWriteAndBlowCommand(100, Guid.NewGuid());
             await Node.Prepare(syncCommand)
-                      .Expect<AggregateChangedEventNotification>(e => e.AggregateId == syncCommand.AggregateId)
+                      .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
                       .Execute()
                       .ShouldThrow<BalloonException>();
         }
@@ -69,7 +69,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new PlanTitleWriteAndBlowCommand(100, Guid.NewGuid());
             await Node.Prepare(syncCommand)
-                      .Expect<AggregateChangedEventNotification>()
+                      .Expect<BalloonTitleChangedNotification>()
                       .Execute()
                       .ShouldThrow<BalloonException>();
         }

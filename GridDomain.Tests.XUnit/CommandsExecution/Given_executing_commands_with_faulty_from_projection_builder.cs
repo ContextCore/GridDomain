@@ -29,7 +29,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task When_dont_expect_fault_Then_it_is_not_received_case_it_comes_from_projection_builder()
         {
             await Node.Prepare(new PlanTitleWriteCommand(100, Guid.NewGuid()))
-                      .Expect<AggregateChangedEventNotification>()
+                      .Expect<BalloonTitleChangedNotification>()
                       .Execute(TimeSpan.FromSeconds(1))
                       .ShouldThrow<TimeoutException>();
         }
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var syncCommand = new PlanTitleWriteCommand(100, Guid.NewGuid());
             var res = await Node.Prepare(syncCommand)
-                                .Expect<AggregateChangedEventNotification>()
+                                .Expect<BalloonTitleChangedNotification>()
                                 .Or<Fault<BalloonTitleChanged>>(f => f.Message.SourceId == syncCommand.AggregateId)
                                 .Execute(false);
 
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         public async Task When_expect_fault_Then_exception_is_raised()
         {
             await Node.Prepare(new PlanTitleWriteCommand(8, Guid.NewGuid()))
-                      .Expect<AggregateChangedEventNotification>()
+                      .Expect<BalloonTitleChangedNotification>()
                       .Or<Fault<BalloonTitleChanged>>()
                       .Execute()
                       .ShouldThrow<MessageHandleException>();

@@ -9,7 +9,7 @@ using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
 using Serilog;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridGomain.Tests.Stress.BalloonDomain
 {
     class BalloonCatalogProjection : IHandlerWithMetadata<BalloonTitleChanged>,
                                      IHandlerWithMetadata<BalloonCreated>
@@ -18,42 +18,37 @@ namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
         private readonly Func<BalloonContext> _contextCreator;
         private readonly IPublisher _publisher;
         private readonly ProcessEntry _readModelUpdatedProcessEntry = new ProcessEntry(nameof(BalloonCatalogProjection), "Publishing notification", "Read model was updated");
-        private readonly ILogger _log;
+        private readonly ILogger _loggingAdapter;
 
         public BalloonCatalogProjection(Func<BalloonContext> contextCreator, IPublisher publisher, ILogger logger)
         {
-            _log = logger;
+            _loggingAdapter = logger;
             _publisher = publisher;
             _contextCreator = contextCreator;
         }
 
         public Task Handle(BalloonTitleChanged msg, IMessageMetadata metadata=null)
         {
-            _log.Debug("Projecting balloon catalog from message {@msg}", msg);
             using (var context = _contextCreator())
             {
                 context.BalloonCatalog.AddOrUpdate(msg.ToCatalogItem());
                 context.SaveChanges();
-
-                _publisher.Publish(new BalloonTitleChangedNotification(){BallonId = msg.SourceId},
-                                    metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
             }
-            _log.Debug("Projected balloon catalog from message {@msg}", msg);
-
+            _publisher.Publish(new BalloonTitleChangedNotification() { BallonId = msg.SourceId },
+                                    metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
             return Task.CompletedTask;
         }
 
         public Task Handle(BalloonCreated msg, IMessageMetadata metadata=null)
         {
-            _log.Debug("Projecting balloon catalog from message {@msg}", msg);
             using (var context = _contextCreator())
             {
                 context.BalloonCatalog.Add(msg.ToCatalogItem());
                 context.SaveChanges();
-                _publisher.Publish(new BalloonCreatedNotification() { BallonId = msg.SourceId },
-                                   metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
             }
-            _log.Debug("Projected balloon catalog from message {@msg}", msg);
+            _publisher.Publish(new BalloonCreatedNotification() { BallonId = msg.SourceId },
+                                  metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
+
             return Task.CompletedTask;
         }
 

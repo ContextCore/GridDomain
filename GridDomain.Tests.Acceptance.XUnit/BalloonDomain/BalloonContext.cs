@@ -2,9 +2,9 @@ using System.Data.Entity;
 
 namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
 {
-    public class BallonContext : DbContext
+    public class BalloonContext : DbContext
     {
-        public BallonContext(string connString):base(connString)
+        public BalloonContext(string connString):base(connString)
         {
             
         }

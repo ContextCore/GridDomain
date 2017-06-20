@@ -24,7 +24,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
             if (i % 2 == 0)
                 throw new MessageHandleException(msg);
 
-            _publisher.Publish(new AggregateChangedEventNotification {AggregateId = msg.SourceId});
+            _publisher.Publish(new BalloonTitleChangedNotification {BallonId = msg.SourceId});
 
             return Task.CompletedTask;
         }

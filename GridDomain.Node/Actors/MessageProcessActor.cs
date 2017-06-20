@@ -74,7 +74,7 @@ namespace GridDomain.Node.Actors
         protected virtual void PublishFault(IMessageMetadataEnvelop msg, Exception ex)
         {
             _log.Error(ex,
-                       "Handler actor raised an error on message process: {@Message}. Count: {count}",
+                       "Handler actor raised an error on message process: {@msg}. Count: {count}",
                        msg,
                        ++_publishFaultCount);
 

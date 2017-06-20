@@ -10,13 +10,12 @@ namespace GridDomain.Tests.Framework
         public static async Task ClearData(IAkkaDbConfiguration akkaConf)
         {
             await Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
-            await
-                Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"),
+            await Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"),
                          akkaConf.JournalTableName,
                          akkaConf.MetadataTableName);
         }
 
-        private static async Task Truncate(string connection, params string[] tableNames)
+        public static async Task Truncate(string connection, params string[] tableNames)
         {
             await ExecuteSql(connection, tableNames.Select(t => $"Truncate table {t}").ToArray());
         }

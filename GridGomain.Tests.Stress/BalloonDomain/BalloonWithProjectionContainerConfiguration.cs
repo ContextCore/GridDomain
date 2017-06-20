@@ -4,7 +4,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridGomain.Tests.Stress.BalloonDomain
 {
     public class BalloonWithProjectionContainerConfiguration : IContainerConfiguration
     {

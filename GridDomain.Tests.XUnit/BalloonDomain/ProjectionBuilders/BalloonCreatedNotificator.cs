@@ -36,7 +36,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
                                                                   metadata,
                                                                   new ProcessEntry(GetType().Name, MessageProcessed, Why));
 
-            var notification = new AggregateCreatedEventNotification {AggregateId = msg.SourceId};
+            var notification = new BalloonCreatedNotification {BallonId = msg.SourceId};
             _publisher.Publish(notification, notificationMetadata);
 
             return Task.CompletedTask;

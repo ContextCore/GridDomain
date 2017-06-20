@@ -62,6 +62,7 @@ namespace GridGomain.Tests.Stress
                        RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
         [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 400)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
+        //MAX: 500
         public void Benchmark()
         {
             Scenario.Execute(Fixture.Node, p => _counter.Increment());

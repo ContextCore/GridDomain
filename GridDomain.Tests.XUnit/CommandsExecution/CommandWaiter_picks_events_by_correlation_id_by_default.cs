@@ -20,10 +20,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var commandB = new PlanTitleWriteCommand(10, Guid.NewGuid());
 
             Node.Execute(commandB);
-            var res = await Node.Prepare(commandA).Expect<AggregateChangedEventNotification>().Execute(false);
+            var res = await Node.Prepare(commandA).Expect<BalloonTitleChangedNotification>().Execute(false);
 
             //will pick right command by correlation Id
-            Assert.Equal(commandA.AggregateId, res.Message<AggregateChangedEventNotification>().AggregateId);
+            Assert.Equal(commandA.AggregateId, res.Message<BalloonTitleChangedNotification>().BallonId);
         }
     }
 }

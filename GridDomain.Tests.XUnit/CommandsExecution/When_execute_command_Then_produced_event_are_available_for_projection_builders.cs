@@ -19,7 +19,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new PlanTitleChangeCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(cmd).Expect<AggregateChangedEventNotification>().Execute();
+            await Node.Prepare(cmd).Expect<BalloonTitleChangedNotification>().Execute();
         }
 
         [Fact]
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
         {
             var cmd = new PlanTitleWriteCommand(42, Guid.NewGuid());
 
-            await Node.Prepare(cmd).Expect<AggregateChangedEventNotification>().Execute();
+            await Node.Prepare(cmd).Expect<BalloonTitleChangedNotification>().Execute();
         }
     }
 }

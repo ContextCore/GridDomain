@@ -20,10 +20,10 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             var syncCommand = new PlanTitleWriteCommand(1000, Guid.NewGuid());
 
             var results = await Node.Prepare(syncCommand)
-                                    .Expect<AggregateChangedEventNotification>()
+                                    .Expect<BalloonTitleChangedNotification>()
                                     .Execute();
 
-            var changedEvent = results.Message<AggregateChangedEventNotification>();
+            var changedEvent = results.Message<BalloonTitleChangedNotification>();
             var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
 
             //Results_contains_received_messages()
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.XUnit.CommandsExecution
             //Results_contains_requested_message()
             Assert.NotNull(changedEvent);
             //Emmited_event_has_correct_id()
-            Assert.Equal(syncCommand.AggregateId, changedEvent?.AggregateId);
+            Assert.Equal(syncCommand.AggregateId, changedEvent?.BallonId);
             //Aggregate_has_correct_state_from_command()
             Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Title);
         }

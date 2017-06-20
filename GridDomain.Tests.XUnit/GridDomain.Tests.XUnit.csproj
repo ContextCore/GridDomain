@@ -358,9 +358,9 @@
     <Compile Include="BalloonDomain\Events\ProcessedHistory.cs" />
     <Compile Include="BalloonDomain\Events\BalloonTitleChanged.cs" />
     <Compile Include="BalloonDomain\Events\BalloonCreated.cs" />
-    <Compile Include="BalloonDomain\ProjectionBuilders\AggregateChangedEventNotification.cs" />
+    <Compile Include="BalloonDomain\ProjectionBuilders\BalloonTitleChangedNotification.cs" />
     <Compile Include="BalloonDomain\ProjectionBuilders\AggregateChangedProjectionBuilder.cs" />
-    <Compile Include="BalloonDomain\ProjectionBuilders\AggregateCreatedEventNotification.cs" />
+    <Compile Include="BalloonDomain\ProjectionBuilders\BalloonCreatedNotification.cs" />
     <Compile Include="BalloonDomain\ProjectionBuilders\BalloonCreatedNotificator.cs" />
     <Compile Include="BalloonDomain\ProjectionBuilders\AggregateCreatedProjectionBuilder_Alternative.cs" />
     <Compile Include="BalloonDomain\ProjectionBuilders\BalloonTitleChangedFaultyMessageHandler.cs" />

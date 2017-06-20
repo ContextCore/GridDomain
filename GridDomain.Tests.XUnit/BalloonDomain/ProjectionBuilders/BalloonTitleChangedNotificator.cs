@@ -18,7 +18,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
 
         public Task Handle(BalloonTitleChanged msg)
         {
-            _publisher.Publish(new AggregateChangedEventNotification {AggregateId = msg.SourceId});
+            _publisher.Publish(new BalloonTitleChangedNotification {BallonId = msg.SourceId});
             return Task.CompletedTask;
         }
 
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
                                                                              "Publishing notification",
                                                                              "Aggregate created event processed"));
 
-            _publisher.Publish(new AggregateChangedEventNotification {AggregateId = msg.SourceId}, notificationMetadata);
+            _publisher.Publish(new BalloonTitleChangedNotification {BallonId = msg.SourceId}, notificationMetadata);
             return Task.CompletedTask;
         }
     }
