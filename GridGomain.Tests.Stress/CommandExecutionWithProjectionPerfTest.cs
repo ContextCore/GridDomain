@@ -60,7 +60,7 @@ namespace GridGomain.Tests.Stress
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
             NumberOfIterations = 10, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 10000, TestMode = TestMode.Test)]
-        //MAX: 400
+        //MAX: 400, need several launches to warm up sql server
         [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 300)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         public void Benchmark()
