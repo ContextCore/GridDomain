@@ -161,48 +161,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
-    <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="NUnitAssertEx.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Commands\Order_calculate_total_test.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Hydration\Order_when_adding_correct_item_tests.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_test.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Hydration\Order_creates_from_event.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Commands\Order_guards_its_negative_number_on_creation.cs" />
-    <Compile Include="OrderAggregate\ProjectionBuilders\Order_created_projection_test.cs" />
-    <Compile Include="OrderAggregate\ProjectionBuilders\Order_projection_builder_test.cs" />
     <Compile Include="ProjectionBuilderTest.cs" />
-    <Compile Include="SkuAggregate\Aggregate\Sku_creation_tests.cs" />
-    <Compile Include="SkuAggregate\ProjectionBuilder\SkuProjectionBuilderTests.cs" />
-    <Compile Include="SkuAggregate\ProjectionBuilder\Sku_created_projection_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_replenishment_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_reserve_expiration_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_reserve_renew_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_reserve_take_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_reserve_first_time_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_successfull_creation_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_negative_creation_tests.cs" />
-    <Compile Include="SkuStockAggregate\Aggregate\SkuStock_take_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStockProjectionBuilderTests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_two_times_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_without_sku_created_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_created_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_added_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_double_reserved_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_taken_errors_test.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_renewed_errors_test.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_taken_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_taken_errors_test.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_renewed_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_taken_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_errors_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_expired_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_wihout_sku_entry_tests.cs" />
-    <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_errors_tests.cs" />
-    <Compile Include="UserAggregate\User_created_tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
