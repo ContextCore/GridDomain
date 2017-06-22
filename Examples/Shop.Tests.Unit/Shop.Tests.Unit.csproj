@@ -180,8 +180,6 @@
     <Compile Include="OrderAggregate\ProjectionBuilders\Order_created_projection_test.cs" />
     <Compile Include="OrderAggregate\ProjectionBuilders\Order_projection_builder_test.cs" />
     <Compile Include="ProjectionBuilderTest.cs" />
-    <Compile Include="InMemory_sequence_provider_tests.cs" />
-    <Compile Include="Sequence_provider_tests.cs" />
     <Compile Include="SkuAggregate\Aggregate\Sku_creation_tests.cs" />
     <Compile Include="SkuAggregate\ProjectionBuilder\SkuProjectionBuilderTests.cs" />
     <Compile Include="SkuAggregate\ProjectionBuilder\Sku_created_projection_tests.cs" />
@@ -212,7 +210,6 @@
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserved_wihout_sku_entry_tests.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_reserve_canceled_errors_tests.cs" />
     <Compile Include="UserAggregate\User_created_tests.cs" />
-    <Compile Include="User_creates_from_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

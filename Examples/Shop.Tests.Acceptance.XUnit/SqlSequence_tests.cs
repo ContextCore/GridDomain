@@ -1,41 +1,31 @@
 ﻿using System;
 using System.Data.SqlClient;
-using NUnit.Framework;
 using Shop.Infrastructure;
 using Shop.Tests.Unit;
 
 namespace Shop.Tests.Acceptance
 {
-    [TestFixture]
-    public class SqlSequence_tests : Sequence_provider_tests
+    public class SqlSequence_tests : Sequence_provider_tests,
+                                     IDisposable
     {
-        [TearDown]
-        public void ClearSequences()
+        public SqlSequence_tests()
         {
+            var prov = new SqlSequenceProvider(ConnectionString);
+            prov.Connect();
+            Provider = prov;
+        }
+        protected override ISequenceProvider Provider { get; }
+
+        public void Dispose()
+        {
+            DeleteCreatedSequences("global");
             DeleteCreatedSequences(CreatedSequences.ToArray());
             CreatedSequences.Clear();
         }
 
-        protected override Func<ISequenceProvider> SequenceProviderFactory { get; }
 
         private const string ConnectionString =
             "Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True";
-
-        public SqlSequence_tests()
-        {
-            SequenceProviderFactory = () =>
-                                      {
-                                          var sequenceProvider = new SqlSequenceProvider(ConnectionString);
-                                          sequenceProvider.Connect();
-                                          return sequenceProvider;
-                                      };
-        }
-
-        [OneTimeSetUp]
-        public void ClearGlobalSequences()
-        {
-            DeleteCreatedSequences("global");
-        }
 
         private void DeleteCreatedSequences(params string[] sequences)
         {
@@ -55,8 +45,5 @@ namespace Shop.Tests.Acceptance
                     }
             }
         }
-
-        [OneTimeSetUp]
-        public void Init() {}
     }
 }

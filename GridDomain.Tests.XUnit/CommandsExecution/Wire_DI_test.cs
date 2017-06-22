@@ -5,7 +5,7 @@ using Microsoft.Practices.Unity;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit.CommandsExecution {
-    public class Hyperion_DI_test
+    public class Wire_DI_test
     {
         [Fact]
         public void Just_create_an_actor()

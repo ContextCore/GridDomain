@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{23A802FA-0F0D-4864-8C44-908635B78918}</ProjectGuid>
+    <ProjectGuid>{4A92DD22-5C34-4F30-9CB3-1FEB4E452CC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Shop.Tests.Acceptance</RootNamespace>
-    <AssemblyName>Shop.Tests.Acceptance</AssemblyName>
+    <RootNamespace>Shop.Tests.Unit.XUnit</RootNamespace>
+    <AssemblyName>Shop.Tests.Unit.XUnit</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,25 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.1.1.2\lib\net45\Akka.dll</HintPath>
-    </Reference>
-    <Reference Include="Akka.TestKit, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.TestKit.1.1.2\lib\net45\Akka.TestKit.dll</HintPath>
-    </Reference>
-    <Reference Include="Akka.TestKit.NUnit3, Version=1.1.2.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.TestKit.NUnit3.1.1.2\lib\net45\Akka.TestKit.NUnit3.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -56,22 +42,33 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.assert, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.assert.2.2.0\lib\netstandard1.1\xunit.assert.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.core, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.extensibility.core.2.2.0\lib\netstandard1.1\xunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.extensibility.execution.2.2.0\lib\net452\xunit.execution.desktop.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InMemory_sequence_provider_tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sequence_provider_tests.cs" />
+    <Compile Include="User_creates_from_event.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.Common\GridDomain.Common.csproj">
-      <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
+      <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
       <Name>GridDomain.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
-      <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
-      <Name>GridDomain.CQRS.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GridDomain.Node\GridDomain.Node.csproj">
-      <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
-      <Name>GridDomain.Node</Name>
+    <ProjectReference Include="..\..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
+      <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
+      <Name>GridDomain.EventSourcing</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj">
       <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>
@@ -89,23 +86,13 @@
       <Project>{dd89ff59-69d6-443d-ba52-669a41f62adc}</Project>
       <Name>Shop.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Shop.Tests.Unit\Shop.Tests.Unit.csproj">
-      <Project>{1567d98e-ef33-4da1-a85e-0887c68e88ad}</Project>
-      <Name>Shop.Tests.Unit</Name>
+    <ProjectReference Include="..\Shop.ReadModel\Shop.ReadModel.csproj">
+      <Project>{105b2938-9764-4341-9c70-d8eaf182d516}</Project>
+      <Name>Shop.ReadModel</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UserFlows\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
