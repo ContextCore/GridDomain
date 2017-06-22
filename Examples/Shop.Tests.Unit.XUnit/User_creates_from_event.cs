@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
-using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit
+namespace Shop.Tests.Unit.XUnit
 {
     public class Given_new_user
     {

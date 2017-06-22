@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using Shop.Infrastructure;
 using Shop.Tests.Unit;
+using Shop.Tests.Unit.XUnit;
 
 namespace Shop.Tests.Acceptance
 {

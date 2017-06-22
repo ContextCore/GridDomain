@@ -161,12 +161,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountAggregate\Aggregate\Account_creation_tests.cs" />
-    <Compile Include="AccountAggregate\Aggregate\Account_withdrawal_tests.cs" />
-    <Compile Include="AccountAggregate\Aggregate\Account_replenish_tests.cs" />
-    <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
-    <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
-    <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
     <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
     <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="NUnitAssertEx.cs" />
@@ -176,7 +170,6 @@
     <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_test.cs" />
     <Compile Include="OrderAggregate\Aggregate\Hydration\Order_creates_from_event.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_guards_its_negative_number_on_creation.cs" />
-    <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_test.cs" />
     <Compile Include="OrderAggregate\ProjectionBuilders\Order_created_projection_test.cs" />
     <Compile Include="OrderAggregate\ProjectionBuilders\Order_projection_builder_test.cs" />
     <Compile Include="ProjectionBuilderTest.cs" />

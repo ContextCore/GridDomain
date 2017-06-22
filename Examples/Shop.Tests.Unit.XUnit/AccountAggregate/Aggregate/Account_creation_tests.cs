@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
-using NUnit.Framework;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
+using Xunit;
 
-namespace Shop.Tests.Unit.AccountAggregate.Aggregate
+namespace Shop.Tests.Unit.XUnit.AccountAggregate.Aggregate
 {
-    [TestFixture]
     public class Account_creation_tests : AggregateCommandsTest<Account, AccountCommandsHandler>
     {
         private CreateAccountCommand _command;
 
-        [OneTimeSetUp]
-        public async Task When_creating_account()
+        public Account_creation_tests()
         {
             Init();
             _command = new CreateAccountCommand(Aggregate.Id, Guid.NewGuid(), 123);
-            await Execute(_command);
+            Execute(_command).Wait();
         }
 
         protected override IEnumerable<DomainEvent> Expected()
@@ -28,22 +26,22 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
             yield return new AccountCreated(_command.AccountId, _command.UserId, _command.Number);
         }
 
-        [Test]
+        [Fact]
         public void Aggregate_should_take_id_from_command()
         {
-            Assert.AreEqual(_command.AccountId, Aggregate.Id);
+            Assert.Equal(_command.AccountId, Aggregate.Id);
         }
 
-        [Test]
+        [Fact]
         public void Aggregate_should_take_number_from_command()
         {
-            Assert.AreEqual(_command.Number, Aggregate.Number);
+            Assert.Equal(_command.Number, Aggregate.Number);
         }
 
-        [Test]
+        [Fact]
         public void Aggregate_should_take_user_from_command()
         {
-            Assert.AreEqual(_command.UserId, Aggregate.UserId);
+            Assert.Equal(_command.UserId, Aggregate.UserId);
         }
     }
 }

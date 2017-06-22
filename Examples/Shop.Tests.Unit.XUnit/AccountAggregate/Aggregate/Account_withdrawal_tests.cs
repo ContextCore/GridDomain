@@ -4,24 +4,22 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
-using NUnit.Framework;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
+using Xunit;
 
-namespace Shop.Tests.Unit.AccountAggregate.Aggregate
+namespace Shop.Tests.Unit.XUnit.AccountAggregate.Aggregate
 {
-    [TestFixture]
     public class Account_withdrawal_tests : AggregateCommandsTest<Account, AccountCommandsHandler>
     {
-        [SetUp]
-        public async Task When_account_withdrawal()
+        public Account_withdrawal_tests()// When_account_withdrawal()
         {
             Init();
             _initialAmount = Aggregate.Amount;
 
             _command = new PayForOrderCommand(Aggregate.Id, new Money(12), Guid.NewGuid());
-            await Execute(_command);
+            Execute(_command).Wait();
         }
 
         protected override IEnumerable<DomainEvent> Given()
@@ -38,18 +36,18 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
         private PayForOrderCommand _command;
         private Money _initialAmount;
 
-        [Test]
+        [Fact]
         public void Amount_should_be_increased()
         {
-            Assert.AreEqual(_initialAmount - _command.Amount, Aggregate.Amount);
+            Assert.Equal(_initialAmount - _command.Amount, Aggregate.Amount);
         }
 
-        [Test]
-        public void When_withdraw_too_much_Not_enough_money_error_is_occured()
+        [Fact]
+        public async Task When_withdraw_too_much_Not_enough_money_error_is_occured()
         {
             var cmd = new PayForOrderCommand(Aggregate.Id, new Money(12000), Guid.NewGuid());
 
-            Assert.Throws<NotEnoughMoneyException>(() => Execute(cmd));
+           await Assert.ThrowsAsync<NotEnoughMoneyException>(() => Execute(cmd));
         }
     }
 }

@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using Ploeh.AutoFixture;
 using Shop.Infrastructure;
 using Xunit;
 
-namespace Shop.Tests.Unit
+namespace Shop.Tests.Unit.XUnit
 {
     public abstract class Sequence_provider_tests
     {

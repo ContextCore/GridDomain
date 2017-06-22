@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
-using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
+using Xunit;
 
-namespace Shop.Tests.Unit.AccountAggregate.Aggregate
+namespace Shop.Tests.Unit.XUnit.AccountAggregate.Aggregate
 {
-    [TestFixture]
     public class Account_hydration_tests : AggregateTest<Account>
     {
-        [SetUp]
-        public void Given_account_with_initial_amount()
+        public Account_hydration_tests()// Given_account_with_initial_amount()
         {
             Init();
         }
@@ -28,17 +26,17 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
             yield return _initialAmountEvent = new AccountReplenish(_created.SourceId, Guid.NewGuid(), new Money(100));
         }
 
-        [Test]
+        [Fact]
         public void After_replenish_amount_is_increased_hydration()
         {
             var amount = new Money(123);
             var replenishEvent = new AccountReplenish(_created.SourceId, Guid.NewGuid(), amount);
             Aggregate.ApplyEvents(replenishEvent);
 
-            Assert.AreEqual(_initialAmountEvent.Amount + amount, Aggregate.Amount);
+            Assert.Equal(_initialAmountEvent.Amount + amount, Aggregate.Amount);
         }
 
-        [Test]
+        [Fact]
         public void After_withdraw_amount_is_decreased_hydration()
         {
             var amount = new Money(12);
@@ -46,19 +44,19 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
 
             Aggregate.ApplyEvents(withdrawEvent);
 
-            Assert.AreEqual(_initialAmountEvent.Amount - amount, Aggregate.Amount);
+            Assert.Equal(_initialAmountEvent.Amount - amount, Aggregate.Amount);
         }
 
-        [Test]
+        [Fact]
         public void Id_should_be_taken_from_created_event()
         {
-            Assert.AreEqual(_created.SourceId, Aggregate.Id);
+            Assert.Equal(_created.SourceId, Aggregate.Id);
         }
 
-        [Test]
+        [Fact]
         public void Initial_amount_should_be_taken_from_replenish_event()
         {
-            Assert.AreEqual(_initialAmountEvent.Amount, Aggregate.Amount);
+            Assert.Equal(_initialAmountEvent.Amount, Aggregate.Amount);
         }
     }
 }

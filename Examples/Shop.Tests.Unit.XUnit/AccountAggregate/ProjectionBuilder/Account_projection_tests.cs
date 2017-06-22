@@ -1,17 +1,16 @@
 ﻿using System;
-using NUnit.Framework;
+using System.Threading.Tasks;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.ReadModel.Context;
+using Xunit;
 
-namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
 {
-    [TestFixture]
     public class Account_projection_tests : Account_projection_builder_test
     {
         private AccountCreated _msg;
 
-        [OneTimeSetUp]
-        public void Given_account_created_and_projecting()
+        public Account_projection_tests()
         {
             _msg = new AccountCreated(Guid.NewGuid(), Guid.NewGuid(), 42);
             var user = new User {Id = _msg.UserId, Login = "test"};
@@ -22,10 +21,10 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
                 context.SaveChanges();
             }
 
-            ProjectionBuilder.Handle(_msg);
+            ProjectionBuilder.Handle(_msg).Wait();
         }
 
-        [Test]
+        [Fact]
         public void Shoud_create_account_row()
         {
             using (var context = ContextFactory())
@@ -35,13 +34,13 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
             }
         }
 
-        [Test]
-        public void Should_fail_on_additional_project_attempt()
+        [Fact]
+        public async Task Should_fail_on_additional_project_attempt()
         {
-            Assert.Throws<ArgumentException>(() => ProjectionBuilder.Handle(_msg));
+           await Assert.ThrowsAsync<ArgumentException>(() => ProjectionBuilder.Handle(_msg));
         }
 
-        [Test]
+        [Fact]
         public void Should_project_all_fields()
         {
             using (var context = ContextFactory())
@@ -49,11 +48,11 @@ namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
                 var row = context.Accounts.Find(_msg.SourceId);
                 var user = context.Users.Find(_msg.UserId);
 
-                Assert.AreEqual(row.UserId, _msg.UserId);
-                Assert.AreEqual(row.Number, _msg.AccountNumber);
-                Assert.AreEqual(row.Created, _msg.CreatedTime);
-                Assert.AreEqual(row.Id, _msg.SourceId);
-                Assert.AreEqual(row.Login, user.Login);
+                Assert.Equal(row.UserId, _msg.UserId);
+                Assert.Equal(row.Number, _msg.AccountNumber);
+                Assert.Equal(row.Created, _msg.CreatedTime);
+                Assert.Equal(row.Id, _msg.SourceId);
+                Assert.Equal(row.Login, user.Login);
             }
         }
     }

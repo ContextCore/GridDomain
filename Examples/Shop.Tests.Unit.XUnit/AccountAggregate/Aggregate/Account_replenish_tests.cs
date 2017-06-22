@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Framework;
 using NMoneys;
-using NUnit.Framework;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
+using Xunit;
 
-namespace Shop.Tests.Unit.AccountAggregate.Aggregate
+namespace Shop.Tests.Unit.XUnit.AccountAggregate.Aggregate
 {
-    [TestFixture]
     public class Account_replenish_tests : AggregateCommandsTest<Account, AccountCommandsHandler>
     {
         protected override IEnumerable<DomainEvent> Given()
@@ -23,14 +22,13 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
         private ReplenishAccountByCardCommand _command;
         private Money _initialAmount;
 
-        [OneTimeSetUp]
-        public async Task When_account_replenish()
+        public Account_replenish_tests()// When_account_replenish()
         {
             Init();
             _command = new ReplenishAccountByCardCommand(Aggregate.Id, new Money(12), "xxx123");
             _initialAmount = Aggregate.Amount;
 
-            await Execute(_command);
+            Execute(_command).Wait();
         }
 
         protected override IEnumerable<DomainEvent> Expected()
@@ -38,10 +36,10 @@ namespace Shop.Tests.Unit.AccountAggregate.Aggregate
             yield return new AccountReplenish(Aggregate.Id, _command.Id, _command.Amount);
         }
 
-        [Test]
+        [Fact]
         public void Then_amount_should_be_increased()
         {
-            Assert.AreEqual(_initialAmount + _command.Amount, Aggregate.Amount);
+            Assert.Equal(_initialAmount + _command.Amount, Aggregate.Amount);
         }
     }
 }
