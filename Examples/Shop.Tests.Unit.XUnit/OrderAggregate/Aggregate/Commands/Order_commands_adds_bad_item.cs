@@ -15,9 +15,9 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
 {
     public class Order_commands_adds_bad_item
     {
-        private AggregateScenario<Order, OrderCommandsHandler> GivenNewOrder()
+        private AggregateScenario<Order> GivenNewOrder()
         {
-            var scenario = new AggregateScenario<Order, OrderCommandsHandler>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            var scenario = new AggregateScenario<Order>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
             scenario.Given(new OrderCreated(Guid.NewGuid(), 123, Guid.NewGuid()));
             return scenario;
         }

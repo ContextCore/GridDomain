@@ -41,7 +41,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
         private ReserveStockCommand _reserveStockCommand;
         private int _initialStock;
         private readonly TimeSpan _reserveTime = TimeSpan.FromMilliseconds(100);
-        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock> _scenario;
         private DateTime _expirationDate;
         private Reservation _aggregateReserve;
         private FutureEventScheduledEvent _reserveExpirationFutureEvent;

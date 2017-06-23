@@ -17,16 +17,16 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
     public class Account_creation_tests
     {
         private readonly CreateAccountCommand _command;
-        private readonly AggregateScenario<Account, AccountCommandsHandler> _scenario;
+        private readonly AggregateScenario<Account> _scenario;
 
         public Account_creation_tests()
         {
             _command = new Fixture().Create<CreateAccountCommand>();
 
-            _scenario = AggregateScenario<Account, AccountCommandsHandler>.New()
-                                                                          .When(_command)
-                                                                          .Then(new AccountCreated(_command.AccountId, _command.UserId, _command.Number))
-                                                                          .Run();
+            _scenario = AggregateScenario.New<Account, AccountCommandsHandler>()
+                                         .When(_command)
+                                         .Then(new AccountCreated(_command.AccountId, _command.UserId, _command.Number))
+                                         .Run();
             _scenario.Check();
         }
 

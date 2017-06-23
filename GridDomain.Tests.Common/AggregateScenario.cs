@@ -10,25 +10,54 @@ using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.Common
 {
-    public class AggregateScenario<TAggregate, TCommandsHandler> where TAggregate : Aggregate
-                                                                 where TCommandsHandler : class,
-                                                                 IAggregateCommandsHandler<TAggregate>
+
+    public static class AggregateScenario
+    {
+        public static AggregateScenario<TAggregate> New<TAggregate,TAggregateCommandsHandler>() where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
+                                                                                                where TAggregate : Aggregate
+        {
+            return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), CreateCommandsHandler<TAggregate,TAggregateCommandsHandler>());
+        }
+
+        public static AggregateScenario<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler) where TAggregate : Aggregate
+        {
+            return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), handler);
+        }
+        private static TAggregate CreateAggregate<TAggregate>() where TAggregate: Aggregate
+        {
+            return (TAggregate)new AggregateFactory().Build(typeof(TAggregate), Guid.NewGuid(), null);
+        }
+
+        private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate,THandler>() where THandler : IAggregateCommandsHandler<TAggregate>
+        {
+            var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
+            if (constructorInfo == null)
+                throw new CannotCreateCommandHandlerExeption();
+
+            return (IAggregateCommandsHandler<TAggregate>)constructorInfo.Invoke(null);
+        }
+
+    }
+
+
+    public class AggregateScenario<TAggregate> where TAggregate : Aggregate
     {
         public Fixture Data { get; } = new Fixture();
         public Guid Id { get; }= Guid.NewGuid();
 
-        public AggregateScenario(TAggregate agr = null, TCommandsHandler handler = null)
+        public AggregateScenario(TAggregate agr, IAggregateCommandsHandler<TAggregate> handler)
         {
-            CommandsHandler = handler ?? CreateCommandsHandler();
-            Aggregate = agr ?? CreateAggregate();
+            CommandsHandler = handler;
+            Aggregate = agr;
         }
 
-        protected TCommandsHandler CommandsHandler { get; }
+
+        private IAggregateCommandsHandler<TAggregate> CommandsHandler { get; }
         public TAggregate Aggregate { get; private set; }
 
-        protected DomainEvent[] ExpectedEvents { get; private set; } = {};
-        protected DomainEvent[] ProducedEvents { get; private set; } = {};
-        protected DomainEvent[] GivenEvents { get; private set; } = {};
+        private DomainEvent[] ExpectedEvents { get; set; } = {};
+        private DomainEvent[] ProducedEvents { get; set; } = {};
+        private DomainEvent[] GivenEvents { get; set; } = {};
         private List<Command> GivenCommands { get; set; } = new List<Command>();
 
         private void AddEventInfo(string message, IEnumerable<DomainEvent> ev, StringBuilder builder)
@@ -44,7 +73,7 @@ namespace GridDomain.Tests.Common
             builder.AppendLine();
         }
 
-        protected string CollectDebugInfo()
+        private string CollectDebugInfo()
         {
             var sb = new StringBuilder();
             foreach (var cmd in GivenCommands)
@@ -57,36 +86,36 @@ namespace GridDomain.Tests.Common
             return sb.ToString();
         }
 
-        public AggregateScenario<TAggregate, TCommandsHandler> Given(params DomainEvent[] events)
+        public AggregateScenario<TAggregate> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
             Aggregate.ApplyEvents(events);
             return this;
         }
 
-        public AggregateScenario<TAggregate, TCommandsHandler> Given(IEnumerable<DomainEvent> events)
+        public AggregateScenario<TAggregate> Given(IEnumerable<DomainEvent> events)
         {
             return Given(events.ToArray());
         }
 
-        public AggregateScenario<TAggregate, TCommandsHandler> When(params Command[] commands)
+        public AggregateScenario<TAggregate> When(params Command[] commands)
         {
             GivenCommands = commands.ToList();
             return this;
         }
 
-        public AggregateScenario<TAggregate, TCommandsHandler> Then(IEnumerable<DomainEvent> expectedEvents)
+        public AggregateScenario<TAggregate> Then(IEnumerable<DomainEvent> expectedEvents)
         {
             return Then(expectedEvents.ToArray());
         }
 
-        public AggregateScenario<TAggregate, TCommandsHandler> Then(params DomainEvent[] expectedEvents)
+        public AggregateScenario<TAggregate> Then(params DomainEvent[] expectedEvents)
         {
             ExpectedEvents = expectedEvents;
             return this;
         }
 
-        public AggregateScenario<TAggregate, TCommandsHandler> Run()
+        public AggregateScenario<TAggregate> Run()
         {
             RunAsync().Wait();
             return this;
@@ -108,27 +137,7 @@ namespace GridDomain.Tests.Common
             Console.WriteLine(CollectDebugInfo());
             EventsExtensions.CompareEvents(ExpectedEvents, ProducedEvents);
         }
-
-        public static AggregateScenario<TAggregate, TCommandsHandler> New(TAggregate agr = null,
-                                                                          TCommandsHandler handler = null)
-        {
-            return new AggregateScenario<TAggregate, TCommandsHandler>(agr, handler);
-        }
-
-        private static TAggregate CreateAggregate()
-        {
-            return (TAggregate) new AggregateFactory().Build(typeof(TAggregate), Guid.NewGuid(), null);
-        }
-
-        private static TCommandsHandler CreateCommandsHandler()
-        {
-            var constructorInfo = typeof(TCommandsHandler).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo == null)
-                throw new CannotCreateCommandHandlerExeption();
-
-            return (TCommandsHandler) constructorInfo.Invoke(null);
-        }
-
+    
         public T GivenEvent<T>(Predicate<T> filter = null) where T : DomainEvent
         {
             var events = GivenEvents.OfType<T>();

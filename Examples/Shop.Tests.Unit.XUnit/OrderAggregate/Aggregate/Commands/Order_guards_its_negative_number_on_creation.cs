@@ -10,24 +10,18 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
 {
-    public class Order_guards_its_negative_number_on_creation : AggregateCommandsTest<Order, OrderCommandsHandler>
+    public class Order_guards_its_negative_number_on_creation
     {
-        protected override OrderCommandsHandler CreateCommandsHandler()
+        [Fact]
+        public async Task When_creating_order_with_negative_number_it_throws_exception()
         {
             var sequenceNumberMock = new Mock<ISequenceProvider>();
             sequenceNumberMock.Setup(p => p.GetNext(It.IsAny<string>())).Returns(-1);
 
-            return new OrderCommandsHandler(sequenceNumberMock.Object);
-        }
-
-        [Fact]
-        public async Task When_creating_order_with_negative_number_it_throws_exception()
-        {
-            await AggregateScenario<Order, OrderCommandsHandler>
-                .New(null, CreateCommandsHandler())
-                .When(new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid()))
-                .RunAsync()
-                .ShouldThrow<NegativeOrderNumberException>();
+            await AggregateScenario.New(new OrderCommandsHandler(sequenceNumberMock.Object))
+                                   .When(new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid()))
+                                   .RunAsync()
+                                   .ShouldThrow<NegativeOrderNumberException>();
         }
     }
 }

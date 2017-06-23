@@ -35,7 +35,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
             _scenario.Run();
         }
 
-        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock> _scenario;
         private DateTime _expirationDate;
         private ReserveStockCommand _reserveStockCommand;
         private StockReserved _stockReservedEvent;

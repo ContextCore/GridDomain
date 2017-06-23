@@ -25,7 +25,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
 
         private TakeFromStockCommand _takeCommand;
         private int _initialStock;
-        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock> _scenario;
 
        [Fact]
         public void Then_Aggregate_Quantity_should_be_reduced_by_take_amount()

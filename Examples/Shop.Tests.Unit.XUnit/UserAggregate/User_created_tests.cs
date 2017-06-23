@@ -8,20 +8,19 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.UserAggregate
 {
-   
     internal class User_created_tests
     {
         private readonly Guid _stockId = Guid.NewGuid();
 
-        private AggregateScenario<User, UserCommandsHandler> NewScenario()
+        private AggregateScenario<User> NewScenario()
         {
             var stockProviderMoq = new Mock<IDefaultStockProvider>();
             stockProviderMoq.Setup(p => p.GetStockForSku(It.IsAny<Guid>())).Returns(_stockId);
 
-            return AggregateScenario<User, UserCommandsHandler>.New(null, new UserCommandsHandler(stockProviderMoq.Object));
+            return AggregateScenario.New(new UserCommandsHandler(stockProviderMoq.Object));
         }
 
-       [Fact]
+        [Fact]
         public void Given_user_created_When_buing_now_Then_pending_order_event_is_created()
         {
             var userId = Guid.NewGuid();
@@ -29,11 +28,10 @@ namespace Shop.Tests.Unit.XUnit.UserAggregate
             var quantity = 10;
             var account = Guid.NewGuid();
 
-            var scenario =
-                NewScenario()
-                    .Given(new UserCreated(userId, "testLogin", account))
-                    .When(new BuySkuNowCommand(userId, skuId, quantity))
-                    .Then(new SkuPurchaseOrdered(userId, skuId, 10, Any.GUID, _stockId, account));
+            var scenario = NewScenario()
+                            .Given(new UserCreated(userId, "testLogin", account))
+                            .When(new BuySkuNowCommand(userId, skuId, quantity))
+                            .Then(new SkuPurchaseOrdered(userId, skuId, 10, Any.GUID, _stockId, account));
 
             scenario.Run().Check();
 
@@ -45,7 +43,7 @@ namespace Shop.Tests.Unit.XUnit.UserAggregate
             Assert.Equal(pendingOrderId, pendingOrder.Order);
         }
 
-       [Fact]
+        [Fact]
         public void Given_user_with_pending_order_When_cancel_order_Then_order_canceled_is_created()
         {
             var userId = Guid.NewGuid();
@@ -65,10 +63,10 @@ namespace Shop.Tests.Unit.XUnit.UserAggregate
             scenario.Run().Check();
 
             //pending order should be removed
-           Assert.Empty(scenario.Aggregate.PendingOrders);
+            Assert.Empty(scenario.Aggregate.PendingOrders);
         }
 
-       [Fact]
+        [Fact]
         public void Given_user_with_pending_order_When_complete_order_Then_order_completed_is_emitted()
         {
             var userId = Guid.NewGuid();
@@ -88,10 +86,10 @@ namespace Shop.Tests.Unit.XUnit.UserAggregate
             scenario.Run().Check();
 
             //pending order should be removed
-             Assert.Empty(scenario.Aggregate.PendingOrders);
+            Assert.Empty(scenario.Aggregate.PendingOrders);
         }
 
-       [Fact]
+        [Fact]
         public void When_user_created_by_command_Then_created_event_occures()
         {
             var cmd = new CreateUserCommand(Guid.NewGuid(), "testLogin", Guid.NewGuid());

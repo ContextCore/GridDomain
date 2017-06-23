@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using NMoneys;
-using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
@@ -19,7 +16,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
         {
             ReplenishAccountByCardCommand command;
             Money initialAmount;
-            var scenario = new AggregateScenario<Account, AccountCommandsHandler>();
+            var scenario = AggregateScenario.New<Account, AccountCommandsHandler>();
 
             scenario.Given(new AccountCreated(scenario.Id, Guid.NewGuid(), 123),
                            new AccountReplenish(scenario.Id, Guid.NewGuid(), initialAmount = new Money(100)))
@@ -36,7 +33,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
         {
             PayForOrderCommand command;
             Money initialAmount;
-            var scenario = new AggregateScenario<Account, AccountCommandsHandler>();
+            var scenario = AggregateScenario.New<Account,AccountCommandsHandler>();
             var id = Guid.NewGuid();
 
             scenario.Given(new AccountCreated(id, Guid.NewGuid(), 34),
@@ -52,7 +49,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
         [Fact]
         public async Task When_withdraw_too_much_Not_enough_money_error_is_occured()
         {
-            var scenario = new AggregateScenario<Account, AccountCommandsHandler>();
+            var scenario = AggregateScenario.New<Account,AccountCommandsHandler>();
             await scenario.Given(new AccountCreated(scenario.Id, Guid.NewGuid(), 34),
                                  new AccountReplenish(scenario.Id, Guid.NewGuid(), new Money(100)))
                           .When(new PayForOrderCommand(scenario.Id, new Money(10000), Guid.NewGuid()))

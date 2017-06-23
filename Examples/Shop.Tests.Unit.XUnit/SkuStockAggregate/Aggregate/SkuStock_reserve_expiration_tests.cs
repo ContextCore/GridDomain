@@ -41,7 +41,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
         }
 
         private int _initialStock;
-        private AggregateScenario<SkuStock, SkuStockCommandsHandler> _scenario;
+        private AggregateScenario<SkuStock> _scenario;
         private DateTime _expirationDate;
         private Guid _aggregateId;
         private RaiseScheduledDomainEventCommand _raiseEventCommand;
