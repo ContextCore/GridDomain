@@ -25,7 +25,8 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
                            new AccountReplenish(scenario.Id, Guid.NewGuid(), initialAmount = new Money(100)))
                      .When(command = new ReplenishAccountByCardCommand(scenario.Id, new Money(12), "xxx123"))
                      .Then(new AccountReplenish(scenario.Id, command.Id, command.Amount))
-                     .Run();
+                     .Run()
+                     .Check();
 
             Assert.Equal(initialAmount + command.Amount, scenario.Aggregate.Amount);
         }
@@ -42,7 +43,8 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
                            new AccountReplenish(id, Guid.NewGuid(), initialAmount = new Money(100)))
                     .When(command = new PayForOrderCommand(id, new Money(12), Guid.NewGuid()))
                     .Then(new AccountWithdrawal(id, command.Id, command.Amount))
-                    .Run();
+                    .Run()
+                    .Check();
 
             Assert.Equal(initialAmount - command.Amount, scenario.Aggregate.Amount);
         }

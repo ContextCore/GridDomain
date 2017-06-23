@@ -21,15 +21,14 @@ using Xunit;
 namespace Shop.Tests.Unit.XUnit.BuyNowSaga
 {
    
-    internal class BuyNowSaga_tests
+    public class BuyNowSaga_tests
     {
         private readonly InMemoryPriceCalculator _inMemoryPriceCalculator = new InMemoryPriceCalculator();
 
         private SagaScenario<BuyNow, BuyNowState, BuyNowSagaFactory> NewScenario()
         {
             var factory = new BuyNowSagaFactory(_inMemoryPriceCalculator, Log.Logger);
-            var scenario = SagaScenario<BuyNow, BuyNowState, BuyNowSagaFactory>.New(BuyNow.Descriptor, factory);
-            return scenario;
+            return SagaScenario<BuyNow, BuyNowState, BuyNowSagaFactory>.New(BuyNow.Descriptor, factory);
         }
 
        [Fact]

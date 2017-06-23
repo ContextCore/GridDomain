@@ -23,10 +23,11 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
         {
             _command = new Fixture().Create<CreateAccountCommand>();
 
-            _scenario = AggregateScenario<Account,AccountCommandsHandler>.New()
-                                           .When(_command)
-                                           .Then(new AccountCreated(_command.AccountId, _command.UserId, _command.Number))
-                                           .Run();
+            _scenario = AggregateScenario<Account, AccountCommandsHandler>.New()
+                                                                          .When(_command)
+                                                                          .Then(new AccountCreated(_command.AccountId, _command.UserId, _command.Number))
+                                                                          .Run();
+            _scenario.Check();
         }
 
         [Fact]

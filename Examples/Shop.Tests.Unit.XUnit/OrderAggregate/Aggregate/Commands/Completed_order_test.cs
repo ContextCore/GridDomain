@@ -14,48 +14,42 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
 {
-   
-    public class Completed_order_test : AggregateCommandsTest<Order, OrderCommandsHandler>
+    public class Completed_order_tests
     {
-        public Completed_order_test() //Given_completed_order()
+        [Fact]
+        public async Task When_completed_order_try_add_items_it_throws_exeption()
         {
-            Init();
+            var scenario = new AggregateScenario<Order, OrderCommandsHandler>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            await scenario.Given(new OrderCreated(scenario.Id, 123, Guid.NewGuid()),
+                                 new OrderCompleted(scenario.Id, OrderStatus.Paid))
+                          .When(new AddItemToOrderCommand(scenario.Id,
+                                                          Guid.NewGuid(),
+                                                          123,
+                                                          new Money(1)))
+                          .RunAsync()
+                          .ShouldThrow<CantAddItemsToClosedOrder>();
         }
 
-        protected override OrderCommandsHandler CreateCommandsHandler()
-        {
-            return new OrderCommandsHandler(new InMemorySequenceProvider());
-        }
-
-        protected override IEnumerable<DomainEvent> Given()
-        {
-            yield return new OrderCreated(Aggregate.Id, 123, Guid.NewGuid());
-            yield return new OrderCompleted(Aggregate.Id, OrderStatus.Paid);
-        }
-
-       [Fact]
-        public void When_completed_order_try_add_items_it_throws_exeption()
-        {
-            Assert.Throws<CantAddItemsToClosedOrder>(() =>
-                                                     {
-                                                         var cmd = new AddItemToOrderCommand(Aggregate.Id,
-                                                                                             Guid.NewGuid(),
-                                                                                             123,
-                                                                                             new Money(1));
-                                                         Execute(cmd);
-                                                     });
-        }
-
-       [Fact]
+        [Fact]
         public async Task When_completed_order_try_complete_it_throws_exeption()
         {
-            await Assert.ThrowsAsync<CannotCompleteAlreadyClosedOrderException>(() => Execute(new CompleteOrderCommand(Aggregate.Id)));
+            var scenario = new AggregateScenario<Order, OrderCommandsHandler>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            await scenario.Given(new OrderCreated(scenario.Id, 123, Guid.NewGuid()),
+                                 new OrderCompleted(scenario.Id, OrderStatus.Paid))
+                          .When(new CompleteOrderCommand(scenario.Id))
+                          .RunAsync()
+                          .ShouldThrow<CannotCompleteAlreadyClosedOrderException>();
         }
 
-       [Fact]
+        [Fact]
         public void When_order_completes_it_chages_status_to_paid()
         {
-            Assert.Equal(OrderStatus.Paid, Aggregate.Status);
+            var scenario = new AggregateScenario<Order, OrderCommandsHandler>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            scenario.Given(new OrderCreated(scenario.Id, 123, Guid.NewGuid()),
+                           new OrderCompleted(scenario.Id, OrderStatus.Paid))
+                    .Run();
+
+            Assert.Equal(OrderStatus.Paid, scenario.Aggregate.Status);
         }
     }
 }

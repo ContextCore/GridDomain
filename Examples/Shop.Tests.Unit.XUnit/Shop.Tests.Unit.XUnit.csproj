@@ -174,9 +174,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountAggregate\AggregateTests\Account_creation_tests.cs" />
-    <Compile Include="AccountAggregate\AggregateTests\Account_hydration_tests.cs" />
-    <Compile Include="AccountAggregate\AggregateTests\Account_commands_tests.cs" />
+    <Compile Include="AccountAggregate\Account_creation_tests.cs" />
+    <Compile Include="AccountAggregate\Account_hydration_tests.cs" />
+    <Compile Include="AccountAggregate\Account_commands_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_test.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
@@ -278,9 +278,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AppReadme\Compare-NET-Objects-Help.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
