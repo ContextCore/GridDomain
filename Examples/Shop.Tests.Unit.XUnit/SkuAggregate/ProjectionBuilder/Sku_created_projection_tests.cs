@@ -9,7 +9,7 @@ namespace Shop.Tests.Unit.XUnit.SkuAggregate.ProjectionBuilder
    
     public class Sku_created_projection_tests : SkuProjectionBuilderTests
     {
-        private SkuCreated _message;
+        private readonly SkuCreated _message;
 
         public Sku_created_projection_tests() //Given_sku_created_message_projected()
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
@@ -11,28 +12,19 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuAggregate.Aggregate
 {
-   
-    internal class Sku_creation_tests : AggregateCommandsTest<Sku, SkuCommandsHandler>
+    public class Sku_creation_tests
     {
-        private static readonly InMemorySequenceProvider SequenceProvider = new InMemorySequenceProvider();
-        private CreateNewSkuCommand _cmd;
-
-        protected override SkuCommandsHandler CreateCommandsHandler()
+        [Fact]
+        public void When_creating_new_sku()
         {
-            return new SkuCommandsHandler(SequenceProvider);
-        }
+            var id = Guid.NewGuid();
+            CreateNewSkuCommand cmd;
 
-        protected override IEnumerable<DomainEvent> Expected()
-        {
-            yield return new SkuCreated(Aggregate.Id, _cmd.Name, _cmd.Article, 1, new Money(100));
-        }
-
-       [Fact]
-        public async Task When_creating_new_sku()
-        {
-            Init();
-            _cmd = new CreateNewSkuCommand("testSku", "tesstArticle", Aggregate.Id, new Money(100));
-            await Execute(_cmd);
+            AggregateScenario.New(new SkuCommandsHandler(new InMemorySequenceProvider()))
+                             .When(cmd = new CreateNewSkuCommand("testSku", "tesstArticle", id, new Money(100)))
+                             .Then(new SkuCreated(id, cmd.Name, cmd.Article, 1, new Money(100)))
+                             .Run()
+                             .Check();
         }
     }
 }
