@@ -8,10 +8,18 @@ namespace GridDomain.Tests.Framework
 {
     public static class AggregateDebugExtensions
     {
-        public static void ApplyEvents(this IAggregate aggregate, params DomainEvent[] events)
+        public static void ApplyEvents(this Aggregate aggregate, params DomainEvent[] events)
         {
             foreach (var e in events)
-                aggregate.ApplyEvent(e);
+            {
+                ApplyEvent(aggregate,e);
+            }
+            
+        }
+        public static T ApplyEvent<T>(this Aggregate aggregate, T evt) where T:DomainEvent
+        {
+            ((IAggregate)aggregate).ApplyEvent(evt);
+            return evt;
         }
 
         public static void ClearEvents(this IAggregate aggregate)

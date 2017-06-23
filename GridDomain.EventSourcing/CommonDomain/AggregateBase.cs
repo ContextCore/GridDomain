@@ -119,6 +119,8 @@ namespace GridDomain.EventSourcing.CommonDomain
 
         public bool MarkPersisted(DomainEvent e)
         {
+            if (!_uncommittedEvents.Contains(e))
+                throw new EventIsNotBelongingToAggregateException();
             ((IAggregate)this).ApplyEvent(e);
             return _uncommittedEvents.Remove(e);
         }
@@ -177,4 +179,6 @@ namespace GridDomain.EventSourcing.CommonDomain
             return Equals(obj as IAggregate);
         }
     }
+
+    public class EventIsNotBelongingToAggregateException : Exception { }
 }

@@ -12,7 +12,6 @@ namespace GridDomain.EventSourcing.CommonDomain
         void ApplyEvent(object @event);
         ICollection GetUncommittedEvents();
         void ClearUncommittedEvents();
-
         IMemento GetSnapshot();
     }
 }

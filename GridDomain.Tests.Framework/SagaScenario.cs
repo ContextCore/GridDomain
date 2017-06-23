@@ -14,8 +14,8 @@ using Ploeh.AutoFixture.Dsl;
 namespace GridDomain.Tests.Framework
 {
     public class SagaScenario<TSaga, TState, TFactory> where TSaga : Process<TState>
-                                                      where TState : class, ISagaState
-                                                      where TFactory : class, ISagaCreator<TState>
+                                                       where TState : class, ISagaState
+                                                       where TFactory : class, ISagaCreator<TState>
     {
         internal SagaScenario(ISaga—reatorCatalog<TState> ÒreatorCatalog)
         {
@@ -26,15 +26,15 @@ namespace GridDomain.Tests.Framework
         public ISaga<TState> Saga { get; private set; }
         protected SagaStateAggregate<TState> SagaStateAggregate { get; private set; }
 
-        public ICommand[] ExpectedCommands { get; private set; } = {};
-        public ICommand[] ProducedCommands { get; private set; } = {};
-        protected DomainEvent[] GivenEvents { get; private set; } = {};
-        protected DomainEvent[] ReceivedEvents { get; private set; } = {};
+        public ICommand[] ExpectedCommands { get; private set; } = { };
+        public ICommand[] ProducedCommands { get; private set; } = { };
+        protected DomainEvent[] GivenEvents { get; private set; } = { };
+        protected DomainEvent[] ReceivedEvents { get; private set; } = { };
 
         public TState InitialState { get; private set; }
 
         public TState GenerateState(string stateName,
-                                   Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig = null)
+                                    Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig = null)
         {
             var fixture = new Fixture();
             var composer = fixtureConfig?.Invoke(fixture.Build<TState>());
@@ -113,7 +113,7 @@ namespace GridDomain.Tests.Framework
         }
 
         public SagaScenario<TSaga, TState, TFactory> CheckProducedState(TState expectedState,
-                                                                       CompareLogic customCompareLogic = null)
+                                                                        CompareLogic customCompareLogic = null)
         {
             EventsExtensions.CompareState(expectedState, Saga.State, customCompareLogic);
             return this;

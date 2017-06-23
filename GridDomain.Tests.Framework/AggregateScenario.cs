@@ -2,20 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Logging;
+using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.Framework
 {
-    public class AggregateScenario<TAggregate, TCommandsHandler> where TAggregate : class, IAggregate
+    public class AggregateScenario<TAggregate, TCommandsHandler> where TAggregate : Aggregate
                                                                  where TCommandsHandler : class,
                                                                  IAggregateCommandsHandler<TAggregate>
     {
-        internal AggregateScenario(TAggregate agr = null, TCommandsHandler handler = null)
+        public Fixture Data { get; } = new Fixture();
+        public Guid Id { get; }= Guid.NewGuid();
+
+        public AggregateScenario(TAggregate agr = null, TCommandsHandler handler = null)
         {
             CommandsHandler = handler ?? CreateCommandsHandler();
             Aggregate = agr ?? CreateAggregate();
@@ -27,7 +29,7 @@ namespace GridDomain.Tests.Framework
         protected DomainEvent[] ExpectedEvents { get; private set; } = {};
         protected DomainEvent[] ProducedEvents { get; private set; } = {};
         protected DomainEvent[] GivenEvents { get; private set; } = {};
-        protected Command[] GivenCommands { get; private set; } = {};
+        private List<Command> GivenCommands { get; set; } = new List<Command>();
 
         private void AddEventInfo(string message, IEnumerable<DomainEvent> ev, StringBuilder builder)
         {
@@ -59,7 +61,6 @@ namespace GridDomain.Tests.Framework
         {
             GivenEvents = events;
             Aggregate.ApplyEvents(events);
-            Aggregate.ClearUncommittedEvents();
             return this;
         }
 
@@ -70,7 +71,7 @@ namespace GridDomain.Tests.Framework
 
         public AggregateScenario<TAggregate, TCommandsHandler> When(params Command[] commands)
         {
-            GivenCommands = commands;
+            GivenCommands = commands.ToList();
             return this;
         }
 
@@ -87,14 +88,19 @@ namespace GridDomain.Tests.Framework
 
         public AggregateScenario<TAggregate, TCommandsHandler> Run()
         {
+            RunAsync().Wait();
+            return this;
+        }
+        public async Task RunAsync()
+        {
             //When
             foreach (var cmd in GivenCommands)
-                Aggregate = CommandsHandler.ExecuteAsync(Aggregate, cmd).Result;
+                Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
 
             //Then
-            ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            ProducedEvents = Aggregate.GetDomainEvents();
 
-            return this;
+            Aggregate.PersistAll();
         }
 
         public void Check()

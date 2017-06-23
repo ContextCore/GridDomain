@@ -12,7 +12,7 @@ using GridDomain.Logging;
 
 namespace GridDomain.Tests.Framework
 {
-    public class AggregateCommandsTest<TAggregate, THandler> : AggregateTest<TAggregate> where TAggregate : IAggregate
+    public class AggregateCommandsTest<TAggregate, THandler> : AggregateTest<TAggregate> where TAggregate : Aggregate
                                                                                          where THandler : class,
                                                                                          IAggregateCommandsHandler
                                                                                          <TAggregate>
@@ -38,7 +38,9 @@ namespace GridDomain.Tests.Framework
             foreach (var cmd in command)
                 Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
 
-            return ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            ProducedEvents = Aggregate.GetDomainEvents();
+            Aggregate.PersistAll();
+            return ProducedEvents;
         }
 
         protected async Task Execute(params ICommand[] command)
@@ -63,7 +65,8 @@ namespace GridDomain.Tests.Framework
             foreach (var cmd in command)
                 Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
 
-            ProducedEvents = Aggregate.GetUncommittedEvents().Cast<DomainEvent>().ToArray();
+            ProducedEvents = Aggregate.GetDomainEvents();
+            Aggregate.PersistAll();
 
             Console.WriteLine(CollectDebugInfo(command));
             EventsExtensions.CompareEvents(expected.ToArray(), ProducedEvents);

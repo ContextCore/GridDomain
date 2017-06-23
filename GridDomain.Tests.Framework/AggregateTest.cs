@@ -8,7 +8,7 @@ using Ploeh.AutoFixture;
 
 namespace GridDomain.Tests.Framework
 {
-    public class AggregateTest<TAggregate> where TAggregate : IAggregate
+    public class AggregateTest<TAggregate> where TAggregate : Aggregate
     {
         protected readonly AggregateFactory aggregateFactory = new AggregateFactory();
         protected TAggregate Aggregate;

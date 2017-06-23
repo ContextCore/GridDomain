@@ -174,10 +174,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountAggregate\Aggregate\Account_creation_tests.cs" />
-    <Compile Include="AccountAggregate\Aggregate\Account_hydration_tests.cs" />
-    <Compile Include="AccountAggregate\Aggregate\Account_replenish_tests.cs" />
-    <Compile Include="AccountAggregate\Aggregate\Account_withdrawal_tests.cs" />
+    <Compile Include="AccountAggregate\AggregateTests\Account_creation_tests.cs" />
+    <Compile Include="AccountAggregate\AggregateTests\Account_hydration_tests.cs" />
+    <Compile Include="AccountAggregate\AggregateTests\Account_Commands_tests.cs" />
+    <Compile Include="AccountAggregate\AggregateTests\Account_withdrawal_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_test.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
@@ -274,6 +274,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

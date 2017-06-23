@@ -28,9 +28,9 @@ namespace GridDomain.EventSourcing
         #region Base functions
 
     
-        public static T Empty<T>(Guid id) where T : IAggregate
+        public static T Empty<T>(Guid? id = null) where T : IAggregate
         {
-            return Factory.Build<T>(id);
+            return Factory.Build<T>(id ?? Guid.NewGuid());
         }
 
         // Aggregate State, do not mix with uncommited events 
