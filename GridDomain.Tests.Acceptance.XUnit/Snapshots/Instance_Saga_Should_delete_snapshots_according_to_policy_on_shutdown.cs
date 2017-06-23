@@ -6,7 +6,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.Sagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;

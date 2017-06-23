@@ -6,6 +6,7 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Xunit;

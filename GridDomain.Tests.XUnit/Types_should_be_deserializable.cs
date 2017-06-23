@@ -11,7 +11,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;

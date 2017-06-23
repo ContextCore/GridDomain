@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using NMoneys;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Events;

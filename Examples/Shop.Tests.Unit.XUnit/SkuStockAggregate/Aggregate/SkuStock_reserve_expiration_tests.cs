@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Common;
 using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Xunit;

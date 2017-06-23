@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Automatonymous;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.Sagas;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;

@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;

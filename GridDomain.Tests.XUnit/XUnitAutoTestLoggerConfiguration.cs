@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using NMoneys;
 using Serilog;
 using Serilog.Events;

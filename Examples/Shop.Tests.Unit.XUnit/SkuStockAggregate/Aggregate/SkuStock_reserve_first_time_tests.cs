@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;

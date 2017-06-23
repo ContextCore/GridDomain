@@ -1,6 +1,6 @@
 using Akka.Event;
 using GridDomain.Node.Configuration.Akka;
-using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Common.Configuration;
 
 namespace GridGomain.Tests.Stress
 {

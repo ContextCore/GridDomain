@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;

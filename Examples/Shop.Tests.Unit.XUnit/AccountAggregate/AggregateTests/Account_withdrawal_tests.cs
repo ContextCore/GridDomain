@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.CommandsExecution;
 using NMoneys;
 using Shop.Domain.Aggregates.AccountAggregate;

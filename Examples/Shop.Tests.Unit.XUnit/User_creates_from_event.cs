@@ -1,6 +1,6 @@
 ﻿using System;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Xunit;

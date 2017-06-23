@@ -2,7 +2,6 @@ using System;
 using Automatonymous;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using Newtonsoft.Json;
 using Xunit;

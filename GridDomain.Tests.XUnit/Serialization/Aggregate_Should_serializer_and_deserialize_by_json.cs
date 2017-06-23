@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using Newtonsoft.Json;
 using Xunit;

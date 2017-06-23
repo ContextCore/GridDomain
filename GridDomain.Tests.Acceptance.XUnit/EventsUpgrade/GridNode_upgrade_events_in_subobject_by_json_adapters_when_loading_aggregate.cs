@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Commands;

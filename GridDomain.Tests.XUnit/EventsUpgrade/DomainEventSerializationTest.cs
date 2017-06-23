@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
-using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.XUnit.EventsUpgrade.Events;
 using Xunit;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
 using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
 using Xunit;

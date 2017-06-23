@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Common.Configuration;
 using Microsoft.Practices.Unity;
 using Xunit;
 

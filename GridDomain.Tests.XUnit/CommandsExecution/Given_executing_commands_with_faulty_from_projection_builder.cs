@@ -4,6 +4,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Commands;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;

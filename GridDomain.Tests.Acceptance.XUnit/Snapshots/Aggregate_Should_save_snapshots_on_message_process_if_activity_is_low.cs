@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Commands;

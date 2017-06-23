@@ -1,5 +1,5 @@
 using System;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using NMoneys;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;

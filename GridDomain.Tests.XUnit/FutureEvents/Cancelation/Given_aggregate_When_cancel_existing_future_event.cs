@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.CommandsExecution;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Xunit;

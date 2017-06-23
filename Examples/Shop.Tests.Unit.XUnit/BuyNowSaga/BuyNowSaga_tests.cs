@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using KellermanSoftware.CompareNetObjects;
 using NMoneys;
 using Serilog;

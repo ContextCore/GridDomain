@@ -4,7 +4,7 @@ using GridDomain.Common;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit;
 using Microsoft.Practices.Unity;
 using Xunit;

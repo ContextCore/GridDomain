@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade.SampleDomain;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit;
 using Xunit;
 using Xunit.Abstractions;

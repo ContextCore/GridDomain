@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Commands;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;

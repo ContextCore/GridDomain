@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;

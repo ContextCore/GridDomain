@@ -10,7 +10,7 @@ using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 using GridDomain.CQRS;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 
 namespace GridDomain.Tests.Acceptance.XUnit.Projection
 {

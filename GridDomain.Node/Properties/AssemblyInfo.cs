@@ -40,4 +40,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("GridDomain.Tests.Unit")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.XUnit")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance.XUnit")]
-[assembly: InternalsVisibleTo("GridDomain.Tests.Framework")]
+[assembly: InternalsVisibleTo("GridDomain.Tests.Common")]

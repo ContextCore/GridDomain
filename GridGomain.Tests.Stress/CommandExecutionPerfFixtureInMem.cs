@@ -13,8 +13,6 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Framework;
-using GridDomain.Tests.Framework.Configuration;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Commands;

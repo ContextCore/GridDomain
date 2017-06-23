@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Event;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using GridGomain.Tests.Stress.BalloonDomain;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories;

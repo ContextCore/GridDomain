@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS.Messaging", "GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj", "{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}"
 EndProject
@@ -20,8 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scheduling", "GridDomain.Scheduling\GridDomain.Scheduling.csproj", "{96037181-43D1-4AE5-A9E8-0660D4CC4C82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS.Messaging.Akka", "GridDomain.CQRS.Messaging.Akka\GridDomain.CQRS.Messaging.Akka.csproj", "{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Framework", "GridDomain.Tests.Framework\GridDomain.Tests.Framework.csproj", "{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Common", "GridDomain.Common\GridDomain.Common.csproj", "{AB9BB393-1874-4421-A78A-55D9977A6173}"
 EndProject
@@ -52,6 +50,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Unit.XUnit", "Examples\Shop.Tests.Unit.XUnit\Shop.Tests.Unit.XUnit.csproj", "{4A92DD22-5C34-4F30-9CB3-1FEB4E452CC2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Acceptance.XUnit", "Examples\Shop.Tests.Acceptance.XUnit\Shop.Tests.Acceptance.XUnit.csproj", "{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,10 +95,6 @@ Global
 		{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB9BB393-1874-4421-A78A-55D9977A6173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB9BB393-1874-4421-A78A-55D9977A6173}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB9BB393-1874-4421-A78A-55D9977A6173}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -147,12 +143,15 @@ Global
 		{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8} = {FAE42EE3-3882-4F70-994D-04A2D5EB07A7}
 		{5DA0C909-A90C-4D12-B450-137A8555C0E2} = {FAE42EE3-3882-4F70-994D-04A2D5EB07A7}
 		{5FDD57E7-9D56-4BA7-9C2F-C2E9B78A2143} = {035FC0F5-C50D-431E-8FE7-84DDD0AFECCB}
 		{46CC4BE2-93BE-4807-9B1A-7A10DFEA29AF} = {FAE42EE3-3882-4F70-994D-04A2D5EB07A7}
@@ -164,5 +163,6 @@ Global
 		{DEED3428-0247-4BB9-ABA1-D48A8EB02BB4} = {5FDD57E7-9D56-4BA7-9C2F-C2E9B78A2143}
 		{4A92DD22-5C34-4F30-9CB3-1FEB4E452CC2} = {5FDD57E7-9D56-4BA7-9C2F-C2E9B78A2143}
 		{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7} = {5FDD57E7-9D56-4BA7-9C2F-C2E9B78A2143}
+		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8} = {FAE42EE3-3882-4F70-994D-04A2D5EB07A7}
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using Moq;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;

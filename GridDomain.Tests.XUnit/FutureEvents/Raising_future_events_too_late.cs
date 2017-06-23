@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;

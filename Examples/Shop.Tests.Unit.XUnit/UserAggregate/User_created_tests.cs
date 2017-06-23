@@ -1,5 +1,5 @@
 ﻿using System;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using Moq;
 using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Commands;

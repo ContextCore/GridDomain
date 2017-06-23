@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using Xunit;
 
 namespace GridDomain.Tests.XUnit

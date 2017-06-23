@@ -7,7 +7,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;

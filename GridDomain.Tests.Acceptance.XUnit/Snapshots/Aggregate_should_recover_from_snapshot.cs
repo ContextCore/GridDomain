@@ -4,7 +4,6 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
-using GridDomain.Tests.Framework;
 using GridDomain.Tests.XUnit;
 using GridDomain.Tests.XUnit.BalloonDomain;
 using GridDomain.Tests.XUnit.BalloonDomain.Events;
