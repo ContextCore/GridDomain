@@ -1,23 +1,23 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel;
 using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
     public class SkuStock_taken_errors_test : SkuStockProjectionBuilderTests
     {
-       [Fact]
+        [Fact]
         public async Task Given_no_stock_When_stock_taken_projected_Then_error_occurs()
         {
-            var reserveTaken = new StockReserveTaken(Guid.NewGuid(), Guid.NewGuid());
-            await Assert.ThrowsAsync<SkuStockEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveTaken));
+            await ProjectionBuilder.Handle(new StockReserveTaken(Guid.NewGuid(), Guid.NewGuid()))
+                                   .ShouldThrow<SkuStockEntryNotFoundException>();
         }
 
-       [Fact]
+        [Fact]
         public async Task Given_sku_created_and_taken_messages_When_projected_Then_another_history_is_added()
         {
             var stockId = Guid.NewGuid();
@@ -28,9 +28,11 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             await ProjectionBuilder.Handle(stockCreatedEvent);
             await ProjectionBuilder.Handle(stockTaken);
             await ProjectionBuilder.Handle(stockTaken);
-
-            Assert.Equal(3, ContextFactory().StockHistory.Count());
-            Assert.Equal(1, ContextFactory().SkuStocks.Find(stockId).AvailableQuantity);
+            using (var context = ContextFactory())
+            {
+                Assert.Equal(3, context.StockHistory.Count());
+                Assert.Equal(1, context.SkuStocks.Find(stockId).AvailableQuantity);
+            }
         }
     }
 }

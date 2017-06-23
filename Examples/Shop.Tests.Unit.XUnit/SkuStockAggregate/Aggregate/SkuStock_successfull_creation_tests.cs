@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
@@ -10,33 +7,23 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
 {
-   
-    internal class SkuStock_successfull_creation_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
+    public class SkuStock_successfull_creation_tests
     {
-        private CreateSkuStockCommand _command;
-
-        public SkuStock_successfull_creation_tests()// When_creating_stock()
+        [Fact]
+        public void When_creating_stock_Then_stock_created_event_is_raised()
         {
-            Init();
-            _command = new CreateSkuStockCommand(Aggregate.Id, Guid.NewGuid(), 10, "test batch", TimeSpan.FromMinutes(1));
-            Execute(_command).Wait();
-        }
+            var id = Guid.NewGuid();
+            CreateSkuStockCommand cmd;
+            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+                                            .When(cmd = new CreateSkuStockCommand(id, Guid.NewGuid(), 10, "test batch", TimeSpan.FromMinutes(1)))
+                                            .Then(new SkuStockCreated(id, cmd.SkuId, cmd.Quantity, cmd.ReserveTime))
+                                            .Run()
+                                            .Check();
 
-        protected override IEnumerable<DomainEvent> Expected()
-        {
-            yield return new SkuStockCreated(Aggregate.Id, _command.SkuId, _command.Quantity, _command.ReserveTime);
-        }
-
-       [Fact]
-        public void Quantity_is_passed_to_aggregate()
-        {
-            Assert.Equal(_command.Quantity, Aggregate.Quantity);
-        }
-
-       [Fact]
-        public void SkuId_is_passed_to_aggregate()
-        {
-            Assert.Equal(_command.SkuId, Aggregate.SkuId);
+            //Quantity_is_passed_to_aggregate()
+            Assert.Equal(cmd.Quantity, scenario.Aggregate.Quantity);
+            //SkuId_is_passed_to_aggregate()
+            Assert.Equal(cmd.SkuId, scenario.Aggregate.SkuId);
         }
     }
 }

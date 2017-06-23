@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.Tests.Common;
 using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel.Context;
@@ -7,18 +8,17 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
     public class SkuStock_created_tests : SkuStockProjectionBuilderTests
     {
         private SkuStockCreated _message;
 
-        public SkuStock_created_tests()// Given_sku_created_message_When_projected()
+        public SkuStock_created_tests() // Given_sku_created_message_When_projected()
         {
             _message = new Fixture().Create<SkuStockCreated>();
             ProjectionBuilder.Handle(_message).Wait();
         }
 
-       [Fact]
+        [Fact]
         public void Then_new_sku_stock_row_is_added()
         {
             using (var context = ContextFactory())
@@ -27,7 +27,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             }
         }
 
-       [Fact]
+        [Fact]
         public void Then_new_stock_history_row_is_added()
         {
             using (var context = ContextFactory())
@@ -36,7 +36,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             }
         }
 
-       [Fact]
+        [Fact]
         public void Then_new_stock_history_row_is_filled()
         {
             using (var context = ContextFactory())
@@ -57,7 +57,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             }
         }
 
-       [Fact]
+        [Fact]
         public void Then_sku_row_fields_are_filled()
         {
             using (var context = ContextFactory())
@@ -74,10 +74,11 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             }
         }
 
-       [Fact]
+        [Fact]
         public async Task When_project_again_error_occures()
         {
-            await Assert.ThrowsAsync<ArgumentException>(() => ProjectionBuilder.Handle(_message));
+            await ProjectionBuilder.Handle(_message)
+                                   .ShouldThrow<ArgumentException>();
         }
     }
 }

@@ -7,9 +7,9 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using KellermanSoftware.CompareNetObjects;
-using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Dsl;
+using Xunit;
 
 namespace GridDomain.Tests.Common
 {
@@ -127,7 +127,7 @@ namespace GridDomain.Tests.Common
 
         public SagaScenario<TSaga, TState, TFactory> CheckProducedStateName(string stateName)
         {
-            Assert.AreEqual(stateName, Saga.State.CurrentStateName);
+            Assert.Equal(stateName, Saga.State.CurrentStateName);
             return this;
         }
 

@@ -10,7 +10,7 @@ using Xunit;
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
 {
    
-    internal class SkuStock_reserve_renew_tests
+    public class SkuStock_reserve_renew_tests
     {
         public SkuStock_reserve_renew_tests()// Given_sku_stock_with_amount_and_reserve_When_renew_reserve()
         {
@@ -21,7 +21,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
             _expirationDate = reservationStartTime + reserveTime;
 
             _scenario =
-                Scenario.New<SkuStock, SkuStockCommandsHandler>()
+                AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
                         .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, reserveTime),
                                new StockAdded(aggregateId, 10, "test batch 2"),
                                _stockReservedEvent = new StockReserved(aggregateId, customerId, _expirationDate, 5),

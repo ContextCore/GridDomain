@@ -1,16 +1,16 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel;
 using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
     public class SkuStock_reserve_canceled_errors_tests : SkuStockProjectionBuilderTests
     {
-       [Fact]
-        public async Task  Given_no_reserve_When_reserve_cancel_projected_Then_error_occurs()
+        [Fact]
+        public async Task Given_no_reserve_When_reserve_cancel_projected_Then_error_occurs()
         {
             var stockId = Guid.NewGuid();
 
@@ -21,7 +21,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             await Assert.ThrowsAsync<ReserveEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveCanceledEvent));
         }
 
-       [Fact]
+        [Fact]
         public async Task Given_no_stock_When_reserve_cancel_projected_Then_error_occurs()
         {
             var stockId = Guid.NewGuid();
@@ -31,7 +31,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             await Assert.ThrowsAsync<SkuStockEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveCanceledEvent));
         }
 
-       [Fact]
+        [Fact]
         public async Task Given_sku_created_and_stock_added_and_stock_reserved_messages_When_projected_twice()
         {
             var stockId = Guid.NewGuid();
@@ -45,7 +45,9 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             await ProjectionBuilder.Handle(stockAddedEvent);
             await ProjectionBuilder.Handle(stockReservedEvent);
             await ProjectionBuilder.Handle(reserveCanceledEvent);
-            await Assert.ThrowsAsync<ReserveEntryNotFoundException>(() => ProjectionBuilder.Handle(reserveCanceledEvent));
+
+            await ProjectionBuilder.Handle(reserveCanceledEvent)
+                                   .ShouldThrow<ReserveEntryNotFoundException>();
         }
     }
 }

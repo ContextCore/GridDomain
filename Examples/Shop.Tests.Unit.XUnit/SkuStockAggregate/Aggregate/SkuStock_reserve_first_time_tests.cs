@@ -10,110 +10,61 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
 {
-   
-    internal class SkuStock_reserve_first_time_tests
+    public class SkuStock_reserve_first_time_tests
     {
-        public SkuStock_reserve_first_time_tests()// Given_sku_stock_with_amount_When_reserve_first_time()
+        [Fact]
+        public void Given_sku_stock_with_amount_When_reserve_first_time()
         {
+            var reserveTime = TimeSpan.FromMilliseconds(100);
+            Reservation aggregateReserve;
+            FutureEventScheduledEvent reserveExpirationFutureEvent = null;
             var aggregateId = Guid.NewGuid();
-
             var reservationStartTime = BusinessDateTime.Now;
 
-            _reserveStockCommand = new ReserveStockCommand(aggregateId, Guid.NewGuid(), 10, reservationStartTime);
+            ReserveStockCommand reserveStockCommand;
+            var expirationDate = reservationStartTime + reserveTime;
 
-            _expirationDate = reservationStartTime + _reserveTime;
+            var initialQuantity = 50;
+            var addedQuantity = 10;
 
-            _scenario =
-                Scenario.New<SkuStock, SkuStockCommandsHandler>()
-                        .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, _reserveTime),
-                               new StockAdded(aggregateId, 10, "test batch 2"))
-                        .When(_reserveStockCommand);
+            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+                                            .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), initialQuantity, reserveTime),
+                                                   new StockAdded(aggregateId, addedQuantity, "test batch 2"))
+                                            .When(reserveStockCommand = new ReserveStockCommand(aggregateId, Guid.NewGuid(), 10, reservationStartTime))
+                                            .Then(new StockReserved(reserveStockCommand.StockId,
+                                                                    reserveStockCommand.CustomerId,
+                                                                    expirationDate,
+                                                                    reserveStockCommand.Quantity),
+                                                  new FutureEventScheduledEvent(Any.GUID,
+                                                                                aggregateId,
+                                                                                expirationDate,
+                                                                                new ReserveExpired(aggregateId, reserveStockCommand.CustomerId)));
 
-            _initialStock = _scenario.Aggregate.Quantity;
-            _scenario.Run();
-            _scenario.Aggregate.Reservations.TryGetValue(_reserveStockCommand.CustomerId, out _aggregateReserve);
+            // Then_stock_reserved_event_should_be_raised()
+            scenario.Run().Check();
 
-            if (_aggregateReserve != null)
-                _reserveExpirationFutureEvent = _scenario.Aggregate.FutureEvents.FirstOrDefault();
-            _reserveExpiredEvent = _reserveExpirationFutureEvent?.Event as ReserveExpired;
-        }
-
-        private ReserveStockCommand _reserveStockCommand;
-        private int _initialStock;
-        private readonly TimeSpan _reserveTime = TimeSpan.FromMilliseconds(100);
-        private AggregateScenario<SkuStock> _scenario;
-        private DateTime _expirationDate;
-        private Reservation _aggregateReserve;
-        private FutureEventScheduledEvent _reserveExpirationFutureEvent;
-        private ReserveExpired _reserveExpiredEvent;
-
-       [Fact]
-        public void Aggregate_quantity_should_be_decreased_by_command_amount()
-        {
-            Assert.Equal(_initialStock - _reserveStockCommand.Quantity, _scenario.Aggregate.Quantity);
-        }
-
-       [Fact]
-        public void Reserve_expiration_event_should_exist()
-        {
-            Assert.NotNull(_reserveExpiredEvent);
-        }
-
-       [Fact]
-        public void Reserve_expiration_event_should_have_reserve_id()
-        {
-            Assert.Equal(_reserveStockCommand.CustomerId, _reserveExpiredEvent?.ReserveId);
-        }
-
-       [Fact]
-        public void Reserve_expiration_future_event_should_exist()
-        {
-            Assert.NotNull(_reserveExpirationFutureEvent);
-        }
-
-       [Fact]
-        public void Reserve_expiration_future_event_should_have_reservation_expiration_date()
-        {
-            Assert.Equal(_aggregateReserve.ExpirationDate, _reserveExpirationFutureEvent.RaiseTime);
-        }
-
-       [Fact]
-        public void Then_aggregate_reservation_for_stock_should_have_correct_expiration_date()
-        {
-            Assert.Equal(_expirationDate, _aggregateReserve.ExpirationDate);
-        }
-
-       [Fact]
-        public void Then_aggregate_reservation_for_stock_should_have_correct_quanity()
-        {
-            Assert.Equal(_reserveStockCommand.Quantity, _aggregateReserve.Quantity);
-        }
-
-       [Fact]
-        public void Then_aggregate_reservation_should_be_added()
-        {
-            Assert.NotNull(_aggregateReserve);
-        }
-
-       [Fact]
-        public void Then_reservation_should_be_added_in_aggregate()
-        {
-            Assert.NotEmpty(_scenario.Aggregate.Reservations);
-        }
-
-       [Fact]
-        public void Then_stock_reserved_event_should_be_raised()
-        {
-            _scenario.Then(
-                           new StockReserved(_reserveStockCommand.StockId,
-                                             _reserveStockCommand.CustomerId,
-                                             _expirationDate,
-                                             _reserveStockCommand.Quantity),
-                           new FutureEventScheduledEvent(Any.GUID,
-                                                         _scenario.Aggregate.Id,
-                                                         _expirationDate,
-                                                         new ReserveExpired(_scenario.Aggregate.Id, _reserveStockCommand.CustomerId)));
-            _scenario.Check();
+            scenario.Aggregate.Reservations.TryGetValue(reserveStockCommand.CustomerId, out aggregateReserve);
+            if (aggregateReserve != null)
+                reserveExpirationFutureEvent = scenario.Aggregate.FutureEvents.FirstOrDefault();
+            var reserveExpiredEvent = reserveExpirationFutureEvent?.Event as ReserveExpired;
+            // Aggregate_quantity_should_be_decreased_by_command_amount()
+            Assert.Equal(initialQuantity + addedQuantity - reserveStockCommand.Quantity, scenario.Aggregate.Quantity);
+            //Reserve_expiration_event_should_exist()
+            Assert.NotNull(reserveExpiredEvent);
+            //Reserve_expiration_event_should_have_reserve_id()
+            Assert.Equal(reserveStockCommand.CustomerId, reserveExpiredEvent?.ReserveId);
+            //Reserve_expiration_future_event_should_exist()
+            Assert.NotNull(reserveExpirationFutureEvent);
+            // Reserve_expiration_future_event_should_have_reservation_expiration_date()
+            Assert.Equal(aggregateReserve.ExpirationDate, reserveExpirationFutureEvent.RaiseTime);
+            //Then_aggregate_reservation_for_stock_should_have_correct_expiration_date()
+            Assert.Equal(expirationDate, aggregateReserve.ExpirationDate);
+            //Then_aggregate_reservation_for_stock_should_have_correct_quanity()
+            Assert.Equal(reserveStockCommand.Quantity, aggregateReserve.Quantity);
+            //Then_aggregate_reservation_should_be_added()
+            Assert.NotNull(aggregateReserve);
+            // Then_reservation_should_be_added_in_aggregate()
+            Assert.NotEmpty(scenario.Aggregate.Reservations);
         }
     }
 }

@@ -11,44 +11,38 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
 {
-   
-    internal class SkuStock_take_tests : AggregateCommandsTest<SkuStock, SkuStockCommandsHandler>
+    public class SkuStock_take_tests
     {
-        private TakeFromStockCommand _command;
         private readonly Guid _skuId = Guid.NewGuid();
-        private int _initialStock;
 
-        protected override IEnumerable<DomainEvent> Given()
+        [Fact]
+        public void SkuStock_take_When_adding_stock()
         {
-            yield return new SkuStockCreated(Aggregate.Id, _skuId, 50, TimeSpan.FromMilliseconds(100));
-            yield return new StockAdded(Aggregate.Id, 10, "test batch 2");
+            var id = Guid.NewGuid();
+            TakeFromStockCommand cmd;
+
+            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+                                            .Given(new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)),
+                                                   new StockAdded(id, 10, "test batch 2"))
+                                            .When(cmd = new TakeFromStockCommand(id, 10))
+                                            .Then(new StockTaken(id, cmd.Quantity))
+                                            .Run()
+                                            .Check();
+
+            //Aggregate_quantity_should_be_decreased_by_command_amount()
+            Assert.Equal(60 - cmd.Quantity, scenario.Aggregate.Quantity);
         }
 
-        public SkuStock_take_tests()// When_adding_stock()
-        {
-            Init();
-            _initialStock = Aggregate.Quantity;
-            _command = new TakeFromStockCommand(Aggregate.Id, 10);
-            Execute(_command).Wait();
-        }
-
-        protected override IEnumerable<DomainEvent> Expected()
-        {
-            yield return new StockTaken(Aggregate.Id, _command.Quantity);
-        }
-
-       [Fact]
-        public void Aggregate_quantity_should_be_decreased_by_command_amount()
-        {
-            Assert.Equal(_initialStock - _command.Quantity, Aggregate.Quantity);
-        }
-
-       [Fact]
+        [Fact]
         public async Task When_take_too_many_should_throw_exception()
         {
-            var command = new TakeFromStockCommand(Aggregate.Id, 100);
-
-            await Execute(command).ShouldThrow<OutOfStockException>();
+            var id = Guid.NewGuid();
+            await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+                                   .Given(new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)),
+                                          new StockAdded(id, 10, "test batch 2"))
+                                   .When(new TakeFromStockCommand(id, 100))
+                                   .RunAsync()
+                                   .ShouldThrow<OutOfStockException>();
         }
     }
 }

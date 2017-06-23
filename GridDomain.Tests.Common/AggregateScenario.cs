@@ -132,10 +132,11 @@ namespace GridDomain.Tests.Common
             Aggregate.PersistAll();
         }
 
-        public void Check()
+        public AggregateScenario<TAggregate> Check()
         {
             Console.WriteLine(CollectDebugInfo());
             EventsExtensions.CompareEvents(ExpectedEvents, ProducedEvents);
+            return this;
         }
     
         public T GivenEvent<T>(Predicate<T> filter = null) where T : DomainEvent
