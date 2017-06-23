@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.CommandsExecution;
 using NMoneys;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
@@ -12,7 +9,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
 {
-    public class Account_withdrawal_tests // : AggregateCommandsTest<Account, AccountCommandsHandler>
+    public class Account_withdrawal_tests
     {
         [Fact]
         public void When_pay_from_account_Then_amount_should_be_decreased()
