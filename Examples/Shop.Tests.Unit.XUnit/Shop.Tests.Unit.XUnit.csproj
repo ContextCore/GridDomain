@@ -176,8 +176,7 @@
   <ItemGroup>
     <Compile Include="AccountAggregate\AggregateTests\Account_creation_tests.cs" />
     <Compile Include="AccountAggregate\AggregateTests\Account_hydration_tests.cs" />
-    <Compile Include="AccountAggregate\AggregateTests\Account_Commands_tests.cs" />
-    <Compile Include="AccountAggregate\AggregateTests\Account_withdrawal_tests.cs" />
+    <Compile Include="AccountAggregate\AggregateTests\Account_commands_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_test.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />

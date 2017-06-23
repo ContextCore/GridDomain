@@ -8,7 +8,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
 {
     public class Account_projection_tests : Account_projection_builder_test
     {
-        private AccountCreated _msg;
+        private readonly AccountCreated _msg;
 
         public Account_projection_tests()
         {
