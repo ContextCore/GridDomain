@@ -9,28 +9,20 @@ using Xunit;
 
 namespace GridDomain.Tests.XUnit.Sagas.Transitions
 {
-    public class Given_created_event_when_hydrating : AggregateTest<SagaStateAggregate<SoftwareProgrammingState>>
+    public class Given_created_event_when_hydrating
     {
-        private Guid _sagaId;
-        private SoftwareProgrammingProcess _machine;
-        private SoftwareProgrammingState _softwareProgrammingState;
-
-        protected override IEnumerable<DomainEvent> Given()
-        {
-            yield return new SagaCreated<SoftwareProgrammingState>(_softwareProgrammingState, _sagaId);
-        }
-
         [Fact]
         public void Given_created_event()
         {
-            _sagaId = Guid.NewGuid();
-            _machine = new SoftwareProgrammingProcess();
-            _softwareProgrammingState = new SoftwareProgrammingState(_sagaId, _machine.Sleeping.Name);
-            Init();
+            var sagaId = Guid.NewGuid();
+            var softwareProgrammingState = new SoftwareProgrammingState(sagaId, nameof(SoftwareProgrammingProcess.Sleeping));
+            var aggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+            aggregate.ApplyEvents(new SagaCreated<SoftwareProgrammingState>(softwareProgrammingState, sagaId));
+
             //Then_State_is_taken_from_event()
-            Assert.Equal(_softwareProgrammingState, Aggregate.State);
+            Assert.Equal(softwareProgrammingState, aggregate.State);
             //Then_Id_is_taken_from_event()
-            Assert.Equal(_sagaId, Aggregate.Id);
+            Assert.Equal(sagaId, aggregate.Id);
         }
     }
 }

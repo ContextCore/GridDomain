@@ -142,8 +142,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorSystemDebugExtensions.cs" />
-    <Compile Include="AggregateCommandsTest.cs" />
     <Compile Include="AggregateDebugExtensions.cs" />
     <Compile Include="Any.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
@@ -152,17 +150,13 @@
     <Compile Include="TestExtensions.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="CannotCreateCommandHandlerExeption.cs" />
-    <Compile Include="CannotCreateGenericType.cs" />
     <Compile Include="CannotFindRequestedEventException.cs" />
     <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
     <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
     <Compile Include="DateTimeComparer.cs" />
-    <Compile Include="DateTimeDeltaComparer.cs" />
-    <Compile Include="DateTimeOffsetDeltaComparer.cs" />
     <Compile Include="EventsExtensions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
-    <Compile Include="AggregateTest.cs" />
     <Compile Include="GuidComparer.cs" />
     <Compile Include="LoggerConfigurationXunitTestOutputExtensions.cs" />
     <Compile Include="ObjectDeserializationChecker.cs" />

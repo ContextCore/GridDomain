@@ -25,10 +25,10 @@ namespace Shop.Tests.Unit.XUnit.BuyNowSaga
     {
         private readonly InMemoryPriceCalculator _inMemoryPriceCalculator = new InMemoryPriceCalculator();
 
-        private SagaScenario<BuyNow, BuyNowState, BuyNowSagaFactory> NewScenario()
+        private SagaScenario<BuyNow, BuyNowState> NewScenario()
         {
             var factory = new BuyNowSagaFactory(_inMemoryPriceCalculator, Log.Logger);
-            return SagaScenario<BuyNow, BuyNowState, BuyNowSagaFactory>.New(BuyNow.Descriptor, factory);
+            return SagaScenario.New<BuyNow, BuyNowState>(BuyNow.Descriptor, factory);
         }
 
        [Fact]
