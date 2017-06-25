@@ -17,7 +17,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
     {
         private AggregateScenario<Order> GivenNewOrder()
         {
-            var scenario = new AggregateScenario<Order>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            var scenario = AggregateScenario.New(new OrderCommandsHandler(new InMemorySequenceProvider()));
             scenario.Given(new OrderCreated(Guid.NewGuid(), 123, Guid.NewGuid()));
             return scenario;
         }

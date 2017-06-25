@@ -19,7 +19,7 @@ namespace Shop.Domain.Sagas
 
         public BuyNow(IPriceCalculator calculator)
         {
-            CompositeEvent(() => OrderWasReserved, x => x.OrderWarReservedStatus, OrderFinilized, StockReserved);
+            CompositeEvent(() => OrderWasReserved, x => x.OrderWarReservedStatus, OrderFinalized, StockReserved);
 
             During(Initial,
                    When(PurchaseOrdered).Then((state, domainEvent) =>
@@ -57,7 +57,7 @@ namespace Shop.Domain.Sagas
                                                 state.ReserveId = domainEvent.ReserveId;
                                                 Dispatch(new CalculateOrderTotalCommand(state.OrderId));
                                             }),
-                   When(OrderFinilized)
+                   When(OrderFinalized)
                        .Then(
                              (state, domainEvent) => { Dispatch(new PayForOrderCommand(state.AccountId, domainEvent.TotalPrice, state.OrderId)); }),
                    When(OrderWasReserved).TransitionTo(Paying));
@@ -81,7 +81,7 @@ namespace Shop.Domain.Sagas
         public Event<OrderCreated> OrderCreated { get; private set; }
         public Event<ItemAdded> ItemAdded { get; private set; }
         public Event<StockReserved> StockReserved { get; private set; }
-        public Event<OrderTotalCalculated> OrderFinilized { get; private set; }
+        public Event<OrderTotalCalculated> OrderFinalized { get; private set; }
         public Event<AccountWithdrawal> OrderPaid { get; private set; }
         public Event<StockReserveTaken> ReserveTaken { get; private set; }
 
