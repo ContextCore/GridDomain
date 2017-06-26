@@ -38,6 +38,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.Unit")]
-[assembly: InternalsVisibleTo("GridDomain.Tests.XUnit")]
-[assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance.XUnit")]
+[assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.Common")]

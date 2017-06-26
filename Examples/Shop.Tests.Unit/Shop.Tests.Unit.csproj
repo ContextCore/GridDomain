@@ -7,8 +7,8 @@
     <ProjectGuid>{4A92DD22-5C34-4F30-9CB3-1FEB4E452CC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Shop.Tests.Unit.Unit</RootNamespace>
-    <AssemblyName>Shop.Tests.Unit.Unit</AssemblyName>
+    <RootNamespace>Shop.Tests.Unit</RootNamespace>
+    <AssemblyName>Shop.Tests.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

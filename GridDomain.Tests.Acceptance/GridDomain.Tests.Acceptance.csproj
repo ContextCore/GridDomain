@@ -7,8 +7,8 @@
     <ProjectGuid>{C2552609-5E29-4187-8D6A-E2F5D82BFF35}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Tests.Acceptance.Unit</RootNamespace>
-    <AssemblyName>GridDomain.Tests.Acceptance.Unit</AssemblyName>
+    <RootNamespace>GridDomain.Tests.Acceptance</RootNamespace>
+    <AssemblyName>GridDomain.Tests.Acceptance</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
