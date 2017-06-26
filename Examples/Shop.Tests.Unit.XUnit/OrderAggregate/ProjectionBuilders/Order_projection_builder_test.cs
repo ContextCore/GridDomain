@@ -7,8 +7,8 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.ProjectionBuilders
     {
         public Order_projection_builder_test()
         {
-            ContextFactory = () => new ShopDbContext(Options);
-            ProjectionBuilder = new OrdersProjectionBuilder(ContextFactory);
+            ContextFactory = options => new ShopDbContext(options);
+            ProjectionBuilder = new OrdersProjectionBuilder(CreateContext);
         }
     }
 }

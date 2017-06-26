@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
+    
     public class SkuStock_reserve_expired_errors_tests : SkuStockProjectionBuilderTests
     {
        [Fact]

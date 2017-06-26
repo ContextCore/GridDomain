@@ -26,7 +26,7 @@ namespace Shop.Tests.Unit.XUnit.SkuAggregate.ProjectionBuilder
        [Fact]
         public void When_project_all_fields_are_filled()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.Skus.Find(_message.SourceId);
                 Assert.Equal(_message.SourceId, row.Id);
@@ -43,7 +43,7 @@ namespace Shop.Tests.Unit.XUnit.SkuAggregate.ProjectionBuilder
        [Fact]
         public void When_project_new_row_is_added()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.NotNull(context.Skus.Find(_message.SourceId));
             }

@@ -5,7 +5,8 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
+
+    
     public class SkuStock_added_tests : SkuStockProjectionBuilderTests
     {
         private StockAdded _stockAddedEvent;
@@ -23,7 +24,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_history_fields_are_filled()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.StockHistory.Find(_stockAddedEvent.SourceId, (long) 2);
 
@@ -45,7 +46,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_history_new_row_is_added()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.NotNull(context.StockHistory.Find(_stockAddedEvent.SourceId, (long) 2));
             }
@@ -54,7 +55,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_stock_entry_is_renewed()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.SkuStocks.Find(_stockAddedEvent.SourceId);
                 Assert.Equal(_stockAddedEvent.Quantity + _stockCreatedEvent.Quantity, row.AvailableQuantity);

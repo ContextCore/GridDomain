@@ -7,8 +7,8 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
     {
         public Account_projection_builder_test()
         {
-            ContextFactory = () => new ShopDbContext(Options);
-            ProjectionBuilder = new AccountProjectionBuilder(ContextFactory);
+            ContextFactory = options => new ShopDbContext(options);
+            ProjectionBuilder = new AccountProjectionBuilder(CreateContext);
         }
     }
 }

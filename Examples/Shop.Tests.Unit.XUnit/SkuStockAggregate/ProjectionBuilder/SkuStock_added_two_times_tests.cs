@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
+    
     public class SkuStock_added_two_times_tests : SkuStockProjectionBuilderTests
     {
         [Fact]
@@ -19,7 +19,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             await ProjectionBuilder.Handle(stockAddedEvent);
             await ProjectionBuilder.Handle(stockAddedEvent);
 
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.Equal(3, context.StockHistory.Count());
             }

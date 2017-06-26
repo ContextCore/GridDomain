@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
+    
     public class SkuStock_reserve_canceled_errors_tests : SkuStockProjectionBuilderTests
     {
         [Fact]

@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
+    
     public class SkuStock_added_without_sku_created_tests : SkuStockProjectionBuilderTests
     {
         [Fact]

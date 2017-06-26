@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using Ploeh.AutoFixture;
@@ -16,36 +17,23 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
     /// </summary>
     public class Account_creation_tests
     {
-        private readonly CreateAccountCommand _command;
-        private readonly AggregateScenario<Account> _scenario;
-
-        public Account_creation_tests()
-        {
-            _command = new Fixture().Create<CreateAccountCommand>();
-
-            _scenario = AggregateScenario.New<Account, AccountCommandsHandler>()
-                                         .When(_command)
-                                         .Then(new AccountCreated(_command.AccountId, _command.UserId, _command.Number))
-                                         .Run();
-            _scenario.Check();
-        }
-
         [Fact]
-        public void Aggregate_should_take_id_from_command()
+        public async Task Account_create_by_command()
         {
-            Assert.Equal(_command.AccountId, _scenario.Aggregate.Id);
-        }
+            var command = new Fixture().Create<CreateAccountCommand>();
 
-        [Fact]
-        public void Aggregate_should_take_number_from_command()
-        {
-            Assert.Equal(_command.Number, _scenario.Aggregate.Number);
-        }
+            var scenario = await AggregateScenario.New<Account, AccountCommandsHandler>()
+                                                  .When(command)
+                                                  .Then(new AccountCreated(command.AccountId, command.UserId, command.Number))
+                                                  .Run()
+                                                  .Check();
 
-        [Fact]
-        public void Aggregate_should_take_user_from_command()
-        {
-            Assert.Equal(_command.UserId, _scenario.Aggregate.UserId);
+            //Aggregate_should_take_id_from_command()
+            Assert.Equal(command.AccountId, scenario.Aggregate.Id);
+            //Aggregate_should_take_number_from_command()
+            Assert.Equal(command.Number, scenario.Aggregate.Number);
+            //Aggregate_should_take_user_from_command()
+            Assert.Equal(command.UserId, scenario.Aggregate.UserId);
         }
     }
 }

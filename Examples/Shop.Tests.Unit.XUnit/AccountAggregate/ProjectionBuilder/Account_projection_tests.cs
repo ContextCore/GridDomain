@@ -15,7 +15,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
             _msg = new AccountCreated(Guid.NewGuid(), Guid.NewGuid(), 42);
             var user = new User {Id = _msg.UserId, Login = "test"};
 
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 context.Users.Add(user);
                 context.SaveChanges();
@@ -27,7 +27,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Shoud_create_account_row()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.Accounts.Find(_msg.SourceId);
                 Assert.NotNull(row);
@@ -43,7 +43,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Should_project_all_fields()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.Accounts.Find(_msg.SourceId);
                 var user = context.Users.Find(_msg.UserId);

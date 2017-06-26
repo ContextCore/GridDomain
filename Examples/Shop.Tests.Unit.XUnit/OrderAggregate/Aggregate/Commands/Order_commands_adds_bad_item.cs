@@ -26,11 +26,11 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
         public async Task Order_should_throw_exñeption_on_item_add_with_negative_money()
         {
             var scenario = GivenNewOrder();
-            await scenario.When(new AddItemToOrderCommand(scenario.Id,
+            await scenario.When(new AddItemToOrderCommand(scenario.Aggregate.Id,
                                                           Guid.NewGuid(),
                                                           20,
                                                           new Money(-123)))
-                          .RunAsync()
+                          .Run()
                           .ShouldThrow<InvalidMoneyException>();
         }
 
@@ -38,11 +38,11 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
         public async Task Order_should_throw_exñeption_on_item_add_with_negative_quantity()
         {
             var scenario = GivenNewOrder();
-            await scenario.When(new AddItemToOrderCommand(scenario.Id,
+            await scenario.When(new AddItemToOrderCommand(scenario.Aggregate.Id,
                                                           Guid.NewGuid(),
                                                           -1,
                                                           new Money(123)))
-                          .RunAsync()
+                          .Run()
                           .ShouldThrow<InvalidQuantityException>();
         }
     }

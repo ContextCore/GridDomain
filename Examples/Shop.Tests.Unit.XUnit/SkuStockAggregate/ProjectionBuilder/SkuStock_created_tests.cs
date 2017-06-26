@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
+    
     public class SkuStock_created_tests : SkuStockProjectionBuilderTests
     {
         private SkuStockCreated _message;
@@ -21,7 +22,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
         [Fact]
         public void Then_new_sku_stock_row_is_added()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.NotNull(context.SkuStocks.Find(_message.SourceId));
             }
@@ -30,7 +31,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
         [Fact]
         public void Then_new_stock_history_row_is_added()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.NotNull(context.StockHistory.Find(_message.SourceId, (long) 1));
             }
@@ -39,7 +40,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
         [Fact]
         public void Then_new_stock_history_row_is_filled()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.StockHistory.Find(_message.SourceId, (long) 1);
                 Assert.Equal(1, row.Number);
@@ -60,7 +61,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
         [Fact]
         public void Then_sku_row_fields_are_filled()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.SkuStocks.Find(_message.SourceId);
                 Assert.Equal(_message.SourceId, row.Id);

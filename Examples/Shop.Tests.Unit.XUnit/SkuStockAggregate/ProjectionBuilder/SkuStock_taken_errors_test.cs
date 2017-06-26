@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
+    
     public class SkuStock_taken_errors_test : SkuStockProjectionBuilderTests
     {
         [Fact]
@@ -28,7 +29,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
             await ProjectionBuilder.Handle(stockCreatedEvent);
             await ProjectionBuilder.Handle(stockTaken);
             await ProjectionBuilder.Handle(stockTaken);
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.Equal(3, context.StockHistory.Count());
                 Assert.Equal(1, context.SkuStocks.Find(stockId).AvailableQuantity);

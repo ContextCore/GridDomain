@@ -16,12 +16,12 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
         private readonly Guid _skuId = Guid.NewGuid();
 
         [Fact]
-        public void SkuStock_take_When_adding_stock()
+        public async Task SkuStock_take_When_adding_stock()
         {
             var id = Guid.NewGuid();
             TakeFromStockCommand cmd;
 
-            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+            var scenario = await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
                                             .Given(new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)),
                                                    new StockAdded(id, 10, "test batch 2"))
                                             .When(cmd = new TakeFromStockCommand(id, 10))
@@ -41,7 +41,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
                                    .Given(new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)),
                                           new StockAdded(id, 10, "test batch 2"))
                                    .When(new TakeFromStockCommand(id, 100))
-                                   .RunAsync()
+                                   .Run()
                                    .ShouldThrow<OutOfStockException>();
         }
     }

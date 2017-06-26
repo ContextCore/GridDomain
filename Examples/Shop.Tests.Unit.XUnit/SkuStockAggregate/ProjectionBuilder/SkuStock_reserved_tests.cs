@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
 {
-   
+    
     public class SkuStock_reserved_tests : SkuStockProjectionBuilderTests
     {
         private StockAdded _stockAddedEvent;
@@ -28,7 +28,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_history_containes_rows_for_added_and_reserved_events()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.Equal(3, context.StockHistory.Count());
             }
@@ -37,7 +37,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_history_row_is_added()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3);
                 if (history != null)
@@ -52,7 +52,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_history_row_is_filled()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 //#1 is stock added history
                 var history = context.StockHistory.Find(_stockCreatedEvent.SourceId, (long) 3);
@@ -73,7 +73,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_reserve_row_is_added()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 Assert.NotNull(context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId));
             }
@@ -82,7 +82,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_reserve_row_is_filled()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var reserve = context.StockReserves.Find(_stockCreatedEvent.SourceId, _stockReservedEvent.ReserveId);
 
@@ -98,7 +98,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
        [Fact]
         public void Then_sku_stock_row_is_modified()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var stock = context.SkuStocks.Find(_stockCreatedEvent.SourceId);
                 Assert.Equal(_stockAddedEvent.Quantity + _stockCreatedEvent.Quantity - _stockReservedEvent.Quantity,

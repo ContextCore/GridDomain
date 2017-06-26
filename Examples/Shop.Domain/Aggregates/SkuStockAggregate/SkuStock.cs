@@ -35,17 +35,8 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             Apply<ReserveExpired>(e => CancelReservation(e.ReserveId));
             Apply<StockTaken>(e => Quantity -= e.Quantity);
             Apply<StockReserveTaken>(e => Reservations.Remove(e.ReserveId));
-            Apply<ReserveRenewed>(e =>
-                                  {
-                                      CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == e.ReserveId);
-                                      CancelReservation(e.ReserveId);
-                                  });
-
-            Apply<ReserveCanceled>(e =>
-                                   {
-                                       CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == e.ReserveId);
-                                       CancelReservation(e.ReserveId);
-                                   });
+            Apply<ReserveRenewed>(e => CancelReservation(e.ReserveId));
+            Apply<ReserveCanceled>(e => CancelReservation(e.ReserveId));
         }
 
         public SkuStock(Guid sourceId, Guid skuId, int amount, TimeSpan reservationTime) : this(sourceId)
@@ -96,7 +87,9 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             if (Reservations.TryGetValue(reserveId, out oldReservation))
             {
                 quantityToReserve += oldReservation.Quantity;
+
                 Emit(new ReserveRenewed(Id, reserveId));
+                CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == reserveId);
             }
 
             Emit(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
@@ -115,6 +108,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         public void Cancel(Guid reserveId)
         {
             Emit(new ReserveCanceled(Id, reserveId));
+            CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == reserveId);
         }
     }
 }

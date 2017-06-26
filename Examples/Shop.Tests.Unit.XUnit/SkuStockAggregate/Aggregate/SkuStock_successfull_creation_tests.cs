@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
@@ -10,11 +11,11 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
     public class SkuStock_successfull_creation_tests
     {
         [Fact]
-        public void When_creating_stock_Then_stock_created_event_is_raised()
+        public async Task When_creating_stock_Then_stock_created_event_is_raised()
         {
             var id = Guid.NewGuid();
             CreateSkuStockCommand cmd;
-            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+            var scenario = await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
                                             .When(cmd = new CreateSkuStockCommand(id, Guid.NewGuid(), 10, "test batch", TimeSpan.FromMinutes(1)))
                                             .Then(new SkuStockCreated(id, cmd.SkuId, cmd.Quantity, cmd.ReserveTime))
                                             .Run()

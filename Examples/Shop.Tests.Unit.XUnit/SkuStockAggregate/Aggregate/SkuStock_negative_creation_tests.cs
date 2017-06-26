@@ -18,7 +18,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
                                                                    -10,
                                                                    "test batch",
                                                                    TimeSpan.FromDays(1)))
-                                   .RunAsync()
+                                   .Run()
                                    .ShouldThrow<ArgumentException>();
         }
     }

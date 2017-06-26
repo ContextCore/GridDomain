@@ -14,7 +14,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.ProjectionBuilders
         {
             _msg = new OrderCreated(Guid.NewGuid(), 123, Guid.NewGuid());
             var user = new User {Id = _msg.User, Login = "test"};
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 context.Users.Add(user);
                 context.SaveChanges();
@@ -28,7 +28,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.ProjectionBuilders
        [Fact]
         public void Should_created_order_line()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.Orders.Find(_msg.SourceId);
                 Assert.NotNull(row);
@@ -44,7 +44,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.ProjectionBuilders
        [Fact]
         public void Should_write_all_fields()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var row = context.Orders.Find(_msg.SourceId);
 

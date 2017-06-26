@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateDebugExtensions.cs" />
+    <Compile Include="AggregateScenarioExtensions.cs" />
     <Compile Include="Any.cs" />
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="LoggerActorDummy.cs" />

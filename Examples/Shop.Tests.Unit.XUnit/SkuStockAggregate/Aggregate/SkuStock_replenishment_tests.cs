@@ -15,13 +15,13 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
         private readonly Guid _skuId = Guid.NewGuid();
 
         [Fact]
-        public void When_adding_stock_Aggregate_quantity_should_be_increased_by_command_amount()
+        public async Task When_adding_stock_Aggregate_quantity_should_be_increased_by_command_amount()
         {
             AddToStockCommand command;
             SkuStockCreated created;
             StockAdded added;
             var id = Guid.NewGuid();
-            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+            var scenario = await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
                                             .Given(created = new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)),
                                                    added = new StockAdded(id, 10, "test batch 2"))
                                             .When(command = new AddToStockCommand(id, _skuId, 10, "test batch"))
@@ -38,7 +38,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
             await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
                                    .Given(new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)))
                                    .When(new AddToStockCommand(id, _skuId, -10, "test batch"))
-                                   .RunAsync()
+                                   .Run()
                                    .ShouldThrow<ArgumentException>();
         }
 
@@ -49,7 +49,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
             await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
                                    .Given(new SkuStockCreated(id, _skuId, 50, TimeSpan.FromMilliseconds(100)))
                                    .When(new AddToStockCommand(id, Guid.NewGuid(), 10, "test batch"))
-                                   .RunAsync()
+                                   .Run()
                                    .ShouldThrow<InvalidSkuAddException>();
         }
     }

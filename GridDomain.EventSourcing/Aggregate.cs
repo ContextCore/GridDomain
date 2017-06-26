@@ -50,8 +50,10 @@ namespace GridDomain.EventSourcing
 
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
-            //will emit occured event only after succesfull apply of scheduled event
-             Emit(ev.Event, () => Emit(futureEventOccuredEvent, afterEventsPersistence));
+            //How to handle case when applying occured event will raise an exception?
+             Emit(afterEventsPersistence,
+                 ev.Event,
+                 futureEventOccuredEvent);
         }
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)

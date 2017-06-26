@@ -15,16 +15,16 @@ namespace Shop.Tests.Unit.XUnit.SkuAggregate.Aggregate
     public class Sku_creation_tests
     {
         [Fact]
-        public void When_creating_new_sku()
+        public async Task When_creating_new_sku()
         {
             var id = Guid.NewGuid();
             CreateNewSkuCommand cmd;
 
-            AggregateScenario.New(new SkuCommandsHandler(new InMemorySequenceProvider()))
-                             .When(cmd = new CreateNewSkuCommand("testSku", "tesstArticle", id, new Money(100)))
-                             .Then(new SkuCreated(id, cmd.Name, cmd.Article, 1, new Money(100)))
-                             .Run()
-                             .Check();
+            await AggregateScenario.New(new SkuCommandsHandler(new InMemorySequenceProvider()))
+                                   .When(cmd = new CreateNewSkuCommand("testSku", "tesstArticle", id, new Money(100)))
+                                   .Then(new SkuCreated(id, cmd.Name, cmd.Article, 1, new Money(100)))
+                                   .Run()
+                                   .Check();
         }
     }
 }

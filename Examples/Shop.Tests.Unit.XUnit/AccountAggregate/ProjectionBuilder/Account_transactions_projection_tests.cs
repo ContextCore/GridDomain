@@ -20,7 +20,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
             _msgReplenish = new AccountReplenish(msgCreated.SourceId, Guid.NewGuid(), new Money(100));
             _msgWithdrawal = new AccountWithdrawal(msgCreated.SourceId, Guid.NewGuid(), new Money(30));
 
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 context.Users.Add(user);
                 context.SaveChanges();
@@ -34,7 +34,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Should_create_entries_for_replenish()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var history = context.TransactionHistory.Find(_msgReplenish.ChangeId);
                 Assert.NotNull(history);
@@ -44,7 +44,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Should_create_entries_for_withdrawal()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var history = context.TransactionHistory.Find(_msgWithdrawal.ChangeId);
                 Assert.NotNull(history);
@@ -54,7 +54,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Should_fill_fields_for_replenish()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var history = context.TransactionHistory.Find(_msgReplenish.ChangeId);
                 Assert.Equal(_msgReplenish.SourceId, history.AccountId);
@@ -72,7 +72,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Should_fill_fields_for_withdrawal()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var history = context.TransactionHistory.Find(_msgWithdrawal.ChangeId);
 
@@ -91,7 +91,7 @@ namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
         [Fact]
         public void Should_update_modified_time_for_account()
         {
-            using (var context = ContextFactory())
+            using (var context = CreateContext())
             {
                 var account = context.Accounts.Find(_msgWithdrawal.SourceId);
                 Assert.Equal(_msgWithdrawal.CreatedTime, account.LastModified);

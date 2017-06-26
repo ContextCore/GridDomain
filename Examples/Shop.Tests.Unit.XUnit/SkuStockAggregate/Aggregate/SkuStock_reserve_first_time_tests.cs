@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Tests.Common;
@@ -13,7 +14,7 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
     public class SkuStock_reserve_first_time_tests
     {
         [Fact]
-        public void Given_sku_stock_with_amount_When_reserve_first_time()
+        public async Task Given_sku_stock_with_amount_When_reserve_first_time()
         {
             var reserveTime = TimeSpan.FromMilliseconds(100);
             Reservation aggregateReserve;
@@ -27,21 +28,21 @@ namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
             var initialQuantity = 50;
             var addedQuantity = 10;
 
-            var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
-                                            .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), initialQuantity, reserveTime),
-                                                   new StockAdded(aggregateId, addedQuantity, "test batch 2"))
-                                            .When(reserveStockCommand = new ReserveStockCommand(aggregateId, Guid.NewGuid(), 10, reservationStartTime))
-                                            .Then(new StockReserved(reserveStockCommand.StockId,
-                                                                    reserveStockCommand.CustomerId,
-                                                                    expirationDate,
-                                                                    reserveStockCommand.Quantity),
-                                                  new FutureEventScheduledEvent(Any.GUID,
-                                                                                aggregateId,
-                                                                                expirationDate,
-                                                                                new ReserveExpired(aggregateId, reserveStockCommand.CustomerId)));
+            var scenario = await AggregateScenario.New<SkuStock, SkuStockCommandsHandler>()
+                                                  .Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), initialQuantity, reserveTime),
+                                                         new StockAdded(aggregateId, addedQuantity, "test batch 2"))
+                                                  .When(reserveStockCommand = new ReserveStockCommand(aggregateId, Guid.NewGuid(), 10, reservationStartTime))
+                                                  .Then(new StockReserved(reserveStockCommand.StockId,
+                                                                          reserveStockCommand.CustomerId,
+                                                                          expirationDate,
+                                                                          reserveStockCommand.Quantity),
+                                                        new FutureEventScheduledEvent(Any.GUID,
+                                                                                      aggregateId,
+                                                                                      expirationDate,
+                                                                                      new ReserveExpired(aggregateId, reserveStockCommand.CustomerId)))
+                                                  .Run().Check();
 
             // Then_stock_reserved_event_should_be_raised()
-            scenario.Run().Check();
 
             scenario.Aggregate.Reservations.TryGetValue(reserveStockCommand.CustomerId, out aggregateReserve);
             if (aggregateReserve != null)

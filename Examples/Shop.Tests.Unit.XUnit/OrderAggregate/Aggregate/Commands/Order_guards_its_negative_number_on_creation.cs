@@ -20,7 +20,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
 
             await AggregateScenario.New(new OrderCommandsHandler(sequenceNumberMock.Object))
                                    .When(new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid()))
-                                   .RunAsync()
+                                   .Run()
                                    .ShouldThrow<NegativeOrderNumberException>();
         }
     }
