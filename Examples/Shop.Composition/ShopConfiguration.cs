@@ -43,11 +43,11 @@ namespace Shop.Composition
             container.RegisterType<ISkuPriceQuery, SkuPriceQuery>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>(new ContainerControlledLifetimeManager());
 
-            container.Register(new AggregateConfiguration<Account, AccountCommandsHandler>());
-            container.Register(new AggregateConfiguration<Order, OrderCommandsHandler>());
-            container.Register(new AggregateConfiguration<Sku, SkuCommandsHandler>());
-            container.Register(new AggregateConfiguration<SkuStock, SkuStockCommandsHandler>());
-            container.Register(new AggregateConfiguration<User, UserCommandsHandler>());
+            container.Register(AggregateConfiguration.New<Account, AccountCommandsHandler>());
+            container.Register(AggregateConfiguration.New<Order, OrderCommandsHandler>());
+            container.Register(AggregateConfiguration.New<Sku, SkuCommandsHandler>());
+            container.Register(AggregateConfiguration.New<SkuStock, SkuStockCommandsHandler>());
+            container.Register(AggregateConfiguration.New<User, UserCommandsHandler>());
             container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>();
             container.Register(SagaConfiguration.New<BuyNow, BuyNowState, BuyNowSagaFactory>(BuyNow.Descriptor));

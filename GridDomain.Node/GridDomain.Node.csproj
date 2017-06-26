@@ -302,9 +302,10 @@
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="Configuration\Composition\AggregateBaseConfiguration.cs" />
+    <Compile Include="Configuration\Composition\DomainBuilder.cs" />
     <Compile Include="Configuration\Composition\IAggregateDependencyFactory.cs" />
+    <Compile Include="Configuration\Composition\IDomainBuilder.cs" />
     <Compile Include="Configuration\Composition\ISagaDependencyFactory.cs" />
-    <Compile Include="Configuration\Composition\SagaStateConfiguration.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultExceptionPolicy.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
@@ -355,7 +356,6 @@
     <Compile Include="Configuration\Akka\Hocon\PersistenceJournalConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\PersistenceSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\RootConfig.cs" />
-    <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
     <Compile Include="Configuration\Composition\ContainerExtensions.cs" />
     <Compile Include="Configuration\Composition\SagaConfiguration.cs" />
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />

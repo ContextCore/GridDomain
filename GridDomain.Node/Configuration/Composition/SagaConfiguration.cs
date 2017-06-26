@@ -10,54 +10,25 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public interface IDomainBuilder
-    {
-        void RegisterSaga<TState, TSaga>(ISagaDependencyFactory<TState, TSaga> factory) where TSaga : Process<TState>
-                                                                                        where TState : class, ISagaState;
-
-        void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate;
-    }
-
-    public class DomainBuilder : IDomainBuilder
-    {
-        private readonly IUnityContainer _unityContainer;
-
-        public DomainBuilder(IUnityContainer container)
-        {
-            _unityContainer = container;
-        }
-
-        public void RegisterSaga<TState, TSaga>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
-                                                                                               where TSaga : Process<TState>
-        {
-            _unityContainer.Register(SagaConfiguration.New(factory));
-        }
-
-        public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public static class SagaConfiguration
     {
-        public static SagaConfiguration<TSaga, TState> New<TSaga, TState, TFactoryA>(ISagaDescriptor descriptor,
+        public static SagaConfiguration<TState> New<TSaga, TState, TFactoryA>(ISagaDescriptor descriptor,
                                                                                      Func<ISnapshotsPersistencePolicy> s = null,
                                                                                      IConstructAggregates factory = null) where TFactoryA : ISagaCreator<TState>
                                                                                                                           where TState : class, ISagaState
                                                                                                                           where TSaga : Process<TState>
         {
-            return new SagaConfiguration<TSaga, TState>(c => CreateCatalog(c.Resolve<TFactoryA>(), descriptor),
+            return new SagaConfiguration<TState>(c => CreateCatalog(c.Resolve<TFactoryA>(), descriptor),
                                                         typeof(TSaga).Name,
                                                         s,
                                                         factory);
         }
 
-        public static SagaConfiguration<TSaga, TState> New<TSaga, TState>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
+        public static SagaConfiguration<TState> New<TSaga, TState>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
                                                                                                                          where TSaga : Process<TState>
         {
             var registrationName = typeof(TSaga).Name;
-            return new SagaConfiguration<TSaga, TState>(c => factory.CreateCatalog(registrationName),
+            return new SagaConfiguration<TState>(c => factory.CreateCatalog(registrationName),
                                                         registrationName,
                                                         () => factory.StateDependencyFactory.CreatePersistencePolicy(registrationName),
                                                         factory.StateDependencyFactory.CreateFactory(registrationName));
@@ -71,8 +42,7 @@ namespace GridDomain.Node.Configuration.Composition
         }
     }
 
-    public class SagaConfiguration<TSaga, TState> : IContainerConfiguration where TSaga : Process<TState>
-                                                                            where TState : class, ISagaState
+    public class SagaConfiguration<TState> : IContainerConfiguration where TState : class, ISagaState
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapShotsPolicy;
@@ -96,7 +66,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterInstance(sagaSpecificRegistrationsName, _aggregateFactory);
             container.RegisterInstance<ISagaÑreatorCatalog<TState>>(catalog);
             container.RegisterType<SagaActor<TState>>();
-            container.Register(new SagaStateConfiguration<TState>(_snapShotsPolicy));
+            container.Register(AggregateConfiguration.NewSagaState<TState>(_snapShotsPolicy));
         }
 
         public void Register(IUnityContainer container)

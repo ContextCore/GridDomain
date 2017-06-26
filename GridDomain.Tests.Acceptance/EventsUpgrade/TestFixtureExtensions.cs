@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                                                    int keep = 1,
                                                                    TimeSpan? maxSaveFrequency = null)
         {
-            fixture.Add(new AggregateConfiguration<Balloon, BalloonCommandHandler>(
+            fixture.Add(AggregateConfiguration.New<Balloon, BalloonCommandHandler>(
                                                                                    () => new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
                                                                                          {
                                                                                              Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()
