@@ -14,7 +14,7 @@ namespace GridDomain.EventSourcing
         }
 
         //Source of the event - aggregate that created it
-        // private setter for serializers
+        //private setter for serializers
         public Guid SourceId { get; private set; }
         public Guid SagaId { get; private set; }
         public DateTime CreatedTime { get; private set; }

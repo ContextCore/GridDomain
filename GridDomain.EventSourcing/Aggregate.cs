@@ -34,7 +34,7 @@ namespace GridDomain.EventSourcing
         }
 
         // Aggregate State, do not mix with uncommited events 
-        public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;//new List<FutureEventScheduledEvent>();
+        public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;
         readonly List<FutureEventScheduledEvent> _futureEvents = new List<FutureEventScheduledEvent>();
         /// <summary>
         /// will emit occured event only after succesfull apply of scheduled event

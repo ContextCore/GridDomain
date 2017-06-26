@@ -42,13 +42,12 @@ namespace GridDomain.Tests.Common
 
     public class AggregateScenario<TAggregate> where TAggregate : Aggregate
     {
-        public Fixture Data { get; } = new Fixture();
         public Guid Id { get; }= Guid.NewGuid();
 
-        public AggregateScenario(TAggregate agr, IAggregateCommandsHandler<TAggregate> handler)
+        public AggregateScenario(TAggregate aggregate, IAggregateCommandsHandler<TAggregate> handler)
         {
-            CommandsHandler = handler;
-            Aggregate = agr;
+            CommandsHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+            Aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
         }
 
 

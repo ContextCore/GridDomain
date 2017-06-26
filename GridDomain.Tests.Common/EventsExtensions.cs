@@ -10,17 +10,28 @@ using Xunit;
 
 namespace GridDomain.Tests.Common
 {
+    public static class Compare
+    {
+        public static CompareLogic Ignore(params string[] members)
+        {
+            return new CompareLogic(
+                new ComparisonConfig
+                  {
+                      MembersToIgnore = members.ToList()
+                } );
+        }
+    }
     public static class EventsExtensions
     {
         private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};
 
-        private static readonly ComparisonConfig DateCreatedAndSagaId_IgnoreConfig
+        private static readonly ComparisonConfig Ignore_Id_DateCreated
             = new ComparisonConfig
               {
                   MembersToIgnore = new[]
                                     {
                                         nameof(DomainEvent.CreatedTime),
-                                        nameof(DomainEvent.SagaId)
+                                        nameof(DomainEvent.Id)
                                     }.ToList(),
                   CustomComparers = new List<BaseTypeComparer>
                                     {
@@ -67,7 +78,7 @@ namespace GridDomain.Tests.Common
                                          IEnumerable<DomainEvent> published,
                                          CompareLogic logic = null)
         {
-            CompareByLogic(expected, published, logic ?? new CompareLogic(DateCreatedAndSagaId_IgnoreConfig));
+            CompareByLogic(expected, published, logic ?? new CompareLogic(Ignore_Id_DateCreated));
         }
 
         /// <summary>

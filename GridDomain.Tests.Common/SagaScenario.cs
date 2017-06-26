@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
@@ -53,11 +54,12 @@ namespace GridDomain.Tests.Common
         internal SagaScenario(ISaga—reatorCatalog<TState> ÒreatorCatalog)
         {
             Saga—reatorCatalog = ÒreatorCatalog;
+            StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(Guid.NewGuid());
         }
 
         protected ISaga—reatorCatalog<TState> Saga—reatorCatalog { get; }
         public ISaga<TState> Saga { get; private set; }
-        protected SagaStateAggregate<TState> SagaStateAggregate { get; private set; }
+        protected SagaStateAggregate<TState> StateAggregate { get; private set; }
 
         public ICommand[] ExpectedCommands { get; private set; } = { };
         public ICommand[] ProducedCommands { get; private set; } = { };
@@ -66,51 +68,57 @@ namespace GridDomain.Tests.Common
 
         public TState InitialState { get; private set; }
 
-        public TState GenerateState(string stateName,
-                                    Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig =
-                                        null)
+        public TState NewState(string stateName,
+                                    Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig = null)
         {
             var fixture = new Fixture();
             var composer = fixtureConfig?.Invoke(fixture.Build<TState>());
-            var generateState = composer != null ? composer.Create() : fixture.Create<TState>();
-            generateState.CurrentStateName = stateName;
-            return generateState;
+            var state = composer != null ? composer.Create() : fixture.Create<TState>();
+            state.CurrentStateName = stateName;
+
+            return state;
+        }
+        public SagaScenario<TSaga, TState> Given(string stateName,
+                                                 Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig = null)
+        {
+            return Given(NewState(stateName,fixtureConfig));
         }
 
         public SagaScenario<TSaga, TState> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
-            SagaStateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(Guid.NewGuid());
-            SagaStateAggregate.ApplyEvents(events);
-            SagaStateAggregate.ClearEvents();
+            StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(Guid.NewGuid());
+            StateAggregate.ApplyEvents(events);
+            StateAggregate.ClearEvents();
+            InitialState = StateAggregate.State;
             return this;
         }
 
-        public SagaScenario<TSaga, TState> GivenState(Guid id, TState state)
+        public SagaScenario<TSaga, TState> Given(TState state)
         {
+            Condition.NotNull(()=>state);
             InitialState = state;
-            SagaStateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(id);
-            SagaStateAggregate.ApplyEvents(new SagaCreated<TState>(state, id));
-            SagaStateAggregate.ClearEvents();
+            StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(state.Id);
+            StateAggregate.ApplyEvents(new SagaCreated<TState>(state, state.Id));
             return this;
         }
 
         public SagaScenario<TSaga, TState> When(params DomainEvent[] events)
         {
-            ReceivedEvents = events;
+            ReceivedEvents = events.Select(e => e.CloneWithSaga(StateAggregate.Id)).ToArray();
             return this;
         }
 
         public SagaScenario<TSaga, TState> Then(params Command[] expectedCommands)
         {
-            ExpectedCommands = expectedCommands;
+            ExpectedCommands = expectedCommands.Select(c => c.CloneWithSaga(StateAggregate.Id)).ToArray();
             return this;
         }
 
         public async Task<SagaScenario<TSaga, TState>> Run()
         {
-            if (SagaStateAggregate != null)
-                Saga = Saga—reatorCatalog.Create(SagaStateAggregate.State);
+            if (StateAggregate?.State != null)
+                Saga = Saga—reatorCatalog.Create(StateAggregate.State);
 
             foreach (var evt in ReceivedEvents.Where(e => Saga—reatorCatalog.CanCreateFrom(e)))
                 Saga = Saga—reatorCatalog.CreateNew(evt);

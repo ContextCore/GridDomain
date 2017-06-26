@@ -19,7 +19,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
         [Fact]
         public async Task When_completed_order_try_add_items_it_throws_exeption()
         {
-            var scenario = new AggregateScenario<Order>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            var scenario = AggregateScenario.New(new OrderCommandsHandler(new InMemorySequenceProvider()));
             await scenario.Given(new OrderCreated(scenario.Id, 123, Guid.NewGuid()),
                                  new OrderCompleted(scenario.Id, OrderStatus.Paid))
                           .When(new AddItemToOrderCommand(scenario.Id,
@@ -33,7 +33,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
         [Fact]
         public async Task When_completed_order_try_complete_it_throws_exeption()
         {
-            var scenario = new AggregateScenario<Order>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            var scenario = AggregateScenario.New(new OrderCommandsHandler(new InMemorySequenceProvider()));
             await scenario.Given(new OrderCreated(scenario.Id, 123, Guid.NewGuid()),
                                  new OrderCompleted(scenario.Id, OrderStatus.Paid))
                           .When(new CompleteOrderCommand(scenario.Id))
@@ -44,7 +44,7 @@ namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
         [Fact]
         public void When_order_completes_it_chages_status_to_paid()
         {
-            var scenario = new AggregateScenario<Order>(null, new OrderCommandsHandler(new InMemorySequenceProvider()));
+            var scenario = AggregateScenario.New(new OrderCommandsHandler(new InMemorySequenceProvider()));
             scenario.Given(new OrderCreated(scenario.Id, 123, Guid.NewGuid()),
                            new OrderCompleted(scenario.Id, OrderStatus.Paid))
                     .Run();
