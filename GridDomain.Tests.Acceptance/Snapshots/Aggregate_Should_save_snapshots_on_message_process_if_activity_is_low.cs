@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
+using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;

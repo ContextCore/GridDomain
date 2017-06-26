@@ -7,7 +7,7 @@ using Shop.Domain.Aggregates.UserAggregate.Commands;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.UserAggregate
+namespace Shop.Tests.Unit.UserAggregate
 {
     internal class User_created_tests
     {

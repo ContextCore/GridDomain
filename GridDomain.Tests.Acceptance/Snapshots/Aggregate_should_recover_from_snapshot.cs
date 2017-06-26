@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;

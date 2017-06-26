@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using NMoneys;
 using Shop.Domain.Aggregates.OrderAggregate;
@@ -12,7 +10,7 @@ using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Infrastructure;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 {
     public class Completed_order_tests
     {

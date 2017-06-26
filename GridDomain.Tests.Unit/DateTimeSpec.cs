@@ -4,7 +4,7 @@ using GridDomain.Common;
 using GridDomain.Tests.Common;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public class DateTimeSpec
     {
