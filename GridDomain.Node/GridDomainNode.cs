@@ -6,7 +6,7 @@ using Akka.DI.Core;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
-
+using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
@@ -91,10 +91,9 @@ namespace GridDomain.Node
             _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
             System.RegisterOnTermination(OnSystemTermination);
 
-            var unityContainer = Container;
-            unityContainer.Register(new GridNodeContainerConfiguration(System, _transportMode, Settings));
-
-            unityContainer.Register(Settings.Configuration);
+            Container.Register(new GridNodeContainerConfiguration(System, _transportMode, Settings));
+            Container.Register(Settings.CustomContainerConfiguration);
+            Settings.Builder.ContainerConfigurations.ForEach(c => Container.Register(c));
 
             Pipe = Container.Resolve<CommandPipeBuilder>();
             await Settings.MessageRouting.Register(Pipe);

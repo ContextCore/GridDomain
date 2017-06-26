@@ -19,8 +19,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                            TimeSpan? maxInactiveTime = null)
         {
             fixture.Add(
-                        new CustomContainerConfiguration(
-                                                         c =>
+                        new CustomContainerConfiguration(c =>
                                                              c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
                                                                                                                        new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
                                                                                                                                                                 maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));

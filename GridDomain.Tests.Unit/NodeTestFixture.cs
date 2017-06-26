@@ -21,21 +21,21 @@ namespace GridDomain.Tests.Unit
     public class NodeTestFixture : IDisposable
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
-
-        private readonly List<IContainerConfiguration> _containerConfiguration = new List<IContainerConfiguration>();
         private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
+        private readonly List<IDomainBuilderConfiguration> _domainConfigurations = new List<IDomainBuilderConfiguration>();
+        private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
 
         private ActorSystem _system;
 
-        public NodeTestFixture(IContainerConfiguration containerConfiguration = null,
+        public NodeTestFixture(IDomainBuilderConfiguration domainConfiguration = null,
                                IMessageRouteMap map = null,
                                TimeSpan? defaultTimeout = null,
                                ITestOutputHelper helper = null)
         {
             if (map != null)
                 Add(map);
-            if (containerConfiguration != null)
-                Add(containerConfiguration);
+            if (domainConfiguration != null)
+                Add(domainConfiguration);
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
@@ -44,7 +44,6 @@ namespace GridDomain.Tests.Unit
         public GridDomainNode Node { get; private set; }
 
         public ActorSystem System { get; set; }
-
         public ILogger Logger { get; private set; }
         public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
         private bool ClearDataOnStart => !InMemory;
@@ -70,9 +69,13 @@ namespace GridDomain.Tests.Unit
             _routeMap.Add(map);
         }
 
+        public void Add(IDomainBuilderConfiguration config)
+        {
+            _domainConfigurations.Add(config);
+        }
         public void Add(IContainerConfiguration config)
         {
-            _containerConfiguration.Add(config);
+            _containerConfigurations.Add(config);
         }
 
         public string GetConfig()
@@ -89,7 +92,7 @@ namespace GridDomain.Tests.Unit
             await CreateLogger();
 
             var settings = CreateNodeSettings();
-
+            _domainConfigurations.ForEach(c => c.Register(settings.DomainBuilder));
             Node = new GridDomainNode(settings);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
@@ -100,15 +103,14 @@ namespace GridDomain.Tests.Unit
 
         protected virtual NodeSettings CreateNodeSettings()
         {
-            var settings = new NodeSettings(new CustomContainerConfiguration(_containerConfiguration.ToArray()),
-                                            new CompositeRouteMap(_routeMap.ToArray()),
+            var settings = new NodeSettings(new CompositeRouteMap(_routeMap.ToArray()),
                                             () => new[] { System })
                            {
                                QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger
                            };
-
+            _domainConfigurations.ForEach(c => c.Register(settings.DomainBuilder));
             return settings;
         }
 

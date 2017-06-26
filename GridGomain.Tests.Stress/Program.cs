@@ -46,15 +46,16 @@ namespace GridGomain.Tests.Stress
             }
 
             var unityContainer = new UnityContainer();
-            unityContainer.Register(new BalloonContainerConfiguration());
+         //   unityContainer.Register(new CustomContainerConfiguration());
 
-            var cfg = new CustomContainerConfiguration(c => c.Register(new BalloonContainerConfiguration()),
+            var cfg = new CustomContainerConfiguration(//c => c.Register(new BalloonContainerConfiguration()),
                                                        c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                                                        c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var settings = new NodeSettings(cfg, new BalloonRouteMap(), actorSystemFactory);
+            var settings = new NodeSettings(new BalloonRouteMap(), actorSystemFactory, cfg);
+            settings.DomainBuilder.Register(new BalloonDomainConfiguration());
             var node = new GridDomainNode(settings);
 
             await node.Start();
@@ -115,39 +116,7 @@ namespace GridGomain.Tests.Stress
             }
         }
 
-        private static GridDomainNode StartSampleDomainNode()
-        {
-            var unityContainer = new UnityContainer();
-            unityContainer.Register(new BalloonContainerConfiguration());
-
-            var cfg = new CustomContainerConfiguration(c => c.Register(new BalloonContainerConfiguration()),
-                                                       c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
-                                                       c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
-
-            Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
-
-            var settings = new NodeSettings(cfg, new BalloonRouteMap(), actorSystemFactory);
-            var node = new GridDomainNode(settings);
-
-            node.Start().Wait();
-            return node;
-        }
-
-        private static AutoTestAkkaConfiguration ClearWriteDb()
-        {
-            var dbCfg = new AutoTestAkkaConfiguration();
-
-            using (var connection = new SqlConnection(dbCfg.Persistence.JournalConnectionString))
-            {
-                connection.Open();
-                var cmdJournal = new SqlCommand(@"TRUNCATE TABLE Journal", connection);
-                cmdJournal.ExecuteNonQuery();
-
-                var cmdSnapshots = new SqlCommand(@"TRUNCATE TABLE Snapshots", connection);
-                cmdSnapshots.ExecuteNonQuery();
-            }
-            return dbCfg;
-        }
+   
 
         private static async Task WaitAggregateCommands(int changeNumber, Random random, GridDomainNode node)
         {

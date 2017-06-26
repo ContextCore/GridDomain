@@ -445,7 +445,7 @@
     <Compile Include="BalloonDomain\Balloon.cs" />
     <Compile Include="BalloonDomain\BalloonException.cs" />
     <Compile Include="BalloonDomain\BalloonCommandHandler.cs" />
-    <Compile Include="BalloonDomain\BalloonContainerConfiguration.cs" />
+    <Compile Include="BalloonDomain\Configuration\BalloonContainerConfiguration.cs" />
     <Compile Include="BalloonDomain\BalloonRouteMap.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />

@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Metadata
     public class Metadata_from_message_handler_event_passed_to_produced_fault : NodeTestKit
     {
         public Metadata_from_message_handler_event_passed_to_produced_fault(ITestOutputHelper output)
-            : base(output, new NodeTestFixture(new BalloonContainerConfiguration(), CreateMap())) {}
+            : base(output, new NodeTestFixture(new BalloonDomainConfiguration(), CreateMap())) {}
 
         private IMessageMetadataEnvelop<IFault<BalloonCreated>> _answer;
         private InflateNewBallonCommand _command;

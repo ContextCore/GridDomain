@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class CommandWaiter_results_tests : NodeTestKit
     {
         public CommandWaiter_results_tests(ITestOutputHelper output)
-            : base(output, new NodeTestFixture(new BalloonContainerConfiguration(), CreateMap())) {}
+            : base(output, new NodeTestFixture(new BalloonDomainConfiguration(), CreateMap())) {}
 
         private IWaitResult _result;
 

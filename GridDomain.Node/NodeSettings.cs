@@ -12,16 +12,19 @@ namespace GridDomain.Node
 {
     public class NodeSettings
     {
-        public NodeSettings(IContainerConfiguration configuration = null,
-                            IMessageRouteMap messageRouting = null,
-                            Func<ActorSystem[]> actorSystemFactory = null)
+        public NodeSettings(IMessageRouteMap messageRouting = null,
+                            Func<ActorSystem[]> actorSystemFactory = null,
+                            IContainerConfiguration customContainerConfiguration = null)
         {
+            CustomContainerConfiguration = customContainerConfiguration;
             ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
             MessageRouting = messageRouting ?? MessageRouting;
-            Configuration = configuration ?? Configuration;
         }
 
-        public IContainerConfiguration Configuration { get; } = new EmptyContainerConfiguration();
+        public IDomainBuilder DomainBuilder => Builder;
+
+        internal readonly DomainBuilder Builder = new DomainBuilder();
+        internal IContainerConfiguration CustomContainerConfiguration { get; }
         public IMessageRouteMap MessageRouting { get; } = new EmptyRouteMap();
         public Func<ActorSystem[]> ActorSystemFactory { get; } = () => new[] {ActorSystem.Create("defaultSystem")};
 

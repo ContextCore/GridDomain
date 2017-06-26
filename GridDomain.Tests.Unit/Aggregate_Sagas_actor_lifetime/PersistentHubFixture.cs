@@ -22,17 +22,12 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 
         private IContainerConfiguration CreateConfiguration()
         {
-            return
-                new CustomContainerConfiguration(
-                                                 c =>
-                                                     c.Register(SagaConfiguration.New<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>
-                                                                    (SoftwareProgrammingProcess.Descriptor)),
-                                                 c =>
-                                                     c.RegisterAggregate
-                                                     <SagaStateAggregate<SoftwareProgrammingState>,
-                                                         SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>(),
-                                                 c => c.RegisterAggregate<Balloon, BalloonCommandHandler>(),
-                                                 c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
+            return new CustomContainerConfiguration(
+                                                    c => c.Register(SagaConfiguration.New<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>
+                                                                        (SoftwareProgrammingProcess.Descriptor)),
+                                                    c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingState>, SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>(),
+                                                    c => c.RegisterAggregate<Balloon, BalloonCommandHandler>(),
+                                                    c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
         }
 
         private class TestPersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration

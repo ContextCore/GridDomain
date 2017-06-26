@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class Given_executing_commands_with_faulty_from_projection_builder : NodeTestKit
     {
         public Given_executing_commands_with_faulty_from_projection_builder(ITestOutputHelper output)
-            : base(output, new NodeTestFixture(new BalloonContainerConfiguration(), CreateMap())) {}
+            : base(output, new NodeTestFixture(new BalloonDomainConfiguration(), CreateMap())) {}
 
         private static IMessageRouteMap CreateMap()
         {

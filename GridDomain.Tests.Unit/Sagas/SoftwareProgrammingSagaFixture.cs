@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.Sagas
 {
     public class SoftwareProgrammingSagaFixture : NodeTestFixture
     {
-        public SoftwareProgrammingSagaFixture(IContainerConfiguration config = null,
+        public SoftwareProgrammingSagaFixture(IDomainBuilderConfiguration config = null,
                                               IMessageRouteMap map = null,
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.Sagas
                                                            SagaStateCommandHandler<SoftwareProgrammingState>>());
             Add(cfg);
             Add(new SoftwareProgrammingSagaRoutes());
-            Add(new BalloonContainerConfiguration());
+            Add(new BalloonDomainConfiguration());
         }
     }
 }

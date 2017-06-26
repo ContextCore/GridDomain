@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Unit
     {
         public BalloonFixture()
         {
-            Add(new BalloonContainerConfiguration());
+            Add(new BalloonDomainConfiguration());
             Add(new BalloonRouteMap());
             this.ClearSheduledJobs();
         }

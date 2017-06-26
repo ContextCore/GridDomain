@@ -30,4 +30,30 @@ namespace GridDomain.Node.Configuration.Composition
             return new CustomContainerConfiguration(c => { });
         }
     }
+
+    public class CustomDomainBulderConfiguration : IDomainBuilderConfiguration
+    {
+        private readonly Action<IDomainBuilder>[] _registrations;
+
+        public CustomDomainBulderConfiguration(params Action<IDomainBuilder>[] registrations)
+        {
+            _registrations = registrations;
+        }
+
+        public CustomDomainBulderConfiguration(params IDomainBuilderConfiguration[] configurations)
+            : this(configurations.Select(config => (Action<IDomainBuilder>)(container => container.Register(config)))
+                                 .ToArray())
+        { }
+
+        public void Register(IDomainBuilder container)
+        {
+            foreach (var reg in _registrations)
+                reg.Invoke(container);
+        }
+
+        public static IDomainBuilderConfiguration Empty()
+        {
+            return new CustomDomainBulderConfiguration(c => { });
+        }
+    }
 }

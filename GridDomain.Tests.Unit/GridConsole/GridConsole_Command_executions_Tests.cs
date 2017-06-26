@@ -28,15 +28,12 @@ namespace GridDomain.Tests.Unit.GridConsole
 
         public async Task Given_existing_GridNode()
         {
-            var container = new UnityContainer();
-            var sampleDomainContainerConfiguration = new BalloonContainerConfiguration();
-            container.Register(sampleDomainContainerConfiguration);
-
             var serverConfig = new TestGridNodeConfiguration();
 
-            var settings = new NodeSettings(sampleDomainContainerConfiguration,
-                                            new BalloonRouteMap(),
+            var settings = new NodeSettings(new BalloonRouteMap(),
                                             () => new[] {serverConfig.CreateInMemorySystem()});
+
+            settings.DomainBuilder.Register(new BalloonDomainConfiguration());
 
             _serverNode = new GridDomainNode(settings);
 
