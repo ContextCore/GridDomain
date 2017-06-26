@@ -4,7 +4,7 @@ using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.MessageWaiting
+namespace GridDomain.Tests.Unit.MessageWaiting
 {
     public class AkkaWaiter_messages_test_A_and_B_or_C_and_D : AkkaWaiterTest
     {

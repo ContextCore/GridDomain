@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain
+namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class IncreaseTitleCommand : Command
     {

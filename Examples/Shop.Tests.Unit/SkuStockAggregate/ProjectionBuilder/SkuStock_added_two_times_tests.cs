@@ -4,7 +4,7 @@ using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
     
     public class SkuStock_added_two_times_tests : SkuStockProjectionBuilderTests

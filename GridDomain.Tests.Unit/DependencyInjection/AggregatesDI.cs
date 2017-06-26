@@ -1,10 +1,10 @@
 ﻿using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.XUnit.DependencyInjection.Infrastructure;
+using GridDomain.Tests.Unit.DependencyInjection.Infrastructure;
 using Microsoft.Practices.Unity;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection
+namespace GridDomain.Tests.Unit.DependencyInjection
 {
     public class AggregatesDI : NodeTestKit
     {

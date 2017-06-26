@@ -1,10 +1,10 @@
 using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain
+namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class BalloonContainerConfiguration : IContainerConfiguration
     {

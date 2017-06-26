@@ -1,9 +1,9 @@
 using System;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class HomeAggregateHandler : AggregateCommandsHandler<HomeAggregate>,
                                         IAggregateCommandsHandlerDescriptor

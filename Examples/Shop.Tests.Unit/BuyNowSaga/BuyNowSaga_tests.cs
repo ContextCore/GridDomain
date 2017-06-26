@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Common;
-using KellermanSoftware.CompareNetObjects;
 using NMoneys;
 using Ploeh.AutoFixture;
 using Serilog;
@@ -17,10 +15,10 @@ using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Commands;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Shop.Domain.Sagas;
-using Shop.Tests.Unit.XUnit.DomainServices;
+using Shop.Tests.Unit.DomainServices;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.BuyNowSaga
+namespace Shop.Tests.Unit.BuyNowSaga
 {
    
     public class BuyNowSaga_tests

@@ -1,12 +1,10 @@
 using System;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.CommandsExecution;
-using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.FutureEvents
+namespace GridDomain.Tests.Unit.FutureEvents
 {
     public class Given_aggregate_When_raising_several_future_events_by_method_call
     {

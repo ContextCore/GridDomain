@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Serialization
+namespace GridDomain.Tests.Unit.Serialization
 {
     public class Private_setters_without_parameter_in_constructor_deserialization
     {

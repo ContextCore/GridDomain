@@ -1,8 +1,7 @@
 using System;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.CommandPipe
+namespace GridDomain.Tests.Unit.CommandPipe
 {
     internal class TestCommand : Command
     {

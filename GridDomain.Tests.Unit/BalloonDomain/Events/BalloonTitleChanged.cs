@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain.Events
+namespace GridDomain.Tests.Unit.BalloonDomain.Events
 {
     public class BalloonTitleChanged : DomainEvent,
                                                IHaveProcessingHistory

@@ -3,15 +3,15 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
-using GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers;
+using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit;
+using GridDomain.Tests.Unit;
 using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
+namespace GridDomain.Tests.Acceptance.Scheduling
 {
     public class NodeSchedulerTests : NodeTestKit
     {

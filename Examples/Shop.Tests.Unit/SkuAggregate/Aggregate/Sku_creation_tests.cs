@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using NMoneys;
 using Shop.Domain.Aggregates.SkuAggregate;
@@ -10,7 +8,7 @@ using Shop.Domain.Aggregates.SkuAggregate.Events;
 using Shop.Infrastructure;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuAggregate.Aggregate
+namespace Shop.Tests.Unit.SkuAggregate.Aggregate
 {
     public class Sku_creation_tests
     {

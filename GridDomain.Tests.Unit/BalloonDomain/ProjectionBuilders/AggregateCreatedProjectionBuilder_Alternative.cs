@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
+namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 {
     public class AggregateCreatedProjectionBuilder_Alternative : IHandler<BalloonCreated>
     {

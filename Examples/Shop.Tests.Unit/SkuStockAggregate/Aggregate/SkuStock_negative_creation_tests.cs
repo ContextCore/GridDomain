@@ -5,7 +5,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
+namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
     internal class SkuStock_negative_creation_tests
     {

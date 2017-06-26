@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade.SampleDomain;
+using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit;
+using GridDomain.Tests.Unit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : NodeTestKit
     {

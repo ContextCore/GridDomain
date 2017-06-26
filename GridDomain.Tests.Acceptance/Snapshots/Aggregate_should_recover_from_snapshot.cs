@@ -2,16 +2,14 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
+namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Aggregate_should_recover_from_snapshot : NodeTestKit
     {

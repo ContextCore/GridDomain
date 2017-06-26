@@ -9,13 +9,13 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
+namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
     public class Actors_should_fill_saga_id_for_produced_faults : TestKit
     {

@@ -8,7 +8,7 @@ using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public class LogTest : TestKit
     {

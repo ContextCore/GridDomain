@@ -2,13 +2,13 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class Execute_command_until_projection_build_notification_fetching_results : SampleDomainCommandExecutionTests
     {

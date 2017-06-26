@@ -4,7 +4,7 @@ using Akka.DI.Unity;
 using Microsoft.Practices.Unity;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution {
+namespace GridDomain.Tests.Unit.CommandsExecution {
     public class Wire_DI_test
     {
         [Fact]

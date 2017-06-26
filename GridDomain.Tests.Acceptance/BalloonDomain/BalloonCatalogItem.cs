@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
     public class BalloonCatalogItem
     {

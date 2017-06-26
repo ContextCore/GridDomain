@@ -2,16 +2,15 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class Given_saga_When_handling_command_faults : NodeTestKit
     {

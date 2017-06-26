@@ -3,7 +3,7 @@ using Ploeh.AutoFixture;
 using Shop.Infrastructure;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit
+namespace Shop.Tests.Unit
 {
     public abstract class Sequence_provider_tests
     {

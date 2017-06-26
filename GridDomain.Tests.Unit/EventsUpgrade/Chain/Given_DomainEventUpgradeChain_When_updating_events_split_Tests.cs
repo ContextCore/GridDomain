@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
-using GridDomain.Tests.XUnit.EventsUpgrade.Events;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.Tests.Unit.EventsUpgrade.Events;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Chain
+namespace GridDomain.Tests.Unit.EventsUpgrade.Chain
 {
     public class Given_DomainEventUpgradeChain_When_updating_events_split_Tests
     {

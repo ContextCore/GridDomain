@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class When_execute_command_causing_an_aggregate_error : SampleDomainCommandExecutionTests
     {

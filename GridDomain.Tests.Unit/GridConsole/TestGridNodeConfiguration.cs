@@ -1,7 +1,7 @@
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Tests.Common.Configuration;
 
-namespace GridDomain.Tests.XUnit.GridConsole
+namespace GridDomain.Tests.Unit.GridConsole
 {
     internal class TestGridNodeConfiguration : AkkaConfiguration
     {

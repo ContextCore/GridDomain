@@ -7,7 +7,7 @@ using Serilog;
 using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public class XUnitAutoTestLoggerConfiguration : LoggerConfiguration
     {

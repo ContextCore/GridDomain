@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class PlannedFailureException : Exception
     {

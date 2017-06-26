@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.DependencyInjection.Infrastructure;
+using GridDomain.Tests.Unit.DependencyInjection.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection
+namespace GridDomain.Tests.Unit.DependencyInjection
 {
     public class Given_configured_container_When_executing_aggregate_handler : AggregatesDI
     {

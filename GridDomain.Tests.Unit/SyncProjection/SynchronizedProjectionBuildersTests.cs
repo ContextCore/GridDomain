@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.CommandsExecution;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.SyncProjection
+namespace GridDomain.Tests.Unit.SyncProjection
 {
     public class SynchronizedProjectionBuildersTests : SampleDomainCommandExecutionTests
     {

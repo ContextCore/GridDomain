@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain.Commands
+namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
     public class InflateNewBallonCommand : Command
     {

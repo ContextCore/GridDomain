@@ -2,12 +2,12 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     public class Given_aggregate_with_upgraded_event_with_new_field : NodeTestKit
     {

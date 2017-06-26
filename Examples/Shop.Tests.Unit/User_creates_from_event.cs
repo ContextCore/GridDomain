@@ -5,7 +5,7 @@ using Shop.Domain.Aggregates.UserAggregate;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit
+namespace Shop.Tests.Unit
 {
     public class Given_new_user
     {

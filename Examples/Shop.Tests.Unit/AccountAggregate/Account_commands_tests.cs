@@ -7,7 +7,7 @@ using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
+namespace Shop.Tests.Unit.AccountAggregate
 {
     public class Account_Commands_tests
     {

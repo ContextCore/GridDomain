@@ -1,8 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class HomeAggregate : Aggregate
     {

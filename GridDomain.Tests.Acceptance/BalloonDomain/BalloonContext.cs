@@ -1,6 +1,6 @@
 using System.Data.Entity;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
     public class BalloonContext : DbContext
     {

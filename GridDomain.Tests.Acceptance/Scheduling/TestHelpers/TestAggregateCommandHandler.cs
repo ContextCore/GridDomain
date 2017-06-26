@@ -1,7 +1,6 @@
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestAggregateCommandHandler : AggregateCommandsHandler<TestAggregate>
     {

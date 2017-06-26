@@ -2,9 +2,9 @@ using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
+namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
     public class BalanceAggregatesCommandHandler : AggregateCommandsHandler<BalanceAggregate>,
                                                    IAggregateCommandsHandlerDescriptor

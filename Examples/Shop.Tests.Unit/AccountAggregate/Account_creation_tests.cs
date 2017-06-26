@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.AccountAggregate;
@@ -9,7 +6,7 @@ using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
+namespace Shop.Tests.Unit.AccountAggregate
 {
     /// <summary>
     /// Tests for Account aggregate creation from command. 

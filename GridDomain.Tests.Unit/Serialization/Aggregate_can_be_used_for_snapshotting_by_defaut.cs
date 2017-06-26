@@ -1,10 +1,9 @@
 using System;
-
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Serialization
+namespace GridDomain.Tests.Unit.Serialization
 {
     public class Aggregate_can_be_used_for_snapshotting_by_defaut
     {

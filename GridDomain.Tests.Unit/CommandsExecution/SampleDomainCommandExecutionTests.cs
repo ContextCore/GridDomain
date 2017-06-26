@@ -1,7 +1,7 @@
-using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class SampleDomainCommandExecutionTests : NodeTestKit
     {

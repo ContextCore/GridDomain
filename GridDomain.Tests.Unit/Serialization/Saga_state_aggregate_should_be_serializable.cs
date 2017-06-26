@@ -1,12 +1,11 @@
 using System;
-using Automatonymous;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Serialization
+namespace GridDomain.Tests.Unit.Serialization
 {
     public class Saga_state_aggregate_should_be_serializable
     {

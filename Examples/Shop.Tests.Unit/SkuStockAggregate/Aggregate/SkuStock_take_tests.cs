@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.CommandsExecution;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
+namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
     public class SkuStock_take_tests
     {

@@ -8,12 +8,12 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class Given_istance_saga_saga_actor_can_be_created : SoftwareProgrammingSagaTest
     {

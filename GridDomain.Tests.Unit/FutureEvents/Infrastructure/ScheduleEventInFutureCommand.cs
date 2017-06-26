@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
+namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class ScheduleEventInFutureCommand : Command
     {

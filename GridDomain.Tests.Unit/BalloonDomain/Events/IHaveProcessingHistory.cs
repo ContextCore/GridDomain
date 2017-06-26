@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain.Events
+namespace GridDomain.Tests.Unit.BalloonDomain.Events
 {
     public interface IHaveProcessingHistory
     {

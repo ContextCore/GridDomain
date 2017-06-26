@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Sagas.Transitions
+namespace GridDomain.Tests.Unit.Sagas.Transitions
 {
     public class Given_created_event_when_hydrating
     {

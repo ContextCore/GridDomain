@@ -1,8 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
+namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class FutureEventsAggregate : Aggregate
     {

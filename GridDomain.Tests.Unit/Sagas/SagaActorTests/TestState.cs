@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
-namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
+namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
     public class TestState : ISagaState
     {

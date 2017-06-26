@@ -1,6 +1,6 @@
 using Akka.Actor;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection.NamedDependencies
+namespace GridDomain.Tests.Unit.DependencyInjection.NamedDependencies
 {
     public class NamedActorA : ReceiveActor
     {

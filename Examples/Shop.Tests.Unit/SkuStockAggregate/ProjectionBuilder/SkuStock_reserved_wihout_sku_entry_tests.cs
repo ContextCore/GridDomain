@@ -5,7 +5,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
     
     public class SkuStock_reserved_wihout_sku_entry_tests : SkuStockProjectionBuilderTests

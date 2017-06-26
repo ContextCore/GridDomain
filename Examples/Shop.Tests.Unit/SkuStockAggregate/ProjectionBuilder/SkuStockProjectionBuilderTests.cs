@@ -1,10 +1,8 @@
-using System.Reflection;
 using Shop.Infrastructure;
 using Shop.ReadModel;
 using Shop.ReadModel.Context;
-using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
 
     public class SkuStockProjectionBuilderTests : ProjectionBuilderTest<ShopDbContext, SkuStockProjectionBuilder>

@@ -8,7 +8,7 @@ using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.MessageWaiting
+namespace GridDomain.Tests.Unit.MessageWaiting
 {
     public class AkkaWaiter_One_Message_Test
     {

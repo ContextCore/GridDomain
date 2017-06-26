@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using NMoneys;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Hydration
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Hydration
 {
    
     public class Order_when_adding_correct_item_tests

@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class When_execute_command_Then_produced_event_are_available_for_projection_builders :
         SampleDomainCommandExecutionTests

@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Shop.ReadModel;
+﻿using Shop.ReadModel;
 using Shop.ReadModel.Context;
 
-namespace Shop.Tests.Unit.XUnit.SkuAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.SkuAggregate.ProjectionBuilder
 {
     public class SkuProjectionBuilderTests : ProjectionBuilderTest<ShopDbContext, SkuProjectionBuilder>
     {

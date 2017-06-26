@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events
 {
     public class SleptWellEvent : DomainEvent
     {

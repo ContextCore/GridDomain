@@ -4,12 +4,12 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class Execute_command_waiting_aggregate_event : SampleDomainCommandExecutionTests
     {

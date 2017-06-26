@@ -1,10 +1,9 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestAggregate : Aggregate
     {

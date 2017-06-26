@@ -4,7 +4,7 @@ using Akka.TestKit.Xunit2;
 using Microsoft.Practices.Unity;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection.NamedDependencies
+namespace GridDomain.Tests.Unit.DependencyInjection.NamedDependencies
 {
     public class AggregateNamedDependenciesTest : TestKit
     {

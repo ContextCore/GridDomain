@@ -1,7 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events
+namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Events
 {
     public class BalanceChangedEvent_V0 : DomainEvent
     {

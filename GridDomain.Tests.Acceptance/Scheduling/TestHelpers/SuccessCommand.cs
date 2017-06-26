@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class SuccessCommand : Command
     {

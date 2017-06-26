@@ -10,7 +10,7 @@ using GridDomain.Tests.Common.Configuration;
 using Microsoft.Practices.Unity;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public abstract class CompositionRootTests
     {

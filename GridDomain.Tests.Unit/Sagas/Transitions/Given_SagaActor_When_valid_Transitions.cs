@@ -1,26 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Akka.Actor;
-using Akka.TestKit.TestActors;
-using Akka.TestKit.Xunit2;
-
-using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node.Actors;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.CommandsExecution;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
-using ActorSystem = Akka.Actor.ActorSystem;
 
-namespace GridDomain.Tests.XUnit.Sagas.Transitions
+namespace GridDomain.Tests.Unit.Sagas.Transitions
 {
     public class Given_SagaActor_When_valid_Transitions
     { 

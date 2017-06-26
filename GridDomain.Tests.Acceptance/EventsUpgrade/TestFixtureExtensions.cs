@@ -1,18 +1,16 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit.TestActors;
-using GridDomain.Common;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public static class TestFixtureExtensions
     {

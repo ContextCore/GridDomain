@@ -7,10 +7,10 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.CommandPipe
+namespace GridDomain.Tests.Unit.CommandPipe
 {
     public class SagaProcessorActorTests : TestKit
     {

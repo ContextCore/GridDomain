@@ -5,7 +5,7 @@ using GridDomain.EventSourcing.Adapters;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     public class Collection_nested_property_upgrade_by_constructor
     {

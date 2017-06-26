@@ -4,10 +4,10 @@ using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.CommandPipe
+namespace GridDomain.Tests.Unit.CommandPipe
 {
     public class CommandExecutorActorTests : TestKit
     {

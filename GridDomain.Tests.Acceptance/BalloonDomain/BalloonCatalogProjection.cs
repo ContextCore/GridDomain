@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Data.Entity.Migrations;
 using System.Threading.Tasks;
-using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Serilog;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
     class BalloonCatalogProjection : IHandlerWithMetadata<BalloonTitleChanged>,
                                      IHandlerWithMetadata<BalloonCreated>

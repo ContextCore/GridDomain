@@ -3,7 +3,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.ReadModel.Context;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.SkuStockAggregate.ProjectionBuilder
 {
 
     

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaRoutes : IMessageRouteMap
     {

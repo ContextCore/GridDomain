@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Serialization
+namespace GridDomain.Tests.Unit.Serialization
 {
     public class JsonSerializationSettings_can_be_overriden_by_user : NodeTestKit
     {

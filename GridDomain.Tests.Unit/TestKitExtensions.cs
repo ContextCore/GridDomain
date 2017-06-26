@@ -4,14 +4,12 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Persistence;
 using Akka.TestKit.Xunit2;
-
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public static class TestKitExtensions
     {

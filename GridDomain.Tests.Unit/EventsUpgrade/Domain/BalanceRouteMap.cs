@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.ProjectionBuilders;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.ProjectionBuilders;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain
+namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
     public class BalanceRouteMap : IMessageRouteMap
     {

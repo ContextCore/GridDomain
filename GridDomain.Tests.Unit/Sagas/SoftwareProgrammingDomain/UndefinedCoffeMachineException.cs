@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class UndefinedCoffeMachineException : Exception {}
 }

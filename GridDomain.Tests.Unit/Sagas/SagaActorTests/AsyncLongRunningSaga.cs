@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 
-namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
+namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
     public class AsyncLongRunningSaga : Process<TestState>
     {

@@ -3,11 +3,11 @@ using Automatonymous;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingProcess : Process<SoftwareProgrammingState>
     {

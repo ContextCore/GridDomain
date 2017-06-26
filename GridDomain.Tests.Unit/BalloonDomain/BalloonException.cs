@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain
+namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class BalloonException : Exception {}
 }

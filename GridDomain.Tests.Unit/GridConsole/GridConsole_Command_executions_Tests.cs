@@ -4,14 +4,14 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Connector;
 using Microsoft.Practices.Unity;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.GridConsole
+namespace GridDomain.Tests.Unit.GridConsole
 {
     public class GridConsole_Command_executions_Tests : IDisposable
     {

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.ProjectionBuilders
+namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.ProjectionBuilders
 {
     public class BalanceAggregateChangedProjectionBuilder
     {

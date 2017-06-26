@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 
-namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     public interface IPersistentActorTestsInfrastructure
     {

@@ -1,10 +1,10 @@
 using System;
 using Automatonymous;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Serilog;
 
-namespace GridDomain.Tests.XUnit.Sagas.Transitions
+namespace GridDomain.Tests.Unit.Sagas.Transitions
 {
     public class Given_AutomatonymousSaga
     {

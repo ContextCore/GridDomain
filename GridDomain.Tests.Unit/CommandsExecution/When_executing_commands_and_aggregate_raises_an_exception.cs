@@ -4,14 +4,14 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     //different fixtures from static method ? 
     public class When_executing_commands_and_aggregate_raises_an_exception : NodeTestKit

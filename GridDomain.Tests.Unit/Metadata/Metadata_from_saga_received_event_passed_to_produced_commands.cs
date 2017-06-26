@@ -4,18 +4,17 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tests.XUnit.Sagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Metadata
+namespace GridDomain.Tests.Unit.Metadata
 {
     public class Metadata_from_saga_received_event_passed_to_produced_commands : SoftwareProgrammingSagaTest
     {

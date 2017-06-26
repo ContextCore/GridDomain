@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
+namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 {
     public class BalloonCreatedNotification
     {

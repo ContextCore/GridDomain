@@ -6,7 +6,7 @@ using GridDomain.Node.Actors;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     public abstract class PersistentHubChildrenLifetimeTest : NodeTestKit
     {

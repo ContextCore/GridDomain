@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.XUnit.FutureEvents.Infrastructure
+namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class FutureEventsRouteMap : IMessageRouteMap
     {

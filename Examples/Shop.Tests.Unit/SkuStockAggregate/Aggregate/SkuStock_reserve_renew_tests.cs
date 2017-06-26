@@ -8,7 +8,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuStockAggregate.Aggregate
+namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
 {
     public class SkuStock_reserve_renew_tests
     {

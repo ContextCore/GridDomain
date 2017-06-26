@@ -3,7 +3,7 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
+namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
     public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
                                                 IAggregateCommandsHandlerDescriptor

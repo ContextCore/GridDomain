@@ -2,17 +2,16 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
+namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low : NodeTestKit
     {

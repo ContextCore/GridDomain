@@ -7,14 +7,14 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Metadata
+namespace GridDomain.Tests.Unit.Metadata
 {
     public class Metadata_from_message_handler_event_passed_to_produced_fault : NodeTestKit
     {

@@ -3,7 +3,7 @@ using GridDomain.Common;
 using Ploeh.AutoFixture;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Metadata
+namespace GridDomain.Tests.Unit.Metadata
 {
     public class MessageMetadata_inheritance_Tests
     {

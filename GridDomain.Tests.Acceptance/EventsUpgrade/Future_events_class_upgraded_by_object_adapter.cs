@@ -3,15 +3,15 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.EventsUpgrade;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.EventsUpgrade;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public class Future_events_class_upgraded_by_object_adapter : NodeTestKit
     {

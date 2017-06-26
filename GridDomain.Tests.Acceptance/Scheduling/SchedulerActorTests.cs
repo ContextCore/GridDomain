@@ -11,8 +11,8 @@ using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers;
-using GridDomain.Tests.XUnit;
+using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
+using GridDomain.Tests.Unit;
 using Microsoft.Practices.Unity;
 using Moq;
 using Serilog;
@@ -20,7 +20,7 @@ using Xunit;
 using Xunit.Abstractions;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
+namespace GridDomain.Tests.Acceptance.Scheduling
 {
     public class SchedulerActorTests : TestKit
     {

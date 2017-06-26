@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
+namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
     internal class TestRouteMap : IMessageRouteMap
     {

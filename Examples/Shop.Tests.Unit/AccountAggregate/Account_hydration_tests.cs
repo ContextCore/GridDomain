@@ -7,7 +7,7 @@ using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.AccountAggregate.AggregateTests
+namespace Shop.Tests.Unit.AccountAggregate
 {
     /// <summary>
     /// Tests for account aggregate hydration from events 

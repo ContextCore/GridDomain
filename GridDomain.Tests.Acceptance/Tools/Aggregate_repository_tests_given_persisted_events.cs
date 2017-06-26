@@ -4,14 +4,14 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Common.Configuration;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Xunit;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Tools
+namespace GridDomain.Tests.Acceptance.Tools
 {
     public class Aggregate_repository_tests_given_persisted_events
     {

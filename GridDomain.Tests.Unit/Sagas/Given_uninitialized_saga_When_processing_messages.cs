@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class Given_uninitialized_saga_When_processing_messages : SoftwareProgrammingSagaTest
     {

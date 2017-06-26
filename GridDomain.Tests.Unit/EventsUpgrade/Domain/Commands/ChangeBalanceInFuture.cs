@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.Commands
+namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands
 {
     public class ChangeBalanceInFuture : Command
     {

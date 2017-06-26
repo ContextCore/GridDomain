@@ -1,8 +1,8 @@
 using GridDomain.EventSourcing.VersionedTypeSerialization;
-using GridDomain.Tests.XUnit.EventsUpgrade.Events;
+using GridDomain.Tests.Unit.EventsUpgrade.Events;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     public class VersionedTypeNameTests
     {

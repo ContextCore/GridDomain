@@ -1,6 +1,6 @@
 using GridDomain.Node.Actors;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
+namespace GridDomain.Tests.Acceptance.Snapshots
 {
     internal class SnapshotsPersistenceAfterEachMessagePolicy : SnapshotsPersistencePolicy
     {

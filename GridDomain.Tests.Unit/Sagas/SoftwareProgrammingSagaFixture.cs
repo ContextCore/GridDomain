@@ -3,10 +3,10 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class SoftwareProgrammingSagaFixture : NodeTestFixture
     {

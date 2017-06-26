@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain
+namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class BalloonRouteMap : IMessageRouteMap
     {

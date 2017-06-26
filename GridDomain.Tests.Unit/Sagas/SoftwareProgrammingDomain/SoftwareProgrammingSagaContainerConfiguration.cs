@@ -1,12 +1,8 @@
-using System;
-
 using GridDomain.Common;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaContainerConfiguration : IContainerConfiguration
     {

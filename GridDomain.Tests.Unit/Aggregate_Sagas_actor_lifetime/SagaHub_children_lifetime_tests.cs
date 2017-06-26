@@ -3,14 +3,12 @@ using Akka.Actor;
 using Akka.DI.Core;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     public class SagaHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {

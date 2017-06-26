@@ -5,7 +5,7 @@ using Microsoft.Practices.Unity;
 using Serilog;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public class GridNodeContainerTests : CompositionRootTests
     {

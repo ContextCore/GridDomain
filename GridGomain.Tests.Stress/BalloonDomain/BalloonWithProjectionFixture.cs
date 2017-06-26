@@ -1,5 +1,5 @@
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.FutureEvents;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.FutureEvents;
 
 namespace GridGomain.Tests.Stress.BalloonDomain
 {

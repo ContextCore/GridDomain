@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller :
         SampleDomainCommandExecutionTests

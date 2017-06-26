@@ -4,7 +4,7 @@ using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.ReadModel.Context;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
 {
     public class Account_projection_tests : Account_projection_builder_test
     {

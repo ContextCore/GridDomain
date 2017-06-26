@@ -3,16 +3,14 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.CommandsExecution;
-using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.FutureEvents.Retry
+namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
     public class FutureEvent_regular_Reraise : NodeTestKit
     {

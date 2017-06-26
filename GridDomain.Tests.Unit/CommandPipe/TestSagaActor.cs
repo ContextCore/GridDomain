@@ -6,7 +6,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 
-namespace GridDomain.Tests.XUnit.CommandPipe
+namespace GridDomain.Tests.Unit.CommandPipe
 {
     internal class TestSagaActor : ReceiveActor
     {

@@ -1,10 +1,10 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingSagaFactory : ISagaCreator<SoftwareProgrammingState>,
                                                   ISagaCreator<SoftwareProgrammingState, GotTiredEvent>,

@@ -7,12 +7,12 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.XUnit.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.FutureEvents.Retry
+namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {

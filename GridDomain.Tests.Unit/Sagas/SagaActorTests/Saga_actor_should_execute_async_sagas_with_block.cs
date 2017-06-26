@@ -14,12 +14,12 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
+namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
     public class Saga_actor_should_execute_async_sagas_with_block : TestKit
     {

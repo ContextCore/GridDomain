@@ -1,11 +1,11 @@
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain;
 using Microsoft.Practices.Unity;
 using Quartz;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade
+namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     public class BalanceFixture : NodeTestFixture
     {

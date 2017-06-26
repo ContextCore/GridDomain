@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using GridDomain.Tests.Acceptance.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.CQRS;
+using GridDomain.Tests.Acceptance.BalloonDomain;
+using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
-using GridDomain.CQRS;
-using GridDomain.Tests.Common;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Projection
+namespace GridDomain.Tests.Acceptance.Projection
 {
     public class BalloonEventsShouldBeProjected : NodeTestKit
     {

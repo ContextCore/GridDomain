@@ -1,16 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using Automatonymous;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.Sagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.Sagas;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
+namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Instance_saga_Should_recover_from_snapshot : NodeTestKit
     {

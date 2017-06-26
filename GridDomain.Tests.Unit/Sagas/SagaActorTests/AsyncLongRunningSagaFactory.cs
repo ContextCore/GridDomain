@@ -1,10 +1,10 @@
 using System;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Serilog;
 
-namespace GridDomain.Tests.XUnit.Sagas.SagaActorTests
+namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
     public class AsyncLongRunningSagaFactory : ISagaCreator<TestState>,
                                                ISagaCreator<TestState, BalloonCreated>

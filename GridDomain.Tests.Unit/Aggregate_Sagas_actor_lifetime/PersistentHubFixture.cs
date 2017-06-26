@@ -1,15 +1,13 @@
 using System;
-
 using GridDomain.Common;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     public class PersistentHubFixture : NodeTestFixture
     {

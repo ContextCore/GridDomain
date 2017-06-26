@@ -1,7 +1,7 @@
 using Shop.ReadModel;
 using Shop.ReadModel.Context;
 
-namespace Shop.Tests.Unit.XUnit.AccountAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.AccountAggregate.ProjectionBuilder
 {
     public class Account_projection_builder_test : ProjectionBuilderTest<ShopDbContext, AccountProjectionBuilder>
     {

@@ -1,12 +1,10 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain
+namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class Balloon : Aggregate
     {

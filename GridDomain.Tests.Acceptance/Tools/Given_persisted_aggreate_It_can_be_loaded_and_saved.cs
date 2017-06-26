@@ -2,12 +2,12 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.Common.Configuration;
-using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Xunit;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Tools
+namespace GridDomain.Tests.Acceptance.Tools
 {
     public class Given_persisted_aggreate_It_can_be_loaded_and_saved
     {

@@ -1,8 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.XUnit.DependencyInjection.Infrastructure
+namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
     public class TestAggregate : Aggregate
     {

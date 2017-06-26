@@ -5,17 +5,16 @@ using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Acceptance.XUnit.EventsUpgrade;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit;
-using GridDomain.Tests.XUnit.Sagas;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.Sagas;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Snapshots
+namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {

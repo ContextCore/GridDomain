@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders
+namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 {
     public class BalloonCreatedNotificator : IHandlerWithMetadata<BalloonCreated>
     {

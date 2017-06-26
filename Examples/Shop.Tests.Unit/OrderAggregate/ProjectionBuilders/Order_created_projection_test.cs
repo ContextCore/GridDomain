@@ -4,7 +4,7 @@ using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Shop.ReadModel.Context;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.OrderAggregate.ProjectionBuilders
+namespace Shop.Tests.Unit.OrderAggregate.ProjectionBuilders
 {
    
     public class Order_created_projection_test : Order_projection_builder_test

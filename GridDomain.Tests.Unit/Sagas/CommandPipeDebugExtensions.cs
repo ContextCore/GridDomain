@@ -3,7 +3,7 @@ using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Actors.CommandPipe;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public static class CommandPipeDebugExtensions
     {

@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
 using Microsoft.Practices.Unity;
 
 namespace GridGomain.Tests.Stress.BalloonDomain

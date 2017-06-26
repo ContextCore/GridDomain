@@ -4,11 +4,11 @@ using Akka.DI.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Aggregate_Sagas_actor_lifetime
+namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     public class AggregateHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 
 namespace GridGomain.Tests.Stress
 {

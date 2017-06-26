@@ -3,19 +3,17 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
-using QuickGraph;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class Saga_produced_events_and_commands_has_sagaId : SoftwareProgrammingSagaTest
     {

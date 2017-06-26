@@ -3,12 +3,12 @@ using GridDomain.Common;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers;
-using GridDomain.Tests.XUnit;
+using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
+using GridDomain.Tests.Unit;
 using Microsoft.Practices.Unity;
 using Quartz;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
+namespace GridDomain.Tests.Acceptance.Scheduling
 {
     public class SchedulerFixture : NodeTestFixture
     {

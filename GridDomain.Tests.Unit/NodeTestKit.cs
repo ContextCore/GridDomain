@@ -5,7 +5,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public abstract class NodeTestKit : TestKit
     {

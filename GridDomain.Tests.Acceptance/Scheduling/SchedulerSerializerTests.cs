@@ -3,7 +3,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
 using Xunit;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling
+namespace GridDomain.Tests.Acceptance.Scheduling
 {
     public class SchedulerSerializerTests
     {

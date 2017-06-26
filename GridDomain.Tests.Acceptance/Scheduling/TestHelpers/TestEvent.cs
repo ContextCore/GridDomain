@@ -2,7 +2,7 @@ using System;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestEvent : DomainEvent
     {

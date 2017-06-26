@@ -8,7 +8,7 @@ using Shop.Domain.Aggregates.OrderAggregate.Exceptions;
 using Shop.Infrastructure;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 {
     public class Order_guards_its_negative_number_on_creation
     {

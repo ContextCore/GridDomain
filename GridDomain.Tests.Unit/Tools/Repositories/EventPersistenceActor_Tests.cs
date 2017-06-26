@@ -5,7 +5,7 @@ using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tools.Repositories;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Tools.Repositories
+namespace GridDomain.Tests.Unit.Tools.Repositories
 {
     public class EventPersistenceActor_Tests : TestKit
     {

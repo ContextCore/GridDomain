@@ -1,10 +1,10 @@
 using System;
 using GridDomain.Common;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Tests.Acceptance.XUnit.BalloonDomain
+namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
     public class BalloonWithProjectionContainerConfiguration : IContainerConfiguration
     {

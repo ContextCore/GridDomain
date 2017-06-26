@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -12,14 +11,13 @@ using GridDomain.Node;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.BalloonDomain;
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using KellermanSoftware.CompareNetObjects;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Ploeh.AutoFixture;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public class Types_should_be_deserializable : TypesDeserializationTest
     {

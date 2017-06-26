@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Hydration
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Hydration
 {
    
     public class Order_creates_from_event 

@@ -8,7 +8,7 @@ using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Shop.Infrastructure;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.OrderAggregate.Aggregate.Commands
+namespace Shop.Tests.Unit.OrderAggregate.Aggregate.Commands
 {
     public class Order_calculate_total_test
     {

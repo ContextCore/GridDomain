@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using NMoneys;
 using Shop.Domain.DomainServices.PriceCalculator;
 
-namespace Shop.Tests.Unit.XUnit.DomainServices
+namespace Shop.Tests.Unit.DomainServices
 {
     public class InMemoryPriceCalculator : IPriceCalculator
     {

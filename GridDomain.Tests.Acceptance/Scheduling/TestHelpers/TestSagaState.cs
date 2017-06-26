@@ -1,8 +1,7 @@
 using System;
-using System.Runtime.Serialization;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestSagaState : ISagaState
     {

@@ -1,4 +1,4 @@
-using GridDomain.Tests.XUnit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridGomain.Tests.Stress.BalloonDomain
 {

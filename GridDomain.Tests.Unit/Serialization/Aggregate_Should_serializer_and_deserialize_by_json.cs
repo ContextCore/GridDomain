@@ -1,11 +1,11 @@
 using System;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Serialization
+namespace GridDomain.Tests.Unit.Serialization
 {
     public class Aggregate_Should_serializer_and_deserialize_by_json
     {

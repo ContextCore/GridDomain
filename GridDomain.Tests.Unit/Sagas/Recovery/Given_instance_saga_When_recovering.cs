@@ -5,15 +5,14 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Events;
-using Serilog;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas.Recovery
+namespace GridDomain.Tests.Unit.Sagas.Recovery
 {
     public class Given_instance_saga_When_recovering
     {

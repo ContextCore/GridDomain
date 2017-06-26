@@ -4,7 +4,7 @@ using Ploeh.AutoFixture;
 using Shop.Domain.Aggregates.SkuAggregate.Events;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit.SkuAggregate.ProjectionBuilder
+namespace Shop.Tests.Unit.SkuAggregate.ProjectionBuilder
 {
    
     public class Sku_created_projection_tests : SkuProjectionBuilderTests

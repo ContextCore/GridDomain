@@ -3,7 +3,7 @@ using Akka.Dispatch;
 using Akka.Event;
 using Serilog;
 
-namespace GridDomain.Tests.XUnit
+namespace GridDomain.Tests.Unit
 {
     public class SerilogLoggerActor : ReceiveActor,
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>

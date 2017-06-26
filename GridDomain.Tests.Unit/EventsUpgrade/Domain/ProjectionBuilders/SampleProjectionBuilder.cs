@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Tests.XUnit.EventsUpgrade.Domain.Events;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 
-namespace GridDomain.Tests.XUnit.EventsUpgrade.Domain.ProjectionBuilders
+namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.ProjectionBuilders
 {
     public class SampleProjectionBuilder : IHandler<BalanceChangedEvent_V0>
     {

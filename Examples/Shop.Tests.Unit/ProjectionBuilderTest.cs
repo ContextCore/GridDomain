@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Shop.Tests.Unit.XUnit
+namespace Shop.Tests.Unit
 {
     [Collection("ProjectionTests")]
     public class ProjectionBuilderTest<TContext, TBuilder> where TContext : DbContext

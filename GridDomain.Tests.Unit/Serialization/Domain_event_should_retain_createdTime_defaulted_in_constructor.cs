@@ -2,7 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using Xunit;
 
-namespace GridDomain.Tests.XUnit.Serialization
+namespace GridDomain.Tests.Unit.Serialization
 {
     public class Domain_event_should_retain_createdTime_defaulted_in_constructor
     {

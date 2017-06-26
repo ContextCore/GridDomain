@@ -1,6 +1,6 @@
 using Shop.Infrastructure;
 
-namespace Shop.Tests.Unit.XUnit
+namespace Shop.Tests.Unit
 {
     public class InMemory_sequence_provider_tests : Sequence_provider_tests
     {

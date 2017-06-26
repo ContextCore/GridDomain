@@ -1,9 +1,9 @@
 using System;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.XUnit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
 
-namespace GridDomain.Tests.XUnit.BalloonDomain
+namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class BalloonCommandHandler : AggregateCommandsHandler<Balloon>,
                                                   IAggregateCommandsHandlerDescriptor

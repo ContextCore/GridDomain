@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain.Commands
+namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands
 {
     public class GoSleepCommand : Command
     {

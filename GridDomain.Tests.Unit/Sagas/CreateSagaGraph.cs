@@ -1,11 +1,11 @@
 using System.Linq;
 using Automatonymous.Graphing;
 using Automatonymous.Visualizer;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class CreateSagaGraph
     {

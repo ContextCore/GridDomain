@@ -1,14 +1,12 @@
 using System;
 using System.Threading.Tasks;
-
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Tests.XUnit.CommandsExecution;
-using GridDomain.Tests.XUnit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas.Transitions
+namespace GridDomain.Tests.Unit.Sagas.Transitions
 {
     public class Given_AutomatonymousSaga_When_invalid_Transitions
     {

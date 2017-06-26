@@ -3,7 +3,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using Serilog;
 
-namespace GridDomain.Tests.Acceptance.XUnit.Scheduling.TestHelpers
+namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TestSagaFactory : ISagaCreator<TestSagaState, TestSagaStartMessage>,
                                    ISagaCreator<TestSagaState, Guid>,

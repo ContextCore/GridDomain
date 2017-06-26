@@ -1,6 +1,6 @@
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.XUnit.Sagas
+namespace GridDomain.Tests.Unit.Sagas
 {
     public class SoftwareProgrammingSagaTest : NodeTestKit
     {
