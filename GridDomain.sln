@@ -33,9 +33,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{03
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shop", "Shop", "{5FDD57E7-9D56-4BA7-9C2F-C2E9B78A2143}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.XUnit", "GridDomain.Tests.XUnit\GridDomain.Tests.XUnit.csproj", "{46CC4BE2-93BE-4807-9B1A-7A10DFEA29AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Unit", "GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj", "{46CC4BE2-93BE-4807-9B1A-7A10DFEA29AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Acceptance.XUnit", "GridDomain.Tests.Acceptance.XUnit\GridDomain.Tests.Acceptance.XUnit.csproj", "{C2552609-5E29-4187-8D6A-E2F5D82BFF35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Acceptance", "GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj", "{C2552609-5E29-4187-8D6A-E2F5D82BFF35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Composition", "Examples\Shop.Composition\Shop.Composition.csproj", "{B2A45BA3-C914-429E-BCC4-DF1199E6D072}"
 EndProject
@@ -47,9 +47,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.ReadModel", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.API", "Examples\Shop.API\Shop.API.csproj", "{DEED3428-0247-4BB9-ABA1-D48A8EB02BB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Unit.XUnit", "Examples\Shop.Tests.Unit.XUnit\Shop.Tests.Unit.XUnit.csproj", "{4A92DD22-5C34-4F30-9CB3-1FEB4E452CC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Unit", "Examples\Shop.Tests.Unit\Shop.Tests.Unit.csproj", "{4A92DD22-5C34-4F30-9CB3-1FEB4E452CC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Acceptance.XUnit", "Examples\Shop.Tests.Acceptance.XUnit\Shop.Tests.Acceptance.XUnit.csproj", "{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Acceptance", "Examples\Shop.Tests.Acceptance\Shop.Tests.Acceptance.csproj", "{ED7A4C35-71B2-4ECA-9E18-98D62F9B83A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}"
 EndProject

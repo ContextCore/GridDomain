@@ -7,8 +7,8 @@
     <ProjectGuid>{C2552609-5E29-4187-8D6A-E2F5D82BFF35}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Tests.Acceptance.XUnit</RootNamespace>
-    <AssemblyName>GridDomain.Tests.Acceptance.XUnit</AssemblyName>
+    <RootNamespace>GridDomain.Tests.Acceptance.Unit</RootNamespace>
+    <AssemblyName>GridDomain.Tests.Acceptance.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -250,9 +250,9 @@
       <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>
       <Name>GridDomain.Tests.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Tests.XUnit\GridDomain.Tests.XUnit.csproj">
+    <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj">
       <Project>{46cc4be2-93be-4807-9b1a-7a10dfea29af}</Project>
-      <Name>GridDomain.Tests.XUnit</Name>
+      <Name>GridDomain.Tests.Unit</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
       <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>

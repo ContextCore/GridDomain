@@ -1,30 +1,44 @@
 using System;
 using GridDomain.Common;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
-namespace Shop.Tests.Unit
+namespace Shop.Tests.Unit.XUnit
 {
+    [Collection("ProjectionTests")]
     public class ProjectionBuilderTest<TContext, TBuilder> where TContext : DbContext
     {
-        private static readonly Random Random = new Random();
-        private readonly string DatabaseName;
-        protected DbContextOptions<TContext> Options;
+        private DbContextOptions<TContext> Options { get; }
 
-        protected ProjectionBuilderTest(string dbName = null)
+        protected ProjectionBuilderTest()
         {
-            DatabaseName = dbName ?? GetType().BeautyName() + Random.Next();
+            Options = CreateNewContextOptions();
         }
 
-        protected TBuilder ProjectionBuilder { get; set; }
-        protected Func<TContext> ContextFactory { get; set; }
-
-        [OneTimeSetUp]
-        public void Generate_db_options()
+        private DbContextOptions<TContext> CreateNewContextOptions()
         {
-            Options = new DbContextOptionsBuilder<TContext>().UseInMemoryDatabase(DatabaseName).Options;
+            // Create a fresh service provider, and therefore a fresh 
+            // InMemory database instance.
+            var serviceProvider = new ServiceCollection()
+                                        .AddEntityFrameworkInMemoryDatabase()
+                                        .BuildServiceProvider();
 
-            Console.WriteLine($"Generated options for test in-memory db '{DatabaseName}'");
+            // Create a new options instance telling the context to use an
+            // InMemory database and the new service provider.
+            var builder = new DbContextOptionsBuilder<TContext>();
+            builder.UseInMemoryDatabase(GetType().BeautyName() + new Random().Next())
+                   .UseInternalServiceProvider(serviceProvider);
+
+            return builder.Options;
+        }
+
+        protected Func<DbContextOptions<TContext>, TContext> ContextFactory { get; set; }
+        protected TBuilder ProjectionBuilder { get; set; }
+
+        protected TContext CreateContext()
+        {
+            return ContextFactory(Options);
         }
     }
 }

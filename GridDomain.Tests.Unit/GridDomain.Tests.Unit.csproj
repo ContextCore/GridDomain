@@ -7,8 +7,8 @@
     <ProjectGuid>{46CC4BE2-93BE-4807-9B1A-7A10DFEA29AF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Tests.XUnit</RootNamespace>
-    <AssemblyName>GridDomain.Tests.XUnit</AssemblyName>
+    <RootNamespace>GridDomain.Tests.Unit</RootNamespace>
+    <AssemblyName>GridDomain.Tests.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
