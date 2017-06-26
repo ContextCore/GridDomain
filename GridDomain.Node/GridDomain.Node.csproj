@@ -301,7 +301,7 @@
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
-    <Compile Include="Configuration\Composition\AggregateBaseConfiguration.cs" />
+    <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
     <Compile Include="Configuration\Composition\DomainBuilder.cs" />
     <Compile Include="Configuration\Composition\IAggregateDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\IDomainBuilder.cs" />

@@ -149,7 +149,7 @@ namespace Shop.Tests.Unit.BuyNowSaga
                           .Then(new PayForOrderCommand(state.AccountId, totalPrice, state.OrderId))
                           .Run()
                           .CheckProducedCommands()
-                          .CheckOnlyStateNameChanged(nameof(BuyNow.Reserving));
+                          .CheckStateName(nameof(BuyNow.Reserving));
         }
 
        [Fact]

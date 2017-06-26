@@ -12,7 +12,7 @@ namespace GridDomain.Node.Configuration.Composition
 {
     public static class SagaConfiguration
     {
-        public static SagaConfiguration<TState> New<TSaga, TState, TFactoryA>(ISagaDescriptor descriptor,
+        public static IContainerConfiguration New<TSaga, TState, TFactoryA>(ISagaDescriptor descriptor,
                                                                                      Func<ISnapshotsPersistencePolicy> s = null,
                                                                                      IConstructAggregates factory = null) where TFactoryA : ISagaCreator<TState>
                                                                                                                           where TState : class, ISagaState
@@ -24,7 +24,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                         factory);
         }
 
-        public static SagaConfiguration<TState> New<TSaga, TState>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
+        public static IContainerConfiguration New<TSaga, TState>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
                                                                                                                          where TSaga : Process<TState>
         {
             var registrationName = typeof(TSaga).Name;
