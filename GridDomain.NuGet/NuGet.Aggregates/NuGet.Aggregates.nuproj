@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj" />
+    <ProjectReference Include="..\..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">$(NuProjPath)\NuProj.targets</NuProjTargetsPath>

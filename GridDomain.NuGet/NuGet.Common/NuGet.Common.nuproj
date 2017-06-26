@@ -31,7 +31,7 @@
     </ProjectUrl>
     <LicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt
     </LicenseUrl>
-	<IconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</IconUrl>
+    <IconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</IconUrl>
     <Copyright>Copyright © aleskov</Copyright>
     <Tags>CQRS ES DDD Akka</Tags>
   </PropertyGroup>
@@ -40,14 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.Common\GridDomain.Common.csproj" />
-    <ProjectReference Include="..\..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj" />
     <ProjectReference Include="..\..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
     <ProjectReference Include="..\..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
     <ProjectReference Include="..\..\GridDomain.Logging\GridDomain.Logging.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <NuProjTargetsPath Condition=" '$(NuProjTargetsPath)' == '' ">$(NuProjPath)\NuProj.targets</NuProjTargetsPath>
-	<NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">$(NuProjPath)\NuProj.Tasks.dll</NuProjTasksPath>
+    <NuProjTasksPath Condition=" '$(NuProjTasksPath)' == '' ">$(NuProjPath)\NuProj.Tasks.dll</NuProjTasksPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
