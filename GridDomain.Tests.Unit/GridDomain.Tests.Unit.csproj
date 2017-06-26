@@ -414,7 +414,6 @@
     <Compile Include="Sagas\SoftwareProgrammingDomain\SagaDataAggregateCommandsHandlerDummy.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Slept.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingProcess.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaContainerConfiguration.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingState.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaFactory.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaRoutes.cs" />

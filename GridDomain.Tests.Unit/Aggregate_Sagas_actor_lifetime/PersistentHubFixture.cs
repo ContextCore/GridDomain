@@ -25,13 +25,12 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
             return
                 new CustomContainerConfiguration(
                                                  c =>
-                                                     c.Register(
-                                                                new SagaConfiguration<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingProcess.Descriptor, null, null)),
+                                                     c.Register(SagaConfiguration.New<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>
+                                                                    (SoftwareProgrammingProcess.Descriptor)),
                                                  c =>
-                                                     c
-                                                         .RegisterAggregate
-                                                         <SagaStateAggregate<SoftwareProgrammingState>,
-                                                             SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>(),
+                                                     c.RegisterAggregate
+                                                     <SagaStateAggregate<SoftwareProgrammingState>,
+                                                         SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>(),
                                                  c => c.RegisterAggregate<Balloon, BalloonCommandHandler>(),
                                                  c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
         }

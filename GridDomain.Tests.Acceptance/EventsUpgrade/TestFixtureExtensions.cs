@@ -45,11 +45,11 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                                                            TimeSpan? maxSaveFrequency = null,
                                                                            int saveOnEach = 1)
         {
-            var containerConfiguration = new SagaConfiguration<SoftwareProgrammingProcess,
+            var containerConfiguration = SagaConfiguration.New<SoftwareProgrammingProcess,
                                                                SoftwareProgrammingState,
                                                                SoftwareProgrammingSagaFactory>
                 (SoftwareProgrammingProcess.Descriptor,
-                 () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency), null);
+                 () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency));
 
             fixture.Add(new CustomContainerConfiguration(c =>{c.Register(containerConfiguration);}));
 

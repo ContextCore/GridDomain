@@ -14,9 +14,11 @@ namespace GridDomain.Tests.Unit.Sagas
                                               IMessageRouteMap map = null,
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
-            var cfg = new CustomContainerConfiguration(c => c.Register(new SoftwareProgrammingSagaContainerConfiguration()),
+            var cfg = new CustomContainerConfiguration(c => c.Register(SagaConfiguration.New<SoftwareProgrammingProcess,
+                                                                           SoftwareProgrammingState,
+                                                                           SoftwareProgrammingSagaFactory>(SoftwareProgrammingProcess.Descriptor)),
                                                        c => c.RegisterAggregate<SagaStateAggregate<SoftwareProgrammingState>,
-                                                                                SagaStateCommandHandler<SoftwareProgrammingState>>());
+                                                           SagaStateCommandHandler<SoftwareProgrammingState>>());
             Add(cfg);
             Add(new SoftwareProgrammingSagaRoutes());
             Add(new BalloonContainerConfiguration());

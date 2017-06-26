@@ -13,6 +13,14 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
+
+    public static class AggregateBaseConfiguration
+    {
+       //public AggregateBaseConfiguration(Type aggregateType, IAggregateDependencyFactory factory)
+       //{
+       //    
+       //}
+    }
     public class AggregateBaseConfiguration<TAggregateActor, TAggregate, TAggregateCommandsHandler> : IContainerConfiguration
         where TAggregate : Aggregate
         where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
@@ -20,10 +28,20 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly IConstructAggregates _factory;
 
         private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
+        private readonly IAggregateDependencyFactory<TAggregate> _aggregateDependencyFactory;
+        private static readonly string RegistrationName = typeof(TAggregate).Name;
 
         public AggregateBaseConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
                                           Func<IMemento, TAggregate> snapshotsFactory = null)
             : this(snapshotsPolicy, new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory)) {}
+
+
+        public AggregateBaseConfiguration(IAggregateDependencyFactory<TAggregate> factory)
+            :this(() => factory.CreatePersistencePolicy(RegistrationName),
+                  factory.CreateFactory(RegistrationName))
+        {
+            _aggregateDependencyFactory = factory;
+        }
 
         private AggregateBaseConfiguration(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
                                            IConstructAggregates snapshotsFactory = null)
@@ -35,20 +53,25 @@ namespace GridDomain.Node.Configuration.Composition
         public void Register(IUnityContainer container)
         {
             container.RegisterType<AggregateHubActor<TAggregate>>();
-            container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
 
-            var aggregateRegistrationName = typeof(TAggregate).Name;
-            container.RegisterType<ISnapshotsPersistencePolicy>(aggregateRegistrationName,
+            if(_aggregateDependencyFactory == null)
+                container.RegisterType<IAggregateCommandsHandler<TAggregate>, TAggregateCommandsHandler>();
+            else
+                container.RegisterInstance<IAggregateCommandsHandler<TAggregate>>(
+                    _aggregateDependencyFactory.CreateCommandsHandler(RegistrationName));
+
+
+            container.RegisterType<ISnapshotsPersistencePolicy>(RegistrationName,
                                                                 new InjectionFactory(c => _snapshotsPolicyFactory()));
 
             container.RegisterType<TAggregateActor>(new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
                                                                              new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
                                                                              new ResolvedParameter<IPublisher>(),
-                                                                             new ResolvedParameter<ISnapshotsPersistencePolicy>(aggregateRegistrationName),
-                                                                             new ResolvedParameter<IConstructAggregates>(aggregateRegistrationName),
+                                                                             new ResolvedParameter<ISnapshotsPersistencePolicy>(RegistrationName),
+                                                                             new ResolvedParameter<IConstructAggregates>(RegistrationName),
                                                                              new ResolvedParameter<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName)));
 
-            container.RegisterInstance(aggregateRegistrationName, _factory);
+            container.RegisterInstance(RegistrationName, _factory);
         }
     }
 }

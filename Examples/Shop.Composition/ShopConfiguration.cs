@@ -50,7 +50,7 @@ namespace Shop.Composition
             container.Register(new AggregateConfiguration<User, UserCommandsHandler>());
             container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>();
-            container.Register(new SagaConfiguration<BuyNow, BuyNowState, BuyNowSagaFactory>(BuyNow.Descriptor, null, null));
+            container.Register(SagaConfiguration.New<BuyNow, BuyNowState, BuyNowSagaFactory>(BuyNow.Descriptor));
         }
     }
 }

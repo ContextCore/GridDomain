@@ -302,6 +302,8 @@
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
     <Compile Include="Configuration\Composition\AggregateBaseConfiguration.cs" />
+    <Compile Include="Configuration\Composition\IAggregateDependencyFactory.cs" />
+    <Compile Include="Configuration\Composition\ISagaDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\SagaStateConfiguration.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultExceptionPolicy.cs" />
