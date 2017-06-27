@@ -22,12 +22,12 @@ namespace GridDomain.Tests.Unit
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
         private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
-        private readonly List<IDomainBuilderConfiguration> _domainConfigurations = new List<IDomainBuilderConfiguration>();
+        private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
 
         private ActorSystem _system;
 
-        public NodeTestFixture(IDomainBuilderConfiguration domainConfiguration = null,
+        public NodeTestFixture(IDomainConfiguration domainConfiguration = null,
                                IMessageRouteMap map = null,
                                TimeSpan? defaultTimeout = null,
                                ITestOutputHelper helper = null)
@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Unit
             _routeMap.Add(map);
         }
 
-        public void Add(IDomainBuilderConfiguration config)
+        public void Add(IDomainConfiguration config)
         {
             _domainConfigurations.Add(config);
         }

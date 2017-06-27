@@ -4,18 +4,17 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
-namespace GridDomain.Node.Configuration.Composition {
-
-
-    public interface IDomainBuilderConfiguration
+namespace GridDomain.Node.Configuration.Composition
+{
+    public interface IDomainConfiguration
     {
         void Register(IDomainBuilder builder);
     }
 
     public interface IDomainBuilder
     {
-        void RegisterSaga<TState, TSaga>(ISagaDependencyFactory<TState, TSaga> factory) where TSaga : Process<TState>
-                                                                                        where TState : class, ISagaState;
+        void RegisterSaga<TState, TProcess>(ISagaDependencyFactory<TProcess, TState> factory) where TProcess : Process<TState>
+                                                                                              where TState : class, ISagaState;
 
         void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate;
 
@@ -23,27 +22,30 @@ namespace GridDomain.Node.Configuration.Composition {
         void RegisterHandler<TMessage, THandler>(IMessageHandlerWithMetadataFactory<TMessage, THandler> factory) where THandler : IHandlerWithMetadata<TMessage>;
     }
 
-    class DelegateMessageHandlerFactory<TMessage, THandler>: IMessageHandlerFactory<TMessage, THandler> where THandler : IHandler<TMessage>
+    class DelegateMessageHandlerFactory<TMessage, THandler> : IMessageHandlerFactory<TMessage, THandler> where THandler : IHandler<TMessage>
     {
-        private readonly Func<IMessageProcessContext,THandler> _creator;
+        private readonly Func<IMessageProcessContext, THandler> _creator;
 
-        public DelegateMessageHandlerFactory(Func<IMessageProcessContext,THandler> creator)
+        public DelegateMessageHandlerFactory(Func<IMessageProcessContext, THandler> creator)
         {
             _creator = creator;
         }
+
         public THandler Create(IMessageProcessContext context)
         {
             return _creator(context);
         }
     }
+
     class DelegateMessageWithMetadataHandlerFactory<TMessage, THandler> : IMessageHandlerWithMetadataFactory<TMessage, THandler> where THandler : IHandlerWithMetadata<TMessage>
     {
-        private readonly Func<IMessageProcessContext,THandler> _creator;
+        private readonly Func<IMessageProcessContext, THandler> _creator;
 
-        public DelegateMessageWithMetadataHandlerFactory(Func<IMessageProcessContext,THandler> creator)
+        public DelegateMessageWithMetadataHandlerFactory(Func<IMessageProcessContext, THandler> creator)
         {
             _creator = creator;
         }
+
         public THandler Create(IMessageProcessContext context)
         {
             return _creator(context);
@@ -52,7 +54,7 @@ namespace GridDomain.Node.Configuration.Composition {
 
     public static class DomainBuilderExtensions
     {
-        public static void Register(this IDomainBuilder builder, IDomainBuilderConfiguration cfg)
+        public static void Register(this IDomainBuilder builder, IDomainConfiguration cfg)
         {
             cfg.Register(builder);
         }
@@ -64,7 +66,7 @@ namespace GridDomain.Node.Configuration.Composition {
 
         public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandlerWithMetadata<TMessage>, new()
         {
-            RegisterMetadataHandler<TMessage, THandler>(builder,c => new THandler());
+            RegisterMetadataHandler<TMessage, THandler>(builder, c => new THandler());
         }
 
         public static void RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer) where THandler : IHandler<TMessage>
@@ -83,12 +85,12 @@ namespace GridDomain.Node.Configuration.Composition {
         IPublisher Publisher { get; }
     }
 
-    public interface IMessageHandlerFactory<TMessage,THandler> where THandler: IHandler<TMessage>
+    public interface IMessageHandlerFactory<TMessage, THandler> where THandler : IHandler<TMessage>
     {
         THandler Create(IMessageProcessContext context);
     }
 
-    public interface IMessageHandlerWithMetadataFactory<TMessage,THandler> where THandler: IHandlerWithMetadata<TMessage>
+    public interface IMessageHandlerWithMetadataFactory<TMessage, THandler> where THandler : IHandlerWithMetadata<TMessage>
     {
         THandler Create(IMessageProcessContext context);
     }

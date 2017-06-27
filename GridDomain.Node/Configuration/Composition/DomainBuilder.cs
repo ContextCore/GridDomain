@@ -13,8 +13,8 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
 
-        public void RegisterSaga<TState, TSaga>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
-                                                                                               where TSaga : Process<TState>
+        public void RegisterSaga<TProcess, TSaga>(ISagaDependencyFactory<TSaga, TProcess> factory) where TProcess : class, ISagaState
+                                                                                                   where TSaga : Process<TProcess>
         {
             _containerConfigurations.Add(SagaConfiguration.New(factory));
         }
@@ -27,14 +27,14 @@ namespace GridDomain.Node.Configuration.Composition
         public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>
         {
             var cfg = new ContainerConfiguration(c => c.RegisterType<THandler>(
-                new InjectionFactory(cont => factory.Create(c.Resolve<IMessageProcessContext>()))));
+                                                                               new InjectionFactory(cont => factory.Create(c.Resolve<IMessageProcessContext>()))));
             _containerConfigurations.Add(cfg);
         }
 
         public void RegisterHandler<TMessage, THandler>(IMessageHandlerWithMetadataFactory<TMessage, THandler> factory) where THandler : IHandlerWithMetadata<TMessage>
         {
             var cfg = new ContainerConfiguration(c => c.RegisterType<THandler>(
-                new InjectionFactory(cont => factory.Create(c.Resolve<IMessageProcessContext>()))));
+                                                                               new InjectionFactory(cont => factory.Create(c.Resolve<IMessageProcessContext>()))));
             _containerConfigurations.Add(cfg);
         }
     }

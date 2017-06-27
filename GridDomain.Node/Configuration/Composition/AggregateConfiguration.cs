@@ -43,7 +43,7 @@ namespace GridDomain.Node.Configuration.Composition
         }
     }
 
-    public class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
+    class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
         where TAggregate : Aggregate
     {
         private readonly IConstructAggregates _factory;

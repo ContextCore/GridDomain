@@ -47,8 +47,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
             var containerConfiguration = SagaConfiguration.New<SoftwareProgrammingProcess,
                                                                SoftwareProgrammingState,
                                                                SoftwareProgrammingSagaFactory>
-                (SoftwareProgrammingProcess.Descriptor,
-                 () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency));
+
+                (SoftwareProgrammingProcess.Descriptor, () => fixture.Node.Container.Resolve<SoftwareProgrammingSagaFactory>());
 
             fixture.Add(new ContainerConfiguration(c =>{c.Register(containerConfiguration);}));
 

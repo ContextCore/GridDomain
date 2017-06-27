@@ -1,3 +1,4 @@
+using System;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
@@ -10,12 +11,8 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.BalloonDomain
 {
-    //public class BalloonContainerConfiguration : BalloonDomainConfiguration
-    //{
-       
-    //}
 
-    public class BalloonDomainConfiguration : IDomainBuilderConfiguration
+    public class BalloonDomainConfiguration : IDomainConfiguration
     {
         public void Register(IDomainBuilder builder)
         {
@@ -26,21 +23,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         }
     }
 
-    public class BalloonDependencyFactory: IAggregateDependencyFactory<Balloon>
+    public class BalloonDependencyFactory: DefaultDependencyFactory<Balloon>
     {
-        public IAggregateCommandsHandler<Balloon> CreateCommandsHandler(string name)
-        {
-            return new BalloonCommandHandler();
-        }
-
-        public ISnapshotsPersistencePolicy CreatePersistencePolicy(string name)
-        {
-            return new SnapshotsPersistencePolicy();
-        }
-
-        public IConstructAggregates CreateFactory(string name)
-        {
-            return new AggregateFactory();
-        }
+        public override Func<IAggregateCommandsHandler<Balloon>> HandlerCreator { protected get; set; } = () => new BalloonCommandHandler();
     }
 }

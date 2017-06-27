@@ -31,16 +31,16 @@ namespace GridDomain.Node.Configuration.Composition
         }
     }
 
-    public class CustomDomainBulderConfiguration : IDomainBuilderConfiguration
+    public class DomainConfiguration : IDomainConfiguration
     {
         private readonly Action<IDomainBuilder>[] _registrations;
 
-        public CustomDomainBulderConfiguration(params Action<IDomainBuilder>[] registrations)
+        public DomainConfiguration(params Action<IDomainBuilder>[] registrations)
         {
             _registrations = registrations;
         }
 
-        public CustomDomainBulderConfiguration(params IDomainBuilderConfiguration[] configurations)
+        public DomainConfiguration(params IDomainConfiguration[] configurations)
             : this(configurations.Select(config => (Action<IDomainBuilder>)(container => container.Register(config)))
                                  .ToArray())
         { }
@@ -51,9 +51,9 @@ namespace GridDomain.Node.Configuration.Composition
                 reg.Invoke(container);
         }
 
-        public static IDomainBuilderConfiguration Empty()
+        public static IDomainConfiguration Empty()
         {
-            return new CustomDomainBulderConfiguration(c => { });
+            return new DomainConfiguration(c => { });
         }
     }
 }

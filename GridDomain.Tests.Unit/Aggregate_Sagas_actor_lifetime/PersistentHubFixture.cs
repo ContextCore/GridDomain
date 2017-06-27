@@ -20,11 +20,24 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 
         public IPersistentActorTestsInfrastructure Infrastructure { get; }
 
+        private IDomainConfiguration CreateDomainConfiguration()
+        {
+            return new DomainConfiguration(
+                                           b => b.RegisterAggregate(new BalloonDependencyFactory() {RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration()}));
+            //   b => b.RegisterSaga(new BalloonDependencyFactory(){RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration()})););
+
+            // c => c.Register(SagaConfiguration.New<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>
+            //                     (SoftwareProgrammingProcess.Descriptor)),
+            // c => { c.Register(AggregateConfiguration.New<SagaStateAggregate<SoftwareProgrammingState>, SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>()); },
+            // c => { c.Register(AggregateConfiguration.New<Balloon, BalloonCommandHandler>()); },
+            // c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
+        }
+
         private IContainerConfiguration CreateConfiguration()
         {
             return new ContainerConfiguration(
-                                              c => c.Register(SagaConfiguration.New<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>
-                                                                  (SoftwareProgrammingProcess.Descriptor)),
+                                              c => c.Register(SagaConfiguration.New<SoftwareProgrammingProcess, SoftwareProgrammingState, SoftwareProgrammingSagaFactory>(SoftwareProgrammingProcess.Descriptor,
+                                                                                                                                                                          () => Node.Container.Resolve<SoftwareProgrammingSagaFactory>())),
                                               c => { c.Register(AggregateConfiguration.New<SagaStateAggregate<SoftwareProgrammingState>, SagaDataAggregateCommandsHandlerDummy<SoftwareProgrammingState>>()); },
                                               c => { c.Register(AggregateConfiguration.New<Balloon, BalloonCommandHandler>()); },
                                               c => c.RegisterType<IPersistentChildsRecycleConfiguration, TestPersistentChildsRecycleConfiguration>());
