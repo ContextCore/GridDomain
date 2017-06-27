@@ -61,7 +61,7 @@ namespace GridDomain.Node
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
             container.RegisterInstance(transport);
-            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(transport));
+            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(transport, _log));
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterInstance(AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration());

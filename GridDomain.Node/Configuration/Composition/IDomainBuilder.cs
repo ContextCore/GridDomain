@@ -3,6 +3,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using Serilog;
 
 namespace GridDomain.Node.Configuration.Composition
 {
@@ -83,6 +84,7 @@ namespace GridDomain.Node.Configuration.Composition
     public interface IMessageProcessContext
     {
         IPublisher Publisher { get; }
+        ILogger Log { get; }
     }
 
     public interface IMessageHandlerFactory<TMessage, THandler> where THandler : IHandler<TMessage>
