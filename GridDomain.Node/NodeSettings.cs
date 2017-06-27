@@ -16,7 +16,7 @@ namespace GridDomain.Node
                             Func<ActorSystem[]> actorSystemFactory = null,
                             IContainerConfiguration customContainerConfiguration = null)
         {
-            CustomContainerConfiguration = customContainerConfiguration;
+            CustomContainerConfiguration = customContainerConfiguration ?? CustomContainerConfiguration;
             ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
             MessageRouting = messageRouting ?? MessageRouting;
         }
@@ -24,7 +24,7 @@ namespace GridDomain.Node
         public IDomainBuilder DomainBuilder => Builder;
 
         internal readonly DomainBuilder Builder = new DomainBuilder();
-        internal IContainerConfiguration CustomContainerConfiguration { get; }
+        internal IContainerConfiguration CustomContainerConfiguration { get; } = new EmptyContainerConfiguration();
         public IMessageRouteMap MessageRouting { get; } = new EmptyRouteMap();
         public Func<ActorSystem[]> ActorSystemFactory { get; } = () => new[] {ActorSystem.Create("defaultSystem")};
 
@@ -32,7 +32,6 @@ namespace GridDomain.Node
 
         public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(10);
         public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig();
-
         public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings(5,
                                                                                                TimeSpan.FromMinutes(10),
                                                                                                new DefaultExceptionPolicy());

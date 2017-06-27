@@ -9,6 +9,7 @@ using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
@@ -60,6 +61,7 @@ namespace GridDomain.Node
             container.RegisterInstance<IPublisher>(transport);
             container.RegisterInstance<IActorSubscriber>(transport);
             container.RegisterInstance(transport);
+            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(transport));
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
             container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
