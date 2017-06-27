@@ -13,25 +13,25 @@ namespace GridDomain.Node.Configuration.Composition
     public static class SagaConfiguration
     {
         public static IContainerConfiguration New<TSaga, TState, TFactoryA>(ISagaDescriptor descriptor,
-                                                                                     Func<ISnapshotsPersistencePolicy> s = null,
-                                                                                     IConstructAggregates factory = null) where TFactoryA : ISagaCreator<TState>
-                                                                                                                          where TState : class, ISagaState
-                                                                                                                          where TSaga : Process<TState>
+                                                                            Func<ISnapshotsPersistencePolicy> s = null,
+                                                                            IConstructAggregates factory = null) where TFactoryA : ISagaCreator<TState>
+                                                                                                                 where TState : class, ISagaState
+                                                                                                                 where TSaga : Process<TState>
         {
             return new SagaConfiguration<TState>(c => CreateCatalog(c.Resolve<TFactoryA>(), descriptor),
-                                                        typeof(TSaga).Name,
-                                                        s,
-                                                        factory);
+                                                 typeof(TSaga).Name,
+                                                 s,
+                                                 factory);
         }
 
         public static IContainerConfiguration New<TSaga, TState>(ISagaDependencyFactory<TState, TSaga> factory) where TState : class, ISagaState
-                                                                                                                         where TSaga : Process<TState>
+                                                                                                                where TSaga : Process<TState>
         {
             var registrationName = typeof(TSaga).Name;
             return new SagaConfiguration<TState>(c => factory.CreateCatalog(registrationName),
-                                                        registrationName,
-                                                        () => factory.StateDependencyFactory.CreatePersistencePolicy(registrationName),
-                                                        factory.StateDependencyFactory.CreateFactory(registrationName));
+                                                 registrationName,
+                                                 () => factory.StateDependencyFactory.CreatePersistencePolicy(registrationName),
+                                                 factory.StateDependencyFactory.CreateFactory(registrationName));
         }
 
         private static Saga—reatorsCatalog<TState> CreateCatalog<TState>(ISagaCreator<TState> factoryCreator, ISagaDescriptor descriptor) where TState : class, ISagaState

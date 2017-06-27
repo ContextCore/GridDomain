@@ -8,7 +8,10 @@ namespace GridDomain.Tests.Unit.FutureEvents
     {
         public FutureEventsFixture(ITestOutputHelper output = null) : base(null, null, null, output)
         {
-            Add(new CustomContainerConfiguration(c => c.RegisterAggregate<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>()));
+            Add(new ContainerConfiguration(c =>
+                                                 {
+                                                     c.Register(AggregateConfiguration.New<FutureEventsAggregate, FutureEventsAggregatesCommandHandler>());
+                                                 }));
             Add(new FutureEventsRouteMap());
             this.ClearSheduledJobs();
         }

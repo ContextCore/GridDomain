@@ -13,10 +13,8 @@ namespace GridDomain.Node
     public class NodeSettings
     {
         public NodeSettings(IMessageRouteMap messageRouting = null,
-                            Func<ActorSystem[]> actorSystemFactory = null,
-                            IContainerConfiguration customContainerConfiguration = null)
+                            Func<ActorSystem[]> actorSystemFactory = null)
         {
-            CustomContainerConfiguration = customContainerConfiguration ?? CustomContainerConfiguration;
             ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
             MessageRouting = messageRouting ?? MessageRouting;
         }
@@ -24,7 +22,7 @@ namespace GridDomain.Node
         public IDomainBuilder DomainBuilder => Builder;
 
         internal readonly DomainBuilder Builder = new DomainBuilder();
-        internal IContainerConfiguration CustomContainerConfiguration { get; } = new EmptyContainerConfiguration();
+        public IContainerConfiguration CustomContainerConfiguration { get; set; } = new EmptyContainerConfiguration();
         public IMessageRouteMap MessageRouting { get; } = new EmptyRouteMap();
         public Func<ActorSystem[]> ActorSystemFactory { get; } = () => new[] {ActorSystem.Create("defaultSystem")};
 

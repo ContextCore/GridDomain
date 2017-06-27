@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             public void Register(IUnityContainer container)
             {
-                container.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
+                container.Register(AggregateConfiguration.New<TestAggregate, TestAggregateCommandHandler>());
                 container.Register(SagaConfiguration.New<TestSaga, TestSagaState, TestSagaFactory>(TestSaga.Descriptor));
             }
         }

@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                            TimeSpan? maxInactiveTime = null)
         {
             fixture.Add(
-                        new CustomContainerConfiguration(c =>
+                        new ContainerConfiguration(c =>
                                                              c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
                                                                                                                        new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
                                                                                                                                                                 maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                 (SoftwareProgrammingProcess.Descriptor,
                  () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency));
 
-            fixture.Add(new CustomContainerConfiguration(c =>{c.Register(containerConfiguration);}));
+            fixture.Add(new ContainerConfiguration(c =>{c.Register(containerConfiguration);}));
 
             return fixture;
         }

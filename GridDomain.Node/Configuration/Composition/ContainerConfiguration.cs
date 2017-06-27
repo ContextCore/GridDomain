@@ -5,16 +5,16 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public class CustomContainerConfiguration : IContainerConfiguration
+    public class ContainerConfiguration : IContainerConfiguration
     {
         private readonly Action<IUnityContainer>[] _registrations;
 
-        public CustomContainerConfiguration(params Action<IUnityContainer>[] registrations)
+        public ContainerConfiguration(params Action<IUnityContainer>[] registrations)
         {
             _registrations = registrations;
         }
 
-        public CustomContainerConfiguration(params IContainerConfiguration[] configurations)
+        public ContainerConfiguration(params IContainerConfiguration[] configurations)
             : this(
                    configurations.Select(config => (Action<IUnityContainer>) (container => container.Register(config)))
                                  .ToArray()) {}
@@ -25,9 +25,9 @@ namespace GridDomain.Node.Configuration.Composition
                 reg.Invoke(container);
         }
 
-        public static CustomContainerConfiguration Empty()
+        public static ContainerConfiguration Empty()
         {
-            return new CustomContainerConfiguration(c => { });
+            return new ContainerConfiguration(c => { });
         }
     }
 

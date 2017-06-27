@@ -12,8 +12,11 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         public BalanceFixture()
         {
             Add(
-                new CustomContainerConfiguration(
-                                                 c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>()));
+                new ContainerConfiguration(
+                                                 c =>
+                                                 {
+                                                     c.Register(AggregateConfiguration.New<BalanceAggregate, BalanceAggregatesCommandHandler>());
+                                                 }));
             Add(new BalanceRouteMap());
             OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }

@@ -14,11 +14,11 @@ namespace GridDomain.Tests.Unit.DependencyInjection
         {
             public DINodeFixture()
             {
-                Add(new CustomContainerConfiguration(c =>
+                Add(new ContainerConfiguration(c =>
                                                      {
                                                          c.RegisterType<ITestDependency, TestDependencyImplementation>();
                                                          c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
-                                                         c.RegisterAggregate<TestAggregate, TestAggregatesCommandHandler>();
+                                                         c.Register(AggregateConfiguration.New<TestAggregate, TestAggregatesCommandHandler>());
                                                      }));
                 Add(new TestRouteMap());
             }

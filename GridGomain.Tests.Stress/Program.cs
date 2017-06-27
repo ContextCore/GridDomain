@@ -48,13 +48,13 @@ namespace GridGomain.Tests.Stress
             var unityContainer = new UnityContainer();
          //   unityContainer.Register(new CustomContainerConfiguration());
 
-            var cfg = new CustomContainerConfiguration(//c => c.Register(new BalloonContainerConfiguration()),
+            var cfg = new ContainerConfiguration(//c => c.Register(new BalloonContainerConfiguration()),
                                                        c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                                                        c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
             Func<ActorSystem[]> actorSystemFactory = () => new[] {new StressTestAkkaConfiguration().CreateSystem()};
 
-            var settings = new NodeSettings(new BalloonRouteMap(), actorSystemFactory, cfg);
+            var settings = new NodeSettings(new BalloonRouteMap(), actorSystemFactory) {CustomContainerConfiguration = cfg};
             settings.DomainBuilder.Register(new BalloonDomainConfiguration());
             var node = new GridDomainNode(settings);
 

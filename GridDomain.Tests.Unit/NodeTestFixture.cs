@@ -92,7 +92,8 @@ namespace GridDomain.Tests.Unit
             await CreateLogger();
 
             var settings = CreateNodeSettings();
-            _domainConfigurations.ForEach(c => c.Register(settings.DomainBuilder));
+            _domainConfigurations.ForEach(c => settings.DomainBuilder.Register(c));
+
             Node = new GridDomainNode(settings);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
@@ -108,7 +109,8 @@ namespace GridDomain.Tests.Unit
                            {
                                QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
-                               Log = Logger
+                               Log = Logger,
+                               CustomContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
                            };
             _domainConfigurations.ForEach(c => c.Register(settings.DomainBuilder));
             return settings;

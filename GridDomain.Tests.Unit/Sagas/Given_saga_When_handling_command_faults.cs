@@ -20,7 +20,10 @@ namespace GridDomain.Tests.Unit.Sagas
         {
             public FaultyAggregateFixture()
             {
-                Add(new CustomContainerConfiguration(c => c.RegisterAggregate<HomeAggregate, HomeAggregateHandler>()));
+                Add(new ContainerConfiguration(c =>
+                                                     {
+                                                         c.Register(AggregateConfiguration.New<HomeAggregate, HomeAggregateHandler>());
+                                                     }));
                 Add(new CustomRouteMap(r => r.RegisterAggregate(HomeAggregateHandler.Descriptor)));
             }
         }

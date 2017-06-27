@@ -16,7 +16,7 @@ namespace GridGomain.Tests.Stress.BalloonDomain
 
         public void Register(IUnityContainer container)
         {
-            container.RegisterAggregate<Balloon, BalloonCommandHandler>();
+            container.Register(AggregateConfiguration.New<Balloon, BalloonCommandHandler>());
             container.RegisterInstance<Func<BalloonContext>>(() => new BalloonContext(_balloonConnString));
             container.RegisterType<BalloonCatalogProjection>();
         }
