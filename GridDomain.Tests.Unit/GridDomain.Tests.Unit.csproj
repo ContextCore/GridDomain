@@ -352,7 +352,7 @@
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingDependencyFactory.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDependencies.cs" />
     <Compile Include="SerilogLoggerActor.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />

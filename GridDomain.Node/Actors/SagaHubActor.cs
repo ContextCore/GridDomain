@@ -14,13 +14,11 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors
 {
-    public class SagaHubActor<TMachine, TState> : PersistentHubActor where TMachine : Process<TState>
-                                                                     where TState : class, ISagaState
+    public class SagaHubActor<TState> : PersistentHubActor where TState : class, ISagaState
     {
         private readonly ProcessEntry _redirectEntry;
 
-        public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf)
-            : base(recycleConf, typeof(TMachine).Name)
+        public SagaHubActor(IPersistentChildsRecycleConfiguration recycleConf): base(recycleConf, typeof(TState).Name)
         {
             _redirectEntry = new ProcessEntry(Self.Path.Name, "Forwarding to new child", "New saga was created");
 
@@ -41,7 +39,7 @@ namespace GridDomain.Node.Actors
         {
             var childActorId = Guid.Empty;
 
-            if (env is RedirectToNewSaga saga)
+            if (env.Message is RedirectToNewSaga saga)
                 return saga.SagaId;
 
             env.Message.Match()

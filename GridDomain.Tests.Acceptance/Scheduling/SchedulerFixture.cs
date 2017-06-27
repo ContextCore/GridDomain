@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
@@ -32,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             public void Register(IUnityContainer container)
             {
                 container.Register(AggregateConfiguration.New<TestAggregate, TestAggregateCommandHandler>());
-                container.Register(SagaConfiguration.New<TestSaga, TestSagaState, TestSagaFactory>(TestSaga.Descriptor, () => container.Resolve<TestSagaFactory>()));
+                container.Register(SagaConfiguration.New(new DefaultSagaDependencyFactory<TestSaga, TestSagaState>(((Func<ISagaCreator<TestSagaState>>) (() => container.Resolve<TestSagaFactory>()))(), TestSaga.Descriptor)));
             }
         }
     }

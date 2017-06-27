@@ -7,42 +7,42 @@ namespace GridDomain.Node.Configuration.Composition
 {
     public interface IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
     {
-        IAggregateCommandsHandler<TAggregate> CreateCommandsHandler(string name);
-        ISnapshotsPersistencePolicy CreatePersistencePolicy(string name);
-        IConstructAggregates CreateFactory(string name);
-        IPersistentChildsRecycleConfiguration CreateRecycleConfiguration(string name);
+        IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
+        ISnapshotsPersistencePolicy CreatePersistencePolicy();
+        IConstructAggregates CreateFactory();
+        IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
     }
 
-    public abstract class DefaultDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
+    public abstract class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
     {
         public abstract Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
         public Func<ISnapshotsPersistencePolicy> SnapshotPolicyCreator { protected get; set; }
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
         public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
-        protected DefaultDependencyFactory()
+        protected DefaultAggregateDependencyFactory()
         {
             SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => new AggregateFactory();
             RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();
         }
 
-        public IAggregateCommandsHandler<TAggregate> CreateCommandsHandler(string name)
+        public IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()
         {
             return HandlerCreator();
         }
 
-        public ISnapshotsPersistencePolicy CreatePersistencePolicy(string name)
+        public ISnapshotsPersistencePolicy CreatePersistencePolicy()
         {
             return SnapshotPolicyCreator();
         }
 
-        public IConstructAggregates CreateFactory(string name)
+        public IConstructAggregates CreateFactory()
         {
             return AggregateFactoryCreator();
         }
 
-        public IPersistentChildsRecycleConfiguration CreateRecycleConfiguration(string name)
+        public IPersistentChildsRecycleConfiguration CreateRecycleConfiguration()
         {
             return RecycleConfigurationCreator();
         }

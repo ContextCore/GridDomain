@@ -16,10 +16,10 @@ namespace GridDomain.Node.Configuration.Composition
     {
         public static IContainerConfiguration New<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
         {
-            var registrationName = typeof(TAggregate).Name;
-            return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => factory.CreateCommandsHandler(registrationName),
-                                                                                      () => factory.CreatePersistencePolicy(registrationName),
-                                                                                      factory.CreateFactory(registrationName));
+            return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => factory.CreateCommandsHandler(),
+                                                                                      factory.CreatePersistencePolicy,
+                                                                                      factory.CreateFactory(),
+                                                                                      factory.CreateRecycleConfiguration());
         }
 
         public static IContainerConfiguration
@@ -30,7 +30,8 @@ namespace GridDomain.Node.Configuration.Composition
         {
             return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => c.Resolve<TAggregateCommandsHandler>(),
                                                                                       snapshotsPolicy,
-                                                                                      new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory));
+                                                                                      new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory),
+                                                                                      new DefaultPersistentChildsRecycleConfiguration());
         }
 
         public static IContainerConfiguration NewSagaState<TState>(Func<ISnapshotsPersistencePolicy> snapshotsPolicy,
@@ -39,7 +40,8 @@ namespace GridDomain.Node.Configuration.Composition
         {
             return new AggregateConfiguration<SagaStateActor<TState>, SagaStateAggregate<TState>>(c => c.Resolve<SagaStateCommandHandler<TState>>(),
                                                                                                   snapshotsPolicy,
-                                                                                                  new AggregateSnapshottingFactory<SagaStateAggregate<TState>>(snapshotsFactory));
+                                                                                                  new AggregateSnapshottingFactory<SagaStateAggregate<TState>>(snapshotsFactory),
+                                                                                                  new DefaultPersistentChildsRecycleConfiguration());
         }
     }
 
@@ -50,19 +52,24 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
         private static readonly string RegistrationName = typeof(TAggregate).Name;
         private readonly Func<IUnityContainer, IAggregateCommandsHandler<TAggregate>> _commandsHandlerCreator;
+        private readonly IPersistentChildsRecycleConfiguration _persistencChildsRecycleConfiguration;
 
         internal AggregateConfiguration(Func<IUnityContainer, IAggregateCommandsHandler<TAggregate>> commandsHandlerCreator,
-                                        Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
-                                        IConstructAggregates snapshotsFactory = null)
+                                        Func<ISnapshotsPersistencePolicy> snapshotsPolicy,
+                                        IConstructAggregates snapshotsFactory,
+                                        IPersistentChildsRecycleConfiguration persistencChildsRecycleConfiguration)
         {
-            _factory = snapshotsFactory ?? new AggregateFactory();
-            _snapshotsPolicyFactory = snapshotsPolicy ?? (() => new NoSnapshotsPersistencePolicy());
+            _persistencChildsRecycleConfiguration = persistencChildsRecycleConfiguration;
+            _factory = snapshotsFactory;
+            _snapshotsPolicyFactory = snapshotsPolicy;
             _commandsHandlerCreator = commandsHandlerCreator;
         }
 
         public void Register(IUnityContainer container)
         {
-            container.RegisterType<AggregateHubActor<TAggregate>>();
+            container.RegisterInstance(RegistrationName, _persistencChildsRecycleConfiguration);
+            container.RegisterType<AggregateHubActor<TAggregate>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(RegistrationName)));
+
             container.RegisterInstance<IAggregateCommandsHandler<TAggregate>>(_commandsHandlerCreator(container));
             container.RegisterType<ISnapshotsPersistencePolicy>(RegistrationName,
                                                                 new InjectionFactory(c => _snapshotsPolicyFactory()));

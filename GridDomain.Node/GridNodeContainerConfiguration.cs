@@ -64,7 +64,6 @@ namespace GridDomain.Node
             container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(transport));
 
             container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            container.RegisterType<IPersistentChildsRecycleConfiguration, DefaultPersistentChildsRecycleConfiguration>();
             container.RegisterInstance(AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration());
 
             container.RegisterInstance(PerformanceCountersConfigSection.Default ?? new DefaultPerfCountersConfiguration());

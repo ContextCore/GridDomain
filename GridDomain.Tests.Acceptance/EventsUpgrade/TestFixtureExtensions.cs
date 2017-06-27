@@ -1,6 +1,8 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit.TestActors;
+using GridDomain.Common;
+using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Composition;
@@ -44,11 +46,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                                                            TimeSpan? maxSaveFrequency = null,
                                                                            int saveOnEach = 1)
         {
-            var containerConfiguration = SagaConfiguration.New<SoftwareProgrammingProcess,
-                                                               SoftwareProgrammingState,
-                                                               SoftwareProgrammingSagaFactory>
-
-                (SoftwareProgrammingProcess.Descriptor, () => fixture.Node.Container.Resolve<SoftwareProgrammingSagaFactory>());
+            var containerConfiguration = SagaConfiguration.New(new DefaultSagaDependencyFactory<SoftwareProgrammingProcess, SoftwareProgrammingState>(((Func<ISagaCreator<SoftwareProgrammingState>>) (() => fixture.Node.Container.Resolve<SoftwareProgrammingSagaFactory>()))(), SoftwareProgrammingProcess.Descriptor));
 
             fixture.Add(new ContainerConfiguration(c =>{c.Register(containerConfiguration);}));
 

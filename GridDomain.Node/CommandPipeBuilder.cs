@@ -53,7 +53,7 @@ namespace GridDomain.Node
 
         public Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null)
         {
-            var sagaActorType = typeof(SagaHubActor<,>).MakeGenericType(sagaDescriptor.StateMachineType, sagaDescriptor.StateType);
+            var sagaActorType = typeof(SagaHubActor<>).MakeGenericType(sagaDescriptor.StateType);
 
             var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
             var processor = new Processor(sagaActor);

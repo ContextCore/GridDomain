@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         }
     }
 
-    public class BalloonDependencyFactory: DefaultDependencyFactory<Balloon>
+    public class BalloonDependencyFactory: DefaultAggregateDependencyFactory<Balloon>
     {
         public override Func<IAggregateCommandsHandler<Balloon>> HandlerCreator { protected get; set; } = () => new BalloonCommandHandler();
     }

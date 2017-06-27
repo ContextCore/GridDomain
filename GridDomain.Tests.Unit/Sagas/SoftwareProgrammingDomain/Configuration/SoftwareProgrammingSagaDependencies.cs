@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using Serilog;
 
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration
 {
-    class SoftwareProgrammingDependencyFactory
+    public class SoftwareProgrammingSagaDependenciesFactory: DefaultSagaDependencyFactory<SoftwareProgrammingProcess, SoftwareProgrammingState>
     {
-        ISagaDependencyFactory<SoftwareProgrammingProcess, SoftwareProgrammingState> New(SoftwareProgrammingSagaFactory factory)
+        public SoftwareProgrammingSagaDependenciesFactory(ILogger log):base(new SoftwareProgrammingSagaFactory(log), SoftwareProgrammingProcess.Descriptor)
         {
-            return SagaDependencyFactory.FromSagaCreator<SoftwareProgrammingProcess, SoftwareProgrammingState>(factory, SoftwareProgrammingProcess.Descriptor);
+            
         }
     }
 }
