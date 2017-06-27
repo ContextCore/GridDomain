@@ -279,6 +279,7 @@
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\AggregatesDI.cs" />
+    <Compile Include="DependencyInjection\FutureEvents\Configuration\FutureAggregateDependenciesFactory.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />

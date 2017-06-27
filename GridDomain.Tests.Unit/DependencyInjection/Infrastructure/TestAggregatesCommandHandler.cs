@@ -11,12 +11,10 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
     {
         //TODO: refactor to separate class
         public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new TestAggregatesCommandHandler(null);
-        private readonly IUnityContainer _locator;
 
-        public TestAggregatesCommandHandler(IUnityContainer unityContainer)
+        public TestAggregatesCommandHandler(ITestDependency testDependency)
         {
-            _locator = unityContainer;
-            Map<TestCommand>((c, a) => a.Execute(c.Parameter, _locator.Resolve<ITestDependency>()));
+            Map<TestCommand>((c, a) => a.Execute(c.Parameter, testDependency));
         }
 
         public Type AggregateType => typeof(TestAggregate);

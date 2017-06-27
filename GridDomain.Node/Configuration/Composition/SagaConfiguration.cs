@@ -10,21 +10,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public static class SagaConfiguration
-    {
-        public static IContainerConfiguration New<TProcess, TState>(ISagaDependencyFactory<TProcess, TState> factory) where TState : class, ISagaState
-                                                                                                                      where TProcess : Process<TState>
-        {
-            var registrationName = typeof(TProcess).Name;
-            return new SagaConfiguration<TState>(c => factory.CreateCatalog(),
-                                                 registrationName,
-                                                 () => factory.StateDependencyFactory.CreatePersistencePolicy(),
-                                                 factory.StateDependencyFactory.CreateFactory(),
-                                                 factory.StateDependencyFactory.CreateRecycleConfiguration());
-        }
-    }
-
-    public class SagaConfiguration<TState> : IContainerConfiguration where TState : class, ISagaState
+    internal class SagaConfiguration<TState> : IContainerConfiguration where TState : class, ISagaState
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapShotsPolicy;
@@ -38,11 +24,11 @@ namespace GridDomain.Node.Configuration.Composition
                                    IConstructAggregates factory,
                                    IPersistentChildsRecycleConfiguration configuration)
         {
-            _persistentChildsRecycleConfiguration = configuration;// ?? new DefaultPersistentChildsRecycleConfiguration();
+            _persistentChildsRecycleConfiguration = configuration;
             RegistrationName = registrationName;
             _sagaCatalogCreator = factoryCreator;
-            _aggregateFactory = factory;// ?? new AggregateFactory();
-            _snapShotsPolicy = snapShotsPolicy;// ?? (() => new NoSnapshotsPersistencePolicy());
+            _aggregateFactory = factory;
+            _snapShotsPolicy = snapShotsPolicy;
         }
 
         private void Register(IUnityContainer container, ISaga—reatorCatalog<TState> catalog)

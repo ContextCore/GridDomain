@@ -16,7 +16,11 @@ namespace GridDomain.Node.Configuration.Composition
         public void RegisterSaga<TProcess, TSaga>(ISagaDependencyFactory<TSaga, TProcess> factory) where TProcess : class, ISagaState
                                                                                                    where TSaga : Process<TProcess>
         {
-            _containerConfigurations.Add(SagaConfiguration.New(factory));
+            _containerConfigurations.Add(new SagaConfiguration<TProcess>(c => factory.CreateCatalog(),
+                                                                         typeof(TSaga).Name,
+                                                                         () => factory.StateDependencyFactory.CreatePersistencePolicy(),
+                                                                         factory.StateDependencyFactory.CreateFactory(),
+                                                                         factory.StateDependencyFactory.CreateRecycleConfiguration()));
         }
 
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate

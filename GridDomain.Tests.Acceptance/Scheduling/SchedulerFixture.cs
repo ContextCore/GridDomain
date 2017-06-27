@@ -6,8 +6,10 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.DependencyInjection.Infrastructure;
 using Microsoft.Practices.Unity;
 using Quartz;
+using TestAggregate = GridDomain.Tests.Acceptance.Scheduling.TestHelpers.TestAggregate;
 
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
@@ -15,7 +17,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
     {
         public SchedulerFixture()
         {
-            Add(new SchedulerContainerConfiguration());
+            Add(new TestSagaFactoryDomainConfiguration(Logger));
+            Add(new TestAggregateDomainConfiguration());
             Add(new TestRouter());
 
             OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
@@ -26,15 +29,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var settings = base.CreateNodeSettings();
             settings.QuartzJobRetrySettings = new InMemoryRetrySettings(4, TimeSpan.Zero);
             return settings;
-        }
-
-        private class SchedulerContainerConfiguration : IContainerConfiguration
-        {
-            public void Register(IUnityContainer container)
-            {
-                container.Register(AggregateConfiguration.New<TestAggregate, TestAggregateCommandHandler>());
-                container.Register(SagaConfiguration.New(new DefaultSagaDependencyFactory<TestSaga, TestSagaState>(((Func<ISagaCreator<TestSagaState>>) (() => container.Resolve<TestSagaFactory>()))(), TestSaga.Descriptor)));
-            }
         }
     }
 }

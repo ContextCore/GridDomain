@@ -10,6 +10,7 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
@@ -46,10 +47,11 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                                                            TimeSpan? maxSaveFrequency = null,
                                                                            int saveOnEach = 1)
         {
-            var containerConfiguration = SagaConfiguration.New(new DefaultSagaDependencyFactory<SoftwareProgrammingProcess, SoftwareProgrammingState>(((Func<ISagaCreator<SoftwareProgrammingState>>) (() => fixture.Node.Container.Resolve<SoftwareProgrammingSagaFactory>()))(), SoftwareProgrammingProcess.Descriptor));
+            var sagaDependencies = new SoftwareProgrammingSagaDependenciesFactory(fixture.Logger);
+            sagaDependencies.StateDependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach,keep,maxSaveFrequency);
 
-            fixture.Add(new ContainerConfiguration(c =>{c.Register(containerConfiguration);}));
-
+            fixture.Add(new DomainConfiguration(d => d.RegisterSaga(sagaDependencies)));
+            
             return fixture;
         }
 

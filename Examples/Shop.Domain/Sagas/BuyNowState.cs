@@ -1,8 +1,26 @@
 ﻿using System;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Configuration.Composition;
+using Serilog;
+using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
+    public class BuyNowSagaDomainConfiguration : IDomainConfiguration
+    {
+        private readonly IPriceCalculator _calculator;
+        private readonly ILogger _log;
+        public BuyNowSagaDomainConfiguration(IPriceCalculator calculator, ILogger log)
+        {
+            _calculator = calculator;
+            _log = log;
+        }
+
+        public void Register(IDomainBuilder builder)
+        {
+            builder.RegisterSaga(new DefaultSagaDependencyFactory<BuyNow,BuyNowState>(new BuyNowSagaFactory(_calculator, _log),BuyNow.Descriptor));
+        }
+    }
     public class BuyNowState : ISagaState
     {
         public BuyNowState(Guid id, string currentStateName)

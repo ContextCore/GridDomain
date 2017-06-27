@@ -13,39 +13,40 @@ namespace GridDomain.Node.Configuration.Composition
         IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
     }
 
-    public abstract class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
+    public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
     {
-        public abstract Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
+        public Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
         public Func<ISnapshotsPersistencePolicy> SnapshotPolicyCreator { protected get; set; }
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
         public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
         protected DefaultAggregateDependencyFactory()
         {
-            SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy();
+            SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => new AggregateFactory();
             RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();
         }
 
-        public IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()
+        public virtual IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()
         {
-            return HandlerCreator();
+            return HandlerCreator == null ? throw new CannotCreateCommandHandlerExeption() : HandlerCreator();
         }
 
-        public ISnapshotsPersistencePolicy CreatePersistencePolicy()
+        public virtual ISnapshotsPersistencePolicy CreatePersistencePolicy()
         {
             return SnapshotPolicyCreator();
         }
 
-        public IConstructAggregates CreateFactory()
+        public virtual IConstructAggregates CreateFactory()
         {
             return AggregateFactoryCreator();
         }
 
-        public IPersistentChildsRecycleConfiguration CreateRecycleConfiguration()
+        public virtual IPersistentChildsRecycleConfiguration CreateRecycleConfiguration()
         {
             return RecycleConfigurationCreator();
         }
     }
 
+    public class CannotCreateCommandHandlerExeption : Exception { }
 }

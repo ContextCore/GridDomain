@@ -6,6 +6,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.Sagas
@@ -16,9 +17,7 @@ namespace GridDomain.Tests.Unit.Sagas
                                               IMessageRouteMap map = null,
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
         {
-            var cfg = new ContainerConfiguration(c => c.Register(SagaConfiguration.New(new DefaultSagaDependencyFactory<SoftwareProgrammingProcess, SoftwareProgrammingState>(((Func<ISagaCreator<SoftwareProgrammingState>>) (() => c.Resolve<SoftwareProgrammingSagaFactory>()))(), SoftwareProgrammingProcess.Descriptor))),
-                                                 c => { c.Register(AggregateConfiguration.New<SagaStateAggregate<SoftwareProgrammingState>, SagaStateCommandHandler<SoftwareProgrammingState>>()); });
-            Add(cfg);
+            Add(new SoftwareProgrammingSagaDomainConfiguration(Logger));
             Add(new SoftwareProgrammingSagaRoutes());
             Add(new BalloonDomainConfiguration());
         }

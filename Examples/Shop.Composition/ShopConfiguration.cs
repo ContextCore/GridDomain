@@ -6,6 +6,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
+using Serilog;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Domain.Aggregates.SkuAggregate;
@@ -24,33 +25,43 @@ using User = Shop.Domain.Aggregates.UserAggregate.User;
 
 namespace Shop.Composition
 {
-    public class ShopConfiguration : IContainerConfiguration
+
+    public class ShopDomainConfiguration : IContainerConfiguration, IDomainConfiguration
     {
         private readonly DbContextOptions<ShopDbContext> _readModelContextOptions;
+        private readonly IUnityContainer _container;
 
-        public ShopConfiguration(DbContextOptions<ShopDbContext> readModelContextOptions = null)
+        public ShopDomainConfiguration(DbContextOptions<ShopDbContext> readModelContextOptions = null)
         {
             _readModelContextOptions = readModelContextOptions
                                        ?? new DbContextOptionsBuilder<ShopDbContext>().UseSqlServer(
                                                                                                     "Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
                                                                                       .Options;
-            ;
+            _container = new UnityContainer();
         }
 
-        public void Register(IUnityContainer container)
+        private void Compose(UnityContainer container)
         {
             container.RegisterInstance<Func<ShopDbContext>>(() => new ShopDbContext(_readModelContextOptions));
             container.RegisterType<ISkuPriceQuery, SkuPriceQuery>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
 
+            container.RegisterType<BuyNowSagaDomainConfiguration>(new ContainerControlledLifetimeManager());
+        }
+        public void Register(IUnityContainer container)
+        {
             container.Register(AggregateConfiguration.New<Account, AccountCommandsHandler>());
             container.Register(AggregateConfiguration.New<Order, OrderCommandsHandler>());
             container.Register(AggregateConfiguration.New<Sku, SkuCommandsHandler>());
             container.Register(AggregateConfiguration.New<SkuStock, SkuStockCommandsHandler>());
             container.Register(AggregateConfiguration.New<User, UserCommandsHandler>());
-            container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
-            container.RegisterType<IPriceCalculator, SqlPriceCalculator>();
-            container.Register(SagaConfiguration.New(new DefaultSagaDependencyFactory<BuyNow, BuyNowState>(((Func<ISagaCreator<BuyNowState>>) (() => container.Resolve<BuyNowSagaFactory>()))(), BuyNow.Descriptor)));
+            
+        }
+
+        public void Register(IDomainBuilder builder)
+        {
+            builder.Register(_container.Resolve<BuyNowSagaDomainConfiguration>());
         }
     }
 }

@@ -45,8 +45,10 @@ namespace GridDomain.Node.Configuration.Composition {
 
     public class SagaStateDependencyFactory<TState> : DefaultAggregateDependencyFactory<SagaStateAggregate<TState>> where TState : ISagaState
     {
-        public override Func<IAggregateCommandsHandler<SagaStateAggregate<TState>>> HandlerCreator { protected get; set; }
-            = () => new SagaStateCommandHandler<TState>();
+        public SagaStateDependencyFactory()
+        {
+            HandlerCreator = () => new SagaStateCommandHandler<TState>();
+        }
     }
 
 }

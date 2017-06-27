@@ -1,4 +1,5 @@
-﻿using GridDomain.Node.Configuration.Composition;
+﻿using GridDomain.Node.Actors;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Unit.DependencyInjection.Infrastructure;
 using Microsoft.Practices.Unity;
@@ -14,12 +15,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
         {
             public DINodeFixture()
             {
-                Add(new ContainerConfiguration(c =>
-                                                     {
-                                                         c.RegisterType<ITestDependency, TestDependencyImplementation>();
-                                                         c.RegisterInstance<IQuartzConfig>(new InMemoryQuartzConfig());
-                                                         c.Register(AggregateConfiguration.New<TestAggregate, TestAggregatesCommandHandler>());
-                                                     }));
+                Add(new DomainConfiguration(d => d.RegisterAggregate(new TestAggregateDependenciesFactory())));
                 Add(new TestRouteMap());
             }
         }
