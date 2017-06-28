@@ -64,7 +64,7 @@ namespace GridDomain.Node
             return Task.CompletedTask;
         }
 
-        public Task RegisterHandler<TMessage, THandler>(string correlationField) where THandler : IHandler<TMessage>
+        public Task RegisterHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                                  where TMessage : class, IHaveSagaId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(true);

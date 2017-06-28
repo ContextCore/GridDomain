@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
         public async Task Register(IMessagesRouter router)
         {
             await router.RegisterAggregate<BalanceAggregate,BalanceAggregatesCommandHandler>();
-            await router.RegisterHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>(m => m.SourceId);
+            await router.RegisterHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>();
         }
 
         public string Name { get; } = nameof(BalanceRouteMap);

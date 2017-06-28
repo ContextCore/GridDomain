@@ -21,7 +21,6 @@ namespace GridDomain.Tests.Unit
             Destructure.ByTransforming<Exception>(r => new {Type = r.GetType(), r.StackTrace});
             Destructure.ByTransforming<IMessageMetadata>(r => new {r.CasuationId, r.CorrelationId});
             Destructure.ByTransforming<ICommand>(r => new {r.Id});
-            //Destructure.ByTransforming<IMessageMetadataEnvelop>(r => new {r.Id});
         }
     }
 }

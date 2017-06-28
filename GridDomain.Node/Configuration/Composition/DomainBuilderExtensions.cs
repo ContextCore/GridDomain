@@ -34,14 +34,14 @@ namespace GridDomain.Node.Configuration.Composition {
         public static void RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer, Expression<Func<TMessage, Guid>> propertyExp) where THandler : IHandler<TMessage>
                                                                                                                                                                                            where TMessage : class, IHaveSagaId, IHaveId
         {
-            builder.RegisterHandler(new DefaultMessageHandlerFactory<TMessage, THandler>(producer,propertyExp));
+            builder.RegisterHandler(new DefaultMessageHandlerFactory<TMessage, THandler>(producer));
         }
 
         public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer, Expression<Func<TMessage, Guid>> propertyExp) 
             where THandler : IHandlerWithMetadata<TMessage>
             where TMessage : class, IHaveSagaId, IHaveId
         {
-            builder.RegisterHandler(new DefaultMessageWithMetadataHandlerFactory<TMessage, THandler>(producer, propertyExp));
+            builder.RegisterHandler(new DefaultMessageWithMetadataHandlerFactory<TMessage, THandler>(producer));
         }
     }
 }
