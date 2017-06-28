@@ -256,7 +256,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BalloonsCreationAndChangeProjectionScenario.cs" />
+    <Compile Include="BalloonsCreationAndChangeScenarioProjection.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
     <Compile Include="CommandExecutionPerfFixtureInMem.cs" />
     <Compile Include="CommandExecutionPerfFixture.cs" />

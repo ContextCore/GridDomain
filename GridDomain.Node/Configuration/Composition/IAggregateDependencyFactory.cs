@@ -7,11 +7,6 @@ using GridDomain.Node.Actors;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public interface IRouteMapFactory
-    {
-        IMessageRouteMap CreateRouteMap();
-    }
-
     public interface IAggregateDependencyFactory<TAggregate> : IRouteMapFactory where TAggregate : Aggregate
     {
         IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
@@ -20,25 +15,6 @@ namespace GridDomain.Node.Configuration.Composition
         IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
     }
 
-    public static class DefaultAggregateDependencyFactory
-    {
-        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer=null) where TAggregate : Aggregate
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-
-            var map = mapProducer ?? MessageRouteMap.New(handler);
-
-            return new DefaultAggregateDependencyFactory<TAggregate>(() => handler,() => map);
-        }
-        
-        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate, TAggregateCommandsHandler>()
-            where TAggregate : Aggregate
-            where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>, new()
-        {
-            return New(new TAggregateCommandsHandler());
-        }
-    }
     public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
     {
         public Func<IMessageRouteMap> MapProducer{protected get;set;}

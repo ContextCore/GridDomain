@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
 {
     public class Given_aggregate_When_raising_several_future_events : FutureEventsTest
     {

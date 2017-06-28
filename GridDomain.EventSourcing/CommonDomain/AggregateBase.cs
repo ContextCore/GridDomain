@@ -179,6 +179,4 @@ namespace GridDomain.EventSourcing.CommonDomain
             return Equals(obj as IAggregate);
         }
     }
-
-    public class EventIsNotBelongingToAggregateException : Exception { }
 }

@@ -1,5 +1,5 @@
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.FutureEvents;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 
 namespace GridDomain.Tests.Acceptance.BalloonDomain
 {

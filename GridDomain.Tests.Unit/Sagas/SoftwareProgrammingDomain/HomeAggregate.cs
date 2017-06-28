@@ -1,19 +1,9 @@
 using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
-using GridDomain.Node.Configuration.Composition;
 
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
-
-    public class HomeDomainConfiguration : IDomainConfiguration
-    {
-        public void Register(IDomainBuilder builder)
-        {
-            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new HomeAggregateHandler()));
-        }
-    }
-
     public class HomeAggregate : Aggregate
     {
         private HomeAggregate(Guid id) : base(id) {}

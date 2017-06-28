@@ -2,7 +2,8 @@ using System;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.Unit.BalloonDomain;
-using GridDomain.Tests.Unit.FutureEvents;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 
 namespace GridDomain.Tests.Unit
 {

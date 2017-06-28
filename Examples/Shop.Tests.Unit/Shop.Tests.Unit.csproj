@@ -186,7 +186,7 @@
     <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
     <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="InMemory_sequence_provider_tests.cs" />
-    <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_test.cs" />
+    <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_calculate_total_test.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_commands_adds_bad_item.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Order_guards_its_negative_number_on_creation.cs" />
@@ -227,7 +227,7 @@
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_taken_errors_test.cs" />
     <Compile Include="SkuStockAggregate\ProjectionBuilder\SkuStock_taken_tests.cs" />
     <Compile Include="UserAggregate\User_created_tests.cs" />
-    <Compile Include="User_creates_from_event.cs" />
+    <Compile Include="Given_new_user.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GridDomain.Common\GridDomain.Common.csproj">

@@ -6,11 +6,11 @@ using GridDomain.Node;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.FutureEvents.Retry
+namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
 {
     public class FutureEvent_regular_Reraise : NodeTestKit
     {

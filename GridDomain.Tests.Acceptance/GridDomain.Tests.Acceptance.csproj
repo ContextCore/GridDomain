@@ -246,9 +246,10 @@
   <ItemGroup>
     <Compile Include="BalloonDomain\BalloonCatalogItem.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogProjection.cs" />
+    <Compile Include="BalloonDomain\BalloonCatalogProjectionFactory.cs" />
     <Compile Include="BalloonDomain\BalloonContext.cs" />
     <Compile Include="BalloonDomain\BalloonDomainEventsExtensions.cs" />
-    <Compile Include="BalloonDomain\BalloonWithProjectionContainerConfiguration.cs" />
+    <Compile Include="BalloonDomain\BalloonWithProjectionDomainConfiguration.cs" />
     <Compile Include="BalloonDomain\BalloonWithProjectionFixture.cs" />
     <Compile Include="EventsUpgrade\Future_events_class_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
@@ -279,6 +280,7 @@
     <Compile Include="Scheduling\TestHelpers\TestRouter.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSaga.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaFactory.cs" />
+    <Compile Include="Scheduling\TestHelpers\TestSagaFactoryDomainConfiguration.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaStartMessage.cs" />
     <Compile Include="Scheduling\TestHelpers\TestSagaState.cs" />
     <Compile Include="Scheduling\TestHelpers\Throttle.cs" />

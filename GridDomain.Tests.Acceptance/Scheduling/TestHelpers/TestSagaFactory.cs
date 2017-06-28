@@ -2,27 +2,10 @@ using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
-using GridDomain.Node.Configuration.Composition;
 using Serilog;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestSagaFactoryDomainConfiguration : IDomainConfiguration
-    {
-        private readonly ILogger _logger;
-        public TestSagaFactoryDomainConfiguration(ILogger logger)
-        {
-            _logger = logger;
-        }
-
-        public void Register(IDomainBuilder builder)
-        {
-            builder.RegisterSaga(new DefaultSagaDependencyFactory<TestSaga, TestSagaState>(new TestSagaFactory(_logger),TestSaga.Descriptor));
-        }
-
-     
-    }
-    
     public class TestSagaFactory : ISagaCreator<TestSagaState, TestSagaStartMessage>,
                                    ISagaCreator<TestSagaState, Guid>,
                                    ISagaCreator<TestSagaState>

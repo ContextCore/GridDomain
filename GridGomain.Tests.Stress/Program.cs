@@ -12,6 +12,7 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Microsoft.Practices.Unity;
 

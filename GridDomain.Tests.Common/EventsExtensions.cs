@@ -10,17 +10,6 @@ using Xunit;
 
 namespace GridDomain.Tests.Common
 {
-    public static class Compare
-    {
-        public static CompareLogic Ignore(params string[] members)
-        {
-            return new CompareLogic(
-                new ComparisonConfig
-                  {
-                      MembersToIgnore = members.ToList()
-                } );
-        }
-    }
     public static class EventsExtensions
     {
         private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};

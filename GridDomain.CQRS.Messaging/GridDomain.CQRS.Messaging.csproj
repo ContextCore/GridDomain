@@ -110,6 +110,7 @@
     <Compile Include="CompositeRouteMap.cs" />
     <Compile Include="CustomRouteMap.cs" />
     <Compile Include="EmptyRouteMap.cs" />
+    <Compile Include="MessageRouteMap.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandlerDescriptor.cs" />
     <Compile Include="MessageRouting\AggregateCommandInfo.cs" />
     <Compile Include="IMessageRouteMap.cs" />

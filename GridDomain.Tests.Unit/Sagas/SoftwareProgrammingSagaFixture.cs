@@ -6,6 +6,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration;
 using Microsoft.Practices.Unity;

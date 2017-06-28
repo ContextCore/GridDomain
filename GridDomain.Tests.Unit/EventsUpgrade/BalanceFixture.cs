@@ -1,22 +1,11 @@
 using GridDomain.Node;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain;
-using GridDomain.Tests.Unit.FutureEvents;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Microsoft.Practices.Unity;
 using Quartz;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
-    public class BalanceDomainDonfiguration : IDomainConfiguration
-    {
-        public void Register(IDomainBuilder builder)
-        {
-            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new BalanceAggregatesCommandHandler(), new BalanceRouteMap()));
-        }
-    }
-
-
     public class BalanceFixture : NodeTestFixture
     {
         public BalanceFixture()

@@ -1,7 +1,7 @@
 using Microsoft.Practices.Unity;
 using Quartz;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
 {
     public static class NodeTestFixtureExtensions
     {

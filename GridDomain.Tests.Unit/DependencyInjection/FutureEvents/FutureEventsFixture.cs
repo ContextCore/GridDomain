@@ -1,9 +1,7 @@
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
 {
     internal class FutureEventsFixture : NodeTestFixture
     {

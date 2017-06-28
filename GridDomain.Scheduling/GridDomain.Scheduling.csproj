@@ -133,6 +133,7 @@
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="Integration\JobFailed.cs" />
     <Compile Include="Integration\JobSucceeded.cs" />
+    <Compile Include="Integration\OptionsNotFilledException.cs" />
     <Compile Include="Integration\ScheduledCommandWasNotConfirmedException.cs" />
     <Compile Include="Integration\ScheduleKeyExtensions.cs" />
     <Compile Include="Quartz\Retry\AlwaysRetryExceptionPolicy.cs" />

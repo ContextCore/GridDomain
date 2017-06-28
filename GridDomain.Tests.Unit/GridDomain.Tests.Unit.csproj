@@ -249,6 +249,8 @@
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubFixture.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
     <Compile Include="Aggregate_Sagas_actor_lifetime\SagaHub_children_lifetime_tests.cs" />
+    <Compile Include="BalloonDomain\Configuration\BalloonDependencyFactory.cs" />
+    <Compile Include="BalloonDomain\ProjectionBuilders\FaultyBalloonProjectionDomainConfiguration.cs" />
     <Compile Include="CommandPipe\CommandExecutorActorTests.cs" />
     <Compile Include="CommandPipe\CustomHandlerProcessorActorTests.cs" />
     <Compile Include="CommandPipe\EchoSleepActor.cs" />
@@ -279,9 +281,11 @@
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DateTimeSpec.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Configuration\FutureAggregateDependenciesFactory.cs" />
+    <Compile Include="DependencyInjection\FutureEvents\Configuration\FutureAggregateDomainConfiguration.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregate.cs" />
+    <Compile Include="DependencyInjection\Infrastructure\TestAggregateDomainConfiguration.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestAggregatesCommandHandler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestCommand.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestDependencyImplementation.cs" />
@@ -291,6 +295,7 @@
     <Compile Include="DependencyInjection\NamedDependencies\NamedActorB.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\SomeService.cs" />
     <Compile Include="EventsUpgrade\BalanceChangedDomainEventAdapter1.cs" />
+    <Compile Include="EventsUpgrade\BalanceDomainDonfiguration.cs" />
     <Compile Include="EventsUpgrade\BalanceFixture.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater1.cs" />
     <Compile Include="EventsUpgrade\Chain\DomainEventUpdater2.cs" />
@@ -350,7 +355,9 @@
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDependencies.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDependenciesFactory.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDomainConfiguration.cs" />
+    <Compile Include="Sagas\SoftwareProgrammingDomain\HomeDomainConfiguration.cs" />
     <Compile Include="SerilogLoggerActor.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
@@ -443,7 +450,7 @@
     <Compile Include="BalloonDomain\Balloon.cs" />
     <Compile Include="BalloonDomain\BalloonException.cs" />
     <Compile Include="BalloonDomain\BalloonCommandHandler.cs" />
-    <Compile Include="BalloonDomain\Configuration\BalloonContainerConfiguration.cs" />
+    <Compile Include="BalloonDomain\Configuration\BalloonDomainConfiguration.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />

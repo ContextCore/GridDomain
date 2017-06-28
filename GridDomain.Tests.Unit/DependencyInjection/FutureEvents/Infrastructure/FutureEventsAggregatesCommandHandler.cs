@@ -1,9 +1,8 @@
 using System;
 using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
+namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 {
     public class FutureEventsAggregatesCommandHandler : AggregateCommandsHandler<FutureEventsAggregate>,
                                                         IAggregateCommandsHandlerDescriptor
