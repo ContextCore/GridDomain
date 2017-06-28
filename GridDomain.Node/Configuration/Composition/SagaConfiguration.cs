@@ -15,7 +15,7 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly IConstructAggregates _aggregateFactory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapShotsPolicy;
         private readonly Func<IUnityContainer, ISaga—reatorCatalog<TState>> _sagaCatalogCreator;
-        private readonly string RegistrationName;
+        private readonly string _registrationName;
         private readonly IPersistentChildsRecycleConfiguration _persistentChildsRecycleConfiguration;
 
         internal SagaConfiguration(Func<IUnityContainer, ISaga—reatorCatalog<TState>> factoryCreator,
@@ -25,7 +25,7 @@ namespace GridDomain.Node.Configuration.Composition
                                    IPersistentChildsRecycleConfiguration configuration)
         {
             _persistentChildsRecycleConfiguration = configuration;
-            RegistrationName = registrationName;
+            _registrationName = registrationName;
             _sagaCatalogCreator = factoryCreator;
             _aggregateFactory = factory;
             _snapShotsPolicy = snapShotsPolicy;
@@ -33,13 +33,25 @@ namespace GridDomain.Node.Configuration.Composition
 
         private void Register(IUnityContainer container, ISaga—reatorCatalog<TState> catalog)
         {
-            container.RegisterInstance<IPersistentChildsRecycleConfiguration>(RegistrationName, _persistentChildsRecycleConfiguration);
-            container.RegisterInstance<IConstructAggregates>(RegistrationName, _aggregateFactory);
+            container.RegisterInstance<IPersistentChildsRecycleConfiguration>(_registrationName, _persistentChildsRecycleConfiguration);
+            container.RegisterInstance<IConstructAggregates>(_registrationName, _aggregateFactory);
             container.RegisterInstance<ISaga—reatorCatalog<TState>>(catalog);
             container.RegisterType<SagaActor<TState>>();
-            container.Register(AggregateConfiguration.NewSagaState<TState>(_snapShotsPolicy));
 
-            container.RegisterType<SagaHubActor<TState>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(RegistrationName)));
+            RegisterStateAggregate<SagaStateActor<TState>>(container);
+            container.RegisterType<SagaHubActor<TState>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName)));
+
+            //for direct access to saga state from repositories and for generalization
+            RegisterStateAggregate<AggregateActor<SagaStateAggregate<TState>>>(container);
+            container.RegisterType<AggregateHubActor<SagaStateAggregate<TState>>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName)));
+        }
+
+        private void RegisterStateAggregate<TStateActorType>(IUnityContainer container)
+        {
+            container.Register(new AggregateConfiguration<TStateActorType, SagaStateAggregate<TState>>(c => c.Resolve<SagaStateCommandHandler<TState>>(),
+                                                                                                              _snapShotsPolicy,
+                                                                                                              new AggregateSnapshottingFactory<SagaStateAggregate<TState>>(),
+                                                                                                              new DefaultPersistentChildsRecycleConfiguration()));
         }
 
         public void Register(IUnityContainer container)

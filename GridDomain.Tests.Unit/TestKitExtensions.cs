@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit
 
             var actor = kit.ActorOfAsTestActorRef<T>(props, name);
 
-            await actor.Ask<RecoveryCompleted>(NotifyOnPersistenceEvents.Instance);
+            await actor.Ask<RecoveryCompleted>(NotifyOnPersistenceEvents.Instance,TimeSpan.FromSeconds(5));
 
             return actor.UnderlyingActor;
         }
@@ -34,9 +34,7 @@ namespace GridDomain.Tests.Unit
         public static async Task<TSagaState> LoadSagaByActor<TSagaState>(this TestKit kit, Guid id)
             where TSagaState : class, ISagaState
         {
-            var name = AggregateActorName.New<SagaStateAggregate<TSagaState>>(id).ToString();
-            var actor = await kit.LoadActor<SagaActor<TSagaState>>(name);
-            return actor.Saga.State;
+            return (await kit.LoadAggregateByActor<SagaStateAggregate<TSagaState>>(id)).State;
         }
     }
 }

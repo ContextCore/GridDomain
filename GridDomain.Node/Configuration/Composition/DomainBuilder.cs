@@ -18,7 +18,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                                    where TSaga : Process<TProcess>
         {
             _containerConfigurations.Add(new SagaConfiguration<TProcess>(c => factory.CreateCatalog(),
-                                                                         typeof(TSaga).Name,
+                                                                         typeof(TSaga).BeautyName(),
                                                                          () => factory.StateDependencyFactory.CreatePersistencePolicy(),
                                                                          factory.StateDependencyFactory.CreateFactory(),
                                                                          factory.StateDependencyFactory.CreateRecycleConfiguration()));
