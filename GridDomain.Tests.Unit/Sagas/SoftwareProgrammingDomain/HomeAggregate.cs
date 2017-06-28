@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Composition;
 

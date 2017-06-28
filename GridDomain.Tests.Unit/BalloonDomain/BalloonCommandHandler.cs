@@ -9,9 +9,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                                   IAggregateCommandsHandlerDescriptor
 
     {
-        //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new BalloonCommandHandler();
-
         public BalloonCommandHandler()
         {
             Map<WriteTitleCommand>((c, a) => a.WriteNewTitle(c.Parameter));

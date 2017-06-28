@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.Sagas
             var sagaDataEvent = new SagaCreated<SoftwareProgrammingState>(sagaData, sagaId);
             await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingState>>(sagaId, sagaDataEvent);
 
-            var results = await Node.NewDebugWaiter(TimeSpan.FromDays(1))
+            var results = await Node.NewDebugWaiter()
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
                                     .Create()
                                     .SendToSagas(new CoffeMakeFailedEvent(Guid.Empty, sagaData.PersonId), sagaId);

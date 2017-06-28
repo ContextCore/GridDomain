@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
@@ -10,6 +11,7 @@ namespace GridDomain.Node.Configuration.Composition
     {
         IMessageRouteMap CreateRouteMap();
     }
+
     public interface IAggregateDependencyFactory<TAggregate> : IRouteMapFactory where TAggregate : Aggregate
     {
         IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
@@ -20,13 +22,21 @@ namespace GridDomain.Node.Configuration.Composition
 
     public static class DefaultAggregateDependencyFactory
     {
-        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer) where TAggregate : Aggregate
+        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer=null) where TAggregate : Aggregate
         {
-            var map = mapProducer ?? throw new ArgumentNullException(nameof(mapProducer));
-            if(mapProducer==null)
+            if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
+            var map = mapProducer ?? MessageRouteMap.New(handler);
+
             return new DefaultAggregateDependencyFactory<TAggregate>(() => handler,() => map);
+        }
+        
+        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate, TAggregateCommandsHandler>()
+            where TAggregate : Aggregate
+            where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>, new()
+        {
+            return New(new TAggregateCommandsHandler());
         }
     }
     public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
@@ -37,9 +47,9 @@ namespace GridDomain.Node.Configuration.Composition
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
         public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
-        public DefaultAggregateDependencyFactory(Func<IAggregateCommandsHandler<TAggregate>> handler, Func<IMessageRouteMap> mapProducer)
+        public DefaultAggregateDependencyFactory(Func<IAggregateCommandsHandler<TAggregate>> handler, Func<IMessageRouteMap> mapProducer=null)
         {
-            MapProducer = mapProducer ?? throw new ArgumentNullException(nameof(mapProducer));
+            MapProducer = mapProducer ?? (() => MessageRouteMap.New(handler()));
             HandlerCreator = handler ?? throw new ArgumentNullException(nameof(handler));
             SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => new AggregateFactory();

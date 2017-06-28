@@ -26,7 +26,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                          () => factory.StateDependencyFactory.CreatePersistencePolicy(),
                                                                          factory.StateDependencyFactory.CreateFactory(),
                                                                          factory.StateDependencyFactory.CreateRecycleConfiguration()));
-           // _maps.Add(factory.CreateRouteMap());
+            _maps.Add(factory.CreateRouteMap());
         }
 
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate

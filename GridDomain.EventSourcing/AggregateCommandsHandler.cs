@@ -10,9 +10,12 @@ namespace GridDomain.EventSourcing
 {
     
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<Func<ICommand, TAggregate, Task<TAggregate>>, ICommand>,
+                                                        IAggregateCommandsHandlerDescriptor,
                                                         IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
+                                                      
     {
         public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();
+        public Type AggregateType { get; } = typeof(TAggregate);
 
         public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command)
         {
@@ -26,8 +29,6 @@ namespace GridDomain.EventSourcing
                 throw new CannotFindAggregateCommandHandlerExeption(typeof(TAggregate), command.GetType());
             return handler;
         }
-
-    
 
         private void Map<TCommand>(Func<TCommand,TAggregate, TAggregate> commandExecutor) where TCommand : ICommand
         {

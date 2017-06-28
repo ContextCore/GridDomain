@@ -9,8 +9,6 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
                                                         IAggregateCommandsHandlerDescriptor
 
     {
-        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new FutureEventsAggregatesCommandHandler();
-
         public FutureEventsAggregatesCommandHandler()
         {
             Map<ScheduleEventInFutureCommand>((c, a) => a.ScheduleInFuture(c.RaiseTime, c.Value));

@@ -7,18 +7,18 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.DependencyInjection
 {
-    public class Given_configured_container_When_executing_aggregate_handler : AggregatesDI
+    public class Given_configured_container_When_executing_aggregate_handler : NodeTestKit
     {
-        public Given_configured_container_When_executing_aggregate_handler(ITestOutputHelper helper) : base(helper) {}
+        public Given_configured_container_When_executing_aggregate_handler(ITestOutputHelper helper) 
+            : base(helper, new NodeTestFixture(new TestAggregateDomainConfiguration())) {}
 
         [Fact]
         public async Task
-            Given_configured_container_When_executing_aggregate_handler_Then_container_is_available_in_aggregate_command_handler
-            ()
+            Given_configured_container_When_executing_aggregate_handler_Then_container_is_available_in_aggregate_command_handler()
         {
-            var testCommand = new TestCommand(42, Guid.NewGuid());
-
-            await Node.Prepare(testCommand).Expect<TestDomainEvent>().Execute();
+            await Node.Prepare(new TestCommand(42, Guid.NewGuid()))
+                      .Expect<TestDomainEvent>()
+                      .Execute();
         }
     }
 }

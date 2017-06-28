@@ -1,14 +1,10 @@
 using System;
-using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
@@ -20,6 +16,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
         {
             _balloonConnString = balloonConnString;
         }
+
         public void Register(IDomainBuilder builder)
         {
             builder.RegisterAggregate(new BalloonDependencyFactory());

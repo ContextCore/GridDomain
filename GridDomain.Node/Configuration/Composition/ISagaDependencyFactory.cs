@@ -6,7 +6,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.Node.Configuration.Composition {
-    public interface ISagaDependencyFactory<TProcess, TState> where TState : class, ISagaState
+    public interface ISagaDependencyFactory<TProcess, TState>: IRouteMapFactory where TState : class, ISagaState
                                                               where TProcess : Process<TState>
     {
         ISaga—reatorCatalog<TState> CreateCatalog();
@@ -18,7 +18,7 @@ namespace GridDomain.Node.Configuration.Composition {
         where TProcess : Process<TState>
     {
         private readonly ISaga—reatorCatalog<TState> _saga—reatorCatalog;
-
+        public Func<IMessageRouteMap> RouteMapCreator { get; set; }
        
         public DefaultSagaDependencyFactory(ISaga—reatorCatalog<TState> catalog)
         {
@@ -26,6 +26,7 @@ namespace GridDomain.Node.Configuration.Composition {
         }
         public DefaultSagaDependencyFactory(ISagaCreator<TState> creator, ISagaDescriptor descriptor):this(BuildCatalog(creator,descriptor))
         {
+            RouteMapCreator = () => MessageRouteMap.New(descriptor);
         }
 
         public ISaga—reatorCatalog<TState> CreateCatalog()
@@ -39,9 +40,14 @@ namespace GridDomain.Node.Configuration.Composition {
             producer.RegisterAll(factoryCreator);
             return producer;
         }
+     
         public virtual SagaStateDependencyFactory<TState> StateDependencyFactory { get; } = new SagaStateDependencyFactory<TState>();
 
         IAggregateDependencyFactory<SagaStateAggregate<TState>> ISagaDependencyFactory<TProcess, TState>.StateDependencyFactory => StateDependencyFactory;
+        public virtual IMessageRouteMap CreateRouteMap()
+        {
+            return RouteMapCreator();
+        }
     }
 
     public class SagaStateDependencyFactory<TState> : DefaultAggregateDependencyFactory<SagaStateAggregate<TState>> where TState : ISagaState

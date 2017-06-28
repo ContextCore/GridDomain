@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
@@ -18,6 +19,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         {
             builder.RegisterSaga(new DefaultSagaDependencyFactory<TestSaga, TestSagaState>(new TestSagaFactory(_logger),TestSaga.Descriptor));
         }
+
+     
     }
     
     public class TestSagaFactory : ISagaCreator<TestSagaState, TestSagaStartMessage>,

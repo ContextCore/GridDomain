@@ -57,7 +57,7 @@ namespace GridDomain.Node.Actors
                                                  catch (Exception ex)
                                                  {
                                                      //for case when handler cannot create its task
-                                                     FinishExecution(Self, envelop, ex);
+                                                     FinishExecution(Sender, envelop, ex);
                                                  }
                                              },
                                              m => m.Message is TMessage);

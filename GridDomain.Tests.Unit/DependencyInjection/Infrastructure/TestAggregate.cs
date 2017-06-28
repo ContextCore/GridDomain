@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new TestAggregatesCommandHandler(new TestDependencyImplementation()), new TestRouteMap()));
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new TestAggregatesCommandHandler(new TestDependencyImplementation())));
         }
     }
 

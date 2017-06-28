@@ -278,7 +278,6 @@
     <Compile Include="CommandsExecution\When_executing_command_domainEvents_Should_have_sagaId.cs" />
     <Compile Include="CompositionRootTests.cs" />
     <Compile Include="DateTimeSpec.cs" />
-    <Compile Include="DependencyInjection\AggregatesDI.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Configuration\FutureAggregateDependenciesFactory.cs" />
     <Compile Include="DependencyInjection\Given_configured_container_When_executing_aggregate_handler.cs" />
     <Compile Include="DependencyInjection\Infrastructure\ITestDependency.cs" />
@@ -287,7 +286,6 @@
     <Compile Include="DependencyInjection\Infrastructure\TestCommand.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestDependencyImplementation.cs" />
     <Compile Include="DependencyInjection\Infrastructure\TestDomainEvent.cs" />
-    <Compile Include="DependencyInjection\Infrastructure\TestRouteMap.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\AggregateNamedDependenciesTest.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\NamedActorA.cs" />
     <Compile Include="DependencyInjection\NamedDependencies\NamedActorB.cs" />
@@ -342,7 +340,6 @@
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\FutureEventsAggregatesCommandHandler.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
-    <Compile Include="DependencyInjection\FutureEvents\Infrastructure\FutureEventsRouteMap.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestScheduledException.cs" />
     <Compile Include="DependencyInjection\FutureEvents\NodeTestFixtureExtensions.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Raising_future_events_too_late.cs" />
@@ -418,7 +415,6 @@
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingProcess.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingState.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaFactory.cs" />
-    <Compile Include="Sagas\SoftwareProgrammingDomain\SoftwareProgrammingSagaRoutes.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\UndefinedCoffeMachineException.cs" />
     <Compile Include="BalloonFixture.cs" />
     <Compile Include="BalloonDomain\Commands\PlanBallonBlowCommand.cs" />
@@ -448,7 +444,6 @@
     <Compile Include="BalloonDomain\BalloonException.cs" />
     <Compile Include="BalloonDomain\BalloonCommandHandler.cs" />
     <Compile Include="BalloonDomain\Configuration\BalloonContainerConfiguration.cs" />
-    <Compile Include="BalloonDomain\BalloonRouteMap.cs" />
     <Compile Include="Serialization\Aggregate_can_be_used_for_snapshotting_by_defaut.cs" />
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />

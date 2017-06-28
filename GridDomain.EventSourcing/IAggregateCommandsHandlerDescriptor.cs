@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting
+namespace GridDomain.EventSourcing
 {
     public interface IAggregateCommandsHandlerDescriptor
     {

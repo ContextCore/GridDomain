@@ -2,6 +2,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.Tests.Unit.FutureEvents;
 using Microsoft.Practices.Unity;
 using Quartz;
 
@@ -11,7 +12,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new BalanceAggregatesCommandHandler()));
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new BalanceAggregatesCommandHandler(), new BalanceRouteMap()));
         }
     }
 
@@ -21,8 +22,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         public BalanceFixture()
         {
             Add(new BalanceDomainDonfiguration());
-            Add(new BalanceRouteMap());
-            OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
+            this.ClearSheduledJobs();
         }
 
         protected override NodeSettings CreateNodeSettings()

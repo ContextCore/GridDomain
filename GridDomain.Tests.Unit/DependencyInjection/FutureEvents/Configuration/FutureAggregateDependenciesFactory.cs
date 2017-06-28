@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration
 {
     class FutureAggregateDependenciesFactory : DefaultAggregateDependencyFactory<FutureEventsAggregate>
     {
-        public FutureAggregateDependenciesFactory():base(() => new FutureEventsAggregatesCommandHandler(), () => EmptyRouteMap.Instance)
+        public FutureAggregateDependenciesFactory():base(() => new FutureEventsAggregatesCommandHandler())
         {
         }
     }

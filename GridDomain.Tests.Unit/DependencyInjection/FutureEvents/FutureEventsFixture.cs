@@ -7,10 +7,9 @@ namespace GridDomain.Tests.Unit.FutureEvents
 {
     internal class FutureEventsFixture : NodeTestFixture
     {
-        public FutureEventsFixture(ITestOutputHelper output = null) : base(null, null, null, output)
+        public FutureEventsFixture(ITestOutputHelper output = null) : base(null, null, output)
         {
             Add(new FutureAggregateDomainConfiguration());
-            Add(new FutureEventsRouteMap());
             this.ClearSheduledJobs();
         }
     }

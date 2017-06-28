@@ -1,6 +1,5 @@
 using System;
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
@@ -16,11 +15,9 @@ namespace GridDomain.Tests.Unit.Sagas
     public class SoftwareProgrammingSagaFixture : NodeTestFixture
     {
         public SoftwareProgrammingSagaFixture(IDomainConfiguration config = null,
-                                              IMessageRouteMap map = null,
-                                              TimeSpan? timeout = default(TimeSpan?)) : base(config, map, timeout)
+                                              TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
         {
             Add(new SoftwareProgrammingSagaDomainConfiguration(Logger));
-            Add(new SoftwareProgrammingSagaRoutes());
             Add(new BalloonDomainConfiguration());
             Add(new QuartzSchedulerConfiguration(new InMemoryQuartzConfig()));
         }

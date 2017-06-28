@@ -12,14 +12,9 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class AsyncExecute_without_timeout_using_node_defaults : NodeTestKit
     {
-        public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(output, CreateFixture()) {}
-
-        private static NodeTestFixture CreateFixture()
-        {
-            return new NodeTestFixture(new BalloonDomainConfiguration(),
-                                       null,
-                                       TimeSpan.FromMilliseconds(100));
-        }
+        public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(output,
+            new NodeTestFixture(new BalloonDomainConfiguration(),
+                                TimeSpan.FromMilliseconds(100))) {}
 
         [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()

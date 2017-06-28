@@ -89,6 +89,7 @@
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="IAggregateCommandsHandler.cs" />
+    <Compile Include="IAggregateCommandsHandlerDescriptor.cs" />
     <Compile Include="IHaveSagaId.cs" />
     <Compile Include="InvalidDefaultMementoException.cs" />
     <Compile Include="ISourcedEvent.cs" />

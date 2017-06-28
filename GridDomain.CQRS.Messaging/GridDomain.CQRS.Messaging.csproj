@@ -114,7 +114,6 @@
     <Compile Include="MessageRouting\AggregateCommandInfo.cs" />
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
-    <Compile Include="MessageRouting\IAggregateCommandsHandlerDescriptor.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

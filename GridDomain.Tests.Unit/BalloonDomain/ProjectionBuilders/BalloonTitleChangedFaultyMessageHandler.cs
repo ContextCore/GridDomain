@@ -13,6 +13,9 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
         {
             builder.RegisterAggregate(new BalloonDependencyFactory());
 
+            builder.RegisterHandler(new DefaultMessageHandlerFactory<BalloonCreated, BalloonCreatedFaultyProjection>
+                (c => new BalloonCreatedFaultyProjection(), m => m.SourceId));
+
             builder.RegisterHandler(new DefaultMessageHandlerFactory<BalloonTitleChanged, BalloonTitleChangedFaultyMessageHandler>
                                         (c => new BalloonTitleChangedFaultyMessageHandler(c.Publisher), m => m.SourceId));
 
@@ -34,7 +37,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
         {
             var i = int.Parse(msg.Value);
             if (i % 2 == 1)
-                return Task.Run(() => { throw new MessageHandleException(msg); });
+                return Task.Run(() => throw new MessageHandleException(msg));
 
             _publisher.Publish(new BalloonTitleChangedNotification {BallonId = msg.SourceId});
             return Task.CompletedTask;

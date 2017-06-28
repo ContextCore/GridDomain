@@ -8,7 +8,7 @@ namespace GridDomain.CQRS.Messaging
 {
     public class CustomRouteMap : IMessageRouteMap
     {
-        private readonly List<Func<IMessagesRouter, Task>> _routeRules = new List<Func<IMessagesRouter, Task>>();
+        private readonly List<Func<IMessagesRouter, Task>> _routeRules;
 
         public CustomRouteMap(params Func<IMessagesRouter, Task>[] routeRules)
         {

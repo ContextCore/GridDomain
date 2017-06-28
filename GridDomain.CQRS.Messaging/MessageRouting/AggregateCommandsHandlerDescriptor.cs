@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GridDomain.EventSourcing;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {

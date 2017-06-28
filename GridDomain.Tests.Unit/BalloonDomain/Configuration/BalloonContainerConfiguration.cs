@@ -14,9 +14,16 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class BalloonDomainConfiguration : IDomainConfiguration
     {
+        public BalloonDependencyFactory BalloonDependencyFactory { get; }
+
+        public BalloonDomainConfiguration()
+        {
+            BalloonDependencyFactory = new BalloonDependencyFactory();
+        }
+
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(new BalloonDependencyFactory());
+            builder.RegisterAggregate(BalloonDependencyFactory);
 
             builder.RegisterHandler<BalloonCreated, BalloonCreatedNotificator>(c => new BalloonCreatedNotificator(c.Publisher), bc => bc.SourceId);
             builder.RegisterHandler<BalloonTitleChanged, BalloonTitleChangedNotificator>(c => new BalloonTitleChangedNotificator(c.Publisher), bc => bc.SourceId);
@@ -25,7 +32,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
     public class BalloonDependencyFactory : DefaultAggregateDependencyFactory<Balloon>
     {
-        public BalloonDependencyFactory() : base(() => new BalloonCommandHandler(),
-                                                 () => MessageRouteMap.New(BalloonCommandHandler.Descriptor,"Balloon aggregate map")) { }
+        public BalloonDependencyFactory() : base(() => new BalloonCommandHandler()) { }
     }
 }

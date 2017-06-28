@@ -10,9 +10,6 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
                                                    IAggregateCommandsHandlerDescriptor
 
     {
-        //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new BalanceAggregatesCommandHandler();
-
         public BalanceAggregatesCommandHandler()
         {
             Map<ChangeBalanceCommand>((c, a) => a.ChangeState(c.Parameter));

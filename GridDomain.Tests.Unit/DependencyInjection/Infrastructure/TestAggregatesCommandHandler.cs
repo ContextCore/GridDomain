@@ -5,18 +5,13 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
-    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
-                                                IAggregateCommandsHandlerDescriptor
+    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>
 
     {
-        //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDescriptor Descriptor = new TestAggregatesCommandHandler(null);
-
         public TestAggregatesCommandHandler(ITestDependency testDependency)
         {
             Map<TestCommand>((c, a) => a.Execute(c.Parameter, testDependency));
         }
 
-        public Type AggregateType => typeof(TestAggregate);
     }
 }

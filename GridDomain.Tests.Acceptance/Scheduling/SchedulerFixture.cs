@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         {
             Add(new TestSagaFactoryDomainConfiguration(Logger));
             Add(new TestAggregateDomainConfiguration());
-            Add(new TestRouter());
+            
 
             OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }

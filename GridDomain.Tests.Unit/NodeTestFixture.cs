@@ -77,7 +77,7 @@ namespace GridDomain.Tests.Unit
             return InMemory ? AkkaConfig.ToStandAloneInMemorySystemConfig() : AkkaConfig.ToStandAloneSystemConfig();
         }
 
-        public async Task<GridDomainNode> CreateNode()
+        public virtual async Task<GridDomainNode> CreateNode()
         {
             if (ClearDataOnStart)
                 await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
@@ -104,6 +104,7 @@ namespace GridDomain.Tests.Unit
                                Log = Logger,
                                CustomContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
                            };
+
             settings.DomainBuilder.Register(_domainConfigurations);
 
             return settings;

@@ -49,6 +49,8 @@ namespace GridDomain.Node.Configuration.Composition
         }
     }
 
+
+
     class DefaultMessageHandlerFactory<TMessage, THandler> : MessageHandlerFactory<TMessage, THandler>,
                                                              IMessageHandlerFactory<TMessage, THandler> where THandler : IHandler<TMessage>
                                                                                                         where TMessage : class, IHaveSagaId, IHaveId

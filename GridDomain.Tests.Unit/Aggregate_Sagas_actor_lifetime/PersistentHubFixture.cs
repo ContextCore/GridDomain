@@ -18,7 +18,6 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         {
             Infrastructure = infrastructure;
             Add(CreateDomainConfiguration());
-            Add(new SoftwareProgrammingSagaRoutes());
         }
 
         public IPersistentActorTestsInfrastructure Infrastructure { get; }

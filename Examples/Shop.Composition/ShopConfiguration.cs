@@ -1,8 +1,4 @@
 using System;
-
-using GridDomain.Common;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
@@ -18,17 +14,13 @@ using Shop.Infrastructure;
 using Shop.ReadModel.Context;
 using Shop.ReadModel.DomanServices;
 using Account = Shop.Domain.Aggregates.AccountAggregate.Account;
-using Order = Shop.Domain.Aggregates.OrderAggregate.Order;
-using Sku = Shop.Domain.Aggregates.SkuAggregate.Sku;
-using SkuStock = Shop.Domain.Aggregates.SkuStockAggregate.SkuStock;
-using User = Shop.Domain.Aggregates.UserAggregate.User;
 
 namespace Shop.Composition
 {
     class AccountDomainConfiguration : IDomainConfiguration {
         public void Register(IDomainBuilder builder)
         {
-           builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new AccountCommandsHandler()));
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New<Account,AccountCommandsHandler>());
         }
     }
     class OrderDomainConfiguration : IDomainConfiguration {

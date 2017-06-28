@@ -21,16 +21,8 @@ namespace GridDomain.Tests.Unit.Sagas
 
     public class Given_saga_When_handling_command_faults : NodeTestKit
     {
-        public Given_saga_When_handling_command_faults(ITestOutputHelper output) : base(output, new FaultyAggregateFixture()) {}
-
-        private class FaultyAggregateFixture : SoftwareProgrammingSagaFixture
-        {
-            public FaultyAggregateFixture()
-            {
-                Add(new HomeDomainConfiguration());
-                Add(new CustomRouteMap(r => r.RegisterAggregate(HomeAggregateHandler.Descriptor)));
-            }
-        }
+        public Given_saga_When_handling_command_faults(ITestOutputHelper output) :
+            base(output, new SoftwareProgrammingSagaFixture(new HomeDomainConfiguration())) {}
 
         [Fact]
         public async Task When_saga_produce_command_and_waiting_for_it_fault()
