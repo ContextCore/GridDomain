@@ -12,22 +12,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    public static class AggregateConfiguration
-    {
-        public static IContainerConfiguration
-            New<TAggregate, TAggregateCommandsHandler>(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
-                                                       Func<IMemento, TAggregate> snapshotsFactory = null)
-            where TAggregate : Aggregate
-            where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
-        {
-            return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => c.Resolve<TAggregateCommandsHandler>(),
-                                                                                      snapshotsPolicy,
-                                                                                      new AggregateSnapshottingFactory<TAggregate>(snapshotsFactory),
-                                                                                      new DefaultPersistentChildsRecycleConfiguration());
-        }
-    }
-
-    class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
+    internal class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
         where TAggregate : Aggregate
     {
         private readonly IConstructAggregates _factory;

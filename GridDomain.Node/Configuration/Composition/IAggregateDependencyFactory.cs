@@ -13,6 +13,13 @@ namespace GridDomain.Node.Configuration.Composition
         IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
     }
 
+    public static class DefaultAggregateDependencyFactory
+    {
+        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler) where TAggregate : Aggregate
+        {
+            return new DefaultAggregateDependencyFactory<TAggregate>(() => handler);
+        }
+    }
     public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
     {
         public Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
@@ -20,8 +27,9 @@ namespace GridDomain.Node.Configuration.Composition
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
         public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
-        public DefaultAggregateDependencyFactory()
+        public DefaultAggregateDependencyFactory(Func<IAggregateCommandsHandler<TAggregate>> handler)
         {
+            HandlerCreator = handler;
             SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => new AggregateFactory();
             RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();

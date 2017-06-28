@@ -7,16 +7,20 @@ using Quartz;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
+    public class BalanceDomainDonfiguration : IDomainConfiguration
+    {
+        public void Register(IDomainBuilder builder)
+        {
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new BalanceAggregatesCommandHandler()));
+        }
+    }
+
+
     public class BalanceFixture : NodeTestFixture
     {
         public BalanceFixture()
         {
-            Add(
-                new ContainerConfiguration(
-                                                 c =>
-                                                 {
-                                                     c.Register(AggregateConfiguration.New<BalanceAggregate, BalanceAggregatesCommandHandler>());
-                                                 }));
+            Add(new BalanceDomainDonfiguration());
             Add(new BalanceRouteMap());
             OnNodeStartedEvent += (sender, args) => Node.Container.Resolve<IScheduler>().Clear();
         }

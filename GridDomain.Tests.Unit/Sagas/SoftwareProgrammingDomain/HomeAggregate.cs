@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(new DefaultAggregateDependencyFactory<HomeAggregate>(){HandlerCreator = () => new HomeAggregateHandler()});
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new HomeAggregateHandler()));
         }
     }
 

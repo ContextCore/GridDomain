@@ -6,6 +6,7 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,8 +20,9 @@ namespace GridDomain.Tests.Acceptance.Projection
         [Fact]
         public async Task When_Executing_command_events_should_be_projected()
         {
+            var dbOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(Fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
             //warm up EF 
-            using (var context = new BalloonContext(Fixture.AkkaConfig.Persistence.JournalConnectionString))
+            using (var context = new BalloonContext(dbOptions))
             {
                 context.BalloonCatalog.Add(new BalloonCatalogItem() {BalloonId = Guid.NewGuid(),LastChanged = DateTime.UtcNow,Title="WarmUp"});
                 await context.SaveChangesAsync();
@@ -33,7 +35,7 @@ namespace GridDomain.Tests.Acceptance.Projection
                       .Expect<BalloonCreatedNotification>()
                       .Execute(TimeSpan.FromSeconds(30));
 
-            using (var context = new BalloonContext(Fixture.AkkaConfig.Persistence.JournalConnectionString))
+            using (var context = new BalloonContext(dbOptions))
             {
                 var catalogItem = await context.BalloonCatalog.FindAsync(cmd.AggregateId);
                 Assert.Equal(cmd.Title.ToString(), catalogItem.Title);

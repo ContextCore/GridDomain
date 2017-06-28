@@ -10,9 +10,8 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration
 {
     class FutureAggregateDependenciesFactory : DefaultAggregateDependencyFactory<FutureEventsAggregate>
     {
-        public FutureAggregateDependenciesFactory()
+        public FutureAggregateDependenciesFactory():base(() => new FutureEventsAggregatesCommandHandler())
         {
-            HandlerCreator = () => new FutureEventsAggregatesCommandHandler();
         }
     }
 

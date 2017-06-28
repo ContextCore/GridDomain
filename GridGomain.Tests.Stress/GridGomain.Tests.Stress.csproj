@@ -256,13 +256,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BalloonDomain\BalloonContext.cs" />
-    <Compile Include="BalloonDomain\BalloonCatalogItem.cs" />
-    <Compile Include="BalloonDomain\BalloonCatalogProjection.cs" />
-    <Compile Include="BalloonDomain\BalloonDomainEventsExtensions.cs" />
-    <Compile Include="BalloonDomain\BalloonWithProjectionContainerConfiguration.cs" />
-    <Compile Include="BalloonDomain\BalloonWithProjectionFixture.cs" />
-    <Compile Include="BalloonDomain\BalloonWithProjectionRouteMap.cs" />
     <Compile Include="BalloonsCreationAndChangeProjectionScenario.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
     <Compile Include="CommandExecutionPerfFixtureInMem.cs" />
@@ -321,6 +314,10 @@
     <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
       <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
       <Name>GridDomain.Scheduling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj">
+      <Project>{C2552609-5E29-4187-8D6A-E2F5D82BFF35}</Project>
+      <Name>GridDomain.Tests.Acceptance</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj">
       <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>

@@ -25,9 +25,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
     public class BalloonDependencyFactory: DefaultAggregateDependencyFactory<Balloon>
     {
-        public BalloonDependencyFactory()
+        public BalloonDependencyFactory():base(() => new BalloonCommandHandler())
         {
-            HandlerCreator = () => new BalloonCommandHandler();
         }
     }
 }

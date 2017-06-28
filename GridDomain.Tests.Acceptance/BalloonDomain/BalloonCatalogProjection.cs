@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Migrations;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -31,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
             _log.Debug("Projecting balloon catalog from message {@msg}", msg);
             using (var context = _contextCreator())
             {
-                context.BalloonCatalog.AddOrUpdate(msg.ToCatalogItem());
+                context.BalloonCatalog.Add(msg.ToCatalogItem());
                 context.SaveChanges();
 
                 _publisher.Publish(new BalloonTitleChangedNotification(){BallonId = msg.SourceId},

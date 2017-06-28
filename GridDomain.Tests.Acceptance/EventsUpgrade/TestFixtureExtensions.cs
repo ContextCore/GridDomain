@@ -22,22 +22,18 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                            TimeSpan? maxInactiveTime = null)
         {
             fixture.Add(
-                        new ContainerConfiguration(c =>
-                                                             c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                                                                                                                       new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
+                        new ContainerConfiguration(c =>c.RegisterInstance<IPersistentChildsRecycleConfiguration>(new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
                                                                                                                                                                 maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
         }
 
         public static NodeTestFixture InitSampleAggregateSnapshots(this NodeTestFixture fixture,
                                                                    int keep = 1,
-                                                                   TimeSpan? maxSaveFrequency = null)
+                                                                   TimeSpan? maxSaveFrequency = null,
+                                                                   int saveOnEach = 1)
         {
-            fixture.Add(AggregateConfiguration.New<Balloon, BalloonCommandHandler>(
-                                                                                   () => new SnapshotsPersistencePolicy(1, keep, maxSaveFrequency)
-                                                                                         {
-                                                                                             Log = fixture.Logger.ForContext<SnapshotsPersistencePolicy>()
-                                                                                         },
-                                                                                   Balloon.FromSnapshot));
+            var aggregateDependencyFactory = DefaultAggregateDependencyFactory.New(new BalloonCommandHandler());
+            aggregateDependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+            fixture.Add(new DomainConfiguration(d => d.RegisterAggregate(aggregateDependencyFactory)));
 
             return fixture;
         }

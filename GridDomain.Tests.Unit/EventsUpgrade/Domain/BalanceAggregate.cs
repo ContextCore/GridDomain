@@ -1,9 +1,11 @@
 using System;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
+ 
     public class BalanceAggregate : Aggregate
     {
         public decimal Amount;

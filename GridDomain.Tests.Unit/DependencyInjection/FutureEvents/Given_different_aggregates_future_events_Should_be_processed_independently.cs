@@ -20,10 +20,10 @@ namespace GridDomain.Tests.Unit.FutureEvents
             var commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
 
             var eventA =
-                (await Node.Prepare(commandA).Expect<FutureEventOccuredEvent>().Execute()).Received;
+                await Node.Prepare(commandA).Expect<FutureEventOccuredEvent>().Execute().Received();
 
             var eventB =
-                (await Node.Prepare(commandB).Expect<FutureEventOccuredEvent>().Execute()).Received;
+                await Node.Prepare(commandB).Expect<FutureEventOccuredEvent>().Execute().Received();
 
             //Future_event_ids_are_different()
             Assert.NotEqual(eventA.FutureEventId, eventB.FutureEventId);

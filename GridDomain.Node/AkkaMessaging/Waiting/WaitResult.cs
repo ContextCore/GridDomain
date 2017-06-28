@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 
@@ -27,5 +28,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public T Received { get; }
         public IMessageMetadata ReceivedMetadata { get; }
         public IFault Fault { get; }
+    }
+
+    public static class WaitResultExtensions
+    {
+        public static async Task<T> Received<T>(this Task<WaitResult<T>> res) where T : class
+        {
+            return (await res).Received;
+        }
     }
 }

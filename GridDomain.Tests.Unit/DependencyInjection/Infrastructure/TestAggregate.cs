@@ -8,9 +8,8 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 
     public class TestAggregateDependenciesFactory : DefaultAggregateDependencyFactory<TestAggregate>
     {
-        public TestAggregateDependenciesFactory()
+        public TestAggregateDependenciesFactory():base(() => new TestAggregatesCommandHandler(new TestDependencyImplementation()))
         {
-            HandlerCreator = () => new TestAggregatesCommandHandler(new TestDependencyImplementation());
         }
     }
 
