@@ -1,10 +1,10 @@
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace GridGomain.Tests.Stress.BalloonDomain
 {
     public class BalloonContext : DbContext
     {
-        public BalloonContext(string connString):base(connString)
+        public BalloonContext(DbContextOptions connString):base(connString)
         {
             
         }

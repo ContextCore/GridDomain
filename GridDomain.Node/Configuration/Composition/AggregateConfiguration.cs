@@ -14,14 +14,6 @@ namespace GridDomain.Node.Configuration.Composition
 {
     public static class AggregateConfiguration
     {
-        public static IContainerConfiguration New<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
-        {
-            return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => factory.CreateCommandsHandler(),
-                                                                                      factory.CreatePersistencePolicy,
-                                                                                      factory.CreateFactory(),
-                                                                                      factory.CreateRecycleConfiguration());
-        }
-
         public static IContainerConfiguration
             New<TAggregate, TAggregateCommandsHandler>(Func<ISnapshotsPersistencePolicy> snapshotsPolicy = null,
                                                        Func<IMemento, TAggregate> snapshotsFactory = null)

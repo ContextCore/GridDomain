@@ -7,7 +7,7 @@ namespace GridGomain.Tests.Stress.BalloonDomain
     {
         public BalloonWithProjectionFixture()
         {
-            Add(new BalloonWithProjectionContainerConfiguration(AkkaConfig.Persistence.JournalConnectionString));
+            Add(new BalloonWithProjectionDomainConfiguration(AkkaConfig.Persistence.JournalConnectionString));
             Add(new BalloonWithProjectionRouteMap());
             this.ClearSheduledJobs();
         }

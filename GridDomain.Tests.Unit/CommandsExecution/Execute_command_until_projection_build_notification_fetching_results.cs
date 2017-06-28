@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                                     .Execute();
 
             var changedEvent = results.Message<BalloonTitleChangedNotification>();
-            var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
+            var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
 
             //Results_contains_received_messages()
             Assert.NotEmpty(results.All);

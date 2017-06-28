@@ -13,14 +13,14 @@ namespace GridDomain.Tests.Unit
 {
     public static class TestKitExtensions
     {
-        public static async Task<T> LoadAggregate<T>(this TestKit kit, Guid id) where T : Aggregate
+        public static async Task<T> LoadAggregateByActor<T>(this TestKit kit, Guid id) where T : Aggregate
         {
             var name = AggregateActorName.New<T>(id).ToString();
             var actor = await kit.LoadActor<AggregateActor<T>>(name);
             return actor.State;
         }
 
-        public static async Task<T> LoadActor<T>(this TestKit kit, string name) where T : ActorBase
+        private static async Task<T> LoadActor<T>(this TestKit kit, string name) where T : ActorBase
         {
             var props = kit.Sys.DI().Props<T>();
 
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit
             return actor.UnderlyingActor;
         }
 
-        public static async Task<TSagaState> LoadSaga<TSagaState>(this TestKit kit, Guid id)
+        public static async Task<TSagaState> LoadSagaByActor<TSagaState>(this TestKit kit, Guid id)
             where TSagaState : class, ISagaState
         {
             var name = AggregateActorName.New<SagaStateAggregate<TSagaState>>(id).ToString();

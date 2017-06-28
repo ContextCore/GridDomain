@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 
             await Node.Prepare(cmd).Expect<BalloonTitleChanged>().Execute();
 
-            var aggregate = await this.LoadAggregate<Balloon>(cmd.AggregateId);
+            var aggregate = await this.LoadAggregateByActor<Balloon>(cmd.AggregateId);
 
             Assert.Equal(cmd.Parameter.ToString(), aggregate.Title);
         }

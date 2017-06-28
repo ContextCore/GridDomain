@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.Sagas
 
             var sagaCreatedEvent = res.Message<SagaCreated<SoftwareProgrammingState>>();
 
-            var state = await this.LoadSaga<SoftwareProgrammingState>(sagaCreatedEvent.State.Id);
+            var state = await this.LoadSagaByActor<SoftwareProgrammingState>(sagaCreatedEvent.State.Id);
             //Saga_data_is_not_null()
             Assert.NotNull(state);
             // Saga_has_correct_id()

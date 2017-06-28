@@ -1,5 +1,4 @@
 using System;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,9 +7,11 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using GridGomain.Tests.Stress.BalloonDomain;
+using Microsoft.EntityFrameworkCore;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Serilog.Events;
+using Shop.ReadModel.Context;
 using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress
@@ -18,12 +19,14 @@ namespace GridGomain.Tests.Stress
     public class CommandExecutionWithProjectionPerfTest
     {
         private Counter _counter;
+        private readonly DbContextOptions<BalloonContext> _dbContextOptions;
         private NodeTestFixture Fixture { get; }
 
         public CommandExecutionWithProjectionPerfTest(ITestOutputHelper output)
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
+            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(Fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
 
             Fixture = new BalloonWithProjectionFixture()
                       {
@@ -37,8 +40,9 @@ namespace GridGomain.Tests.Stress
         [PerfSetup]
         public void Setup(BenchmarkContext context)
         {
+
             //warm up EF 
-            using (var ctx = new BalloonContext(Fixture.AkkaConfig.Persistence.JournalConnectionString))
+            using (var ctx = new BalloonContext(_dbContextOptions))
             {
                 ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
                 ctx.SaveChanges();
@@ -83,7 +87,7 @@ namespace GridGomain.Tests.Stress
                 Fixture.Output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
             }
 
-            using (var context = new BalloonContext(Fixture.AkkaConfig.Persistence.JournalConnectionString))
+            using (var context = new BalloonContext(_dbContextOptions))
             {
                 var projectedCount = context.BalloonCatalog.Select(x => x).Count();
                 Fixture.Output.WriteLine($"Found {projectedCount} projected rows");

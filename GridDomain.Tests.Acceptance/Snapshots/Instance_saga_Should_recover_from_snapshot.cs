@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                        Node.AggregateFromSnapshotsFactory);
             await repo.Add(sagaState);
 
-            var restoredState = await this.LoadSaga<SoftwareProgrammingState>(sagaState.Id);
+            var restoredState = await this.LoadSagaByActor<SoftwareProgrammingState>(sagaState.Id);
             //CoffeMachineId_should_be_equal()
             Assert.Equal(sagaState.State.CoffeeMachineId,  restoredState.CoffeeMachineId);
             // State_should_be_equal()

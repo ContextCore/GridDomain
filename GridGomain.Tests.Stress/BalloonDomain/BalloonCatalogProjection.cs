@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Migrations;
 using System.Threading.Tasks;
 using Akka.Event;
 using GridDomain.Common;
@@ -31,7 +30,7 @@ namespace GridGomain.Tests.Stress.BalloonDomain
         {
             using (var context = _contextCreator())
             {
-                context.BalloonCatalog.AddOrUpdate(msg.ToCatalogItem());
+                context.BalloonCatalog.Add(msg.ToCatalogItem());
                 context.SaveChanges();
             }
             _publisher.Publish(new BalloonTitleChangedNotification() { BallonId = msg.SourceId },

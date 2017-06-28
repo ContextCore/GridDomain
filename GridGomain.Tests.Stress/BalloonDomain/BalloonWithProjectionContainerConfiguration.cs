@@ -5,15 +5,16 @@ using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
+using Shop.ReadModel.Context;
 
 namespace GridGomain.Tests.Stress.BalloonDomain
 {
 
-    public class BalloonWithProjectionDomainCOnfiguration : IDomainConfiguration
+    public class BalloonWithProjectionDomainConfiguration: IDomainConfiguration
     {
         private readonly string _balloonConnString;
 
-        public BalloonWithProjectionDomainCOnfiguration(string balloonConnString)
+        public BalloonWithProjectionDomainConfiguration(string balloonConnString)
         {
             _balloonConnString = balloonConnString;
         }
@@ -21,13 +22,13 @@ namespace GridGomain.Tests.Stress.BalloonDomain
         {
             builder.RegisterAggregate(new BalloonDependencyFactory());
 
-            var options = new DbContextOptionsBuilder<ShopDbContext>().UseSqlServer(
-                                                                                                                      "Server = (local); Database = Shop; Integrated Security = true; MultipleActiveResultSets = True")
-                                                                                                        .Options;
-            var projectionFactory = new BalloonCatalogProjectionFactory()
-            builder.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>(new BalloonMe());
-            builder.RegisterHandler<BalloonCreated, BalloonCatalogProjection > (new BalloonDependencyFactory());
+            var options = new DbContextOptionsBuilder<ShopDbContext>().UseSqlServer(_balloonConnString).Options;
+            BalloonContext BalloonContextProducer() => new BalloonContext(options);
 
+            var projectionFactory = new BalloonCatalogProjectionFactory(BalloonContextProducer);
+            builder.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>(projectionFactory);
+            builder.RegisterHandler<BalloonCreated, BalloonCatalogProjection>(projectionFactory);
+            builder.RegisterAggregate(new BalloonDependencyFactory());
         }
     }
 
@@ -50,22 +51,6 @@ namespace GridGomain.Tests.Stress.BalloonDomain
         BalloonCatalogProjection IMessageHandlerFactory<BalloonCreated, BalloonCatalogProjection>.Create(IMessageProcessContext context)
         {
             return _projection.Value;
-        }
-    }
-  
-    public class BalloonWithProjectionContainerConfiguration : IContainerConfiguration
-    {
-        private readonly string _balloonConnString;
-        public BalloonWithProjectionContainerConfiguration(string balloonConnString)
-        {
-            _balloonConnString = balloonConnString;
-        }
-
-        public void Register(IUnityContainer container)
-        {
-            container.Register(AggregateConfiguration.New<Balloon, BalloonCommandHandler>());
-            container.RegisterInstance<Func<BalloonContext>>(() => new BalloonContext(_balloonConnString));
-            container.RegisterType<BalloonCatalogProjection>();
         }
     }
 }

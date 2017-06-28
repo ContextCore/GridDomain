@@ -1,8 +1,18 @@
 using System;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Configuration.Composition;
 
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
+
+    public class HomeDomainConfiguration : IDomainConfiguration
+    {
+        public void Register(IDomainBuilder builder)
+        {
+            builder.RegisterAggregate(new DefaultAggregateDependencyFactory<HomeAggregate>(){HandlerCreator = () => new HomeAggregateHandler()});
+        }
+    }
+
     public class HomeAggregate : Aggregate
     {
         private HomeAggregate(Guid id) : base(id) {}

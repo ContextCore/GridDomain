@@ -4,6 +4,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node.Actors;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -25,7 +26,10 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
         {
-            _containerConfigurations.Add(AggregateConfiguration.New(factory));
+            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => factory.CreateCommandsHandler(),
+                                                                                                            factory.CreatePersistencePolicy,
+                                                                                                            factory.CreateFactory(),
+                                                                                                            factory.CreateRecycleConfiguration()));
         }
 
         public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>

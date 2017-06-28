@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             var syncCommand = new PlanTitleWriteCommand(42, Guid.NewGuid());
             Node.Execute(syncCommand);
-            var aggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
+            var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Title);
         }
     }

@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                       .Expect<BalloonTitleChanged>()
                       .Execute();
 
-            var sampleAggregate = await this.LoadAggregate<Balloon>(syncCommand.AggregateId);
+            var sampleAggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
 
             Assert.Equal(syncCommand.Parameter.ToString(), sampleAggregate.Title);
 

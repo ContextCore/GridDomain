@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit
 {
     public class BalloonFixture : NodeTestFixture
     {
-        public BalloonFixture(string connString)
+        public BalloonFixture()
         {
             Add(new BalloonDomainConfiguration());
             Add(new BalloonRouteMap());

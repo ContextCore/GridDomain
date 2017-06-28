@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Akka.DI.Core;
+using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -20,10 +22,7 @@ namespace GridDomain.Tests.Unit.Sagas
         {
             public FaultyAggregateFixture()
             {
-                Add(new ContainerConfiguration(c =>
-                                                     {
-                                                         c.Register(AggregateConfiguration.New<HomeAggregate, HomeAggregateHandler>());
-                                                     }));
+                Add(new HomeDomainConfiguration());
                 Add(new CustomRouteMap(r => r.RegisterAggregate(HomeAggregateHandler.Descriptor)));
             }
         }
@@ -50,7 +49,9 @@ namespace GridDomain.Tests.Unit.Sagas
                       .Create()
                       .SendToSagas(coffeMakeFailedEvent, new MessageMetadata(coffeMakeFailedEvent.SourceId));
 
-            var sagaDataAggregate = await this.LoadAggregate<SagaStateAggregate<SoftwareProgrammingState>>(givenSagaStateAggregate.Id);
+            Sys.AddDependencyResolver(new UnityDependencyResolver(Node.Container,Sys));
+
+            var sagaDataAggregate = await this.LoadAggregateByActor<SagaStateAggregate<SoftwareProgrammingState>>(givenSagaStateAggregate.Id);
             //Saga_should_be_in_correct_state_after_fault_handling()
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), sagaDataAggregate.State.CurrentStateName);
             //Saga_state_should_contain_data_from_fault_message()

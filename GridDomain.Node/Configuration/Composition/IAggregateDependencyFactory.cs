@@ -20,7 +20,7 @@ namespace GridDomain.Node.Configuration.Composition
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
         public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
-        protected DefaultAggregateDependencyFactory()
+        public DefaultAggregateDependencyFactory()
         {
             SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => new AggregateFactory();

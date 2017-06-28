@@ -25,8 +25,6 @@ namespace GridDomain.Tests.Unit
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
 
-        private ActorSystem _system;
-
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null,
                                IMessageRouteMap map = null,
                                TimeSpan? defaultTimeout = null,

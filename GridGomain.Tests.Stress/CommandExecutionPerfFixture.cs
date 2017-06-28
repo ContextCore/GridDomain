@@ -33,7 +33,7 @@ namespace GridGomain.Tests.Stress
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
 
-            Fixture = new BalloonFixture
+            Fixture = new BalloonFixture()
                       {
                           Output = output,
                           InMemory = false,

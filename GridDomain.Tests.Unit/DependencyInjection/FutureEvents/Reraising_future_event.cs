@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
                     .Expect<TestDomainEvent>()
                     .Execute();
 
-            var aggregate = await this.LoadAggregate<FutureEventsAggregate>(aggregateId);
+            var aggregate = await this.LoadAggregateByActor<FutureEventsAggregate>(aggregateId);
 
             Assert.True(reraiseTime.Second - aggregate.ProcessedTime.Second <= 1);
         }
