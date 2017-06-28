@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
     public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest
     {
         public Given_different_aggregates_future_events_Should_be_processed_independently(ITestOutputHelper output)
-            : base(output) {}
+            : base(output) { }
 
         [Fact]
         public async Task Raising_several_future_events_for_different_aggregates()

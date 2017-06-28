@@ -30,11 +30,5 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public IFault Fault { get; }
     }
 
-    public static class WaitResultExtensions
-    {
-        public static async Task<T> Received<T>(this Task<WaitResult<T>> res) where T : class
-        {
-            return (await res).Received;
-        }
-    }
+   
 }

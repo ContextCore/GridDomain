@@ -30,8 +30,7 @@ namespace GridDomain.Tests.Unit.GridConsole
         {
             var serverConfig = new TestGridNodeConfiguration();
 
-            var settings = new NodeSettings(new BalloonRouteMap(),
-                                            () => new[] {serverConfig.CreateInMemorySystem()});
+            var settings = new NodeSettings(() => new[] {serverConfig.CreateInMemorySystem()});
 
             settings.DomainBuilder.Register(new BalloonDomainConfiguration());
 

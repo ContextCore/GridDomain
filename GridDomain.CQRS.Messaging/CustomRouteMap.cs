@@ -14,11 +14,9 @@ namespace GridDomain.CQRS.Messaging
         {
             _routeRules = routeRules.ToList();
         }
-
-        public CustomRouteMap(IMessageRouteMap baseMap, params Func<IMessagesRouter, Task>[] routeRules)
+        public CustomRouteMap(string name, params Func<IMessagesRouter, Task>[] routeRules):this(routeRules)
         {
-            _routeRules.Add(baseMap.Register);
-            _routeRules.AddRange(routeRules);
+            Name = name;
         }
 
         public async Task Register(IMessagesRouter router)
@@ -26,5 +24,7 @@ namespace GridDomain.CQRS.Messaging
             foreach (var routeRule in _routeRules)
                 await routeRule(router);
         }
+
+        public string Name { get; }
     }
 }

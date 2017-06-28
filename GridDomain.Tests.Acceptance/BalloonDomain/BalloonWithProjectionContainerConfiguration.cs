@@ -1,8 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS.Messaging;
+using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
 
@@ -26,9 +30,9 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
             var projectionFactory = new BalloonCatalogProjectionFactory(BalloonContextProducer);
             builder.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>(projectionFactory);
             builder.RegisterHandler<BalloonCreated, BalloonCatalogProjection>(projectionFactory);
-            builder.RegisterAggregate(new BalloonDependencyFactory());
         }
     }
+
     public class BalloonCatalogProjectionFactory : IMessageHandlerFactory<BalloonTitleChanged, BalloonCatalogProjection>,
                                                    IMessageHandlerFactory<BalloonCreated, BalloonCatalogProjection>
     {
@@ -48,6 +52,13 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
         BalloonCatalogProjection IMessageHandlerFactory<BalloonCreated, BalloonCatalogProjection>.Create(IMessageProcessContext context)
         {
             return _projection.Value;
+        }
+
+        public IMessageRouteMap CreateRouteMap()
+        {
+            return new CustomRouteMap(r => r.RegisterHandler<BalloonCreated, BalloonCatalogProjection>(),
+                                      r => r.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>());
+
         }
     }
 }

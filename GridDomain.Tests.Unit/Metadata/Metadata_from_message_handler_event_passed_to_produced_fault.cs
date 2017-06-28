@@ -28,9 +28,7 @@ namespace GridDomain.Tests.Unit.Metadata
 
         private static IMessageRouteMap CreateMap()
         {
-            return new CustomRouteMap(new BalloonRouteMap(),
-                                      r =>
-                                          r.RegisterHandler<BalloonCreated, BalloonCreatedFaultyProjection>(nameof(DomainEvent.SourceId)));
+            return new CustomRouteMap(r => r.RegisterHandler<BalloonCreated, BalloonCreatedFaultyProjection>(nameof(DomainEvent.SourceId)));
         }
 
         [Fact]

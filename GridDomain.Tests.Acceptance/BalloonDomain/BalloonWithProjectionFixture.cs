@@ -8,7 +8,6 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
         public BalloonWithProjectionFixture()
         {
             Add(new BalloonWithProjectionDomainConfiguration(AkkaConfig.Persistence.JournalConnectionString));
-            Add(new BalloonWithProjectionRouteMap());
             this.ClearSheduledJobs();
         }
     }

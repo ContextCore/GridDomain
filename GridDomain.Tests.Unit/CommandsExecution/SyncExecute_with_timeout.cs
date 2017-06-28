@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class SyncExecute_with_timeout : SampleDomainCommandExecutionTests
+    public class SyncExecute_with_timeout : BalloonDomainCommandExecutionTests
     {
         public SyncExecute_with_timeout(ITestOutputHelper output) : base(output) {}
 

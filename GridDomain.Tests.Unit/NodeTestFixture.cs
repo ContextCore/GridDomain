@@ -21,22 +21,23 @@ namespace GridDomain.Tests.Unit
     public class NodeTestFixture : IDisposable
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
-        private readonly List<IMessageRouteMap> _routeMap = new List<IMessageRouteMap>();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
 
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null,
-                               IMessageRouteMap map = null,
                                TimeSpan? defaultTimeout = null,
                                ITestOutputHelper helper = null)
         {
-            if (map != null)
-                Add(map);
             if (domainConfiguration != null)
                 Add(domainConfiguration);
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
+        }
+        public NodeTestFixture(params IDomainConfiguration[] domainConfiguration):this()
+        {
+            foreach (var c in domainConfiguration)
+                Add(c);
         }
 
         public GridDomainNode Node { get; private set; }
@@ -62,11 +63,6 @@ namespace GridDomain.Tests.Unit
             return new XUnitAutoTestLoggerConfiguration(helper, LogLevel);
         }
 
-        public void Add(IMessageRouteMap map)
-        {
-            _routeMap.Add(map);
-        }
-
         public void Add(IDomainConfiguration config)
         {
             _domainConfigurations.Add(config);
@@ -90,7 +86,6 @@ namespace GridDomain.Tests.Unit
             await CreateLogger();
 
             var settings = CreateNodeSettings();
-            _domainConfigurations.ForEach(c => settings.DomainBuilder.Register(c));
 
             Node = new GridDomainNode(settings);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
@@ -102,15 +97,15 @@ namespace GridDomain.Tests.Unit
 
         protected virtual NodeSettings CreateNodeSettings()
         {
-            var settings = new NodeSettings(new CompositeRouteMap(_routeMap.ToArray()),
-                                            () => new[] { System })
+            var settings = new NodeSettings(() => new[] { System })
                            {
                                QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger,
                                CustomContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
                            };
-            _domainConfigurations.ForEach(c => c.Register(settings.DomainBuilder));
+            settings.DomainBuilder.Register(_domainConfigurations);
+
             return settings;
         }
 

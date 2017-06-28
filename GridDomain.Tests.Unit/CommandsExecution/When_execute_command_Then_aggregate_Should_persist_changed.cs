@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_execute_command_Then_aggregate_Should_persist_changed : SampleDomainCommandExecutionTests
+    public class When_execute_command_Then_aggregate_Should_persist_changed : BalloonDomainCommandExecutionTests
     {
         public When_execute_command_Then_aggregate_Should_persist_changed(ITestOutputHelper output) : base(output) {}
 

@@ -10,5 +10,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
         {
             await router.RegisterAggregate(TestAggregatesCommandHandler.Descriptor);
         }
+
+        public string Name { get; } = nameof(TestRouteMap);
     }
 }

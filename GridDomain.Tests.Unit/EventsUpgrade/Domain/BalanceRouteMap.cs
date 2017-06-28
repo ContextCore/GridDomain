@@ -13,5 +13,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
             await router.RegisterAggregate(BalanceAggregatesCommandHandler.Descriptor);
             await router.RegisterHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>(m => m.SourceId);
         }
+
+        public string Name { get; } = nameof(BalanceRouteMap);
     }
 }

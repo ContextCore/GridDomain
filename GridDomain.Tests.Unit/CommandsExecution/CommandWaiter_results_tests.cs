@@ -14,16 +14,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class CommandWaiter_results_tests : NodeTestKit
     {
         public CommandWaiter_results_tests(ITestOutputHelper output)
-            : base(output, new NodeTestFixture(new BalloonDomainConfiguration(), CreateMap())) {}
+            : base(output, new NodeTestFixture(new BalloonDomainConfiguration())) {}
 
         private IWaitResult _result;
 
-        private static IMessageRouteMap CreateMap()
-        {
-            var faultyHandlerMap = new CustomRouteMap(r => r.RegisterAggregate(BalloonCommandHandler.Descriptor));
-
-            return new CompositeRouteMap(faultyHandlerMap);
-        }
 
         [Fact]
         public async Task When_expect_more_than_one_messages()

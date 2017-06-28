@@ -68,21 +68,21 @@ namespace GridDomain.Node.Actors
             sender.Tell(new HandlerExecuted(envelop, error));
 
             if (error != null)
-                PublishFault(envelop, error);
+                PublishFault((TMessage)envelop.Message, envelop.Metadata, error);
         }
 
-        protected virtual void PublishFault(IMessageMetadataEnvelop msg, Exception ex)
+        protected virtual void PublishFault(TMessage msg, IMessageMetadata metadata, Exception ex)
         {
             _log.Error(ex,
                        "Handler actor raised an error on message process: {@msg}. Count: {count}",
                        msg,
                        ++_publishFaultCount);
 
-            var metadata = msg.Metadata.CreateChild(Guid.Empty, FaltProcessEntry);
+            var faultMetadata = metadata.CreateChild(msg.Id, FaltProcessEntry);
 
-            var fault = Fault.NewGeneric(msg.Message, ex, ((TMessage) msg.Message).SagaId, typeof(THandler));
+            var fault = Fault.NewGeneric(msg, ex, msg.SagaId, typeof(THandler));
 
-            Publisher.Publish(fault, metadata);
+            Publisher.Publish(fault, faultMetadata);
         }
 
         protected override void PreStart()

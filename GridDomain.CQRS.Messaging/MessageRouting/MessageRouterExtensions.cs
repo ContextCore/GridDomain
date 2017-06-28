@@ -12,7 +12,7 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         public static Task RegisterHandler<TMessage, THandler>(this IMessagesRouter router,
                                                                Expression<Func<TMessage, Guid>> correlationPropertyExpression
                                                                    = null) where THandler : IHandler<TMessage>
-                                                                           where TMessage : DomainEvent
+                                                                           where TMessage : class, IHaveSagaId, IHaveId
         {
             return router.RegisterHandler<TMessage, THandler>(MemberNameExtractor.GetName(correlationPropertyExpression));
         }

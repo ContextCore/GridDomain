@@ -266,7 +266,7 @@
     <Compile Include="CommandsExecution\When_executing_commands_and_aggregate_raises_an_exception.cs" />
     <Compile Include="CommandsExecution\Execute_command_until_projection_build_notification_fetching_results.cs" />
     <Compile Include="CommandsExecution\Execute_command_waiting_aggregate_event.cs" />
-    <Compile Include="CommandsExecution\SampleDomainCommandExecutionTests.cs" />
+    <Compile Include="CommandsExecution\BalloonDomainCommandExecutionTests.cs" />
     <Compile Include="CommandsExecution\SyncExecute_with_timeout.cs" />
     <Compile Include="CommandsExecution\When_async_method_called_Then_domainEvents_are_persisted.cs" />
     <Compile Include="CommandsExecution\When_execute_command_causing_an_aggregate_error.cs" />

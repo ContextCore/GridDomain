@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_execute_command_without_expectations : SampleDomainCommandExecutionTests
+    public class When_execute_command_without_expectations : BalloonDomainCommandExecutionTests
     {
         public When_execute_command_without_expectations(ITestOutputHelper output) : base(output) {}
 

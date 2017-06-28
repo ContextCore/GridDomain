@@ -18,6 +18,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Sagas
 {
+
     public class Given_saga_When_handling_command_faults : NodeTestKit
     {
         public Given_saga_When_handling_command_faults(ITestOutputHelper output) : base(output, new FaultyAggregateFixture()) {}

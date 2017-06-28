@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_async_method_called_Then_domainEvents_are_persisted : SampleDomainCommandExecutionTests
+    public class When_async_method_called_Then_domainEvents_are_persisted : BalloonDomainCommandExecutionTests
     {
         public When_async_method_called_Then_domainEvents_are_persisted(ITestOutputHelper output) : base(output) {}
 

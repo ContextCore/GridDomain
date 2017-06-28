@@ -9,6 +9,7 @@ using Akka.Monitoring.PerformanceCounters;
 using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
@@ -96,7 +97,8 @@ namespace GridDomain.Node
             Settings.Builder.ContainerConfigurations.ForEach(c => Container.Register(c));
 
             Pipe = Container.Resolve<CommandPipeBuilder>();
-            await Settings.MessageRouting.Register(Pipe);
+
+            await new CompositeRouteMap("All settings map", Settings.Builder.MessageRouteMaps.ToArray()).Register(Pipe);
 
             Transport = Container.Resolve<IActorTransport>();
 
@@ -106,6 +108,7 @@ namespace GridDomain.Node
 
             ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),
                                                  nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
+
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 

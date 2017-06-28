@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class Metadata_from_message_handler_event_passed_to_produced_notification : SampleDomainCommandExecutionTests
+    public class Metadata_from_message_handler_event_passed_to_produced_notification : BalloonDomainCommandExecutionTests
     {
         public Metadata_from_message_handler_event_passed_to_produced_notification(ITestOutputHelper output) : base(output) {}
 

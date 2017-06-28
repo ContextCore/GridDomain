@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Execute_command_until_projection_build_notification_fetching_results : SampleDomainCommandExecutionTests
+    public class Execute_command_until_projection_build_notification_fetching_results : BalloonDomainCommandExecutionTests
     {
         public Execute_command_until_projection_build_notification_fetching_results(ITestOutputHelper output) : base(output) {}
 

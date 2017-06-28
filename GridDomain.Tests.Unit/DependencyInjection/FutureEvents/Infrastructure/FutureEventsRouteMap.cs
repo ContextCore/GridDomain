@@ -10,5 +10,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
         {
             await router.RegisterAggregate(FutureEventsAggregatesCommandHandler.Descriptor);
         }
+
+        public string Name { get; } = nameof(FutureEventsRouteMap);
     }
 }

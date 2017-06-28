@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.Practices.Unity;
@@ -6,18 +7,11 @@ using Microsoft.Practices.Unity;
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
 
-    public class TestAggregateDependenciesFactory : DefaultAggregateDependencyFactory<TestAggregate>
-    {
-        public TestAggregateDependenciesFactory():base(() => new TestAggregatesCommandHandler(new TestDependencyImplementation()))
-        {
-        }
-    }
-
     public class TestAggregateDomainConfiguration : IDomainConfiguration
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(new TestAggregateDependenciesFactory());
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new TestAggregatesCommandHandler(new TestDependencyImplementation()), new TestRouteMap()));
         }
     }
 

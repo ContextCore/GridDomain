@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Async_execution_dont_block_aggregate : SampleDomainCommandExecutionTests
+    public class Async_execution_dont_block_aggregate : BalloonDomainCommandExecutionTests
     {
         public Async_execution_dont_block_aggregate(ITestOutputHelper output) : base(output) {}
 

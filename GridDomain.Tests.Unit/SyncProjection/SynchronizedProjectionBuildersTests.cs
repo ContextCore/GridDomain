@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.SyncProjection
 {
-    public class SynchronizedProjectionBuildersTests : SampleDomainCommandExecutionTests
+    public class SynchronizedProjectionBuildersTests : BalloonDomainCommandExecutionTests
     {
         public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : base(output) {}
 

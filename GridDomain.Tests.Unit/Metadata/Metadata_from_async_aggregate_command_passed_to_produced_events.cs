@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class Metadata_from_async_aggregate_command_passed_to_produced_events : SampleDomainCommandExecutionTests
+    public class Metadata_from_async_aggregate_command_passed_to_produced_events : BalloonDomainCommandExecutionTests
     {
         public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) {}
 

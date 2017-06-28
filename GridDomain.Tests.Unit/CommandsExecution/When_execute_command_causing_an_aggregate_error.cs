@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_execute_command_causing_an_aggregate_error : SampleDomainCommandExecutionTests
+    public class When_execute_command_causing_an_aggregate_error : BalloonDomainCommandExecutionTests
     {
         public When_execute_command_causing_an_aggregate_error(ITestOutputHelper output) : base(output) {}
 

@@ -7,9 +7,10 @@ namespace GridDomain.CQRS.Messaging
     {
         private readonly IMessageRouteMap[] _maps;
 
-        public CompositeRouteMap(params IMessageRouteMap[] maps)
+        public CompositeRouteMap(string name, params IMessageRouteMap[] maps)
         {
             _maps = maps;
+            Name = name;
         }
 
         public async Task Register(IMessagesRouter router)
@@ -17,5 +18,7 @@ namespace GridDomain.CQRS.Messaging
             foreach (var messageRouteMap in _maps)
                 await messageRouteMap.Register(router);
         }
+
+        public string Name { get; }
     }
 }

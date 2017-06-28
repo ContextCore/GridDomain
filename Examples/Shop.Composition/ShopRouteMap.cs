@@ -45,5 +45,7 @@ namespace Shop.Composition
             await router.RegisterHandler<ReserveRenewed, SkuStockProjectionBuilder>();
             await router.RegisterHandler<ReserveCanceled, SkuStockProjectionBuilder>();
         }
+
+        public string Name { get; } = nameof(ShopRouteMap);
     }
 }

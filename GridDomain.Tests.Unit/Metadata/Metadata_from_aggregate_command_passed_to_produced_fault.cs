@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class Metadata_from_aggregate_command_passed_to_produced_fault : SampleDomainCommandExecutionTests
+    public class Metadata_from_aggregate_command_passed_to_produced_fault : BalloonDomainCommandExecutionTests
     {
         public Metadata_from_aggregate_command_passed_to_produced_fault(ITestOutputHelper output) : base(output) {}
 

@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout :
-        SampleDomainCommandExecutionTests
+        BalloonDomainCommandExecutionTests
     {
         public When_execute_command_without_explicit_timeout_Then_wait_should_use_default_timeout(ITestOutputHelper output)
             : base(output) {}

@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         private static NodeTestFixture CreateFixture()
         {
             return new NodeTestFixture(new BalloonDomainConfiguration(),
-                                       new BalloonRouteMap(),
+                                       null,
                                        TimeSpan.FromMilliseconds(100));
         }
 

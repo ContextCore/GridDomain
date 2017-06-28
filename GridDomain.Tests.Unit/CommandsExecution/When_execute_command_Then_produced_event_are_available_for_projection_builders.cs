@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class When_execute_command_Then_produced_event_are_available_for_projection_builders :
-        SampleDomainCommandExecutionTests
+        BalloonDomainCommandExecutionTests
     {
         public When_execute_command_Then_produced_event_are_available_for_projection_builders(ITestOutputHelper output)
             : base(output) {}

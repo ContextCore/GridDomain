@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Async_execute_dont_wait : SampleDomainCommandExecutionTests
+    public class Async_execute_dont_wait : BalloonDomainCommandExecutionTests
     {
         public Async_execute_dont_wait(ITestOutputHelper output) : base(output) {}
 

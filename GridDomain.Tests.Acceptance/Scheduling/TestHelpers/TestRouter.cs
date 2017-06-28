@@ -11,5 +11,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
             await router.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
             await router.RegisterSaga(TestSaga.Descriptor);
         }
+
+        public string Name { get; } = nameof(TestRouter);
     }
 }

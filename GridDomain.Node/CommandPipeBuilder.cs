@@ -64,8 +64,8 @@ namespace GridDomain.Node
             return Task.CompletedTask;
         }
 
-        public Task RegisterHandler<TMessage, THandler>(string correlationField) where TMessage : DomainEvent
-                                                                                 where THandler : IHandler<TMessage>
+        public Task RegisterHandler<TMessage, THandler>(string correlationField) where THandler : IHandler<TMessage>
+                                                                                 where TMessage : class, IHaveSagaId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(true);
         }
@@ -94,7 +94,7 @@ namespace GridDomain.Node
         }
 
         public Task RegisterHandler<TMessage, THandler>(bool sync = false) where THandler : IHandler<TMessage>
-                                                                           where TMessage : DomainEvent
+                                                                           where TMessage : class, IHaveSagaId, IHaveId
         {
             var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);
             var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());

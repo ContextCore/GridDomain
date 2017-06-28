@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller :
-        SampleDomainCommandExecutionTests
+        BalloonDomainCommandExecutionTests
     {
         public When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller(
             ITestOutputHelper output) : base(output) {}

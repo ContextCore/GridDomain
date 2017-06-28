@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 
@@ -11,6 +12,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null);
 
         Task RegisterHandler<TMessage, THandler>(string correlationField) where THandler : IHandler<TMessage>
-                                                                          where TMessage : DomainEvent;
+                                                                          where TMessage : class, IHaveSagaId, IHaveId;
     }
 }

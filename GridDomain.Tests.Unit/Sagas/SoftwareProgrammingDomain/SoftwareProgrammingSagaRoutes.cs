@@ -10,5 +10,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
         {
             await router.RegisterSaga(SoftwareProgrammingProcess.Descriptor);
         }
+
+        public string Name { get; } = nameof(SoftwareProgrammingSagaRoutes);
     }
 }

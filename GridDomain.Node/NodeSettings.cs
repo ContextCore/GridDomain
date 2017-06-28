@@ -1,7 +1,6 @@
 using System;
 using Akka.Actor;
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
 using GridDomain.Logging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
@@ -12,18 +11,15 @@ namespace GridDomain.Node
 {
     public class NodeSettings
     {
-        public NodeSettings(IMessageRouteMap messageRouting = null,
-                            Func<ActorSystem[]> actorSystemFactory = null)
+        public NodeSettings(Func<ActorSystem[]> actorSystemFactory = null)
         {
             ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
-            MessageRouting = messageRouting ?? MessageRouting;
         }
 
         public IDomainBuilder DomainBuilder => Builder;
 
         internal readonly DomainBuilder Builder = new DomainBuilder();
         public IContainerConfiguration CustomContainerConfiguration { get; set; } = new EmptyContainerConfiguration();
-        public IMessageRouteMap MessageRouting { get; } = new EmptyRouteMap();
         public Func<ActorSystem[]> ActorSystemFactory { get; } = () => new[] {ActorSystem.Create("defaultSystem")};
 
         public ILogger Log { get; set; } = new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>();

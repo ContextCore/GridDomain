@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Execute_command_waiting_aggregate_event : SampleDomainCommandExecutionTests
+    public class Execute_command_waiting_aggregate_event : BalloonDomainCommandExecutionTests
     {
         public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : base(output) {}
 

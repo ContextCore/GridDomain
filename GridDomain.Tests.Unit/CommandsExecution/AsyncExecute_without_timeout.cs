@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class AsyncExecute_without_timeout : SampleDomainCommandExecutionTests
+    public class AsyncExecute_without_timeout : BalloonDomainCommandExecutionTests
     {
         public AsyncExecute_without_timeout(ITestOutputHelper output) : base(output) {}
 

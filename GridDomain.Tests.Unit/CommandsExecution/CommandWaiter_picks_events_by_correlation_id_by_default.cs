@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class CommandWaiter_picks_events_by_correlation_id_by_default : SampleDomainCommandExecutionTests
+    public class CommandWaiter_picks_events_by_correlation_id_by_default : BalloonDomainCommandExecutionTests
     {
         public CommandWaiter_picks_events_by_correlation_id_by_default(ITestOutputHelper output) : base(output) {}
 

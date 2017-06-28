@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
         {
             public DINodeFixture()
             {
-                Add(new DomainConfiguration(d => d.RegisterAggregate(new TestAggregateDependenciesFactory())));
+                Add(new TestAggregateDomainConfiguration());
                 Add(new TestRouteMap());
             }
         }
