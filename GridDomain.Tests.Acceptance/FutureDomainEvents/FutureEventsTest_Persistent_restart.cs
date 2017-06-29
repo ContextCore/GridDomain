@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
             await Task.Delay(300);
 
             await node.Stop();
-            _fixture.System = null;
+          //  _fixture.System = null;
             await node.Start();
 
             var res = await node.NewWaiter(TimeSpan.FromSeconds(10))

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.EventsUpgrade;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
@@ -16,13 +17,12 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class Future_events_class_upgraded_by_object_adapter : NodeTestKit
     {
         public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output)
-            : base(output, new EventAdaptersFixture {InMemory = false}) {}
+            : base(output, new EventAdaptersFixture().InitFastRecycle()) {}
 
         private class EventAdaptersFixture : BalanceFixture
         {
             public EventAdaptersFixture()
             {
-                this.InitFastRecycle();
                 InMemory = false;
                 LogLevel = LogEventLevel.Debug;
                 OnNodeCreatedEvent +=
@@ -36,6 +36,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                     return new BalanceChangedEvent_V1(evt.AmplifiedAmountChange, evt.SourceId);
                 }
             }
+          
         }
 
         [Fact]

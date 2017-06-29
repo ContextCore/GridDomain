@@ -16,7 +16,7 @@ using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
-    public class CommandPipeBuilder : IMessagesRouter
+    public class CommandPipe : IMessagesRouter
     {
         private readonly TypeCatalog<Processor, ICommand> _aggregatesCatalog = new TypeCatalog<Processor, ICommand>();
         private readonly IUnityContainer _container;
@@ -26,7 +26,7 @@ namespace GridDomain.Node
         private readonly ProcessorListCatalog _sagaCatalog = new ProcessorListCatalog();
         private readonly ActorSystem _system;
 
-        public CommandPipeBuilder(ActorSystem system, IUnityContainer container)
+        public CommandPipe(ActorSystem system, IUnityContainer container)
         {
             _container = container;
             _system = system;

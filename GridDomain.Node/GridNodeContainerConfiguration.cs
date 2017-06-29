@@ -90,7 +90,7 @@ namespace GridDomain.Node
                                                                   IUnityContainer unityContainer,
                                                                   TimeSpan defaultTimeout)
         {
-            var pipeBuilder = new CommandPipeBuilder(actorSystem, unityContainer);
+            var pipeBuilder = new CommandPipe(actorSystem, unityContainer);
             var commandExecutorActor = await pipeBuilder.Init();
             unityContainer.RegisterInstance(pipeBuilder);
 

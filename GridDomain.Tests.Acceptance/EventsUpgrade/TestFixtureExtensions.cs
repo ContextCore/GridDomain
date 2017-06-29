@@ -17,14 +17,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public static class TestFixtureExtensions
     {
-        public static void InitFastRecycle(this NodeTestFixture fixture,
-                                           TimeSpan? clearPeriod = null,
-                                           TimeSpan? maxInactiveTime = null)
-        {
-            fixture.Add(
-                        new ContainerConfiguration(c =>c.RegisterInstance<IPersistentChildsRecycleConfiguration>(new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
-                                                                                                                                                                maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
-        }
+       
 
         public static NodeTestFixture IgnoreCommands(this NodeTestFixture fixture)
         {

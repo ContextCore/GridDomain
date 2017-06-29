@@ -351,7 +351,7 @@
     <Compile Include="MessageWaiterFactory.cs" />
     <Compile Include="NodeSettings.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
-    <Compile Include="CommandPipeBuilder.cs" />
+    <Compile Include="CommandPipe.cs" />
     <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
     <Compile Include="Configuration\Akka\Hocon\EmptyConfig.cs" />

@@ -30,9 +30,7 @@ namespace GridDomain.Node
         private bool _stopping;
         private TransportMode _transportMode;
         private IMessageWaiterFactory _waiterFactory;
-        internal CommandPipeBuilder Pipe;
-        private ActorSystem[] Systems;
-
+        internal CommandPipe Pipe;
         public GridDomainNode(NodeSettings settings)
         {
             Settings = settings;
@@ -80,21 +78,20 @@ namespace GridDomain.Node
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
 
             Container = new UnityContainer();
-            Systems = Settings.ActorSystemFactory.Invoke();
 
             Initializing.Invoke(this, this);
 
-            System = Systems.First();
+            System = Settings.ActorSystemFactory.Invoke();
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
-            _transportMode = Systems.Length > 1 ? TransportMode.Cluster : TransportMode.Standalone;
+            _transportMode = TransportMode.Standalone;
             System.RegisterOnTermination(OnSystemTermination);
 
             Container.Register(new GridNodeContainerConfiguration(System, _transportMode, Settings));
             Container.Register(Settings.CustomContainerConfiguration);
             Settings.Builder.ContainerConfigurations.ForEach(c => Container.Register(c));
 
-            Pipe = Container.Resolve<CommandPipeBuilder>();
+            Pipe = Container.Resolve<CommandPipe>();
 
             await new CompositeRouteMap("All settings map", Settings.Builder.MessageRouteMaps.ToArray()).Register(Pipe);
 
@@ -151,7 +148,7 @@ namespace GridDomain.Node
                 await System.Terminate();
                 System.Dispose();
             }
-
+            System = null;
             Container?.Dispose();
             Settings.Log.Debug("GridDomain node {Id} stopped", Id);
         }

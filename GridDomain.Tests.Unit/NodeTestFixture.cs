@@ -33,6 +33,7 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
+            Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
         }
         public NodeTestFixture(params IDomainConfiguration[] domainConfiguration):this()
         {
@@ -58,11 +59,6 @@ namespace GridDomain.Tests.Unit
             System = null;
         }
 
-        public virtual LoggerConfiguration CreateLoggerConfiguration(ITestOutputHelper helper)
-        {
-            return new XUnitAutoTestLoggerConfiguration(helper, LogLevel);
-        }
-
         public void Add(IDomainConfiguration config)
         {
             _domainConfigurations.Add(config);
@@ -82,8 +78,6 @@ namespace GridDomain.Tests.Unit
             if (ClearDataOnStart)
                 await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
 
-            System = System ?? ActorSystem.Create(Name, GetConfig());
-            await CreateLogger();
 
             var settings = CreateNodeSettings();
 
@@ -97,7 +91,7 @@ namespace GridDomain.Tests.Unit
 
         protected virtual NodeSettings CreateNodeSettings()
         {
-            var settings = new NodeSettings(() => new[] { System })
+            var settings = new NodeSettings(CreateSystem)
                            {
                                QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
@@ -110,14 +104,17 @@ namespace GridDomain.Tests.Unit
             return settings;
         }
 
-        private async Task CreateLogger()
+        private ActorSystem CreateSystem()
         {
-            Logger = CreateLoggerConfiguration(Output).CreateLogger();
+           if(System ==null || System.TerminationTask.IsCompleted)
+                System = ActorSystem.Create(Name, GetConfig());
 
-            var extSystem = (ExtendedActorSystem) System;
-            var logActor = extSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(Logger)), "node-log-test");
+            ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 
-            await logActor.Ask<LoggerInitialized>(new InitializeLogger(System.EventStream));
+            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(Logger)), "node-log-test");
+
+            logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
+            return System;
         }
 
         public event EventHandler OnNodeStartedEvent = delegate { };

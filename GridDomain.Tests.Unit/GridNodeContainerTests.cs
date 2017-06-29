@@ -1,6 +1,7 @@
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using Helios.Util;
 using Microsoft.Practices.Unity;
 using Serilog;
 using Xunit.Abstractions;
@@ -21,7 +22,7 @@ namespace GridDomain.Tests.Unit
             var container = new UnityContainer();
 
             var actorSystem = ActorSystemBuilders[mode]();
-            container.Register(new GridNodeContainerConfiguration(actorSystem, mode, new NodeSettings()));
+            container.Register(new GridNodeContainerConfiguration(actorSystem, mode, new NodeSettings(null)));
             actorSystem.Terminate();
             return container;
         }
