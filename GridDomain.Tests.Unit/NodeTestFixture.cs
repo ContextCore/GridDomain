@@ -33,7 +33,6 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
-            Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
         }
         public NodeTestFixture(params IDomainConfiguration[] domainConfiguration):this()
         {
@@ -78,7 +77,7 @@ namespace GridDomain.Tests.Unit
             if (ClearDataOnStart)
                 await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
 
-
+            Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
             var settings = CreateNodeSettings();
 
             Node = new GridDomainNode(settings);
@@ -106,8 +105,9 @@ namespace GridDomain.Tests.Unit
 
         private ActorSystem CreateSystem()
         {
-           if(System ==null || System.TerminationTask.IsCompleted)
-                System = ActorSystem.Create(Name, GetConfig());
+            if(System == null || System.TerminationTask.IsCompleted)
+                 System = ActorSystem.Create(Name, GetConfig());
+        
 
             ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 

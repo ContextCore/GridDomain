@@ -21,6 +21,7 @@ namespace GridDomain.Tests.Common
         /// </summary>
         /// <param name="loggerConfiguration">The logger configuration.</param>
         /// <param name="testOutputHelper">Xunit <see cref="TestOutputHelper" /> that writes to test output</param>
+        /// <param name="restrictedToMinimumLevel"></param>
         /// <param name="outputTemplate">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatProvider">Message template describing the output format.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
@@ -33,11 +34,11 @@ namespace GridDomain.Tests.Common
                                                           IFormatProvider formatProvider = null)
         {
             if (loggerConfiguration == null)
-                throw new ArgumentNullException("loggerConfiguration");
+                throw new ArgumentNullException(nameof(loggerConfiguration));
             if (testOutputHelper == null)
-                throw new ArgumentNullException("testOutputHelper");
+                throw new ArgumentNullException(nameof(testOutputHelper));
             if (outputTemplate == null)
-                throw new ArgumentNullException("outputTemplate");
+                throw new ArgumentNullException(nameof(outputTemplate));
 
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
             return loggerConfiguration.Sink(new XUnitTestOutputSink(testOutputHelper, formatter), restrictedToMinimumLevel);
