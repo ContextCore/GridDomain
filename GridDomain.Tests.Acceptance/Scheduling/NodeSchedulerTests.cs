@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
             Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
 
-            Throttle.AssertInTime(() => Assert.True(ResultHolder.Count == 1), TimeSpan.FromSeconds(2));
+            Throttle.AssertInTime(() => Assert.True(ResultHolder.Count == 1), TimeSpan.FromSeconds(20));
         }
 
         [Fact]

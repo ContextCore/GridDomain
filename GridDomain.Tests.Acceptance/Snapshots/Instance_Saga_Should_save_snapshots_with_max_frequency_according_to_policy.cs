@@ -23,8 +23,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
             : base(
                    output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(2,
-                                                                                                              TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(2,TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -39,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
 
             //wait some time, allowing first snapshots to be saved
-            // await Task.Delay(200);
+            await Task.Delay(200);
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow);
 
             //send text event
@@ -49,7 +48,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .SendToSagas(sagaContinueEvent, sagaId);
 
             //wait some time, second snapshots should not be saved due to max frequency in snapshotting policy
-            //await Task.Delay(200);
+            await Task.Delay(200);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                                                                   new AggregateFactory()).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
