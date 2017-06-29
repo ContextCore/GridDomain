@@ -46,18 +46,14 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public async Task Add<T>(T aggregate) where T : IAggregate
         {
-            var serializer = new DomainSerializer();
-
             using (var repo = new RawSnapshotsRepository(_writeString))
             {
                 var snapshot = aggregate.GetSnapshot();
                 var item = new SnapshotItem
                            {
-                               Manifest = snapshot.GetType().
-                                                   AssemblyQualifiedShortName(),
-                               PersistenceId = AggregateActorName.New<T>(aggregate.Id).
-                                                                  Name,
-                               Snapshot = serializer.ToBinary(snapshot),
+                               Manifest = snapshot.GetType().AssemblyQualifiedShortName(),
+                               PersistenceId = AggregateActorName.New<T>(aggregate.Id).Name,
+                               Snapshot = new DomainSerializer().ToBinary(snapshot),
                                Timestamp = BusinessDateTime.UtcNow
                            };
                 await repo.Save(item.PersistenceId, item);

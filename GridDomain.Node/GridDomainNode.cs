@@ -40,7 +40,6 @@ namespace GridDomain.Node
 
         public NodeSettings Settings { get; }
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
-        public AggregatesSnapshotsFactory AggregateFromSnapshotsFactory { get; private set; }
         public IActorTransport Transport { get; private set; }
         public ActorSystem System { get; private set; }
         private IActorRef ActorTransportProxy { get; set; }
@@ -79,7 +78,6 @@ namespace GridDomain.Node
         {
             _stopping = false;
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
-            AggregateFromSnapshotsFactory = new AggregatesSnapshotsFactory();
 
             Container = new UnityContainer();
             Systems = Settings.ActorSystemFactory.Invoke();
@@ -112,8 +110,6 @@ namespace GridDomain.Node
             var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
             var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
-            RegisterCustomAggregateSnapshots();
-
             if (appInsightsConfig.IsEnabled)
             {
                 var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
@@ -130,21 +126,6 @@ namespace GridDomain.Node
             await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
 
             Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
-        }
-
-        private void RegisterCustomAggregateSnapshots()
-        {
-            var factories =
-                Container.ResolveAll(typeof(IConstructAggregates))
-                         .Select(o => new {Type = o.GetType(), Obj = (IConstructAggregates) o})
-                         .Where(o =>o.Type.IsGenericType
-                                 && o.Type.GetGenericTypeDefinition() == typeof(AggregateSnapshottingFactory<>))
-                         .Select(o => new {AggregateType = o.Type.GetGenericArguments().First(), Constructor = o.Obj})
-                         .ToArray();
-
-            foreach (var factory in factories)
-                AggregateFromSnapshotsFactory.Register(factory.AggregateType,
-                                                       m => (Aggregate)factory.Constructor.Build(factory.GetType(), Guid.Empty, m));
         }
 
         public async Task Stop()

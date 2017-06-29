@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             sagaState.PersistAll();
 
             var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                       Node.AggregateFromSnapshotsFactory);
+                                                       new AggregateFactory());
             await repo.Add(sagaState);
 
             var restoredState = await this.LoadSagaByActor<SoftwareProgrammingState>(sagaState.Id);

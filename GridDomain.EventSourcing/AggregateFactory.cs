@@ -13,8 +13,6 @@ namespace GridDomain.EventSourcing
     // objects id.
     public class AggregateFactory : IConstructAggregates
     {
-    
-
         //default convention: Aggregate is implementing IMemento itself
         protected virtual Aggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {

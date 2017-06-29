@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy : NodeTestKit
     {
         public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
-            : base(output, new BalloonFixture {InMemory = false}.InitSampleAggregateSnapshots()) {}
+            : base(output, new BalloonFixture {InMemory = false}.EnableSnapshots()) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Thread.Sleep(100);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  Node.AggregateFromSnapshotsFactory)
+                                                                  new BalloonAggregateFactory())
                                                                   .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, snapshots.Length);

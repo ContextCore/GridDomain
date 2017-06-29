@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -22,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
             : base(
                    output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2,
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(2,
                                                                                                               TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
 
         [Fact]
@@ -51,7 +52,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //await Task.Delay(200);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  Node.AggregateFromSnapshotsFactory).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+                                                                  new AggregateFactory()).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);

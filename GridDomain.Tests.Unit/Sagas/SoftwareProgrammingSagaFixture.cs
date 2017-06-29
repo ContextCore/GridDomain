@@ -1,26 +1,40 @@
 using System;
-using GridDomain.Common;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Node;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
-using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.Sagas
 {
     public class SoftwareProgrammingSagaFixture : NodeTestFixture
     {
+        private readonly SoftwareProgrammingSagaDomainConfiguration _softwareProgrammingSagaDomainConfiguration;
+
         public SoftwareProgrammingSagaFixture(IDomainConfiguration config = null,
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
         {
-            Add(new SoftwareProgrammingSagaDomainConfiguration(Logger));
+            _softwareProgrammingSagaDomainConfiguration = new SoftwareProgrammingSagaDomainConfiguration(Logger);
             Add(new BalloonDomainConfiguration());
             Add(new QuartzSchedulerConfiguration(new InMemoryQuartzConfig()));
+        }
+
+        protected override NodeSettings CreateNodeSettings()
+        {
+            Add(_softwareProgrammingSagaDomainConfiguration);
+            return base.CreateNodeSettings();
+        }
+
+        public SoftwareProgrammingSagaFixture InitSnapshots(int keep = 1,
+                                                            TimeSpan? maxSaveFrequency = null,
+                                                            int saveOnEach = 1)
+        {
+            _softwareProgrammingSagaDomainConfiguration.SoftwareProgrammingSagaDependenciesFactory
+                                                       .StateDependencyFactory
+                                                       .SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+            return this;
         }
     }
 }

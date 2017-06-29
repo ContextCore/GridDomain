@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                    Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
+                                                    new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Snapshots_should_be_saved_one_time()
             Assert.Equal(0, snapshots.Length);

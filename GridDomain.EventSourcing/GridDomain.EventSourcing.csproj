@@ -58,7 +58,6 @@
     <Compile Include="AggregateCommandsHandler.cs" />
     <Compile Include="AggregateExtensions.cs" />
     <Compile Include="AggregateFactory.cs" />
-    <Compile Include="AggregateSnapshottingFactory.cs" />
     <Compile Include="AggregatesSnapshotsFactory.cs" />
     <Compile Include="CannotFindAggregateCommandHandlerExeption.cs" />
     <Compile Include="CannotFindAggregateCreatorBySnapshotException.cs" />

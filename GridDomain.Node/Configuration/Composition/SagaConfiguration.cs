@@ -50,8 +50,8 @@ namespace GridDomain.Node.Configuration.Composition
         {
             container.Register(new AggregateConfiguration<TStateActorType, SagaStateAggregate<TState>>(c => c.Resolve<SagaStateCommandHandler<TState>>(),
                                                                                                               _snapShotsPolicy,
-                                                                                                              new AggregateSnapshottingFactory<SagaStateAggregate<TState>>(),
-                                                                                                              new DefaultPersistentChildsRecycleConfiguration()));
+                                                                                                              _aggregateFactory,
+                                                                                                              _persistentChildsRecycleConfiguration));
         }
 
         public void Register(IUnityContainer container)

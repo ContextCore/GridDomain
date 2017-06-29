@@ -1,4 +1,5 @@
 using System;
+using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Tests.Unit.BalloonDomain;
@@ -23,14 +24,25 @@ namespace GridDomain.Tests.Unit
             return base.CreateNodeSettings();
         }
 
-        public BalloonFixture InitSampleAggregateSnapshots(
+        public BalloonFixture EnableSnapshots(
             int keep = 1,
             TimeSpan? maxSaveFrequency = null,
             int saveOnEach = 1)
         {
-            _balloonDomainConfiguration.BalloonDependencyFactory.SnapshotPolicyCreator
-                = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+            var dependencyFactory = _balloonDomainConfiguration.BalloonDependencyFactory;
+
+            dependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+            dependencyFactory.AggregateFactoryCreator = () => new BalloonAggregateFactory();
+
             return this;
+        }
+    }
+
+    internal class BalloonAggregateFactory : AggregatesSnapshotsFactory
+    {
+        public BalloonAggregateFactory()
+        {
+            Register(Balloon.FromSnapshot);
         }
     }
 }

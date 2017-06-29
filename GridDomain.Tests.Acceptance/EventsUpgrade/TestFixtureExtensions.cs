@@ -26,19 +26,6 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                                                                                                                                                 maxInactiveTime ?? TimeSpan.FromMilliseconds(50)))));
         }
 
-        public static NodeTestFixture InitSoftwareProgrammingSagaSnapshots(this NodeTestFixture fixture,
-                                                                           int keep = 1,
-                                                                           TimeSpan? maxSaveFrequency = null,
-                                                                           int saveOnEach = 1)
-        {
-            var sagaDependencies = new SoftwareProgrammingSagaDependenciesFactory(fixture.Logger);
-            sagaDependencies.StateDependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach,keep,maxSaveFrequency);
-
-            fixture.Add(new DomainConfiguration(d => d.RegisterSaga(sagaDependencies)));
-            
-            return fixture;
-        }
-
         public static NodeTestFixture IgnoreCommands(this NodeTestFixture fixture)
         {
             fixture.OnNodeStartedEvent += (sender, e) =>

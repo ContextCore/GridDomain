@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output, new BalloonFixture {InMemory = false}.InitSampleAggregateSnapshots(2)) {}
+            : base(output, new BalloonFixture {InMemory = false}.EnableSnapshots(2)) {}
 
         private readonly int[] _parameters = new int[5];
 
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await Node.KillAggregate<Balloon>(aggregateId);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  Node.AggregateFromSnapshotsFactory).Load<Balloon>(aggregateId);
+                                                                  new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Only_2_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);

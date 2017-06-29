@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -21,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
             : base(output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSoftwareProgrammingSagaSnapshots(2)
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(2)
                                                                         .IgnoreCommands()) {}
 
         [Fact]
@@ -48,8 +49,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Node.KillSaga<SoftwareProgrammingProcess, SoftwareProgrammingState>(sagaId);
             await Task.Delay(200);
-            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  Node.AggregateFromSnapshotsFactory)
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString, new AggregateFactory())
                                                                   .Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //Only_two_Snapshots_should_left()

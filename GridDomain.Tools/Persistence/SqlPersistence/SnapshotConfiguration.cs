@@ -15,8 +15,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             builder.Property(x => x.PersistenceId).
                     HasColumnName(@"PersistenceId").
                     IsRequired().
-                    HasColumnType("nvarchar").
-                    HasMaxLength(255);
+                    HasColumnType("nvarchar(255)");
 
             builder.Property(x => x.SequenceNr).
                     HasColumnName(@"SequenceNr").
@@ -24,8 +23,8 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
                     HasColumnType("bigint");
 
             builder.Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("datetime2");
-            builder.Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar").HasMaxLength(500);
-            builder.Property(x => x.Snapshot).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary");
+            builder.Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar(500)");
+            builder.Property(x => x.Snapshot).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary(max)");
         }
     }
 }

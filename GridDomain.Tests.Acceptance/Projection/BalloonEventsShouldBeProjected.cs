@@ -24,12 +24,11 @@ namespace GridDomain.Tests.Acceptance.Projection
             //warm up EF 
             using (var context = new BalloonContext(dbOptions))
             {
-                context.Database.Migrate();
                 context.BalloonCatalog.Add(new BalloonCatalogItem() {BalloonId = Guid.NewGuid(),LastChanged = DateTime.UtcNow,Title="WarmUp"});
                 await context.SaveChangesAsync();
             }
 
-            await TestDbTools.Truncate(Fixture.AkkaConfig.Persistence.JournalConnectionString, "BalloonCatalogItems");
+            await TestDbTools.Truncate(Fixture.AkkaConfig.Persistence.JournalConnectionString, "BalloonCatalog");
             
             var cmd = new InflateNewBallonCommand(123, Guid.NewGuid());
             await Node.Prepare(cmd)

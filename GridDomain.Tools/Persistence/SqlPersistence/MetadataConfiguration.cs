@@ -14,8 +14,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             builder.Property(x => x.PersistenceId).
                     HasColumnName(@"PersistenceId").
                     IsRequired().
-                    HasColumnType("nvarchar").
-                    HasMaxLength(255);
+                    HasColumnType("nvarchar(255)");
 
             builder.Property(x => x.SequenceNr).
                     HasColumnName(@"SequenceNr").

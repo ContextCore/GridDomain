@@ -20,9 +20,10 @@ namespace GridDomain.Tests.Unit
             return actor.State;
         }
 
-        private static async Task<T> LoadActor<T>(this TestKit kit, string name) where T : ActorBase
+        public static async Task<T> LoadActor<T>(this TestKit kit, string name) where T : ActorBase
         {
-            var props = kit.Sys.DI().Props<T>();
+            var diActorSystemAdapter = kit.Sys.DI();
+            var props = diActorSystemAdapter.Props<T>();
 
             var actor = kit.ActorOfAsTestActorRef<T>(props, name);
 

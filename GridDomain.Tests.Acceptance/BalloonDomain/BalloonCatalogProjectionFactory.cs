@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain {
         public IMessageRouteMap CreateRouteMap()
         {
             return new CustomRouteMap(r => r.RegisterHandler<BalloonCreated, BalloonCatalogProjection>(),
-                r => r.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>());
+                                      r => r.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>());
 
         }
     }

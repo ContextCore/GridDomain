@@ -9,12 +9,19 @@ namespace GridDomain.EventSourcing
         private readonly IDictionary<Type, Func<IMemento, Aggregate>> _creators =
             new Dictionary<Type, Func<IMemento, Aggregate>>();
 
-        public void Register<T>(Func<IMemento, T> producer) where T : Aggregate
+        public static AggregatesSnapshotsFactory New<T>(Func<IMemento, T> producer) where T : Aggregate
         {
-            Register(typeof(T), m => producer(m));
+            var factory = new AggregatesSnapshotsFactory();
+            factory.Register(producer);
+            return factory;
         }
 
-        public void Register(Type type, Func<IMemento, Aggregate> producer)
+        protected void Register<T>(Func<IMemento, T> producer) where T : Aggregate
+        {
+            Register(typeof(T), producer);
+        }
+
+        private void Register(Type type, Func<IMemento, Aggregate> producer)
         {
             _creators.Add(type, producer);
         }

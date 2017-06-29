@@ -7,9 +7,8 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
-    public abstract class NodeTestKit : TestKit
+    public class NodeTestKit : TestKit
     {
-        private readonly Lazy<Task<GridDomainNode>> _lazyNode;
         protected readonly AkkaConfiguration AkkaConfig;
 
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture) : base(fixture.GetConfig(), fixture.Name)
@@ -18,10 +17,10 @@ namespace GridDomain.Tests.Unit
             Fixture.System = Sys;
             Fixture.Output = output;
             AkkaConfig = fixture.AkkaConfig;
-            _lazyNode = new Lazy<Task<GridDomainNode>>(fixture.CreateNode);
+            Node = fixture.CreateNode().Result;
         }
 
-        protected GridDomainNode Node => _lazyNode.Value.Result;
+        protected GridDomainNode Node { get; }
         protected NodeTestFixture Fixture { get; }
     }
 }

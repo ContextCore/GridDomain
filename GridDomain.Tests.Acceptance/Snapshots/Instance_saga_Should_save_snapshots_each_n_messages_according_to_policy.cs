@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -24,10 +25,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
             : base(
                    output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.IgnoreCommands()
-                                                                        .InitSoftwareProgrammingSagaSnapshots(5,
-                                                                                                              TimeSpan.FromMilliseconds(5),
-                                                                                                              2)) {}
+                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(5, TimeSpan.FromMilliseconds(5), 2)
+                                                                        .IgnoreCommands()) { }
 
         [Fact]
         public async Task Given_default_policy()
@@ -39,7 +38,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 .Create()
                                 .SendToSagas(sagaStartEvent);
 
-            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
+            var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>()
+                            .SourceId;
 
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow, sagaId);
 
@@ -63,17 +63,20 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await Task.Delay(500);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  Node.AggregateFromSnapshotsFactory)
-                                .Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+                                                                  new AggregateFactory()).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //saving on each message, maximum on each command
             //Snapshots_should_be_saved_two_times
             //4 events in total, two saves of snapshots due to policy saves on each two events
             Assert.Equal(2, snapshots.Length);
             //First_snapshot_should_have_state_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), snapshots.First().Aggregate.State.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
+                         snapshots.First()
+                                  .Aggregate.State.CurrentStateName);
             //Last_snapshot_should_have_parameters_from_last_command()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), snapshots.Last().Aggregate.State.CurrentStateName);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
+                         snapshots.Last()
+                                  .Aggregate.State.CurrentStateName);
 
             //Restored_saga_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == sagaId));
