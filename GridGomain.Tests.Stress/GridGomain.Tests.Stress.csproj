@@ -275,10 +275,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Examples\Shop.ReadModel\Shop.ReadModel.csproj">
-      <Project>{105B2938-9764-4341-9C70-D8EAF182D516}</Project>
-      <Name>Shop.ReadModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
       <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
       <Name>GridDomain.Common</Name>

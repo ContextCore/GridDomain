@@ -18,7 +18,5 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 
             this.MapFutureEvents();
         }
-
-        public Type AggregateType => typeof(FutureEventsAggregate);
     }
 }

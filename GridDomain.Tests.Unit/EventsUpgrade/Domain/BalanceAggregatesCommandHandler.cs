@@ -19,7 +19,5 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
             Map<ChangeBalanceInFuture>((c, a) => a.ChangeStateInFuture(c.RaiseTime, c.Parameter, c.UseLegacyEvent));
             this.MapFutureEvents();
         }
-
-        public Type AggregateType => typeof(BalanceAggregate);
     }
 }

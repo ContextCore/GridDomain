@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Serilog.Events;
-using Shop.ReadModel.Context;
 using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress

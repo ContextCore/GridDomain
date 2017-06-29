@@ -28,7 +28,5 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
             Map<PlanTitleWriteAndBlowCommand>((c, a) => a.PlanWriteTitleToBlow(c.Parameter, c.SleepTime));
         }
-
-        public Type AggregateType => typeof(Balloon);
     }
 }
