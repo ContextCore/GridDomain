@@ -1,18 +1,17 @@
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Tools.Persistence.SqlPersistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Repositories.RawDataRepositories
 {
     public class RawSnapshotsRepository : IRepository<SnapshotItem>
     {
-        private readonly string _connectionString;
+        private readonly DbContextOptions _options;
 
-        public RawSnapshotsRepository(string connectionString)
+        public RawSnapshotsRepository(DbContextOptions options)
         {
-            _connectionString = connectionString;
+            _options = options;
         }
 
         public void Dispose() {}
@@ -22,9 +21,9 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             foreach (var m in messages)
                 m.PersistenceId = id;
 
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            using (var context = new AkkaSqlPersistenceContext(_options))
             {
-                context.Snapshots.AddOrUpdate(messages);
+                context.Snapshots.AddRange(messages);
                 await context.SaveChangesAsync();
             }
         }
@@ -36,7 +35,7 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
         /// <returns></returns>
         public async Task<SnapshotItem[]> Load(string id)
         {
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            using (var context = new AkkaSqlPersistenceContext(_options))
             {
                 return await context.Snapshots.Where(j => j.PersistenceId == id).OrderBy(i => i.SequenceNr).ToArrayAsync();
             }

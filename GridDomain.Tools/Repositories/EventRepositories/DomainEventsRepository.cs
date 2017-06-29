@@ -5,6 +5,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Akka.Hocon;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories.RawDataRepositories;
+using Microsoft.EntityFrameworkCore;
 
 //using Wire.Extensions;
 
@@ -59,7 +60,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
         public static DomainEventsRepository New(string connectionString)
         {
-            return new DomainEventsRepository(new RawJournalRepository(connectionString));
+            return new DomainEventsRepository(new RawJournalRepository(new DbContextOptionsBuilder().UseSqlServer(connectionString).Options));
         }
     }
 }

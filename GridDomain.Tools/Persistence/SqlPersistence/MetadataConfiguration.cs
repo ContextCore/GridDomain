@@ -1,28 +1,26 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+using GridDomain.Tools.Persistence.Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-    public class MetadataConfiguration : EntityTypeConfiguration<Metadata>
+    public class MetadataConfiguration : IEntityTypeConfiguration<Metadata>
     {
-        public MetadataConfiguration() : this("dbo") {}
-
-        public MetadataConfiguration(string schema)
+        public void Map(EntityTypeBuilder<Metadata> builder)
         {
-            ToTable("Metadata", schema);
-            HasKey(x => new {x.PersistenceId, x.SequenceNr});
+            builder.ToTable("Metadata");
+            builder.HasKey(x => new {x.PersistenceId, x.SequenceNr});
 
-            Property(x => x.PersistenceId)
-                .HasColumnName(@"PersistenceId")
-                .IsRequired()
-                .HasColumnType("nvarchar")
-                .HasMaxLength(255)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-            Property(x => x.SequenceNr)
-                .HasColumnName(@"SequenceNr")
-                .IsRequired()
-                .HasColumnType("bigint")
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            builder.Property(x => x.PersistenceId).
+                    HasColumnName(@"PersistenceId").
+                    IsRequired().
+                    HasColumnType("nvarchar").
+                    HasMaxLength(255);
+
+            builder.Property(x => x.SequenceNr).
+                    HasColumnName(@"SequenceNr").
+                    IsRequired().
+                    HasColumnType("bigint");
         }
     }
 }

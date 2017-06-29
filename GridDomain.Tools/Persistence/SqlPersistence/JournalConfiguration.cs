@@ -1,33 +1,24 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+using GridDomain.Tools.Persistence.Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-    public class JournalConfiguration : EntityTypeConfiguration<JournalItem>
+    public class JournalConfiguration : IEntityTypeConfiguration<JournalItem>
     {
-        public JournalConfiguration() : this("dbo") {}
-
-        public JournalConfiguration(string schema)
+        public void Map(EntityTypeBuilder<JournalItem> builder)
         {
-            ToTable("Journal", schema);
-            HasKey(x => new {x.PersistenceId, x.SequenceNr});
+            builder.ToTable("Journal");
+            builder.HasKey(x => new {x.PersistenceId, x.SequenceNr});
 
-            Property(x => x.PersistenceId)
-                .HasColumnName(@"PersistenceId")
-                .IsRequired()
-                .HasColumnType("nvarchar")
-                .HasMaxLength(255)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-            Property(x => x.SequenceNr)
-                .HasColumnName(@"SequenceNr")
-                .IsRequired()
-                .HasColumnType("bigint")
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-            Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("bigint");
-            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
-            Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar").HasMaxLength(500);
-            Property(x => x.Payload).HasColumnName(@"Payload").IsRequired().HasColumnType("varbinary");
-            Property(x => x.Tags).HasColumnName(@"Tags").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
+            builder.Property(x => x.PersistenceId).HasColumnName(@"PersistenceId").IsRequired().HasColumnType("nvarchar").HasMaxLength(255);
+            builder.Property(x => x.SequenceNr).HasColumnName(@"SequenceNr").IsRequired().HasColumnType("bigint");
+            builder.Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("bigint");
+            builder.Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
+            builder.Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar").HasMaxLength(500);
+            builder.Property(x => x.Payload).HasColumnName(@"Payload").IsRequired().HasColumnType("varbinary");
+            builder.Property(x => x.Tags).HasColumnName(@"Tags").IsRequired(false).HasColumnType("nvarchar").HasMaxLength(100);
         }
     }
 }

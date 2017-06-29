@@ -1,8 +1,7 @@
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Tools.Persistence.SqlPersistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Repositories.RawDataRepositories
 {
@@ -14,11 +13,11 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
     /// </summary>
     public class RawJournalRepository : IRepository<JournalItem>
     {
-        private readonly string _connectionString;
+        private readonly DbContextOptions _dbOptions;
 
-        public RawJournalRepository(string connectionString)
+        public RawJournalRepository(DbContextOptions dbOptions)
         {
-            _connectionString = connectionString;
+            _dbOptions = dbOptions;
         }
 
         public void Dispose() {}
@@ -28,16 +27,16 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             foreach (var m in messages)
                 m.PersistenceId = id;
 
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            using (var context = new AkkaSqlPersistenceContext(_dbOptions))
             {
-                context.Journal.AddOrUpdate(messages);
+                context.Journal.AddRange(messages);
                 await context.SaveChangesAsync();
             }
         }
 
         public async Task<JournalItem[]> Load(string id)
         {
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            using (var context = new AkkaSqlPersistenceContext(_dbOptions))
             {
                 return await context.Journal.Where(j => j.PersistenceId == id).OrderBy(j => j.SequenceNr).ToArrayAsync();
             }
@@ -45,14 +44,10 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
 
         public int TotalCount()
         {
-            using (var context = new AkkaSqlPersistenceContext(_connectionString))
+            using (var context = new AkkaSqlPersistenceContext(_dbOptions))
             {
                return (from x in context.Journal select x).Count();
             }
         }
-        //connection.Open();
-        //        var sqlText = @"SELECT COUNT(*) FROM Journal";
-        //var cmdJournal = new SqlCommand(sqlText, connection);
-        //var count = (int)cmdJournal.ExecuteScalar();
     }
 }

@@ -1,10 +1,28 @@
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Wire;
 
 namespace GridDomain.Tools.Persistence
 {
+    namespace Microsoft.EntityFrameworkCore
+    {
+        public interface IEntityTypeConfiguration<TEntity>where TEntity : class
+        {
+            void Map(EntityTypeBuilder<TEntity> builder);
+        }
+
+        public static class ModelBuilderExtensions
+        {
+            public static void AddConfiguration<TEntity>(this ModelBuilder modelBuilder, IEntityTypeConfiguration<TEntity> configuration)
+                where TEntity : class
+            {
+                configuration.Map(modelBuilder.Entity<TEntity>());
+            }
+        }
+    }
     internal class WireHexDeserializer
     {
         public T Deserialize<T>(string wireSerializedHexString)

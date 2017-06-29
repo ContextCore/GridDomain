@@ -75,8 +75,9 @@ namespace GridGomain.Tests.Stress
         public void Cleanup()
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(Fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
 
-            var rawJournalRepository = new RawJournalRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString);
+            var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();
             if (count != totalCommandsToIssue)
             {

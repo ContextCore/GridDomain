@@ -15,6 +15,7 @@ using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;
 using Pro.NBench.xUnit.XunitExtensions;
 using NBench;
@@ -69,7 +70,8 @@ namespace GridGomain.Tests.Stress
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
 
-            var rawJournalRepository = new RawJournalRepository(Fixture.AkkaConfig.Persistence.JournalConnectionString);
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(Fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
+            var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();
             if (count != totalCommandsToIssue)
             {

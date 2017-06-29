@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using GridDomain.Tools.Persistence.Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-    public class AkkaSqlPersistenceContext : DbContext,
-                                             IAkkaSqlPersistenceContext
+    public class AkkaSqlPersistenceContext : DbContext
     {
-        static AkkaSqlPersistenceContext()
-        {
-            Database.SetInitializer<AkkaSqlPersistenceContext>(null);
-        }
-
-        public AkkaSqlPersistenceContext(string connectionString) : base(connectionString) {}
+        public AkkaSqlPersistenceContext(DbContextOptions options) : base(options) {}
 
         public DbSet<JournalItem> Journal { get; set; } // JournalEntry
         public DbSet<Metadata> Metadatas { get; set; } // Metadata
@@ -21,6 +16,9 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 
         public bool IsSqlParameterNull(SqlParameter param)
         {
+            SaveChanges();
+            SaveChangesAsync();
+
             var sqlValue = param.SqlValue;
             var nullableValue = sqlValue as INullable;
             if (nullableValue != null)
@@ -28,21 +26,14 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             return sqlValue == null || sqlValue == DBNull.Value;
         }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Configurations.Add(new JournalConfiguration());
-            modelBuilder.Configurations.Add(new MetadataConfiguration());
-            modelBuilder.Configurations.Add(new SnapshotConfiguration());
+            modelBuilder.AddConfiguration(new JournalConfiguration());
+            modelBuilder.AddConfiguration(new MetadataConfiguration());
+            modelBuilder.AddConfiguration(new SnapshotConfiguration());
         }
 
-        public static DbModelBuilder CreateModel(DbModelBuilder modelBuilder, string schema)
-        {
-            modelBuilder.Configurations.Add(new JournalConfiguration(schema));
-            modelBuilder.Configurations.Add(new MetadataConfiguration(schema));
-            modelBuilder.Configurations.Add(new SnapshotConfiguration(schema));
-            return modelBuilder;
-        }
     }
 }

@@ -9,6 +9,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tools.Repositories.EventRepositories;
 using GridDomain.Tools.Repositories.RawDataRepositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
@@ -45,7 +46,8 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public static AggregateRepository New(string akkaWriteDbConnectionString, EventsAdaptersCatalog upgradeCatalog = null)
         {
-            var rawSqlAkkaPersistenceRepository = new RawJournalRepository(akkaWriteDbConnectionString);
+            var options = new DbContextOptionsBuilder().UseSqlServer(akkaWriteDbConnectionString).Options;
+            var rawSqlAkkaPersistenceRepository = new RawJournalRepository(options);
             var domainEventsRepository = new DomainEventsRepository(rawSqlAkkaPersistenceRepository);
             return new AggregateRepository(domainEventsRepository, upgradeCatalog);
         }

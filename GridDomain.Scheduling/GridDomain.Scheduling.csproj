@@ -172,10 +172,6 @@
       <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.CQRS.ReadModel\GridDomain.CQRS.ReadModel.csproj">
-      <Project>{c5acc8b4-289d-4654-8976-ac7cdb8d4c5e}</Project>
-      <Name>GridDomain.CQRS.ReadModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
