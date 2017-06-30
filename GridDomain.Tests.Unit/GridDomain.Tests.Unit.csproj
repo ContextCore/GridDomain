@@ -355,7 +355,6 @@
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
-    <Compile Include="PeristenceAsyncTest.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDependenciesFactory.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDomainConfiguration.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\HomeDomainConfiguration.cs" />

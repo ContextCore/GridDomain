@@ -75,7 +75,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
                       .Execute();
 
             //give some time to scheduler listeners to proceed
-            await Task.Delay(500);
+            await Task.Delay(1000);
 
             //waiting for policy call to determine should we retry failed job or not
             await _policyCallNumberChanged.Task.TimeoutAfter(TimeSpan.FromSeconds(5));

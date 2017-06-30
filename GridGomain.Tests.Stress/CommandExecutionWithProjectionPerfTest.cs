@@ -25,7 +25,6 @@ namespace GridGomain.Tests.Stress
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(Fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
 
             Fixture = new BalloonWithProjectionFixture()
                       {
@@ -34,6 +33,7 @@ namespace GridGomain.Tests.Stress
                           AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
                           LogLevel = LogEventLevel.Warning
                       };
+            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(Fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
         }
 
         [PerfSetup]

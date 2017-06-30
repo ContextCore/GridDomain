@@ -148,10 +148,8 @@ namespace GridDomain.Node.Actors
             Receive<GracefullShutdownRequest>(r =>
                                               {
                                                   Context.Watch(_stateAggregateActor);
-                                                  Become( () => Receive<Terminated>( 
-                                                      t =>
-                                                    Context.Stop(Self),
-                                                    t => t.ActorRef.Path == _stateAggregateActor.Path));
+                                                  Become( () => Receive<Terminated>( t => Context.Stop(Self),
+                                                            t => t.ActorRef.Path == _stateAggregateActor.Path));
                                                   _stateAggregateActor.Tell(r);
                                               });
 
