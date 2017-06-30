@@ -48,7 +48,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .SendToSagas(sagaContinueEventA);
 
             await Node.KillSaga<SoftwareProgrammingProcess, SoftwareProgrammingState>(sagaId);
-            await Task.Delay(200);
+
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString, new AggregateFactory())
                                                                   .Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
 

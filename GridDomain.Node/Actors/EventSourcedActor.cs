@@ -83,7 +83,8 @@ namespace GridDomain.Node.Actors
         }
         protected void StashMessage(object message)
         {
-            Log.Debug("Aggregate {id} stashing message {message}", PersistenceId, message);
+            Log.Debug("Aggregate {id} stashing message {message}á current behavior is {behavior}", PersistenceId, message, Behavior.Current);
+            
             Stash.Stash();
         }
 

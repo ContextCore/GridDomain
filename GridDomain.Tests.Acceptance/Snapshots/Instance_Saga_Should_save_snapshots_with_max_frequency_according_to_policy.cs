@@ -37,8 +37,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var sagaId = res.Message<SagaCreated<SoftwareProgrammingState>>().SourceId;
 
-            //wait some time, allowing first snapshots to be saved
-            await Task.Delay(200);
             var sagaContinueEvent = new CoffeMakeFailedEvent(sagaId, sagaStartEvent.PersonId, BusinessDateTime.UtcNow);
 
             //send text event
@@ -47,8 +45,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToSagas(sagaContinueEvent, sagaId);
 
-            //wait some time, second snapshots should not be saved due to max frequency in snapshotting policy
-            await Task.Delay(200);
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                                                                   new AggregateFactory()).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
