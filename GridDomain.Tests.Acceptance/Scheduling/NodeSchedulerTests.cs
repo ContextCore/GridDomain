@@ -1,11 +1,17 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Node;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,8 +19,32 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
+    class TestSchedulingAggregateDomainConfiguration : IDomainConfiguration
+    {
+        public void Register(IDomainBuilder builder)
+        {
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new TestAggregateCommandHandler()));
+        }
+    }
+
     public class NodeSchedulerTests : NodeTestKit
     {
+        public class SchedulerFixture : NodeTestFixture
+        {
+            public SchedulerFixture()
+            {
+               Add(new TestSchedulingAggregateDomainConfiguration());
+               this.ClearSheduledJobs();
+            }
+
+            protected override NodeSettings CreateNodeSettings()
+            {
+                var settings = base.CreateNodeSettings();
+                settings.QuartzJobRetrySettings = new InMemoryRetrySettings(4, TimeSpan.Zero);
+                return settings;
+            }
+        }
+
         public NodeSchedulerTests(ITestOutputHelper output) : base(output, new SchedulerFixture())
         {
             ResultHolder.Clear();
@@ -41,13 +71,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         }
 
         [Fact]
-        public void When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
+        public async Task When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
         {
-            var testMessage = new SuccessCommand(Name);
+            var testMessage = new SuccessCommand("yes!");
             Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
             Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
 
-            Throttle.AssertInTime(() => Assert.True(ResultHolder.Count == 1), TimeSpan.FromSeconds(20));
+            await Task.Delay(2000);
+            Assert.True(ResultHolder.Count == 1);
         }
 
         [Fact]
