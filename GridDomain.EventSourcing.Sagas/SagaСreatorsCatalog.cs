@@ -6,7 +6,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 namespace GridDomain.EventSourcing.Sagas
 {
     public class Saga—reatorsCatalog<TState> : TypeCatalog<Func<object, Guid?, ISaga<TState>>, object>,
-                                               ISaga—reatorCatalog<TState> where TState : ISagaState
+                                               ISagaCreatorCatalog<TState> where TState : ISagaState
     {
         private readonly ISagaCreator<TState> _fromStateCreator;
         private readonly ISagaDescriptor _descriptor;

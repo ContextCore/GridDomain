@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Unit
                                                                    Assembly.GetAssembly(typeof(QuartzSchedulerConfiguration)),
                                                                    Assembly.GetAssembly(typeof(SagaReceivedMessage<>)),
                                                                    Assembly.GetAssembly(typeof(Balloon)),
-                                                                   Assembly.GetAssembly(typeof(ISaga—reatorCatalog<>)),
+                                                                   Assembly.GetAssembly(typeof(ISagaCreatorCatalog<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
                                                                    Assembly.GetAssembly(typeof(ExecutionOptions))
                                                                };

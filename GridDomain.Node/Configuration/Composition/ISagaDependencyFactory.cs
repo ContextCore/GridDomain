@@ -7,7 +7,7 @@ namespace GridDomain.Node.Configuration.Composition {
     public interface ISagaDependencyFactory<TProcess, TState>: IRouteMapFactory where TState : class, ISagaState
                                                               where TProcess : Process<TState>
     {
-        ISaga—reatorCatalog<TState> CreateCatalog();
+        ISagaCreatorCatalog<TState> CreateCatalog();
         IAggregateDependencyFactory<SagaStateAggregate<TState>> StateDependencyFactory { get; }
     }
 }

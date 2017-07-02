@@ -14,11 +14,11 @@ namespace GridDomain.Node.Configuration.Composition
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapShotsPolicy;
-        private readonly Func<IUnityContainer, ISaga—reatorCatalog<TState>> _sagaCatalogCreator;
+        private readonly Func<IUnityContainer, ISagaCreatorCatalog<TState>> _sagaCatalogCreator;
         private readonly string _registrationName;
         private readonly IPersistentChildsRecycleConfiguration _persistentChildsRecycleConfiguration;
 
-        internal SagaConfiguration(Func<IUnityContainer, ISaga—reatorCatalog<TState>> factoryCreator,
+        internal SagaConfiguration(Func<IUnityContainer, ISagaCreatorCatalog<TState>> factoryCreator,
                                    string registrationName,
                                    Func<ISnapshotsPersistencePolicy> snapShotsPolicy,
                                    IConstructAggregates factory,
@@ -31,11 +31,11 @@ namespace GridDomain.Node.Configuration.Composition
             _snapShotsPolicy = snapShotsPolicy;
         }
 
-        private void Register(IUnityContainer container, ISaga—reatorCatalog<TState> catalog)
+        private void Register(IUnityContainer container, ISagaCreatorCatalog<TState> catalog)
         {
             container.RegisterInstance<IPersistentChildsRecycleConfiguration>(_registrationName, _persistentChildsRecycleConfiguration);
             container.RegisterInstance<IConstructAggregates>(_registrationName, _aggregateFactory);
-            container.RegisterInstance<ISaga—reatorCatalog<TState>>(catalog);
+            container.RegisterInstance<ISagaCreatorCatalog<TState>>(catalog);
             container.RegisterType<SagaActor<TState>>();
 
             RegisterStateAggregate<SagaStateActor<TState>>(container);

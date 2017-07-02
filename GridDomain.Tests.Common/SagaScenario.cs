@@ -51,13 +51,13 @@ namespace GridDomain.Tests.Common
     public class SagaScenario<TSaga, TState> where TSaga : Process<TState>
                                              where TState : class, ISagaState
     {
-        internal SagaScenario(ISaga—reatorCatalog<TState> ÒreatorCatalog)
+        internal SagaScenario(ISagaCreatorCatalog<TState> ÒreatorCatalog)
         {
             Saga—reatorCatalog = ÒreatorCatalog;
             StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(Guid.NewGuid());
         }
 
-        protected ISaga—reatorCatalog<TState> Saga—reatorCatalog { get; }
+        protected ISagaCreatorCatalog<TState> Saga—reatorCatalog { get; }
         public ISaga<TState> Saga { get; private set; }
         protected SagaStateAggregate<TState> StateAggregate { get; private set; }
 

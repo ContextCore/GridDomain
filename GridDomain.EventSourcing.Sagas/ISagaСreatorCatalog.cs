@@ -4,7 +4,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
 namespace GridDomain.EventSourcing.Sagas
 {
-    public interface ISaga—reatorCatalog<TState> : ISagaCreator<TState>,
+    public interface ISagaCreatorCatalog<TState> : ISagaCreator<TState>,
                                                    ISagaCreator<TState, object>
         where TState : ISagaState
     {

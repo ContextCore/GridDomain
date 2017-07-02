@@ -8,10 +8,10 @@ namespace GridDomain.Node.Configuration.Composition {
         where TState : class, ISagaState
         where TProcess : Process<TState>
     {
-        private readonly ISaga—reatorCatalog<TState> _saga—reatorCatalog;
+        private readonly ISagaCreatorCatalog<TState> _saga—reatorCatalog;
         public Func<IMessageRouteMap> RouteMapCreator { get; set; }
        
-        public DefaultSagaDependencyFactory(ISaga—reatorCatalog<TState> catalog)
+        public DefaultSagaDependencyFactory(ISagaCreatorCatalog<TState> catalog)
         {
             _saga—reatorCatalog = catalog;
         }
@@ -20,7 +20,7 @@ namespace GridDomain.Node.Configuration.Composition {
             RouteMapCreator = () => MessageRouteMap.New(descriptor);
         }
 
-        public ISaga—reatorCatalog<TState> CreateCatalog()
+        public ISagaCreatorCatalog<TState> CreateCatalog()
         {
             return _saga—reatorCatalog;
         }

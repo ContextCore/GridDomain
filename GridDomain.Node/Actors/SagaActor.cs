@@ -26,7 +26,7 @@ namespace GridDomain.Node.Actors
                                      IWithUnboundedStash where TState : class, ISagaState
     {
         private readonly ProcessEntry _exceptionOnTransit;
-        private readonly ISagaСreatorCatalog<TState> _сreatorCatalog;
+        private readonly ISagaCreatorCatalog<TState> _сreatorCatalog;
         private readonly IPublisher _publisher;
         private readonly ProcessEntry _sagaProducedCommand;
         private readonly ILoggingAdapter Log;
@@ -42,7 +42,7 @@ namespace GridDomain.Node.Actors
 
         private Guid Id { get; }
 
-        public SagaActor(ISagaСreatorCatalog<TState> сreatorCatalog,
+        public SagaActor(ISagaCreatorCatalog<TState> сreatorCatalog,
                          IPublisher publisher)
 
         {
