@@ -3,7 +3,7 @@ using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
-namespace GridGomain.Tests.Stress {
+namespace NBenchTest {
     public class NBenchTest
     {
         private Counter _counter;
