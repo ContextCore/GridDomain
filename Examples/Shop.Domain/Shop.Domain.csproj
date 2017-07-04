@@ -32,31 +32,24 @@
   <ItemGroup>
     <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="NMoneys, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Serilog.2.3.0\lib\net46\Serilog.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -148,42 +141,34 @@
     <ProjectReference Include="..\..\GridDomain.Common\GridDomain.Common.csproj">
       <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
       <Name>GridDomain.Common</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
       <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
       <Name>GridDomain.EventSourcing.Sagas</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.Logging\GridDomain.Logging.csproj">
       <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
       <Name>GridDomain.Logging</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
       <Name>GridDomain.Node</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Shop.Infrastructure\Shop.Infrastructure.csproj">
       <Project>{DD89FF59-69D6-443D-BA52-669A41F62ADC}</Project>
       <Name>Shop.Infrastructure</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
