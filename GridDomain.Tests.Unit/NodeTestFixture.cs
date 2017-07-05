@@ -105,9 +105,8 @@ namespace GridDomain.Tests.Unit
 
         private ActorSystem CreateSystem()
         {
-            if(System == null || System.TerminationTask.IsCompleted)
+            if(System == null)
                  System = ActorSystem.Create(Name, GetConfig());
-        
 
             ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 

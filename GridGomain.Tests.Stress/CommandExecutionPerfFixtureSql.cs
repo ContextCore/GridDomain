@@ -24,44 +24,46 @@ using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress
 {
-    public class CommandExecutionPerfFixture
+    public class CommandExecutionPerfFixtureSql
     {
         private Counter _counter;
-        private NodeTestFixture Fixture { get; }
+        private readonly ITestOutputHelper _testOutputHelper;
+        private NodeTestFixture _fixture;
 
-        public CommandExecutionPerfFixture(ITestOutputHelper output)
+        public CommandExecutionPerfFixtureSql(ITestOutputHelper output)
         {
+            _testOutputHelper = output;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-
-            Fixture = new BalloonFixture()
-                      {
-                          Output = output,
-                          InMemory = false,
-                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
-                          LogLevel = LogEventLevel.Warning
-                      };
         }
 
         [PerfSetup]
         public void Setup(BenchmarkContext context)
         {
-            Fixture.CreateNode().Wait();
+            _fixture = new BalloonFixture()
+                      {
+                          Output = _testOutputHelper,
+                          InMemory = false,
+                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
+                          LogLevel = LogEventLevel.Warning
+                      };
+
+            _fixture.CreateNode().Wait();
             _counter = context.GetCounter("TotalCommandsExecutedCounter");
         }
 
         private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(101,11);
 
         [NBenchFact]
-        [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
+        [PerfBenchmark(Description = "Measuring command executions without projections with sql server",
             NumberOfIterations = 5, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
-        [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 300)]
+        [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 200)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         //MAX: 500
-        public void Benchmark()
+        public void MeasureCommandExecutionWithoutProjectionsUsingSql()
         {
-            Scenario.Execute(Fixture.Node, p => _counter.Increment());
+            Scenario.Execute(_fixture.Node, p => _counter.Increment());
         }
 
 
@@ -70,18 +72,18 @@ namespace GridGomain.Tests.Stress
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
 
-            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(Fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(_fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
             var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();
             if (count != totalCommandsToIssue)
             {
-                Fixture.Output.WriteLine($"!!! Journal contains only {count} of {totalCommandsToIssue} !!!");
+                _fixture.Output.WriteLine($"!!! Journal contains only {count} of {totalCommandsToIssue} !!!");
                 Task.Delay(2000).Wait();
                 count = rawJournalRepository.TotalCount();
-                Fixture.Output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
+                _fixture.Output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
             }
 
-            Fixture.Dispose();
+            _fixture.Dispose();
         }
     }
 }

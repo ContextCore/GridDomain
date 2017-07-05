@@ -15,44 +15,45 @@ using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress
 {
-    public class CommandExecutionWithProjectionPerfTest
+    public class CommandExecutionWithProjectionPerfTestSql
     {
         private Counter _counter;
-        private readonly DbContextOptions<BalloonContext> _dbContextOptions;
-        private NodeTestFixture Fixture { get; }
+        private readonly ITestOutputHelper _testOutputHelper;
+        private NodeTestFixture _fixture;
+        private DbContextOptions<BalloonContext> _dbContextOptions;
 
-        public CommandExecutionWithProjectionPerfTest(ITestOutputHelper output)
+        public CommandExecutionWithProjectionPerfTestSql(ITestOutputHelper output)
         {
+            _testOutputHelper = output;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-
-            Fixture = new BalloonWithProjectionFixture()
-                      {
-                          Output = output,
-                          InMemory = false,
-                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
-                          LogLevel = LogEventLevel.Warning
-                      };
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(Fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
         }
 
         [PerfSetup]
         public void Setup(BenchmarkContext context)
         {
+            _fixture = new BalloonWithProjectionFixture()
+                      {
+                          Output = _testOutputHelper,
+                          InMemory = false,
+                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
+                          LogLevel = LogEventLevel.Warning
+                      };
+
+            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(_fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
 
             //warm up EF 
-            using (var ctx = new BalloonContext(_dbContextOptions))
+            using(var ctx = new BalloonContext(_dbContextOptions))
             {
                 ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
                 ctx.SaveChanges();
             }
 
-            //Database.SetInitializer(new CreateDatabaseIfNotExists<BalloonContext>());
-            TestDbTools.Truncate(Fixture.AkkaConfig.Persistence.JournalConnectionString,
-                                 "BalloonCatalogitems")
+            TestDbTools.Truncate(_fixture.AkkaConfig.Persistence.JournalConnectionString,
+                                 "BalloonCatalog")
                        .Wait();
 
-            Fixture.CreateNode().Wait();
+            _fixture.CreateNode().Wait();
 
             _counter = context.GetCounter("TotalCommandsExecutedCounter");
         }
@@ -60,40 +61,40 @@ namespace GridGomain.Tests.Stress
         private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(50, 5);
 
         [NBenchFact]
-        [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
-            NumberOfIterations = 10, RunMode = RunMode.Iterations,
-            RunTimeMilliseconds = 10000, TestMode = TestMode.Test)]
+        [PerfBenchmark(Description = "Measuring command executions with projections in sql",
+                       NumberOfIterations = 10, RunMode = RunMode.Iterations,
+                       RunTimeMilliseconds = 10000, TestMode = TestMode.Test)]
         //MAX: 400, need several launches to warm up sql server
-        [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 300)]
+        [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 200)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
-        public void Benchmark()
+        public void MeasureCommandExecutionWithProjectionsInSql()
         {
-            Scenario.Execute(Fixture.Node, p => _counter.Increment());
+            Scenario.Execute(_fixture.Node, p => _counter.Increment());
         }
 
         [PerfCleanup]
         public void Cleanup()
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
-            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(Fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(_fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
 
             var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();
             if (count != totalCommandsToIssue)
             {
-                Fixture.Output.WriteLine($"!!! Journal contains only {count} of {totalCommandsToIssue} !!!");
+                _fixture.Output.WriteLine($"!!! Journal contains only {count} of {totalCommandsToIssue} !!!");
                 Task.Delay(2000).Wait();
                 count = rawJournalRepository.TotalCount();
-                Fixture.Output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
+                _fixture.Output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
             }
 
             using (var context = new BalloonContext(_dbContextOptions))
             {
                 var projectedCount = context.BalloonCatalog.Select(x => x).Count();
-                Fixture.Output.WriteLine($"Found {projectedCount} projected rows");
+                _fixture.Output.WriteLine($"Found {projectedCount} projected rows");
             }
 
-            Fixture.Dispose();
+            _fixture.Dispose();
         }
     }
 }

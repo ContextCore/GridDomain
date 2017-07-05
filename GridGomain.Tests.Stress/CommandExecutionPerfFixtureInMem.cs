@@ -25,48 +25,54 @@ namespace GridGomain.Tests.Stress
 {
     public class CommandExecutionPerfFixtureInMem
     {
+        private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
-        private NodeTestFixture Fixture { get; }
+        private readonly ITestOutputHelper _testOutputHelper;
+        private NodeTestFixture _fixture;
 
         public CommandExecutionPerfFixtureInMem(ITestOutputHelper output)
         {
+            _testOutputHelper = output;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
 
-            Fixture = new BalloonFixture
-                      {
-                          Output = output,
-                          InMemory = true,
-                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
-                          LogLevel = LogEventLevel.Error
-                      };
+           
         }
 
         [PerfSetup]
         public void Setup(BenchmarkContext context)
         {
-            Fixture.CreateNode().Wait();
-            _counter = context.GetCounter("TotalCommandsExecutedCounter");
+            _fixture = new BalloonFixture
+                      {
+                          Output = _testOutputHelper,
+                          InMemory = true,
+                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
+                          LogLevel = LogEventLevel.Error
+                      };
+
+            _fixture.CreateNode().Wait();
+            _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }
 
         private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(101, 11);
 
         [NBenchFact]
-        [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
+        [PerfBenchmark(Description = "Measuring command executions without projections in memory",
                        NumberOfIterations = 5, RunMode = RunMode.Iterations,
                        RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
-        [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 400)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 200)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         //MAX: 500
-        public void Benchmark()
+        public void MeasureCommandExecutionWithoutProjectionsInMemory()
         {
-            Scenario.Execute(Fixture.Node, p => _counter.Increment());
+            Scenario.Execute(_fixture.Node, p => _counter.Increment());
+            _counter.Increment();
         }
 
         [PerfCleanup]
         public void Cleanup()
         {
-            Fixture.Dispose();
+            _fixture.Dispose();
         }
     }
 }

@@ -25,20 +25,21 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
             _contextCreator = contextCreator;
         }
 
-        public Task Handle(BalloonTitleChanged msg, IMessageMetadata metadata=null)
+        public async Task Handle(BalloonTitleChanged msg, IMessageMetadata metadata=null)
         {
             _log.Debug("Projecting balloon catalog from message {@msg}", msg);
             using (var context = _contextCreator())
             {
-                context.BalloonCatalog.Add(msg.ToCatalogItem());
+                var balloon = await context.BalloonCatalog.FindAsync(msg.SourceId);
+                balloon.Title = msg.Value;
+                balloon.TitleVersion++;
+                context.BalloonCatalog.Update(balloon);
                 context.SaveChanges();
 
                 _publisher.Publish(new BalloonTitleChangedNotification(){BallonId = msg.SourceId},
                                     metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
             }
             _log.Debug("Projected balloon catalog from message {@msg}", msg);
-
-            return Task.CompletedTask;
         }
 
         public Task Handle(BalloonCreated msg, IMessageMetadata metadata=null)
