@@ -88,6 +88,14 @@ namespace GridDomain.Tests.Unit
             return Node;
         }
 
+        public void InitDatabase()
+        {
+            if (InMemory) return;
+
+          //  using( var context = new SnapshotsC)
+
+        }
+
         protected virtual NodeSettings CreateNodeSettings()
         {
             var settings = new NodeSettings(CreateSystem)

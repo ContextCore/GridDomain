@@ -32,7 +32,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                plugin-dispatcher = ""akka.actor.default-dispatcher""
                                connection-string =  """ + _dbConfiguration.JournalConnectionString + @"""
                                connection-timeout = " + jornalConnectionTimeoutSeconds + @"s
-                               schema-name = dbo
+                               schema-name = "+_dbConfiguration.SchemaName + @"
                                table-name = """ + _dbConfiguration.JournalTableName + @"""
                                auto-initialize = on
                                timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""

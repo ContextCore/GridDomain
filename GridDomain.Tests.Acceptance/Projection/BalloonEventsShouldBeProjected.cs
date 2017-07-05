@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Acceptance.BalloonDomain;
@@ -12,6 +13,18 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Projection
 {
+    public static class ConnectionStrings
+    {
+        static ConnectionStrings()
+        {
+            AutoTestDb = ConfigurationManager.ConnectionStrings["AutoTestDb"]?.ConnectionString 
+                ?? 
+                new AutoTestLocalDbConfiguration().ReadModelConnectionString;
+        }
+
+        public static string AutoTestDb { get; }
+    }
+
     public class BalloonEventsShouldBeProjected : NodeTestKit
     {
         public BalloonEventsShouldBeProjected(ITestOutputHelper output) :
@@ -20,7 +33,9 @@ namespace GridDomain.Tests.Acceptance.Projection
         [Fact]
         public async Task When_Executing_command_events_should_be_projected()
         {
-            var dbOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(Fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
+            var autoTestDb = ConnectionStrings.AutoTestDb;
+
+            var dbOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(autoTestDb).Options;
             //warm up EF 
             using (var context = new BalloonContext(dbOptions))
             {
@@ -28,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.Projection
                 await context.SaveChangesAsync();
             }
 
-            await TestDbTools.Truncate(Fixture.AkkaConfig.Persistence.JournalConnectionString, "BalloonCatalog");
+            await TestDbTools.Truncate(autoTestDb, "BalloonCatalog");
             
             var cmd = new InflateNewBallonCommand(123, Guid.NewGuid());
             await Node.Prepare(cmd)

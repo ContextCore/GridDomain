@@ -24,7 +24,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                       plugin-dispatcher = ""akka.actor.default-dispatcher""
                                       connection-string = """ + akkaConf.Persistence.SnapshotConnectionString + @"""
                                       connection-timeout = " + akkaConf.Persistence.SnapshotsConnectionTimeoutSeconds + @"s
-                                      schema-name = dbo
+                                      schema-name = "+ akkaConf.Persistence.SchemaName + @"
                                       table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
                                       auto-initialize = on
                            }

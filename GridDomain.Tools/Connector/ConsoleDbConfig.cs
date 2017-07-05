@@ -8,8 +8,9 @@ namespace GridDomain.Tools.Connector
         public string JournalConnectionString { get; }
         public string MetadataTableName { get; }
         public string JournalTableName { get; }
-        public int JornalConnectionTimeoutSeconds => 30;
-        public int SnapshotsConnectionTimeoutSeconds => 30;
+        public int JornalConnectionTimeoutSeconds { get; } = 30;
+        public int SnapshotsConnectionTimeoutSeconds { get; } = 30;
         public string SnapshotTableName { get; }
+        public string SchemaName { get; } = "dbo";
     }
 }

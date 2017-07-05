@@ -296,6 +296,7 @@
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
+    <Compile Include="Configuration\Akka\WriteDbConfigSection.cs" />
     <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
     <Compile Include="Configuration\Composition\ContainerConfiguration.cs" />
     <Compile Include="Configuration\Composition\DefaultAggregateDependencyFactory.cs" />
