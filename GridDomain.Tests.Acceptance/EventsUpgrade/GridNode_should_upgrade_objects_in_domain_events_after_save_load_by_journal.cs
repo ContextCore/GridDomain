@@ -2,8 +2,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,15 +14,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : NodeTestKit
     {
         public GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal(ITestOutputHelper output)
-            : base(output, new ObjectsUpgradeFixture {InMemory = false}) {}
+            : base(output, new NodeTestFixture().UseSqlPersistence().UseAdaper(new BookOrderAdapter())) {}
 
-        private class ObjectsUpgradeFixture : NodeTestFixture
-        {
-            public ObjectsUpgradeFixture()
-            {
-                OnNodeCreatedEvent += (sender, args) => Node.EventsAdaptersCatalog.Register(new BookOrderAdapter());
-            }
-        }
 
         [Fact]
         public async Task GridNode_updates_objects_in_events_by_adapter()

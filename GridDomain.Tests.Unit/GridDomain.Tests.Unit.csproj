@@ -346,7 +346,7 @@
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestScheduledException.cs" />
-    <Compile Include="DependencyInjection\FutureEvents\NodeTestFixtureExtensions.cs" />
+    <Compile Include="NodeTestFixtureExtensions.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Reraising_future_event.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />

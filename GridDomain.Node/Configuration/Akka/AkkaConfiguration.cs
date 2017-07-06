@@ -20,8 +20,8 @@ namespace GridDomain.Node.Configuration.Akka
             _logLevel = logLevel;
         }
 
-        public IAkkaNetworkAddress Network { get; }
-        public IAkkaDbConfiguration Persistence { get; }
+        public IAkkaNetworkAddress Network { get; set; }
+        public IAkkaDbConfiguration Persistence { get; set; }
 
         public AkkaConfiguration Copy(int newPort)
         {

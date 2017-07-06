@@ -13,6 +13,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Microsoft.Practices.Unity;
@@ -45,10 +46,9 @@ namespace GridGomain.Tests.Stress
             _fixture = new BalloonFixture
                       {
                           Output = _testOutputHelper,
-                          InMemory = true,
                           AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
                           LogLevel = LogEventLevel.Error
-                      };
+                      }.UseSqlPersistence();
 
             _fixture.CreateNode().Wait();
             _counter = context.GetCounter(TotalCommandsExecutedCounter);

@@ -11,10 +11,10 @@ namespace GridDomain.Tests.Unit
     {
         protected readonly AkkaConfiguration AkkaConfig;
 
-        protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture) : base(fixture.GetConfig(), fixture.Name)
+        protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture) : base(fixture.SystemConfigFactory(), fixture.Name)
         {
             Fixture = fixture;
-            Fixture.System = Sys;
+            Fixture.ActorSystemCreator = () => Sys;
             Fixture.Output = output;
             AkkaConfig = fixture.AkkaConfig;
             Node = fixture.CreateNode().Result;

@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output, new BalloonFixture {InMemory = false}.EnableSnapshots(2)) {}
+            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots(2)) {}
 
         private readonly int[] _parameters = new int[5];
 

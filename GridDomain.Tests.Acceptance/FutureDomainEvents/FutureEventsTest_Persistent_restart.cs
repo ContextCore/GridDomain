@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
@@ -14,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
     {
         public FutureEventsTest_Persistent_restart(ITestOutputHelper helper)
         {
-            _fixture = new FutureEventsFixture(helper) {InMemory = false};
+            _fixture = new FutureEventsFixture(helper).UseSqlPersistence();
         }
 
         private readonly FutureEventsFixture _fixture;

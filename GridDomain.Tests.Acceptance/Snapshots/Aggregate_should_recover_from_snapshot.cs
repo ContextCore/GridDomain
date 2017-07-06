@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_should_recover_from_snapshot : NodeTestKit
     {
         public Aggregate_should_recover_from_snapshot(ITestOutputHelper output)
-            : base(output, new BalloonFixture {InMemory = false}.EnableSnapshots()) {}
+            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots()) {}
 
         [Fact]
         public async Task Given_persisted_snapshot_Aggregate_should_execute_command()

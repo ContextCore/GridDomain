@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low : NodeTestKit
     {
         public Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low(ITestOutputHelper output)
-            : base(output, new BalloonFixture {InMemory = false}.EnableSnapshots()) {}
+            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots()) {}
 
         [Fact]
         public async Task Given_timeout_only_default_policy()

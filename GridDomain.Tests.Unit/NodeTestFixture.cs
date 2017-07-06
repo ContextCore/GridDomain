@@ -18,11 +18,14 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
+
     public class NodeTestFixture : IDisposable
     {
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
+
+        public NodeSettings NodeSettings { get; set; }
 
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null,
                                TimeSpan? defaultTimeout = null,
@@ -33,6 +36,8 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
+            SystemConfigFactory = () => AkkaConfig.ToStandAloneInMemorySystemConfig();
+            ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
         }
         public NodeTestFixture(params IDomainConfiguration[] domainConfiguration):this()
         {
@@ -41,12 +46,10 @@ namespace GridDomain.Tests.Unit
         }
 
         public GridDomainNode Node { get; private set; }
-
-        public ActorSystem System { get; set; }
+        public ActorSystem System { get; private set; }
+        public Func<string> SystemConfigFactory { get; set; }
         public ILogger Logger { get; private set; }
         public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
-        private bool ClearDataOnStart => !InMemory;
-        public bool InMemory { get; set; } = true;
         public string Name => AkkaConfig.Network.SystemName;
         internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(3);
         public ITestOutputHelper Output { get; set; }
@@ -55,7 +58,6 @@ namespace GridDomain.Tests.Unit
         public void Dispose()
         {
             Node.Stop().Wait();
-            System = null;
         }
 
         public void Add(IDomainConfiguration config)
@@ -67,40 +69,25 @@ namespace GridDomain.Tests.Unit
             _containerConfigurations.Add(config);
         }
 
-        public string GetConfig()
-        {
-            return InMemory ? AkkaConfig.ToStandAloneInMemorySystemConfig() : AkkaConfig.ToStandAloneSystemConfig();
-        }
-
         public virtual async Task<GridDomainNode> CreateNode()
         {
-            if (ClearDataOnStart)
-                await TestDbTools.ClearData(DefaultAkkaConfig.Persistence);
-
             Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
-            var settings = CreateNodeSettings();
+            NodeSettings = CreateNodeSettings();
 
-            Node = new GridDomainNode(settings);
+            OnNodePreparingEvent.Invoke(this, this);
+            Node = new GridDomainNode(NodeSettings);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
-            OnNodeStartedEvent.Invoke(this, new EventArgs());
+            OnNodeStartedEvent.Invoke(this, Node);
 
             return Node;
-        }
-
-        public void InitDatabase()
-        {
-            if (InMemory) return;
-
-          //  using( var context = new SnapshotsC)
-
         }
 
         protected virtual NodeSettings CreateNodeSettings()
         {
             var settings = new NodeSettings(CreateSystem)
                            {
-                               QuartzConfig = InMemory ? (IQuartzConfig) new InMemoryQuartzConfig() : new PersistedQuartzConfig(),
+                               QuartzConfig = new InMemoryQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger,
                                CustomContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
@@ -110,11 +97,11 @@ namespace GridDomain.Tests.Unit
 
             return settings;
         }
-
+        public Func<ActorSystem> ActorSystemCreator { get; set; }
         private ActorSystem CreateSystem()
         {
-            if(System == null)
-                 System = ActorSystem.Create(Name, GetConfig());
+            if (System == null)
+                System = ActorSystemCreator();
 
             ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 
@@ -124,7 +111,8 @@ namespace GridDomain.Tests.Unit
             return System;
         }
 
-        public event EventHandler OnNodeStartedEvent = delegate { };
-        public event EventHandler<GridDomainNode> OnNodeCreatedEvent = delegate { };
+        public event EventHandler<GridDomainNode>  OnNodeStartedEvent   = delegate { };
+        public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };
+        public event EventHandler<GridDomainNode>  OnNodeCreatedEvent   = delegate { };
     }
 }

@@ -2,11 +2,13 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,21 +17,15 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate : NodeTestKit
     {
         public GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(ITestOutputHelper output)
-            : base(output, new EventsUpgradeFixture {InMemory = false}) {}
+            : base(output,
+                   new BalloonFixture().UseSqlPersistence().
+                                        UseAdaper(new String01Adapter())) { }
 
-        private class EventsUpgradeFixture : BalloonFixture
+        private class String01Adapter : ObjectAdapter<string, string>
         {
-            public EventsUpgradeFixture()
+            public override string Convert(string value)
             {
-                OnNodeCreatedEvent += (sender, args) => Node.EventsAdaptersCatalog.Register(new String01Adapter());
-            }
-
-            private class String01Adapter : ObjectAdapter<string, string>
-            {
-                public override string Convert(string value)
-                {
-                    return value + "01";
-                }
+                return value + "01";
             }
         }
 
@@ -38,7 +34,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             var cmd = new InflateNewBallonCommand(1, Guid.NewGuid());
 
-            await Node.Prepare(cmd).Expect<BalloonCreated>().Execute();
+            await Node.Prepare(cmd).
+                       Expect<BalloonCreated>().
+                       Execute();
 
             var aggregate = await Node.LoadAggregate<Balloon>(cmd.AggregateId);
 

@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Instance_Saga_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
             : base(
                    output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(2,TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
+                   new SoftwareProgrammingSagaFixture().UseSqlPersistence().InitSnapshots(2,TimeSpan.FromSeconds(10)).IgnoreCommands()) {}
 
         [Fact]
         public async Task Given_default_policy()

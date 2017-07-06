@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Acceptance.EventsUpgrade;
+using GridDomain.Tests.Acceptance.Tools;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
@@ -18,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy : NodeTestKit
     {
         public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
-            : base(output, new BalloonFixture {InMemory = false}.EnableSnapshots()) {}
+            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots()) {}
 
         [Fact]
         public async Task Given_default_policy()

@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         public Instance_Saga_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
             : base(output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(2)
+                   new SoftwareProgrammingSagaFixture().UseSqlPersistence().InitSnapshots(2)
                                                                         .IgnoreCommands()) {}
 
         [Fact]

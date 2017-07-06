@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Event;
 using GridDomain.Tests.Acceptance.BalloonDomain;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
@@ -35,10 +36,9 @@ namespace GridGomain.Tests.Stress
             _fixture = new BalloonWithProjectionFixture()
                       {
                           Output = _testOutputHelper,
-                          InMemory = false,
                           AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
                           LogLevel = LogEventLevel.Warning
-                      };
+                      }.UseSqlPersistence();
 
             _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(_fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
 

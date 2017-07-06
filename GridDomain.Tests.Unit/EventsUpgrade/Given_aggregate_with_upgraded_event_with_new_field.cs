@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using Xunit;
@@ -12,19 +13,10 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     public class Given_aggregate_with_upgraded_event_with_new_field : NodeTestKit
     {
         public Given_aggregate_with_upgraded_event_with_new_field(ITestOutputHelper output)
-            : base(output, new EventsUpgradeFixture()) {}
+            : base(output, new BalanceFixture().UseAdaper(new BalanceChangedDomainEventAdapter1())) {}
 
         protected Given_aggregate_with_upgraded_event_with_new_field(ITestOutputHelper output, NodeTestFixture fixture)
             : base(output, fixture) {}
-
-        protected class EventsUpgradeFixture : BalanceFixture
-        {
-            public EventsUpgradeFixture()
-            {
-                OnNodeStartedEvent +=
-                    (sender, args) => Node.EventsAdaptersCatalog.Register(new BalanceChangedDomainEventAdapter1());
-            }
-        }
 
         [Fact]
         public async Task When_aggregate_is_recovered_from_persistence()

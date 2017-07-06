@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Instance_saga_Should_recover_from_snapshot : NodeTestKit
     {
         public Instance_saga_Should_recover_from_snapshot(ITestOutputHelper helper)
-            : base(helper, new SoftwareProgrammingSagaFixture {InMemory = false}) {}
+            : base(helper, new SoftwareProgrammingSagaFixture().UseSqlPersistence()) {}
 
         [Fact]
         public async Task Test()

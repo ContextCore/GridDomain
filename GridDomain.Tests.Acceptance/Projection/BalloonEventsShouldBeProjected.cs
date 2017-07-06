@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Acceptance.BalloonDomain;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
@@ -17,8 +18,8 @@ namespace GridDomain.Tests.Acceptance.Projection
     {
         static ConnectionStrings()
         {
-            AutoTestDb = ConfigurationManager.ConnectionStrings["AutoTestDb"]?.ConnectionString 
-                ?? 
+            AutoTestDb = ConfigurationManager.ConnectionStrings["AutoTestDb"]?.ConnectionString
+                ??
                 new AutoTestLocalDbConfiguration().ReadModelConnectionString;
         }
 
@@ -28,7 +29,7 @@ namespace GridDomain.Tests.Acceptance.Projection
     public class BalloonEventsShouldBeProjected : NodeTestKit
     {
         public BalloonEventsShouldBeProjected(ITestOutputHelper output) :
-            base(output, new BalloonWithProjectionFixture() {InMemory = false}) {}
+            base(output, new BalloonWithProjectionFixture().UseSqlPersistence()) {}
 
         [Fact]
         public async Task When_Executing_command_events_should_be_projected()

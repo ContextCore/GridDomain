@@ -4,7 +4,9 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.EventsUpgrade;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
@@ -16,22 +18,16 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class Future_events_upgraded_by_object_adapter : NodeTestKit
     {
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
-            : base(output, new FutureEventsAdapterFixture {InMemory = false}) {}
+            : base(output,
+                   new BalanceFixture().UseSqlPersistence().
+                                        InitFastRecycle().
+                                        UseAdaper(new IncreaseBy100Adapter())) { }
 
-        private class FutureEventsAdapterFixture : BalanceFixture
+        private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>
         {
-            public FutureEventsAdapterFixture()
+            public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V1 evt)
             {
-                this.InitFastRecycle();
-                OnNodeCreatedEvent += (sender, args) => Node.EventsAdaptersCatalog.Register(new IncreaseBy100Adapter());
-            }
-
-            private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>
-            {
-                public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V1 evt)
-                {
-                    return new BalanceChangedEvent_V1(evt.AmountChange + 100, evt.SourceId, evt.CreatedTime, evt.SagaId);
-                }
+                return new BalanceChangedEvent_V1(evt.AmountChange + 100, evt.SourceId, evt.CreatedTime, evt.SagaId);
             }
         }
 
@@ -40,10 +36,14 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), false);
 
-            var res = await Node.Prepare(cmd).Expect<BalanceChangedEvent_V1>().Execute();
+            var res = await Node.Prepare(cmd).
+                                 Expect<BalanceChangedEvent_V1>().
+                                 Execute();
 
             //event should be modified by json object adapter, changing its Amount
-            Assert.Equal(101, res.Message<BalanceChangedEvent_V1>().AmountChange);
+            Assert.Equal(101,
+                         res.Message<BalanceChangedEvent_V1>().
+                             AmountChange);
         }
     }
 }

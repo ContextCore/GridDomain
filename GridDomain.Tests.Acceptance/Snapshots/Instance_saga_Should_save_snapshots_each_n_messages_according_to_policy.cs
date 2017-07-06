@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Instance_saga_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
             : base(
                    output,
-                   new SoftwareProgrammingSagaFixture {InMemory = false}.InitSnapshots(5, TimeSpan.FromMilliseconds(5), 2)
+                   new SoftwareProgrammingSagaFixture().UseSqlPersistence().InitSnapshots(5, TimeSpan.FromMilliseconds(5), 2)
                                                                         .IgnoreCommands()) { }
 
         [Fact]
