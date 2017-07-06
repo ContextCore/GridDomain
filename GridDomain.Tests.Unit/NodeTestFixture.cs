@@ -25,8 +25,6 @@ namespace GridDomain.Tests.Unit
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
 
-        public NodeSettings NodeSettings { get; set; }
-
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null,
                                TimeSpan? defaultTimeout = null,
                                ITestOutputHelper helper = null)
@@ -44,7 +42,7 @@ namespace GridDomain.Tests.Unit
             foreach (var c in domainConfiguration)
                 Add(c);
         }
-
+        public NodeSettings NodeSettings { get; private set; }
         public GridDomainNode Node { get; private set; }
         public ActorSystem System { get; private set; }
         public Func<string> SystemConfigFactory { get; set; }

@@ -17,12 +17,12 @@ namespace GridDomain.Tests.Common
 
         public static async Task Truncate(string connection, params string[] tableNames)
         {
-            await ExecuteSql(connection, tableNames.Select(t => $"Truncate table {t}").ToArray());
+            await ExecuteSql(connection, tableNames.Select(t => $"IF OBJECT_ID('{t}') IS NOT NULL BEGIN  Truncate table {t} END ").ToArray());
         }
 
         private static async Task Delete(string connection, params string[] tableNames)
         {
-            await ExecuteSql(connection, tableNames.Select(t => $"Delete from {t}").ToArray());
+            await ExecuteSql(connection, tableNames.Select(t => $"IF OBJECT_ID('{t}') IS NOT NULL BEGIN  Delete from {t}  END").ToArray());
         }
 
         private static async Task ExecuteSql(string connection, params string[] sqlCommand)

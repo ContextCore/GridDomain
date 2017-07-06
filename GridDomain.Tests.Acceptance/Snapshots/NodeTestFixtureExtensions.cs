@@ -15,12 +15,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
         {
             fixture.AkkaConfig.Persistence = GetConfig();
             fixture.OnNodePreparingEvent += (s,e) => TestDbTools.ClearData(e.AkkaConfig.Persistence).Wait();
-            fixture.NodeSettings.QuartzConfig = new PersistedQuartzConfig();
+            fixture.OnNodePreparingEvent += (s,e) => e.NodeSettings.QuartzConfig = new PersistedQuartzConfig();
             fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToStandAloneSystemConfig();
 
             return fixture;
 
-        }
+        } 
 
         private static IAkkaDbConfiguration GetConfig()
         {

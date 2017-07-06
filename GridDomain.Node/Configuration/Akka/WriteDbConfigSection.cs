@@ -4,11 +4,14 @@ namespace GridDomain.Node.Configuration.Akka {
 
     public class WriteDbConfigSection : ConfigurationSection, IAkkaDbConfiguration
     {
-        [ConfigurationProperty(nameof(SnapshotConnectionString))]
-        public string SnapshotConnectionString => (string)base[nameof(SnapshotConnectionString)];
+        private const string SnapshotConnectionStringName = "snapshotsConnectionString";
+        private const string JournalConnectionStringName  = "journalConnectionString";
 
-        [ConfigurationProperty(nameof(JournalConnectionString))]
-        public string JournalConnectionString => (string)base[nameof(JournalConnectionString)];
+        [ConfigurationProperty(SnapshotConnectionStringName)]
+        public string SnapshotConnectionString => (string)base[SnapshotConnectionStringName];
+
+        [ConfigurationProperty(JournalConnectionStringName)]
+        public string JournalConnectionString => (string)base[JournalConnectionStringName];
 
         [ConfigurationProperty(nameof(MetadataTableName),DefaultValue = "Metadata",IsRequired = false)]
         public string MetadataTableName => (string)base[nameof(MetadataTableName)];
@@ -22,7 +25,7 @@ namespace GridDomain.Node.Configuration.Akka {
         [ConfigurationProperty(nameof(SnapshotsConnectionTimeoutSeconds), DefaultValue =30, IsRequired = false)]
         public int SnapshotsConnectionTimeoutSeconds => (int)base[nameof(SnapshotsConnectionTimeoutSeconds)];
 
-        [ConfigurationProperty(nameof(SnapshotTableName), DefaultValue = "SnapShots", IsRequired = false)]
+        [ConfigurationProperty(nameof(SnapshotTableName), DefaultValue = "Snapshots", IsRequired = false)]
         public string SnapshotTableName => (string)base[nameof(SnapshotTableName)];
 
         [ConfigurationProperty(nameof(SchemaName), DefaultValue = "dbo", IsRequired = false)]

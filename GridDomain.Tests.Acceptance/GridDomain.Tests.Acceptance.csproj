@@ -386,7 +386,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GridDomain.Tests.Acceptance.dll.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
