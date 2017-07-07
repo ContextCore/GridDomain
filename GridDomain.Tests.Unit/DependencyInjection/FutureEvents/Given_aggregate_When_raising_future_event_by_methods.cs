@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
@@ -24,11 +25,10 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
 
             //quite ugly, but it only safe way to run some logic after scheduled event persistence
             aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid(),
-                                          () => { AfterScheduledEventOccures(aggregate, futureEventEnvelop, testCommand); }
-                                         );
+                                         () => AfterScheduledEventOccures(aggregate, futureEventEnvelop, testCommand));
         }
 
-        private static void AfterScheduledEventOccures(FutureEventsAggregate aggregate,
+        private static Task AfterScheduledEventOccures(FutureEventsAggregate aggregate,
                                                        FutureEventScheduledEvent futureEventEnvelop,
                                                        ScheduleEventInFutureCommand testCommand)
         {
@@ -51,6 +51,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
             Assert.Equal(((TestDomainEvent) futureEventEnvelop.Event).Id, producedEvent.Id);
             //Future_event_contains_data_from_command()
             Assert.Equal(testCommand.Value, producedEvent.Value);
+            return Task.CompletedTask;
         }
     }
 }

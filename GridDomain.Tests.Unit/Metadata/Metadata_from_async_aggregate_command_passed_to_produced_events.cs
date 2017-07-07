@@ -51,8 +51,8 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
             Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId).Name, step.Who);
-            Assert.Equal(AggregateActor<Balloon>.CommandExecutionCreatedAnEvent, step.Why);
-            Assert.Equal(AggregateActor<Balloon>.PublishingEvent, step.What);
+            Assert.Equal(SimpleAggregateActorConstants.CommandExecutionCreatedAnEvent, step.Why);
+            Assert.Equal(SimpleAggregateActorConstants.PublishingEvent, step.What);
         }
     }
 }

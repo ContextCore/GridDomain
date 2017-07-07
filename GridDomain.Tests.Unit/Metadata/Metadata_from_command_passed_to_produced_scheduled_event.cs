@@ -50,8 +50,8 @@ namespace GridDomain.Tests.Unit.Metadata
             var step = answer.Metadata.History.Steps.First();
 
             Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId).Name, step.Who);
-            Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandExecutionCreatedAnEvent, step.Why);
-            Assert.Equal(AggregateActor<FutureEventsAggregate>.PublishingEvent, step.What);
+            Assert.Equal(SimpleAggregateActorConstants.CommandExecutionCreatedAnEvent, step.Why);
+            Assert.Equal(SimpleAggregateActorConstants.PublishingEvent, step.What);
         }
     }
 }

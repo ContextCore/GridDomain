@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -23,7 +24,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                                     .Expect<BalloonTitleChangedNotification>()
                                     .Execute();
 
-            var changedEvent = results.Message<BalloonTitleChangedNotification>();
+            var changedEvent = results.Received;
             var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
 
             //Results_contains_received_messages()

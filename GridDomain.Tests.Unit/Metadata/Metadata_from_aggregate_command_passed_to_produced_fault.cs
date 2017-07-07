@@ -55,8 +55,8 @@ namespace GridDomain.Tests.Unit.Metadata
             var step = metadata.History.Steps.First();
 
             Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId).Name, step.Who);
-            Assert.Equal(AggregateActor<Balloon>.CommandRaisedAnError, step.Why);
-            Assert.Equal(AggregateActor<Balloon>.CreatedFault, step.What);
+            Assert.Equal(SimpleAggregateActorConstants.CommandRaisedAnError, step.Why);
+            Assert.Equal(SimpleAggregateActorConstants.CreatedFault, step.What);
         }
     }
 }

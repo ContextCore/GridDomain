@@ -29,8 +29,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             string messageSerialization=null;
 
 #if DEBUG
-            //some messages should can not be serialized 8( for example aggregates 
-            messageSerialization = @"  #serialize-messages = on
+            messageSerialization = @"  serialize-messages = on
                                        serialize-creators = on";
 #endif
             var actorConfig = @"   

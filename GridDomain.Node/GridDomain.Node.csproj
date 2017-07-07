@@ -215,6 +215,8 @@
     <Compile Include="ActorSystemFactory.cs" />
     <Compile Include="ActorSystemNullException.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
+    <Compile Include="Actors\AggregateActor - Copy.cs" />
+    <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="Actors\AggregateExecutionException.cs" />
     <Compile Include="Actors\AggregateHubActor.cs" />
     <Compile Include="Actors\BehaviorStack.cs" />
@@ -329,7 +331,6 @@
     <Compile Include="Actors\SagaHubActor.cs" />
     <Compile Include="Actors\GracefullShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
-    <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaConfigurationExtensions.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
     <Compile Include="Actors\PersistentHubActor.cs" />

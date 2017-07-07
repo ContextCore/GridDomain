@@ -42,7 +42,7 @@ namespace GridDomain.EventSourcing
         /// <param name="futureEventId"></param>
         /// <param name="futureEventOccuredEventId"></param>
         /// <param name="afterEventsPersistence"></param>
-        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId, Action afterEventsPersistence = null)
+        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId, Func<Task> afterEventsPersistence = null)
         {
             FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (ev == null)
@@ -52,8 +52,8 @@ namespace GridDomain.EventSourcing
 
             //How to handle case when applying occured event will raise an exception?
              Emit(afterEventsPersistence,
-                 ev.Event,
-                 futureEventOccuredEvent);
+                  ev.Event,
+                  futureEventOccuredEvent);
         }
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
@@ -61,7 +61,7 @@ namespace GridDomain.EventSourcing
              Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
-        protected void Emit(DomainEvent @event, Action afterApply, DateTime raiseTime, Guid? futureEventId = null)
+        protected void Emit(DomainEvent @event, Func<Task> afterApply, DateTime raiseTime, Guid? futureEventId = null)
         {
             Emit(afterApply, new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }

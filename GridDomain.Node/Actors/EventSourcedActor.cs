@@ -34,19 +34,19 @@ namespace GridDomain.Node.Actors
 
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
-            State = aggregateConstructor.Build(typeof(T), Id, null);
+            State = (T)aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
             Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
             DefaultBehavior();
 
-            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
+            Recover<DomainEvent>(e => { ((IAggregate)State).ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
             {
                 _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
-                State = aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
+                State = (T)aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
                 RecoverFromSnapshot();
             });
 
@@ -100,7 +100,7 @@ namespace GridDomain.Node.Actors
 
         protected Guid Id { get; }
         public override string PersistenceId { get; }
-        public IAggregate State { get; protected set; }
+        public T State { get; protected set; }
 
         protected bool TrySaveSnapshot(IAggregate aggregate)
         {

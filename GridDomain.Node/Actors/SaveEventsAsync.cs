@@ -1,18 +1,49 @@
 using System;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Node.Actors
 {
     class SaveEventsAsync
     {
-        public SaveEventsAsync(AggregateBase newState, Action continuation)
+        private SaveEventsAsync()
         {
-            Continuation = continuation;
-            NewState = newState;
-        }
 
-        public Action Continuation { get; }
-        public AggregateBase NewState { get; }
+        }
+        public static SaveEventsAsync Instance { get; } = new SaveEventsAsync();
+    }
+
+    public class ProducedEventsPersisted
+    {
+        private ProducedEventsPersisted()
+        {
+            
+        }
+        public static ProducedEventsPersisted Instance { get; } = new ProducedEventsPersisted();
+    }
+    public class EventPersistingInProgress
+    {
+        public EventPersistingInProgress()
+        {
+
+        }
+        public static EventPersistingInProgress Instance { get; } = new EventPersistingInProgress();
+    }
+
+    public class CommandHandlerExecuted
+    {
+        private CommandHandlerExecuted()
+        {
+
+        }
+        public static CommandHandlerExecuted Instance { get; } = new CommandHandlerExecuted();
+    }
+
+    public class CommandExecuted
+    {
+        private CommandExecuted()
+        {
+
+        }
+        public static CommandExecuted Instance { get; } = new CommandExecuted();
     }
 }

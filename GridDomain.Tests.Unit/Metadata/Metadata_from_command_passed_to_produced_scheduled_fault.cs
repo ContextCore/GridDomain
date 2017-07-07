@@ -53,8 +53,8 @@ namespace GridDomain.Tests.Unit.Metadata
             var step = schedulingCommandFault.Metadata.History.Steps.First();
 
             Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId).Name, step.Who);
-            Assert.Equal(AggregateActor<FutureEventsAggregate>.CommandRaisedAnError, step.Why);
-            Assert.Equal(AggregateActor<FutureEventsAggregate>.CreatedFault, step.What);
+            Assert.Equal(SimpleAggregateActorConstants.CommandRaisedAnError, step.Why);
+            Assert.Equal(SimpleAggregateActorConstants.CreatedFault, step.What);
         }
     }
 }
