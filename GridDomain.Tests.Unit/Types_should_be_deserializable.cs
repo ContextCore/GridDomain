@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Akka.Actor;
+using Akka.DI.Core;
+using Akka.Serialization;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -21,17 +25,27 @@ namespace GridDomain.Tests.Unit
 {
     public class Types_should_be_deserializable : TypesDeserializationTest
     {
+        protected override ObjectDeserializationChecker Checker { get; } 
+
         public Types_should_be_deserializable()
         {
             Fixture.Register<ICommand>(() => new FakeCommand(Guid.NewGuid()));
             Fixture.Register<Command>(() => new FakeCommand(Guid.NewGuid()));
             Fixture.Register<DomainEvent>(() => new BalloonCreated("1", Guid.NewGuid()));
+
+            var sys = (ExtendedActorSystem)ActorSystem.Create("test");
+            sys.InitDomainEventsSerialization(new EventsAdaptersCatalog());
+
+            Checker = new ObjectDeserializationChecker(null, new DomainEventsJsonAkkaSerializer(sys),
+                                                             new WireSerializer(sys),
+                                                             new NewtonSoftJsonSerializer(sys));
         }
 
         protected override IEnumerable<Type> ExcludeTypes
         {
             get
             {
+               // yield return;
                 yield return typeof(SagaStateAggregate<>);
                 yield return typeof(SagaCreated<>);
                 yield return typeof(SagaReceivedMessage<>);

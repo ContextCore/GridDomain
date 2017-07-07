@@ -26,7 +26,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         public string Build()
         {
-            var messageSerialization = "";
+            string messageSerialization=null;
 
 #if DEBUG
             messageSerialization = @"  serialize-messages = on
@@ -37,6 +37,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
              " + messageSerialization + @"
              serializers {
                         wire = """ + typeof(WireSerializer).AssemblyQualifiedShortName() + @"""
+                        wireDebug = """ + typeof(DebugWireSerializer).AssemblyQualifiedShortName() + @"""
                         json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
@@ -45,7 +46,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                    """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = json
                                   # for local snapshots storage
                                    ""Akka.Persistence.Serialization.Snapshot, Akka.Persistence"" = json
-                                   ""System.Object"" = wire
+                                   ""System.Object"" = wireDebug
 
              }
        }";

@@ -237,13 +237,13 @@ namespace GridDomain.Node.Actors
             if (Saga.State.Id != GetSagaId(msg) && !_сreatorCatalog.CanCreateFrom(msg))
             {
                 Log.Error("Existing saga {saga} {sagaid} received message {@message} targeting different saga. Saga will not proceed.", typeof(TState), Saga.State.Id, msg);
-
             }
             //block any other executing until saga completes transition
             //cast is need for dynamic call of Transit
 
             Behavior.Become(() => AwaitingTransitionBehavior(msg, metadata), nameof(AwaitingTransitionBehavior));
 
+            Log.Warning("transiting saga by message " + msg);
             Task<TransitionResult<TState>> processSagaTask = Saga.PreviewTransit((dynamic)msg);
             processSagaTask.ContinueWith(t => new SagaTransited(t.Result.ProducedCommands.ToArray(),
                                                                 metadata,

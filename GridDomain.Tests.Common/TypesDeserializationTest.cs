@@ -12,7 +12,8 @@ namespace GridDomain.Tests.Common
     public abstract class TypesDeserializationTest
     {
         private readonly HashSet<Type> _excludes;
-        protected ObjectDeserializationChecker Checker = new ObjectDeserializationChecker();
+        protected abstract ObjectDeserializationChecker Checker { get; }
+                                                       
         protected Fixture Fixture;
 
         protected TypesDeserializationTest()
@@ -68,7 +69,7 @@ namespace GridDomain.Tests.Common
                     results.Add(RestoreResult.Error(type,ex));
                 }
 
-            results.AddRange(RestoreAll(objects));
+            results.AddRange(RestoreAll(objects.ToArray()));
 
             CheckResults(results.ToArray());
         }

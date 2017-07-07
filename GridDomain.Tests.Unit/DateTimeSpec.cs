@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.Tests.Common;
+using Helios.Util;
 using Xunit;
 
 namespace GridDomain.Tests.Unit

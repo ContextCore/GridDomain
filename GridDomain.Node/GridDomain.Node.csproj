@@ -316,6 +316,7 @@
     <Compile Include="Configuration\Composition\ISagaDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\MessageHandlerFactory.cs" />
     <Compile Include="Configuration\Composition\SagaStateDependencyFactory.cs" />
+    <Compile Include="DebugWireSerializer.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultExceptionPolicy.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
