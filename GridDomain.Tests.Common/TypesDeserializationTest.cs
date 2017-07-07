@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Common
         private readonly HashSet<Type> _excludes;
         protected abstract ObjectDeserializationChecker Checker { get; }
                                                        
-        protected Fixture Fixture;
+        protected readonly Fixture Fixture;
 
         protected TypesDeserializationTest()
         {
@@ -34,24 +34,26 @@ namespace GridDomain.Tests.Common
         protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
         protected Type[] TypesCache { get; }
 
-        protected void CheckAllChildrenOf<T>(params Assembly[] assembly)
+        protected void CheckAllChildrenOf<T>(ObjectDeserializationChecker objectDeserializationChecker, params Assembly[] assembly)
         {
             var allTypes =
                 assembly.SelectMany(a => a.GetTypes())
                         .Where(
                                t =>
-                                   typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface
+                                   typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface && !t.IsGenericTypeDefinition
                                    && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
 
-            CheckAll<T>(allTypes.ToArray());
+            CheckAll<T>(objectDeserializationChecker, allTypes.ToArray());
         }
 
-        protected void CheckAll<T>(params Type[] types)
+
+        protected void CheckAll<T>(ObjectDeserializationChecker objectDeserializationChecker, params Type[] types)
         {
             var objects = new List<object>();
             var results = new List<RestoreResult>();
-            foreach (var type in types.Where(t => !_excludes.Contains(t)))
+
+            foreach (var type in types.Where(t => !_excludes.Contains(t) && typeof(T).IsAssignableFrom(t)))
                 try
                 {
                     var constructedType = type;
@@ -69,9 +71,13 @@ namespace GridDomain.Tests.Common
                     results.Add(RestoreResult.Error(type,ex));
                 }
 
-            results.AddRange(RestoreAll(objects.ToArray()));
-
+            results.AddRange(RestoreAll(objectDeserializationChecker, objects.ToArray()));
             CheckResults(results.ToArray());
+        }
+
+        protected void CheckAll(ObjectDeserializationChecker objectDeserializationChecker, params object[] objects)
+        {
+            CheckResults(RestoreAll(objectDeserializationChecker, objects).ToArray());
         }
 
         protected static void CheckResults(params RestoreResult[] results)
@@ -90,13 +96,13 @@ namespace GridDomain.Tests.Common
             Assert.True(true, sb.ToString());
         }
 
-        protected RestoreResult[] RestoreAll(params object[] objects)
+        protected static RestoreResult[] RestoreAll(ObjectDeserializationChecker checker, params object[] objects)
         {
             var restoreResults = new List<RestoreResult>();
             foreach (var obj in objects)
                 try
                 {
-                    restoreResults.Add(Checker.IsRestorable(obj, out string difference) ?
+                    restoreResults.Add(checker.IsRestorable(obj, out string difference) ?
                         RestoreResult.Ok(obj.GetType()) : 
                         RestoreResult.Diff(obj.GetType(), difference));
                 }

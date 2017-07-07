@@ -25,6 +25,7 @@ namespace GridDomain.Tests.Unit
 {
     public class Types_should_be_deserializable : TypesDeserializationTest
     {
+        private readonly ExtendedActorSystem _system;
         protected override ObjectDeserializationChecker Checker { get; } 
 
         public Types_should_be_deserializable()
@@ -32,27 +33,19 @@ namespace GridDomain.Tests.Unit
             Fixture.Register<ICommand>(() => new FakeCommand(Guid.NewGuid()));
             Fixture.Register<Command>(() => new FakeCommand(Guid.NewGuid()));
             Fixture.Register<DomainEvent>(() => new BalloonCreated("1", Guid.NewGuid()));
+            Fixture.Register<Exception>(() => new Exception("test exception"));
 
-            var sys = (ExtendedActorSystem)ActorSystem.Create("test");
-            sys.InitDomainEventsSerialization(new EventsAdaptersCatalog());
+            _system = (ExtendedActorSystem)ActorSystem.Create("test");
+            _system.InitDomainEventsSerialization(new EventsAdaptersCatalog());
 
-            Checker = new ObjectDeserializationChecker(null, new DomainEventsJsonAkkaSerializer(sys),
-                                                             new WireSerializer(sys),
-                                                             new NewtonSoftJsonSerializer(sys));
+            Checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system), new WireSerializer(_system));
         }
 
-        protected override IEnumerable<Type> ExcludeTypes
+        private ObjectDeserializationChecker GetChecker(params Serializer[] ser)
         {
-            get
-            {
-               // yield return;
-                yield return typeof(SagaStateAggregate<>);
-                yield return typeof(SagaCreated<>);
-                yield return typeof(SagaReceivedMessage<>);
-                yield return typeof(CreateNewStateCommand<>);
-                yield return typeof(SaveStateCommand<>);
-            }
+            return new ObjectDeserializationChecker(null, ser);
         }
+        protected override IEnumerable<Type> ExcludeTypes => new List<Type>();
 
         private class FakeCommand : Command
         {
@@ -70,37 +63,45 @@ namespace GridDomain.Tests.Unit
                                                                };
 
         [Fact]
-        public void Aggregates_from_all_assemblies_should_be_deserializable()
+        public void Aggregates_from_all_assemblies_should_be_deserializable_by_json()
         {
-            CheckAllChildrenOf<IAggregate>(AllAssemblies);
+            var checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system));
+            CheckAllChildrenOf<IAggregate>(checker, AllAssemblies);
         }
 
         [Fact]
-        public void Commands_from_all_assemblies_should_be_deserializable()
+        public void Commands_from_all_assemblies_should_be_deserializable_by_json_and_wire()
         {
-            CheckAllChildrenOf<ICommand>(AllAssemblies);
+            CheckAllChildrenOf<ICommand>(Checker, AllAssemblies);
         }
 
         [Fact]
-        public void DomainEvents_from_all_assemblies_should_be_deserializable()
+        public void DomainEvents_from_all_assemblies_should_be_deserializable_by_json_and_wire()
         {
-            CheckAllChildrenOf<DomainEvent>(AllAssemblies);
+            CheckAllChildrenOf<DomainEvent>(Checker, AllAssemblies);
         }
 
         [Fact]
-        public void Saga_commands_aggregates_and_events_should_be_deserializable()
+        public void SagaState_from_all_assemblies_should_be_deserializable_by_json_and_wire()
+        {
+            CheckAllChildrenOf<ISagaState>(Checker, AllAssemblies);
+        }
+
+
+        [Fact]
+        public void Saga_commands_aggregates_and_events_should_be_deserializable_by_json()
         {
             var state = Fixture.Create<SoftwareProgrammingState>();
             var aggregate = new SagaStateAggregate<SoftwareProgrammingState>(state);
             aggregate.PersistAll();
-            Checker.AfterRestore = o =>
+            var checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system));
+            checker.AfterRestore = o =>
                                    {
-                                       //little hack because version will be deserialized 
-                                       //and increased from produced events
                                        ((IMemento) o).Version = 0;
                                        ((Aggregate) o).PersistAll();
                                    };
-            CheckResults(Checker.IsRestorable(aggregate, out string difference1) ?
+
+            CheckResults(checker.IsRestorable(aggregate, out string difference1) ?
                              RestoreResult.Ok(aggregate.GetType()) :
                              RestoreResult.Diff(aggregate.GetType(), difference1));
         }
@@ -108,13 +109,14 @@ namespace GridDomain.Tests.Unit
         [Fact]
         public void MessageMetadata_classes_should_be_deserializable()
         {
-            CheckAll<object>(typeof(MessageMetadata));
+            CheckAll<object>(Checker, typeof(MessageMetadata));
         }
+
 
         [Fact]
         public void Scheduler_job_types_from_all_assemblies_should_be_deserializable()
         {
-            CheckAll<object>(typeof(ExecutionOptions), typeof(ExecutionOptions), typeof(ScheduleKey));
+            CheckAll<object>(Checker, typeof(ExecutionOptions), typeof(ScheduleKey));
         }
     }
 }

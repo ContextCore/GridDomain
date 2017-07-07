@@ -54,6 +54,8 @@ namespace GridDomain.Node.Actors
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
         private readonly List<IActorRef> _commandCompletedWaiters = new List<IActorRef>();
+        private AggregateBase UncomfirmedState { get; set; }
+        private Action StateConfirmedContinuation { get; set; }
 
         public new TAggregate State
         {
@@ -84,7 +86,12 @@ namespace GridDomain.Node.Actors
         private void RegisterAggregatePersistence()
         {
             State.RegisterPersistence((newStateTask, continuation) =>
-                                          newStateTask.ContinueWith(t => new SaveEventsAsync(t.Result, continuation))
+                                          newStateTask.ContinueWith(t =>
+                                                                    {
+                                                                        UncomfirmedState = t.Result;
+                                                                        StateConfirmedContinuation = continuation;
+                                                                        return new SaveEventsAsync(t.Result, continuation);
+                                                                    })
                                                       .PipeTo(Self));
         }
 
