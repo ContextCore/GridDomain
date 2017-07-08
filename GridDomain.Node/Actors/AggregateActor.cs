@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Automatonymous;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Logging;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Akka.Messages;
@@ -251,6 +253,69 @@ namespace GridDomain.Node.Actors
             var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
             var unscheduleMessage = new Unschedule(key);
             return _schedulerActorRef.Ask<Unscheduled>(unscheduleMessage);
+        }
+    }
+
+    public class SchedulingState : ISagaState
+    {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        public Guid Id { get; }
+        public string CurrentStateName { get; set; }
+    }
+   //\   public Event<GotTiredEvent> GotTired { get; private set; }
+   //public Event<CoffeMadeEvent> CoffeReady { get; private set; }
+   //public Event<SleptWellEvent> SleptWell { get; private set; }
+   //public Event<Fault<GoSleepCommand>> SleptBad { get; private set; }
+   //public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
+   //
+   //public State Coding { get; private set; }
+   //public State MakingCoffee { get; private set; }
+   //public State Sleeping { get; private set; }
+    public class ScedulingProcess : Process<SchedulingState>
+    {
+
+        public ScedulingProcess()
+        {
+           // During(Coding,
+           //     When(GotTired).Then(context =>
+           //                         {
+           //                             var sagaData = context.Instance;
+           //                             var domainEvent = context.Data;
+           //                             sagaData.PersonId = domainEvent.SourceId;
+           //                             Log.Verbose("Hello trace string");
+           //                             Dispatch(new MakeCoffeCommand(domainEvent.SourceId, sagaData.CoffeeMachineId));
+           //                         })
+           //                   .TransitionTo(MakingCoffee),
+           //     When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
+
+            During(Initial,
+                   When(Schedule).Then((s, e) =>
+                                       {
+                                           Dispatch(new );
+                                       }))
+
+        }
+        public State Scheduling { get; set; }
+        public State Scheduled{ get; set; }
+        public State Cancelling{ get; set; }
+
+        public Event<FutureEventCanceledEvent> Cancel { get; private set; }
+        public Event<Fault<CancelScheduledDomainEventCommand>> CancelFail { get; private set; }
+        public Event<Fault<RaiseScheduledDomainEventCommand>> ScheduleFail { get; private set; }
+        public Event<FutureEventScheduledEvent> Schedule { get; private set; }
+    }
+
+    public class CancelScheduledDomainEventCommand : Command
+    {
+        public Guid[] Events { get; }
+
+        public CancelScheduledDomainEventCommand(Guid aggregareId, params Guid[] events):base(aggregareId)
+        {
+            Events = events;
         }
     }
 }
