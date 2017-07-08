@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Aggregate;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.FutureEvents;

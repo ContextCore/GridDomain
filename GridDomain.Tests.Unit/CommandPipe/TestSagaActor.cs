@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 
 namespace GridDomain.Tests.Unit.CommandPipe
 {

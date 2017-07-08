@@ -10,8 +10,12 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Aggregate;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.Hadlers;
+using GridDomain.Node.Actors.Saga;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

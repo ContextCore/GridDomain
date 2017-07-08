@@ -6,6 +6,8 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.Messages;
+using GridDomain.Node.Actors.Saga;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Unit.Sagas;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;

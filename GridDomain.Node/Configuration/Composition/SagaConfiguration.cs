@@ -6,6 +6,10 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Aggregate;
+using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Node.Actors.PersistentHub;
+using GridDomain.Node.Actors.Saga;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition

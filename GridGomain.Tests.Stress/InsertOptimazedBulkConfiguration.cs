@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.PersistentHub;
 
 namespace GridGomain.Tests.Stress
 {

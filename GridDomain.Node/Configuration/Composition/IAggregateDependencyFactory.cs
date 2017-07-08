@@ -4,6 +4,8 @@ using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Node.Actors.PersistentHub;
 
 namespace GridDomain.Node.Configuration.Composition
 {

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 
 namespace GridDomain.Tests.Unit.Sagas
 {

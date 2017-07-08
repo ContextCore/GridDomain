@@ -7,6 +7,7 @@ using Akka.Actor;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;

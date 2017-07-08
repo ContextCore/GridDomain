@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Hadlers;
 
 namespace GridDomain.Tests.Unit.CommandPipe
 {

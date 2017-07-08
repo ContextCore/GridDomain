@@ -1,6 +1,7 @@
 using System;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;

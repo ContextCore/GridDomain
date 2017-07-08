@@ -10,6 +10,7 @@ using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tools.Repositories.AggregateRepositories;

@@ -60,8 +60,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
             await Emit(eventTask);
 
-            var evtTask2 = await Task.Delay(sleepMiliseconds).
-                                      ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
+            var evtTask2 = await Task.Delay(sleepMiliseconds)
+                                     .ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
             Emit(evtTask2);
         }
 

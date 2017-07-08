@@ -7,6 +7,8 @@ using Akka.TestKit.Xunit2;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Aggregate;
+using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Tests.Unit

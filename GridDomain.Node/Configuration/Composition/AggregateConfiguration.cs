@@ -6,7 +6,10 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Aggregate;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Scheduling.Akka;
 using Microsoft.Practices.Unity;
 

@@ -6,7 +6,9 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.Hadlers;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {

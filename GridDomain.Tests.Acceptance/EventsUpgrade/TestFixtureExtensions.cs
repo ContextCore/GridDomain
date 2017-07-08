@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;

@@ -1,4 +1,5 @@
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.EventSourced;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {

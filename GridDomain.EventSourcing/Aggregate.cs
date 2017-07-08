@@ -21,6 +21,7 @@ namespace GridDomain.EventSourcing
         private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private IRouteEvents _registeredRoutes;
+        public Func<DomainEvent[], Task> Persist { get; set; }
 
         protected Aggregate(Guid id) : this(null)
         {
@@ -106,12 +107,13 @@ namespace GridDomain.EventSourcing
             return _uncommittedEvents.Remove(e);
         }
 
-        protected void Emit(params DomainEvent[] events)
+        protected Task Emit(params DomainEvent[] events)
         {
             foreach (var e in events)
             {
                 _uncommittedEvents.Add(e);
             }
+            return Persist(_uncommittedEvents.Cast<DomainEvent>().ToArray());
         }
 
         public override int GetHashCode()

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Scheduling.FutureEvents;
@@ -10,8 +9,6 @@ namespace GridDomain.Scheduling
 {
     public class FutureEventsAggregate : Aggregate
     {
-       
-
         protected FutureEventsAggregate(Guid id):base(id)
         {
             Register<FutureEventScheduledEvent>(Apply);
@@ -20,20 +17,11 @@ namespace GridDomain.Scheduling
             _schedulingSourceName = GetType().Name;
         }
 
-        #region Base functions
-
-    
-       
-        // Aggregate State, do not mix with uncommited events 
         public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;
         readonly List<FutureEventScheduledEvent> _futureEvents = new List<FutureEventScheduledEvent>();
         private readonly string _schedulingSourceName;
 
-        /// <summary>
-        /// will emit occured event only after succesfull apply of scheduled event
-        /// </summary>
-        /// <param name="futureEventId"></param>
-        /// <param name="futureEventOccuredEventId"></param>
+      
         public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
@@ -50,11 +38,6 @@ namespace GridDomain.Scheduling
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
              Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
-        }
-
-        protected void Emit(DomainEvent @event, Func<Task> afterApply, DateTime raiseTime, Guid? futureEventId = null)
-        {
-            Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
@@ -91,7 +74,5 @@ namespace GridDomain.Scheduling
                 return;
             _futureEvents.Remove(evt);
         }
-        
-        #endregion
     }
 }

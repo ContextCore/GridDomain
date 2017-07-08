@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.EventSourced.Messages;
+using GridDomain.Node.Actors.PersistentHub;
 using Xunit;
 using Xunit.Abstractions;
 

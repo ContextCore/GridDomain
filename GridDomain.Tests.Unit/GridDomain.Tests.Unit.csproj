@@ -353,6 +353,7 @@
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestScheduledException.cs" />
+    <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="NodeTestFixtureExtensions.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Raising_future_events_too_late.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Reraising_future_event.cs" />
@@ -360,7 +361,6 @@
     <Compile Include="DependencyInjection\FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="GridConsole\GridConsole_Command_executions_Tests.cs" />
     <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
-    <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDependenciesFactory.cs" />
     <Compile Include="Sagas\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingSagaDomainConfiguration.cs" />
