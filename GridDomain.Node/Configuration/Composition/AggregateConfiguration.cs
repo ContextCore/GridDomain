@@ -7,7 +7,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Akka;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;

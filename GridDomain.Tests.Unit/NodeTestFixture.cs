@@ -10,6 +10,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 using Serilog;

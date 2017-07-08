@@ -3,10 +3,11 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Quartz;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Scheduling.Integration
+namespace GridDomain.Scheduling.Akka
 {
     public class SchedulingActor : ReceiveActor
     {

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.ReadModel.Context;
@@ -17,7 +18,7 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(AccountCreated msg)
+        public async Task Handle(AccountCreated msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -36,7 +37,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(AccountReplenish msg)
+        public async Task Handle(AccountReplenish msg,IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -62,7 +63,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(AccountWithdrawal msg)
+        public async Task Handle(AccountWithdrawal msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {

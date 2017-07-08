@@ -4,6 +4,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration;
 
@@ -18,7 +19,7 @@ namespace GridDomain.Tests.Unit.Sagas
         {
             _softwareProgrammingSagaDomainConfiguration = new SoftwareProgrammingSagaDomainConfiguration(Logger);
             Add(new BalloonDomainConfiguration());
-            Add(new QuartzSchedulerConfiguration(new InMemoryQuartzConfig()));
+            Add(new SchedulingConfiguration(new InMemoryQuartzConfig()));
         }
 
         protected override NodeSettings CreateNodeSettings()

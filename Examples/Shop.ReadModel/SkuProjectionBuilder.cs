@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using Shop.Domain.Aggregates.SkuAggregate.Events;
 using Shop.ReadModel.Context;
@@ -15,7 +16,7 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(SkuCreated msg)
+        public async Task Handle(SkuCreated msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {

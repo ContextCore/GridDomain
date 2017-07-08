@@ -1,6 +1,6 @@
 using System.Collections.Specialized;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Quartz.Configuration
 {
     public class InMemoryQuartzConfig : IQuartzConfig
     {

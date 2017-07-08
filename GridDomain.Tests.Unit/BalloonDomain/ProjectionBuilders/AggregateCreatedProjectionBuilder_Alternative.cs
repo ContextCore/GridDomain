@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
@@ -14,7 +15,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
             Watch.Start();
         }
 
-        public Task Handle(BalloonCreated msg)
+        public Task Handle(BalloonCreated msg, IMessageMetadata metadata)
         {
             msg.History.SequenceNumber = int.Parse(msg.Value);
             msg.History.ElapsedTicksFromAppStart = Watch.ElapsedTicks;

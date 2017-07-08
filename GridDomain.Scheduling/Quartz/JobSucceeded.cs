@@ -1,4 +1,4 @@
-namespace GridDomain.Scheduling.Integration
+namespace GridDomain.Scheduling.Quartz
 {
     public class JobSucceeded : JobCompleted
     {

@@ -197,16 +197,7 @@ namespace GridDomain.Node.Actors
         {
             var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
 
-            switch (evt)
-            {
-                case FutureEventScheduledEvent e:
-                    Handle(e, commandMetadata);
-                    break;
-                case FutureEventCanceledEvent e:
-                    Handle(e, commandMetadata);
-                    break;
-            }
-
+           
             return _customHandlersActor.Ask<AllHandlersCompleted>(envelop);
         }
 

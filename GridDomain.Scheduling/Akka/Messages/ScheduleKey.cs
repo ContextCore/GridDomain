@@ -18,14 +18,5 @@ namespace GridDomain.Scheduling.Akka.Messages
         public string Group { get; private set; }
         public string Description { get; private set; }
 
-        public static ScheduleKey For(Command cmd, Guid id = default(Guid), string group = null, string description = null)
-        {
-            var commandType = cmd.GetType();
-            id = id == default(Guid) ? Guid.NewGuid() : id;
-            group = group ?? commandType.Namespace;
-            var name = $"{commandType.Name} #  {id}";
-            description = description ?? $"{name} # {group}";
-            return new ScheduleKey(id, name, group, description);
-        }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Scheduling.Integration
+namespace GridDomain.Scheduling.Quartz
 {
     public class JobFailed : JobCompleted
     {

@@ -1,6 +1,6 @@
 using GridDomain.Common;
-using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Scheduling.WebUI;
@@ -10,11 +10,11 @@ using Quartz.Spi;
 
 namespace GridDomain.Scheduling
 {
-    public class QuartzSchedulerConfiguration : IContainerConfiguration
+    public class SchedulingConfiguration : IContainerConfiguration
     {
         private readonly IQuartzConfig _quartzConfig;
 
-        public QuartzSchedulerConfiguration(IQuartzConfig quartzConfig)
+        public SchedulingConfiguration(IQuartzConfig quartzConfig)
         {
             _quartzConfig = quartzConfig;
         }

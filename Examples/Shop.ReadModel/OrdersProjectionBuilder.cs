@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using Shop.Domain.Aggregates.OrderAggregate.Events;
 using Shop.ReadModel.Context;
@@ -18,7 +19,7 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(ItemAdded msg)
+        public async Task Handle(ItemAdded msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -38,7 +39,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(OrderCompleted msg)
+        public async Task Handle(OrderCompleted msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -49,7 +50,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(OrderCreated msg)
+        public async Task Handle(OrderCreated msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {

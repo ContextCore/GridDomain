@@ -4,6 +4,7 @@ using GridDomain.Common;
 using GridDomain.Logging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 using Serilog;
 

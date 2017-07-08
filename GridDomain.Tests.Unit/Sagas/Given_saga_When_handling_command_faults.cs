@@ -8,7 +8,6 @@ using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Integration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;

@@ -11,8 +11,9 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
 using Serilog;
@@ -40,7 +41,7 @@ namespace GridDomain.Node
 
         public void Register(IUnityContainer container)
         {
-            new QuartzSchedulerConfiguration(_config).Register(container);
+            new SchedulingConfiguration(_config).Register(container);
 
             //TODO: replace with config
             IActorTransport transport;

@@ -7,7 +7,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.FutureEvents;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;

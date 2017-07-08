@@ -1,7 +1,7 @@
 using System.Collections.Specialized;
 using System.Configuration;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Quartz.Configuration
 {
     public class PersistedQuartzConfig : IQuartzConfig
     {

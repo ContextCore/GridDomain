@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;

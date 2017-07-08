@@ -28,47 +28,30 @@ namespace GridDomain.Node.Actors
         {
             Publisher = publisher;
             _monitor = new ActorMonitor(Context, typeof(THandler).Name);
-            var handlerWithMetadata = handler as IHandlerWithMetadata<TMessage>;
-
-            Func<TMessage, IMessageMetadata, Task> handlerExecute;
-
-            if (handlerWithMetadata != null)
-                handlerExecute = (msg, meta) => handlerWithMetadata.Handle(msg, meta);
-            else
-                handlerExecute = (msg, meta) => handler.Handle(msg);
-
             //to avoid creation of generic types in senders
             Receive<IMessageMetadataEnvelop>(envelop =>
                                              {
                                                  _monitor.IncrementMessagesReceived();
+                                                 Task handleTask;
+
                                                  try
                                                  {
-                                                     var sender = Sender;
-                                                     var message = (TMessage) envelop.Message;
-                                                     var metadata = envelop.Metadata;
-
-                                                     handlerExecute(message, metadata)
-                                                         .ContinueWith(t =>
-                                                                       {
-                                                                           var error = t?.Exception.UnwrapSingle();
-                                                                           FinishExecution(sender, envelop, error);
-                                                                       });
+                                                      handleTask = handler.Handle((TMessage) envelop.Message, envelop.Metadata);
                                                  }
                                                  catch (Exception ex)
                                                  {
-                                                     //for case when handler cannot create its task
-                                                     FinishExecution(Sender, envelop, ex);
+                                                      handleTask = Task.FromException(ex);
                                                  }
+
+                                                 handleTask.ContinueWith(t =>
+                                                 {
+                                                     var error = t?.Exception.UnwrapSingle();
+                                                     if(error != null)
+                                                         PublishFault((TMessage)envelop.Message, envelop.Metadata, error);
+                                                     return new HandlerExecuted(envelop, error);
+                                                 }).PipeTo(Sender);
                                              },
                                              m => m.Message is TMessage);
-        }
-
-        private void FinishExecution(IActorRef sender, IMessageMetadataEnvelop envelop, Exception error = null)
-        {
-            sender.Tell(new HandlerExecuted(envelop, error));
-
-            if (error != null)
-                PublishFault((TMessage)envelop.Message, envelop.Metadata, error);
         }
 
         protected virtual void PublishFault(TMessage msg, IMessageMetadata metadata, Exception ex)

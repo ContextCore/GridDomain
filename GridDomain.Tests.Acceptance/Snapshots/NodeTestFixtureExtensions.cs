@@ -4,6 +4,7 @@ using System.Reflection;
 using Akka.Actor;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit;

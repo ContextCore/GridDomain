@@ -8,9 +8,10 @@ using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Akka.Messages;
-using GridDomain.Scheduling.Integration;
 using GridDomain.Scheduling.Quartz;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Unit;
 using Microsoft.Practices.Unity;
@@ -32,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var publisherMoq = new Mock<IPublisher>();
             _container.RegisterInstance(publisherMoq.Object);
 
-            new QuartzSchedulerConfiguration(new PersistedQuartzConfig()).Register(_container);
+            new SchedulingConfiguration(new PersistedQuartzConfig()).Register(_container);
             Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
             _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>(), nameof(SchedulingActor));
             _quartzScheduler = _container.Resolve<IScheduler>();

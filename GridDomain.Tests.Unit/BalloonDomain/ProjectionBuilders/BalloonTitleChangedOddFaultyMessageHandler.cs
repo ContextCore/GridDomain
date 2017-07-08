@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
@@ -14,7 +15,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
             _publisher = publisher;
         }
 
-        public Task Handle(BalloonTitleChanged msg)
+
+        public Task Handle(BalloonTitleChanged msg, IMessageMetadata metadata)
         {
             var i = int.Parse(msg.Value);
 
