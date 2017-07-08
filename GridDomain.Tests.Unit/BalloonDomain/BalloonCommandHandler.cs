@@ -5,13 +5,13 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 
 namespace GridDomain.Tests.Unit.BalloonDomain
 {
-    public class BalloonCommandHandler : AggregateCommandsHandler<Balloon>,
-                                                  IAggregateCommandsHandlerDescriptor
+    public class BalloonCommandHandler : AggregateCommandsHandler<Balloon>
 
     {
         public BalloonCommandHandler()
         {
             Map<WriteTitleCommand>((c, a) => a.WriteNewTitle(c.Parameter));
+
             Map<IncreaseTitleCommand>((c, a) => a.IncreaseTitle(c.Value));
 
             Map<InflateNewBallonCommand>(c => new Balloon(c.AggregateId, c.Title.ToString()));

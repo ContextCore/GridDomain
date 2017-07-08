@@ -11,12 +11,9 @@ namespace GridDomain.EventSourcing.CommonDomain
                                           IMemento,
                                           IEquatable<IAggregate>
     {
-        protected internal readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
+        private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private IRouteEvents _registeredRoutes;
-
-        private static readonly Func<Task> EmptyContinue = () => Task.CompletedTask;
-        private Action<Func<Task>> _persistEvents = afterAll => afterAll();
 
         protected AggregateBase()
             : this(null) { }
@@ -32,14 +29,14 @@ namespace GridDomain.EventSourcing.CommonDomain
 
         Guid IMemento.Id
         {
-            get { return Id; }
-            set { Id = value; }
+            get => Id;
+            set => Id = value;
         }
 
         int IMemento.Version
         {
-            get { return Version; }
-            set { Version = value; }
+            get => Version;
+            set => Version = value;
         }
 
         protected void Apply<T>(Action<T> action) where T : DomainEvent
@@ -54,14 +51,8 @@ namespace GridDomain.EventSourcing.CommonDomain
 
         protected IRouteEvents RegisteredRoutes
         {
-            get { return _registeredRoutes ?? (_registeredRoutes = new ConventionEventRouter(true, this)); }
-            set
-            {
-                if (value == null)
-                    throw new InvalidOperationException("AggregateBase must have an event router to function");
-
-                _registeredRoutes = value;
-            }
+            get => _registeredRoutes ?? (_registeredRoutes = new ConventionEventRouter(true, this));
+            set => _registeredRoutes = value ?? throw new InvalidOperationException("AggregateBase must have an event router to function");
         }
 
         public Guid Id { get; protected set; }
@@ -93,29 +84,9 @@ namespace GridDomain.EventSourcing.CommonDomain
             RegisteredRoutes.Register(route);
         }
 
-        public void RegisterPersistence(Action<Func<Task>> saveStateAction)
+        protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-            _persistEvents = saveStateAction;
-        }
-
-        protected void Emit(params DomainEvent[] e)
-        {
-            Emit(EmptyContinue, e);
-        }
-
-        protected void Emit(DomainEvent @event, Action afterPersist)
-        {
-            Emit(() =>
-                 {
-                     afterPersist();
-                     return Task.CompletedTask;
-                 },
-                 @event);
-        }
-
-        protected void Emit<T>(Task<T> evtTask) where T : DomainEvent
-        {
-            Emit(evtTask.ContinueWith(t => new DomainEvent[] {t.Result}), null);
+            Emit(await evtTask);
         }
 
         public bool MarkPersisted(DomainEvent e)
@@ -126,28 +97,12 @@ namespace GridDomain.EventSourcing.CommonDomain
             return _uncommittedEvents.Remove(e);
         }
 
-        protected void Emit(Func<Task> afterPersist, params DomainEvent[] events)
+        protected void Emit(params DomainEvent[] events)
         {
             foreach (var e in events)
             {
                 _uncommittedEvents.Add(e);
             }
-
-            _persistEvents(afterPersist);
-        }
-
-        /// <summary>
-        /// returns task finishing when event will be procuded.
-        /// No persistence is guaranted. 
-        /// Use continuation task for run code after persistence.
-        /// </summary>
-        /// <param name="evtTask"></param>
-        /// <param name="continuation"></param>
-        /// <returns></returns>
-        protected Task Emit(Task<DomainEvent[]> evtTask, Func<Task> continuation = null)
-        {
-            continuation = continuation ?? EmptyContinue;
-            return evtTask.ContinueWith(t => Emit(continuation, t.Result));
         }
 
         public override int GetHashCode()

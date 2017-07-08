@@ -10,7 +10,6 @@ namespace GridDomain.EventSourcing
 {
     
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<Func<ICommand, TAggregate, Task<TAggregate>>, ICommand>,
-                                                        IAggregateCommandsHandlerDescriptor,
                                                         IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
                                                       
     {
@@ -30,28 +29,42 @@ namespace GridDomain.EventSourcing
             return handler;
         }
 
-        private void Map<TCommand>(Func<TCommand,TAggregate, TAggregate> commandExecutor) where TCommand : ICommand
+        private void Map<TCommand>(Func<TCommand, TAggregate, Task<TAggregate>> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>((c, a) =>
+            Add<TCommand>((c, a) => commandExecutor((TCommand)c, a));
+        }
+       
+        protected void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
+        {
+            Map((Func<TCommand, TAggregate, Task<TAggregate>>)(async (c, a) =>
+                                                               {
+                                                                   await commandExecutor(c, a);
+                                                                   return a;
+                                                               }));
+        }
+
+        private void Map<TCommand>(Func<TCommand, TAggregate, TAggregate> commandExecutor) where TCommand : ICommand
+        {
+            Map((Func<TCommand, TAggregate, Task<TAggregate>>)((c, a) =>
             {
                 try
                 {
-                    var aggregate = commandExecutor((TCommand)c, a);
-                    return Task.FromResult(aggregate);
+                    return Task.FromResult(commandExecutor(c, a));
                 }
                 catch (Exception ex)
                 {
                     return Task.FromException<TAggregate>(ex);
                 }
-            });
+            }));
         }
+
         public void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             Map((Func<TCommand, TAggregate, TAggregate>)((c, a) =>
-            {
-                commandExecutor(c, a);
-                return a;
-            }));
+                                                         {
+                                                             commandExecutor(c, a);
+                                                             return a;
+                                                         }));
         }
 
         protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand

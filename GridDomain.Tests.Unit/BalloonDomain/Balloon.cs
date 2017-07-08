@@ -53,23 +53,27 @@ namespace GridDomain.Tests.Unit.BalloonDomain
             Emit(new BalloonTitleChanged((value + int.Parse(Title)).ToString(), Id));
         }
 
-        public void PlanTitleWrite(int sleepMiliseconds)
+        public async Task PlanTitleWrite(int sleepMiliseconds)
         {
-            var eventTask = Task.Delay(sleepMiliseconds)
-                                .ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
+            var eventTask = Task.Delay(sleepMiliseconds).
+                                 ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
 
-            Emit(eventTask);
+            await Emit(eventTask);
+
+            var evtTask2 = await Task.Delay(sleepMiliseconds).
+                                      ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
+            Emit(evtTask2);
         }
 
-        internal void PlanTitleWrite(int parameter, TimeSpan sleepTime)
+        internal async Task PlanTitleWrite(int parameter, TimeSpan sleepTime)
         {
-            Emit(Task.Delay(sleepTime)
-                     .ContinueWith(t => new BalloonTitleChanged(parameter.ToString(), Id)));
+            await Task.Delay(sleepTime);
+            Emit(new BalloonTitleChanged(parameter.ToString(), Id));
         }
 
-        internal void PlanWriteTitleToBlow(int parameter, TimeSpan sleepTime)
+        internal async Task PlanWriteTitleToBlow(int parameter, TimeSpan sleepTime)
         {
-            Emit(Task.Delay(sleepTime)
+            Emit(await Task.Delay(sleepTime)
                      .ContinueWith(t =>
                                    {
                                        Blow();
@@ -93,15 +97,11 @@ namespace GridDomain.Tests.Unit.BalloonDomain
             throw new BalloonException();
         }
 
-        public void BlowAfter(TimeSpan callBackTime)
+        public async Task BlowAfter(TimeSpan callBackTime)
         {
-            Emit(Task.Delay(callBackTime)
-                     .ContinueWith(t =>
-                                   {
-                                       Blow();
-                                       return new BalloonTitleChanged("0", Id);
-                                   })
-                );
+            await Task.Delay(callBackTime);
+            Blow();
+            Emit(new BalloonTitleChanged("0", Id));
         }
 
         private class BalloonSnapshot : IMemento

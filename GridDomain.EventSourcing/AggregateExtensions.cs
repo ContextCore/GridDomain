@@ -11,6 +11,7 @@ namespace GridDomain.EventSourcing
                             .Cast<DomainEvent>()
                             .ToArray();
         }
+
         public static void PersistAll(this Aggregate aggregate)
         {
             foreach (var e in aggregate.GetDomainEvents())

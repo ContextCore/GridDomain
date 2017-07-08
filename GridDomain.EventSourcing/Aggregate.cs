@@ -51,8 +51,7 @@ namespace GridDomain.EventSourcing
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
             //How to handle case when applying occured event will raise an exception?
-             Emit(afterEventsPersistence,
-                  ev.Event,
+             Emit(ev.Event,
                   futureEventOccuredEvent);
         }
 
@@ -63,7 +62,7 @@ namespace GridDomain.EventSourcing
 
         protected void Emit(DomainEvent @event, Func<Task> afterApply, DateTime raiseTime, Guid? futureEventId = null)
         {
-            Emit(afterApply, new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+            Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent

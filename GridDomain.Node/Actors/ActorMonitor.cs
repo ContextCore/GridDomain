@@ -21,33 +21,33 @@ namespace GridDomain.Node.Actors
             return $"{_context.System.Name}.{_actorGroupName}.{metricName}";
         }
 
-        private void IncrementCounter(string akkaActorRestarts)
+        public void Increment(string counterName)
         {
-            _context.IncrementCounter(GetCounterName(akkaActorRestarts));
+            _context.IncrementCounter(GetCounterName(counterName));
+        }
+        public void Increment<T>()
+        {
+            Increment(typeof(T).Name);
         }
 
         public void IncrementMessagesReceived()
         {
-            //_context.IncrementMessagesReceived();
-            IncrementCounter(CounterNames.ActorRestarts);
+            Increment(CounterNames.ReceivedMessages);
         }
 
         public void IncrementActorRestarted()
         {
-            // _context.IncrementActorRestart();
-            IncrementCounter(CounterNames.ActorRestarts);
+            Increment(CounterNames.ActorRestarts);
         }
 
         public void IncrementActorStopped()
         {
-            //  _context.IncrementActorStopped();
-            IncrementCounter(CounterNames.ActorsStopped);
+            Increment(CounterNames.ActorsStopped);
         }
 
         public void IncrementActorStarted()
         {
-            //_context.IncrementActorCreated();
-            IncrementCounter(CounterNames.ActorsCreated);
+            Increment(CounterNames.ActorsCreated);
         }
     }
 }
