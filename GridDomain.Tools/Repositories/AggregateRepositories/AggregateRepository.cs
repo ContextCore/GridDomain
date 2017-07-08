@@ -34,7 +34,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             aggr.PersistAll();
         }
 
-        public async Task<T> LoadAggregate<T>(Guid id) where T : AggregateBase
+        public async Task<T> LoadAggregate<T>(Guid id) where T : Aggregate
         {
             var agr = Aggregate.Empty<T>(id);
             var persistId = AggregateActorName.New<T>(id).ToString();

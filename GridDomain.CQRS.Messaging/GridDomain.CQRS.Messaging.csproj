@@ -92,7 +92,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateCommandHandlerExtensions.cs" />
     <Compile Include="CompositeRouteMap.cs" />
     <Compile Include="CustomRouteMap.cs" />
     <Compile Include="EmptyRouteMap.cs" />

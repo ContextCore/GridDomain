@@ -9,7 +9,7 @@ using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration
 {
-    class FutureAggregateDependenciesFactory : DefaultAggregateDependencyFactory<FutureEventsAggregate>
+    class FutureAggregateDependenciesFactory : DefaultAggregateDependencyFactory<TestFutureEventsAggregate>
     {
         public FutureAggregateDependenciesFactory():base(() => new FutureEventsAggregatesCommandHandler())
         {

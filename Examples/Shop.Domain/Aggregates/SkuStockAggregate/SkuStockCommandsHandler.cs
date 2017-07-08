@@ -1,6 +1,7 @@
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
+using GridDomain.Scheduling.FutureEvents;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate

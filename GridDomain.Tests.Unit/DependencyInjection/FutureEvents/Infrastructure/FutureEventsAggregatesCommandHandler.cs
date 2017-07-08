@@ -1,12 +1,11 @@
 using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.Scheduling.FutureEvents;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 {
-    public class FutureEventsAggregatesCommandHandler : AggregateCommandsHandler<FutureEventsAggregate>,
-                                                        IAggregateCommandsHandlerDescriptor
-
+    public class FutureEventsAggregatesCommandHandler : AggregateCommandsHandler<TestFutureEventsAggregate>
     {
         public FutureEventsAggregatesCommandHandler()
         {

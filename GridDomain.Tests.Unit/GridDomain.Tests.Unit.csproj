@@ -348,7 +348,7 @@
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\ScheduleEventInFutureCommand.cs" />
-    <Compile Include="DependencyInjection\FutureEvents\Infrastructure\FutureEventsAggregate.cs" />
+    <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestFutureEventsAggregate.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\FutureEventsAggregatesCommandHandler.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestDomainEvent.cs" />
     <Compile Include="DependencyInjection\FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />

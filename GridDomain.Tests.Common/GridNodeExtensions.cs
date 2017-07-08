@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Common
         }
 
         public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, Guid id)
-            where TAggregate : AggregateBase
+            where TAggregate : Aggregate
         {
             using (var eventsRepo = new ActorSystemEventRepository(node.System))
             using (var repo = new AggregateRepository(eventsRepo))
@@ -87,7 +87,7 @@ namespace GridDomain.Tests.Common
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)
-            where TAggregate : AggregateBase
+            where TAggregate : Aggregate
         {
             var name = AggregateActorName.New<TAggregate>(id).Name;
             await node.SaveToJournal(name, messages);

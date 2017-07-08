@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
         {
             var testCommand = new ScheduleEventInFutureCommand(DateTime.Now, Guid.NewGuid(), "test value");
 
-            var aggregate = new FutureEventsAggregate(testCommand.AggregateId);
+            var aggregate = new TestFutureEventsAggregate(testCommand.AggregateId);
             aggregate.ScheduleInFuture(testCommand.RaiseTime, testCommand.Value);
 
             var futureEventEnvelop = aggregate.GetEvent<FutureEventScheduledEvent>();
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
                                          () => AfterScheduledEventOccures(aggregate, futureEventEnvelop, testCommand));
         }
 
-        private static Task AfterScheduledEventOccures(FutureEventsAggregate aggregate,
+        private static Task AfterScheduledEventOccures(TestFutureEventsAggregate aggregate,
                                                        FutureEventScheduledEvent futureEventEnvelop,
                                                        ScheduleEventInFutureCommand testCommand)
         {

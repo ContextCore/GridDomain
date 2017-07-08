@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Scheduling.Integration;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = schedulingCommandFault.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<FutureEventsAggregate>(command.AggregateId).Name, step.Who);
+            Assert.Equal(AggregateActorName.New<TestFutureEventsAggregate>(command.AggregateId).Name, step.Who);
             Assert.Equal(SimpleAggregateActorConstants.CommandRaisedAnError, step.Why);
             Assert.Equal(SimpleAggregateActorConstants.CreatedFault, step.What);
         }

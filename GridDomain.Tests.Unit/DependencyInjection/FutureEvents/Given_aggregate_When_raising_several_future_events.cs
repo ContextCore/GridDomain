@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;

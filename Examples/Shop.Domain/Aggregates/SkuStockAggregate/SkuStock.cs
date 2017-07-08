@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.Scheduling;
 using Serilog;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate
 {
-    public class SkuStock : Aggregate
+    public class SkuStock : FutureEventsAggregate
     {
         private readonly ILogger _logger = Log.Logger.ForContext<SkuStock>();
 

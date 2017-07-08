@@ -1,6 +1,6 @@
 using System;
 using GridDomain.Common;
-using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Scheduling.Quartz.Retry;
 
 namespace GridDomain.Node

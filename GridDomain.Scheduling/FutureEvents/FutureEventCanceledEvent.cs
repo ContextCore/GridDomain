@@ -1,6 +1,7 @@
 using System;
+using GridDomain.EventSourcing;
 
-namespace GridDomain.EventSourcing.FutureEvents
+namespace GridDomain.Scheduling.FutureEvents
 {
     public class FutureEventCanceledEvent : DomainEvent
     {

@@ -1,105 +1,127 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.EventSourcing.FutureEvents;
 
 namespace GridDomain.EventSourcing
 {
-    public class Aggregate : AggregateBase
+    public abstract class Aggregate : IAggregate,
+                                          IMemento,
+                                          IEquatable<IAggregate>
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
-       
-
-        protected Aggregate(Guid id)
-        {
-            Id = id;
-            Register<FutureEventScheduledEvent>(Apply);
-            Register<FutureEventOccuredEvent>(Apply);
-            Register<FutureEventCanceledEvent>(Apply);
-        }
-
-        #region Base functions
-
-    
         public static T Empty<T>(Guid? id = null) where T : IAggregate
         {
             return Factory.Build<T>(id ?? Guid.NewGuid());
         }
 
-        // Aggregate State, do not mix with uncommited events 
-        public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;
-        readonly List<FutureEventScheduledEvent> _futureEvents = new List<FutureEventScheduledEvent>();
-        /// <summary>
-        /// will emit occured event only after succesfull apply of scheduled event
-        /// </summary>
-        /// <param name="futureEventId"></param>
-        /// <param name="futureEventOccuredEventId"></param>
-        /// <param name="afterEventsPersistence"></param>
-        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId, Func<Task> afterEventsPersistence = null)
+        private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
+        public bool HasUncommitedEvents => _uncommittedEvents.Any();
+        private IRouteEvents _registeredRoutes;
+
+        protected Aggregate(Guid id) : this(null)
         {
-            FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
-            if (ev == null)
-                throw new ScheduledEventNotFoundException(futureEventId);
-
-            var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
-
-            //How to handle case when applying occured event will raise an exception?
-             Emit(ev.Event,
-                  futureEventOccuredEvent);
+            Id = id;
         }
 
-        protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
+        protected Aggregate(IRouteEvents handler)
         {
-             Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
-        }
-
-        protected void Emit(DomainEvent @event, Func<Task> afterApply, DateTime raiseTime, Guid? futureEventId = null)
-        {
-            Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
-        }
-
-        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
-        {
-            var eventsToCancel = FutureEvents.Where(fe => fe.Event is TEvent);
-            if (criteia != null)
-                eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
-
-            var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id))
-                                             .Cast<DomainEvent>()
-                                             .ToArray();
-            Emit(domainEvents);
-        }
-
-        private void Apply(FutureEventScheduledEvent e)
-        {
-            _futureEvents.Add(e);
-        }
-
-        private void Apply(FutureEventOccuredEvent e)
-        {
-            DeleteFutureEvent(e.FutureEventId);
-        }
-
-        private void Apply(FutureEventCanceledEvent e)
-        {
-            DeleteFutureEvent(e.FutureEventId);
-        }
-
-        private void DeleteFutureEvent(Guid futureEventId)
-        {
-            FutureEventScheduledEvent evt = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
-            if (evt == null)
+            if (handler == null)
                 return;
-            _futureEvents.Remove(evt);
+
+            RegisteredRoutes = handler;
+            RegisteredRoutes.Register(this);
         }
-        
-        #endregion
+
+        Guid IMemento.Id
+        {
+            get => Id;
+            set => Id = value;
+        }
+
+        int IMemento.Version
+        {
+            get => Version;
+            set => Version = value;
+        }
+
+        protected void Apply<T>(Action<T> action) where T : DomainEvent
+        {
+            Register(action);
+        }
+
+        public virtual IMemento GetSnapshot()
+        {
+            return this;
+        }
+
+        protected IRouteEvents RegisteredRoutes
+        {
+            get => _registeredRoutes ?? (_registeredRoutes = new ConventionEventRouter(true, this));
+            set => _registeredRoutes = value ?? throw new InvalidOperationException("AggregateBase must have an event router to function");
+        }
+
+        public Guid Id { get; protected set; }
+        public int Version { get; protected set; }
+
+        void IAggregate.ApplyEvent(object @event)
+        {
+            RegisteredRoutes.Dispatch(@event);
+            Version++;
+        }
+
+        ICollection IAggregate.GetUncommittedEvents()
+        {
+            return (ICollection) _uncommittedEvents;
+        }
+
+        void IAggregate.ClearUncommittedEvents()
+        {
+            _uncommittedEvents.Clear();
+        }
+
+        public virtual bool Equals(IAggregate other)
+        {
+            return null != other && other.Id == Id;
+        }
+
+        protected void Register<T>(Action<T> route)
+        {
+            RegisteredRoutes.Register(route);
+        }
+
+        protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
+        {
+            Emit(await evtTask);
+        }
+
+        public bool MarkPersisted(DomainEvent e)
+        {
+            if (!_uncommittedEvents.Contains(e))
+                throw new EventIsNotBelongingToAggregateException();
+            ((IAggregate) this).ApplyEvent(e);
+            return _uncommittedEvents.Remove(e);
+        }
+
+        protected void Emit(params DomainEvent[] events)
+        {
+            foreach (var e in events)
+            {
+                _uncommittedEvents.Add(e);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IAggregate);
+        }
     }
 }

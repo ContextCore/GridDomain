@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
         [Fact]
         public void Then_nothing_happened()
         {
-            var aggregate = new FutureEventsAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
             var testValue = "value D";
 
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);

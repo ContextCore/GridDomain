@@ -112,10 +112,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregate.cs" />
+    <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
     <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
+    <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
+    <Compile Include="FutureEvents\AsyncEventsReceived.cs" />
+    <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
+    <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
+    <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
+    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
+    <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="Integration\JobFailed.cs" />
     <Compile Include="Integration\JobSucceeded.cs" />
     <Compile Include="Integration\OptionsNotFilledException.cs" />

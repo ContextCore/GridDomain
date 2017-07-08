@@ -250,6 +250,10 @@
       <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
       <Name>GridDomain.Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
+      <Project>{96037181-43D1-4AE5-A9E8-0660D4CC4C82}</Project>
+      <Name>GridDomain.Scheduling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj">
       <Project>{adbac768-c2f7-43bd-aa76-fc004bc054d8}</Project>
       <Name>GridDomain.Tests.Common</Name>

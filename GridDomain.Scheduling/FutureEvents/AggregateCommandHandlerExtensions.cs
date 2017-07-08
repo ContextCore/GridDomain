@@ -1,13 +1,11 @@
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.FutureEvents;
 
-namespace GridDomain.CQRS.Messaging
+namespace GridDomain.Scheduling.FutureEvents
 {
     public static class AggregateCommandHandlerExtensions
     {
         public static void MapFutureEvents<TAggregate>(this AggregateCommandsHandler<TAggregate> handler)
-            where TAggregate : Aggregate
+            where TAggregate : FutureEventsAggregate
         {
             handler.Map<RaiseScheduledDomainEventCommand>((c, a) => a.RaiseScheduledEvent(c.FutureEventId, c.Id));
         }

@@ -1,15 +1,16 @@
 using System;
 using GridDomain.EventSourcing;
+using GridDomain.Scheduling;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 {
-    public class FutureEventsAggregate : Aggregate
+    public class TestFutureEventsAggregate : FutureEventsAggregate
     {
         public string Value;
 
-        private FutureEventsAggregate(Guid id) : base(id) {}
+        private TestFutureEventsAggregate(Guid id) : base(id) {}
 
-        public FutureEventsAggregate(Guid id, string initialValue = "") : this(id)
+        public TestFutureEventsAggregate(Guid id, string initialValue = "") : this(id)
         {
             Emit(new TestDomainEvent(initialValue, Id));
         }

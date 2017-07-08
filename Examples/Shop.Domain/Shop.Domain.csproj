@@ -166,6 +166,10 @@
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
       <Name>GridDomain.Node</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
+      <Project>{96037181-43D1-4AE5-A9E8-0660D4CC4C82}</Project>
+      <Name>GridDomain.Scheduling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shop.Infrastructure\Shop.Infrastructure.csproj">
       <Project>{DD89FF59-69D6-443D-BA52-669A41F62ADC}</Project>
       <Name>Shop.Infrastructure</Name>

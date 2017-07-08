@@ -8,10 +8,10 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Logging;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.FutureEvents;
 
 namespace GridDomain.Node.Actors
 {

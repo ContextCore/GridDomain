@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
 using Quartz;
@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait
             await Task.Delay(2000);
-            var scheduleKey = AggregateActor<FutureEventsAggregate>.CreateScheduleKey(futureEventEnvelop.Id,
+            var scheduleKey = AggregateActor<TestFutureEventsAggregate>.CreateScheduleKey(futureEventEnvelop.Id,
                                                                                       testCommand.AggregateId,
                                                                                       "");
 

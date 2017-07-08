@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.EventSourcing.FutureEvents
+namespace GridDomain.Scheduling.FutureEvents
 {
     public class RaiseScheduledDomainEventCommand : Command
     {

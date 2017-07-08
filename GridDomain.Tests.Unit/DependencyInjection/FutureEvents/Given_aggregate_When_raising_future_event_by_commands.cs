@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
             var futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
             var producedEvent = waitResults.Message<TestDomainEvent>();
 
-            var aggregate = await this.LoadAggregateByActor<FutureEventsAggregate>(testCommand.AggregateId);
+            var aggregate = await this.LoadAggregateByActor<TestFutureEventsAggregate>(testCommand.AggregateId);
 
             //Future_event_fires_in_time()
             Assert.True(scheduledTime.Second - aggregate.ProcessedTime.Second <= 1);

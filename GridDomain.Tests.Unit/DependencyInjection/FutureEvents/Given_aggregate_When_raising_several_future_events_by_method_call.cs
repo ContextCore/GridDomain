@@ -1,5 +1,5 @@
 using System;
-using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
         [Fact]
         public void When_scheduling_future_event()
         {
-            var aggregate = new FutureEventsAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "value D");
 
             aggregate.ClearEvents();

@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
                       .And<JobSucceeded>()
                       .Execute();
 
-            var aggregate = await Node.LoadAggregate<FutureEventsAggregate>(testCommand.AggregateId);
+            var aggregate = await Node.LoadAggregate<TestFutureEventsAggregate>(testCommand.AggregateId);
 
             Assert.True(now.Second - aggregate.ProcessedTime.Second <= 1);
         }

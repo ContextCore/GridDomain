@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
         [Fact]
         public void Then_it_occures_and_applies_to_aggregate()
         {
-            var aggregate = new FutureEventsAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
             aggregate.PersistAll();
 
             var testValue = "value D";

@@ -1,7 +1,8 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 
-namespace GridDomain.EventSourcing.FutureEvents
+namespace GridDomain.Scheduling.FutureEvents
 {
     public class AsyncEventsReceived
     {
