@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.Metadata
             Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
                                                                                  gotTiredEventMetadata));
 
-            var answer = FishForMessage<MessageMetadataEnvelop<ICommand>>(m => true,TimeSpan.FromDays(1));
+            var answer = FishForMessage<MessageMetadataEnvelop<ICommand>>(m => true);
             var command = answer.Message as MakeCoffeCommand;
 
             //Result_contains_metadata()
