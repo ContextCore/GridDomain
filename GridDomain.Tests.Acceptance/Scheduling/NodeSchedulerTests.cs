@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
@@ -11,7 +10,6 @@ using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
@@ -74,8 +72,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public async Task When_client_tries_to_add_two_task_with_same_id_Then_only_one_gets_executed()
         {
             var testMessage = new SuccessCommand("yes!");
-            Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
-            Scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
+            Scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(0.5)));
+            Scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, Name, Group), CreateOptions(1)));
 
             await Task.Delay(2000);
             Assert.True(ResultHolder.Count == 1);

@@ -7,7 +7,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 {
-    public class BalloonTitleChangedNotificator : IHandlerWithMetadata<BalloonTitleChanged>
+    public class BalloonTitleChangedNotificator : IHandler<BalloonTitleChanged>
     {
         private readonly IPublisher _publisher;
 

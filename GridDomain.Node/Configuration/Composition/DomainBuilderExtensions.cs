@@ -25,7 +25,7 @@ namespace GridDomain.Node.Configuration.Composition {
             RegisterHandler<TMessage, THandler>(builder, c => new THandler(), e => e.SourceId);
         }
 
-        public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandlerWithMetadata<TMessage>, new()
+        public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
                                                                                                     where TMessage : DomainEvent
         {
             RegisterMetadataHandler<TMessage, THandler>(builder, c => new THandler(), e => e.SourceId);
@@ -38,7 +38,7 @@ namespace GridDomain.Node.Configuration.Composition {
         }
 
         public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer, Expression<Func<TMessage, Guid>> propertyExp) 
-            where THandler : IHandlerWithMetadata<TMessage>
+            where THandler : IHandler<TMessage>
             where TMessage : class, IHaveSagaId, IHaveId
         {
             builder.RegisterHandler(new DefaultMessageWithMetadataHandlerFactory<TMessage, THandler>(producer));

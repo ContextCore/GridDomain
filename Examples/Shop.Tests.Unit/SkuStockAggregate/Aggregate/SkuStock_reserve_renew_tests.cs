@@ -34,7 +34,7 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
                                                                new ReserveExpired(aggregateId, customerId)))
                           .When(reserveStockCommand = new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime))
                           .Then(new ReserveRenewed(scenario.Aggregate.Id, customerId),
-                                new FutureEventCanceledEvent(Any.GUID, scenario.Aggregate.Id),
+                                new FutureEventCanceledEvent(Any.GUID, scenario.Aggregate.Id, nameof(SkuStock)),
                                 new StockReserved(scenario.Aggregate.Id,
                                                   customerId,
                                                   expirationDate,

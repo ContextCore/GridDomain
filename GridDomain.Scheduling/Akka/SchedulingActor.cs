@@ -20,7 +20,7 @@ namespace GridDomain.Scheduling.Akka
         {
             _logger.Debug("Scheduling actor started at path {Path}", Self.Path);
             _scheduler = scheduler;
-            Receive<ScheduleCommand>(message => Schedule(message));
+            Receive<ScheduleCommandExecution>(message => Schedule(message));
             Receive<ScheduleMessage>(message => Schedule(message));
             Receive<Unschedule>(message => Unschedule(message));
         }
@@ -41,7 +41,7 @@ namespace GridDomain.Scheduling.Akka
             }
         }
 
-        private void Schedule(ScheduleCommand message)
+        private void Schedule(ScheduleCommandExecution message)
         {
             Schedule(() => QuartzJob.Create(message.Key, message.Command, message.CommandMetadata, message.Options),
                      message.Options.RunAt,

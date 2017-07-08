@@ -12,6 +12,6 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
         Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null);
 
         Task RegisterHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                                          where TMessage : class, IHaveSagaId, IHaveId;
+                                                   where TMessage : class, IHaveSagaId, IHaveId;
     }
 }

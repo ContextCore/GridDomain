@@ -112,7 +112,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate.cs" />
+    <Compile Include="FutureEventsAggregate.cs" />
     <Compile Include="FutureEvents\FutureEventsShedulingMessageHandler.cs" />
     <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
@@ -122,6 +122,7 @@
     <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
     <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
     <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
+    <Compile Include="FutureEvents\IFutureDomainEvent.cs" />
     <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
     <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
     <Compile Include="Quartz\JobFailed.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="Quartz\Configuration\IQuartzConfig.cs" />
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
-    <Compile Include="Akka\Messages\ScheduleCommand.cs" />
+    <Compile Include="Akka\Messages\ScheduleCommandExecution.cs" />
     <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\Configuration\PersistedQuartzConfig.cs" />
     <Compile Include="Quartz\QuartzSchedulerFactory.cs" />

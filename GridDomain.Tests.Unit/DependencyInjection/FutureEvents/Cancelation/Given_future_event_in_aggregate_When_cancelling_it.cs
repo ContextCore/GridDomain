@@ -44,9 +44,8 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait
             await Task.Delay(2000);
-            var scheduleKey = AggregateActor<TestFutureEventsAggregate>.CreateScheduleKey(futureEventEnvelop.Id,
-                                                                                      testCommand.AggregateId,
-                                                                                      "");
+            var scheduleKey = FutureEventsShedulingMessageHandler.CreateScheduleKey(futureEventEnvelop.Id,
+                                                                                      testCommand.AggregateId);
 
             var jobKey = new JobKey(scheduleKey.Name, scheduleKey.Group);
 

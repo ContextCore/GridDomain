@@ -62,9 +62,8 @@
     <Compile Include="ICommandWaiter.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IConditionBuilder.cs" />
-    <Compile Include="IHandler.cs" />
     <Compile Include="IFault.cs" />
-    <Compile Include="IHandlerWithMetadata.cs" />
+    <Compile Include="IHandler.cs" />
     <Compile Include="IGenericQuery.cs" />
     <Compile Include="IMessageWaiter.cs" />
     <Compile Include="IMessageWaiterBase.cs" />

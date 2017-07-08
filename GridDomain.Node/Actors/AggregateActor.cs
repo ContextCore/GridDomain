@@ -25,7 +25,6 @@ namespace GridDomain.Node.Actors
         private readonly ProcessEntry _domainEventProcessEntry;
         private readonly ProcessEntry _domainEventProcessFailEntry;
         private readonly IPublisher _publisher;
-        private readonly IActorRef _schedulerActorRef;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
         private readonly List<IActorRef> _commandCompletedWaiters = new List<IActorRef>();
@@ -41,14 +40,11 @@ namespace GridDomain.Node.Actors
             _aggregateCommandsHandler = handler;
             _publisher = publisher;
             _customHandlersActor = customHandlersActor;
-            _schedulerActorRef = schedulerActorRef;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, SimpleAggregateActorConstants.PublishingEvent, SimpleAggregateActorConstants.CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, SimpleAggregateActorConstants.CreatedFault, SimpleAggregateActorConstants.CommandRaisedAnError);
 
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
-
-
         protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
@@ -196,52 +192,7 @@ namespace GridDomain.Node.Actors
         private Task<AllHandlersCompleted> Project(object evt, IMessageMetadata commandMetadata)
         {
             var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
-
-           
             return _customHandlersActor.Ask<AllHandlersCompleted>(envelop);
-        }
-
-        private Task Handle(FutureEventScheduledEvent futureEventScheduledEvent, IMessageMetadata messageMetadata)
-        {
-            var message = futureEventScheduledEvent;
-            var scheduleId = message.Id;
-            var aggregateId = message.Event.SourceId;
-
-            var description = $"Aggregate {typeof(TAggregate).Name} id = {aggregateId} scheduled future event "
-                              + $"{scheduleId} with payload type {message.Event.GetType(). Name} on time {message.RaiseTime}\r\n"
-                              + $"Future event: {message.ToPropsString()}";
-
-            var scheduleKey = CreateScheduleKey(scheduleId, aggregateId, description);
-
-            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
-            var metadata = messageMetadata.CreateChild(command.Id,
-                                                       new ProcessEntry(GetType().
-                                                                            Name,
-                                                                        "Scheduling raise future event command",
-                                                                        "FutureEventScheduled event occured"));
-            var scheduleEvent = new ScheduleCommand(command,
-                                                    scheduleKey,
-                                                    ExecutionOptions.ForCommand(message.RaiseTime,
-                                                                                message.Event.GetType()),
-                                                    metadata);
-
-            return _schedulerActorRef.Ask<Scheduled>(scheduleEvent);
-        }
-
-        public static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid aggregateId, string description)
-        {
-            return new ScheduleKey(scheduleId,
-                                   $"{typeof(TAggregate).Name}_{aggregateId}_future_event_{scheduleId}",
-                                   $"{typeof(TAggregate).Name}_futureEvents",
-                                   "");
-        }
-
-        private Task Handle(FutureEventCanceledEvent futureEventCanceledEvent, IMessageMetadata metadata)
-        {
-            var message = futureEventCanceledEvent;
-            var key = CreateScheduleKey(message.FutureEventId, message.SourceId, "");
-            var unscheduleMessage = new Unschedule(key);
-            return _schedulerActorRef.Ask<Unscheduled>(unscheduleMessage);
         }
     }
 }

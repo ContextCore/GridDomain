@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class ScheduleCommand
+    public class ScheduleCommandExecution
     {
-        public ScheduleCommand(Command command,
+        public ScheduleCommandExecution(Command command,
                                ScheduleKey key,
                                ExecutionOptions options,
                                IMessageMetadata commandMetadata = null)

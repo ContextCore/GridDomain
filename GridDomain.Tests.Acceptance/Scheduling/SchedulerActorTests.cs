@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             _quartzScheduler.Shutdown(false);
@@ -90,13 +90,13 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testCommand = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
             foreach (var failTask in failTasks)
             {
                 var text = failTask.ToString(CultureInfo.InvariantCulture);
                 var failTaskCommand = new FailCommand();
-                _scheduler.Tell(new ScheduleCommand(failTaskCommand,
+                _scheduler.Tell(new ScheduleCommandExecution(failTaskCommand,
                                                     new ScheduleKey(Guid.Empty, text, text),
                                                     CreateOptions(failTask)));
             }
@@ -122,7 +122,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
@@ -148,7 +148,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommand(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
             }
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();

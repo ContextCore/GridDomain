@@ -92,7 +92,7 @@ namespace GridDomain.Node
             await SagaProcessor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;
         }
-
+        
         public Task RegisterHandler<TMessage, THandler>(bool sync = false) where THandler : IHandler<TMessage>
                                                                            where TMessage : class, IHaveSagaId, IHaveId
         {

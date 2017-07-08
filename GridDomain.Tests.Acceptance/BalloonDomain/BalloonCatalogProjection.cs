@@ -9,8 +9,8 @@ using Serilog;
 
 namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
-    class BalloonCatalogProjection : IHandlerWithMetadata<BalloonTitleChanged>,
-                                     IHandlerWithMetadata<BalloonCreated>
+    class BalloonCatalogProjection : IHandler<BalloonTitleChanged>,
+                                     IHandler<BalloonCreated>
 
     {
         private readonly Func<BalloonContext> _contextCreator;

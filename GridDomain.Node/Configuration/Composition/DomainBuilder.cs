@@ -47,7 +47,7 @@ namespace GridDomain.Node.Configuration.Composition
             _maps.Add(factory.CreateRouteMap());
         }
 
-        public void RegisterHandler<TMessage, THandler>(IMessageHandlerWithMetadataFactory<TMessage, THandler> factory) where THandler : IHandlerWithMetadata<TMessage>
+        public void RegisterHandler<TMessage, THandler>(IMessageHandlerWithMetadataFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>
         {
             var cfg = new ContainerConfiguration(c => c.RegisterType<THandler>(new InjectionFactory(cont => factory.Create(c.Resolve<IMessageProcessContext>()))));
             _containerConfigurations.Add(cfg);

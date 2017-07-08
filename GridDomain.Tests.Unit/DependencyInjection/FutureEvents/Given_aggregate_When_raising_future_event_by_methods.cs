@@ -24,8 +24,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
             aggregate.MarkPersisted(futureEventEnvelop);
 
             //quite ugly, but it only safe way to run some logic after scheduled event persistence
-            aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid(),
-                                         () => AfterScheduledEventOccures(aggregate, futureEventEnvelop, testCommand));
+            aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid());
         }
 
         private static Task AfterScheduledEventOccures(TestFutureEventsAggregate aggregate,

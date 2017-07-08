@@ -17,6 +17,7 @@ namespace GridDomain.Scheduling
             Register<FutureEventScheduledEvent>(Apply);
             Register<FutureEventOccuredEvent>(Apply);
             Register<FutureEventCanceledEvent>(Apply);
+            _schedulingSourceName = GetType().Name;
         }
 
         #region Base functions
@@ -26,13 +27,14 @@ namespace GridDomain.Scheduling
         // Aggregate State, do not mix with uncommited events 
         public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;
         readonly List<FutureEventScheduledEvent> _futureEvents = new List<FutureEventScheduledEvent>();
+        private readonly string _schedulingSourceName;
+
         /// <summary>
         /// will emit occured event only after succesfull apply of scheduled event
         /// </summary>
         /// <param name="futureEventId"></param>
         /// <param name="futureEventOccuredEventId"></param>
-        /// <param name="afterEventsPersistence"></param>
-        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId, Func<Task> afterEventsPersistence = null)
+        public void RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
         {
             FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (ev == null)
@@ -47,12 +49,12 @@ namespace GridDomain.Scheduling
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
-             Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+             Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
         }
 
         protected void Emit(DomainEvent @event, Func<Task> afterApply, DateTime raiseTime, Guid? futureEventId = null)
         {
-            Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event));
+            Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
@@ -61,7 +63,7 @@ namespace GridDomain.Scheduling
             if (criteia != null)
                 eventsToCancel = eventsToCancel.Where(e => criteia((TEvent) e.Event));
 
-            var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id))
+            var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id, _schedulingSourceName))
                                              .Cast<DomainEvent>()
                                              .ToArray();
             Emit(domainEvents);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Infrastructure;
@@ -26,7 +27,7 @@ namespace Shop.ReadModel
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(ReserveCanceled msg)
+        public async Task Handle(ReserveCanceled msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -54,7 +55,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(ReserveExpired msg)
+        public async Task Handle(ReserveExpired msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -82,7 +83,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(ReserveRenewed msg)
+        public async Task Handle(ReserveRenewed msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -110,7 +111,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(SkuStockCreated msg)
+        public async Task Handle(SkuStockCreated msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -139,7 +140,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(StockAdded msg)
+        public async Task Handle(StockAdded msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -160,7 +161,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(StockReserved msg)
+        public async Task Handle(StockReserved msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -194,7 +195,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(StockReserveTaken msg)
+        public async Task Handle(StockReserveTaken msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {
@@ -222,7 +223,7 @@ namespace Shop.ReadModel
             }
         }
 
-        public async Task Handle(StockTaken msg)
+        public async Task Handle(StockTaken msg, IMessageMetadata metadata = null)
         {
             using (var context = _contextFactory())
             {

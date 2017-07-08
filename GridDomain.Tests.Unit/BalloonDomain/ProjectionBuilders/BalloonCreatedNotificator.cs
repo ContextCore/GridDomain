@@ -7,7 +7,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 {
-    public class BalloonCreatedNotificator : IHandlerWithMetadata<BalloonCreated>
+    public class BalloonCreatedNotificator : IHandler<BalloonCreated>
     {
         public const string MessageProcessed = "message processed";
         public const string Why = "message received";
