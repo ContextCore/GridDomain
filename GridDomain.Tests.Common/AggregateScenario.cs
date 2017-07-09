@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -72,13 +73,23 @@ namespace GridDomain.Tests.Common
     
         public async Task<AggregateScenario<TAggregate>> Run()
         {
+            var events = new List<DomainEvent>();
+            Task Persistence(Aggregate agr)
+            {
+                Aggregate = (TAggregate)agr;
+                events.AddRange(agr.GetDomainEvents());
+                agr.PersistAll();
+                return Task.CompletedTask;
+            }
+
             //When
             foreach (var cmd in GivenCommands)
-                Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
+            {
+               await CommandsHandler.ExecuteAsync(Aggregate, cmd, Persistence);
+            }
 
             //Then
-            ProducedEvents = Aggregate.GetDomainEvents();
-            Aggregate.PersistAll();
+            ProducedEvents = events.ToArray();
 
             return this;
         }

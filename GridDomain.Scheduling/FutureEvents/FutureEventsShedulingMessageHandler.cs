@@ -21,15 +21,6 @@ namespace GridDomain.Scheduling.FutureEvents
         {
             _schedulerActorRef = schedulingActor;
 
-            //switch(evt)
-            //{
-            //    case FutureEventScheduledEvent e:
-            //        Handle(e, commandMetadata);
-            //        break;
-            //    case FutureEventCanceledEvent e:
-            //        Handle(e, commandMetadata);
-            //        break;
-            //}
             _schedulingFutureEventProcessEntry = new ProcessEntry(GetType().
                     Name,
                 "Scheduling raise future event command",

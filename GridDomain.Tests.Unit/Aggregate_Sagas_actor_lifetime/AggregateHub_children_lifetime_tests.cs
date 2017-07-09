@@ -4,7 +4,7 @@ using Akka.DI.Core;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.Aggregate;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit.Abstractions;

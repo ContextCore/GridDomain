@@ -7,7 +7,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.Aggregate;
+using GridDomain.Node.Actors.Aggregates;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition

@@ -37,9 +37,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
         public void WriteNewTitle(int number)
         {
-           // Emit(Task.Delay(1000).ContinueWith(t => new BalloonTitleChanged(number.ToString(), Id)));
-          // Thread.Sleep(1000);
-           Emit(new BalloonTitleChanged(number.ToString(), Id));
+            Emit(new BalloonTitleChanged(number.ToString(), Id));
         }
 
         public void InflateNewBaloon(string value)
@@ -52,17 +50,20 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         {
             Emit(new BalloonTitleChanged((value + int.Parse(Title)).ToString(), Id));
         }
-
+        //demo for actions depending on changed state after emit
+        public async Task DoubleIncreaseTitle(int value)
+        {
+            await EmitAsync(new BalloonTitleChanged(value.ToString(), Id));
+            //should be changed value from previous emit
+            var newValue = int.Parse(Title) + 1;
+            Emit(new BalloonTitleChanged((newValue).ToString(), Id));
+        }
         public async Task PlanTitleWrite(int sleepMiliseconds)
         {
             var eventTask = Task.Delay(sleepMiliseconds).
                                  ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
 
             await Emit(eventTask);
-
-            var evtTask2 = await Task.Delay(sleepMiliseconds)
-                                     .ContinueWith(t => new BalloonTitleChanged(sleepMiliseconds.ToString(), Id));
-            Emit(evtTask2);
         }
 
         internal async Task PlanTitleWrite(int parameter, TimeSpan sleepTime)

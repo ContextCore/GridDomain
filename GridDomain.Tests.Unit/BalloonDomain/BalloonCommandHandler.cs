@@ -14,6 +14,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
             Map<IncreaseTitleCommand>((c, a) => a.IncreaseTitle(c.Value));
 
+            Map<DoubleIncreaseTitleCommand>((c, a) => a.DoubleIncreaseTitle(c.Value));
+
             Map<InflateNewBallonCommand>(c => new Balloon(c.AggregateId, c.Title.ToString()));
 
             Map<InflateCopyCommand>((c, a) => a.InflateNewBaloon(c.Parameter.ToString()));

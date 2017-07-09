@@ -6,7 +6,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.Aggregate;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Node.Actors.EventSourced;

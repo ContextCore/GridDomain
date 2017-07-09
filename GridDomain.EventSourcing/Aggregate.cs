@@ -21,7 +21,7 @@ namespace GridDomain.EventSourcing
         private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private IRouteEvents _registeredRoutes;
-        public Func<DomainEvent[], Task> Persist { get; set; }
+        public PersistenceDelegate Persist { get; set; }
 
         protected Aggregate(Guid id) : this(null)
         {
@@ -96,7 +96,7 @@ namespace GridDomain.EventSourcing
 
         protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-            Emit(await evtTask);
+            await EmitAsync(await evtTask);
         }
 
         public bool MarkPersisted(DomainEvent e)
@@ -107,15 +107,20 @@ namespace GridDomain.EventSourcing
             return _uncommittedEvents.Remove(e);
         }
 
-        protected Task Emit(params DomainEvent[] events)
+        protected async Task EmitAsync(params DomainEvent[] events)
         {
             foreach (var e in events)
             {
                 _uncommittedEvents.Add(e);
             }
-            return Persist(_uncommittedEvents.Cast<DomainEvent>().ToArray());
+
+            await Persist(this);
         }
 
+        protected void Emit(params DomainEvent[] events)
+        {
+            EmitAsync(events);
+        }
         public override int GetHashCode()
         {
             return Id.GetHashCode();
