@@ -27,7 +27,7 @@ namespace GridDomain.Node
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
         private readonly ILoggingAdapter _log;
-        private readonly ProcessorListCatalog _sagaCatalog = new ProcessorListCatalog();
+        private readonly ProcessorListCatalog<ISagaTransitCompleted> _sagaCatalog = new ProcessorListCatalog<ISagaTransitCompleted>();
         private readonly ActorSystem _system;
 
         public CommandPipe(ActorSystem system, IUnityContainer container)

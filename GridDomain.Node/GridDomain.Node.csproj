@@ -246,7 +246,6 @@
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExсeption.cs" />
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\IProcessorListCatalog.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\MessageActorProcessor.cs" />
     <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandComplete.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandCompletedAck.cs" />

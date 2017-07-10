@@ -19,10 +19,10 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class SagaPipeActor : ReceiveActor
     {
         public const string SagaProcessActorRegistrationName = nameof(SagaProcessActorRegistrationName);
-        private readonly IProcessorListCatalog _catalog;
+        private readonly IProcessorListCatalog<ISagaTransitCompleted> _catalog;
         private IActorRef _commandExecutionActor;
 
-        public SagaPipeActor(IProcessorListCatalog catalog)
+        public SagaPipeActor(IProcessorListCatalog<ISagaTransitCompleted> catalog)
         {
             _catalog = catalog;
 
@@ -43,12 +43,15 @@ namespace GridDomain.Node.Actors.CommandPipe
         
         private Task<SagasProcessComplete> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
-            var eventProcessors = _catalog.Get(messageMetadataEnvelop.Message);
-            if (!eventProcessors.Any())
-                return Task.FromResult(SagasProcessComplete.NoResults);
+            return _catalog.ProcessMessage(messageMetadataEnvelop)
+                           .ContinueWith(t =>
+                                         {
+                                             var sagaTransiteds = t.Result.OfType<SagaTransited>().ToArray();
+                                             if(!sagaTransiteds.Any())
+                                                 return SagasProcessComplete.NoResults;
 
-            return Task.WhenAll(eventProcessors.Select(e => e.ActorRef.Ask<ISagaTransitCompleted>(messageMetadataEnvelop)))
-                       .ContinueWith(t => new SagasProcessComplete(CreateCommandEnvelops(t.Result.OfType<SagaTransited>()).ToArray()));
+                                             return new SagasProcessComplete(CreateCommandEnvelops(sagaTransiteds).ToArray());
+                                         });
         }
 
         private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<SagaTransited> messages)

@@ -7,4 +7,8 @@ namespace GridDomain.Node.Actors.CommandPipe.Processors
     {
         
     }
+    public interface IProcessorListCatalog<T> : ICatalog<IReadOnlyCollection<IMessageProcessor<T>>, object>
+    {
+
+    }
 }
