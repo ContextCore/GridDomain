@@ -3,7 +3,7 @@ using GridDomain.Common;
 
 namespace GridDomain.Node.Actors.Hadlers
 {
-    internal class HandlerExecuted
+    public class HandlerExecuted
     {
         public HandlerExecuted(IMessageMetadataEnvelop processingMessage, Exception error = null)
         {

@@ -223,6 +223,11 @@
     <Compile Include="Actors\Aggregates\Messages\CommandExecuted.cs" />
     <Compile Include="Actors\Aggregates\Messages\CommandProducedEventsPersisted.cs" />
     <Compile Include="Actors\BehaviorStack.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\FireAndForgetMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\IMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\ParrallelMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\SynchroniousMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\ProcessorListCatalogExtensions.cs" />
     <Compile Include="Actors\EventSourced\Messages\CancelShutdownRequest.cs" />
     <Compile Include="Actors\Sagas\Messages\CommandCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
@@ -238,8 +243,8 @@
     <Compile Include="Actors\Hadlers\HandlerExecuted.cs" />
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExсeption.cs" />
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
-    <Compile Include="Actors\CommandPipe\ProcessorCatalogs\IProcessorListCatalog.cs" />
-    <Compile Include="Actors\CommandPipe\Processor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\IProcessorListCatalog.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\Processor.cs" />
     <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandComplete.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandCompletedAck.cs" />
@@ -256,12 +261,11 @@
     <Compile Include="Actors\EventSourced\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\Messages\NotifyOnPersistenceEvents.cs" />
     <Compile Include="Actors\Sagas\Messages\RedirectToNewSaga.cs" />
-    <Compile Include="Actors\CommandPipe\ProcessorCatalogs\ProcessorListCatalog.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\ProcessorListCatalog.cs" />
     <Compile Include="Actors\CommandPipe\SagaPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Messages\SagasProcessComplete.cs" />
     <Compile Include="Actors\CommandPipe\HandlersPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Messages\AllHandlersCompleted.cs" />
-    <Compile Include="Actors\CommandPipe\ProcessorCatalogs\MessageProcessPolicy.cs" />
     <Compile Include="Actors\Sagas\SagaActorConstants.cs" />
     <Compile Include="Actors\Sagas\Exceptions\SagaAlreadyStartedException.cs" />
     <Compile Include="Actors\Sagas\SagaState.cs" />

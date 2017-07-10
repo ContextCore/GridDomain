@@ -4,6 +4,7 @@ using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit;
 
@@ -19,8 +20,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void CommandExecutor_does_not_support_command_inheritance()
         {
-            var catalog = new TypeCatalog<Processor, ICommand>();
-            catalog.Add<InflateNewBallonCommand>(new Processor(TestActor));
+            var catalog = new TypeCatalog<IMessageProcessor, ICommand>();
+            catalog.Add<InflateNewBallonCommand>(new FireAndForgetMessageProcessor(TestActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
@@ -34,8 +35,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void CommandExecutor_routes_command_by_its_type()
         {
-            var catalog = new TypeCatalog<Processor, ICommand>();
-            catalog.Add<InflateNewBallonCommand>(new Processor(TestActor));
+            var catalog = new TypeCatalog<IMessageProcessor, ICommand>();
+            catalog.Add<InflateNewBallonCommand>(new FireAndForgetMessageProcessor(TestActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 

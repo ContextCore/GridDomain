@@ -21,8 +21,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<BalloonCreated>(new Processor(delayActor));
-            catalog.Add<BalloonTitleChanged>(new Processor(delayActor));
+            catalog.Add<BalloonCreated>(new FireAndForgetMessageProcessor(delayActor));
+            catalog.Add<BalloonTitleChanged>(new FireAndForgetMessageProcessor(delayActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
@@ -51,9 +51,9 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<BalloonCreated>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<BalloonTitleChanged>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<BalloonTitleChanged>(new Processor(delayActor, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonCreated>(new SyncProjectionProcessor(delayActor));
+            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(delayActor));
+            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(delayActor));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
@@ -85,7 +85,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
             var catalog = new ProcessorListCatalog();
-            catalog.Add<BalloonCreated>(new Processor(TestActor));
+            catalog.Add<BalloonCreated>(new SyncProjectionProcessor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msg = MessageMetadataEnvelop.New(new Project(new Inherited()));
@@ -100,7 +100,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         public void CustomHandlerProcessor_routes_events_by_type()
         {
             var catalog = new ProcessorListCatalog();
-            catalog.Add<BalloonCreated>(new Processor(TestActor));
+            catalog.Add<BalloonCreated>(new SyncProjectionProcessor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var msg =
@@ -127,11 +127,11 @@ namespace GridDomain.Tests.Unit.CommandPipe
             //Slow handler will receive messages first. 
             //Due to it is registered with async process policy 
             //second handler (fast) will not wait for slow one and it will finish execution before slow handler
-            catalog.Add<BalloonCreated>(new Processor(slowHandler, MessageProcessPolicy.Async));
-            catalog.Add<BalloonCreated>(new Processor(fastHandler, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonCreated>(new FireAndForgetMessageProcessor(slowHandler));
+            catalog.Add<BalloonCreated>(new SyncProjectionProcessor(fastHandler));
 
-            catalog.Add<BalloonTitleChanged>(new Processor(slowHandler, MessageProcessPolicy.Async));
-            catalog.Add<BalloonTitleChanged>(new Processor(fastHandler, MessageProcessPolicy.Sync));
+            catalog.Add<BalloonTitleChanged>(new FireAndForgetMessageProcessor(slowHandler));
+            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(fastHandler));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
@@ -140,8 +140,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             //async handler will last handler to receive all three messages, but will process them faster
             //maintaining initial order
-            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && e.Mark == fastHandler.Path.ToString());
-            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonTitleChanged && e.Mark == fastHandler.Path.ToString());
+            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && e.Mark == fastHandler.Path.ToString(), TimeSpan.FromDays(1));
+            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonTitleChanged && e.Mark == fastHandler.Path.ToString(), TimeSpan.FromDays(1));
             
             //HandlersProcessActor should notify next step - saga actor that work is done
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>(e => e.Message is BalloonCreated);

@@ -35,10 +35,10 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<BalloonCreated>(new Processor(testSagaActorA));
+            catalog.Add<BalloonCreated>(new SyncProjectionProcessor(testSagaActorA));
             //two commands per one event will be produced
-            catalog.Add<BalloonTitleChanged>(new Processor(testSagaActorB));
-            catalog.Add<BalloonTitleChanged>(new Processor(testSagaActor—));
+            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(testSagaActorB));
+            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(testSagaActor—));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
@@ -75,7 +75,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
             var catalog = new ProcessorListCatalog();
-            catalog.Add<BalloonCreated>(new Processor(testSagaActor));
+            catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
@@ -95,7 +95,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
 
             var catalog = new ProcessorListCatalog();
-            catalog.Add<BalloonCreated>(new Processor(testSagaActor));
+            catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));

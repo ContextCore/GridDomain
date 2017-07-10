@@ -26,17 +26,19 @@ namespace GridDomain.Node.Actors.CommandPipe
             ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
                                                            {
                                                                var project = envelop.Message;
-                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m,envelop.Metadata)).ToArray();
+                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata)).
+                                                                                      ToArray();
 
-                                                               return envelops.Select(messageMetadataEnvelop => SynhronizeHandlers(messageMetadataEnvelop, handlersCatalog))
-                                                                              .ToChain()
-                                                                              .ContinueWith(t =>
+                                                               return envelops.Select(handlersCatalog.ProcessMessage).
+                                                                               ToChain().
+                                                                               ContinueWith(t =>
                                                                                             {
                                                                                                 foreach (var env in envelops)
                                                                                                     sagasProcessActor.Tell(env);
 
                                                                                                 return new AllHandlersCompleted(project.ProjectId);
-                                                                                            }).PipeTo(Sender);
+                                                                                            }).
+                                                                               PipeTo(Sender);
                                                            });
         }
 
@@ -51,23 +53,6 @@ namespace GridDomain.Node.Actors.CommandPipe
                 return new MessageMetadataEnvelop<IFault>(fault, metadata);
 
             return new MessageMetadataEnvelop<object>(message, metadata);
-        }
-
-        private Task SynhronizeHandlers(IMessageMetadataEnvelop messageMetadataEnvelop, IProcessorListCatalog processorListCatalog)
-        {
-            var processors = processorListCatalog.Get(messageMetadataEnvelop.Message);
-            if (!processors.Any())
-                return Task.CompletedTask;
-
-            return processors.Select(p =>
-                                          {
-                                              if (p.Policy.IsSynchronious)
-                                                  return p.ActorRef.Ask<HandlerExecuted>(messageMetadataEnvelop);
-
-                                              p.ActorRef.Tell(messageMetadataEnvelop);
-                                              return Task.CompletedTask;
-                                          })
-                              .ToChain();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace GridDomain.Node
 {
     public class CommandPipe : IMessagesRouter
     {
-        private readonly TypeCatalog<Processor, ICommand> _aggregatesCatalog = new TypeCatalog<Processor, ICommand>();
+        private readonly TypeCatalog<IMessageProcessor, ICommand> _aggregatesCatalog = new TypeCatalog<IMessageProcessor, ICommand>();
         private readonly IUnityContainer _container;
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
@@ -47,7 +47,7 @@ namespace GridDomain.Node
 
             var aggregateActor = CreateActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
-            var processor = new Processor(aggregateActor);
+            var processor = new FireAndForgetMessageProcessor(aggregateActor);
 
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
                 _aggregatesCatalog.Add(aggregateCommandInfo, processor);
@@ -60,7 +60,7 @@ namespace GridDomain.Node
             var sagaActorType = typeof(SagaHubActor<>).MakeGenericType(sagaDescriptor.StateType);
 
             var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
-            var processor = new Processor(sagaActor);
+            var processor = new SynchroniousMessageProcessor<ISagaTransitCompleted>(sagaActor);
 
             foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
                 _sagaCatalog.Add(acceptMsg.MessageType, processor);
@@ -71,7 +71,7 @@ namespace GridDomain.Node
         public Task RegisterHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                                  where TMessage : class, IHaveSagaId, IHaveId
         {
-            return RegisterHandler<TMessage, THandler>(true);
+            return RegisterHandler<TMessage, THandler>(actor => new SynchroniousMessageProcessor<HandlerExecuted>(actor));
         }
 
         /// <summary>
@@ -97,13 +97,13 @@ namespace GridDomain.Node
             return CommandExecutor;
         }
         
-        public Task RegisterHandler<TMessage, THandler>(bool sync = false) where THandler : IHandler<TMessage>
+        public Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
                                                                            where TMessage : class, IHaveSagaId, IHaveId
         {
             var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);
             var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());
 
-            _handlersCatalog.Add<TMessage>(new Processor(handlerActor, new MessageProcessPolicy(sync)));
+            _handlersCatalog.Add<TMessage>(processorCreator(handlerActor));
             return Task.CompletedTask;
         }
 

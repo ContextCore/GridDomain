@@ -1,12 +1,13 @@
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
     public class AggregatesPipeActor : ReceiveActor
     {
-        public AggregatesPipeActor(ICatalog<Processor, ICommand> aggregateCatalog)
+        public AggregatesPipeActor(ICatalog<IMessageProcessor, ICommand> aggregateCatalog)
         {
             Receive<IMessageMetadataEnvelop<ICommand>>(c =>
                                                        {
