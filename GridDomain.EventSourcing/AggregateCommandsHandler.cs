@@ -34,26 +34,14 @@ namespace GridDomain.EventSourcing
      
         private void AddCommandExecution<TCommand>(Func<TCommand, TAggregate, Task<TAggregate>> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>((a, c, p) =>
+            Add<TCommand>(async (a, c, p) =>
             {
-                Task<TAggregate> commandExecutionTask;
-                try
-                {
-                    commandExecutionTask = commandExecutor((TCommand)c, a);
-                }
-                catch (Exception ex)
-                {
-                    return Task.FromException<TAggregate>(ex);
-                }
-
-                return commandExecutionTask.ContinueWith(t =>
-                                                  {
-                                                      var aggregate = t.Result;
-                                                      aggregate.Persist = p;
-                                                      if (!aggregate.HasUncommitedEvents) return aggregate;
-                                                      //for cases when we call Produce and expect events persistence after aggregate methods invocation;
-                                                      return p(aggregate).ContinueWith(tr => aggregate).Result;
-                                                  });
+                TAggregate aggregate = await commandExecutor((TCommand)c, a);
+                aggregate.Persist = p;
+                if (!aggregate.HasUncommitedEvents) return aggregate;
+                //for cases when we call Produce and expect events persistence after aggregate methods invocation;
+                await p(aggregate);
+                return aggregate;
             });
         }
         /// <summary>
@@ -63,7 +51,11 @@ namespace GridDomain.EventSourcing
         /// <param name="commandExecutor"></param>
         protected void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
         {
-            AddCommandExecution<TCommand>((c, a) => commandExecutor(c, a).ContinueWith(t => a));
+            AddCommandExecution<TCommand>(async (c, a) =>
+                                          {
+                                              await commandExecutor(c, a);
+                                              return a;
+                                          });
         }
 
         /// <summary>

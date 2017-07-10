@@ -75,11 +75,11 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         internal async Task PlanWriteTitleToBlow(int parameter, TimeSpan sleepTime)
         {
             Produce(await Task.Delay(sleepTime)
-                     .ContinueWith(t =>
-                                   {
-                                       Blow();
-                                       return new BalloonTitleChanged(parameter.ToString(), Id);
-                                   }));
+                                    .ContinueWith(t =>
+                                    {
+                                        Blow();
+                                        return new BalloonTitleChanged(parameter.ToString(), Id);
+                                    }));
         }
 
         private void Apply(BalloonCreated e)

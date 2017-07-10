@@ -13,8 +13,8 @@ namespace GridDomain.Node.Actors.Hadlers
                                                                         where TMessage : class, IHaveSagaId, IHaveId
     {
         private static readonly ProcessEntry FaltProcessEntry = new ProcessEntry(typeof(THandler).Name,
-                                                                                 MessageHandlingStatuses.PublishingFault,
-                                                                                 MessageHandlingStatuses.MessageProcessCasuedAnError);
+                                                                                 MessageHandlingLiterals.PublishingFault,
+                                                                                 MessageHandlingLiterals.MessageProcessCasuedAnError);
 
         private readonly ILoggingAdapter _log = Context.GetLogger();
 
@@ -46,15 +46,16 @@ namespace GridDomain.Node.Actors.Hadlers
                                                  {
                                                      var error = t?.Exception.UnwrapSingle();
                                                      if(error != null)
-                                                         PublishFault((TMessage)envelop.Message, envelop.Metadata, error);
+                                                         PublishError((TMessage)envelop.Message, envelop.Metadata, error);
                                                      return new HandlerExecuted(envelop, error);
                                                  }).PipeTo(Sender);
                                              },
                                              m => m.Message is TMessage);
         }
 
-        protected virtual void PublishFault(TMessage msg, IMessageMetadata metadata, Exception ex)
+        protected virtual void PublishError(TMessage msg, IMessageMetadata metadata, Exception ex)
         {
+            var messageProcessException = new MessageProcessFailedException(ex);
             _log.Error(ex,
                        "Handler actor raised an error on message process: {@msg}. Count: {count}",
                        msg,

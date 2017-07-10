@@ -234,13 +234,14 @@
     <Compile Include="Actors\CommandPipe\Messages\SagaTransitFault.cs" />
     <Compile Include="Actors\EventSourced\Exceptions\EventApplyException.cs" />
     <Compile Include="Actors\EventSourced\Messages\HealthStatus.cs" />
+    <Compile Include="Actors\Hadlers\MessageProcessFailedException.cs" />
     <Compile Include="Actors\Sagas\Messages\GetSagaState.cs" />
     <Compile Include="Actors\Hadlers\HandlerExecuted.cs" />
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExсeption.cs" />
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorCatalogs\IProcessorListCatalog.cs" />
     <Compile Include="Actors\CommandPipe\Processor.cs" />
-    <Compile Include="Actors\Hadlers\MessageHandlingStatuses.cs" />
+    <Compile Include="Actors\Hadlers\MessageHandlingLiterals.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandComplete.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandCompletedAck.cs" />
     <Compile Include="Actors\Sagas\Messages\NotifyOnSagaTransited.cs" />

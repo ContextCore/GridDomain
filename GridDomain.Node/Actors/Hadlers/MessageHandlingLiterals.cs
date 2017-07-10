@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Actors.Hadlers
 {
-    public static class MessageHandlingStatuses
+    public static class MessageHandlingLiterals
     {
         public const string PublishingFault = "publishing fault";
         public const string MessageProcessCasuedAnError = "message process cased an error";

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
@@ -8,6 +9,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
+using GridDomain.Node.Actors.Aggregates.Exceptions;
 using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
@@ -45,6 +47,7 @@ namespace GridDomain.Node.Actors.Aggregates
             State.Persist = PersistEventPack(Self);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
+
         protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
@@ -61,10 +64,14 @@ namespace GridDomain.Node.Actors.Aggregates
                                                            ExecutionContext.Command = cmd;
                                                            ExecutionContext.CommandMetadata = m.Metadata;
 
-                                                           _aggregateCommandsHandler.ExecuteAsync(State, 
+                                                           _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                                   cmd,
                                                                                                   PersistEventPack(Self))
-                                                                                    .ContinueWith(t => ProducedEventsPersisted.Instance)
+                                                                                    .ContinueWith(t =>
+                                                                                                  {
+                                                                                                      if (t.IsFaulted) throw t.Exception;
+                                                                                                      return ProducedEventsPersisted.Instance;
+                                                                                                  })
                                                                                     .PipeTo(Self);
 
                                                            Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
@@ -75,71 +82,69 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             return agr =>
                    {
-                       ExecutionContext.ProducedState = (TAggregate)agr;
+                       ExecutionContext.ProducedState = (TAggregate) agr;
                        return self.Ask<EventsPersisted>(new PersistEvents(agr.GetDomainEvents()));
                    };
         }
 
         private void ProcessingCommandBehavior()
         {
-            var commandMetadata = ExecutionContext.CommandMetadata;
-            var producedEventsMetadata = commandMetadata.CreateChild(Id, _domainEventProcessEntry);
+            var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
 
             //just for catching Failures on events persist
             Command<PersistEvents>(e =>
                                    {
-                                       Monitor.Increment(nameof(EventPersistingInProgress));
+                                       Monitor.Increment(nameof(PersistEvents));
                                        var domainEvents = e.Events;
                                        if (!domainEvents.Any())
                                        {
                                            Log.Warning("Aggregate {id} trying to persist events but no events is presented", PersistenceId);
                                            return;
                                        }
-                                       var command = ExecutionContext.Command;
-
 
                                        //dirty hack, but we know nobody will modify domain events before us 
-                                       foreach(var evt in domainEvents)
-                                           evt.SagaId = command.SagaId;
+                                       foreach (var evt in domainEvents)
+                                           evt.SagaId = ExecutionContext.Command.SagaId;
 
                                        ExecutionContext.MessagesToProject.AddRange(domainEvents);
 
                                        PersistAll(domainEvents,
-                                           persistedEvent =>
-                                           {
-                                               try
-                                               {
-                                                   ExecutionContext.ProducedState.MarkPersisted(persistedEvent);
-                                               }
-                                               catch (Exception ex)
-                                               {
-                                                   Log.Error(SimpleAggregateActorConstants.ErrorOnEventApplyText, Id, command);
-                                                   PublishError(command, commandMetadata, ex);
-                                                   //intentionally drop all pending commands and messages
-                                                   //and don't wait end of projection builders processing as
-                                                   //state is corrupted
-                                                   Context.Stop(Self);
-                                                   return;
-                                               }
+                                                  persistedEvent =>
+                                                  {
+                                                      try
+                                                      {
+                                                          ExecutionContext.ProducedState.MarkPersisted(persistedEvent);
+                                                      }
+                                                      catch (Exception ex)
+                                                      {
+                                                          Log.Error(SimpleAggregateActorConstants.ErrorOnEventApplyText, Id, ExecutionContext.Command);
+                                                          PublishError(ex);
+                                                          //intentionally drop all pending commands and messages
+                                                          //and don't wait end of projection builders processing as
+                                                          //state is corrupted
+                                                          Context.Stop(Self);
+                                                          return;
+                                                      }
 
-                                               NotifyPersistenceWatchers(persistedEvent);
-                                               TrySaveSnapshot(ExecutionContext.ProducedState);
+                                                      NotifyPersistenceWatchers(persistedEvent);
+                                                      TrySaveSnapshot(ExecutionContext.ProducedState);
 
-                                               if (State.HasUncommitedEvents)
-                                                   return;
+                                                      if (ExecutionContext.ProducedState.HasUncommitedEvents)
+                                                          return;
 
-                                               Sender.Tell(EventsPersisted.Instance);
-                                           });
+                                                      Sender.Tell(EventsPersisted.Instance);
+                                                  });
                                    });
             //aggregate raised an error during command execution
-            Command<Status.Failure>(f => PublishError(ExecutionContext.Command, commandMetadata, f.Cause).PipeTo(Self));
+            Command<Status.Failure>(f => PublishError(f.Cause.UnwrapSingle())
+                                        .ContinueWith(t => CommandExecuted.Instance)
+                                        .PipeTo(Self));
 
             Command<ProducedEventsPersisted>(newState =>
                                              {
                                                  Log.Debug("{Aggregate} received a {@command}", PersistenceId, newState);
 
-                                                 ExecutionContext.MessagesToProject
-                                                                 .Select(e => Project(e, producedEventsMetadata)).
+                                                 ExecutionContext.MessagesToProject.Select(e => Project(e, producedEventsMetadata)).
                                                                   ToChain().
                                                                   ContinueWith(t =>
                                                                                {
@@ -154,11 +159,9 @@ namespace GridDomain.Node.Actors.Aggregates
                                      {
                                          Log.Debug("{Aggregate} received a {@command}", PersistenceId, c);
 
-                                         //finish command execution
-                                         State = ExecutionContext.ProducedState;
+                                         //finish command execution. produced state can be null on execution error
+                                         State = ExecutionContext.ProducedState ?? State;
                                          ExecutionContext.Clear();
-                                         ((IAggregate) State).ClearUncommittedEvents();
-
                                          Behavior.Unbecome();
                                          Stash.UnstashAll();
                                          //notify waiters
@@ -173,19 +176,22 @@ namespace GridDomain.Node.Actors.Aggregates
             DefaultBehavior();
         }
 
-        private Task<AllHandlersCompleted> PublishError(ICommand command, IMessageMetadata commandMetadata, Exception exception)
+        private Task<AllHandlersCompleted> PublishError(Exception exception)
         {
+            var command = ExecutionContext.Command;
+            var commandMetadata = ExecutionContext.CommandMetadata;
+            var commandExecutionException = new CommandExecutionFailedException(command, exception);
+
+            Log.Error(commandExecutionException, "{Aggregate} raised an error while executing {@Command}", PersistenceId, command);
+
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
-
-            var fault = Fault.NewGeneric(command, exception, command.SagaId, typeof(TAggregate));
-            Log.Error(exception, "{Aggregate} raised an error {@Exception} while executing {@Command}", PersistenceId, exception, command);
-
-            return Project(fault, producedFaultMetadata).
-                ContinueWith(t =>
-                             {
-                                 _publisher.Publish(fault, producedFaultMetadata);
-                                 return t.Result;
-                             });
+            var fault = Fault.NewGeneric(command, commandExecutionException, command.SagaId, typeof(TAggregate));
+            return Project(fault, producedFaultMetadata)
+                        .ContinueWith(t =>
+                                     {
+                                         _publisher.Publish(fault, producedFaultMetadata);
+                                         return t.Result;
+                                     });
         }
 
         protected override void TerminatingBehavior()
