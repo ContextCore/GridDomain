@@ -7,14 +7,16 @@ namespace GridDomain.Node.Actors.CommandPipe.Processors
     {
         protected MessageActorProcessor(IActorRef actorRef)
         {
-            ActorRef = actorRef;
+            _actorRef = actorRef;
         }
-        public IActorRef ActorRef { get; }
+
+        private readonly IActorRef _actorRef;
+        public IActorRef ActorRef => _actorRef;
 
         public abstract Task Process(object message, Task workInProgress = null);
         protected Task<T> AskActor<T>(object message)
         {
-            return ActorRef.Ask<T>(message);
+            return _actorRef.Ask<T>(message);
         }
     }
 }
