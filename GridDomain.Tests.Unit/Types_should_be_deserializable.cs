@@ -12,6 +12,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
+using GridDomain.Node.Serializers;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Common;

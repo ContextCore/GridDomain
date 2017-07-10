@@ -6,7 +6,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;

@@ -8,6 +8,7 @@ using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.Node;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Serializers;
 
 namespace GridDomain.Tools.Connector
 {

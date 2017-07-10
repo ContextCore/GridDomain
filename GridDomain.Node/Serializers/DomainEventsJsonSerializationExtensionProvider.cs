@@ -1,6 +1,6 @@
 using Akka.Actor;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Serializers
 {
     public class DomainEventsJsonSerializationExtensionProvider : ExtensionIdProvider<DomainEventsJsonSerializationExtension>
     {

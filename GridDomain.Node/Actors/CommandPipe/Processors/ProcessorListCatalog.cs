@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using GridDomain.Common;
 
-namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
+namespace GridDomain.Node.Actors.CommandPipe.Processors
 {
     internal class ProcessorListCatalog : TypeCatalog<List<IMessageProcessor>, object>,
                                           IProcessorListCatalog

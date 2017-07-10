@@ -13,7 +13,7 @@ using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.Sagas;
 using GridDomain.Node.Actors.Sagas.Messages;

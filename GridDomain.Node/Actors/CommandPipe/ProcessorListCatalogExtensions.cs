@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.CommandPipe.Processors;
 
 namespace GridDomain.Node.Actors.CommandPipe {
     public static class ProcessorListCatalogExtensions

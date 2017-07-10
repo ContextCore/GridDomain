@@ -17,6 +17,7 @@ using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Node.Serializers;
 using Microsoft.Practices.Unity;
 using IScheduler = Quartz.IScheduler;
 

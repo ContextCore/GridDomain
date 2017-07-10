@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 
-namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs {
+namespace GridDomain.Node.Actors.CommandPipe.Processors {
 
 
-    //public class ParralelProjectionProcessor: 
     public class FireAndForgetMessageProcessor : MessageActorProcessor
     {
         public FireAndForgetMessageProcessor(IActorRef processor) : base(processor)

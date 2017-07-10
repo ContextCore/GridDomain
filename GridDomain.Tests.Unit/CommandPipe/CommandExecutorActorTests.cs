@@ -4,7 +4,7 @@ using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit;
 

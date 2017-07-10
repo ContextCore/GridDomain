@@ -1,20 +1,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
-using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.Hadlers;
 
-namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs {
-
-
-    public class SyncProjectionProcessor : SynchroniousMessageProcessor<HandlerExecuted>
-    {
-        public SyncProjectionProcessor(IActorRef processor) : base(processor) { }
-    }
-    public class SyncSagaProcessor: SynchroniousMessageProcessor<ISagaTransitCompleted>
-    {
-        public SyncSagaProcessor(IActorRef processor) : base(processor) { }
-    }
-
+namespace GridDomain.Node.Actors.CommandPipe.Processors {
     public class SynchroniousMessageProcessor<T>: MessageActorProcessor
     {
         public SynchroniousMessageProcessor(IActorRef processor):base(processor)

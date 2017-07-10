@@ -2,7 +2,7 @@ using System;
 using Akka.Actor;
 using GridDomain.EventSourcing.Adapters;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Serializers
 {
     public static class DomainEventsJsonSerializationExtensions
     {

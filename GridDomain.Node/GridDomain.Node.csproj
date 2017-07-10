@@ -228,6 +228,8 @@
     <Compile Include="Actors\CommandPipe\Processors\ParrallelMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\SynchroniousMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorListCatalogExtensions.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\SyncProjectionProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\SyncSagaProcessor.cs" />
     <Compile Include="Actors\EventSourced\Messages\CancelShutdownRequest.cs" />
     <Compile Include="Actors\Sagas\Messages\CommandCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
@@ -244,7 +246,7 @@
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExсeption.cs" />
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\IProcessorListCatalog.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\Processor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\MessageActorProcessor.cs" />
     <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandComplete.cs" />
     <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandCompletedAck.cs" />

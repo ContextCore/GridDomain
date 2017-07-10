@@ -3,7 +3,7 @@ using Akka.Actor;
 using GridDomain.EventSourcing.Adapters;
 using Newtonsoft.Json;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Serializers
 {
     public class DomainEventsJsonSerializationExtension : IExtension
     {

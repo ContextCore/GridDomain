@@ -2,7 +2,7 @@ using System;
 using Akka.Actor;
 using Akka.Serialization;
 
-namespace GridDomain.Node {
+namespace GridDomain.Node.Serializers {
     internal class DebugWireSerializer : WireSerializer
     {
         public override int Identifier { get; } = 1232;

@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using GridDomain.Node;
+using GridDomain.Node.Serializers;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;

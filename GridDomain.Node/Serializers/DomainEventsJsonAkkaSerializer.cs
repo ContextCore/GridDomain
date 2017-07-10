@@ -3,7 +3,7 @@ using Akka.Actor;
 using Akka.Serialization;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Serializers
 {
     internal class DomainEventsJsonAkkaSerializer : Serializer
     {

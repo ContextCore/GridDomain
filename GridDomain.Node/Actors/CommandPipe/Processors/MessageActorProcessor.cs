@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
 
-namespace GridDomain.Node.Actors.CommandPipe
+namespace GridDomain.Node.Actors.CommandPipe.Processors
 {
     public abstract class MessageActorProcessor : IMessageProcessor
     {

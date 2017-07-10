@@ -1,7 +1,7 @@
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs;
+using GridDomain.Node.Actors.CommandPipe.Processors;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
