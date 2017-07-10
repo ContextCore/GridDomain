@@ -96,30 +96,30 @@ namespace GridDomain.EventSourcing
 
         protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-            await EmitAsync(await evtTask);
+            await Emit(await evtTask);
         }
 
         public bool MarkPersisted(DomainEvent e)
         {
             if (!_uncommittedEvents.Contains(e))
                 throw new EventIsNotBelongingToAggregateException();
+
             ((IAggregate) this).ApplyEvent(e);
             return _uncommittedEvents.Remove(e);
         }
 
-        protected async Task EmitAsync(params DomainEvent[] events)
+        protected async Task Emit(params DomainEvent[] events)
         {
-            foreach (var e in events)
-            {
-                _uncommittedEvents.Add(e);
-            }
-
+            Produce(events);
             await Persist(this);
         }
 
-        protected void Emit(params DomainEvent[] events)
+        protected void Produce(params DomainEvent[] events)
         {
-            EmitAsync(events);
+            foreach(var e in events)
+            {
+                _uncommittedEvents.Add(e);
+            }
         }
         public override int GetHashCode()
         {

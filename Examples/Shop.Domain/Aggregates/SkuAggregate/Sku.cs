@@ -21,7 +21,7 @@ namespace Shop.Domain.Aggregates.SkuAggregate
 
         public Sku(Guid id, string name, string article, int number, Money price) : this(id)
         {
-            Emit(new SkuCreated(id, name, article, number, price));
+            Produce(new SkuCreated(id, name, article, number, price));
         }
 
         public string Name { get; private set; }

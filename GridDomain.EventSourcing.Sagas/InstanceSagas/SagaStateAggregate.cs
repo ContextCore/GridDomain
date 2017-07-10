@@ -10,7 +10,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
         public SagaStateAggregate(TState state): this(state.Id)
         {
             Condition.NotNull(() => state);
-            Emit(new SagaCreated<TState>(state, state.Id));
+            Produce(new SagaCreated<TState>(state, state.Id));
         }
         
         private SagaStateAggregate(Guid id) : base(id)
@@ -21,7 +21,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
 
         public void ReceiveMessage(TState sagaData, object message)
         {
-            Emit(new SagaReceivedMessage<TState>(Id, sagaData, message));
+            Produce(new SagaReceivedMessage<TState>(Id, sagaData, message));
         }
 
         public void Apply(SagaCreated<TState> e)

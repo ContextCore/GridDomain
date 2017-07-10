@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.Serialization
         {
             public TestAggregate(int value, Guid id) : base(id)
             {
-                Emit(new TestAggregateCreatedEvent(id, value));
+                Produce(new TestAggregateCreatedEvent(id, value));
             }
 
             public int Value { get; private set; }

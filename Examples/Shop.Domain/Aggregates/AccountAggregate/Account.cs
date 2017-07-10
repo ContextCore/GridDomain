@@ -12,7 +12,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
 
         public Account(Guid id, Guid userId, int number) : this(id)
         {
-            Emit(new AccountCreated(id, userId, number));
+            Produce(new AccountCreated(id, userId, number));
         }
 
         public Guid UserId { get; private set; }
@@ -39,7 +39,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
         public void Replenish(Money m, Guid replenishSource)
         {
             GuardNegativeMoney(m, "Cant replenish negative amount of money.");
-            Emit(new AccountReplenish(Id, replenishSource, m));
+            Produce(new AccountReplenish(Id, replenishSource, m));
         }
 
         private static void GuardNegativeMoney(Money m, string msg)
@@ -54,7 +54,7 @@ namespace Shop.Domain.Aggregates.AccountAggregate
             if ((Amount - m).IsNegative())
                 throw new NotEnoughMoneyException("Dont have enough money to pay for bill");
 
-            Emit(new AccountWithdrawal(Id, withdrawSource, m));
+            Produce(new AccountWithdrawal(Id, withdrawSource, m));
         }
     }
 }

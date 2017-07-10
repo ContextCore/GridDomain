@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
         public void Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);
-            Emit(new TestDomainEvent(dependencyUseResult, Id));
+            Produce(new TestDomainEvent(dependencyUseResult, Id));
         }
 
         private void Apply(TestDomainEvent e)

@@ -31,13 +31,13 @@ namespace GridDomain.Scheduling
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
             //How to handle case when applying occured event will raise an exception?
-             Emit(ev.Event,
+             Produce(ev.Event,
                   futureEventOccuredEvent);
         }
 
         protected void Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
         {
-             Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
+             Produce(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
@@ -49,7 +49,7 @@ namespace GridDomain.Scheduling
             var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id, _schedulingSourceName))
                                              .Cast<DomainEvent>()
                                              .ToArray();
-            Emit(domainEvents);
+            Produce(domainEvents);
         }
 
         private void Apply(FutureEventScheduledEvent e)

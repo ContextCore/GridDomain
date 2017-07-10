@@ -38,7 +38,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
         {
             if (number < 0)
                 throw new NegativeOrderNumberException();
-            Emit(new OrderCreated(id, number, user));
+            Produce(new OrderCreated(id, number, user));
         }
 
         public Guid UserId { get; private set; }
@@ -56,7 +56,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
         //calculate total call is last oin order lifetime, it means order is ready to be paid
         public void CalculateTotal()
         {
-            Emit(new OrderTotalCalculated(Id, CalculateTotalPrice()));
+            Produce(new OrderTotalCalculated(Id, CalculateTotalPrice()));
         }
 
         public void AddItem(Guid sku, int quantity, Money totalPrice)
@@ -68,7 +68,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             if (Status != OrderStatus.Created)
                 throw new CantAddItemsToClosedOrder();
 
-            Emit(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
+            Produce(new ItemAdded(Id, sku, quantity, totalPrice, Items.Count + 1));
         }
 
         public void Complete()
@@ -76,7 +76,7 @@ namespace Shop.Domain.Aggregates.OrderAggregate
             if (Status != OrderStatus.Created)
                 throw new CannotCompleteAlreadyClosedOrderException();
 
-            Emit(new OrderCompleted(Id, OrderStatus.Paid));
+            Produce(new OrderCompleted(Id, OrderStatus.Paid));
         }
     }
 }

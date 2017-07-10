@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 
         public TestFutureEventsAggregate(Guid id, string initialValue = "") : this(id)
         {
-            Emit(new TestDomainEvent(initialValue, Id));
+            Produce(new TestDomainEvent(initialValue, Id));
         }
 
         public int? RetriesToSucceed { get; private set; }

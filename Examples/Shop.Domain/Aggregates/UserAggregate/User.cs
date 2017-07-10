@@ -36,7 +36,7 @@ namespace Shop.Domain.Aggregates.UserAggregate
 
         public User(Guid id, string login, Guid account) : this(id)
         {
-            Emit(new UserCreated(id, login, account));
+            Produce(new UserCreated(id, login, account));
         }
 
         public string Login { get; private set; }
@@ -45,7 +45,7 @@ namespace Shop.Domain.Aggregates.UserAggregate
 
         public void BuyNow(Guid skuId, int quantity, IDefaultStockProvider stockProvider)
         {
-             Emit(new SkuPurchaseOrdered(Id,
+             Produce(new SkuPurchaseOrdered(Id,
                                               skuId,
                                               quantity,
                                               Guid.NewGuid(),
@@ -55,12 +55,12 @@ namespace Shop.Domain.Aggregates.UserAggregate
 
         public void CompleteOrder(Guid orderId)
         {
-           Emit(new PendingOrderCompleted(Id, orderId));
+           Produce(new PendingOrderCompleted(Id, orderId));
         }
 
         public void CancelOrder(Guid orderId)
         {
-            Emit(new PendingOrderCanceled(Id, orderId));
+            Produce(new PendingOrderCanceled(Id, orderId));
         }
     }
 }

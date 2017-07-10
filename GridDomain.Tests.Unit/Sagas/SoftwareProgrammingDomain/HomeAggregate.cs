@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 
         public HomeAggregate(Guid id, Guid personId) : base(id)
         {
-            Emit(new HomeCreated(id, personId));
+            Produce(new HomeCreated(id, personId));
         }
 
         public Guid PersonId { get; private set; }
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
             if (sofaId == Guid.Empty)
                 throw new CantFindSofaException();
 
-            Emit(new Slept(sofaId));
+            Produce(new Slept(sofaId));
         }
     }
 }

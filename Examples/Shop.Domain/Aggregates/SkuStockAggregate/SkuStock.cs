@@ -44,7 +44,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         {
             if (amount <= 0)
                 throw new ArgumentException(nameof(amount));
-            Emit(new SkuStockCreated(sourceId, skuId, amount, reservationTime));
+            Produce(new SkuStockCreated(sourceId, skuId, amount, reservationTime));
         }
 
         public TimeSpan ReservationTime { get; set; }
@@ -67,13 +67,13 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
         {
             if (Quantity < quantity)
                 throw new OutOfStockException(quantity, Quantity);
-            Emit(new StockTaken(Id, quantity));
+            Produce(new StockTaken(Id, quantity));
         }
 
         public void Take(Guid reserveId)
         {
             CancelScheduledEvents<ReserveExpired>(e => e.ReserveId == reserveId);
-            Emit(new StockReserveTaken(Id, reserveId));
+            Produce(new StockReserveTaken(Id, reserveId));
         }
 
         public void Reserve(Guid reserveId, int quantity, DateTime? reservationStartTime = null)
@@ -89,11 +89,11 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             {
                 quantityToReserve += oldReservation.Quantity;
 
-                Emit(new ReserveRenewed(Id, reserveId));
+                Produce(new ReserveRenewed(Id, reserveId));
                 CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == reserveId);
             }
 
-            Emit(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
+            Produce(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
             Emit(new ReserveExpired(Id, reserveId), expirationDate);
         }
 
@@ -103,12 +103,12 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
                 throw new InvalidSkuAddException(SkuId, skuId);
             if (quantity <= 0)
                 throw new ArgumentException(nameof(quantity));
-            Emit(new StockAdded(Id, quantity, packArticle));
+            Produce(new StockAdded(Id, quantity, packArticle));
         }
 
         public void Cancel(Guid reserveId)
         {
-            Emit(new ReserveCanceled(Id, reserveId));
+            Produce(new ReserveCanceled(Id, reserveId));
             CancelScheduledEvents<ReserveExpired>(exp => exp.ReserveId == reserveId);
         }
     }

@@ -23,20 +23,20 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 
         public void Apply(TestEvent @event)
         {
-            Emit(new ScheduledCommandSuccessfullyProcessed(Id));
+            Produce(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void Success(string taskId)
         {
             ResultHolder.Add(taskId, taskId);
-            Emit(new ScheduledCommandSuccessfullyProcessed(Id));
+            Produce(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void LongTime(string taskId, TimeSpan timeout)
         {
             Thread.Sleep(timeout);
             ResultHolder.Add(taskId, taskId);
-            Emit(new ScheduledCommandSuccessfullyProcessed(Id));
+            Produce(new ScheduledCommandSuccessfullyProcessed(Id));
         }
 
         public void Failure(TimeSpan timeout)

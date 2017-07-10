@@ -15,12 +15,12 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 
         public BalanceAggregate(Guid id, decimal value) : this(id)
         {
-            Emit(new AggregateCreatedEvent(value, id));
+            Produce(new AggregateCreatedEvent(value, id));
         }
 
         public void ChangeState(int number)
         {
-             Emit(new BalanceChangedEvent_V1(number, Id));
+             Produce(new BalanceChangedEvent_V1(number, Id));
         }
 
         public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
