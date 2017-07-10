@@ -11,5 +11,6 @@ namespace GridDomain.Node.Actors.CommandPipe.ProcessorCatalogs
         public bool IsSynchronious { get; }
 
         public static MessageProcessPolicy Sync { get; } = new MessageProcessPolicy(true);
+        public static MessageProcessPolicy Async { get; } = new MessageProcessPolicy(false);
     }
 }

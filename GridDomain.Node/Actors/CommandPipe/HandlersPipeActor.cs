@@ -25,7 +25,6 @@ namespace GridDomain.Node.Actors.CommandPipe
         {
             ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
                                                            {
-                                                               var sender = Sender;
                                                                var project = envelop.Message;
                                                                var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m,envelop.Metadata)).ToArray();
 
@@ -33,11 +32,11 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                               .ToChain()
                                                                               .ContinueWith(t =>
                                                                                             {
-                                                                                                sender.Tell(new AllHandlersCompleted(project.ProjectId));
-
                                                                                                 foreach (var env in envelops)
                                                                                                     sagasProcessActor.Tell(env);
-                                                                                            });
+
+                                                                                                return new AllHandlersCompleted(project.ProjectId);
+                                                                                            }).PipeTo(Sender);
                                                            });
         }
 

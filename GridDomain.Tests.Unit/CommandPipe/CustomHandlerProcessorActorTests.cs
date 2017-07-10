@@ -120,31 +120,42 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void Sync_and_async_handlers_performs_independent()
         {
-            var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
+            var fastHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(1), TestActor)));
+            var slowHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
             var catalog = new ProcessorListCatalog();
 
-            catalog.Add<BalloonCreated>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<BalloonTitleChanged>(new Processor(delayActor, MessageProcessPolicy.Sync));
-            catalog.Add<DomainEvent>(new Processor(TestActor));
+            //Slow handler will receive messages first. 
+            //Due to it is registered with async process policy 
+            //second handler (fast) will not wait for slow one and it will finish execution before slow handler
+            catalog.Add<BalloonCreated>(new Processor(slowHandler, MessageProcessPolicy.Async));
+            catalog.Add<BalloonCreated>(new Processor(fastHandler, MessageProcessPolicy.Sync));
+
+            catalog.Add<BalloonTitleChanged>(new Processor(slowHandler, MessageProcessPolicy.Async));
+            catalog.Add<BalloonTitleChanged>(new Processor(fastHandler, MessageProcessPolicy.Sync));
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var msgA = MessageMetadataEnvelop.New(new Project(new BalloonCreated("1", Guid.NewGuid()),
-                                                              new BalloonTitleChanged("1", Guid.NewGuid()),
-                                                              new BalloonTitleChanged("3", Guid.NewGuid())));
+            actor.Tell(MessageMetadataEnvelop.New(new Project(new BalloonCreated("1", Guid.NewGuid()),
+                                                              new BalloonTitleChanged("1", Guid.NewGuid()))));
 
-            actor.Tell(msgA);
-
-            //in sync process we should wait for handlers execution
-            //in same order as they were sent to handlers process actor
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonCreated);
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
-            ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
+            //async handler will last handler to receive all three messages, but will process them faster
+            //maintaining initial order
+            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && e.Mark == fastHandler.Path.ToString());
+            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonTitleChanged && e.Mark == fastHandler.Path.ToString());
+            
+            //HandlersProcessActor should notify next step - saga actor that work is done
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>(e => e.Message is BalloonCreated);
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>(e => e.Message is BalloonTitleChanged);
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>(e => e.Message is BalloonTitleChanged);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
-            //HandlersProcessActor should notify next step - saga actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
+
+            //slow async handlers will finish execution only after
+            ExpectMsg<MarkedHandlerExecutedMessage>((e, s) => e.ProcessingMessage.Message is BalloonCreated && e.Mark == slowHandler.Path.ToString());
+            ExpectMsg<MarkedHandlerExecutedMessage>((e, s) => e.ProcessingMessage.Message is BalloonTitleChanged && e.Mark == slowHandler.Path.ToString());
+
+
         }
     }
 }

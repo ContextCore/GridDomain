@@ -14,6 +14,4 @@ namespace GridDomain.Node.Actors.CommandPipe
         public MessageProcessPolicy Policy { get; }
         public IActorRef ActorRef { get; }
     }
-
-    //One per executing command
 }

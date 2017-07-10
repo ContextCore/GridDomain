@@ -43,7 +43,7 @@ namespace GridDomain.Common
 
         public static Task ToChain(this IEnumerable<Task> tasks)
         {
-            return tasks.Aggregate(Task.CompletedTask, (current, task) => current?.ContinueWith(t => task) ?? task);
+            return tasks.Aggregate<Task,Task>(null, (current, task) => current?.ContinueWith(t => task) ?? task) ?? Task.CompletedTask;
         }
 
       
