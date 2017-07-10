@@ -78,11 +78,9 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
         class Inherited : BalloonCreated
         {
-            public Inherited():base("inherited",Guid.NewGuid())
-            {
-                
-            }
+            public Inherited() : base("inherited", Guid.NewGuid()) { }
         }
+
         [Fact]
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
@@ -131,15 +129,11 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var msgA =
-                MessageMetadataEnvelop.New(new Project(new BalloonCreated("1", Guid.NewGuid()),
-                                                       new BalloonTitleChanged("1", Guid.NewGuid()),
-                                                       new BalloonTitleChanged("3", Guid.NewGuid())));
+            var msgA = MessageMetadataEnvelop.New(new Project(new BalloonCreated("1", Guid.NewGuid()),
+                                                              new BalloonTitleChanged("1", Guid.NewGuid()),
+                                                              new BalloonTitleChanged("3", Guid.NewGuid())));
 
             actor.Tell(msgA);
-
-            //async event fires immidiately
-//            ExpectMsg<IMessageMetadataEnvelop>();
 
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor

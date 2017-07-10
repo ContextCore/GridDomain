@@ -54,8 +54,8 @@ namespace GridDomain.Tests.Unit.Metadata
             var step = messageMetadata.History.Steps.First();
 
             Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId).Name, step.Who);
-            Assert.Equal(SimpleAggregateActorConstants.CommandExecutionCreatedAnEvent, step.Why);
-            Assert.Equal(SimpleAggregateActorConstants.PublishingEvent, step.What);
+            Assert.Equal(AggregateActorConstants.CommandExecutionCreatedAnEvent, step.Why);
+            Assert.Equal(AggregateActorConstants.PublishingEvent, step.What);
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Actors.Sagas
 {
-    internal static class SagaActorLiterals
+    internal static class SagaActorConstants
     {
         public const string CreatedFaultForSagaTransit = "created fault for saga transit";
         public const string SagaTransitCasedAndError = "saga transit cased and error";

@@ -1,10 +1,11 @@
 namespace GridDomain.Node.Actors.Aggregates.Messages {
-    public class ProducedEventsPersisted
+    class EventsPersisted
     {
-        private ProducedEventsPersisted()
+
+        private EventsPersisted()
         {
-            
         }
-        public static ProducedEventsPersisted Instance { get; } = new ProducedEventsPersisted();
+
+        public static EventsPersisted Instance { get; } = new EventsPersisted();
     }
 }

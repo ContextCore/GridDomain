@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Actors.Aggregates.Messages
+namespace GridDomain.Node.Actors.Sagas.Messages
 {
     public class CommandCompleted
     {

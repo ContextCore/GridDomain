@@ -55,8 +55,8 @@ namespace GridDomain.Tests.Unit.Metadata
             var step = answer.Metadata.History.Steps.First();
 
             Assert.Equal(nameof(BalloonCreatedFaultyProjection), step.Who);
-            Assert.Equal(MessageHandlingLiterals.MessageProcessCasuedAnError, step.Why);
-            Assert.Equal(MessageHandlingLiterals.PublishingFault, step.What);
+            Assert.Equal(MessageHandlingConstants.MessageProcessCasuedAnError, step.Why);
+            Assert.Equal(MessageHandlingConstants.PublishingFault, step.What);
         }
     }
 }

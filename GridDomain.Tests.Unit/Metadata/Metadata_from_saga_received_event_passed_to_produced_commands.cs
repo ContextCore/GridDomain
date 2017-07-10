@@ -57,8 +57,8 @@ namespace GridDomain.Tests.Unit.Metadata
             var name = AggregateActorName.New<SoftwareProgrammingState>(command.SagaId);
 
             Assert.Equal(name.Name, step.Who);
-            Assert.Equal(SagaActorLiterals.SagaProducedACommand, step.Why);
-            Assert.Equal(SagaActorLiterals.PublishingCommand, step.What);
+            Assert.Equal(SagaActorConstants.SagaProducedACommand, step.Why);
+            Assert.Equal(SagaActorConstants.PublishingCommand, step.What);
         }
     }
 }

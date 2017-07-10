@@ -13,8 +13,8 @@ namespace GridDomain.Node.Actors.Hadlers
                                                                         where TMessage : class, IHaveSagaId, IHaveId
     {
         private static readonly ProcessEntry FaltProcessEntry = new ProcessEntry(typeof(THandler).Name,
-                                                                                 MessageHandlingLiterals.PublishingFault,
-                                                                                 MessageHandlingLiterals.MessageProcessCasuedAnError);
+                                                                                 MessageHandlingConstants.PublishingFault,
+                                                                                 MessageHandlingConstants.MessageProcessCasuedAnError);
 
         private readonly ILoggingAdapter _log = Context.GetLogger();
 

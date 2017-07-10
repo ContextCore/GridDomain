@@ -14,6 +14,7 @@ using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.EventSourced.Messages;
+using GridDomain.Node.Actors.Sagas.Messages;
 
 namespace GridDomain.Node.Actors.Aggregates
 {
@@ -42,8 +43,8 @@ namespace GridDomain.Node.Actors.Aggregates
             _aggregateCommandsHandler = handler;
             _publisher = publisher;
             _customHandlersActor = customHandlersActor;
-            _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, SimpleAggregateActorConstants.PublishingEvent, SimpleAggregateActorConstants.CommandExecutionCreatedAnEvent);
-            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, SimpleAggregateActorConstants.CreatedFault, SimpleAggregateActorConstants.CommandRaisedAnError);
+            _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.PublishingEvent, AggregateActorConstants.CommandExecutionCreatedAnEvent);
+            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CreatedFault, AggregateActorConstants.CommandRaisedAnError);
             State.Persist = PersistEventPack(Self);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
@@ -70,7 +71,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                     .ContinueWith(t =>
                                                                                                   {
                                                                                                       if (t.IsFaulted) throw t.Exception;
-                                                                                                      return ProducedEventsPersisted.Instance;
+                                                                                                      return CommandProducedEventsPersisted.Instance;
                                                                                                   })
                                                                                     .PipeTo(Self);
 
@@ -83,7 +84,7 @@ namespace GridDomain.Node.Actors.Aggregates
             return agr =>
                    {
                        ExecutionContext.ProducedState = (TAggregate) agr;
-                       return self.Ask<EventsPersisted>(new PersistEvents(agr.GetDomainEvents()));
+                       return self.Ask<EventsPersisted>(new PersistEventPack(agr.GetDomainEvents()));
                    };
         }
 
@@ -92,9 +93,9 @@ namespace GridDomain.Node.Actors.Aggregates
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
 
             //just for catching Failures on events persist
-            Command<PersistEvents>(e =>
+            Command<PersistEventPack>(e =>
                                    {
-                                       Monitor.Increment(nameof(PersistEvents));
+                                       Monitor.Increment(nameof(Messages.PersistEventPack));
                                        var domainEvents = e.Events;
                                        if (!domainEvents.Any())
                                        {
@@ -117,7 +118,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                       }
                                                       catch (Exception ex)
                                                       {
-                                                          Log.Error(SimpleAggregateActorConstants.ErrorOnEventApplyText, Id, ExecutionContext.Command);
+                                                          Log.Error(AggregateActorConstants.ErrorOnEventApplyText, Id, ExecutionContext.Command);
                                                           PublishError(ex);
                                                           //intentionally drop all pending commands and messages
                                                           //and don't wait end of projection builders processing as
@@ -140,7 +141,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                         .ContinueWith(t => CommandExecuted.Instance)
                                         .PipeTo(Self));
 
-            Command<ProducedEventsPersisted>(newState =>
+            Command<CommandProducedEventsPersisted>(newState =>
                                              {
                                                  Log.Debug("{Aggregate} received a {@command}", PersistenceId, newState);
 

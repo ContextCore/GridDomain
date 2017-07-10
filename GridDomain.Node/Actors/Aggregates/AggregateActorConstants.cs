@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Actors.Aggregates
 {
-    public static class SimpleAggregateActorConstants
+    public static class AggregateActorConstants
     {
         public const string CreatedFault = "created fault";
         public const string CommandRaisedAnError = "command raised an error";
@@ -17,6 +17,4 @@ namespace GridDomain.Node.Actors.Aggregates
                                                       "Current aggregate state will be taken as a new state. \r\n" +
                                                       "Aggregate is running and will execute futher commands";
     }
-
-    //TODO: extract non-actor handler to reuse in tests for aggregate reaction for command
 }

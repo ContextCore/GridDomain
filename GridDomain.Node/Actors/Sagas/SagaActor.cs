@@ -63,12 +63,12 @@ namespace GridDomain.Node.Actors.Sagas
             Log = Context.GetLogger();
 
             _exceptionOnTransit = new ProcessEntry(Self.Path.Name,
-                                                   SagaActorLiterals.CreatedFaultForSagaTransit,
-                                                   SagaActorLiterals.SagaTransitCasedAndError);
+                                                   SagaActorConstants.CreatedFaultForSagaTransit,
+                                                   SagaActorConstants.SagaTransitCasedAndError);
 
             _sagaProducedCommand = new ProcessEntry(Self.Path.Name,
-                                                    SagaActorLiterals.PublishingCommand,
-                                                    SagaActorLiterals.SagaProducedACommand);
+                                                    SagaActorConstants.PublishingCommand,
+                                                    SagaActorConstants.SagaProducedACommand);
 
 
             var stateActorProps = Context.DI().Props(typeof(SagaStateActor<TState>));
