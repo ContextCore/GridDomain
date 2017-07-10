@@ -10,7 +10,7 @@ namespace GridDomain.Node.Actors.Aggregates {
         public TAggregate ProducedState;
         public ICommand Command;
         public IMessageMetadata CommandMetadata;
-        public List<object> MessagesToProject = new List<object>();
+        public readonly List<object> MessagesToProject = new List<object>();
 
         public void Clear()
         {

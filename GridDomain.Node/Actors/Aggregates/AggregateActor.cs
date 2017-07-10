@@ -89,19 +89,20 @@ namespace GridDomain.Node.Actors.Aggregates
             Command<PersistEvents>(e =>
                                    {
                                        Monitor.Increment(nameof(EventPersistingInProgress));
-                                       var command = ExecutionContext.Command;
                                        var domainEvents = e.Events;
+                                       if (!domainEvents.Any())
+                                       {
+                                           Log.Warning("Aggregate {id} trying to persist events but no events is presented", PersistenceId);
+                                           return;
+                                       }
+                                       var command = ExecutionContext.Command;
+
 
                                        //dirty hack, but we know nobody will modify domain events before us 
-                                       foreach (var evt in domainEvents)
+                                       foreach(var evt in domainEvents)
                                            evt.SagaId = command.SagaId;
 
                                        ExecutionContext.MessagesToProject.AddRange(domainEvents);
-
-                                       if (!domainEvents.Any())
-                                       {
-                                           Log.Warning("Aggregate {id} is saving zero events", PersistenceId);
-                                       }
 
                                        PersistAll(domainEvents,
                                            persistedEvent =>
