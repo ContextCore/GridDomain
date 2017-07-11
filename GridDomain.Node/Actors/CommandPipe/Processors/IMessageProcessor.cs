@@ -10,7 +10,7 @@ namespace GridDomain.Node.Actors.CommandPipe.Processors {
 
     public interface IMessageProcessor
     {
-        Task Process(object message, Task workInProgress = null);
+        Task Process(object message, ref Task workInProgress);
         IActorRef ActorRef { get; }
     }
 }

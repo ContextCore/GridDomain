@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 
-namespace GridDomain.Node.Actors.CommandPipe.Processors {
-    public class SynchroniousMessageProcessor<T>: IMessageProcessor<T>
+namespace GridDomain.Node.Actors.CommandPipe.Processors
+{
+
+    public abstract class MessageProcessor<T> : IMessageProcessor<T>, IMessageProcessor
     {
-        public SynchroniousMessageProcessor(IActorRef processor)
+        protected MessageProcessor(IActorRef processor)
         {
             ActorRef = processor;
         }
@@ -16,11 +18,30 @@ namespace GridDomain.Node.Actors.CommandPipe.Processors {
             if(workInProgress == null || workInProgress.IsCompleted)
                 workInProgress = inProgress;
             else
-                workInProgress = workInProgress.ContinueWith(t => inProgress);
+                workInProgress = AttachToWorkInProgress(workInProgress, inProgress);
 
             return inProgress;
         }
 
+        protected abstract Task AttachToWorkInProgress(Task workInProgress, Task<T> inProgress);
+
+        Task IMessageProcessor.Process(object message, ref Task workInProgress)
+        {
+            return Process(message, ref workInProgress);
+        }
+
         public IActorRef ActorRef { get; }
+    }
+    public class SynchroniousMessageProcessor<T>: MessageProcessor<T>
+    {
+        public SynchroniousMessageProcessor(IActorRef processor):base(processor)
+        {
+        }
+
+        protected override Task AttachToWorkInProgress(Task workInProgress, Task<T> inProgress)
+        {
+            return workInProgress.ContinueWith(t => inProgress);
+        }
+
     }
 }

@@ -4,16 +4,19 @@ using Akka.Actor;
 namespace GridDomain.Node.Actors.CommandPipe.Processors {
 
 
-    public class FireAndForgetMessageProcessor : MessageActorProcessor
+    public class FireAndForgetMessageProcessor : IMessageProcessor
     {
-        public FireAndForgetMessageProcessor(IActorRef processor) : base(processor)
+        public FireAndForgetMessageProcessor(IActorRef processor)
         {
+            ActorRef = processor;
         }
 
-        public override Task Process(object message, Task workInProgress = null)
+        public Task Process(object message, ref Task workInProgress)
         {
             ActorRef.Tell(message);
-            return workInProgress;
+            return workInProgress ?? Task.CompletedTask;
         }
+
+        public IActorRef ActorRef { get; }
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -9,14 +10,16 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         public AggregatesPipeActor(ICatalog<IMessageProcessor, ICommand> aggregateCatalog)
         {
-            Receive<IMessageMetadataEnvelop<ICommand>>(c =>
+            ReceiveAsync<IMessageMetadataEnvelop<ICommand>>(c =>
                                                        {
                                                            var aggregateProcessor = aggregateCatalog.Get(c.Message);
                                                            if (aggregateProcessor == null)
                                                                throw new CannotFindAggregateForCommandExñeption(c.Message,
                                                                                                                 c.Message.GetType());
 
-                                                           aggregateProcessor.ActorRef.Tell(c);
+                                                           var workInProgressTask = Task.CompletedTask;
+                                                           aggregateProcessor.Process(c, ref workInProgressTask);
+                                                           return workInProgressTask;
                                                        });
         }
     }

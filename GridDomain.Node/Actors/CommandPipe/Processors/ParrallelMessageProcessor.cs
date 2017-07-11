@@ -2,15 +2,15 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 namespace GridDomain.Node.Actors.CommandPipe.Processors {
-    public class ParrallelMessageProcessor<T> : MessageActorProcessor
+    public class ParrallelMessageProcessor<T> : MessageProcessor<T>
     {
         public ParrallelMessageProcessor(IActorRef processor) : base(processor)
         {
         }
 
-        public override Task Process(object message, Task workInProgress = null)
+        protected override Task AttachToWorkInProgress(Task workInProgress, Task<T> inProgress)
         {
-            return Task.WhenAll(workInProgress, AskActor<T>(message));
+            return Task.WhenAll(workInProgress, inProgress);
         }
     }
 }

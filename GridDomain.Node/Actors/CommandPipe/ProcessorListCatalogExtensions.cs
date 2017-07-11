@@ -10,9 +10,12 @@ namespace GridDomain.Node.Actors.CommandPipe {
         public static Task ProcessMessage(this IProcessorListCatalog processorListCatalog, IMessageMetadataEnvelop envelop)
         {
             var processors = processorListCatalog.Get(envelop.Message);
-            return processors?.Aggregate<IMessageProcessor, Task>(null,
-                                                          (workInProgress, nextProcessor) => nextProcessor.Process(envelop, workInProgress))
-                   ?? Task.CompletedTask;
+            Task finalTask = Task.CompletedTask;
+
+            foreach (var p in processors)
+                p.Process(envelop, ref finalTask);
+
+            return finalTask;
         }
 
         public static Task<T[]> ProcessMessage<T>(this IProcessorListCatalog<T> processorListCatalog, IMessageMetadataEnvelop envelop)

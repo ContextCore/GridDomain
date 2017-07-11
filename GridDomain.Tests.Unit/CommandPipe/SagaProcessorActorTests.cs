@@ -30,15 +30,15 @@ namespace GridDomain.Tests.Unit.CommandPipe
                                                                e => new ICommand[] {new TestCommand(e.SourceId), new TestCommand(e.SourceId)},
                                                                TimeSpan.FromMilliseconds(50))));
 
-            var testSagaActor— =
+            var testSagaActorC =
                 Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
 
-            var catalog = new ProcessorListCatalog();
+            var catalog = new ProcessorListCatalog<ISagaTransitCompleted>();
 
-            catalog.Add<BalloonCreated>(new SyncProjectionProcessor(testSagaActorA));
+            catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActorA));
             //two commands per one event will be produced
-            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(testSagaActorB));
-            catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(testSagaActor—));
+            catalog.Add<BalloonTitleChanged>(new SyncSagaProcessor(testSagaActorB));
+            catalog.Add<BalloonTitleChanged>(new SyncSagaProcessor(testSagaActorC));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
@@ -74,7 +74,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
-            var catalog = new ProcessorListCatalog();
+            var catalog = new ProcessorListCatalog<ISagaTransitCompleted>();
             catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
@@ -94,7 +94,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
 
-            var catalog = new ProcessorListCatalog();
+            var catalog = new ProcessorListCatalog<ISagaTransitCompleted>();
             catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActor));
 
             var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
