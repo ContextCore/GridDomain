@@ -225,6 +225,7 @@
     <Compile Include="Actors\BehaviorStack.cs" />
     <Compile Include="Actors\CommandPipe\Processors\FireAndForgetMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\IMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\MessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\ParrallelMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\SynchroniousMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorListCatalogExtensions.cs" />

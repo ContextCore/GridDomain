@@ -37,7 +37,7 @@ namespace GridDomain.EventSourcing
             Add<TCommand>(async (a, c, p) =>
             {
                 TAggregate aggregate = await commandExecutor((TCommand)c, a);
-                aggregate.Persist = p;
+                aggregate.SetPersistProvider(p);
                 if (!aggregate.HasUncommitedEvents) return aggregate;
                 //for cases when we call Produce and expect events persistence after aggregate methods invocation;
                 await p(aggregate);

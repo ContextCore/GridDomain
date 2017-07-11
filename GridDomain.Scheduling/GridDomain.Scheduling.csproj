@@ -145,7 +145,6 @@
     <Compile Include="Quartz\Logging\LoggingJobListener.cs" />
     <Compile Include="Quartz\Logging\LoggingSchedulerListener.cs" />
     <Compile Include="Akka\Messages\ScheduleCommandExecution.cs" />
-    <Compile Include="Akka\Messages\ScheduledCommandProcessingFailed.cs" />
     <Compile Include="Quartz\Configuration\PersistedQuartzConfig.cs" />
     <Compile Include="Quartz\QuartzSchedulerFactory.cs" />
     <Compile Include="Quartz\QuartzJob.cs" />

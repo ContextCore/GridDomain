@@ -54,7 +54,7 @@ namespace GridDomain.EventSourcing.Sagas.InstanceSagas
                           .ContinueWith(t =>
                                         {
                                             if (t.IsFaulted)
-                                                throw new SagaTransitionException(message, State, t.Exception);
+                                                throw new SagaTransitionException(message, t.Exception);
                                            
                                             return new TransitionResult<TState>(newState,commandsToDispatch);
                                         });

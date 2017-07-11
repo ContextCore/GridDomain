@@ -8,9 +8,9 @@ namespace GridDomain.Node.Actors.CommandPipe.Processors {
         {
         }
 
-        protected override Task AttachToWorkInProgress(Task workInProgress, Task<T> inProgress)
+        protected override Task AttachToWorkInProgress(Task workInProgress, Task<T> currentWork)
         {
-            return Task.WhenAll(workInProgress, inProgress);
+            return Task.WhenAll(workInProgress, currentWork);
         }
     }
 }

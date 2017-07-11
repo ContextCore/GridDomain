@@ -16,10 +16,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
             _timeToOkResponse = 5;
         }
 
-        public void Apply(ScheduledCommandProcessingFailed @event)
-        {
-            _timeToOkResponse--;
-        }
 
         public void Apply(TestEvent @event)
         {

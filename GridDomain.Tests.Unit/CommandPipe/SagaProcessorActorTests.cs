@@ -61,15 +61,11 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
         }
 
-
-
         class Inherited : BalloonCreated
         {
-            public Inherited():base("123",Guid.NewGuid())
-            {
-                
-            }
+            public Inherited() : base("123", Guid.NewGuid()) { }
         }
+
         [Fact]
         public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
@@ -101,9 +97,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
 
-            var msg =
-                new MessageMetadataEnvelop<DomainEvent>(new BalloonCreated("1", Guid.NewGuid()),
-                                                        MessageMetadata.Empty);
+            var msg = new MessageMetadataEnvelop<DomainEvent>(new BalloonCreated("1", Guid.NewGuid()),
+                                                              MessageMetadata.Empty);
 
             sagaProcessActor.Tell(msg);
 

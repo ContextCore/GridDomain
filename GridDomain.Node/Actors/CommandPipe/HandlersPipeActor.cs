@@ -26,19 +26,20 @@ namespace GridDomain.Node.Actors.CommandPipe
             ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
                                                            {
                                                                var project = envelop.Message;
-                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata)).
-                                                                                      ToArray();
+                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata))
+                                                                                     .ToArray();
 
-                                                               return envelops.Select(handlersCatalog.ProcessMessage).
-                                                                               ToChain().
-                                                                               ContinueWith(t =>
-                                                                                            {
-                                                                                                foreach (var env in envelops)
-                                                                                                    sagasProcessActor.Tell(env);
+                                                               var chain = envelops.Select(handlersCatalog.ProcessMessage)
+                                                                                   .ToChain();
 
-                                                                                                return new AllHandlersCompleted(project.ProjectId);
-                                                                                            }).
-                                                                               PipeTo(Sender);
+                                                               return chain.ContinueWith(t =>
+                                                                                         {
+                                                                                             foreach (var env in envelops)
+                                                                                                 sagasProcessActor.Tell(env);
+
+                                                                                             return new AllHandlersCompleted(project.ProjectId);
+                                                                                         })
+                                                                           .PipeTo(Sender);
                                                            });
         }
 

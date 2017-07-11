@@ -18,13 +18,14 @@ namespace GridDomain.Node.Actors.CommandPipe {
             return finalTask;
         }
 
-        public static Task<T[]> ProcessMessage<T>(this IProcessorListCatalog<T> processorListCatalog, IMessageMetadataEnvelop envelop)
+        public static async Task<T[]> ProcessMessage<T>(this IProcessorListCatalog<T> processorListCatalog, IMessageMetadataEnvelop envelop)
         {
             var processors = processorListCatalog.Get(envelop.Message);
             Task finalTask = Task.CompletedTask;
-            var results = processors.Select(p => p.Process(envelop.Message, ref finalTask)).ToArray();
-            return finalTask.ContinueWith(t => results.Select(r => r.Result).
-                                                       ToArray());
+            var results = processors.Select(p => p.Process(envelop, ref finalTask)).ToArray();
+            await finalTask;
+            await Task.WhenAll(results); //just for backup, all tasks should done already.
+            return results.Select(r => r.Result).ToArray();
         }
     }
 }

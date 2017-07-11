@@ -41,17 +41,14 @@ namespace GridDomain.Node.Actors.CommandPipe
                                           });
         }
         
-        private Task<SagasProcessComplete> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
+        private async Task<SagasProcessComplete> ProcessSagas(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
-            return _catalog.ProcessMessage(messageMetadataEnvelop)
-                           .ContinueWith(t =>
-                                         {
-                                             var sagaTransiteds = t.Result.OfType<SagaTransited>().ToArray();
-                                             if(!sagaTransiteds.Any())
-                                                 return SagasProcessComplete.NoResults;
+           var res = await _catalog.ProcessMessage(messageMetadataEnvelop);
+           var sagaTransiteds = res.OfType<SagaTransited>().ToArray();
+           if(!sagaTransiteds.Any())
+               return SagasProcessComplete.NoResults;
 
-                                             return new SagasProcessComplete(CreateCommandEnvelops(sagaTransiteds).ToArray());
-                                         });
+           return new SagasProcessComplete(CreateCommandEnvelops(sagaTransiteds).ToArray());
         }
 
         private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<SagaTransited> messages)

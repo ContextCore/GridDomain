@@ -45,7 +45,7 @@ namespace GridDomain.Node.Actors.Aggregates
             _customHandlersActor = customHandlersActor;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.PublishingEvent, AggregateActorConstants.CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CreatedFault, AggregateActorConstants.CommandRaisedAnError);
-            State.Persist = PersistEventPack(Self);
+            State.SetPersistProvider(PersistEventPack(Self));
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
 
@@ -153,21 +153,22 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                    foreach (var e in ExecutionContext.MessagesToProject)
                                                                                        _publisher.Publish(e, producedEventsMetadata);
                                                                                    return CommandExecuted.Instance;
-                                                                               });
+                                                                               })
+                                                                  .PipeTo(Self);
                                              });
 
             Command<CommandExecuted>(c =>
                                      {
                                          Log.Debug("{Aggregate} received a {@command}", PersistenceId, c);
-
                                          //finish command execution. produced state can be null on execution error
                                          State = ExecutionContext.ProducedState ?? State;
+                                         //notify waiters
+                                         foreach(var waiter in _commandCompletedWaiters)
+                                             waiter.Tell(new CommandCompleted(ExecutionContext.Command.Id));
+
                                          ExecutionContext.Clear();
                                          Behavior.Unbecome();
                                          Stash.UnstashAll();
-                                         //notify waiters
-                                         foreach (var waiter in _commandCompletedWaiters)
-                                             waiter.Tell(new CommandCompleted(ExecutionContext.Command.Id));
                                      });
 
             Command<IMessageMetadataEnvelop<ICommand>>(o => StashMessage(o));

@@ -9,8 +9,8 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.EventSourcing
 {
     public abstract class Aggregate : IAggregate,
-                                          IMemento,
-                                          IEquatable<IAggregate>
+                                      IMemento,
+                                      IEquatable<IAggregate>
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
         public static T Empty<T>(Guid? id = null) where T : IAggregate
@@ -21,7 +21,13 @@ namespace GridDomain.EventSourcing
         private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private IRouteEvents _registeredRoutes;
-        public PersistenceDelegate Persist { get; set; }
+
+        private PersistenceDelegate _persist;
+
+        public void SetPersistProvider(PersistenceDelegate caller)
+        {
+            _persist = caller;
+        }
 
         protected Aggregate(Guid id) : this(null)
         {
@@ -111,7 +117,7 @@ namespace GridDomain.EventSourcing
         protected async Task Emit(params DomainEvent[] events)
         {
             Produce(events);
-            await Persist(this);
+            await _persist(this);
         }
 
         protected void Produce(params DomainEvent[] events)

@@ -35,6 +35,7 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             var localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
+
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
             _sagaId = Guid.NewGuid();
 
@@ -46,7 +47,6 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
                                                                                                                      localAkkaEventBusTransport,
                                                                                                                      new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
                                                                                                                      messageProcessActor)));
-
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
 
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
@@ -87,7 +87,7 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA));
 
-            FishForMessage<SagaTransited>(m => true);
+            FishForMessage<SagaTransited>(m => true, TimeSpan.FromHours(1));
 
             Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
         }
