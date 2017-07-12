@@ -71,10 +71,10 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //A was received first and should be processed first
-            var msg = ExpectMsg<SagaTransited>(TimeSpan.FromHours(1));
+            var msg = ExpectMsg<SagaTransited>();
             Assert.Equal(domainEventA.SourceId,((TestState)msg.NewSagaState).ProcessingId);
             //B should not be processed after A is completed
-            var msgB = ExpectMsg<SagaTransited>(TimeSpan.FromHours(1));
+            var msgB = ExpectMsg<SagaTransited>();
             Assert.Equal(domainEventB.SourceId,((TestState)msgB.NewSagaState).ProcessingId);
         }
 
