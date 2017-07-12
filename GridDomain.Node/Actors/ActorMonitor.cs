@@ -1,10 +1,21 @@
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
 using GridDomain.Common;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors
 {
+
+
+   //public static class CommandExecuturExtensions
+   //{
+   //    public static Task Execute(this ICommandExecutor executor, ICommand command)
+   //    {
+   //        
+   //    }
+   //}
     public class ActorMonitor
     {
         private readonly string _actorGroupName;

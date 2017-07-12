@@ -52,11 +52,6 @@ namespace GridDomain.Node.Actors.Aggregates
         protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
-            Command<NotifyOnCommandComplete>(n =>
-                                             {
-                                                 _commandCompletedWaiters.Add(Sender);
-                                                 Sender.Tell(NotifyOnCommandCompletedAck.Instance);
-                                             });
 
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
@@ -166,6 +161,8 @@ namespace GridDomain.Node.Actors.Aggregates
                                          //notify waiters
                                          foreach(var waiter in _commandCompletedWaiters)
                                              waiter.Tell(commandCompleted);
+
+                                         _publisher.Publish(commandCompleted);
                                          ExecutionContext.CommandSender.Tell(commandCompleted);
                                          ExecutionContext.Clear();
                                          Behavior.Unbecome();

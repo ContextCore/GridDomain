@@ -40,9 +40,9 @@ namespace GridDomain.Tools.Connector
             _consoleSystem.Dispose();
         }
 
-        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
+        public Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
-            _commandExecutor.Execute(command, metadata);
+            return _commandExecutor.Execute(command, metadata);
         }
 
         public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)

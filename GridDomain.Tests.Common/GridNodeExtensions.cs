@@ -50,14 +50,6 @@ namespace GridDomain.Tests.Common
             return waiter;
         }
 
-        //public static AnyMessagePublisher CreatePublisher(this GridDomainNode node, TimeSpan? timeout = null)
-        //{
-        //    var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();
-        //    var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout, conditionBuilder);
-        //    conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
-        //    return conditionBuilder.Create();
-        //}
-
         public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, Guid id)
             where TAggregate : Aggregate
         {

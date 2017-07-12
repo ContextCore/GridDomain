@@ -1,8 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
+using GridDomain.Node.Actors.Sagas.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node
@@ -30,9 +32,12 @@ namespace GridDomain.Node
             _commandExecutorActor = commandExecutorActor;
         }
 
-        public void Execute<T>(T command, IMessageMetadata metadata = null) where T : ICommand
+        public Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
-            _commandExecutorActor.Tell(new MessageMetadataEnvelop<ICommand>(command, metadata ?? CreateEmptyCommandMetadata(command)));
+            return Prepare(command, metadata)
+                    .Expect<CommandCompleted>(c => c.CommandId == command.Id) //TODO: investigate if predicate can be removed due to correlation id in envelops
+                    .Execute();
+            //_commandExecutorActor.Tell(new MessageMetadataEnvelop<ICommand>(command, metadata ?? CreateEmptyCommandMetadata(command)));
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand

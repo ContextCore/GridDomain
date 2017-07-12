@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
     public interface ICommandExecutor
     {
-        void Execute<T>(T command, IMessageMetadata metadata = null) where T : ICommand;
+        Task Execute(ICommand command, IMessageMetadata metadata = null);
         ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand;
     }
 }

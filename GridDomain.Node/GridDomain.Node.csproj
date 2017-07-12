@@ -249,10 +249,6 @@
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\IProcessorListCatalog.cs" />
     <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
-    <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandComplete.cs" />
-    <Compile Include="Actors\Aggregates\Messages\NotifyOnCommandCompletedAck.cs" />
-    <Compile Include="Actors\Sagas\Messages\NotifyOnSagaTransited.cs" />
-    <Compile Include="Actors\Sagas\Messages\NotifyOnSagaTransitedAck.cs" />
     <Compile Include="Actors\EventSourced\Messages\Persisted.cs" />
     <Compile Include="Actors\EventSourced\Messages\CheckHealth.cs" />
     <Compile Include="Actors\PersistentHub\ChildInfo.cs" />

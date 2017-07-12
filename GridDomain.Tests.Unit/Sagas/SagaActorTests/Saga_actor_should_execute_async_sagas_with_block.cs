@@ -55,8 +55,6 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
                                                                               _localAkkaEventBusTransport),
                                                name);
-
-            _sagaActor.Ask<NotifyOnSagaTransitedAck>(new NotifyOnSagaTransited(TestActor)).Wait();
         }
 
         private readonly TestActorRef<SagaActor<TestState>> _sagaActor;
@@ -73,10 +71,10 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //A was received first and should be processed first
-            var msg = ExpectMsg<SagaTransited>();
+            var msg = ExpectMsg<SagaTransited>(TimeSpan.FromHours(1));
             Assert.Equal(domainEventA.SourceId,((TestState)msg.NewSagaState).ProcessingId);
             //B should not be processed after A is completed
-            var msgB = ExpectMsg<SagaTransited>();
+            var msgB = ExpectMsg<SagaTransited>(TimeSpan.FromHours(1));
             Assert.Equal(domainEventB.SourceId,((TestState)msgB.NewSagaState).ProcessingId);
         }
 

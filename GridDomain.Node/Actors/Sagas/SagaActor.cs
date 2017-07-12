@@ -34,7 +34,7 @@ namespace GridDomain.Node.Actors.Sagas
         private readonly ISagaCreatorCatalog<TState> _сreatorCatalog;
         private readonly IPublisher _publisher;
         private readonly ILoggingAdapter _log;
-        private BehaviorStack Behavior { get; }
+        private BehaviorBag Behavior { get; }
         private ActorMonitor Monitor { get; }
         private readonly IActorRef _stateAggregateActor;
         private readonly List<IActorRef> _sagaTransitionWaiters = new List<IActorRef>();
@@ -50,7 +50,7 @@ namespace GridDomain.Node.Actors.Sagas
 
         {
             Monitor = new ActorMonitor(Context, "Saga" + typeof(TState).Name);
-            Behavior = new BehaviorStack(Become, UnbecomeStacked);
+            Behavior = new BehaviorBag(Become, UnbecomeStacked);
 
             Guid id;
             if (!AggregateActorName.TryParseId(Self.Path.Name, out id))
@@ -71,7 +71,6 @@ namespace GridDomain.Node.Actors.Sagas
                                                    AggregateActorName.New<SagaStateAggregate<TState>>(Id)
                                                                      .Name);
             _stateAggregateActor.Tell(GetSagaState.Instance);
-
             Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
         }
 
@@ -113,11 +112,20 @@ namespace GridDomain.Node.Actors.Sagas
                                              {
                                                  if (_сreatorCatalog.CanCreateFrom(env.Message))
                                                  {
-                                                     Self.Tell(new CreateNewSaga(env),Sender);
+                                                     Self.Tell(new CreateNewSaga(env), Sender);
                                                      Behavior.Become(CreatingSagaBehavior, nameof(CreatingSagaBehavior));
                                                  }
                                                  else
                                                  {
+                                                     if(Saga.State.Id != GetSagaId(env.Message))
+                                                     {
+                                                         _log.Error("Existing saga {saga} {sagaid} received message {@message} "
+                                                                    + "targeting different saga. Saga will not proceed.", typeof(TState), Id, env);
+
+                                                         FinishWithError(env, Sender, new SagaIdMismatchException());
+                                                         return;
+                                                     }
+
                                                      Self.Tell(env, Sender);
                                                      Behavior.Become(TransitingSagaBehavior, nameof(TransitingSagaBehavior));
                                                  }
@@ -146,12 +154,6 @@ namespace GridDomain.Node.Actors.Sagas
 
         private void ProxifyingCommandsBehavior()
         {
-            Receive<NotifyOnSagaTransited>(m =>
-                                           {
-                                               _sagaTransitionWaiters.Add(m.Sender);
-                                               Sender.Tell(NotifyOnSagaTransitedAck.Instance);
-                                           });
-
             Receive<GracefullShutdownRequest>(r =>
                                               {
                                                   Context.Watch(_stateAggregateActor);
@@ -176,8 +178,6 @@ namespace GridDomain.Node.Actors.Sagas
                                    {
                                        processingMessage = c.Message;
                                        processingMessageSender = Sender;
-                                       if (Saga != null)
-                                           throw new SagaAlreadyStartedException(Saga.State, processingMessage);
 
                                        var saga = _сreatorCatalog.CreateNew(processingMessage.Message, c.EnforcedId);
                                        if (Id != saga.State.Id)
@@ -185,6 +185,10 @@ namespace GridDomain.Node.Actors.Sagas
                                            FinishSagaTransition(new RedirectToNewSaga(saga.State.Id, processingMessage), Sender);
                                            return;
                                        }
+
+                                       if(Saga != null)
+                                           throw new SagaAlreadyStartedException(Saga.State, processingMessage);
+
                                        pendingState = saga.State;
                                        var cmd = new CreateNewStateCommand<TState>(Id, pendingState);
 
@@ -192,7 +196,7 @@ namespace GridDomain.Node.Actors.Sagas
                                                            .PipeTo(Self);
                                    });
 
-            Receive<Status.Failure>(f => FinishWithError(processingMessage, f, processingMessageSender));
+            Receive<Status.Failure>(f => FinishWithError(processingMessage, processingMessageSender, f.Cause));
 
             //from state aggregate actro after persist
             Receive<CommandCompleted>(c =>
@@ -224,16 +228,7 @@ namespace GridDomain.Node.Actors.Sagas
                                                       {
                                                           _log.Error("Saga {saga} {sagaid} is not started but received transition message {@message}. "
                                                                        + "Saga will not proceed. ", typeof(TState), Id, messageEnvelop);
-
                                                           Task.FromException(new SagaNotStartedException()).PipeTo(Self);
-                                                          return;
-                                                      }
-                                                      if (Saga.State.Id != GetSagaId(messageEnvelop.Message))
-                                                      {
-                                                          _log.Error("Existing saga {saga} {sagaid} received message {@message} "
-                                                                     + "targeting different saga. Saga will not proceed.", typeof(TState), Id, messageEnvelop);
-
-                                                          Task.FromException(new SagaIdMismatchException()).PipeTo(Self);
                                                           return;
                                                       }
 
@@ -268,15 +263,15 @@ namespace GridDomain.Node.Actors.Sagas
                                           producedCommands = null;
                                       });
 
-            Receive<Status.Failure>(f => FinishWithError(processingEnvelop, f, processingMessageSender));
+            Receive<Status.Failure>(f => FinishWithError(processingEnvelop, processingMessageSender, f.Cause));
 
             StashingMessagesToProcessBehavior();
         }
 
-        private void FinishWithError(IMessageMetadataEnvelop processingMessage, Status.Failure f, IActorRef messageSender)
+        private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception erorr)
         {
             var fault = CreateFault(processingMessage.Message,
-                                    f.Cause.UnwrapSingle());
+                                    erorr.UnwrapSingle());
 
             var faultMetadata = processingMessage.Metadata.CreateChild(fault.SagaId, _exceptionOnTransit);
 
