@@ -23,7 +23,7 @@ namespace GridDomain.Node.Configuration.Composition {
                                                                                                  new CustomRouteMap(r => r.RegisterSyncHandler<TMessage,THandler>())));
         }
 
-        public void AsParrallel()
+        public void AsParallel()
         {
             _builder.RegisterHandler(new MessageHandlerFactory<TMessage, THandler>(_producer, () =>
                                                                                                   new CustomRouteMap(r => r.RegisterParralelHandler<TMessage, THandler>())));

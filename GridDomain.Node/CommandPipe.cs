@@ -60,7 +60,7 @@ namespace GridDomain.Node
             var sagaActorType = typeof(SagaHubActor<>).MakeGenericType(sagaDescriptor.StateType);
 
             var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
-            var processor = new SynchroniousMessageProcessor<ISagaTransitCompleted>(sagaActor);
+            var processor = new SynchronousMessageProcessor<ISagaTransitCompleted>(sagaActor);
 
             foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
                 _sagaCatalog.Add(acceptMsg.MessageType, processor);
@@ -71,7 +71,7 @@ namespace GridDomain.Node
         public Task RegisterSyncHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                                  where TMessage : class, IHaveSagaId, IHaveId
         {
-            return RegisterHandler<TMessage, THandler>(actor => new SynchroniousMessageProcessor<HandlerExecuted>(actor));
+            return RegisterHandler<TMessage, THandler>(actor => new SynchronousMessageProcessor<HandlerExecuted>(actor));
         }
         public Task RegisterFireAndForgetHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                               where TMessage : class, IHaveSagaId, IHaveId
@@ -81,7 +81,7 @@ namespace GridDomain.Node
         public Task RegisterParralelHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                        where TMessage : class, IHaveSagaId, IHaveId
         {
-            return RegisterHandler<TMessage, THandler>(actor => new ParrallelMessageProcessor<HandlerExecuted>(actor));
+            return RegisterHandler<TMessage, THandler>(actor => new ParallelMessageProcessor<HandlerExecuted>(actor));
         }
 
         /// <summary>

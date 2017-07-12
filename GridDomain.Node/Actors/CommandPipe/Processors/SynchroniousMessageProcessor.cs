@@ -3,9 +3,9 @@ using Akka.Actor;
 
 namespace GridDomain.Node.Actors.CommandPipe.Processors
 {
-    public class SynchroniousMessageProcessor<T>: MessageProcessor<T>
+    public class SynchronousMessageProcessor<T>: MessageProcessor<T>
     {
-        public SynchroniousMessageProcessor(IActorRef processor):base(processor)
+        public SynchronousMessageProcessor(IActorRef processor):base(processor)
         {
         }
 

@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 namespace GridDomain.Node.Actors.CommandPipe.Processors {
-    public class ParrallelMessageProcessor<T> : MessageProcessor<T>
+    public class ParallelMessageProcessor<T> : MessageProcessor<T>
     {
-        public ParrallelMessageProcessor(IActorRef processor) : base(processor)
+        public ParallelMessageProcessor(IActorRef processor) : base(processor)
         {
         }
 
