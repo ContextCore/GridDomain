@@ -9,14 +9,14 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders {
         {
             builder.RegisterAggregate(new BalloonDependencyFactory());
 
-            builder.RegisterHandler(new DefaultMessageHandlerFactory<BalloonCreated, BalloonCreatedFaultyProjection>
-                (c => new BalloonCreatedFaultyProjection()));
+            builder.RegisterHandler<BalloonCreated, BalloonCreatedFaultyProjection>
+                (c => new BalloonCreatedFaultyProjection()).AsSync();
 
-            builder.RegisterHandler(new DefaultMessageHandlerFactory<BalloonTitleChanged, BalloonTitleChangedFaultyMessageHandler>
-                (c => new BalloonTitleChangedFaultyMessageHandler(c.Publisher)));
+            builder.RegisterHandler<BalloonTitleChanged, BalloonTitleChangedFaultyMessageHandler>
+                (c => new BalloonTitleChangedFaultyMessageHandler(c.Publisher)).AsSync();
 
-            builder.RegisterHandler(new DefaultMessageHandlerFactory<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>
-                (c => new BalloonTitleChangedOddFaultyMessageHandler(c.Publisher)));
+            builder.RegisterHandler<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>
+                (c => new BalloonTitleChangedOddFaultyMessageHandler(c.Publisher)).AsSync();
         }
     }
 }

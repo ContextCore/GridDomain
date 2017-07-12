@@ -22,11 +22,11 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
             var options = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(_balloonConnString).Options;
             BalloonContext BalloonContextProducer () => new BalloonContext(options);
 
-            var factoryA = new DefaultMessageHandlerFactory<BalloonTitleChanged, BalloonCatalogProjection>(c => new BalloonCatalogProjection(BalloonContextProducer, c.Publisher, c.Log));
-            var factoryB = new DefaultMessageHandlerFactory<BalloonCreated, BalloonCatalogProjection>(c => new BalloonCatalogProjection(BalloonContextProducer, c.Publisher, c.Log));
+            builder.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>(c => new BalloonCatalogProjection(BalloonContextProducer, c.Publisher, c.Log))
+                   .AsSync();
 
-            builder.RegisterHandler(factoryA);
-            builder.RegisterHandler(factoryB);
+            builder.RegisterHandler<BalloonCreated, BalloonCatalogProjection>(c => new BalloonCatalogProjection(BalloonContextProducer, c.Publisher, c.Log))
+                   .AsSync();
         }
     }
 }

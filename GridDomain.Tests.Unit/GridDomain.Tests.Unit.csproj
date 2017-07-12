@@ -271,6 +271,7 @@
     <Compile Include="CommandsExecution\Async_execution_dont_block_aggregate.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_picks_events_by_correlation_id_by_default.cs" />
     <Compile Include="CommandsExecution\CommandWaiter_results_tests.cs" />
+    <Compile Include="CommandsExecution\Executing_command_without_expect.cs" />
     <Compile Include="CommandsExecution\Given_executing_commands_with_faulty_from_projection_builder.cs" />
     <Compile Include="CommandsExecution\Wire_DI_test.cs" />
     <Compile Include="CommandsExecution\When_executing_commands_and_aggregate_raises_an_exception.cs" />

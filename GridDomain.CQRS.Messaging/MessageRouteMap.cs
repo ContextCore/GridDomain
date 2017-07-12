@@ -24,10 +24,10 @@ namespace GridDomain.CQRS.Messaging
             return New(new TAggregateCommandsHandler(), name ?? typeof(TAggregateCommandsHandler).Name);
         }
 
-        public static IMessageRouteMap New<TMessage, THandler>(string name) where THandler : IHandler<TMessage>
+        public static IMessageRouteMap NewSync<TMessage, THandler>(string name) where THandler : IHandler<TMessage>
                                                                             where TMessage : class, IHaveSagaId, IHaveId
         {
-            return new CustomRouteMap(name, r => r.RegisterHandler<TMessage, THandler>());
+            return new CustomRouteMap(name, r => r.RegisterSyncHandler<TMessage, THandler>());
         }
     }
 }

@@ -68,10 +68,20 @@ namespace GridDomain.Node
             return Task.CompletedTask;
         }
 
-        public Task RegisterHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
+        public Task RegisterSyncHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                                  where TMessage : class, IHaveSagaId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(actor => new SynchroniousMessageProcessor<HandlerExecuted>(actor));
+        }
+        public Task RegisterFireAndForgetHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
+                                                              where TMessage : class, IHaveSagaId, IHaveId
+        {
+            return RegisterHandler<TMessage, THandler>(actor => new FireAndForgetMessageProcessor(actor));
+        }
+        public Task RegisterParralelHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
+                                                                       where TMessage : class, IHaveSagaId, IHaveId
+        {
+            return RegisterHandler<TMessage, THandler>(actor => new ParrallelMessageProcessor<HandlerExecuted>(actor));
         }
 
         /// <summary>
@@ -96,8 +106,8 @@ namespace GridDomain.Node
             await SagaProcessor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;
         }
-        
-        public Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
+
+        private Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
                                                                            where TMessage : class, IHaveSagaId, IHaveId
         {
             var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);

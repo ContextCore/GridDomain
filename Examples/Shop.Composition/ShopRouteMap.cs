@@ -26,24 +26,24 @@ namespace Shop.Composition
             await router.RegisterAggregate(new UserCommandsHandler(null));
             await router.RegisterSaga(BuyNow.Descriptor);
 
-            await router.RegisterHandler<AccountCreated, AccountProjectionBuilder>();
-            await router.RegisterHandler<AccountReplenish, AccountProjectionBuilder>();
-            await router.RegisterHandler<AccountWithdrawal, AccountProjectionBuilder>();
+            await router.RegisterSyncHandler<AccountCreated, AccountProjectionBuilder>();
+            await router.RegisterSyncHandler<AccountReplenish, AccountProjectionBuilder>();
+            await router.RegisterSyncHandler<AccountWithdrawal, AccountProjectionBuilder>();
 
-            await router.RegisterHandler<OrderCreated, OrdersProjectionBuilder>();
-            await router.RegisterHandler<ItemAdded, OrdersProjectionBuilder>();
-            await router.RegisterHandler<OrderCompleted, OrdersProjectionBuilder>();
+            await router.RegisterSyncHandler<OrderCreated, OrdersProjectionBuilder>();
+            await router.RegisterSyncHandler<ItemAdded, OrdersProjectionBuilder>();
+            await router.RegisterSyncHandler<OrderCompleted, OrdersProjectionBuilder>();
 
-            await router.RegisterHandler<SkuCreated, SkuProjectionBuilder>();
+            await router.RegisterSyncHandler<SkuCreated, SkuProjectionBuilder>();
 
-            await router.RegisterHandler<SkuStockCreated, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<StockAdded, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<StockReserved, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<ReserveExpired, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<StockTaken, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<StockReserveTaken, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<ReserveRenewed, SkuStockProjectionBuilder>();
-            await router.RegisterHandler<ReserveCanceled, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<SkuStockCreated, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<StockAdded, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<StockReserved, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<ReserveExpired, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<StockTaken, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<StockReserveTaken, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<ReserveRenewed, SkuStockProjectionBuilder>();
+            await router.RegisterSyncHandler<ReserveCanceled, SkuStockProjectionBuilder>();
         }
 
         public string Name { get; } = nameof(ShopRouteMap);

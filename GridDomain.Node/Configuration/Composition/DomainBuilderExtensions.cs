@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -19,29 +18,15 @@ namespace GridDomain.Node.Configuration.Composition {
             Register(builder, maps.ToArray());
         }
 
-        public static void RegisterHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
-                                                                                            where TMessage : DomainEvent
+        public static HandlerRegistrator<TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
+                                                                                            where TMessage : class, IHaveSagaId, IHaveId
         {
-            RegisterHandler<TMessage, THandler>(builder, c => new THandler(), e => e.SourceId);
+            return new HandlerRegistrator<TMessage, THandler>(c => new THandler(), builder);
         }
-
-        public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
-                                                                                                    where TMessage : DomainEvent
+        public static HandlerRegistrator<TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer) where THandler : IHandler<TMessage>
+                                                                                                                                where TMessage : class, IHaveSagaId, IHaveId
         {
-            RegisterMetadataHandler<TMessage, THandler>(builder, c => new THandler(), e => e.SourceId);
-        }
-
-        public static void RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer, Expression<Func<TMessage, Guid>> propertyExp) where THandler : IHandler<TMessage>
-                                                                                                                                                                                           where TMessage : class, IHaveSagaId, IHaveId
-        {
-            builder.RegisterHandler(new DefaultMessageHandlerFactory<TMessage, THandler>(producer));
-        }
-
-        public static void RegisterMetadataHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer, Expression<Func<TMessage, Guid>> propertyExp) 
-            where THandler : IHandler<TMessage>
-            where TMessage : class, IHaveSagaId, IHaveId
-        {
-            builder.RegisterHandler(new DefaultMessageWithMetadataHandlerFactory<TMessage, THandler>(producer));
+            return new HandlerRegistrator<TMessage, THandler>(producer, builder);
         }
     }
 }
