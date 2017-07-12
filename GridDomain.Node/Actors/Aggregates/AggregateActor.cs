@@ -64,7 +64,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                            Monitor.Increment(nameof(CQRS.Command));
                                                            ExecutionContext.Command = cmd;
                                                            ExecutionContext.CommandMetadata = m.Metadata;
-
+                                                           ExecutionContext.CommandSender = Sender;
                                                            _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                                   cmd,
                                                                                                   PersistEventPack(Self))
@@ -162,10 +162,11 @@ namespace GridDomain.Node.Actors.Aggregates
                                          Log.Debug("{Aggregate} received a {@command}", PersistenceId, c);
                                          //finish command execution. produced state can be null on execution error
                                          State = ExecutionContext.ProducedState ?? State;
+                                         var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
                                          //notify waiters
                                          foreach(var waiter in _commandCompletedWaiters)
-                                             waiter.Tell(new CommandCompleted(ExecutionContext.Command.Id));
-
+                                             waiter.Tell(commandCompleted);
+                                         ExecutionContext.CommandSender.Tell(commandCompleted);
                                          ExecutionContext.Clear();
                                          Behavior.Unbecome();
                                          Stash.UnstashAll();

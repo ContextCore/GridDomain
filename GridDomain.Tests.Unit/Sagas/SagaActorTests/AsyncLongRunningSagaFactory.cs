@@ -18,12 +18,12 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
         public ISaga<TestState> Create(TestState message)
         {
-            return new Saga<TestState>(new AsyncLongRunningSaga(), message, _log);
+            return new Saga<TestState>(new AsyncLongRunningProcess(), message, _log);
         }
 
         public ISaga<TestState> CreateNew(BalloonCreated message, Guid? id = null)
         {
-            return Create(new TestState(id ?? message.SagaId, nameof(AsyncLongRunningSaga.Initial)));
+            return Create(new TestState(id ?? message.SagaId, nameof(AsyncLongRunningProcess.Initial)));
         }
     }
 }

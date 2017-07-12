@@ -292,7 +292,6 @@
     <Compile Include="EventsUpgrade\SampleDomain\EventA.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\EventB.cs" />
     <Compile Include="EventsUpgrade\SampleDomain\IOrder.cs" />
-    <Compile Include="EventsUpgrade\TestFixtureExtensions.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
     <Compile Include="Migrations\20170629163126_BalloonInitial.cs" />

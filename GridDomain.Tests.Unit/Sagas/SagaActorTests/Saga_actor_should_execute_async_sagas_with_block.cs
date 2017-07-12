@@ -18,6 +18,7 @@ using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.Sagas;
 using GridDomain.Node.Actors.Sagas.Messages;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Microsoft.Practices.Unity;
 using Xunit;
@@ -27,13 +28,14 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
     public class Saga_actor_should_execute_async_sagas_with_block : TestKit
     {
-        public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output)
+        public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output):base("", output)
         {
             var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-            var producer = new Saga—reatorsCatalog<TestState>(AsyncLongRunningSaga.Descriptor, new AsyncLongRunningSagaFactory(logger));
-            producer.RegisterAll(new AsyncLongRunningSagaFactory(logger));
-            var localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
-            localAkkaEventBusTransport.Subscribe(typeof(object), TestActor);
+            var creator = new AsyncLongRunningSagaFactory(logger);
+            var producer = new Saga—reatorsCatalog<TestState>(AsyncLongRunningProcess.Descriptor, creator);
+            producer.RegisterAll(creator);
+
+            _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
 
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
@@ -44,14 +46,14 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             container.RegisterType<SagaStateActor<TestState>>(new InjectionFactory(cnt =>
                                                                                        new SagaStateActor<TestState>(new SagaStateCommandHandler<TestState>(),
                                                                                                                      blackHole,
-                                                                                                                     localAkkaEventBusTransport,
+                                                                                                                     _localAkkaEventBusTransport,
                                                                                                                      new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
                                                                                                                      messageProcessActor)));
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
 
             var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
             _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
-                                                                              localAkkaEventBusTransport),
+                                                                              _localAkkaEventBusTransport),
                                                name);
 
             _sagaActor.Ask<NotifyOnSagaTransitedAck>(new NotifyOnSagaTransited(TestActor)).Wait();
@@ -59,6 +61,7 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
         private readonly TestActorRef<SagaActor<TestState>> _sagaActor;
         private readonly Guid _sagaId;
+        private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;
 
         [Fact]
         public void Saga_actor_process_one_message_in_time()
@@ -70,14 +73,11 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //A was received first and should be processed first
-            var msg = FishForMessage<IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>>(m => true);
-            FishForMessage<SagaTransited>(m => true);
-            Assert.Equal(domainEventA.SourceId, msg.Message.State.ProcessingId);
-
+            var msg = ExpectMsg<SagaTransited>();
+            Assert.Equal(domainEventA.SourceId,((TestState)msg.NewSagaState).ProcessingId);
             //B should not be processed after A is completed
-            var msgB = FishForMessage<IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>>(m => true);
-            FishForMessage<SagaTransited>(m => true);
-            Assert.Equal(domainEventB.Id, msgB.Message.State.ProcessingId);
+            var msgB = ExpectMsg<SagaTransited>();
+            Assert.Equal(domainEventB.SourceId,((TestState)msgB.NewSagaState).ProcessingId);
         }
 
         [Fact]
@@ -87,9 +87,9 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA));
 
-            FishForMessage<SagaTransited>(m => true, TimeSpan.FromHours(1));
+            var msg = ExpectMsg<SagaTransited>();
 
-            Assert.Equal(domainEventA.SourceId, _sagaActor.UnderlyingActor.Saga.State.ProcessingId);
+            Assert.Equal(domainEventA.SourceId, ((TestState)msg.NewSagaState).ProcessingId);
         }
 
         [Fact]
@@ -97,6 +97,9 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
         {
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _sagaId),
                                                            MessageMetadata.Empty));
+
+            _localAkkaEventBusTransport.Subscribe(typeof(IMessageMetadataEnvelop<SagaCreated<TestState>>), TestActor);
+            _localAkkaEventBusTransport.Subscribe(typeof(IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>), TestActor);
 
             FishForMessage<IMessageMetadataEnvelop<SagaCreated<TestState>>>(m => true);
             FishForMessage<IMessageMetadataEnvelop<SagaReceivedMessage<TestState>>>(m => true);

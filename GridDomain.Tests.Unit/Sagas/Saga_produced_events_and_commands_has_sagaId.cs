@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.Sagas
                                            .Create()
                                            .SendToSagas(new GotTiredEvent(Guid.NewGuid()));
 
-            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
+            var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true,TimeSpan.FromHours(1));
             var command = sagaCompleteMsg.Message;
 
             Assert.Equal(sagaCreatedMsg.Message<SagaStateEvent>().SourceId, command.SagaId);

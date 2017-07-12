@@ -1,4 +1,3 @@
-using System;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
@@ -11,8 +10,7 @@ namespace GridDomain.Node.Actors.CommandPipe.Messages
         public SagaTransited(ICommand[] producedCommands,
                              IMessageMetadata metadata,
                              ProcessEntry sagaProcesEntry, 
-                             ISagaState newSagaState, 
-                             Exception error = null) : base(producedCommands, metadata)
+                             ISagaState newSagaState) : base(producedCommands, metadata)
         {
             SagaProcessEntry = sagaProcesEntry;
             NewSagaState = newSagaState;

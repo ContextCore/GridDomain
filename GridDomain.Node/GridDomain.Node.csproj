@@ -232,6 +232,7 @@
     <Compile Include="Actors\CommandPipe\Processors\SyncProjectionProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\SyncSagaProcessor.cs" />
     <Compile Include="Actors\EventSourced\Messages\CancelShutdownRequest.cs" />
+    <Compile Include="Actors\Sagas\Exceptions\SagaNotStartedException.cs" />
     <Compile Include="Actors\Sagas\Messages\CommandCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialized.cs" />
@@ -272,12 +273,11 @@
     <Compile Include="Actors\Sagas\Exceptions\SagaAlreadyStartedException.cs" />
     <Compile Include="Actors\Sagas\SagaState.cs" />
     <Compile Include="Actors\Sagas\SagaStateActor.cs" />
-    <Compile Include="Actors\Sagas\Exceptions\SagaStateException.cs" />
     <Compile Include="Actors\Aggregates\Messages\PersistEventPack.cs" />
     <Compile Include="Actors\EventSourced\Messages\ShutdownCanceled.cs" />
     <Compile Include="Actors\PersistentHub\ShutdownChild.cs" />
     <Compile Include="Actors\EventSourced\SnapshotsPersistencePolicy.cs" />
-    <Compile Include="Actors\Sagas\Exceptions\UnknownStatePersistedException.cs" />
+    <Compile Include="Actors\Sagas\Exceptions\SagaIdMismatchException.cs" />
     <Compile Include="AkkaCommandPipeExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />

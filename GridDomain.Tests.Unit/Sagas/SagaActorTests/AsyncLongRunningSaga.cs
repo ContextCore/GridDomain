@@ -6,9 +6,9 @@ using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
-    public class AsyncLongRunningSaga : Process<TestState>
+    public class AsyncLongRunningProcess : Process<TestState>
     {
-        public AsyncLongRunningSaga()
+        public AsyncLongRunningProcess()
         {
             InstanceState(s => s.CurrentStateName);
 
@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
                                          }).TransitionTo(Initial),
                    When(Progress).Then((state,msg) =>
                                        {
-                                           state.ProcessingId = msg.Id;
+                                           state.ProcessingId = msg.SourceId;
                                        }).TransitionTo(Final));
         }
 
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
         {
             get
             {
-                var descriptor = SagaDescriptor.CreateDescriptor<AsyncLongRunningSaga, TestState>();
+                var descriptor = SagaDescriptor.CreateDescriptor<AsyncLongRunningProcess, TestState>();
                 descriptor.AddStartMessage<BalloonCreated>();
                 descriptor.AddAcceptedMessage<BalloonTitleChanged>();
                 return descriptor;
