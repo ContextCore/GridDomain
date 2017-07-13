@@ -13,12 +13,10 @@ namespace GridDomain.Node.Actors.Sagas
     public class SagaStateActor<TState> : AggregateActor<SagaStateAggregate<TState>> where TState : ISagaState
     {
         public SagaStateActor(IAggregateCommandsHandler<SagaStateAggregate<TState>> handler,
-                              IActorRef schedulerActorRef,
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor,
                               IActorRef customHandlersActor) : base(handler,
-                                                                    schedulerActorRef,
                                                                     publisher,
                                                                     snapshotsPersistencePolicy,
                                                                     aggregateConstructor,

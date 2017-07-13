@@ -58,7 +58,6 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), TestActor)));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
-                                                                                         TestActor,
                                                                                          transport,
                                                                                          new SnapshotsPersistencePolicy(1, 5, null, null),
                                                                                          new AggregateFactory(),

@@ -11,7 +11,6 @@ namespace GridDomain.Scheduling.Akka
 {
     public class SchedulingActor : ReceiveActor
     {
-        public const string RegistrationName = nameof(SchedulingActor);
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         private readonly IScheduler _scheduler;

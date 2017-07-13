@@ -45,7 +45,6 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             container.RegisterType<SagaStateActor<TestState>>(new InjectionFactory(cnt =>
                                                                                        new SagaStateActor<TestState>(new SagaStateCommandHandler<TestState>(),
-                                                                                                                     blackHole,
                                                                                                                      _localAkkaEventBusTransport,
                                                                                                                      new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
                                                                                                                      messageProcessActor)));

@@ -58,13 +58,15 @@ namespace GridDomain.Tests.Unit
             Node.Stop().Wait();
         }
 
-        public void Add(IDomainConfiguration config)
+        public NodeTestFixture Add(IDomainConfiguration config)
         {
             _domainConfigurations.Add(config);
+            return this;
         }
-        public void Add(IContainerConfiguration config)
+        public NodeTestFixture Add(IContainerConfiguration config)
         {
             _containerConfigurations.Add(config);
+            return this;
         }
 
         public virtual async Task<GridDomainNode> CreateNode()

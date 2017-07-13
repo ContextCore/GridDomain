@@ -46,7 +46,6 @@ namespace GridDomain.Node.Configuration.Composition
                                                                 new InjectionFactory(c => _snapshotsPolicyFactory()));
 
             container.RegisterType<TAggregateActor>(new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
-                                                                             new ResolvedParameter<IActorRef>(SchedulingActor.RegistrationName),
                                                                              new ResolvedParameter<IPublisher>(),
                                                                              new ResolvedParameter<ISnapshotsPersistencePolicy>(RegistrationName),
                                                                              new ResolvedParameter<IConstructAggregates>(RegistrationName),

@@ -31,11 +31,9 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
-        private readonly List<IActorRef> _commandCompletedWaiters = new List<IActorRef>();
         private AggregateCommandExecutionContext<TAggregate> ExecutionContext { get; } = new AggregateCommandExecutionContext<TAggregate>();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-                              IActorRef schedulerActorRef,
                               IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor,
@@ -159,9 +157,6 @@ namespace GridDomain.Node.Actors.Aggregates
                                          //finish command execution. produced state can be null on execution error
                                          State = ExecutionContext.ProducedState ?? State;
                                          var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
-                                         //notify waiters
-                                         foreach(var waiter in _commandCompletedWaiters)
-                                             waiter.Tell(commandCompleted);
 
                                          _publisher.Publish(commandCompleted);
                                          ExecutionContext.CommandSender.Tell(commandCompleted);
