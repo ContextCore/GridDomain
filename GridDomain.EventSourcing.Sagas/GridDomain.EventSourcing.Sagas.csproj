@@ -77,7 +77,7 @@
     <Compile Include="InstanceSagas\TransitionResult.cs" />
     <Compile Include="InstanceSagas\WrongSnapshotTypeReceivedException.cs" />
     <Compile Include="ISaga.cs" />
-    <Compile Include="ISagaСreatorCatalog.cs" />
+    <Compile Include="ISagaCreatorCatalog.cs" />
     <Compile Include="MessageBind.cs" />
     <Compile Include="SagaCreatorAdapter.cs" />
     <Compile Include="SagaDescriptor.cs" />

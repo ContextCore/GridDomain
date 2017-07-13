@@ -180,6 +180,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Persistence\IEntityTypeConfiguration.cs" />
+    <Compile Include="Persistence\ModelBuilderExtensions.cs" />
     <Compile Include="Repositories\AggregateRepositories\AggregateSnapshotRepository.cs" />
     <Compile Include="Repositories\AggregateRepositories\AggregateVersion.cs" />
     <Compile Include="Repositories\EventRepositories\ActorSystemJournalRepository.cs" />

@@ -54,8 +54,8 @@ namespace GridGomain.Tests.Stress
                                                        c => c.RegisterType<IPersistentChildsRecycleConfiguration, InsertOptimazedBulkConfiguration>(),
                                                        c => c.RegisterType<IQuartzConfig, PersistedQuartzConfig>());
 
-            var settings = new NodeSettings(() => new StressTestAkkaConfiguration().CreateSystem()) {CustomContainerConfiguration = cfg};
-            settings.DomainBuilder.Register(new BalloonDomainConfiguration());
+            var settings = new NodeSettings(() => new StressTestAkkaConfiguration().CreateSystem()) {ContainerConfiguration = cfg};
+            settings.Add(new BalloonDomainConfiguration());
             var node = new GridDomainNode(settings);
 
             await node.Start();

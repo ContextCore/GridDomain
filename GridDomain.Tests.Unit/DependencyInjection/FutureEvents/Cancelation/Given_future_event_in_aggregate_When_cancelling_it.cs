@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Microsoft.Practices.Unity;
@@ -39,7 +40,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
             //Cancelation_event_has_same_id_as_future_event()
             Assert.Equal(futureEventEnvelop.Id, futureEventCancelation.FutureEventId);
             //Scheduler_does_not_contain_job_for_future_event()
-            var scheduler = Node.Container.Resolve<IScheduler>();
+            var scheduler = Node.System.GetExtension<SchedulingExtension>().Scheduler;
 
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait

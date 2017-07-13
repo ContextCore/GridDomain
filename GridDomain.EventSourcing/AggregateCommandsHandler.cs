@@ -8,9 +8,6 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing
 {
-
-    public delegate Task<TAggregate> CommandExecutionDelegate<TAggregate>(TAggregate agr, ICommand cmd, PersistenceDelegate persistenceDelegate) where TAggregate : Aggregate;
-
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<CommandExecutionDelegate<TAggregate>, ICommand>,
                                                         IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
                                                       

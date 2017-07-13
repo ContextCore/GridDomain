@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
             {
                 var settings = base.CreateNodeSettings();
                 //TwoFastRetriesSettings();
-                settings.QuartzJobRetrySettings = new InMemoryRetrySettings(2,
+                settings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(2,
                                                                             TimeSpan.FromMilliseconds(10),
                                                                             new StopOnTestExceptionPolicy(Logger));
                 return settings;

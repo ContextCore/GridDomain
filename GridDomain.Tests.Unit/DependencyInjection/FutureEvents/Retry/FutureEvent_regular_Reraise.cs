@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
             {
                 var nodeSettings = base.CreateNodeSettings();
                 //Two fast retries
-                nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(1,
+                nodeSettings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(1,
                                                                                 TimeSpan.FromMilliseconds(10),
                                                                                 new DefaultExceptionPolicy());
                 return nodeSettings;

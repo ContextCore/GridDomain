@@ -1,29 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress {
-
-    public class LoadAll
-    {
-        [Fact]
-        void Test()
-        {
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var allTypes = executingAssembly.GetReferencedAssemblies().
-                                             Select(Assembly.Load).
-                                             Concat(new[] {executingAssembly}).
-                                             SelectMany(a => a.GetTypes())
-                                             .ToArray();
-
-        }
-    }
-
     public class NBenchTest
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);

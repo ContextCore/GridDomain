@@ -6,6 +6,7 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using Akka.TestKit.Xunit2;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
@@ -33,9 +34,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             var publisherMoq = new Mock<IPublisher>();
             _container.RegisterInstance(publisherMoq.Object);
 
-            new SchedulingConfiguration(new PersistedQuartzConfig()).Register(_container);
             Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
-            _scheduler = Sys.ActorOf(Sys.DI().Props<SchedulingActor>(), nameof(SchedulingActor));
+            var ext = Sys.InitSchedulingExtension(new InMemoryQuartzConfig(), log, new Mock<IPublisher>().Object, new Mock<ICommandExecutor>().Object);
+            _scheduler = ext.SchedulingActor;
             _quartzScheduler = _container.Resolve<IScheduler>();
         }
 

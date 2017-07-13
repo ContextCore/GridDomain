@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Acceptance.BalloonDomain;
@@ -14,18 +13,6 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Projection
 {
-    public static class ConnectionStrings
-    {
-        static ConnectionStrings()
-        {
-            AutoTestDb = ConfigurationManager.ConnectionStrings["AutoTestDb"]?.ConnectionString
-                ??
-                new AutoTestLocalDbConfiguration().ReadModelConnectionString;
-        }
-
-        public static string AutoTestDb { get; }
-    }
-
     public class BalloonEventsShouldBeProjected : NodeTestKit
     {
         public BalloonEventsShouldBeProjected(ITestOutputHelper output) :

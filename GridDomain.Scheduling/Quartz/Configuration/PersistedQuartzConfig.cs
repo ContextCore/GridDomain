@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Configuration;
+using GridDomain.Scheduling.Quartz.Retry;
 
 namespace GridDomain.Scheduling.Quartz.Configuration
 {
@@ -30,5 +31,6 @@ namespace GridDomain.Scheduling.Quartz.Configuration
                 };
 
         public string Name { get; }
+        public IRetrySettings RetryOptions { get; set; } = new InMemoryRetrySettings();
     }
 }

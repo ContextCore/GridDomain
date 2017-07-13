@@ -4,6 +4,7 @@ using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using Microsoft.Practices.Unity;
 using Akka.Actor;
+using GridDomain.Scheduling;
 
 namespace GridDomain.Tests.Unit
 {
@@ -11,7 +12,7 @@ namespace GridDomain.Tests.Unit
     {
         public static void ClearSheduledJobs(this NodeTestFixture fixture)
         {
-            fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.Container.Resolve<Quartz.IScheduler>().Clear();
+            fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();
         }
 
         public static NodeTestFixture UseAdaper<TFrom,TTo>(this NodeTestFixture fixture, ObjectAdapter<TFrom,TTo> adapter)

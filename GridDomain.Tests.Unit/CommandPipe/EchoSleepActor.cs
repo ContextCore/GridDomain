@@ -3,19 +3,9 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.Hadlers;
 
 namespace GridDomain.Tests.Unit.CommandPipe
 {
-    class MarkedHandlerExecutedMessage : HandlerExecuted
-    {
-        public string Mark { get; }
-        public MarkedHandlerExecutedMessage(string mark, IMessageMetadataEnvelop processingMessage, Exception error = null) : base(processingMessage, error)
-        {
-            Mark = mark;
-        }
-    }
-
     internal class EchoSleepActor : ReceiveActor
     {
        

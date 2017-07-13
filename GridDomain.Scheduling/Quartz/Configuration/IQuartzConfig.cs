@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using GridDomain.Scheduling.Quartz.Retry;
 
 namespace GridDomain.Scheduling.Quartz.Configuration
 {
@@ -7,5 +8,7 @@ namespace GridDomain.Scheduling.Quartz.Configuration
     {
         NameValueCollection Settings { get; }
         string Name { get; }
+
+        IRetrySettings RetryOptions { get; set; }
     }
 }

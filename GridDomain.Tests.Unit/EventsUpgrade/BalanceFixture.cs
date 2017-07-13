@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         {
             Add(BalanceDomainDonfiguration);
             var nodeSettings = base.CreateNodeSettings();
-            nodeSettings.QuartzJobRetrySettings = new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy());
+            nodeSettings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy());
             return nodeSettings;
         }
         public BalanceFixture InitFastRecycle(

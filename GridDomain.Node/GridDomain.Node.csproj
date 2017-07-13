@@ -213,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemFactory.cs" />
+    <Compile Include="Actors\ActorBehavior.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
     <Compile Include="Actors\Aggregates\Messages\EventsPersisted.cs" />
     <Compile Include="Actors\Aggregates\AggregateActorConstants.cs" />
@@ -222,16 +223,20 @@
     <Compile Include="Actors\Aggregates\AggregateHubActor.cs" />
     <Compile Include="Actors\Aggregates\Messages\CommandExecuted.cs" />
     <Compile Include="Actors\Aggregates\Messages\CommandProducedEventsPersisted.cs" />
+    <Compile Include="Actors\BehaviorBag.cs" />
     <Compile Include="Actors\BehaviorStack.cs" />
     <Compile Include="Actors\CommandPipe\Processors\FireAndForgetMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\IMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\MessageProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\ParrallelMessageProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\SynchroniousMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\ParallelMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\ProcessorListCatalogBase.cs" />
+    <Compile Include="Actors\CommandPipe\Processors\SynchronousMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorListCatalogExtensions.cs" />
     <Compile Include="Actors\CommandPipe\Processors\SyncProjectionProcessor.cs" />
     <Compile Include="Actors\CommandPipe\Processors\SyncSagaProcessor.cs" />
     <Compile Include="Actors\EventSourced\Messages\CancelShutdownRequest.cs" />
+    <Compile Include="Actors\IActorBehavior.cs" />
+    <Compile Include="Actors\IActorState.cs" />
     <Compile Include="Actors\Sagas\Exceptions\SagaNotStartedException.cs" />
     <Compile Include="Actors\Sagas\Messages\CommandCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
@@ -350,7 +355,6 @@
     <Compile Include="Configuration\Akka\Hocon\PersistenceJournalConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\PersistenceSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\RootConfig.cs" />
-    <Compile Include="Configuration\Composition\ContainerExtensions.cs" />
     <Compile Include="Configuration\Composition\SagaConfiguration.cs" />
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />
     <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />

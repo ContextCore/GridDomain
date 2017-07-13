@@ -1,8 +1,7 @@
 using Akka.Actor;
 using GridDomain.Configuration;
-using GridDomain.Scheduling.FutureEvents;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration {
+namespace GridDomain.Scheduling.FutureEvents {
     class FutureAggregateHandlersDomainConfiguration : IDomainConfiguration
     {
         private readonly IActorRef _schedulingActor;

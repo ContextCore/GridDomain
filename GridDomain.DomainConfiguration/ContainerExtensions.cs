@@ -1,10 +1,7 @@
-
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging.MessageRouting;
-using GridDomain.EventSourcing;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Node.Configuration.Composition
+namespace GridDomain.Configuration
 {
     public static class ContainerExtensions
     {

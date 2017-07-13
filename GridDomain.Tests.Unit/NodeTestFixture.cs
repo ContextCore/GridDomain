@@ -88,10 +88,11 @@ namespace GridDomain.Tests.Unit
                                QuartzConfig = new InMemoryQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger,
-                               CustomContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
+                               ContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
                            };
 
-            settings.DomainBuilder.Register(_domainConfigurations);
+            foreach(var c in _domainConfigurations)
+                settings.Add(c);
 
             return settings;
         }

@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
+using Akka.DI.Unity;
 using Akka.Monitoring;
 using Akka.Monitoring.ApplicationInsights;
 using Akka.Monitoring.PerformanceCounters;
 using Akka.Util.Internal;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
@@ -18,6 +20,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
+using GridDomain.Scheduling;
 using Microsoft.Practices.Unity;
 using IScheduler = Quartz.IScheduler;
 
@@ -27,9 +30,7 @@ namespace GridDomain.Node
     {
         private ICommandExecutor _commandExecutor;
 
-        private IScheduler _quartzScheduler;
         private bool _stopping;
-        private TransportMode _transportMode;
         private IMessageWaiterFactory _waiterFactory;
         internal CommandPipe Pipe;
         public GridDomainNode(NodeSettings settings)
@@ -43,14 +44,14 @@ namespace GridDomain.Node
         public ActorSystem System { get; private set; }
         private IActorRef ActorTransportProxy { get; set; }
 
-        public IUnityContainer Container { get; private set; }
+        private IUnityContainer Container { get; set; }
 
         public Guid Id { get; } = Guid.NewGuid();
-        public event EventHandler<GridDomainNode> Initializing =  delegate {};
+        public event EventHandler<GridDomainNode> Initializing = delegate { };
 
         public Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
-           return _commandExecutor.Execute(command, metadata);
+            return _commandExecutor.Execute(command, metadata);
         }
 
         public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
@@ -75,48 +76,50 @@ namespace GridDomain.Node
 
         public async Task Start()
         {
+            Settings.Log.Debug("Starting GridDomain node {Id}", Id);
+
             _stopping = false;
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
-
             Container = new UnityContainer();
 
             Initializing.Invoke(this, this);
 
             System = Settings.ActorSystemFactory.Invoke();
+            Transport = new LocalAkkaEventBusTransport(System);
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
-            _transportMode = TransportMode.Standalone;
             System.RegisterOnTermination(OnSystemTermination);
 
-            Container.Register(new GridNodeContainerConfiguration(System, _transportMode, Settings));
-            Container.Register(Settings.CustomContainerConfiguration);
-            Settings.Builder.ContainerConfigurations.ForEach(c => Container.Register(c));
+            NodeSettings settings = Settings;
+            Container.Register(new GridNodeContainerConfiguration(Transport, settings.Log));
+            Container.Register(Settings.ContainerConfiguration);
+            System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
 
-            Pipe = Container.Resolve<CommandPipe>();
 
-            await new CompositeRouteMap("All settings map", Settings.Builder.MessageRouteMaps.ToArray()).Register(Pipe);
 
-            Transport = Container.Resolve<IActorTransport>();
+            _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
 
-            _quartzScheduler = Container.Resolve<IScheduler>();
-            _commandExecutor = Container.Resolve<ICommandExecutor>();
-            _waiterFactory = Container.Resolve<IMessageWaiterFactory>();
 
             ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),
                                                  nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
 
-            var appInsightsConfig = Container.Resolve<IAppInsightsConfiguration>();
-            var perfCountersConfig = Container.Resolve<IPerformanceCountersConfiguration>();
 
-            if (appInsightsConfig.IsEnabled)
+            var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
+            var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
+
+            if(appInsightsConfig.IsEnabled)
             {
                 var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
                 ActorMonitoringExtension.RegisterMonitor(System, monitor);
             }
-            if (perfCountersConfig.IsEnabled)
+            if(perfCountersConfig.IsEnabled)
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
-            Settings.Log.Debug("Launching GridDomain node {Id}", Id);
+
+            _commandExecutor = await ConfigureDomain();
+            Container.RegisterInstance(_commandExecutor);
+
+            System.InitSchedulingExtension(Settings.QuartzConfig, Settings.Log, Transport, _commandExecutor);
 
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props, nameof(GridNodeController));
@@ -126,25 +129,28 @@ namespace GridDomain.Node
             Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
+        private async Task<ICommandExecutor> ConfigureDomain()
+        {
+            var domainBuilder = new DomainBuilder();
+            Settings.DomainConfigurations.ForEach(c => domainBuilder.Register(c));
+            domainBuilder.ContainerConfigurations.ForEach(c => Container.Register(c));
+            Pipe = new CommandPipe(System, Container);
+            foreach(var m in domainBuilder.MessageRouteMaps)
+                await m.Register(Pipe);
+
+            var commandExecutorActor = await Pipe.Init();
+            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
+        }
+
         public async Task Stop()
         {
-            if (_stopping)
+            if(_stopping)
                 return;
 
             Settings.Log.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
 
-            try
-            {
-                if (_quartzScheduler != null && _quartzScheduler.IsShutdown == false)
-                    _quartzScheduler.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                Settings.Log.Warning($"Got error on quartz scheduler shutdown:{ex}");
-            }
-
-            if (System != null)
+            if(System != null)
             {
                 await System.Terminate();
                 System.Dispose();

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.Common;
@@ -23,80 +22,22 @@ namespace GridDomain.Node
 {
     public class GridNodeContainerConfiguration : IContainerConfiguration
     {
-        private readonly ActorSystem _actorSystem;
-        private readonly IQuartzConfig _config;
-        private readonly TimeSpan _defaultCommandExecutionTimeout;
         private readonly ILogger _log;
-        private readonly IRetrySettings _quartzJobRetrySettings;
-        private readonly TransportMode _transportMode;
+        private readonly IActorTransport _actorTransport;
 
-        public GridNodeContainerConfiguration(ActorSystem actorSystem, TransportMode transportMode, NodeSettings settings)
+        public GridNodeContainerConfiguration(IActorTransport transportMode, ILogger settingsLog)
         {
-            _log = settings.Log;
-            _config = settings.QuartzConfig;
-            _defaultCommandExecutionTimeout = settings.DefaultTimeout;
-            _quartzJobRetrySettings = settings.QuartzJobRetrySettings;
-            _transportMode = transportMode;
-            _actorSystem = actorSystem;
+            _log = settingsLog;
+            _actorTransport = transportMode;
         }
 
         public void Register(IUnityContainer container)
         {
-            new SchedulingConfiguration(_config).Register(container);
-
-            //TODO: replace with config
-            IActorTransport transport;
-            switch (_transportMode)
-            {
-                case TransportMode.Standalone:
-                    transport = new LocalAkkaEventBusTransport(_actorSystem);
-                    break;
-                case TransportMode.Cluster:
-                    transport = new DistributedPubSubTransport(_actorSystem);
-                    break;
-                default:
-                    throw new ArgumentException(nameof(_transportMode));
-            }
-
             container.RegisterInstance(_log);
-
-            container.RegisterInstance<IPublisher>(transport);
-            container.RegisterInstance<IActorSubscriber>(transport);
-            container.RegisterInstance(transport);
-            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(transport, _log));
-
-            container.RegisterType<IHandlerActorTypeFactory, DefaultHandlerActorTypeFactory>();
-            container.RegisterInstance(AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration());
-
-            container.RegisterInstance(PerformanceCountersConfigSection.Default ?? new DefaultPerfCountersConfiguration());
-
-            container.RegisterInstance(_actorSystem);
-
-            _actorSystem.AddDependencyResolver(new UnityDependencyResolver(container, _actorSystem));
-
-            container.RegisterInstance(_quartzJobRetrySettings);
-            var persistentScheduler = _actorSystem.ActorOf(_actorSystem.DI().Props<SchedulingActor>(),
-                                                           nameof(SchedulingActor));
-
-            container.RegisterInstance(SchedulingActor.RegistrationName, persistentScheduler);
-
-            var messageWaiterFactory = new MessageWaiterFactory(_actorSystem, transport, _defaultCommandExecutionTimeout);
-            container.RegisterInstance<IMessageWaiterFactory>(messageWaiterFactory);
-
-            var executor = ConfigureCommandPipe(_actorSystem, transport, container, _defaultCommandExecutionTimeout).Result;
-            container.RegisterInstance(executor);
-        }
-
-        private async Task<ICommandExecutor> ConfigureCommandPipe(ActorSystem actorSystem,
-                                                                  IActorTransport actorTransport,
-                                                                  IUnityContainer unityContainer,
-                                                                  TimeSpan defaultTimeout)
-        {
-            var pipeBuilder = new CommandPipe(actorSystem, unityContainer);
-            var commandExecutorActor = await pipeBuilder.Init();
-            unityContainer.RegisterInstance(pipeBuilder);
-
-            return new AkkaCommandPipeExecutor(actorSystem, actorTransport, commandExecutorActor, defaultTimeout);
+            container.RegisterInstance<IPublisher>(_actorTransport);
+            container.RegisterInstance<IActorSubscriber>(_actorTransport);
+            container.RegisterInstance(_actorTransport);
+            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(_actorTransport, _log));
         }
     }
 }

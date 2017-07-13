@@ -1,9 +1,7 @@
 using System;
-using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;
-using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 
@@ -36,14 +34,6 @@ namespace GridDomain.Tests.Unit
             dependencyFactory.AggregateFactoryCreator = () => new BalloonAggregateFactory();
 
             return this;
-        }
-    }
-
-    internal class BalloonAggregateFactory : AggregatesSnapshotsFactory
-    {
-        public BalloonAggregateFactory()
-        {
-            Register(Balloon.FromSnapshot);
         }
     }
 }

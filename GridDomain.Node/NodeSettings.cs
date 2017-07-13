@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -18,18 +19,21 @@ namespace GridDomain.Node
             ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
         }
 
-        public IDomainBuilder DomainBuilder => Builder;
+        public IReadOnlyCollection<IDomainConfiguration> DomainConfigurations => _domainConfigurations;
+        private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
-        internal readonly DomainBuilder Builder = new DomainBuilder();
-        public IContainerConfiguration CustomContainerConfiguration { get; set; } = new EmptyContainerConfiguration();
+        public void Add(IDomainConfiguration conf)
+        {
+            _domainConfigurations.Add(conf);
+        }
+        public IContainerConfiguration ContainerConfiguration { get; set; } = new EmptyContainerConfiguration();
         public Func<ActorSystem> ActorSystemFactory { get; }
 
         public ILogger Log { get; set; } = new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>();
 
         public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(10);
-        public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig();
-        public IRetrySettings QuartzJobRetrySettings { get; set; } = new InMemoryRetrySettings(5,
-                                                                                               TimeSpan.FromMinutes(10),
-                                                                                               new DefaultExceptionPolicy());
+        public IQuartzConfig QuartzConfig { get; set; } = new InMemoryQuartzConfig(new InMemoryRetrySettings(5,
+                                                                                                             TimeSpan.FromMinutes(10),
+                                                                                                             new DefaultExceptionPolicy()));
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
