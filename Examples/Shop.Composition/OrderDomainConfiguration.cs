@@ -1,3 +1,4 @@
+using GridDomain.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using Shop.Domain.Aggregates.OrderAggregate;
 using Shop.Infrastructure;

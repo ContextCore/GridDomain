@@ -1,9 +1,7 @@
-using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public interface ISagaDependencyFactory<TProcess, TState>: IRouteMapFactory where TState : class, ISagaState
                                                               where TProcess : Process<TState>
     {

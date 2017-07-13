@@ -1,7 +1,7 @@
 ﻿using System;
 using Akka.Persistence;
 
-namespace GridDomain.Node.Actors.EventSourced
+namespace GridDomain.Configuration
 {
     public interface ISnapshotsPersistencePolicy
     {

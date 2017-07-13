@@ -2,6 +2,7 @@ using System;
 using Akka;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;

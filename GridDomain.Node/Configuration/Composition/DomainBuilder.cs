@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;

@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         protected readonly BalanceDomainDonfiguration BalanceDomainDonfiguration;
 
-        public BalanceFixture()
+        public BalanceFixture() : base()
         {
             BalanceDomainDonfiguration = new BalanceDomainDonfiguration();
             this.ClearSheduledJobs();

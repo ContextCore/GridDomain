@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;

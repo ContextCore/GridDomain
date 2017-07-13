@@ -1,5 +1,6 @@
 using System;
 using Akka.Persistence;
+using GridDomain.Configuration;
 
 namespace GridDomain.Node.Actors.EventSourced
 {

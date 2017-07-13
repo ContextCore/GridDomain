@@ -1,6 +1,7 @@
 using System;
 using Akka.Persistence;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using Serilog;
 
 namespace GridDomain.Node.Actors.EventSourced

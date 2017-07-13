@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Configuration.Composition;

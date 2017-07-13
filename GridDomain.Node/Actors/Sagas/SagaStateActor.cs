@@ -1,4 +1,5 @@
 using Akka.Actor;
+using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;

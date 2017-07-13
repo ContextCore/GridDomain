@@ -2,7 +2,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 
-namespace GridDomain.Node.Configuration.Composition
+namespace GridDomain.Configuration
 {
     public interface IDomainBuilder
     {

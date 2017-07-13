@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;

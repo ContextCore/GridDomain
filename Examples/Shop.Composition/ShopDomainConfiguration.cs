@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.Unity;

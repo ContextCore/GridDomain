@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;

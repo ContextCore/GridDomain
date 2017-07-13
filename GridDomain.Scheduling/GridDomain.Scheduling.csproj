@@ -113,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FutureEventsAggregate.cs" />
+    <Compile Include="FutureEvents\FutureAggregateDomainConfiguration.cs" />
     <Compile Include="FutureEvents\FutureEventsShedulingMessageHandler.cs" />
     <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
@@ -182,6 +183,10 @@
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.DomainConfiguration\GridDomain.Configuration.csproj">
+      <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
+      <Name>GridDomain.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
       <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>

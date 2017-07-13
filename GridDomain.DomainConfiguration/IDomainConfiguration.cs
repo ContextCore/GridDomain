@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public interface IDomainConfiguration
     {
         void Register(IDomainBuilder builder);

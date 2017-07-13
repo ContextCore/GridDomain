@@ -256,7 +256,6 @@
     <Compile Include="Actors\PersistentHub\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\EventSourced\EachMessageSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\EventSourcedActor.cs" />
-    <Compile Include="Actors\EventSourced\ISnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\Messages\NotifyOnPersistenceEvents.cs" />
     <Compile Include="Actors\Sagas\Messages\RedirectToNewSaga.cs" />
@@ -302,17 +301,6 @@
     <Compile Include="Configuration\Composition\DefaultAggregateDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\DefaultSagaDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\DomainBuilder.cs" />
-    <Compile Include="Configuration\Composition\DomainBuilderExtensions.cs" />
-    <Compile Include="Configuration\Composition\DomainConfiguration.cs" />
-    <Compile Include="Configuration\Composition\HandlerRegistrator.cs" />
-    <Compile Include="Configuration\Composition\IAggregateDependencyFactory.cs" />
-    <Compile Include="Configuration\Composition\IDomainBuilder.cs" />
-    <Compile Include="Configuration\Composition\IDomainConfiguration.cs" />
-    <Compile Include="Configuration\Composition\IMessageHandlerFactory.cs" />
-    <Compile Include="Configuration\Composition\IMessageProcessContext.cs" />
-    <Compile Include="Configuration\Composition\IRouteMapFactory.cs" />
-    <Compile Include="Configuration\Composition\ISagaDependencyFactory.cs" />
-    <Compile Include="Configuration\Composition\MessageHandlerFactory.cs" />
     <Compile Include="Configuration\Composition\SagaStateDependencyFactory.cs" />
     <Compile Include="Serializers\DebugWireSerializer.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
@@ -322,7 +310,6 @@
     <Compile Include="Serializers\DomainEventsJsonSerializationExtensionProvider.cs" />
     <Compile Include="Serializers\DomainEventsJsonSerializationExtensions.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
-    <Compile Include="Actors\PersistentHub\IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\Sagas\SagaActor.cs" />
     <Compile Include="Actors\Sagas\SagaHubActor.cs" />
     <Compile Include="Actors\EventSourced\Messages\GracefullShutdownRequest.cs" />
@@ -401,6 +388,10 @@
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
       <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.DomainConfiguration\GridDomain.Configuration.csproj">
+      <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
+      <Name>GridDomain.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
       <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>

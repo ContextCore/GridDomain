@@ -106,7 +106,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Shop.Tests.Unit\Shop.Tests.Unit.csproj">
       <Project>{4a92dd22-5c34-4f30-9cb3-1feb4e452cc2}</Project>
-      <Name>Shop.Tests.Unit.Unit</Name>
+      <Name>Shop.Tests.Unit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

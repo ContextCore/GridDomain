@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.Logging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;

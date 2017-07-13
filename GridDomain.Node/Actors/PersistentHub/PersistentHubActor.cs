@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
 

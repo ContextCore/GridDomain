@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
@@ -26,9 +27,7 @@ namespace GridDomain.Tests.Unit
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
 
-        public NodeTestFixture(IDomainConfiguration domainConfiguration = null,
-                               TimeSpan? defaultTimeout = null,
-                               ITestOutputHelper helper = null)
+        public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
         {
             if (domainConfiguration != null)
                 Add(domainConfiguration);
@@ -38,7 +37,7 @@ namespace GridDomain.Tests.Unit
             SystemConfigFactory = () => AkkaConfig.ToStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
         }
-        public NodeTestFixture(params IDomainConfiguration[] domainConfiguration):this()
+        public NodeTestFixture(params IDomainConfiguration[] domainConfiguration)
         {
             foreach (var c in domainConfiguration)
                 Add(c);

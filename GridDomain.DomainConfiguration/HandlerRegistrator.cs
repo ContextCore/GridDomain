@@ -4,7 +4,7 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public class HandlerRegistrator<TMessage,THandler> where THandler : IHandler<TMessage>
                                                        where TMessage : class, IHaveSagaId, IHaveId
     {

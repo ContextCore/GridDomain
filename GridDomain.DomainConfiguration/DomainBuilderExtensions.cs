@@ -5,7 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public static class DomainBuilderExtensions
     {
         public static void Register(this IDomainBuilder builder, params IDomainConfiguration[] maps)

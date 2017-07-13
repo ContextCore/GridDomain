@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;

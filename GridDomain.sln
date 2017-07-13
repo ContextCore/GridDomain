@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Tests.Acceptance", "Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Configuration", "GridDomain.DomainConfiguration\GridDomain.Configuration.csproj", "{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +143,10 @@ Global
 		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADBAC768-C2F7-43BD-AA76-FC004BC054D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Actors.PersistentHub
+namespace GridDomain.Configuration
 {
     public interface IPersistentChildsRecycleConfiguration
     {

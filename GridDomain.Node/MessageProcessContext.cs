@@ -1,3 +1,4 @@
+using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.Configuration.Composition;

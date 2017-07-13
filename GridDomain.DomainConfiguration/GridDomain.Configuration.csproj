@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GridDomain.Configuration</RootNamespace>
+    <AssemblyName>GridDomain.Configuration</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Akka">
+      <HintPath>..\packages\Akka.1.1.3\lib\net45\Akka.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Persistence">
+      <HintPath>..\packages\Akka.Persistence.1.1.3.32-beta\lib\net45\Akka.Persistence.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DomainBuilderExtensions.cs" />
+    <Compile Include="DomainConfiguration.cs" />
+    <Compile Include="HandlerRegistrator.cs" />
+    <Compile Include="IAggregateDependencyFactory.cs" />
+    <Compile Include="IDomainBuilder.cs" />
+    <Compile Include="IDomainConfiguration.cs" />
+    <Compile Include="IMessageHandlerFactory.cs" />
+    <Compile Include="IMessageProcessContext.cs" />
+    <Compile Include="IPersistentChildsRecycleConfiguration.cs" />
+    <Compile Include="IRouteMapFactory.cs" />
+    <Compile Include="ISagaDependencyFactory.cs" />
+    <Compile Include="ISnapshotsPersistencePolicy.cs" />
+    <Compile Include="MessageHandlerFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging.Akka\GridDomain.CQRS.Messaging.Akka.csproj">
+      <Project>{2825362b-d2b2-48fb-80cd-2d20f4f29f0f}</Project>
+      <Name>GridDomain.CQRS.Messaging.Akka</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
+      <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
+      <Name>GridDomain.CQRS.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
+      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Name>GridDomain.CQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+      <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
+      <Name>GridDomain.EventSourcing.Sagas</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
+      <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
+      <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
+      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
+      <Name>GridDomain.Logging</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

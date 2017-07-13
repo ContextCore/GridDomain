@@ -1,6 +1,6 @@
 using GridDomain.CQRS.Messaging;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public interface IRouteMapFactory
     {
         IMessageRouteMap CreateRouteMap();

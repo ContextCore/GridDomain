@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration;
 
 namespace GridDomain.Node.Actors.PersistentHub
 {

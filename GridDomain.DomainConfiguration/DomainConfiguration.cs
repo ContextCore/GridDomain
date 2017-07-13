@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public class DomainConfiguration : IDomainConfiguration
     {
         private readonly Action<IDomainBuilder>[] _registrations;

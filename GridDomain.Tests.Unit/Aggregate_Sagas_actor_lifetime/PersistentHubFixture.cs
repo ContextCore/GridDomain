@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
@@ -16,7 +17,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
 {
     public class PersistentHubFixture : NodeTestFixture
     {
-        public PersistentHubFixture(IPersistentActorTestsInfrastructure infrastructure)
+        public PersistentHubFixture(IPersistentActorTestsInfrastructure infrastructure) : base()
         {
             Infrastructure = infrastructure;
             Add(CreateDomainConfiguration());

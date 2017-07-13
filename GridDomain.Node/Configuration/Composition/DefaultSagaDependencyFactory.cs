@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing.Sagas;
 using GridDomain.EventSourcing.Sagas.InstanceSagas;

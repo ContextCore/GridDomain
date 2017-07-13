@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka;
@@ -29,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
     {
         public class SchedulerFixture : NodeTestFixture
         {
-            public SchedulerFixture()
+            public SchedulerFixture() : base()
             {
                Add(new TestSchedulingAggregateDomainConfiguration());
                this.ClearSheduledJobs();

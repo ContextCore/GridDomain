@@ -1,10 +1,8 @@
 using System;
-using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
 
     public class MessageHandlerFactory<TMessage, THandler> : IMessageHandlerFactory<TMessage,THandler>
                                                              where THandler : IHandler<TMessage>

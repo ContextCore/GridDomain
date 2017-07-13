@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.Common;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.CQRS.Messaging.Akka;
