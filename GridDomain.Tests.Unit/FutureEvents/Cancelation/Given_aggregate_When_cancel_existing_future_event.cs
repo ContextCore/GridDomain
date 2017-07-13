@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
@@ -11,7 +13,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
     public class Given_aggregate_When_cancel_existing_future_event
     {
         [Fact]
-        public void Then_it_occures_and_applies_to_aggregate()
+        public async Task Then_it_occures_and_applies_to_aggregate()
         {
             var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
             aggregate.PersistAll();
@@ -39,7 +41,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
             Assert.True(cancelEvents.All(e => e.FutureEventId != futureEventOutOfCriteria.Id));
             // Canceled_event_cannot_be_raised()
 
-            Assert.Throws<ScheduledEventNotFoundException>(() => aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()));
+            await aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()).ShouldThrow<ScheduledEventNotFoundException>();
 
             var anyEvents = aggregate.GetEvents<DomainEvent>();
             Assert.Empty(anyEvents);

@@ -26,9 +26,9 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
         public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
         {
             if (oldVersion)
-                Emit(new BalanceChangedEvent_V0(number, Id), when);
+                Produce(new BalanceChangedEvent_V0(number, Id), when);
             else
-                Emit(new BalanceChangedEvent_V1(number, Id), when);
+                Produce(new BalanceChangedEvent_V1(number, Id), when);
         }
 
         private void Apply(AggregateCreatedEvent e)

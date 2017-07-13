@@ -121,6 +121,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                           return;
                                                       }
 
+                                                      _publisher.Publish(persistedEvent);
                                                       NotifyPersistenceWatchers(persistedEvent);
                                                       TrySaveSnapshot(ExecutionContext.ProducedState);
 
@@ -137,8 +138,6 @@ namespace GridDomain.Node.Actors.Aggregates
 
             Command<CommandProducedEventsPersisted>(newState =>
                                              {
-                                                 Log.Debug("{Aggregate} received a {@command}", PersistenceId, newState);
-
                                                  ExecutionContext.MessagesToProject.Select(e => Project(e, producedEventsMetadata)).
                                                                   ToChain().
                                                                   ContinueWith(t =>
@@ -153,12 +152,11 @@ namespace GridDomain.Node.Actors.Aggregates
 
             Command<CommandExecuted>(c =>
                                      {
-                                         Log.Debug("{Aggregate} received a {@command}", PersistenceId, c);
                                          //finish command execution. produced state can be null on execution error
                                          State = ExecutionContext.ProducedState ?? State;
                                          var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
-
                                          _publisher.Publish(commandCompleted);
+
                                          ExecutionContext.CommandSender.Tell(commandCompleted);
                                          ExecutionContext.Clear();
                                          Behavior.Unbecome();

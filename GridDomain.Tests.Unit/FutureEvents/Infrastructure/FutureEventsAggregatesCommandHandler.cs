@@ -2,6 +2,7 @@ using System;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.FutureEvents;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 {

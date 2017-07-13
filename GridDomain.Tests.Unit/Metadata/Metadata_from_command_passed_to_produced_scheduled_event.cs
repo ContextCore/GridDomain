@@ -10,6 +10,7 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,11 +27,11 @@ namespace GridDomain.Tests.Unit.Metadata
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
             var res = await Node.Prepare(command, commandMetadata)
-                                .Expect<TestDomainEvent>()
+                                .Expect<ValueChangedSuccessfullyEvent>()
                                 .And<JobSucceeded>()
                                 .Execute();
 
-            var answer = res.MessageWithMetadata<TestDomainEvent>();
+            var answer = res.MessageWithMetadata<ValueChangedSuccessfullyEvent>();
             var jobSucced = res.MessageWithMetadata<JobSucceeded>();
 
             //Result_contains_metadata()
@@ -38,7 +39,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_contains_message()
             Assert.NotNull(answer.Message);
             //Result_message_has_expected_type()
-            Assert.IsAssignableFrom<TestDomainEvent>(answer.Message);
+            Assert.IsAssignableFrom<ValueChangedSuccessfullyEvent>(answer.Message);
             //Result_message_has_expected_id()
             Assert.Equal(command.AggregateId, answer.Message.SourceId);
             //Result_metadata_has_command_id_as_casuation_id()

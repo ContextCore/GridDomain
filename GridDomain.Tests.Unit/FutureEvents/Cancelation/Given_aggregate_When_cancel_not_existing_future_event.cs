@@ -2,6 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation

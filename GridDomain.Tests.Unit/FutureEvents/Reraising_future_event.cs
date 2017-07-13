@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,14 +19,14 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
 
             await
                 Node.Prepare(new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), aggregateId, "test value"))
-                    .Expect<TestDomainEvent>()
+                    .Expect<ValueChangedSuccessfullyEvent>()
                     .Execute();
 
             var reraiseTime = DateTime.Now.AddSeconds(0.5);
 
             await
                 Node.Prepare(new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value"))
-                    .Expect<TestDomainEvent>()
+                    .Expect<ValueChangedSuccessfullyEvent>()
                     .Execute();
 
             var aggregate = await this.LoadAggregateByActor<TestFutureEventsAggregate>(aggregateId);

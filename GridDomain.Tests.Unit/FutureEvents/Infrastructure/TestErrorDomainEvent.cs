@@ -3,9 +3,9 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 {
-    public class TestErrorDomainEvent : DomainEvent
+    public class RetriesToSucceedDecreasedEvent : DomainEvent
     {
-        public TestErrorDomainEvent(string value, Guid sourceId, int succedOnRetryNum) : base(sourceId)
+        public RetriesToSucceedDecreasedEvent(string value, Guid sourceId, int succedOnRetryNum) : base(sourceId)
         {
             Value = value;
             SuccedOnRetryNum = succedOnRetryNum;

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -31,7 +32,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
                                                        FutureEventScheduledEvent futureEventEnvelop,
                                                        ScheduleEventInFutureCommand testCommand)
         {
-            var producedEvent = aggregate.GetEvent<TestDomainEvent>();
+            var producedEvent = aggregate.GetEvent<ValueChangedSuccessfullyEvent>();
 
             aggregate.MarkPersisted(producedEvent);
 
@@ -47,7 +48,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
             //Future_event_sourceId_is_aggregate_id()
             Assert.Equal(futureEventEnvelop.SourceId, aggregate.Id);
             //Future_event_payload_is_aggregate_original_event()
-            Assert.Equal(((TestDomainEvent) futureEventEnvelop.Event).Id, producedEvent.Id);
+            Assert.Equal(((ValueChangedSuccessfullyEvent) futureEventEnvelop.Event).Id, producedEvent.Id);
             //Future_event_contains_data_from_command()
             Assert.Equal(testCommand.Value, producedEvent.Value);
             return Task.CompletedTask;

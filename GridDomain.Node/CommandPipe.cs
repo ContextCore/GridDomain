@@ -93,8 +93,7 @@ namespace GridDomain.Node
 
             SagaProcessor = _system.ActorOf(Props.Create(() => new SagaPipeActor(_sagaCatalog)), nameof(SagaPipeActor));
 
-            HandlersProcessor = _system.ActorOf(
-                                                Props.Create(() => new HandlersPipeActor(_handlersCatalog, SagaProcessor)),
+            HandlersProcessor = _system.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, SagaProcessor)),
                                                 nameof(HandlersPipeActor));
 
             CommandExecutor = _system.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),

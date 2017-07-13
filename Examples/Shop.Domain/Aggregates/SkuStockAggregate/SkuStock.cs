@@ -94,7 +94,7 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             }
 
             Produce(new StockReserved(Id, reserveId, expirationDate, quantityToReserve));
-            Emit(new ReserveExpired(Id, reserveId), expirationDate);
+            Produce(new ReserveExpired(Id, reserveId), expirationDate);
         }
 
         public void AddToToStock(int quantity, Guid skuId, string packArticle)

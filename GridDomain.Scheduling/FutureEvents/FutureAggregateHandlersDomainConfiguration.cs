@@ -2,7 +2,7 @@ using Akka.Actor;
 using GridDomain.Configuration;
 
 namespace GridDomain.Scheduling.FutureEvents {
-    class FutureAggregateHandlersDomainConfiguration : IDomainConfiguration
+    public class FutureAggregateHandlersDomainConfiguration : IDomainConfiguration
     {
         private readonly IActorRef _schedulingActor;
 

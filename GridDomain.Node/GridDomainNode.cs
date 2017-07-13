@@ -21,6 +21,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.FutureEvents;
 using Microsoft.Practices.Unity;
 using IScheduler = Quartz.IScheduler;
 
@@ -115,11 +116,15 @@ namespace GridDomain.Node
             if(perfCountersConfig.IsEnabled)
                 ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
+            _commandExecutor = await CreateCommandExecutor();
 
-            _commandExecutor = await ConfigureDomain();
+            var ext = System.InitSchedulingExtension(Settings.QuartzConfig, Settings.Log, Transport, _commandExecutor);
+            Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
+
+            await ConfigureDomain();
+
             Container.RegisterInstance(_commandExecutor);
 
-            System.InitSchedulingExtension(Settings.QuartzConfig, Settings.Log, Transport, _commandExecutor);
 
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props, nameof(GridNodeController));
@@ -129,17 +134,20 @@ namespace GridDomain.Node
             Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
-        private async Task<ICommandExecutor> ConfigureDomain()
+        private async Task<ICommandExecutor> CreateCommandExecutor()
+        {
+            Pipe = new CommandPipe(System, Container);
+            var commandExecutorActor = await Pipe.Init();
+            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
+        }
+
+        private async Task ConfigureDomain()
         {
             var domainBuilder = new DomainBuilder();
             Settings.DomainConfigurations.ForEach(c => domainBuilder.Register(c));
             domainBuilder.ContainerConfigurations.ForEach(c => Container.Register(c));
-            Pipe = new CommandPipe(System, Container);
             foreach(var m in domainBuilder.MessageRouteMaps)
                 await m.Register(Pipe);
-
-            var commandExecutorActor = await Pipe.Init();
-            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
         }
 
         public async Task Stop()
