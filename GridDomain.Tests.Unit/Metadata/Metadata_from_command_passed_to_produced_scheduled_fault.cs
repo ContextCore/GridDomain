@@ -24,15 +24,10 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var command = new BoomNowCommand(Guid.NewGuid());
-            var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
+            var commandMetadata = new MessageMetadata(Guid.NewGuid(), BusinessDateTime.Now, Guid.NewGuid());
+            var command = new PlanBoomCommand(Guid.NewGuid(), DateTime.Now.AddMilliseconds(100));
 
-            //create aggregate with initial value via event scheduled by Quartz
-            await Node.Prepare(command)
-                      .Expect<ValueChangedSuccessfullyEvent>()
-                      .Execute();
-
-            var res = await Node.Prepare(new PlanBoomCommand(command.AggregateId, DateTime.Now.AddMilliseconds(100)), commandMetadata)
+            var res = await Node.Prepare(command, commandMetadata)
                                 .Expect<JobFailed>()
                                 .And<Fault<RaiseScheduledDomainEventCommand>>()
                                 .Execute(null, false);

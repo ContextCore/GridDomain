@@ -17,19 +17,16 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class When_executing_commands_and_aggregate_raises_an_exception : NodeTestKit
     {
         public When_executing_commands_and_aggregate_raises_an_exception(ITestOutputHelper helper)
-            : base(helper, new BalloonFixture()) {}
+            : base(helper, new BalloonFixture()) { }
 
         [Fact]
         public async Task When_aggregate_throws_fault_it_is_handled_without_implicit_registration()
         {
             //will throw exception in aggregate and in message handler
-            var syncCommand = new PlanTitleWriteAndBlowCommand(50, Guid.NewGuid());
-            var res = await Node.Prepare(syncCommand)
-                                .Expect<BalloonTitleChangedNotification>()
-                                .Or<Fault<BalloonTitleChanged>>()
-                                .Execute(false);
-
-            Assert.NotNull(res.Message<Fault<PlanTitleWriteAndBlowCommand>>());
+            await Node.Prepare(new PlanTitleWriteAndBlowCommand(50, Guid.NewGuid()))
+                      .Expect<BalloonTitleChangedNotification>()
+                      .Execute()
+                      .ShouldThrowCommand<BalloonException>();
         }
 
         [Fact]
