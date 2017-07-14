@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
+using GridDomain.Node.Actors.Aggregates.Exceptions;
+using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,10 +30,9 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
             protected override NodeSettings CreateNodeSettings()
             {
                 var settings = base.CreateNodeSettings();
-                //TwoFastRetriesSettings();
                 settings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(2,
-                                                                            TimeSpan.FromMilliseconds(10),
-                                                                            new StopOnTestExceptionPolicy(Logger));
+                                                                               TimeSpan.FromMilliseconds(10),
+                                                                               new StopOnTestExceptionPolicy(Logger));
                 return settings;
             }
 
@@ -52,11 +54,9 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
 
                     _policyCallNumber++;
                     _policyCallNumberChanged.SetResult(1);
-                    var domainException = ex.UnwrapSingle();
-                    if (domainException is TestScheduledException)
-                        return false;
 
-                    if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException)
+                    var businessException = ex.UnwrapSingle();
+                    if(businessException is CommandExecutionFailedException && businessException.InnerException is ScheduledEventNotFoundException)
                         return false;
 
                     return true;
@@ -68,7 +68,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.3), Guid.NewGuid(), "test value A", 2);
+            var command = new PlanBoomCommand(Guid.NewGuid(),DateTime.Now.AddSeconds(0.2));
 
             await Node.Prepare(command)
                       .Expect<JobFailed>()

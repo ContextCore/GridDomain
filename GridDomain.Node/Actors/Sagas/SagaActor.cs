@@ -34,7 +34,7 @@ namespace GridDomain.Node.Actors.Sagas
         private readonly ISagaCreatorCatalog<TState> _сreatorCatalog;
         private readonly IPublisher _publisher;
         private readonly ILoggingAdapter _log;
-        private BehaviorBag Behavior { get; }
+        private BehaviorQueue Behavior { get; }
         private ActorMonitor Monitor { get; }
         private readonly IActorRef _stateAggregateActor;
         private readonly List<IActorRef> _sagaTransitionWaiters = new List<IActorRef>();
@@ -50,7 +50,7 @@ namespace GridDomain.Node.Actors.Sagas
 
         {
             Monitor = new ActorMonitor(Context, "Saga" + typeof(TState).Name);
-            Behavior = new BehaviorBag(Become, UnbecomeStacked);
+            Behavior = new BehaviorQueue(Become);
 
             Guid id;
             if (!AggregateActorName.TryParseId(Self.Path.Name, out id))
@@ -95,7 +95,6 @@ namespace GridDomain.Node.Actors.Sagas
 
         private void FinishInitialization()
         {
-            Behavior.Unbecome();
             Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
             Stash.UnstashAll();
         }

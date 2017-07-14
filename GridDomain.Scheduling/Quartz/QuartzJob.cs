@@ -91,12 +91,13 @@ namespace GridDomain.Scheduling.Quartz
             }
             catch (Exception e)
             {
-                _quartzLogger.Error(e, "job {key} failed", key.Name);
-                var jobFailed = new JobFailed(key.Name, key.Group, e, processingMessage);
+                var businessError = e.UnwrapSingle();
+                _quartzLogger.Error(businessError, "job {key} failed", key.Name);
+                var jobFailed = new JobFailed(key.Name, key.Group, businessError, processingMessage);
                 var jobFailedMetadata = messageMetadata.CreateChild(processingMessage,
                                                                     _jobFailedProcessEntry);
                 _publisher.Publish(jobFailed, jobFailedMetadata);
-                throw new JobExecutionException(e, false);
+                throw new JobExecutionException(businessError, false);
             }
         }
 

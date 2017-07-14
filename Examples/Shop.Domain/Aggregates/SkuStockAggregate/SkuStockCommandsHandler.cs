@@ -6,7 +6,7 @@ using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate
 {
-    public class SkuStockCommandsHandler : AggregateCommandsHandler<SkuStock>
+    public class SkuStockCommandsHandler : FutureEventsAggregateCommandHandler<SkuStock>
     {
         public SkuStockCommandsHandler()
         {
@@ -19,8 +19,6 @@ namespace Shop.Domain.Aggregates.SkuStockAggregate
             Map<ReserveStockCommand>((c, a) => a.Reserve(c.CustomerId, c.Quantity, c.ReservationStartTime));
 
             Map<TakeReservedStockCommand>((c, a) => a.Take(c.ReserveId));
-
-            this.MapFutureEvents();
         }
     }
 }

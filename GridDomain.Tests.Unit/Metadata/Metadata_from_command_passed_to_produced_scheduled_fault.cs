@@ -19,21 +19,26 @@ namespace GridDomain.Tests.Unit.Metadata
 {
     public class Metadata_from_command_passed_to_produced_scheduled_fault : FutureEventsTest
     {
-        public Metadata_from_command_passed_to_produced_scheduled_fault(ITestOutputHelper output) : base(output) {}
+        public Metadata_from_command_passed_to_produced_scheduled_fault(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var command = new ScheduleErrorInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12", 1);
+            var command = new BoomNowCommand(Guid.NewGuid());
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(command, commandMetadata)
+            //create aggregate with initial value via event scheduled by Quartz
+            await Node.Prepare(command)
+                      .Expect<ValueChangedSuccessfullyEvent>()
+                      .Execute();
+
+            var res = await Node.Prepare(new PlanBoomCommand(command.AggregateId, DateTime.Now.AddMilliseconds(100)), commandMetadata)
                                 .Expect<JobFailed>()
                                 .And<Fault<RaiseScheduledDomainEventCommand>>()
                                 .Execute(null, false);
 
-            var schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
-            var jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();
+            var schedulingCommandFault = res.MessageWithMetadata<Fault<RaiseScheduledDomainEventCommand>>();
+            var jobFailedEnvelop = res.MessageWithMetadata<JobFailed>();
 
             //Result_contains_metadata()
             Assert.NotNull(schedulingCommandFault.Metadata);
@@ -54,7 +59,9 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = schedulingCommandFault.Metadata.History.Steps.First();
 
-            Assert.Equal(AggregateActorName.New<TestFutureEventsAggregate>(command.AggregateId).Name, step.Who);
+            Assert.Equal(AggregateActorName.New<TestFutureEventsAggregate>(command.AggregateId)
+                                           .Name,
+                         step.Who);
             Assert.Equal(AggregateActorConstants.CommandRaisedAnError, step.Why);
             Assert.Equal(AggregateActorConstants.CreatedFault, step.What);
         }

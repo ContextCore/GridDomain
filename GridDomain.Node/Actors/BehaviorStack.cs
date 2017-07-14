@@ -4,26 +4,30 @@ using System.Text;
 
 namespace GridDomain.Node.Actors
 {
-    public class BehaviorStack : BehaviorBag
+    public class BehaviorStack:BehaviorQueue
     {
-        private readonly Stack<string> _behaviorStack = new Stack<string>();
+        private readonly Action _unbecome;
         public IReadOnlyCollection<string> Stack => _behaviorStack;
+        private readonly Stack<string> _behaviorStack = new Stack<string>();
 
-        public BehaviorStack(Action<Action> become, Action unbecome, int historyLimit = 10):base(become,unbecome,historyLimit)
+        public BehaviorStack(Action<Action> become, Action unbecome, int historyLimit = 10):base(become,historyLimit)
         {
+            _unbecome = unbecome;
+            _behaviorStack.Push("Default behavior");
         }
 
         public override void Become(Action act, string name)
         {
             _behaviorStack.Push(name);
-            base.Become(act,name);
+            base.Become(act, name);
         }
 
-
-        public override string Unbecome()
+        public void Unbecome()
         {
+            _unbecome();
             _behaviorStack.Pop();
-            return base.Unbecome();
+            Current = _behaviorStack.Peek();
+            Remember(Current);
         }
     }
 }

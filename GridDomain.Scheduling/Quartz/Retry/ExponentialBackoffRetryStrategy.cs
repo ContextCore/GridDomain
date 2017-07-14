@@ -19,28 +19,18 @@ namespace GridDomain.Scheduling.Quartz.Retry
 
         public bool ShouldRetry(IJobExecutionContext context, JobExecutionException e)
         {
-            if (e?.InnerException != null && !_settings.ErrorActions.ShouldContinue(e.InnerException))
-            {
-                _log.Debug("Job {Key} will not be retried due to special error encoured: {error}",
-                           context.JobDetail.Key.Name,
-                           e.InnerException.GetType());
+            if (e?.InnerException == null)
                 return false;
+
+            if (_settings.ErrorActions.ShouldContinue(e.InnerException))
+            {
+                var totalTries = GetAlreadyPerformedRetries(context);
+                return totalTries < _settings.MaxTries;
             }
-
-            var retries = GetAlreadyPerformedRetries(context);
-            var shouldRetry = retries < _settings.MaxRetries;
-
-            if (shouldRetry)
-                _log.Debug("Job {Key} will be retried, {retries} / {maxRetries}",
-                           context.JobDetail.Key.Name,
-                           retries,
-                           _settings.MaxRetries);
-            else
-                _log.Debug("Job {Key} will not be retried, as retries limit was reached: {maxRetries}",
-                           context.JobDetail.Key.Name,
-                           _settings.MaxRetries);
-
-            return shouldRetry;
+            _log.Debug("Job {Key} will not be retried due to special error encoured: {error}",
+                       context.JobDetail.Key.Name,
+                       e.InnerException.GetType());
+            return false;
         }
 
         public ITrigger GetTrigger(IJobExecutionContext context)

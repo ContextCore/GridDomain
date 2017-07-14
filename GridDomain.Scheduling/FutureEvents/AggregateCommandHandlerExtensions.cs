@@ -2,12 +2,11 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Scheduling.FutureEvents
 {
-    public static class AggregateCommandHandlerExtensions
+    public class FutureEventsAggregateCommandHandler<TAggregate> : AggregateCommandsHandler<TAggregate> where TAggregate : FutureEventsAggregate
     {
-        public static void MapFutureEvents<TAggregate>(this AggregateCommandsHandler<TAggregate> handler)
-            where TAggregate : FutureEventsAggregate
+        public FutureEventsAggregateCommandHandler()
         {
-            handler.Map<RaiseScheduledDomainEventCommand>((c, a) => a.RaiseScheduledEvent(c.FutureEventId, c.Id));
+            Map<RaiseScheduledDomainEventCommand>((c, a) => a.RaiseScheduledEvent(c.FutureEventId, c.Id));
         }
     }
 }

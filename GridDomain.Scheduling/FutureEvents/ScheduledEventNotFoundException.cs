@@ -9,6 +9,6 @@ namespace GridDomain.Scheduling.FutureEvents
             EventId = eventId;
         }
 
-        public Guid EventId { get; set; }
+        public Guid EventId { get; }
     }
 }

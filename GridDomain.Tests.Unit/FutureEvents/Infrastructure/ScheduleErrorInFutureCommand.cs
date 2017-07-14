@@ -3,18 +3,14 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
 {
-    public class ScheduleErrorInFutureCommand : Command
+    public class BoomNowCommand : Command
     {
-        public ScheduleErrorInFutureCommand(DateTime raiseTime, Guid aggregateId, string value, int succedOnRetryNum)
+        public BoomNowCommand(Guid aggregateId)
             : base(aggregateId)
         {
-            RaiseTime = raiseTime;
-            Value = value;
-            SuccedOnRetryNum = succedOnRetryNum;
+    
         }
 
-        public DateTime RaiseTime { get; }
-        public string Value { get; }
-        public int SuccedOnRetryNum { get; }
+
     }
 }

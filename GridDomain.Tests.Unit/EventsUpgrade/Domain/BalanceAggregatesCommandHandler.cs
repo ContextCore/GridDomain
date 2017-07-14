@@ -7,9 +7,7 @@ using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
-    public class BalanceAggregatesCommandHandler : AggregateCommandsHandler<BalanceAggregate>,
-                                                   IAggregateCommandsHandlerDescriptor
-
+    public class BalanceAggregatesCommandHandler : FutureEventsAggregateCommandHandler<BalanceAggregate>
     {
         public BalanceAggregatesCommandHandler()
         {
@@ -18,7 +16,6 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
             Map<CreateBalanceCommand>(c => new BalanceAggregate(c.AggregateId, c.Parameter));
 
             Map<ChangeBalanceInFuture>((c, a) => a.ChangeStateInFuture(c.RaiseTime, c.Parameter, c.UseLegacyEvent));
-            this.MapFutureEvents();
         }
     }
 }

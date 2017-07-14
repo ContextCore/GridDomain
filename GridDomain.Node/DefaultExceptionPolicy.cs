@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Common;
+using GridDomain.Node.Actors.Aggregates.Exceptions;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Scheduling.Quartz.Retry;
 
@@ -9,10 +10,16 @@ namespace GridDomain.Node
     {
         public bool ShouldContinue(Exception ex)
         {
-            if (ex.UnwrapSingle() is NullReferenceException)
+            var businessException = ex.UnwrapSingle();
+
+            if (businessException is NullReferenceException)
                 return false;
 
-            if (ex.UnwrapSingle() is ScheduledEventNotFoundException)
+            if (businessException is ScheduledEventNotFoundException)
+                return false;
+
+            if (businessException is CommandExecutionFailedException 
+                && businessException.InnerException is ScheduledEventNotFoundException)
                 return false;
 
             return true;

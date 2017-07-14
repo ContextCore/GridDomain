@@ -27,7 +27,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             //we can launch any command with CommandConditionBuilder<ICommand>
             //and TCommand will resolve to ICommand leading to incorect subscription
-            Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
+            if(failOnAnyFault)
+                Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
 
             var task = Create(timeout);
 

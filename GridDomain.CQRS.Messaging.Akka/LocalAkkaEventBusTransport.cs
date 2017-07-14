@@ -42,7 +42,8 @@ namespace GridDomain.CQRS.Messaging.Akka
         public void Publish(object msg, IMessageMetadata metadata)
         {
             //   _log.Debug("Publishing {Message} to transport with metadata", msg);
-            _bus.Publish(MessageMetadataEnvelop.New(msg, metadata));
+            var messageMetadataEnvelop = MessageMetadataEnvelop.New(msg, metadata);
+            _bus.Publish(messageMetadataEnvelop);
         }
 
         public void Subscribe(Type messageType, IActorRef actor)

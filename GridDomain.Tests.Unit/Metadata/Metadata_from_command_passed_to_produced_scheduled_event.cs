@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.Metadata
         public Metadata_from_command_passed_to_produced_scheduled_event(ITestOutputHelper output) : base(output) {}
 
         [Fact]
-        public async Task When_execute_aggregate_command_with_fault_and_metadata()
+        public async Task When_execute_aggregate_command()
         {
             var command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12");
             var commandMetadata = new MessageMetadata(command.Id, BusinessDateTime.Now, Guid.NewGuid());

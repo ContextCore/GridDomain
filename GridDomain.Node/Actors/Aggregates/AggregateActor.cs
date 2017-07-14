@@ -44,7 +44,6 @@ namespace GridDomain.Node.Actors.Aggregates
             _customHandlersActor = customHandlersActor;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.PublishingEvent, AggregateActorConstants.CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CreatedFault, AggregateActorConstants.CommandRaisedAnError);
-            State.SetPersistProvider(PersistEventPack(Self));
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
 
@@ -59,27 +58,22 @@ namespace GridDomain.Node.Actors.Aggregates
                                                            ExecutionContext.Command = cmd;
                                                            ExecutionContext.CommandMetadata = m.Metadata;
                                                            ExecutionContext.CommandSender = Sender;
+                                                           var self = Self;
+                                                           Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
                                                            _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                                   cmd,
-                                                                                                  PersistEventPack(Self))
+                                                                                                  agr =>
+                                                                                                  {
+                                                                                                      ExecutionContext.ProducedState = (TAggregate) agr;
+                                                                                                      return self.Ask<EventsPersisted>(new PersistEventPack(agr.GetDomainEvents()));
+                                                                                                  })
                                                                                     .ContinueWith(t =>
                                                                                                   {
                                                                                                       if (t.IsFaulted) throw t.Exception;
                                                                                                       return CommandProducedEventsPersisted.Instance;
                                                                                                   })
                                                                                     .PipeTo(Self);
-
-                                                           Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
                                                        });
-        }
-
-        private PersistenceDelegate PersistEventPack(IActorRef self)
-        {
-            return agr =>
-                   {
-                       ExecutionContext.ProducedState = (TAggregate) agr;
-                       return self.Ask<EventsPersisted>(new PersistEventPack(agr.GetDomainEvents()));
-                   };
         }
 
         private void ProcessingCommandBehavior()

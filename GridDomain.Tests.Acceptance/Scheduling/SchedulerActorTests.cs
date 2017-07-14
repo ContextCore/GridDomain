@@ -57,7 +57,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
                                                 typeof(ScheduledCommandSuccessfullyProcessed),
                                                 id ?? Guid.Empty,
-                                                checkField,
                                                 timeout);
         }
 

@@ -31,9 +31,9 @@ namespace GridDomain.Scheduling
 
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
-            await Emit(ev.Event, ev.Event);
-            //How to handle case when applying occured event will raise an exception?
-            await Emit(ev.Event, futureEventOccuredEvent);
+            await Emit(ev.Event);
+            //wait for event apply in case of errors; 
+            Produce(futureEventOccuredEvent);
         }
 
         protected void Produce(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
@@ -76,7 +76,7 @@ namespace GridDomain.Scheduling
         {
             FutureEventScheduledEvent evt = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (evt == null)
-                return;
+                throw new ScheduledEventNotFoundException(futureEventId);
             _futureEvents.Remove(evt);
         }
     }

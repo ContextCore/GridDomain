@@ -24,17 +24,14 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
             Produce(new ValueChangedSuccessfullyEvent(testValue, 1, Id), raiseTime);
         }
 
-        public async Task ScheduleErrorInFuture(DateTime raiseTime, string testValue, int succedOnRetryNum)
+        public void Boom()
         {
-            if (RetriesToSucceed == 0 || RetriesToSucceed == null)
-            {
-                Produce(new ValueChangedSuccessfullyEvent(testValue, succedOnRetryNum, Id), raiseTime);
-                return;
-            }
+            throw new TestScheduledException(0);
+        }
 
-            await Emit(new RetriesToSucceedDecreasedEvent(testValue, Id, succedOnRetryNum), raiseTime);
-
-            throw new TestScheduledException(RetriesToSucceed.Value + 1);
+        public void PlanBoom(DateTime raiseTime)
+        {
+            Produce(new BoomDomainEvent(Id), raiseTime);
         }
 
         public void CancelFutureEvents(string likeValue)
@@ -49,9 +46,9 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
             RetriesToSucceed = e.RetriesToSucceed;
         }
 
-        private void Apply(RetriesToSucceedDecreasedEvent e)
+        private void Apply(BoomDomainEvent e)
         {
-            RetriesToSucceed--;
+            throw new TestScheduledException(0);
         }
     }
 }

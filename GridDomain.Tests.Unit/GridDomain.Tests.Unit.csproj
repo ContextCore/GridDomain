@@ -350,13 +350,14 @@
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events.cs" />
     <Compile Include="FutureEvents\Given_aggregate_When_raising_several_future_events_by_method_call.cs" />
     <Compile Include="FutureEvents\Given_different_aggregates_future_events_Should_be_processed_independently.cs" />
+    <Compile Include="FutureEvents\Infrastructure\BoomCommand.cs" />
+    <Compile Include="FutureEvents\Infrastructure\BoomDomainEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\CancelFutureEventCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleErrorInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\ScheduleEventInFutureCommand.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestFutureEventsAggregate.cs" />
     <Compile Include="FutureEvents\Infrastructure\FutureEventsAggregatesCommandHandler.cs" />
-    <Compile Include="FutureEvents\Infrastructure\TestDomainEvent.cs" />
-    <Compile Include="FutureEvents\Infrastructure\TestErrorDomainEvent.cs" />
+    <Compile Include="FutureEvents\Infrastructure\ValueChangedSuccessfullyEvent.cs" />
     <Compile Include="FutureEvents\Infrastructure\TestScheduledException.cs" />
     <Compile Include="GridNodeContainerTests.cs" />
     <Compile Include="NodeTestFixtureExtensions.cs" />
