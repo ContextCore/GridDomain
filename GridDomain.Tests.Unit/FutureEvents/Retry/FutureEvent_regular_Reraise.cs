@@ -40,13 +40,14 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
             var command = new BoomNowCommand(Guid.NewGuid());
             var executionOptions = new ExecutionOptions(DateTime.UtcNow.AddMilliseconds(100),
                                                         typeof(ValueChangedSuccessfullyEvent),command.AggregateId);
+
             var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey(command.Id,"test","test"), executionOptions );
             scheduler.Tell(scheduleCommandExecution);
             Node.Transport.Subscribe<MessageMetadataEnvelop<JobFailed>>(TestActor);
 
             //job will be retried one time, but aggregate will fail permanently due to error on apply method
-            ExpectMsg<MessageMetadataEnvelop<JobFailed>>();
-            ExpectMsg<MessageMetadataEnvelop<JobFailed>>();
+            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true);
+            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true);
         }
     }
 }
