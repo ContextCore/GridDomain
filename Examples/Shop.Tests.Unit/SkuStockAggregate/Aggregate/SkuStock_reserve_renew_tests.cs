@@ -26,22 +26,27 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
             var scenario = AggregateScenario.New<SkuStock, SkuStockCommandsHandler>();
 
             await scenario.Given(new SkuStockCreated(aggregateId, Guid.NewGuid(), 50, reserveTime),
-                                 new StockAdded(aggregateId, 10, "test batch 2"),
-                                 stockReservedEvent = new StockReserved(aggregateId, customerId, expirationDate, 5),
-                                 new FutureEventScheduledEvent(Guid.NewGuid(),
-                                                               aggregateId,
-                                                               expirationDate,
-                                                               new ReserveExpired(aggregateId, customerId)))
-                          .When(reserveStockCommand = new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime))
-                          .Then(new ReserveRenewed(scenario.Aggregate.Id, customerId),
-                                new FutureEventCanceledEvent(Any.GUID, scenario.Aggregate.Id, nameof(SkuStock)),
-                                new StockReserved(scenario.Aggregate.Id,
-                                                  customerId,
-                                                  expirationDate,
-                                                  reserveStockCommand.Quantity + stockReservedEvent.Quantity),
-                                new FutureEventScheduledEvent(Any.GUID, scenario.Aggregate.Id, expirationDate, new ReserveExpired(scenario.Aggregate.Id, customerId)))
-                          .Run()
-                          .Check();
+                               new StockAdded(aggregateId, 10, "test batch 2"),
+                               stockReservedEvent = new StockReserved(aggregateId, customerId, expirationDate, 5),
+                               new FutureEventScheduledEvent(Guid.NewGuid(),
+                                   aggregateId,
+                                   expirationDate,
+                                   new ReserveExpired(aggregateId, customerId))).
+                           When(reserveStockCommand =
+                               new ReserveStockCommand(aggregateId, customerId, 10, reservationStartTime)).
+                           Then(new ReserveRenewed(scenario.Aggregate.Id, customerId),
+                               new FutureEventCanceledEvent(Any.GUID, scenario.Aggregate.Id, nameof(SkuStock)),
+                               new StockReserved(scenario.Aggregate.Id,
+                                   customerId,
+                                   expirationDate,
+                                   reserveStockCommand.Quantity + stockReservedEvent.Quantity),
+                               new FutureEventScheduledEvent(Any.GUID,
+                                   scenario.Aggregate.Id,
+                                   expirationDate,
+                                   new ReserveExpired(scenario.Aggregate.Id, customerId),
+                                   nameof(SkuStock))).
+                           Run().
+                           Check();
 
             var reservation = scenario.Aggregate.Reservations[customerId];
 

@@ -39,7 +39,8 @@ namespace Shop.Tests.Unit.SkuStockAggregate.Aggregate
                                                         new FutureEventScheduledEvent(Any.GUID,
                                                                                       aggregateId,
                                                                                       expirationDate,
-                                                                                      new ReserveExpired(aggregateId, reserveStockCommand.CustomerId)))
+                                                                                      new ReserveExpired(aggregateId, reserveStockCommand.CustomerId),
+                                                                                      nameof(SkuStock)))
                                                   .Run().Check();
 
             // Then_stock_reserved_event_should_be_raised()
