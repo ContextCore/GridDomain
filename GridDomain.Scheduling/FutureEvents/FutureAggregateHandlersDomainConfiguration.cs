@@ -12,9 +12,9 @@ namespace GridDomain.Scheduling.FutureEvents {
         }
         public void Register(IDomainBuilder builder)
         {
-            var handler = new FutureEventsShedulingMessageHandler(_schedulingActor);
-            builder.RegisterHandler<FutureEventScheduledEvent, FutureEventsShedulingMessageHandler>(c => handler).AsSync();
-            builder.RegisterHandler<FutureEventCanceledEvent, FutureEventsShedulingMessageHandler>(c => handler).AsSync();
+            var handler = new FutureEventsSchedulingMessageHandler(_schedulingActor);
+            builder.RegisterHandler<FutureEventScheduledEvent, FutureEventsSchedulingMessageHandler>(c => handler).AsSync();
+            builder.RegisterHandler<FutureEventCanceledEvent, FutureEventsSchedulingMessageHandler>(c => handler).AsSync();
         }
     }
 }

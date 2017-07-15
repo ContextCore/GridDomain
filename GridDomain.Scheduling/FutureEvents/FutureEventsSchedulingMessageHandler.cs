@@ -11,13 +11,13 @@ namespace GridDomain.Scheduling.FutureEvents
     /// <summary>
     ///     Listening to scheduling events from aggregates and modify quartz jobs accordinally
     /// </summary>
-    internal class FutureEventsShedulingMessageHandler : IHandler<FutureEventScheduledEvent>,
+    internal class FutureEventsSchedulingMessageHandler : IHandler<FutureEventScheduledEvent>,
                                                          IHandler<FutureEventCanceledEvent>
     {
         private readonly IActorRef _schedulerActorRef;
         private readonly ProcessEntry _schedulingFutureEventProcessEntry;
 
-        public FutureEventsShedulingMessageHandler(IActorRef schedulingActor)
+        public FutureEventsSchedulingMessageHandler(IActorRef schedulingActor)
         {
             _schedulerActorRef = schedulingActor;
 
@@ -29,7 +29,7 @@ namespace GridDomain.Scheduling.FutureEvents
 
         public Task Handle(FutureEventCanceledEvent evt, IMessageMetadata metadata)
         {
-            var key = CreateScheduleKey(evt.FutureEventId, evt.SourceId);
+            var key = CreateScheduleKey(evt.FutureEventId, evt.SourceId, evt.SourceName);
             return _schedulerActorRef.Ask<Unscheduled>(new Unschedule(key));
         }
 
@@ -55,11 +55,10 @@ namespace GridDomain.Scheduling.FutureEvents
             return _schedulerActorRef.Ask<Scheduled>(scheduleEvent);
         }
 
-        internal static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid sourceId, string sourceName=null, string description=null)
+        internal static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid sourceId, string sourceName, string description=null)
         {
-            return new ScheduleKey(scheduleId,
-                $"{sourceName}_{sourceId}_future_event_{scheduleId}",
-                $"{sourceName}_{sourceId}_futureEvents",
+            return new ScheduleKey($"{sourceName}_{sourceId:N}_fe_{scheduleId:N}",
+                $"{sourceName}_{sourceId:N}_future_events",
                 description);
         }
     }

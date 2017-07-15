@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
             var executionOptions = new ExecutionOptions(DateTime.UtcNow.AddMilliseconds(100),
                                                         typeof(ValueChangedSuccessfullyEvent),command.AggregateId);
 
-            var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey(command.Id,"test","test"), executionOptions );
+            var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey("test","test"), executionOptions );
             scheduler.Tell(scheduleCommandExecution);
             Node.Transport.Subscribe<MessageMetadataEnvelop<JobFailed>>(TestActor);
 

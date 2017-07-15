@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
             var ext = Sys.InitSchedulingExtension(new InMemoryQuartzConfig(), log, new Mock<IPublisher>().Object, new Mock<ICommandExecutor>().Object);
             _scheduler = ext.SchedulingActor;
-            _quartzScheduler = _container.Resolve<IScheduler>();
+            _quartzScheduler = ext.Scheduler;
         }
 
         private const string Name = "test";
@@ -60,25 +60,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                                                 timeout);
         }
 
-        [Fact]
-        public void When_scheduler_is_restarted_Then_scheduled_jobs_still_get_executed()
-        {
-            var tasks = new[] {0.5, 1, 1.5, 2, 2.5};
-
-            foreach (var task in tasks)
-            {
-                var text = task.ToString(CultureInfo.InvariantCulture);
-                var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
-            }
-
-            _quartzScheduler.Shutdown(false);
-            _quartzScheduler = _container.Resolve<IScheduler>();
-
-            var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
-
-            Throttle.AssertInTime(() => ResultHolder.Contains(taskIds));
-        }
+        //Scheduler should work all time grid node works
 
         [Fact]
         public void When_some_of_scheduled_jobs_fail_System_still_executes_others()
@@ -90,14 +72,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testCommand = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommandExecution(testCommand, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testCommand, new ScheduleKey(text, text), CreateOptions(task)));
             }
             foreach (var failTask in failTasks)
             {
                 var text = failTask.ToString(CultureInfo.InvariantCulture);
                 var failTaskCommand = new FailCommand();
                 _scheduler.Tell(new ScheduleCommandExecution(failTaskCommand,
-                                                    new ScheduleKey(Guid.Empty, text, text),
+                                                    new ScheduleKey(text, text),
                                                     CreateOptions(failTask)));
             }
 
@@ -122,14 +104,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(text, text), CreateOptions(task)));
             }
 
             var successTaskIds = successTasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
             var tasksToRemoveTaskIds = tasksToRemove.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();
 
             foreach (var taskId in tasksToRemoveTaskIds)
-                _scheduler.Tell(new Unschedule(new ScheduleKey(Guid.Empty, taskId, taskId)));
+                _scheduler.Tell(new Unschedule(new ScheduleKey(taskId, taskId)));
 
             Throttle.AssertInTime(() =>
                                   {
@@ -148,7 +130,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 var text = task.ToString(CultureInfo.InvariantCulture);
                 var testMessage = new SuccessCommand(text);
-                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Guid.Empty, text, text), CreateOptions(task)));
+                _scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(text, text), CreateOptions(task)));
             }
 
             var taskIds = tasks.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray();

@@ -114,7 +114,7 @@
   <ItemGroup>
     <Compile Include="FutureEventsAggregate.cs" />
     <Compile Include="FutureEvents\FutureAggregateHandlersDomainConfiguration.cs" />
-    <Compile Include="FutureEvents\FutureEventsShedulingMessageHandler.cs" />
+    <Compile Include="FutureEvents\FutureEventsSchedulingMessageHandler.cs" />
     <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
