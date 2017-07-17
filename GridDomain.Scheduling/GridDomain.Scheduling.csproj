@@ -118,7 +118,6 @@
     <Compile Include="FutureEvents\AggregateCommandHandlerExtensions.cs" />
     <Compile Include="Akka\Messages\AlreadyScheduled.cs" />
     <Compile Include="Akka\Messages\ExecutionOptions.cs" />
-    <Compile Include="Akka\Messages\ScheduleMessage.cs" />
     <Compile Include="Akka\Messages\ScheduleKey.cs" />
     <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
     <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />

@@ -6,9 +6,9 @@ namespace GridDomain.Scheduling.Akka.Messages
     public class ScheduleCommandExecution
     {
         public ScheduleCommandExecution(Command command,
-                               ScheduleKey key,
-                               ExecutionOptions options,
-                               IMessageMetadata commandMetadata = null)
+                                        ScheduleKey key,
+                                        ExecutionOptions options,
+                                        IMessageMetadata commandMetadata = null)
         {
             Command = command;
             Key = key;

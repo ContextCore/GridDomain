@@ -2,13 +2,15 @@ using System;
 
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class Scheduled
+    public class CommandExecutionScheduled
     {
-        public Scheduled(DateTime nextExecution)
+        public CommandExecutionScheduled(Guid commandId, DateTime nextExecution)
         {
+            CommandId = commandId;
             NextExecution = nextExecution;
         }
 
-        public DateTime NextExecution { get; private set; }
+        public Guid CommandId { get; }
+        public DateTime NextExecution { get; }
     }
 }

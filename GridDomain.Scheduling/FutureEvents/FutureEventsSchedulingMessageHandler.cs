@@ -50,7 +50,7 @@ namespace GridDomain.Scheduling.FutureEvents
                                                              ExecutionOptions.ForCommand(message.RaiseTime, succesEventType),
                                                              metadata);
 
-            return _schedulerActorRef.Ask<Scheduled>(scheduleEvent);
+            return _schedulerActorRef.Ask<CommandExecutionScheduled>(scheduleEvent);
         }
 
         internal static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid sourceId, string sourceName, string description = null)

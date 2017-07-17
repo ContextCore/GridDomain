@@ -2,9 +2,12 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Acceptance.Snapshots;
+using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
+using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration;
 using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,30 +16,27 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 {
     public class FutureEventsTest_Persistent_restart
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
         public FutureEventsTest_Persistent_restart(ITestOutputHelper helper)
         {
-            _fixture = new FutureEventsFixture(helper).UseSqlPersistence();
+            _testOutputHelper = helper;
         }
-
-        private readonly FutureEventsFixture _fixture;
 
         [Fact]
         public async Task It_fires_after_node_restart()
         {
-            var node = await _fixture.CreateNode();
+            var node = await new FutureEventsFixture(_testOutputHelper).UseSqlPersistence().CreateNode();
             var cmd = new ScheduleEventInFutureCommand(DateTime.UtcNow.AddSeconds(3), Guid.NewGuid(), "test value");
 
             await node.Prepare(cmd)
-                      .Expect<FutureEventScheduledEvent>()
+                      .Expect<CommandExecutionScheduled>(m => m.CommandId == cmd.Id)
                       .Execute();
 
-            //to finish job persist
-            await Task.Delay(300);
-
             await node.Stop();
-          //  _fixture.System = null;
-            await node.Start();
 
+            //do not use FutureEventsFixture as it will clear all schedled jobs on launch
+            node = await new NodeTestFixture(new FutureAggregateDomainConfiguration(),null,_testOutputHelper).UseSqlPersistence().CreateNode();
             var res = await node.NewWaiter(TimeSpan.FromSeconds(10))
                                 .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
                                 .Create();

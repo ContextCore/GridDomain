@@ -54,7 +54,7 @@ namespace GridDomain.Scheduling
             schedulingContainer.Register(new SchedulingConfiguration(eventAdapters, logger, publisher, executor));
 
             ext.Scheduler = schedulingContainer.Resolve<IScheduler>();
-            ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor(ext.Scheduler)), nameof(SchedulingActor));
+            ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor(ext.Scheduler, publisher)), nameof(SchedulingActor));
 
             system.RegisterOnTermination(() =>
                                          {
