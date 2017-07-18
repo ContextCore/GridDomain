@@ -8,7 +8,6 @@ namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
         public FutureEventsFixture(ITestOutputHelper output = null) : base(null, null, output)
         {
             Add(new FutureAggregateDomainConfiguration());
-            this.ClearSheduledJobs();
         }
     }
 }

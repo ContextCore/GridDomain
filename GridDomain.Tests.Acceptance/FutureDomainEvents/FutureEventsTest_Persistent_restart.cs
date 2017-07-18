@@ -30,13 +30,12 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
             var cmd = new ScheduleEventInFutureCommand(DateTime.UtcNow.AddSeconds(3), Guid.NewGuid(), "test value");
 
             await node.Prepare(cmd)
-                      .Expect<CommandExecutionScheduled>(m => m.CommandId == cmd.Id)
-                      .Execute();
+                      .Expect<CommandExecutionScheduled>()
+                      .Execute(TimeSpan.FromSeconds(10));
 
             await node.Stop();
 
-            //do not use FutureEventsFixture as it will clear all schedled jobs on launch
-            node = await new NodeTestFixture(new FutureAggregateDomainConfiguration(),null,_testOutputHelper).UseSqlPersistence().CreateNode();
+            node = await new FutureEventsFixture(_testOutputHelper).UseSqlPersistence(false).CreateNode();
             var res = await node.NewWaiter(TimeSpan.FromSeconds(10))
                                 .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
                                 .Create();

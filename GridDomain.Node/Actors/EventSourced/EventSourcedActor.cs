@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 using Akka.Persistence;
 using GridDomain.Common;
@@ -12,7 +13,6 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-
     public class EventSourcedActor<T> : ReceivePersistentActor where T : EventSourcing.Aggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
@@ -29,33 +29,32 @@ namespace GridDomain.Node.Actors.EventSourced
             _snapshotsPolicy = policy;
 
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name).Id;
-            State = (T)aggregateConstructor.Build(typeof(T), Id, null);
+            Id = AggregateActorName.Parse<T>(Self.Path.Name)
+                                   .Id;
+            State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
             Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
 
             DefaultBehavior();
 
-            Recover<DomainEvent>(e => { ((IAggregate)State).ApplyEvent(e); });
+            Recover<DomainEvent>(e => { ((IAggregate) State).ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
-            {
-                _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
-                State = (T)aggregateConstructor.Build(typeof(T), Id, (IMemento)offer.Snapshot);
-                RecoverFromSnapshot();
-            });
+                                   {
+                                       _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
+                                       State = (T) aggregateConstructor.Build(typeof(T), Id, (IMemento) offer.Snapshot);
+                                       RecoverFromSnapshot();
+                                   });
 
             Recover<RecoveryCompleted>(message =>
-            {
-                Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
-                NotifyPersistenceWatchers(message);
-            });
+                                       {
+                                           Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                                           NotifyPersistenceWatchers(message);
+                                       });
         }
 
-        protected virtual void RecoverFromSnapshot()
-        {
-        }
+        protected virtual void RecoverFromSnapshot() { }
 
         protected void DefaultBehavior()
         {
@@ -63,7 +62,8 @@ namespace GridDomain.Node.Actors.EventSourced
                                               {
                                                   Log.Debug("{Actor} received shutdown request", PersistenceId);
                                                   Monitor.IncrementMessagesReceived();
-                                                  Behavior.Become(TerminatingBehavior,nameof(TerminatingBehavior));
+                                                  Behavior.Become(TerminatingBehavior, nameof(TerminatingBehavior));
+                                                  Self.Tell(req);
                                               });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
@@ -77,10 +77,11 @@ namespace GridDomain.Node.Actors.EventSourced
                                                                                 BusinessDateTime.UtcNow);
                                          });
         }
+
         protected void StashMessage(object message)
         {
             Log.Debug("Aggregate {id} stashing message {message} current behavior is {behavior}", PersistenceId, message, Behavior.Current);
-            
+
             Stash.Stash();
         }
 
@@ -111,28 +112,46 @@ namespace GridDomain.Node.Actors.EventSourced
                 watcher.Tell(new Persisted(msg));
         }
 
-     
-
         protected virtual void TerminatingBehavior()
         {
-            //for case when we in process of saving snapshot or events
             Command<DeleteSnapshotsSuccess>(s => StopNow(s));
             Command<DeleteSnapshotsFailure>(s => StopNow(s));
             Command<CancelShutdownRequest>(s =>
                                            {
                                                Behavior.Unbecome();
                                                Stash.UnstashAll();
-                                               Log.Info("Aborting shutdown, will resume activity");
+                                               Log.Info("Shutdown canceled, will resume activity");
                                                Sender.Tell(ShutdownCanceled.Instance);
                                            });
 
             Command<GracefullShutdownRequest>(s =>
                                               {
+                                                  var messagesInStash = Stash.ClearStash()
+                                                                             .ToArray();
+
+                                                  if (messagesInStash.Any(m => !(m.Message is GracefullShutdownRequest) ||
+                                                                               !(m.Message is DeleteSnapshotsSuccess) ||
+                                                                               !(m.Message is DeleteSnapshotsFailure)))
+                                                  {
+                                                      Log.Warning("{Actor} received shutdown request but have unprocessed messages."
+                                                                  + "Shutdown will be postponed until all messages processing",
+                                                                  PersistenceId);
+
+                                                      Behavior.Unbecome();
+                                                      foreach (var m in messagesInStash)
+                                                          Self.Tell(m.Message);
+
+                                                      Self.Tell(s);
+                                                      return;
+                                                  }
+
+
                                                   if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
                                                   {
                                                       Log.Debug("started snapshots delete");
                                                       return;
                                                   }
+
 
                                                   Log.Debug("Unsaved snapshots found");
                                                   if (--_terminateWaitCount < 0)
@@ -147,14 +166,14 @@ namespace GridDomain.Node.Actors.EventSourced
                                                                                             GracefullShutdownRequest.Instance,
                                                                                             Self);
                                               });
-            //start terminateion process
-            Self.Tell(GracefullShutdownRequest.Instance);
         }
 
         protected override void Unhandled(object message)
         {
-            Log.Warning("Actor {id} skipping message {message} because it was unhandled. \r\n {@behavior}.", 
-                PersistenceId, message, Behavior);
+            Log.Warning("Actor {id} skipping message {message} because it was unhandled. \r\n {@behavior}.",
+                        PersistenceId,
+                        message,
+                        Behavior);
             base.Unhandled(message);
         }
 

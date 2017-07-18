@@ -132,7 +132,7 @@ namespace GridDomain.Tests.Common
             {
                 inbox.Watch(saga);
                 sagaHub.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.Settings.DefaultTimeout);
+                inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == saga.Path, timeout ?? node.Settings.DefaultTimeout);
             }
         }
 

@@ -12,10 +12,15 @@ using GridDomain.Tests.Unit;
 namespace GridDomain.Tests.Acceptance.Snapshots {
     public static class NodeTestFixtureExtensions
     {
-        public static T UseSqlPersistence<T>(this T fixture) where T: NodeTestFixture
+        public static T UseSqlPersistence<T>(this T fixture,bool clearData = true) where T: NodeTestFixture
         {
             fixture.AkkaConfig.Persistence = GetConfig();
-            fixture.OnNodePreparingEvent += (s,e) => TestDbTools.ClearData(e.AkkaConfig.Persistence).Wait();
+            if(clearData)
+                fixture.OnNodePreparingEvent += (s, e) =>
+                                                {
+                                                    TestDbTools.ClearData(e.AkkaConfig.Persistence).Wait();
+                                                    fixture.ClearSheduledJobs();
+                                                };
             fixture.OnNodePreparingEvent += (s,e) => e.NodeSettings.QuartzConfig = new PersistedQuartzConfig();
             fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToStandAloneSystemConfig();
 
