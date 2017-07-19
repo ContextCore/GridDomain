@@ -11,12 +11,12 @@ namespace GridDomain.Tests.Common.Configuration
         public string SnapshotConnectionString
             =>
                 ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
-                ?? "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
+                ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string JournalConnectionString
             =>
                 ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
-                ?? "Server=(local); Database = AutoTestAkka; Integrated Security = true; MultipleActiveResultSets = True";
+                ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";

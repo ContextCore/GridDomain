@@ -13,14 +13,11 @@ using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-    public class EventSourcedActor<T> : ReceivePersistentActor where T : EventSourcing.Aggregate
+    public class EventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
-        private readonly TimeSpan _terminateWaitPeriod = TimeSpan.FromSeconds(1);
         protected readonly ActorMonitor Monitor;
-
-        private int _terminateWaitCount = 3;
 
         protected readonly BehaviorStack Behavior;
 
@@ -114,8 +111,8 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected virtual void TerminatingBehavior()
         {
-            Command<DeleteSnapshotsSuccess>(s => StopNow(s));
-            Command<DeleteSnapshotsFailure>(s => StopNow(s));
+            Command<DeleteSnapshotsSuccess>(s => StopNow());
+            Command<DeleteSnapshotsFailure>(s => StopNow());
             Command<CancelShutdownRequest>(s =>
                                            {
                                                Behavior.Unbecome();
@@ -126,19 +123,20 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<GracefullShutdownRequest>(s =>
                                               {
-                                                  var messagesInStash = Stash.ClearStash()
+                                                  var messageToProcess = Stash.ClearStash()
+                                                                             .Where(m => !(m.Message is GracefullShutdownRequest) ||
+                                                                                         !(m.Message is DeleteSnapshotsSuccess) ||
+                                                                                         !(m.Message is DeleteSnapshotsFailure))
                                                                              .ToArray();
 
-                                                  if (messagesInStash.Any(m => !(m.Message is GracefullShutdownRequest) ||
-                                                                               !(m.Message is DeleteSnapshotsSuccess) ||
-                                                                               !(m.Message is DeleteSnapshotsFailure)))
+                                                  if (messageToProcess.Any())
                                                   {
                                                       Log.Warning("{Actor} received shutdown request but have unprocessed messages."
                                                                   + "Shutdown will be postponed until all messages processing",
                                                                   PersistenceId);
 
                                                       Behavior.Unbecome();
-                                                      foreach (var m in messagesInStash)
+                                                      foreach (var m in messageToProcess)
                                                           Self.Tell(m.Message);
 
                                                       Self.Tell(s);
@@ -149,22 +147,11 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
                                                   {
                                                       Log.Debug("started snapshots delete");
-                                                      return;
                                                   }
+                                                  else
+                                                      StopNow();
 
 
-                                                  Log.Debug("Unsaved snapshots found");
-                                                  if (--_terminateWaitCount < 0)
-                                                      return;
-
-                                                  Log.Debug("Will retry to delete snapshots in {time}, times left:{times}",
-                                                            _terminateWaitPeriod,
-                                                            _terminateWaitCount);
-
-                                                  Context.System.Scheduler.ScheduleTellOnce(_terminateWaitPeriod,
-                                                                                            Self,
-                                                                                            GracefullShutdownRequest.Instance,
-                                                                                            Self);
                                               });
         }
 
@@ -177,9 +164,9 @@ namespace GridDomain.Node.Actors.EventSourced
             base.Unhandled(message);
         }
 
-        private void StopNow(object s)
+        private void StopNow()
         {
-            NotifyPersistenceWatchers(s);
+            Log.Debug("Event sourced actor {id} stopped", PersistenceId);
             Context.Stop(Self);
         }
 

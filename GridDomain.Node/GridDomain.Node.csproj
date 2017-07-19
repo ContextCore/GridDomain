@@ -418,6 +418,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="1.6-1.7_migration.sql" />
+    <Content Include="Human_schema.sql" />
     <Content Include="Database schema full.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
