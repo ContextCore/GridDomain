@@ -16,8 +16,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
             : base(output, fixture)
         {
             Infrastructure = fixture.Infrastructure;
-            var actorOfAsTestActorRef = ActorOfAsTestActorRef<PersistentHubActor>(
-                                                                                  Infrastructure.CreateHubProps(Node.System),
+            var actorOfAsTestActorRef = ActorOfAsTestActorRef<PersistentHubActor>(Infrastructure.CreateHubProps(Node.System),
                                                                                   "TestHub_" + Guid.NewGuid());
             Hub = actorOfAsTestActorRef.UnderlyingActor;
             HubRef = actorOfAsTestActorRef.Ref;
